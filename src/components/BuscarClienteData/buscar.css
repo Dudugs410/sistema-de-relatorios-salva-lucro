@@ -1,0 +1,192 @@
+.search-bar{
+    height: auto;
+    width: 100%;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    
+}
+
+.date-container{
+    width: 100%;
+    display: inline-flex;
+    justify-content: space-evenly;
+    background-color: rgba(0,0,0,0.5);
+    padding: 20px;
+}
+
+.date-column{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+.date-text{
+    color:white;
+}
+
+.date-picker{
+    
+    text-align: center;
+    display: flex;
+    border-radius: 10px;
+    height:2.2em;
+    width: 80%;
+    font-style: italic;
+    color: gray;
+}
+
+.date-container>.date-column>input{
+    height: 2.2em;
+    border-radius: 10px;
+    width: 80%;
+    
+}
+
+.date-container>.date-column>span{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    font-weight: bold;
+    
+}
+
+.date-container>.date-column>select{
+    display: flex;
+    height: 2.2em;
+    text-align: center;
+    width: 80%;
+    font-style: italic;
+}
+
+.date-column>.select-card>select{
+    display: flex;
+    height: 2.2em;
+    border-radius: 10px;
+    text-align: center;
+    width: 80%;
+    font-style: italic;
+    color: gray;
+}
+
+.select-card>span{
+    color: white;
+    font-weight: bold;
+    
+}
+
+.date-column>button{
+    height: 2.2em;
+    width: 80%;
+    border-radius: 10px;
+    text-align: center;
+    margin-top: 1.5em;
+}
+
+.select-card:not(:first-child){
+    margin-top: 10px;
+}
+
+.date-column>.date-text{
+    margin-top: 10px;
+}
+
+
+@media screen and (max-width: 832px){
+
+    .search-bar{
+        height: auto;
+        width: 100%;
+        background-color: rgba(0,0,0,0.5);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        
+    }
+    
+    .date-container{
+        width: 100%;
+        align-self: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        background-color: rgba(0,0,0,0.5);
+        padding: 10px;
+        
+    }
+
+    .date-column{
+        text-align: center;
+        display: inline-flex;
+        align-items: center;
+    }
+    
+    .select-card{
+        width: 100%;
+    }
+
+    .select-card>select{
+        display: flex;
+        margin-left: 10%;
+    }
+
+    .select-card>.date-picker{
+        display: flex;
+        border-radius: 10px;
+        height:2.2em;
+        width: 80%;
+        margin-left: 10%;
+    }
+
+    .date-text{
+        color:white;
+    }
+    
+    .date-picker{
+        height: 2em;
+    }
+    
+    .date-container>input{
+        height: auto;
+        border-radius: 10px;
+    }
+    
+    .date-container>select{
+        height: auto;
+        border-radius: 10px;
+    }
+    
+    .date-container>span{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        font-weight: bold;
+    }
+    
+    .date-container>select{
+        display: flex;
+        text-align: center;
+    }
+
+    .date-column:not(:nth-child(3)){
+        display: flex;
+        flex-direction: row;
+
+    }
+
+    .date-column:nth-child(4){
+        margin-left: 10%;
+    }
+
+    body{
+        min-width: 300px;
+    }
+
+    .select-card:not(:first-child){
+        margin-top: 0;
+    }
+    
+}

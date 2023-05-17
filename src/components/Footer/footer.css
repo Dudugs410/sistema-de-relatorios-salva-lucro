@@ -1,0 +1,30 @@
+.footer-main{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 47px;
+    background-color: #181c2e;
+    justify-content: center;
+    bottom: 0;
+    text-align: center;
+
+}
+
+.footer-container{
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+
+}
+
+.footer-content{
+    
+    color: white;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}

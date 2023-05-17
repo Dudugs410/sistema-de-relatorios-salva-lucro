@@ -1,0 +1,198 @@
+
+.header-bg{
+    width: 100%;
+    background-color: #181c2e;
+    color:white;
+    font-weight: bold;
+    display: flex;
+    height: 74.77px;
+
+}
+
+.navbar-title{
+    display: flex;
+    flex-direction: column;
+    align-self: start;
+    padding-left: 20px;
+    padding-top: 5px;
+    font-size: x-large;
+    z-index: 1;
+}
+
+.nav-text{
+    margin-left: 20px;
+}
+
+.header-content{
+    width: 100%;
+    height: 70px;
+    background-color: #dfdfdf;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+
+}
+
+.li-container{
+    width:100%;
+}
+
+.navbar-customer-wrapper{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    font-size: 0.8em;
+    justify-content: flex-end;
+    margin-right: 10%;
+}
+
+.navbar-customer{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    text-align: start;
+    
+}
+
+.navbar-customer:not(:first-child){
+    margin-left: 20%;
+}
+
+ul.navbar-nav{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-evenly;
+}
+
+li:hover{
+    color: yellowgreen;
+}
+
+.btn-exit{
+    text-align: center;
+    align-self: start;
+    background-color: red;
+    border-radius: 6px;
+    border: solid white 1px;
+    margin-top: 2px;
+    margin-right: 2px;
+}
+
+svg{
+    color: white;
+}
+
+polyline, line, path{
+    color: white;
+}
+
+@media screen and (max-width: 832px){
+
+    .header-bg{
+        width: 100%;
+        background-color: #181c2e;
+        color:white;
+        font-weight: bold;
+        display: flex;
+        flex-direction: column;
+        height: auto;
+    
+    }
+    
+    .navbar-title{
+        display: flex;
+        width: 100%;
+        flex-direction: column;
+        text-align: center;
+        padding-left: 0px;
+        padding-top: 5px;
+        font-size: x-large;
+        z-index: 1;
+    }
+    
+    .nav-text{
+        margin-left: 0px;
+    }
+    
+    .header-content{
+        width: 100%;
+        background-color: #dfdfdf;
+        color:black;
+        display: flex;
+        height: auto;
+    
+    }
+    
+    .navbar-customer-wrapper{
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        font-size: 0.8em;
+        justify-content: center;
+        margin-right: 10%;
+    }
+    
+    .navbar-customer{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        text-align: start;
+        
+    }
+    
+    .navbar-customer:not(:first-child){
+        margin-left: 20%;
+    }
+    
+    ul.navbar-nav{
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        justify-content: space-evenly;
+        align-items: center;
+    }
+    
+    li>a{
+        color: #181c2e;
+    }
+
+    .li-container{
+        width: 100%;
+    }
+
+    li{
+        transition: all 0.4s;
+    }
+
+    li:hover{
+        color: yellowgreen;
+        background-color: rgba(0, 0, 0, 0.322);
+
+    }
+
+    .nav-item{
+        width: 100%;
+        text-align: center;
+        border: solid black 1px;
+    }
+
+    .btn-exit{
+        cursor: pointer;
+        text-align: center;
+        align-self: end;
+        position: relative;
+        top: -90px;
+
+    }
+
+    svg{
+        color: white;
+    }
+
+    polyline, line, path{
+        color: white;
+    }
+
+}
