@@ -35,7 +35,8 @@
     height:2.2em;
     width: 80%;
     font-style: italic;
-    color: gray;
+    color: black;
+
 }
 
 .date-container>.date-column>input{

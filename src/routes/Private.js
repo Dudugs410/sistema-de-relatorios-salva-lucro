@@ -8,7 +8,7 @@ import LoadingModal from '../components/LoadingModal'
 
 export default function Private({children}){
 
-  const { signed, isSignedIn, accessToken, setIsSignedIn, setAccessToken, loading, setLoading, setUserData } = useContext(AuthContext)
+  const { signed, isSignedIn, accessToken, setIsSignedIn, setAccessToken, loading, setLoading, setUserData, expired } = useContext(AuthContext)
 
   
   useEffect(()=>{
@@ -25,10 +25,7 @@ export default function Private({children}){
 
 
   if(localStorage.getItem('isSignedIn') === (false || undefined)){
-    console.log('clearing')
-    sessionStorage.clear()
-    Cookies.remove('token')
-    return <Navigate to="/"/>
+    expired()
   }
 
   

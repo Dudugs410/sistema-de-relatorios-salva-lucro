@@ -1,0 +1,15 @@
+
+
+.vendas-view{
+    width: 100%;
+    height: 1200px;
+    overflow: scroll;
+
+    background-color: azure;
+}
+
+.det-th, .det-td{
+    width: 200px;
+    text-align: center;
+    white-space: nowrap;
+}

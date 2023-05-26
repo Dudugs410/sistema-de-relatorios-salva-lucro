@@ -2,18 +2,18 @@
 .content-area{
   height: 100%;
   width: 100%;
-
   display: flex;
   color: white;
   background-color: rgba(0, 0, 0, 0.5);
+  
 }
 
 .graph-area{
   height: 100%;
   width: 50%;
-
   display: flex;
   flex-direction: column;
+
 }
 
 .graph-data{
@@ -26,7 +26,6 @@
 .table-area{
   height: 100%;
   width: 100%;
-
   display: flex;
   flex-direction: column;
 }
@@ -38,104 +37,46 @@
 
 }
 
-table{
+
+.dash-table{
+  border: 0;
   color: white;
 };
 
-table caption{
+.dash-table caption{
   font-size: 1.3em;
-  color: white;
 }
 
-table thead{
-
+.dash-table .dash-thead{
+  border:none;
   height: 1px;
   margin: -1px;
   overflow: hidden;
   padding: 0;
   position: absolute;
   width: 1px;
-  color: white;
 }
 
-tbody{
-  color: white;
-}
-
-table tr{
-  border-bottom: 1px solid rgb(184, 184, 184);
+.dash-table .dash-tr{
+  border-bottom: 3px solid #DDD;
   display: block;
-  color: white;
+  margin-bottom: 0.60em;
 }
 
-table td{
+.dash-table .dash-td{
+  border-bottom: 1px solid #DDD;
   display: block;
   font-size: 0.8em;
   text-align: right;
-  color: white;
 }
 
-table td::before{
+.dash-table .dash-td::before{
   content: attr(data-label);
   float: left;
   font-weight: bold;
   text-transform: uppercase;
-  color: white;
 }
 
-table td{
-  color: white;
 
-}
 
-@media screen and (max-width: 832px){
-    
-    table{
-        border:0;
-        color: white;
-      };
-  
-      table caption{
-        font-size: 1.3em;
-        color: white;
-      }
-  
-      table thead{
-        border:none;
-        height: 1px;
-        margin: -1px;
-        overflow: hidden;
-        padding: 0;
-        position: absolute;
-        width: 1px;
-        color: white;
-      }
-  
-      table tr{
-        border-bottom: 3px solid white;
-        display: block;
-        margin-bottom: 0.60em;
-        color: white;
-      }
-  
-      table td{
-        border-bottom: 1px solid white;
-        display: block;
-        font-size: 0.8em;
-        text-align: right;
-        color: white;
-      }
-  
-      table td::before{
-        content: attr(data-label);
-        float: left;
-        font-weight: bold;
-        text-transform: uppercase;
-        color: white;
-      }
 
-      td{
-        color: white;
-      }
-
-}

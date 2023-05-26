@@ -1,6 +1,17 @@
 import './detalhesData.css'
 
-const DetalhesData = ({vendas, close}) =>{
+import { useContext, useEffect, useState } from 'react'
+import { AuthContext } from '../../contexts/auth'
+
+const DetalhesData = ({ close }) =>{
+
+const { totalLiquido } = useContext(AuthContext)
+const [ total, setTotal] = useState(0)
+
+useEffect(()=>{
+    setTotal(totalLiquido)
+},[totalLiquido])
+
     return(
         <>
             <div className='card-vendas'>
@@ -18,10 +29,13 @@ const DetalhesData = ({vendas, close}) =>{
                     <div className='valores-div'>
                         <span>Voucher: </span> <span>valor</span>
                     </div>
+                    <hr/>
+                    <div className='valores-div'>
+                        <span>Total Líquido: </span> <span>{`${total}`}</span>
+                    </div>
                     <div className='button-container'>
                         <button type='button' className='botao-card btn btn-primary' onClick={ close }>Valores por Administradora</button>
                     </div>
-                    
                 </div>
             </div>
         </>

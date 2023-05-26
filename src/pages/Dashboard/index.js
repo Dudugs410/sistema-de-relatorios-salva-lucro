@@ -7,29 +7,31 @@ import { useContext, useEffect } from "react"
 import { AuthContext } from "../../contexts/auth"
 //////
 import { clienteVendas } from "../../resources/teste"
-
 //////
 import GraficoTorta from "../../components/Grafico"
 
 const Dashboard = () => {
     
-    const { isSignedIn, setIsSignedIn, accessToken, setAccessToken, setUserData } = useContext(AuthContext)
+    const { isSignedIn, setIsSignedIn, accessToken, setAccessToken } = useContext(AuthContext)
+    const { vendas, loadVendas, vendasDiaAtual, loadVendasDiaAtual } = useContext(AuthContext)
 
     useEffect(() => {
         console.log('Dashboard')
+        console.log(vendas)
+        loadVendasDiaAtual()
     },[])
     
     useEffect(() => {
         setIsSignedIn(sessionStorage.getItem('isSignedIn'))
         setAccessToken(Cookies.get('token'))
-    },[])
+    },[setAccessToken, setIsSignedIn])
     
     /////TESTE DO GRÁFICO//////
     // Dados de vendas dos últimos 5 dias
     const lastFiveDaysSales = 
     clienteVendas
     .slice(-5)
-    .map((vendas) => vendas.vendas.reduce((a, b) => a + b, 0));
+    .map((vendas) => vendas.vendas.reduce((a, b) => a + b, 0))
 
   const dados5Dias = {
     labels: [],
@@ -39,7 +41,7 @@ const Dashboard = () => {
         backgroundColor: clienteVendas.slice(-5).map((vendas) => vendas.cor),
       },
     ],
-  };
+  }
 
   // Dados de vendas do dia atual
   const dadosDiaAtual = {
@@ -54,10 +56,9 @@ const Dashboard = () => {
   }
   //////////////////////////////////////////////////////////////////////////////////////
 
-
   return(
     <div className='appPage'>
-        <div className='content-area'>
+        <div className='content-area dash'>
             <div className='graph-area'>
                 <div className='graph-data'>
                     <GraficoTorta data={dadosDiaAtual} />
@@ -68,41 +69,37 @@ const Dashboard = () => {
             </div>
             <div className='table-area'>
                 <div className='table-data'>
-                    <table className="table">
-                        <thead>
-                            <tr>
-                                <th scope="col">Nome</th>
-                                <th scope="col">Código</th>
-                                <th scope="col">Data de Inserção</th>
-                                <th scope="col">info</th>
+                    <table className="table dash-table">
+                        <thead className='dash-thead'>
+                            <tr className='dash-tr'>
+                                <th className='dash-th' scope="col">Débito</th>
+                                <th className='dash-th' scope="col">Crédito</th>
+                                <th className='dash-th' scope="col">Voucher</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td className='cell-text' data-label="Usuário">usuario</td>
-                                <td className='cell-text' data-label="Código">codigo</td>
-                                <td className='cell-text' data-label="Data do cadastro">data</td>
-                                <td className='cell-text' data-label="Detalhes">#</td>
+                        <tbody className='dash-tbody'>
+                            <tr className='dash-tr'>
+                                <td className='cell-text dash-td' data-label="Débito">Débito</td>
+                                <td className='cell-text dash-td' data-label="Crédito">Crédito</td>
+                                <td className='cell-text dash-td' data-label="Voucher">Voucher</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
                 <div className='table-data'>
-                    <table className="table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Nome</th>
-                                    <th scope="col">Código</th>
-                                    <th scope="col">Data de Inserção</th>
-                                    <th scope="col">info</th>
+                    <table className="table dash-table">
+                            <thead className='dash-thead'>
+                                <tr className='dash-tr'>
+                                    <th className='dash-th' scope="col">Débito</th>
+                                    <th className='dash-th' scope="col">Crédito</th>
+                                    <th className='dash-th' scope="col">Voucher</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td className='cell-text' data-label="Usuário">usuario</td>
-                                    <td className='cell-text' data-label="Código">codigo</td>
-                                    <td className='cell-text' data-label="Data do cadastro">data</td>
-                                    <td className='cell-text' data-label="Detalhes">#</td>
+                            <tbody className='dash-tbody'>
+                                <tr className='dash-tr'>
+                                    <td className='cell-text dash-td' data-label="Débito">Débito</td>
+                                    <td className='cell-text dash-td' data-label="Crédito">Crédito</td>
+                                    <td className='cell-text dash-td' data-label="Voucher">Voucher</td>
                                 </tr>
                             </tbody>
                         </table>
