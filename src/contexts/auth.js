@@ -135,6 +135,29 @@ useEffect(() =>{
         await api.get('vendas', config)
             .then((response) => {
             setVendas(response.data)
+
+            const valores = response.data.reduce((total, vendas) =>{
+              total.total += vendas.valorLiquido
+            if(vendas.produtoNome === 'Crédito   '){
+              total.Credito += vendas.valorLiquido
+            } else if(vendas.produtoNome === 'Débito    '){
+              total.Debito += vendas.valorLiquido
+            } else if(vendas.produtoNome === 'Voucher'){
+              total.Voucher += vendas.valorLiquido
+            }
+            return total
+          },{Credito: 0, Debito:0, Voucher: 0, total:0})
+
+            console.log('Valores Crédito: ' + valores.Credito)
+            console.log('Valores Débito: ' + valores.Débito)
+            console.log('Valores Voucher: ' + valores.Voucher)
+            console.log('Total: ' + valores.total)
+
+            setTotalCredito(valores.Credito)
+            setTotalDebito(valores.Debito)
+            setTotalVoucher(valores.Voucher)
+            setTotalLiquido(valores.total)
+   
             return response.data
             })
             .catch((error) => {
@@ -142,34 +165,7 @@ useEffect(() =>{
             })
     }
 
-    async function loadVendasDiaAtual(){
-      let params = {
-        data: '2023-05-01',
-        cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-      }
-      
-      let config = {
-        headers: { 
-          'Content-Type': 'application/json', 
-          'Authorization': `Bearer ${Cookies.get('token')}`
-        },
-        params: params
-      }
-
-      await api.get('vendas', config)
-      .then((response) => { 
-        console.log('teste: ' + response)
-        let vendasHoje = []
-        vendasHoje.push(response.data.map((venda) => { return venda.valorBruto} ))
-        setVendasDiaAtual(vendasHoje)
-      })
-      console.log(vendasDiaAtual)
-    }
-
-    async function handleBusca(){
-      console.log(cnpj, dataInicial)
-      await buscar()
-  }
+    
 
 
   async function buscar() {
@@ -191,10 +187,6 @@ useEffect(() =>{
         alert(`Executou busca entre os dias ${dataInicial} e ${dataFinal}`);
       }
     }
-  }
-
-  function totalVendasLiquido(){
-    setTotalLiquido(vendas.reduce((total, venda) => total + venda.valorLiquido, 0))
   }
 
   function dateConvert(date){
@@ -248,14 +240,17 @@ useEffect(() =>{
         clientes,
         setClientes,
         loadVendas,
-        loadVendasDiaAtual,
         detalhes,
         setDetalhes,
-        handleBusca,
         buscar,
-        totalVendasLiquido,
         totalLiquido,
-        setTotalLiquido
+        setTotalLiquido,
+        totalCredito,
+        setTotalCredito,
+        totalDebito,
+        setTotalDebito,
+        totalVoucher,
+        setTotalVoucher,
         
       }}
     >

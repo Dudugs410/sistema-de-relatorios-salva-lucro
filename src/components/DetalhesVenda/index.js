@@ -7,7 +7,7 @@ import './detalhesVenda.css'
 
 const DetalhesVenda = ({ close }) =>{
 
-    const { vendas, setDetalhes, setDataInicial, setTotalLiquido } = useContext(AuthContext)
+    const { vendas } = useContext(AuthContext)
 
     function handleCurrentVenda(){
         console.log('handleCurrentVenda()')
@@ -21,6 +21,7 @@ const DetalhesVenda = ({ close }) =>{
                         <tr>
                             <th className='det-th'scope="col">Adquirente</th>
                             <th className='det-th'scope="col">Bandeira</th>
+                            <th className='det-th'scope="col">Produto</th>
                             <th className='det-th'scope="col">NSU</th>
                             <th className='det-th'scope="col">CNPJ</th>
                             <th className='det-th'scope="col">Código da Venda</th>
@@ -43,6 +44,7 @@ const DetalhesVenda = ({ close }) =>{
                         <tr key={venda.codigoVenda}>
                             <td className='det-td'data-label="Adquirente">{venda.adquirenteNome}</td>
                             <td className='det-td'data-label="Bandeira">{venda.bandeiraNome}</td>
+                            <td className='det-td'data-label="Produto">{venda.produtoNome}</td>
                             <td className='det-td'data-label="NSU">{venda.nsu}</td>
                             <td className='det-td'data-label="CNPJ">{venda.codigoVenda}</td>
                             <td className='det-td'data-label="Código da Venda">{venda.codigoVenda}</td>
