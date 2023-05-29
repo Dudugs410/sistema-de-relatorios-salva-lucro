@@ -13,12 +13,11 @@ import GraficoTorta from "../../components/Grafico"
 const Dashboard = () => {
     
     const { isSignedIn, setIsSignedIn, accessToken, setAccessToken } = useContext(AuthContext)
-    const { vendas, loadVendas, vendasDiaAtual, loadVendasDiaAtual } = useContext(AuthContext)
+    const { vendas, loadVendas } = useContext(AuthContext)
 
     useEffect(() => {
         console.log('Dashboard')
         console.log(vendas)
-        loadVendasDiaAtual()
     },[])
     
     useEffect(() => {

@@ -23,8 +23,6 @@ function AuthProvider({ children }){
   const [vendas, setVendas] = useState([])
   const [bandeiras, setBandeiras] = useState([])
   const [clientes, setClientes] = useState([])
-  const [vendasDiaAtual, setVendasDiaAtual] = useState([])
-  const [vendas5dias, setVendas5Dias] = useState([])
   const [totalLiquido, setTotalLiquido] = useState(0)
   const [totalDebito, setTotalDebito] = useState(0)
   const [totalCredito, setTotalCredito] = useState(0)
