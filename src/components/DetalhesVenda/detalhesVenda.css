@@ -17,3 +17,9 @@
     text-align: center;
     white-space: nowrap;
 }
+
+.table-btn{
+    height: 1em;
+    text-align: center;
+    justify-content: center;
+}

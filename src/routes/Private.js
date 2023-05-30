@@ -1,14 +1,39 @@
 import { React, useEffect, useContext } from 'react'
-import { Navigate } from 'react-router-dom'
+import jwtDecode from 'jwt-decode'
 import { AuthContext } from '../contexts/auth'
 import Cookies from 'js-cookie'
 
 import Layout from '../components/Layout'
 import LoadingModal from '../components/LoadingModal'
+import api from '../services/api'
 
 export default function Private({children}){
 
-  const { signed, isSignedIn, accessToken, setIsSignedIn, setAccessToken, loading, setLoading, setUserData, expired } = useContext(AuthContext)
+  const { setIsSignedIn, setAccessToken, loading, setLoading, setUserData, expired, accessToken, refreshToken, setRefreshToken, refresh } = useContext(AuthContext)
+
+  /*
+  function isTokenExpired(token) {
+    if (!token) {
+      // Token is not provided
+      return true
+    }
+  
+    const decodedToken = jwtDecode(token)
+    const tokenExp = decodedToken.exp * 1000 // Convert expiration time to milliseconds
+    const currentDateTime = new Date().getTime()
+  
+    // Compare the token's expiration time with the current time
+    return tokenExp < currentDateTime
+  }
+  
+  // Usage example
+  const isExpired = isTokenExpired(accessToken)
+  console.log(`Is token expired? ${isExpired}`)
+
+  if(isTokenExpired(accessToken)){
+    refresh(accessToken)
+  }
+  */
 
   
   useEffect(()=>{
@@ -22,6 +47,12 @@ export default function Private({children}){
       setUserData(JSON.parse(sessionStorage.getItem('userData')))
   },[])
 
+  if(loading)
+  {
+    return(
+      <LoadingModal/>
+    )
+  }
 
 
   if(localStorage.getItem('isSignedIn') === (false || undefined)){

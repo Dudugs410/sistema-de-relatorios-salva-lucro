@@ -6,9 +6,11 @@ import './layout.css'
 function Layout({ children }){
     return(
         <div className='layout'>
-            <Header />
-            { children }
-            <Footer />
+            <div className='appPage'>
+                <Header />
+                { children }
+                <Footer />
+            </div>
         </div>
 
     )

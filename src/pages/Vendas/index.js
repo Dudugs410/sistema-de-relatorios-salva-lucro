@@ -12,12 +12,23 @@ import './Calendar.css'
 
 const Vendas = () =>{
   
-  const { dataInicial, setDataInicial, detalhes, setDetalhes, loadBandeiras, dataFinal, cnpj, vendas, setCnpj, loadVendas, dateConvert, dateConvertYYYYMMDD } = useContext(AuthContext)
+  const { dataInicial, setDataInicial, detalhes, setDetalhes, loadBandeiras, setTotalLiquido, setTotalCredito, setTotalDebito, setTotalVoucher, vendas  } = useContext(AuthContext)
+
+  function zerarValores(){
+    if(vendas){
+      setDetalhes(false)
+      setTotalLiquido(0.00)
+      setTotalCredito(0.00)
+      setTotalDebito(0.00)
+      setTotalVoucher(0.00)
+    }
+  }
 
   useEffect(()=>{
     loadBandeiras()
     setDataInicial(new Date())
     setDetalhes(false)
+    zerarValores()
   },[])
 
   function handleDateChange(date){

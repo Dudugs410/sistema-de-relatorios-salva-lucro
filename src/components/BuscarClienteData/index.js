@@ -16,7 +16,7 @@ const BuscarClienteData = () => {
     const [adm, setAdm] = useState('')
     const [banSelecionada, setBanSelecionada] = useState('')
 
-    const { dataInicial, setDataInicial, dataFinal, setDataFinal, cnpj, setCnpj, loadVendas, vendas, detalhes, setDetalhes, dateConvertYYYYMMDD, totalLiqido, setTotalLiquido, totalVendasLiquido, setTotalCredito, setTotalDebito, setTotalVoucher } = useContext(AuthContext)
+    const { dataInicial, setDataInicial, dataFinal, setDataFinal, cnpj, setCnpj, loadVendas, vendas, detalhes, setDetalhes, buscou, setBuscou, setTotalLiquido, totalVendasLiquido, setTotalCredito, setTotalDebito, setTotalVoucher } = useContext(AuthContext)
     const { setLoading } = useContext(AuthContext)
 
 
@@ -128,7 +128,7 @@ const BuscarClienteData = () => {
                                     <option>place_holder_04</option>
                                 </select>
                             </div>
-                            { detalhes ? <button className="btn btn-secondary" onClick={ () => { setDetalhes(false); setTotalLiquido(0.00); setTotalCredito(0.00); setTotalDebito(0.00); setTotalVoucher(0.00) }}>Fechar</button> : <button className='btn btn-secondary' disabled>Fechar</button>}
+                            { detalhes ? <button className="btn btn-secondary" onClick={ () => { setDetalhes(false); setTotalLiquido(0.00); setTotalCredito(0.00); setTotalDebito(0.00); setTotalVoucher(0.00) }}>Voltar ao Calendário</button> : <button className='btn btn-secondary' disabled>Fechar</button>}
                         </div>
     
 

@@ -1,6 +1,8 @@
 import { React, createContext, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import jwtDecode from 'jwt-decode';
+
 import Cookies from 'js-cookie'
 import api, { config } from '../services/api'
 
@@ -13,6 +15,7 @@ function AuthProvider({ children }){
   const [userData, setUserData] = useState({})
   const [loading, setLoading] = useState(false)
   const [accessToken, setAccessToken] = useState(undefined)
+  const [refreshToken, setRefreshToken] = useState(undefined)
   const [userList, setUserList] = useState([])
 
 ////////////////////////////////////////////////////////////////
@@ -29,6 +32,7 @@ function AuthProvider({ children }){
   const [totalVoucher, setTotalVoucher] = useState(0)
 
   const [detalhes, setDetalhes] = useState(false)
+  const [buscou, setBuscou] = useState(false)
   
   const navigate = useNavigate()
 
@@ -43,7 +47,9 @@ useEffect(() =>{
     await api.post('/token', { client_id: login, client_secret: md5(password) })
     .then(async response => {
         Cookies.set('token', response.data.acess_token)
+        Cookies.set('refreshToken', response.data.refresh_token)
         setAccessToken(Cookies.get('token'))
+        setRefreshToken(Cookies.get('refreshToken'))
         if(response.data.sucess === true){
           sessionStorage.setItem('isSignedIn', true)
         }
@@ -163,11 +169,32 @@ useEffect(() =>{
             })
     }
 
+    //refresh
+
+    async function refresh(){
+      await api.post('/token/refresh/LspDPCtHXkcITp9waAeUC4iUVmBLGhQh4eawKRHWTO4=', config(Cookies.get('refreshToken')))
+      .then(response => {
+        if(response.data.message === "token expirado"){
+          return 0
+        }
+        else{
+          console.log(response)
+          setAccessToken(response.acessToken)
+          Cookies.set('token', accessToken)
+          setRefreshToken(response.refreshToken)
+          Cookies.set('refreshToken', refreshToken)
+        }
+      }).catch(error => console.log(error))
+    }
+    
+
     
 
 
   async function buscar() {
     setCnpj('03953552000102');
+    setLoading(true)
+    setBuscou(true)
     await loadVendas();
     if (!dataFinal) {
       alert(`executou a busca do dia ${dataInicial}`);
@@ -217,9 +244,12 @@ useEffect(() =>{
         setUserData,
         accessToken,
         setAccessToken,
+        refreshToken,
+        setRefreshToken,
         expired,
         dateConvert,
         dateConvertYYYYMMDD,
+        refresh,
 
 
         //////////////////
@@ -249,6 +279,8 @@ useEffect(() =>{
         setTotalDebito,
         totalVoucher,
         setTotalVoucher,
+        buscou,
+        setBuscou,
         
       }}
     >
