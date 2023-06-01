@@ -23,7 +23,12 @@ function AuthProvider({ children }){
   const [dataInicial, setDataInicial] = useState(new Date())
   const [dataFinal, setDataFinal] = useState(null)
   const [cnpj, setCnpj] = useState('03.953.552/0001-02')
+  
   const [vendas, setVendas] = useState([])
+  const [vendas5dias, setVendas5dias] = useState([])
+  const [vendasHoje, setVendasHoje] = useState([])
+
+
   const [bandeiras, setBandeiras] = useState([])
   const [clientes, setClientes] = useState([])
   const [totalLiquido, setTotalLiquido] = useState(0)
@@ -87,12 +92,14 @@ useEffect(() =>{
   
   /////desloga usuário
   function logout(){
+    setLoading(true)
     console.log('logout()')
     sessionStorage.clear()
     setIsSignedIn(false)
     setUserData({})
     Cookies.remove('token')
     localStorage.setItem('isSignedIn', false)
+    setLoading(false)
     navigate('/')
     console.log('************fim logout()************')
   }
@@ -113,6 +120,7 @@ useEffect(() =>{
   //Vendas**********************************************************
 
     async function loadBandeiras(){
+      setLoading(true)
       await api.get('/bandeira')
       .then( async response => {
         setBandeiras(response)
@@ -120,9 +128,11 @@ useEffect(() =>{
       .catch(error =>{
         console.log(error)
       })
+      setLoading(false)
     }
   
     async function loadVendas(){
+      setLoading(true)
         let params = {
             data: dataInicial,
             cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
@@ -167,22 +177,25 @@ useEffect(() =>{
             .catch((error) => {
             console.log(error)
             })
+            setLoading(false)
     }
 
     //refresh
 
     async function refresh(){
-      await api.post('/token/refresh/LspDPCtHXkcITp9waAeUC4iUVmBLGhQh4eawKRHWTO4=', config(Cookies.get('refreshToken')))
-      .then(response => {
-        if(response.data.message === "token expirado"){
-          return 0
-        }
-        else{
+      await api.post('/token/refresh/' + Cookies.get('refreshToken'), config(accessToken))
+      .then((response) => {
+        console.log (response)
+        if(response.success){
           console.log(response)
           setAccessToken(response.acessToken)
           Cookies.set('token', accessToken)
           setRefreshToken(response.refreshToken)
           Cookies.set('refreshToken', refreshToken)
+        }
+        else{
+          //expired()
+          console.log('erro')
         }
       }).catch(error => console.log(error))
     }
@@ -197,21 +210,23 @@ useEffect(() =>{
     setBuscou(true)
     await loadVendas();
     if (!dataFinal) {
-      alert(`executou a busca do dia ${dataInicial}`);
-        console.log(vendas)
-        setDetalhes(true)
-        
+      alert(`executou a busca do dia ${dataInicial}`)
+      console.log(vendas)
+      setDetalhes(true)
     } else {
       if (dataFinal < dataInicial) {
-        alert('A Data Final não pode ser menor que a data inicial. Favor selecionar uma data válida.');
-        return;
+        alert('A Data Final não pode ser menor que a data inicial. Favor selecionar uma data válida.')
+        setLoading(false)
+        return
       } else if (dataFinal === '' || dataInicial === '') {
-        alert('Favor selecionar um período de datas válido');
-        return;
+        alert('Favor selecionar um período de datas válido')
+        setLoading(false)
+        return
       } else {
-        alert(`Executou busca entre os dias ${dataInicial} e ${dataFinal}`);
+        alert(`Executou busca entre os dias ${dataInicial} e ${dataFinal}`)
       }
     }
+    setLoading(false)
   }
 
   function dateConvert(date){
@@ -253,6 +268,8 @@ useEffect(() =>{
 
 
         //////////////////
+        vendas5dias,
+        setVendas5dias,
 
         dataInicial,
         setDataInicial,

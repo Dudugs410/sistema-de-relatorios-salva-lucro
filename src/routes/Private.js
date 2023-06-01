@@ -5,11 +5,11 @@ import Cookies from 'js-cookie'
 
 import Layout from '../components/Layout'
 import LoadingModal from '../components/LoadingModal'
-import api from '../services/api'
+
 
 export default function Private({children}){
 
-  const { setIsSignedIn, setAccessToken, loading, setLoading, setUserData, expired, accessToken, refreshToken, setRefreshToken, refresh } = useContext(AuthContext)
+  const { setIsSignedIn, setAccessToken, loading, setLoading, setUserData } = useContext(AuthContext)
 
   /*
   function isTokenExpired(token) {
@@ -47,19 +47,15 @@ export default function Private({children}){
       setUserData(JSON.parse(sessionStorage.getItem('userData')))
   },[])
 
-  if(loading)
-  {
-    return(
-      <LoadingModal/>
-    )
-  }
-
-
   if(localStorage.getItem('isSignedIn') === (false || undefined)){
-    expired()
+    //expired()
   }
 
   
   return (
-    <Layout>{ children }</Layout>)
+    <>
+      <Layout>{ children }</Layout> 
+      { loading ? <LoadingModal/> : <></>} 
+    </>
+  )
 }

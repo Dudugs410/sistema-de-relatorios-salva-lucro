@@ -2,6 +2,7 @@ import axios from 'axios'
 import Cookies from 'js-cookie';
 
 axios.defaults.headers.common['Content-Type'] = 'application/json';
+axios.defaults.headers.common['Authorization'] = `Bearer ${Cookies.get('token')}`
 
 export function config(token){
     const config = { headers:{ 

@@ -12,13 +12,15 @@ import GraficoTorta from "../../components/Grafico"
 
 const Dashboard = () => {
     
-    const { isSignedIn, setIsSignedIn, accessToken, setAccessToken } = useContext(AuthContext)
-    const { vendas, loadVendas } = useContext(AuthContext)
+    const { setIsSignedIn, setAccessToken } = useContext(AuthContext)
+    const { vendas, } = useContext(AuthContext)
 
     useEffect(() => {
         console.log('Dashboard')
         console.log(vendas)
     },[])
+
+   
     
     useEffect(() => {
         setIsSignedIn(sessionStorage.getItem('isSignedIn'))
