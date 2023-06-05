@@ -1,17 +1,11 @@
 import { useContext } from "react"
 import { AuthContext } from "../../contexts/auth"
 
-import { FiZoomIn } from "react-icons/fi"
-
 import './detalhesVenda.css'
 
-const DetalhesVenda = ({ close }) =>{
+const DetalhesVenda = () =>{
 
     const { vendas, dateConvert } = useContext(AuthContext)
-
-    function handleCurrentVenda(){
-        console.log('handleCurrentVenda()')
-    }
 
     return(
         <>
@@ -27,13 +21,12 @@ const DetalhesVenda = ({ close }) =>{
                             <th className='det-th'scope="col">Código da Venda</th>
                             <th className='det-th'scope="col">Código da Autorização</th>
                             <th className='det-th'scope="col">Número PV</th>
-                            <th className='det-th'scope="col">Status</th>
                             <th className='det-th'scope="col">Valor Bruto</th>
                             <th className='det-th'scope="col">Valor Líquido</th>
                             <th className='det-th'scope="col">Taxa</th>
-                            <th className='det-th'scope="col">Data do Crédito</th>
                             <th className='det-th'scope="col">Data da Venda</th>
                             <th className='det-th'scope="col">Hora da Venda</th>
+                            <th className='det-th'scope="col">Data do Crédito</th>
                             <th className='det-th'scope="col">Qtd Parcelas</th>
                         </tr>
                     </thead>
@@ -41,21 +34,20 @@ const DetalhesVenda = ({ close }) =>{
                     {vendas.map((venda, index)=>{
                     return(
                         <tr className='det-tr' key={venda.codigoVenda}>
-                            <td className='det-td'data-label="Adquirente">{venda.adquirenteNome}</td>
-                            <td className='det-td'data-label="Bandeira">{venda.bandeiraNome}</td>
-                            <td className='det-td'data-label="Produto">{venda.produtoNome}</td>
+                            <td className='det-td'data-label="Adquirente">{venda.adquirente.nomeAdquirente}</td>
+                            <td className='det-td'data-label="Bandeira">{venda.bandeira.descricaoBandeira}</td>
+                            <td className='det-td'data-label="Produto">{venda.produto.descricaoProduto}</td>
                             <td className='det-td'data-label="NSU">{venda.nsu}</td>
-                            <td className='det-td'data-label="CNPJ">{venda.codigoVenda}</td>
+                            <td className='det-td'data-label="CNPJ">{venda.cnpj}</td>
                             <td className='det-td'data-label="Código da Venda">{venda.codigoVenda}</td>
                             <td className='det-td'data-label="Código da Autorização">{venda.codigoAutorizacao}</td>
                             <td className='det-td'data-label="Numero PV">{venda.numeroPV}</td>
-                            <td className='det-td'data-label="Status">{venda.status}</td>
                             <td className='det-td'data-label="Valor Bruto">R${`${venda.valorBruto.toFixed(2)}`.toString().replace('.',',')}</td>
                             <td className='det-td'data-label="Valor Líquido">R${`${venda.valorLiquido.toFixed(2)}`.toString().replace('.',',')}</td>
                             <td className='det-td'data-label="Taxa">R$ {`${venda.taxa.toFixed(2)}`.toString().replace('.',',')}</td>
-                            <td className='det-td'data-label="Data do Crédito">{dateConvert(venda.dataCredito)}</td>
                             <td className='det-td'data-label="Data da Venda">{dateConvert(venda.dataVenda)}</td>
                             <td className='det-td'data-label="Hora da Venda">{venda.horaVenda.replaceAll('-', ':')}</td>
+                            <td className='det-td'data-label="Data do Crédito">{dateConvert(venda.dataCredito)}</td>
                             <td className='det-td'data-label="Qtd Parcelas">{venda.quantidadeParcelas}</td>
                         </tr>
                     )

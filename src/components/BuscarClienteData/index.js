@@ -92,7 +92,7 @@ const BuscarClienteData = () => {
                                 <select id='bandeira' value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}}>
                                     <option defaultValue=''>selecione</option>
                                     {BAN.map((BAN)=>(
-                                        <option key={BAN.CODIGO} value = {BAN.DESCRICAO}>{BAN.DESCRICAO}</option>
+                                        <option key={BAN.codigoBandeira} value = {BAN.descricaoBandeira}>{BAN.descricaoBandeira}</option>
                                     ))}
                                 </select>
                         </div>

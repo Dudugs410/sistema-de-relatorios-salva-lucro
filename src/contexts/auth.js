@@ -1,3 +1,4 @@
+/* eslint-disable default-case */
 import { React, createContext, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -25,9 +26,9 @@ function AuthProvider({ children }){
   const [cnpj, setCnpj] = useState('03.953.552/0001-02')
   
   const [vendas, setVendas] = useState([])
+  const [vendasDashboard, setVendasDashboard] = useState([])
   const [vendas5dias, setVendas5dias] = useState([])
   const [vendasHoje, setVendasHoje] = useState([])
-
 
   const [bandeiras, setBandeiras] = useState([])
   const [clientes, setClientes] = useState([])
@@ -41,9 +42,10 @@ function AuthProvider({ children }){
   
   const navigate = useNavigate()
 
-useEffect(() =>{
-  console.log('auth.js')
-},[])
+  useEffect(() =>{
+    setDataInicial(new Date())
+    console.log('auth.js')
+  },[])
 
   /////Login do usuário
 
@@ -98,6 +100,7 @@ useEffect(() =>{
     setIsSignedIn(false)
     setUserData({})
     Cookies.remove('token')
+    Cookies.remove('refreshToken')
     localStorage.setItem('isSignedIn', false)
     setLoading(false)
     navigate('/')
@@ -110,6 +113,7 @@ useEffect(() =>{
     setIsSignedIn(false)
     setUserData({})
     Cookies.remove('token')
+    Cookies.remove('refreshToken')
     localStorage.setItem('isSignedIn', false)
     navigate('/')
     console.log('************fim sessão expirada************')
@@ -148,22 +152,27 @@ useEffect(() =>{
 
         await api.get('vendas', config)
             .then((response) => {
-            setVendas(response.data)
+            setVendas(response.data.VENDAS)
 
-            const valores = response.data.reduce((total, vendas) =>{
+            const valores = response.data.VENDAS.reduce((total, vendas) =>{
               total.total += vendas.valorLiquido
-            if(vendas.produtoNome === 'Crédito   '){
-              total.Credito += vendas.valorLiquido
-            } else if(vendas.produtoNome === 'Débito    '){
-              total.Debito += vendas.valorLiquido
-            } else if(vendas.produtoNome === 'Voucher'){
-              total.Voucher += vendas.valorLiquido
-            }
+              switch(vendas.produto.descricaoProduto){
+                case 'Crédito':
+                  total.Credito += vendas.valorLiquido
+                  break
+                case 'Débito':
+                  total.Debito += vendas.valorLiquido
+                  break
+                case 'Voucher':
+                  total.Voucher += vendas.valorLiquido
+                  break
+              }
+
             return total
           },{Credito: 0, Debito:0, Voucher: 0, total:0})
 
             console.log('Valores Crédito: ' + valores.Credito)
-            console.log('Valores Débito: ' + valores.Débito)
+            console.log('Valores Débito: ' + valores.Debito)
             console.log('Valores Voucher: ' + valores.Voucher)
             console.log('Total: ' + valores.total)
 
@@ -179,6 +188,77 @@ useEffect(() =>{
             })
             setLoading(false)
     }
+
+    //vendas Dashboard
+
+    async function loadVendasDashboard() {
+      setLoading(true)
+      setCnpj('03953552000102')
+     
+      let vendasTemp = []
+      for(let i = 1; i < 6; i++){
+          let dataTemp = new Date(dataInicial.getDate() - i);
+          let params = {
+              data: dataTemp,
+              cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+            }
+            
+            let config = {
+              headers: { 
+                'Content-Type': 'application/json', 
+                'Authorization': `Bearer ${Cookies.get('token')}`
+              },
+              params: params
+            }
+  
+          try{
+              await api.get('vendas', config)
+              .then((response) => {
+                  vendasTemp.push(response.data.VENDAS)
+                  return response.data
+              })
+                  .catch((error) => {
+                  console.log(error)
+              })
+          } catch(error){
+              console.log(error)
+          }
+      }
+      setVendasDashboard(vendasTemp)
+      console.log(vendasDashboard)
+      setLoading(false)
+  }
+
+    //testar vendas
+
+    async function vendasTeste(){
+      setLoading(true)
+      setCnpj('03953552000102')
+      const dataTemp = '2023-05-31'
+
+        let params = {
+            data: dataTemp,
+            cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+          }
+          
+          let config = {
+            headers: { 
+              'Content-Type': 'application/json', 
+              'Authorization': `Bearer ${Cookies.get('token')}`
+            },
+            params: params
+          }
+          try{
+            let vendasTest = await api.get('/vendas', config)
+            setLoading(false)
+            return vendasTest
+          } catch (error){
+            console.error(error)
+            setLoading(false)
+            return null
+          }
+    }
+      
 
     //refresh
 
@@ -199,10 +279,6 @@ useEffect(() =>{
         }
       }).catch(error => console.log(error))
     }
-    
-
-    
-
 
   async function buscar() {
     setCnpj('03953552000102');
@@ -211,7 +287,6 @@ useEffect(() =>{
     await loadVendas();
     if (!dataFinal) {
       alert(`executou a busca do dia ${dataInicial}`)
-      console.log(vendas)
       setDetalhes(true)
     } else {
       if (dataFinal < dataInicial) {
@@ -227,16 +302,16 @@ useEffect(() =>{
       }
     }
     setLoading(false)
+    console.log(vendas)
   }
 
-  function dateConvert(date){
-    let newDate = new Date(date)
-    let day = newDate.getDate()
-    let month = newDate.getMonth() + 1
-    let year = newDate.getFullYear()
-
-    let convertedDate = (day < 10 ? '0' : '') + day + '/' + (month < 10 ? '0' : '') + month + '/' + year
-    
+  function dateConvert(date) {
+    let parts = date.split('-')
+    let year = parts[0]
+    let month = parts[1]
+    let day = parts[2]
+  
+    let convertedDate = day + '/' + month + '/' + year
     return convertedDate
   }
 
@@ -246,7 +321,7 @@ useEffect(() =>{
 ////////////////////////////////////////////////////////////////////////
 
   return(
-    <AuthContext.Provider sdfsdfsd
+    <AuthContext.Provider
       value={{
         signed: !!userData,
         isSignedIn,
@@ -265,9 +340,13 @@ useEffect(() =>{
         dateConvert,
         dateConvertYYYYMMDD,
         refresh,
+        vendasTeste,
 
 
         //////////////////
+        loadVendasDashboard,
+        vendasDashboard,
+        setVendasDashboard,
         vendas5dias,
         setVendas5dias,
 

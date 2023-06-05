@@ -29,6 +29,7 @@ const Vendas = () =>{
     setDataInicial(new Date())
     setDetalhes(false)
     zerarValores()
+    console.log(dataInicial)
   },[])
 
   function handleDateChange(date){

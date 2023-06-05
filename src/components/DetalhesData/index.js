@@ -25,17 +25,17 @@ function handleAdmin(){
                     <br/><br/><br/>
                     <div className='btn-div'>
                         <div className='valores-div'>
-                            <span>Débito à vista: </span> <span>R$ {`${totalDebito.toFixed(2)}`}</span>
+                            <span>Débito à vista: </span> <span>R$ {`${totalDebito.toFixed(2).toString().replace('.',',')}`}</span>
                         </div>
                         <div className='valores-div'>
-                            <span>Crédito à vista: </span> <span>R$ {`${totalCredito.toFixed(2)}`}</span>
+                            <span>Crédito à vista: </span> <span>R$ {`${totalCredito.toFixed(2).toString().replace('.',',')}`}</span>
                         </div>
                         <div className='valores-div'>
-                            <span>Voucher: </span> <span>R$ {`${totalVoucher.toFixed(2)}`}</span>
+                            <span>Voucher: </span> <span>R$ {`${totalVoucher.toFixed(2).toString().replace('.',',')}`}</span>
                         </div>
                         <hr/>
                         <div className='valores-div'>
-                            <span>Total Líquido: </span> <span>R$ {`${totalLiquido.toFixed(2)}`}</span>
+                            <span>Total Líquido: </span> <span>R$ {`${totalLiquido.toFixed(2).toString().replace('.',',')}`}</span>
                         </div>
                         <div className='button-container'>
                             <button type='button' className='botao-card btn btn-primary' onClick={ handleAdmin }>Valores por Administradora</button>
