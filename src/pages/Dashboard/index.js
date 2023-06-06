@@ -16,33 +16,40 @@ import GraficoTorta from "../../components/Grafico"
 const Dashboard = () => {
     
     const { setIsSignedIn, setAccessToken } = useContext(AuthContext)
-    const { vendasDashboard, setVendasDashboard, loadVendasDashboard, loadVendas, buscar, vendasTeste, loading, setLoading } = useContext(AuthContext)
+    const { vendasDashboard, setVendasDashboard, vendasTeste, loading, setLoading, vendasDiaAnterior, vendasUltimos5dias } = useContext(AuthContext)
 
     useEffect(() => {
         console.log('Dashboard')
-        setLoading(true)
     },[])
 
     useEffect(() => {
         setIsSignedIn(sessionStorage.getItem('isSignedIn'))
         setAccessToken(Cookies.get('token'))
     },[setAccessToken, setIsSignedIn])
-    
-    useEffect(()=>{
-        console.log('vendas Dashboard: ')
-    },[])
 
     useEffect(()=>{
         async function test(){
            await setVendasDashboard(await vendasTeste())
         }
         test()
+        setLoading(false)
         console.log(vendasDashboard)
     },[])
 
     useEffect(()=>{
-
+        async function load(){
+            await vendasDiaAnterior()
+            await vendasUltimos5dias()
+        }
+        load()
+        setLoading(false)
     },[])
+
+    useEffect(()=>{
+        console.log('loading useEffect:')
+        console.log('loading: ')
+        console.log(loading)
+    },[loading])
 
     /////TESTE DO GRÁFICO//////
     // Dados de vendas dos últimos 5 dias

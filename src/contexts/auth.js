@@ -78,14 +78,11 @@ function AuthProvider({ children }){
         } catch (error) {
           console.error(error);
         }
-      setLoading(false)
-      
     })
     .catch(error =>{
         console.log('catch: ')
         console.log(error)
         alert(error.message)
-        setLoading(false)
     })
     
     setLoading(false)
@@ -234,10 +231,13 @@ function AuthProvider({ children }){
     async function vendasTeste(){
       setLoading(true)
       setCnpj('03953552000102')
-      const dataTemp = '2023-05-31'
+      const dataTemp = new Date()
+      let day = dataTemp.getDate() -5
+      dataTemp.setDate(day)
+      const dataParam = dateConvertYYYYMMDD(dataTemp)
 
         let params = {
-            data: dataTemp,
+            data: dataParam,
             cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
           }
           
@@ -250,15 +250,78 @@ function AuthProvider({ children }){
           }
           try{
             let vendasTest = await api.get('/vendas', config)
-            setLoading(false)
             return vendasTest
           } catch (error){
             console.error(error)
             setLoading(false)
-            return null
           }
     }
+
+    //Vendas do dia anterior
+
+    async function vendasDiaAnterior(){
+      setLoading(true)
+      setCnpj('03953552000102')
+      const dataTemp = new Date()
+      let day = dataTemp.getDate() -1
+      dataTemp.setDate(day)
+      const dataParam = dateConvertYYYYMMDD(dataTemp)
+
+        let params = {
+            data: dataParam,
+            cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+          }
+          
+          let config = {
+            headers: { 
+              'Content-Type': 'application/json', 
+              'Authorization': `Bearer ${Cookies.get('token')}`
+            },
+            params: params
+          }
+          try{
+            let vendasTest = await api.get('/vendas', config)
+            return vendasTest
+          } catch (error){
+            console.error(error)
+            setLoading(false)
+          }
+    }
+
+    //Vendas dos últimos 5 dias
+    
+    async function vendasUltimos5dias(){
+      setLoading(true)
+      setCnpj('03953552000102')
       
+      for(let i = 1; i <= 5; i++){
+        let dataTemp = new Date()
+        let day = dataTemp.getDate() -i
+        dataTemp.setDate(day)
+        let dataParam = dateConvertYYYYMMDD(dataTemp)
+
+        let params = {
+          data: dataParam,
+          cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+        }
+        
+        let config = {
+          headers: { 
+            'Content-Type': 'application/json', 
+            'Authorization': `Bearer ${Cookies.get('token')}`
+          },
+          params: params
+        }
+        try{
+          let vendasTest = await api.get('/vendas', config)
+          vendasDashboard.push(vendasTest.data.VENDAS)
+        } catch (error){
+          console.error(error)
+          setLoading(false)
+        }
+      }
+      console.log(vendasDashboard)
+    }
 
     //refresh
 
@@ -341,13 +404,14 @@ function AuthProvider({ children }){
         dateConvertYYYYMMDD,
         refresh,
         vendasTeste,
+        vendasDiaAnterior,
+        vendasUltimos5dias,
 
 
         //////////////////
         loadVendasDashboard,
         vendasDashboard,
         setVendasDashboard,
-        vendas5dias,
         setVendas5dias,
 
         dataInicial,
