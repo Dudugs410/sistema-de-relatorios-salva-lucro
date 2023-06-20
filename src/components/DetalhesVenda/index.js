@@ -31,7 +31,7 @@ const DetalhesVenda = () =>{
                         </tr>
                     </thead>
                 <tbody>
-                    {vendas.map((venda, index)=>{
+                    {vendas.map((venda)=>{
                     return(
                         <tr className='det-tr' key={venda.codigoVenda}>
                             <td className='det-td'data-label="Adquirente">{venda.adquirente.nomeAdquirente}</td>

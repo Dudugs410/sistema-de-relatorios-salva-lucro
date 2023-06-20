@@ -2,19 +2,7 @@ import React, { useContext, useState, useEffect } from "react"
 
 import { AuthContext } from "../../contexts/auth"
 
-const DetalhesAdministradoras = () =>{
-
-    const { vendas } = useContext(AuthContext)
-
-    const [admins, setAdmins] = useState([])
-
-    function adminsVenda(){
-
-    }
-
-    useEffect(() => {
-        adminsVenda()
-    })
+export default function DetalhesAdministradoras(administradoras){
 
     return(
         <div>
@@ -26,11 +14,11 @@ const DetalhesAdministradoras = () =>{
                         </tr>
                     </thead>
                 <tbody>
-                    {admins.map((venda, index)=>{
+                    {administradoras.map((venda, index)=>{
                     return(
-                        <tr key={admins.administradora}>
-                            <td className='det-td'data-label="Adquirente">{admins.administradora}</td>
-                            <td className='det-td'data-label="Total">{admins.valorLiquido}</td>
+                        <tr key={administradoras.nomeAdministradora}>
+                            <td className='det-td'data-label="Adquirente">{administradoras.nomeAdministradora}</td>
+                            <td className='det-td'data-label="Total">{administradoras.valorLiquido}</td>
                         </tr>
                     )
                     })}
@@ -39,5 +27,3 @@ const DetalhesAdministradoras = () =>{
         </div>
     )
 }
-
-export default DetalhesAdministradoras

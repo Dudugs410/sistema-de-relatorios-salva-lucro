@@ -8,26 +8,8 @@ import './header.css'
 
 const Header = () =>{
 
-    const { logout, accessToken, refreshToken, isSignedIn, userData, refresh, vendas, vendasTeste, loadVendas, vendasDashboard } = useContext(AuthContext)
+    const { logout } = useContext(AuthContext)
     const nome = JSON.parse(sessionStorage.getItem('userData')).NOME
-
-    function handleRefresh(e){
-        e.preventDefault()
-        refresh()
-        console.log('access: ' + Cookies.get('token'))
-        console.log('refresh ' + Cookies.get('refreshToken'))
-    }
-
-    function carregarVendas(e){
-        e.preventDefault()
-        loadVendas()
-        console.log(vendasDashboard)
-    }
-
-    function handleDash(e){
-        e.preventDefault()
-        console.log(vendasDashboard)
-    }
 
     return(
         <>
@@ -47,13 +29,6 @@ const Header = () =>{
                     </div>              
                 </div>
                 <button type='button' className='btn-exit' onClick={logout}><FiPower color="#000000" size={24}/></button>
-                <button type='button' className='btn btn-primary' onClick={() => {console.log('Cookies: ' + Cookies.get('token') + '////' + 'accessToken: ' + accessToken )}}>access token</button>
-                <button type='button' className='btn btn-success' onClick={() => {console.log('Cookies: ' + Cookies.get('refreshToken') + '////' + 'refreshToken: ' + refreshToken )}}>refreshToken</button>
-                <button type='button' className='btn btn-warning' onClick={() => { console.log(userData) }}>userData</button>
-                <button type='button' className='btn btn-danger' onClick={() => { console.log(isSignedIn) }}>isSignedIn</button>
-                <button type='button' className='btn btn-dark' onClick={ handleRefresh }>Refresh</button>
-                <button type='button' className='btn btn-secondary' onClick={ carregarVendas }>Vendas</button>
-                <button type='button' className='btn btn-info' onClick={ handleDash }>Vendas Dashboard</button>
             </div>
             
             <div className='header-content drop-shadow'>

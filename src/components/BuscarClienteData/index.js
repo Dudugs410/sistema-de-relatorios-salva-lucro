@@ -5,40 +5,39 @@ import api, { config } from "../../services/api"
 
 import './buscar.css'
 import { AuthContext } from "../../contexts/auth"
+import { VendasContext } from "../../pages/Vendas"
 
 import './reactdatepicker.css'
 
-import LoadingModal from "../LoadingModal"
-
 const BuscarClienteData = () => {
-    const [BAN, setBAN] = useState([])
-
     const [grupo, setGrupo] = useState('')
     const [cliente, setCliente] = useState('')
     const [adm, setAdm] = useState('')
     const [banSelecionada, setBanSelecionada] = useState('')
 
-    const { dataInicial, cnpj, setCnpj, detalhes, setDetalhes, buscar, setTotalLiquido, setTotalCredito, setTotalDebito, setTotalVoucher } = useContext(AuthContext)
-    const { loading, setLoading } = useContext(AuthContext)
-
-
+    const { vendas, setLoading, loadVendas, bandeiras } = useContext(AuthContext)
+    const { detalhes, setDetalhes, dataBusca, cnpjBusca, setCnpjBusca, setTotalDebito, setTotalCredito, setTotalVoucher, setTotalLiquido} = useContext(VendasContext)
 
     useEffect(() => {
-        setCnpj('03.953.552/0001-02')
-        const loadBandeiras = async () =>{
-          const result = await api.get('/bandeira', config(Cookies.get('token')))
-          console.log(result)
-          setBAN(result.data)
-          setLoading(false)
-        }
-        loadBandeiras()
-      }, [setCnpj, setLoading])
+        setCnpjBusca('03.953.552/0001-02')
+      }, [])
 
     async function handleBusca(e){
         e.preventDefault()
-        console.log(cnpj, dataInicial)
+        setLoading(true)
         await buscar()
+        setLoading(false)
     }
+
+    async function buscar() {
+        await loadVendas(dataBusca, cnpjBusca)
+        .then(() =>{
+            alert(`executou a busca do dia ${dataBusca}`)
+            setDetalhes(true)
+        })
+        setLoading(false)
+        console.log(vendas)
+      }
 
     return(
         <>
@@ -91,7 +90,7 @@ const BuscarClienteData = () => {
                             <span>Bandeira</span>
                                 <select id='bandeira' value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}}>
                                     <option defaultValue=''>selecione</option>
-                                    {BAN.map((BAN)=>(
+                                    {bandeiras.map((BAN)=>(
                                         <option key={BAN.codigoBandeira} value = {BAN.descricaoBandeira}>{BAN.descricaoBandeira}</option>
                                     ))}
                                 </select>

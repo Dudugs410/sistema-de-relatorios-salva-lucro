@@ -7,20 +7,20 @@ import Cookies from "js-cookie"
 import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "../../contexts/auth"
 //////
-import { clienteVendas } from "../../resources/teste"
 import LoadingModal from '../../components/LoadingModal'
 //////
-import GraficoTorta from "../../components/Grafico"
+import RePieChart from '../../components/GraficoPie/repiechart'
 
 
 const Dashboard = () => {
     
     const { setIsSignedIn, setAccessToken } = useContext(AuthContext)
-    const { vendasDashboard, setVendasDashboard, vendasTeste, loading, setLoading, vendasDiaAnterior, vendasUltimos5dias } = useContext(AuthContext)
-
-    useEffect(() => {
-        console.log('Dashboard')
-    },[])
+    const { loading, setLoading, vendaAtual, vendaDias, loadVendas, cnpj, vendas, dateConvertSearch } = useContext(AuthContext)
+    const [vendasDash, setVendasDash] = useState([])
+////////////////////////////////////////////////////////////////////
+    
+    const totalVendasDias = []
+    const totalRecebíveis = []
 
     useEffect(() => {
         setIsSignedIn(sessionStorage.getItem('isSignedIn'))
@@ -28,95 +28,70 @@ const Dashboard = () => {
     },[setAccessToken, setIsSignedIn])
 
     useEffect(()=>{
-        async function test(){
-           await setVendasDashboard(await vendasTeste())
+        async function iniciaDashboard(){
+            let dataAnterior = new Date()
+            dataAnterior.setDate(dataAnterior.getDate() - 1)
+            await loadVendas(dateConvertSearch(dataAnterior), cnpj)
+            .then(
+                setVendasDash(vendas)
+            )
         }
-        test()
-        setLoading(false)
-        console.log(vendasDashboard)
+        iniciaDashboard()
+        console.log('vendas: ', vendas)
+        setVendasDash(vendas)
+        console.log('vendasDash: ', vendasDash)
     },[])
 
     useEffect(()=>{
-        async function load(){
-            await vendasDiaAnterior()
-            await vendasUltimos5dias()
-        }
-        load()
-        setLoading(false)
-    },[])
+        console.log('vendasDash: ', vendasDash)
+    }, [vendasDash])
 
     useEffect(()=>{
-        console.log('loading useEffect:')
-        console.log('loading: ')
-        console.log(loading)
-    },[loading])
+        console.log('vendas: ', vendas)
+    }, [vendas])
 
-    /////TESTE DO GRÁFICO//////
-    // Dados de vendas dos últimos 5 dias
-    const lastFiveDaysSales = 
-    clienteVendas
-    .slice(-5)
-    .map((vendas) => vendas.vendas.reduce((a, b) => a + b, 0))
-
-  const dados5Dias = {
-    labels: [],
-    datasets: [
-      {
-        data: lastFiveDaysSales,
-        backgroundColor: clienteVendas.slice(-5).map((vendas) => vendas.cor),
-      },
-    ],
-  }
-
-  // Dados de vendas do dia atual
-  const dadosDiaAtual = {
-    labels: clienteVendas[0].vendas.map((clienteVendas) => clienteVendas.dia),
-    datasets: [
-      {
-        label: "Vendas do Dia Atual",
-        data: clienteVendas[0].vendas,
-        backgroundColor: clienteVendas.map((clienteVendas) => clienteVendas.cor),
-      },
-    ],
-  }
-
+    /*async function loadTotalDia(vendaDias){
+    console.log('loadTotalDia()')
+    console.log(vendaDias)
+    console.log('dias: ')
+    console.log(dias)
+    vendaDias.reduce((total, vendas) =>{
+        if(total !== undefined){
+        total += vendas.valorLiquido
+        valores = total
+        } else {
+        total = 0
+        valores = total
+        }
+        return total
+    },0)
+    }*/
+    
   
 
-  //////////////////////////////////////////////////////////////////////////////////////
+    function handleShowVendas(){
+        console.log('vendasDash: ', vendasDash)
+        console.log('vendas: ', vendas)
+    }
 
   return(
     <>
         { loading ? <LoadingModal/> : <div className='appPage'>
-        <div className='content-area dash'>
-            <div className='graph-area'>
-                <div className='graph-data'>
-                    <GraficoTorta data={dadosDiaAtual} />
+
+            <button className='btn btn-danger' onClick={handleShowVendas}>vendasDash</button>
+
+            <div className='content-area dash'>
+                <div className='graph-area'>
+                    <div className='graph-data'>
+                        <RePieChart/>
+                    </div>
+                    <div className='graph-data'>
+                        
+                    </div>
                 </div>
-                <div className='graph-data'>
-                    <GraficoTorta data={dados5Dias} />
-                </div>
-            </div>
-            <div className='table-area'>
-                <div className='table-data'>
-                    <table className="table dash-table">
-                        <thead className='dash-thead'>
-                            <tr className='dash-tr'>
-                                <th className='dash-th' scope="col">Débito</th>
-                                <th className='dash-th' scope="col">Crédito</th>
-                                <th className='dash-th' scope="col">Voucher</th>
-                            </tr>
-                        </thead>
-                        <tbody className='dash-tbody'>
-                            <tr className='dash-tr'>
-                                <td className='cell-text dash-td' data-label="Débito">Débito</td>
-                                <td className='cell-text dash-td' data-label="Crédito">Crédito</td>
-                                <td className='cell-text dash-td' data-label="Voucher">Voucher</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div className='table-data'>
-                    <table className="table dash-table">
+                <div className='table-area'>
+                    <div className='table-data'>
+                        <table className="table dash-table">
                             <thead className='dash-thead'>
                                 <tr className='dash-tr'>
                                     <th className='dash-th' scope="col">Débito</th>
@@ -132,14 +107,29 @@ const Dashboard = () => {
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                    <div className='table-data'>
+                        <table className="table dash-table">
+                                <thead className='dash-thead'>
+                                    <tr className='dash-tr'>
+                                        <th className='dash-th' scope="col">Débito</th>
+                                        <th className='dash-th' scope="col">Crédito</th>
+                                        <th className='dash-th' scope="col">Voucher</th>
+                                    </tr>
+                                </thead>
+                                <tbody className='dash-tbody'>
+                                    <tr className='dash-tr'>
+                                        <td className='cell-text dash-td' data-label="Débito">Débito</td>
+                                        <td className='cell-text dash-td' data-label="Crédito">Crédito</td>
+                                        <td className='cell-text dash-td' data-label="Voucher">Voucher</td>
+                                    </tr>
+                                </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div> }
-</>
-    
-    
-    
+        </div> }
+    </>  
   )  
 }
 

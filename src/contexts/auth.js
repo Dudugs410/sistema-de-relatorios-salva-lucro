@@ -13,11 +13,9 @@ export const AuthContext = createContext({})
 
 function AuthProvider({ children }){
   const [isSignedIn, setIsSignedIn] = useState(false)
-  const [userData, setUserData] = useState({})
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(null)
   const [accessToken, setAccessToken] = useState(undefined)
   const [refreshToken, setRefreshToken] = useState(undefined)
-  const [userList, setUserList] = useState([])
 
 ////////////////////////////////////////////////////////////////
 
@@ -26,18 +24,12 @@ function AuthProvider({ children }){
   const [cnpj, setCnpj] = useState('03.953.552/0001-02')
   
   const [vendas, setVendas] = useState([])
-  const [vendasDashboard, setVendasDashboard] = useState([])
-  const [vendas5dias, setVendas5dias] = useState([])
-  const [vendasHoje, setVendasHoje] = useState([])
+  const [vendaAtual, setVendaAtual] = useState([])
+  const [vendaDias, setVendaDias] = useState([])
 
   const [bandeiras, setBandeiras] = useState([])
   const [clientes, setClientes] = useState([])
-  const [totalLiquido, setTotalLiquido] = useState(0)
-  const [totalDebito, setTotalDebito] = useState(0)
-  const [totalCredito, setTotalCredito] = useState(0)
-  const [totalVoucher, setTotalVoucher] = useState(0)
 
-  const [detalhes, setDetalhes] = useState(false)
   const [buscou, setBuscou] = useState(false)
   
   const navigate = useNavigate()
@@ -63,7 +55,6 @@ function AuthProvider({ children }){
         try {
           const response = await api.get('/usuario', config(Cookies.get('token')));
           const userList = response.data;
-          sessionStorage.setItem('userList', JSON.stringify(userList));
           const userMatch = userList.find((user) => user.LOGIN === login && user.SENHA === md5(password));
         
           if (userMatch) {
@@ -95,7 +86,6 @@ function AuthProvider({ children }){
     console.log('logout()')
     sessionStorage.clear()
     setIsSignedIn(false)
-    setUserData({})
     Cookies.remove('token')
     Cookies.remove('refreshToken')
     localStorage.setItem('isSignedIn', false)
@@ -108,7 +98,6 @@ function AuthProvider({ children }){
     alert('Sessão expirada. Faça o Login novamente')
     sessionStorage.clear()
     setIsSignedIn(false)
-    setUserData({})
     Cookies.remove('token')
     Cookies.remove('refreshToken')
     localStorage.setItem('isSignedIn', false)
@@ -120,6 +109,9 @@ function AuthProvider({ children }){
 
   //Vendas**********************************************************
 
+
+    //Bandeiras
+    
     async function loadBandeiras(){
       setLoading(true)
       await api.get('/bandeira')
@@ -132,176 +124,14 @@ function AuthProvider({ children }){
       setLoading(false)
     }
   
-    async function loadVendas(){
+    //loadVendas melhorias
+
+    // retorna as vendas da data e cliente específicos.
+
+    async function loadVendas(dataInicial, cnpj){
       setLoading(true)
-        let params = {
-            data: dataInicial,
-            cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-          }
-          
-          let config = {
-            headers: { 
-              'Content-Type': 'application/json', 
-              'Authorization': `Bearer ${Cookies.get('token')}`
-            },
-            params: params
-          }
-
-        await api.get('vendas', config)
-            .then((response) => {
-            setVendas(response.data.VENDAS)
-
-            const valores = response.data.VENDAS.reduce((total, vendas) =>{
-              total.total += vendas.valorLiquido
-              switch(vendas.produto.descricaoProduto){
-                case 'Crédito':
-                  total.Credito += vendas.valorLiquido
-                  break
-                case 'Débito':
-                  total.Debito += vendas.valorLiquido
-                  break
-                case 'Voucher':
-                  total.Voucher += vendas.valorLiquido
-                  break
-              }
-
-            return total
-          },{Credito: 0, Debito:0, Voucher: 0, total:0})
-
-            console.log('Valores Crédito: ' + valores.Credito)
-            console.log('Valores Débito: ' + valores.Debito)
-            console.log('Valores Voucher: ' + valores.Voucher)
-            console.log('Total: ' + valores.total)
-
-            setTotalCredito(valores.Credito)
-            setTotalDebito(valores.Debito)
-            setTotalVoucher(valores.Voucher)
-            setTotalLiquido(valores.total)
-   
-            return response.data
-            })
-            .catch((error) => {
-            console.log(error)
-            })
-            setLoading(false)
-    }
-
-    //vendas Dashboard
-
-    async function loadVendasDashboard() {
-      setLoading(true)
-      setCnpj('03953552000102')
-     
-      let vendasTemp = []
-      for(let i = 1; i < 6; i++){
-          let dataTemp = new Date(dataInicial.getDate() - i);
-          let params = {
-              data: dataTemp,
-              cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-            }
-            
-            let config = {
-              headers: { 
-                'Content-Type': 'application/json', 
-                'Authorization': `Bearer ${Cookies.get('token')}`
-              },
-              params: params
-            }
-  
-          try{
-              await api.get('vendas', config)
-              .then((response) => {
-                  vendasTemp.push(response.data.VENDAS)
-                  return response.data
-              })
-                  .catch((error) => {
-                  console.log(error)
-              })
-          } catch(error){
-              console.log(error)
-          }
-      }
-      setVendasDashboard(vendasTemp)
-      console.log(vendasDashboard)
-      setLoading(false)
-  }
-
-    //testar vendas
-
-    async function vendasTeste(){
-      setLoading(true)
-      setCnpj('03953552000102')
-      const dataTemp = new Date()
-      let day = dataTemp.getDate() -5
-      dataTemp.setDate(day)
-      const dataParam = dateConvertYYYYMMDD(dataTemp)
-
-        let params = {
-            data: dataParam,
-            cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-          }
-          
-          let config = {
-            headers: { 
-              'Content-Type': 'application/json', 
-              'Authorization': `Bearer ${Cookies.get('token')}`
-            },
-            params: params
-          }
-          try{
-            let vendasTest = await api.get('/vendas', config)
-            return vendasTest
-          } catch (error){
-            console.error(error)
-            setLoading(false)
-          }
-    }
-
-    //Vendas do dia anterior
-
-    async function vendasDiaAnterior(){
-      setLoading(true)
-      setCnpj('03953552000102')
-      const dataTemp = new Date()
-      let day = dataTemp.getDate() -1
-      dataTemp.setDate(day)
-      const dataParam = dateConvertYYYYMMDD(dataTemp)
-
-        let params = {
-            data: dataParam,
-            cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-          }
-          
-          let config = {
-            headers: { 
-              'Content-Type': 'application/json', 
-              'Authorization': `Bearer ${Cookies.get('token')}`
-            },
-            params: params
-          }
-          try{
-            let vendasTest = await api.get('/vendas', config)
-            return vendasTest
-          } catch (error){
-            console.error(error)
-            setLoading(false)
-          }
-    }
-
-    //Vendas dos últimos 5 dias
-    
-    async function vendasUltimos5dias(){
-      setLoading(true)
-      setCnpj('03953552000102')
-      
-      for(let i = 1; i <= 5; i++){
-        let dataTemp = new Date()
-        let day = dataTemp.getDate() -i
-        dataTemp.setDate(day)
-        let dataParam = dateConvertYYYYMMDD(dataTemp)
-
-        let params = {
-          data: dataParam,
+      let params = {
+          data: dataInicial,
           cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
         }
         
@@ -312,15 +142,16 @@ function AuthProvider({ children }){
           },
           params: params
         }
-        try{
-          let vendasTest = await api.get('/vendas', config)
-          vendasDashboard.push(vendasTest.data.VENDAS)
-        } catch (error){
-          console.error(error)
-          setLoading(false)
-        }
-      }
-      console.log(vendasDashboard)
+
+      await api.get('vendas', config)
+          .then((response) => {
+            setVendas(response.data.VENDAS)
+            return response.data.VENDAS
+          })
+          .catch((error) => {
+          console.log(error)
+          })
+      setLoading(false)
     }
 
     //refresh
@@ -343,31 +174,6 @@ function AuthProvider({ children }){
       }).catch(error => console.log(error))
     }
 
-  async function buscar() {
-    setCnpj('03953552000102');
-    setLoading(true)
-    setBuscou(true)
-    await loadVendas();
-    if (!dataFinal) {
-      alert(`executou a busca do dia ${dataInicial}`)
-      setDetalhes(true)
-    } else {
-      if (dataFinal < dataInicial) {
-        alert('A Data Final não pode ser menor que a data inicial. Favor selecionar uma data válida.')
-        setLoading(false)
-        return
-      } else if (dataFinal === '' || dataInicial === '') {
-        alert('Favor selecionar um período de datas válido')
-        setLoading(false)
-        return
-      } else {
-        alert(`Executou busca entre os dias ${dataInicial} e ${dataFinal}`)
-      }
-    }
-    setLoading(false)
-    console.log(vendas)
-  }
-
   function dateConvert(date) {
     let parts = date.split('-')
     let year = parts[0]
@@ -375,6 +181,18 @@ function AuthProvider({ children }){
     let day = parts[2]
   
     let convertedDate = day + '/' + month + '/' + year
+    return convertedDate
+  }
+
+  function dateConvertSearch(date) {
+    let newDate = dateConvertYYYYMMDD(date)
+
+    let parts = newDate.split('-')
+    let year = parts[0]
+    let month = parts[1]
+    let day = parts[2]
+  
+    let convertedDate = day + '-' + month + '-' + year
     return convertedDate
   }
 
@@ -386,34 +204,22 @@ function AuthProvider({ children }){
   return(
     <AuthContext.Provider
       value={{
-        signed: !!userData,
         isSignedIn,
         setIsSignedIn,
         loading,
         setLoading,
         submitLogin,
         logout,
-        userData,
-        setUserData,
         accessToken,
         setAccessToken,
         refreshToken,
         setRefreshToken,
         expired,
         dateConvert,
+        dateConvertSearch,
         dateConvertYYYYMMDD,
         refresh,
-        vendasTeste,
-        vendasDiaAnterior,
-        vendasUltimos5dias,
-
-
-        //////////////////
-        loadVendasDashboard,
-        vendasDashboard,
-        setVendasDashboard,
-        setVendas5dias,
-
+        ////////////////
         dataInicial,
         setDataInicial,
         dataFinal,
@@ -428,20 +234,12 @@ function AuthProvider({ children }){
         clientes,
         setClientes,
         loadVendas,
-        detalhes,
-        setDetalhes,
-        buscar,
-        totalLiquido,
-        setTotalLiquido,
-        totalCredito,
-        setTotalCredito,
-        totalDebito,
-        setTotalDebito,
-        totalVoucher,
-        setTotalVoucher,
+        vendaAtual,
+        setVendaAtual,
+        vendaDias,
+        setVendaDias,
         buscou,
         setBuscou,
-        
       }}
     >
       {children}

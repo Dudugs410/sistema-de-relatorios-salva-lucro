@@ -1,4 +1,4 @@
-import { useEffect, useContext } from 'react'
+import { useEffect, useContext, createContext, useState } from 'react'
 import Calendar from 'react-calendar'
 
 import { AuthContext } from '../../contexts/auth'
@@ -10,30 +10,27 @@ import DetalhesVenda from '../../components/DetalhesVenda'
 import './vendas.css'
 import './Calendar.css'
 
+export const VendasContext = createContext({})
+
 const Vendas = () =>{
   
-  const { dataInicial, setDataInicial, detalhes, setDetalhes, loadBandeiras, setTotalLiquido, setTotalCredito, setTotalDebito, setTotalVoucher, vendas  } = useContext(AuthContext)
+  /*
+    dataInicial
+    detalhes
+    cnpj
+  */
+  const [totalCredito, setTotalCredito] = useState(0.00)
+  const [totalDebito, setTotalDebito] = useState(0.00)
+  const [totalVoucher, setTotalVoucher] = useState(0.00)
+  const [totalLiquido, setTotalLiquido] = useState(0.00)
 
-  function zerarValores(){
-    if(vendas){
-      setDetalhes(false)
-      setTotalLiquido(0.00)
-      setTotalCredito(0.00)
-      setTotalDebito(0.00)
-      setTotalVoucher(0.00)
-    }
-  }
+  const [detalhes, setDetalhes] = useState(false)
 
-  useEffect(()=>{
-    loadBandeiras()
-    setDataInicial(new Date())
-    setDetalhes(false)
-    zerarValores()
-    console.log(dataInicial)
-  },[])
+  const [dataBusca, setDataBusca] = useState(new Date())
+  const [cnpjBusca, setCnpjBusca] = useState('3.953.552/0001-02')
 
   function handleDateChange(date){
-    setDataInicial(date)
+    setDataBusca(date)
   }
 
   function MyCalendar() {
@@ -41,22 +38,40 @@ const Vendas = () =>{
       <div>
         <Calendar
           onChange={ handleDateChange }
-          value={ dataInicial }
-          onClickDay={console.log(dataInicial)}
+          value={ dataBusca }
+          onClickDay={console.log(dataBusca)}
         />
       </div>
     )
   }
 
-    return(
-        <div className='appPage'>
-            <div className='page-content'>
-                <BuscarClienteData/>
-                { detalhes ?  <DetalhesVenda/> : <MyCalendar/> }
-                <DetalhesData/>
-            </div>
-        </div>
-    )
+  return(
+    <VendasContext.Provider 
+    value={{
+      detalhes, 
+      setDetalhes, 
+      dataBusca, 
+      setDataBusca, 
+      cnpjBusca, 
+      setCnpjBusca,
+      totalDebito,
+      setTotalDebito,
+      totalCredito,
+      setTotalCredito,
+      totalVoucher,
+      setTotalVoucher,
+      totalLiquido,
+      setTotalLiquido,
+      }}>
+      <div className='appPage'>
+          <div className='page-content'>
+              <BuscarClienteData />
+              { detalhes ?  <DetalhesVenda/> : <MyCalendar/> }
+              <DetalhesData/>
+          </div>
+      </div>
+    </VendasContext.Provider>
+  )
 }
 
 export default Vendas

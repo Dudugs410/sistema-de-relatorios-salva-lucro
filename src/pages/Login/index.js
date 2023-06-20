@@ -7,7 +7,7 @@ import { useContext } from "react"
 import LoadingModal from "../../components/LoadingModal"
 
 const Login = () => {
-    const {submitLogin, loading, isSignedIn, accessToken} = useContext(AuthContext)
+    const {submitLogin, loading, isSignedIn} = useContext(AuthContext)
     const navigate = useNavigate()
 
     const [login, setLogin] = useState('')
