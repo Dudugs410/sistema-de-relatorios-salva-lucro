@@ -5,7 +5,7 @@
     height: 100%;
     width: 100%;
     text-align: left;
-    padding: 5%;
+    padding: 10px;
     
     background-color: white;
 }
@@ -26,12 +26,26 @@
     width: 100%;
     transition: all 0.4s;
     border: none;
+    padding-left: 200px;
+    padding-right: 200px;
     background-color: rgba(0,0,0,0);
 }
 
 .valores-div:hover{
     background-color: rgba(0,0,0,0.5);
     cursor: pointer;
+}
+
+.title{
+    background-color: white;
+    color: black;
+    align-self: center;
+    text-align: center;
+    font-size: 1.3em;
+    font-weight: bold;
+    margin:0;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 @media screen and (max-width: 832px){

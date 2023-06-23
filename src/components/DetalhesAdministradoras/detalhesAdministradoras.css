@@ -44,6 +44,29 @@
     font-weight: bold;
 }
 
+.adm-table{
+    background-color: white;
+    --bs-table-bg: white;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.title{
+    background-color: white;
+    color: black;
+    align-self: center;
+    text-align: center;
+    font-size: 1.3em;
+    font-weight: bold;
+    margin:0;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.content{
+    height:100%;
+    background-color: white;
+}
 @media screen and (max-width: 832px){
     .vendas-container{
         height: 90%;

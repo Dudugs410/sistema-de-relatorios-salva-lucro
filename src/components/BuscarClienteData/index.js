@@ -1,7 +1,4 @@
 import { useState, useEffect, useContext } from "react"
-import Cookies from "js-cookie"
-
-import api, { config } from "../../services/api"
 
 import './buscar.css'
 import { AuthContext } from "../../contexts/auth"
@@ -9,23 +6,29 @@ import { VendasContext } from "../../pages/Vendas"
 
 import './reactdatepicker.css'
 
+import PdfExportComponent2 from "../jsPDF"
+import ExportToExcelButton from "../jsEXCELL"
+
+import GerarRelatorio from "../GerarRelatorio"
+
 const BuscarClienteData = () => {
     const [grupo, setGrupo] = useState('')
     const [cliente, setCliente] = useState('')
     const [adm, setAdm] = useState('')
     const [banSelecionada, setBanSelecionada] = useState('')
 
-    const { vendas, setLoading, loadVendas, bandeiras } = useContext(AuthContext)
-    const { detalhes, setDetalhes, dataBusca, cnpjBusca, setCnpjBusca, setTotalDebito, setTotalCredito, setTotalVoucher, setTotalLiquido} = useContext(VendasContext)
+    const { vendas, setLoading, loadVendas, bandeiras, dateConvert } = useContext(AuthContext)
+    const { detalhes, setDetalhes, setShowAdmin, dataBusca, cnpjBusca, setCnpjBusca, setTotalDebito, setTotalCredito, setTotalVoucher, setTotalLiquido, gerarDados, tableData} = useContext(VendasContext)
 
     useEffect(() => {
         setCnpjBusca('03.953.552/0001-02')
       }, [])
-
+    
     async function handleBusca(e){
         e.preventDefault()
         setLoading(true)
         await buscar()
+        await gerarDados()
         setLoading(false)
     }
 
@@ -81,10 +84,8 @@ const BuscarClienteData = () => {
                                 <option>place_holder_04</option>
                             </select>
                         </div>
-                        { detalhes ? <button className="btn btn-secondary" onClick={ () => { setDetalhes(false); setTotalLiquido(0.00); setTotalCredito(0.00); setTotalDebito(0.00); setTotalVoucher(0.00) }}>Voltar ao Calendário</button> : <button className='btn btn-secondary' disabled>Fechar</button>}
+                        { detalhes ? <button className="btn btn-secondary" onClick={ () => { setDetalhes(false); setShowAdmin(false); setTotalLiquido(0.00); setTotalCredito(0.00); setTotalDebito(0.00); setTotalVoucher(0.00) }}>Voltar ao Calendário</button> : <button className='btn btn-secondary' disabled>Fechar</button>}
                     </div>
-
-
                     <div  className='date-column'>
                         <div className='select-card'>
                             <span>Bandeira</span>
