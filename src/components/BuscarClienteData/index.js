@@ -6,18 +6,13 @@ import { VendasContext } from "../../pages/Vendas"
 
 import './reactdatepicker.css'
 
-import PdfExportComponent2 from "../jsPDF"
-import ExportToExcelButton from "../jsEXCELL"
-
-import GerarRelatorio from "../GerarRelatorio"
-
 const BuscarClienteData = () => {
     const [grupo, setGrupo] = useState('')
     const [cliente, setCliente] = useState('')
     const [adm, setAdm] = useState('')
     const [banSelecionada, setBanSelecionada] = useState('')
 
-    const { vendas, setLoading, loadVendas, bandeiras, dateConvert } = useContext(AuthContext)
+    const { vendas, setLoading, loadVendas, bandeiras, loadBandeiras } = useContext(AuthContext)
     const { detalhes, setDetalhes, setShowAdmin, dataBusca, cnpjBusca, setCnpjBusca, setTotalDebito, setTotalCredito, setTotalVoucher, setTotalLiquido, gerarDados, tableData} = useContext(VendasContext)
 
     useEffect(() => {
@@ -70,7 +65,6 @@ const BuscarClienteData = () => {
                                 <option>place_holder_04</option>
                             </select>
                         </div>
-                        <button className="btn btn-primary" onClick={handleBusca}>Pesquisar</button>
                     </div>
 
                     <div className='date-column'>
@@ -84,7 +78,6 @@ const BuscarClienteData = () => {
                                 <option>place_holder_04</option>
                             </select>
                         </div>
-                        { detalhes ? <button className="btn btn-secondary" onClick={ () => { setDetalhes(false); setShowAdmin(false); setTotalLiquido(0.00); setTotalCredito(0.00); setTotalDebito(0.00); setTotalVoucher(0.00) }}>Voltar ao Calendário</button> : <button className='btn btn-secondary' disabled>Fechar</button>}
                     </div>
                     <div  className='date-column'>
                         <div className='select-card'>
@@ -96,7 +89,11 @@ const BuscarClienteData = () => {
                                     ))}
                                 </select>
                         </div>
-                    </div>   
+                    </div>
+                                        
+                    <div className='submit-container'>
+                        { detalhes ? <button className="btn btn-secondary btn-submit" onClick={ () => { setDetalhes(false); setShowAdmin(false); setTotalLiquido(0.00); setTotalCredito(0.00); setTotalDebito(0.00); setTotalVoucher(0.00) }}>Voltar</button> : <button className="btn btn-primary btn-submit" onClick={handleBusca}>Pesquisar</button>}
+                    </div>      
                 </form>
             </div>
         </>

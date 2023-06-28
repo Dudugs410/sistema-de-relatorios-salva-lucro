@@ -15,7 +15,7 @@ export const VendasContext = createContext({})
 
 const Vendas = () =>{
   
-  const { vendas, dateConvert } = useContext(AuthContext)
+  const { bandeiras, loadBandeiras, vendas, dateConvert, dateConvertSearch } = useContext(AuthContext)
 
   const [totalCredito, setTotalCredito] = useState(0.00)
   const [totalDebito, setTotalDebito] = useState(0.00)
@@ -57,6 +57,16 @@ const Vendas = () =>{
         }
         console.log(tableData)
       }
+
+
+
+      useEffect(()=>{
+        async function inicializar(){
+            await loadBandeiras()
+        }
+        inicializar()
+    },[])
+
   useEffect(()=>{
     gerarDados()
   },[vendas])
@@ -104,7 +114,7 @@ const Vendas = () =>{
           <div className='page-content'>
               <BuscarClienteData />
               { detalhes ?  <DetalhesVenda/> : <MyCalendar/> }
-              { detalhes ? <GerarRelatorio className='export' tableData={tableData} detalhes={detalhes}/> : <></>}
+              { detalhes ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></>}
               <DetalhesData/>
           </div>
       </div>

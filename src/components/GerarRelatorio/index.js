@@ -8,7 +8,7 @@ import { FiFilePlus } from 'react-icons/fi'
 
 import './GerarRelatorio.css'
 
-export default function GerarRelatorio({tableData}){
+export default function GerarRelatorio({tableData, dataAtual}){
 
     // EXCEL ////////////////////////////////////////////////////////////
     const exportToExcel = () => {
@@ -34,7 +34,7 @@ export default function GerarRelatorio({tableData}){
         // Generate Excel file
         workbook.xlsx.writeBuffer()
           .then((buffer) => {
-            saveExcelFile(buffer, 'my_excel_file.xlsx')
+            saveExcelFile(buffer, `Relatorio_de_vendas_${dataAtual}.xlsx`)
           })
           .catch((error) => {
             console.error('Error generating Excel file:', error)
@@ -68,15 +68,15 @@ export default function GerarRelatorio({tableData}){
         body: rows,
         })
     
-        doc.save('my_pdf.pdf')
+        doc.save(`Relatorio_de_vendas_${dataAtual}.pdf`)
     }
     
 
     return(
         <>
             <div className='container'>
-                <button className="btn btn-success" onClick={exportToExcel}>Gerar Excel <FiFilePlus /></button>
-                <button className='btn btn-danger' onClick={generatePdf}>Gerar PDF <FiFilePlus /></button>
+                <button className="btn btn-success btn-exportar" onClick={exportToExcel}>Gerar Excel <FiFilePlus /></button>
+                <button className='btn btn-danger btn-exportar' onClick={generatePdf}>Gerar PDF <FiFilePlus /></button>
             </div>
         </>
     )

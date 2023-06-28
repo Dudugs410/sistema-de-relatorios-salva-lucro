@@ -9,18 +9,16 @@ import { AuthContext } from "../../contexts/auth"
 //////
 import LoadingModal from '../../components/LoadingModal'
 //////
-import RePieChart from '../../components/GraficoPie/repiechart'
 
 
 const Dashboard = () => {
     
     const { setIsSignedIn, setAccessToken } = useContext(AuthContext)
-    const { loading, setLoading, vendaAtual, vendaDias, loadVendas, cnpj, vendas, dateConvertSearch } = useContext(AuthContext)
-    const [vendasDash, setVendasDash] = useState([])
-////////////////////////////////////////////////////////////////////
+    const { loading, loadPeriodo, cnpj, dateConvertSearch } = useContext(AuthContext)
     
-    const totalVendasDias = []
-    const totalRecebíveis = []
+    const [vendasDash, setVendasDash] = useState([])
+    
+////////////////////////////////////////////////////////////////////
 
     useEffect(() => {
         setIsSignedIn(sessionStorage.getItem('isSignedIn'))
@@ -30,25 +28,13 @@ const Dashboard = () => {
     useEffect(()=>{
         async function iniciaDashboard(){
             let dataAnterior = new Date()
-            dataAnterior.setDate(dataAnterior.getDate() - 1)
-            await loadVendas(dateConvertSearch(dataAnterior), cnpj)
-            .then(
-                setVendasDash(vendas)
-            )
-        }
+            dataAnterior.setDate(dataAnterior.getDate() - 5)
+            await loadPeriodo(dateConvertSearch(dataAnterior),dateConvertSearch(new Date()), cnpj)
+            .then((response) =>{
+                setVendasDash(response)
+                console.log(vendasDash)
         iniciaDashboard()
-        console.log('vendas: ', vendas)
-        setVendasDash(vendas)
-        console.log('vendasDash: ', vendasDash)
     },[])
-
-    useEffect(()=>{
-        console.log('vendasDash: ', vendasDash)
-    }, [vendasDash])
-
-    useEffect(()=>{
-        console.log('vendas: ', vendas)
-    }, [vendas])
 
     /*async function loadTotalDia(vendaDias){
     console.log('loadTotalDia()')
@@ -66,24 +52,15 @@ const Dashboard = () => {
         return total
     },0)
     }*/
-    
-  
-
-    function handleShowVendas(){
-        console.log('vendasDash: ', vendasDash)
-        console.log('vendas: ', vendas)
-    }
 
   return(
     <>
         { loading ? <LoadingModal/> : <div className='appPage'>
 
-            <button className='btn btn-danger' onClick={handleShowVendas}>vendasDash</button>
-
             <div className='content-area dash'>
                 <div className='graph-area'>
                     <div className='graph-data'>
-                        <RePieChart/>
+                        
                     </div>
                     <div className='graph-data'>
                         

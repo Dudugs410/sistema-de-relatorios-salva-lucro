@@ -1,12 +1,33 @@
 .container{
+    width: 100%;
     display: flex;
-    justify-content: space-evenly;
     flex-wrap: wrap;
-    flex-direction: row;
-    align-content: center;
+    margin-top: 20px;
+    padding-left: 15%;
+    margin-bottom: 10px;
+    justify-content: flex-end;
+    align-content: stretch;
 
 }
 
 .btn-exportar{
-    width: 80%;
+    width: 138px;
+}
+
+.btn-exportar:not(:first-child){
+    margin-left: 20px;
+}
+
+@media screen and (max-width: 832px){
+    .container{
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        margin-top: 20px;
+        margin-left: 0;
+        margin-bottom: 20px;
+        justify-content: center;
+        align-content: stretch;
+    
+    }
 }

@@ -144,7 +144,7 @@ const DetalhesData = ({ close }) =>{
                         <span>Total Líquido: </span> <span>R$ {`${totalLiquido.toFixed(2).toString().replace('.',',')}`}</span>
                     </div>
                     <div className='button-container'>
-                        { detalhes ? <button type='button' className='botao-card btn btn-primary' onClick={ handleAdmin }>Valores por Administradora</button> : <button type='button' className='botao-card btn btn-primary' disabled>Valores por Administradora</button>}
+                        { detalhes ? <button type='button' className='botao-card btn btn-primary btn-adm' onClick={ handleAdmin }>Valores por Administradora</button> : <></>}
                     </div>
                 </div>
             </div>

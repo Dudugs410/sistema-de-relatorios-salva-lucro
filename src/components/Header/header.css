@@ -26,7 +26,7 @@
 .header-content{
     width: 100%;
     height: 70px;
-    background-color: #dfdfdf;
+    background-color:#444e79;
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
@@ -35,6 +35,8 @@
 }
 
 .li-container{
+    font-weight: bold;
+    color: #181c2e;
     width:100%;
 }
 
@@ -45,6 +47,7 @@
     font-size: 0.8em;
     justify-content: flex-end;
     margin-right: 10%;
+    
 }
 
 .navbar-customer{
@@ -64,10 +67,38 @@ ul.navbar-nav{
     flex-direction: row;
     width: 100%;
     justify-content: space-evenly;
+    
 }
 
 li:hover{
     color: yellowgreen;
+}
+
+li.nav-item:hover{
+    background-color: darkgray;
+    box-shadow:inset 0px 38px 0px 0px #444e79;
+	background-color:#181c2e;
+    color: yellowgreen;
+    transition: all 0.2s;
+}
+
+li.nav-item{
+    width:100%;
+    height: 100%;
+	background-color:#181c2e;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:15px;
+	font-weight:bold;
+	padding:0px 23px;
+	text-decoration:none;
+	text-shadow:0px -1px 0px #7a2a1d;
+}
+
+a.nav-text{
+    margin: 0;
 }
 
 .btn-exit{

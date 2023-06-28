@@ -23,6 +23,7 @@ function AuthProvider({ children }){
   const [cnpj, setCnpj] = useState('03.953.552/0001-02')
   
   const [vendas, setVendas] = useState([])
+
   const [vendaAtual, setVendaAtual] = useState([])
   const [vendaDias, setVendaDias] = useState([])
 
@@ -115,7 +116,7 @@ function AuthProvider({ children }){
       setLoading(true)
       await api.get('/bandeira')
       .then( async response => {
-        setBandeiras(response)
+        setBandeiras(response.data)
       })
       .catch(error =>{
         console.log(error)
@@ -152,6 +153,34 @@ function AuthProvider({ children }){
           })
       setLoading(false)
     }
+
+    ///////////////////////////////////////////////////////////////////////////////////////
+
+    async function loadPeriodo(datainicial, datafinal, cnpj){
+      setLoading(true)
+      let params = {
+          dataInicial: dateConvert(datainicial),
+          dataFinal: dateConvert(datafinal),
+          cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+        }
+        
+        let config = {
+          headers: { 
+            'Content-Type': 'application/json', 
+            'Authorization': `Bearer ${Cookies.get('token')}`
+          },
+          params: params
+        }
+      await api.get('vendas', config)
+      .then((response) => {
+        return response.data.VENDAS
+      })
+      .catch((error) => {
+        console.log(error)
+        })
+    setLoading(false)
+
+  }
 
     //refresh
 
@@ -239,6 +268,7 @@ function AuthProvider({ children }){
         setVendaDias,
         buscou,
         setBuscou,
+        loadPeriodo,
       }}
     >
       {children}
