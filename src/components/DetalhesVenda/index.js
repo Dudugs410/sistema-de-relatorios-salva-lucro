@@ -1,4 +1,4 @@
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
 import { AuthContext } from "../../contexts/auth"
 
 import './detalhesVenda.css'
@@ -7,6 +7,12 @@ const DetalhesVenda = () =>{
 
     const { vendas, dateConvert } = useContext(AuthContext)
 
+    useEffect(()=>{
+        console.log(vendas)
+        console.log(vendas.horaVenda)
+        alert('useEffect detalhes venda')
+    },[])
+    
     return(
         <>
             <div className='dropShadow vendas-view'>
@@ -47,7 +53,7 @@ const DetalhesVenda = () =>{
                                     <td className='det-td'data-label="Valor Líquido">R${`${venda.valorLiquido.toFixed(2)}`.toString().replace('.',',')}</td>
                                     <td className='det-td'data-label="Taxa">R$ {`${venda.taxa.toFixed(2)}`.toString().replace('.',',')}</td>
                                     <td className='det-td'data-label="Data da Venda">{dateConvert(venda.dataVenda)}</td>
-                                    <td className='det-td'data-label="Hora da Venda">{venda.horaVenda.replaceAll('-', ':')}</td>
+                                    <td className='det-td'data-label="Hora da Venda">{ venda.horaVenda?.replaceAll('-', ':')}</td>
                                     <td className='det-td'data-label="Data do Crédito">{dateConvert(venda.dataCredito)}</td>
                                     <td className='det-td'data-label="Qtd Parcelas">{venda.quantidadeParcelas}</td>
                                 </tr>

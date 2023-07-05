@@ -16,11 +16,7 @@ const BuscarClienteData = () => {
     const [listaClientes, setListaClientes] = useState('')
 
     const { vendas, setLoading, loadVendas, bandeiras, grupos } = useContext(AuthContext)
-    const { detalhes, setDetalhes, setShowAdmin, dataBusca, cnpjBusca, setCnpjBusca, setTotalDebito, setTotalCredito, setTotalVoucher, setTotalLiquido, gerarDados, tableData} = useContext(VendasContext)
-
-    useEffect(() => {
-        setCnpjBusca('03.953.552/0001-02')
-      }, [])
+    const { detalhes, setDetalhes, setShowAdmin, dataBusca, cnpjBusca, setCnpjBusca, admBusca, banBusca, setTotalDebito, setTotalCredito, setTotalVoucher, setTotalLiquido, gerarDados, tableData} = useContext(VendasContext)
     
     async function handleBusca(e){
         e.preventDefault()
@@ -31,14 +27,20 @@ const BuscarClienteData = () => {
     }
 
     async function buscar() {
-        await loadVendas(dataBusca, cnpjBusca)
+        await loadVendas(dataBusca, cnpjBusca, admBusca, banBusca)
         .then(() =>{
+            if(dataBusca === '' || cnpjBusca === ''){
+                return 0
+            }
             alert(`executou a busca do dia ${dataBusca}`)
             setDetalhes(true)
         })
         setLoading(false)
-        console.log(vendas)
       }
+
+      useEffect(()=>{
+        console.log(vendas)
+      },[vendas])
 
       useEffect(()=>{
         console.log('gruSelecionado', gruSelecionado)

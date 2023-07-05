@@ -25,8 +25,8 @@ const Vendas = () =>{
   const [detalhes, setDetalhes] = useState(false)
   const [showAdmin, setShowAdmin] = useState(false)
 
-  const [dataBusca, setDataBusca] = useState(new Date())
-  const [cnpjBusca, setCnpjBusca] = useState('3.953.552/0001-02')
+  const [dataBusca, setDataBusca] = useState('')
+  const [cnpjBusca, setCnpjBusca] = useState('')
 
   const tableData = []
 

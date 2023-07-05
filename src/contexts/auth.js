@@ -146,7 +146,12 @@ function AuthProvider({ children }){
 
     // retorna as vendas da data e cliente específicos.
 
-    async function loadVendas(dataInicial, cnpj){
+    async function loadVendas(dataInicial, cnpj, administradora, bandeira){
+      if(dataInicial === '' || cnpj === ''){
+        alert('Favor selecionar uma data e cliente válidos')
+        return 0
+      }
+
       setLoading(true)
       let params = {
           data: dataInicial,
