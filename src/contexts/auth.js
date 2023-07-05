@@ -23,11 +23,13 @@ function AuthProvider({ children }){
   const [cnpj, setCnpj] = useState('03.953.552/0001-02')
   
   const [vendas, setVendas] = useState([])
+  const [vendasDash, setVendasDash] = useState([])
 
   const [vendaAtual, setVendaAtual] = useState([])
   const [vendaDias, setVendaDias] = useState([])
 
   const [bandeiras, setBandeiras] = useState([])
+  const [grupos, setGrupos] = useState([]) 
   const [clientes, setClientes] = useState([])
 
   const [buscou, setBuscou] = useState(false)
@@ -115,13 +117,29 @@ function AuthProvider({ children }){
     async function loadBandeiras(){
       setLoading(true)
       await api.get('/bandeira')
-      .then( async response => {
+      .then( response => {
         setBandeiras(response.data)
+        setLoading(false)
       })
       .catch(error =>{
         console.log(error)
+        setLoading(false)
       })
-      setLoading(false)
+    }
+
+    //Grupo de Clientes
+
+    async function loadGrupos(){
+      setLoading(true)
+      await api.get('/grupo')
+      .then( response => {
+        setGrupos(response.data)
+        setLoading(false)
+      })
+      .catch(error =>{
+        console.log(error)
+        setLoading(false)
+      })
     }
   
     //loadVendas melhorias
@@ -146,40 +164,43 @@ function AuthProvider({ children }){
       await api.get('vendas', config)
           .then((response) => {
             setVendas(response.data.VENDAS)
+            setLoading(false)
             return response.data.VENDAS
           })
           .catch((error) => {
+          setLoading(false)
           console.log(error)
           })
-      setLoading(false)
+      
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
     async function loadPeriodo(datainicial, datafinal, cnpj){
-      setLoading(true)
-      let params = {
-          dataInicial: dateConvert(datainicial),
-          dataFinal: dateConvert(datafinal),
-          cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-        }
-        
-        let config = {
-          headers: { 
-            'Content-Type': 'application/json', 
-            'Authorization': `Bearer ${Cookies.get('token')}`
-          },
-          params: params
-        }
-      await api.get('vendas', config)
-      .then((response) => {
-        return response.data.VENDAS
-      })
-      .catch((error) => {
-        console.log(error)
-        })
-    setLoading(false)
+      setLoading(true);
+    let params = {
+      dataInicial: dateConvert(datainicial),
+      dataFinal: dateConvert(datafinal),
+      cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+    };
 
+    let config = {
+      headers: { 
+        'Content-Type': 'application/json', 
+        'Authorization': `Bearer ${Cookies.get('token')}`
+      },
+      params: params
+    };
+
+    try {
+      const response = await api.get('vendas', config);
+      const vendasData = response.data.VENDAS; // Access the array using response.data.VENDAS
+      setVendasDash(vendasData);
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
   }
 
     //refresh
@@ -256,9 +277,14 @@ function AuthProvider({ children }){
         setCnpj,
         vendas,
         setVendas,
+        vendasDash,
+        setVendasDash,
         bandeiras,
         setBandeiras,
         loadBandeiras,
+        grupos,
+        setGrupos,
+        loadGrupos,
         clientes,
         setClientes,
         loadVendas,

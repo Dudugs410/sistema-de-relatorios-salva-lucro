@@ -15,7 +15,7 @@ export const VendasContext = createContext({})
 
 const Vendas = () =>{
   
-  const { bandeiras, loadBandeiras, vendas, dateConvert, dateConvertSearch } = useContext(AuthContext)
+  const { bandeiras, loadBandeiras, vendas, dateConvert, dateConvertSearch, grupos, loadGrupos } = useContext(AuthContext)
 
   const [totalCredito, setTotalCredito] = useState(0.00)
   const [totalDebito, setTotalDebito] = useState(0.00)
@@ -58,11 +58,12 @@ const Vendas = () =>{
         console.log(tableData)
       }
 
-
+// adicionar bandeiras e administradoras aos filtros de busca // **04/07/2023**
 
       useEffect(()=>{
         async function inicializar(){
             await loadBandeiras()
+            await loadGrupos()
         }
         inicializar()
     },[])

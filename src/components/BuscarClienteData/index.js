@@ -5,14 +5,17 @@ import { AuthContext } from "../../contexts/auth"
 import { VendasContext } from "../../pages/Vendas"
 
 import './reactdatepicker.css'
+import { Background } from "victory"
 
 const BuscarClienteData = () => {
-    const [grupo, setGrupo] = useState('')
     const [cliente, setCliente] = useState('')
     const [adm, setAdm] = useState('')
     const [banSelecionada, setBanSelecionada] = useState('')
+    const [gruSelecionado, setGruSelecionado] = useState('')
+    const [cliSelecionado, setCliSelecionado] = useState('')
+    const [listaClientes, setListaClientes] = useState('')
 
-    const { vendas, setLoading, loadVendas, bandeiras, loadBandeiras } = useContext(AuthContext)
+    const { vendas, setLoading, loadVendas, bandeiras, grupos } = useContext(AuthContext)
     const { detalhes, setDetalhes, setShowAdmin, dataBusca, cnpjBusca, setCnpjBusca, setTotalDebito, setTotalCredito, setTotalVoucher, setTotalLiquido, gerarDados, tableData} = useContext(VendasContext)
 
     useEffect(() => {
@@ -37,6 +40,24 @@ const BuscarClienteData = () => {
         console.log(vendas)
       }
 
+      useEffect(()=>{
+        console.log('gruSelecionado', gruSelecionado)
+
+        const grupoObj = grupos.find(item => item.CODIGOGRUPO === Number(gruSelecionado));
+        let cli = grupoObj ? grupoObj.CLIENTES : [];
+        setListaClientes(cli)
+      },[gruSelecionado])
+
+      useEffect(()=>{
+        console.log(listaClientes)
+      },[listaClientes])
+
+      useEffect(()=>{
+        console.log(cliente)
+        setCnpjBusca(cliente)
+        
+      },[cliente])
+
     return(
         <>
             <div className='search-bar'>
@@ -44,26 +65,30 @@ const BuscarClienteData = () => {
                     <div className='date-column'>
                         <div className='select-card'>
                             <span>Grupo de Clientes</span>
-                            <select id='grupo' value={grupo} onChange={(e) => {setGrupo(e.target.value)}}>
-                                <option defaultValue=''>selecione</option>
-                                <option>place_holder_01</option>
-                                <option>place_holder_02</option>
-                                <option>place_holder_03</option>
-                                <option>place_holder_04</option>
-                            </select>
+                            <select id='grupo' value={gruSelecionado} onChange={(e) => {setGruSelecionado(e.target.value)}}>
+                                    <option defaultValue=''>selecione</option>
+                                    {grupos.map((GRU)=>(
+                                        <option key={GRU.CODIGOGRUPO} value={GRU.CODIGOGRUPO} >{GRU.NOMEGRUPO}</option>
+                                    ))}
+                                </select>
                         </div>
                     </div>
 
                     <div  className='date-column'>
                         <div className='select-card'>
                             <span>Cliente</span>
+                            { listaClientes.length > 0 ?
                             <select id='cliente' value={cliente} onChange={(e) => {setCliente(e.target.value)}}>
                                 <option defaultValue=''>selecione</option>
-                                <option>place_holder_01</option>
-                                <option>place_holder_02</option>
-                                <option>place_holder_03</option>
-                                <option>place_holder_04</option>
-                            </select>
+                                { listaClientes.map((CLI)=>(
+                                        <option key={CLI.CODIGOCLIENTE} value={CLI.CNPJ}>{CLI.NOMECLIENTE}</option>
+                                    ))}
+                            </select> : 
+                            <select className='select-disabled' disabled>
+                                <option defaultValue=''>Selecione o Grupo</option>
+                            </select>}
+                               
+                            
                         </div>
                     </div>
 

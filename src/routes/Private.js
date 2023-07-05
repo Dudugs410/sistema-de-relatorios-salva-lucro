@@ -9,7 +9,7 @@ import LoadingModal from '../components/LoadingModal'
 
 export default function Private({children}){
 
-  const { setIsSignedIn, setAccessToken, loading } = useContext(AuthContext)
+  const { setIsSignedIn, setAccessToken, loading, expired } = useContext(AuthContext)
 
   useEffect(()=>{
     console.log('Private.js')
