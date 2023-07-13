@@ -4,13 +4,13 @@ import './detalhesData.css'
 import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../../contexts/auth'
 
-import DetalhesAdministradoras from '../DetalhesAdministradoras/detalhesAdministradoras'
+import DetalhesAdquirentes from '../DetalhesAdquirentes'
 import { VendasContext } from '../../pages/Vendas'
 
-const DetalhesData = ({ close }) =>{
+const DetalhesData = () =>{
 
     const { vendas, setLoading, loadVendas } = useContext(AuthContext)
-    const { dataBusca, cnpjBusca, setDetalhes, detalhes, setShowAdmin, showAdmin, totalDebito, totalCredito, totalVoucher, totalLiquido, setTotalDebito, setTotalCredito, setTotalVoucher, setTotalLiquido } = useContext(VendasContext)
+    const { dataBusca, cnpjBusca, banBusca, adqBusca, setDetalhes, detalhes, setShowAdmin, showAdmin, totalDebito, totalCredito, totalVoucher, totalLiquido, setTotalDebito, setTotalCredito, setTotalVoucher, setTotalLiquido } = useContext(VendasContext)
 
     useEffect(()=>{
         if(!detalhes){
@@ -18,7 +18,7 @@ const DetalhesData = ({ close }) =>{
         }
         else{
             async function carregarDetalhesData(){
-                await loadVendas(dataBusca, cnpjBusca)
+                await loadVendas(dataBusca, cnpjBusca, adqBusca, banBusca)
                 loadTotalDia(vendas)
             }
             carregarDetalhesData()
@@ -62,7 +62,7 @@ const DetalhesData = ({ close }) =>{
     const [adquirentes, setAdquirentes] = useState([])
     const [encontrou, setEncontrou] = useState(false)
 
-    async function loadTotalAdministradoras(vendasTemp){
+    async function loadTotalAdquirentes(vendasTemp){
         setLoading(true)
         vendasTemp.forEach(element => {
             console.log(element)
@@ -98,10 +98,6 @@ const DetalhesData = ({ close }) =>{
         });
         console.log('vetor de adquirentes: ', adquirentes)
         setLoading(false)
-        /*adquirentes.push({
-            nomeAdquirente: venda.adquirente.nomeAdquirente,
-            valorLiquido: venda.valorLiquido,
-        })*/
     }
 
   function zerarValores(){
@@ -117,18 +113,20 @@ const DetalhesData = ({ close }) =>{
   }
   
   async function handleAdmin(){
-    await loadTotalAdministradoras(vendas)
+    if(adquirentes.length === 0){
+        await loadTotalAdquirentes(vendas)
+    }
     setShowAdmin(true)
   }
     
     return(
         <>
-            {showAdmin ? <DetalhesAdministradoras adquirentes={adquirentes}/> :
+            {showAdmin ? <DetalhesAdquirentes adquirentes={adquirentes}/> :
             <div className='card-vendas'>
                 <h1 className='title'>Vendas no total</h1>
                 <hr/>
                 <span>Formas de pagamento: </span>
-                <br/><br/><br/>
+                
                 <div className='btn-div'>
                     <div className='valores-div'>
                         <span>Débito à vista: </span> <span>R$ {`${totalDebito.toFixed(2).toString().replace('.',',')}`}</span>

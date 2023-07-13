@@ -7,15 +7,19 @@ import DetalhesVenda from '../../components/DetalhesVenda'
 
 import GerarRelatorio from '../../components/GerarRelatorio'
 
+
 import './vendas.css'
 import './Calendar.css'
 import { AuthContext } from '../../contexts/auth'
+
+import Cookies from 'js-cookie'
+
 
 export const VendasContext = createContext({})
 
 const Vendas = () =>{
   
-  const { bandeiras, loadBandeiras, vendas, dateConvert, dateConvertSearch, grupos, loadGrupos } = useContext(AuthContext)
+  const { accessToken, setAccessToken, setIsSignedIn, bandeiras, loadBandeiras, grupos, loadGrupos, adquirentes, loadAdquirentes, vendas, loadVendas, loadPeriodo, dateConvert, dateConvertSearch,  } = useContext(AuthContext)
 
   const [totalCredito, setTotalCredito] = useState(0.00)
   const [totalDebito, setTotalDebito] = useState(0.00)
@@ -26,13 +30,21 @@ const Vendas = () =>{
   const [showAdmin, setShowAdmin] = useState(false)
 
   const [dataBusca, setDataBusca] = useState('')
+
+  // possivelmente utilizar estes parametros para realizar busca por período
+
+  const [dataBusca1, setDataBusca1] = useState('')
+  const [dataBusca2, setDataBusca2] = useState('')
+
   const [cnpjBusca, setCnpjBusca] = useState('')
+  const [banBusca, setBanBusca] = useState('')
+  const [adqBusca, setAdqBusca] = useState('')
 
   const tableData = []
 
     async function gerarDados() {
         tableData.length = 0
-        console.log('estado das vendas: ', vendas)
+        console.log('vendas ao gerar Dados: ', vendas)
         if (vendas.length > 0) {
           vendas.map((venda) => {
             tableData.push({
@@ -48,30 +60,28 @@ const Vendas = () =>{
               valorLiquido: 'R$' + venda.valorLiquido.toFixed(2).replaceAll('.', ','),
               taxa: 'R$' + venda.taxa.toFixed(2).replaceAll('.', ','),
               dataVenda: dateConvert(venda.dataVenda),
-              horaVenda: venda.horaVenda.replaceAll('-', ':'),
+              horaVenda: venda.horaVenda,
               dataCredito: dateConvert(venda.dataCredito),
               parcelas: venda.quantidadeParcelas,
             })
             return 0
           })
         }
-        console.log(tableData)
+        console.log('tableData: ', tableData)
       }
 
-// adicionar bandeiras e administradoras aos filtros de busca // **04/07/2023**
-
-      useEffect(()=>{
-        async function inicializar(){
-            await loadBandeiras()
-            await loadGrupos()
-        }
-        inicializar()
-    },[])
+  useEffect(()=>{
+    async function inicializar(){
+        await loadBandeiras()
+        await loadGrupos() 
+        await loadAdquirentes() 
+    }
+    inicializar()
+  },[])
 
   useEffect(()=>{
     gerarDados()
   },[vendas])
-
 
   function handleDateChange(date){
     setDataBusca(date)
@@ -83,7 +93,6 @@ const Vendas = () =>{
         <Calendar
           onChange={ handleDateChange }
           value={ dataBusca }
-          onClickDay={console.log(dataBusca)}
         />
       </div>
     )
@@ -98,8 +107,6 @@ const Vendas = () =>{
       setShowAdmin, 
       dataBusca, 
       setDataBusca, 
-      cnpjBusca, 
-      setCnpjBusca,
       totalDebito,
       setTotalDebito,
       totalCredito,
@@ -109,6 +116,12 @@ const Vendas = () =>{
       totalLiquido,
       setTotalLiquido,
       gerarDados,
+      cnpjBusca,
+      setCnpjBusca,
+      banBusca,
+      setBanBusca,
+      adqBusca,
+      setAdqBusca,
       tableData
       }}>
       <div className='appPage'>

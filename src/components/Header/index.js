@@ -1,21 +1,28 @@
-import { Link, useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { FiPower } from "react-icons/fi"
 import { AuthContext } from "../../contexts/auth"
-import { useContext, useEffect } from "react"
-import Cookies from "js-cookie"
+import { useContext, useEffect, useState } from "react"
+
+import salvaLucroLogoBranco from '../../assets/LogoTopo.png'
 
 import './header.css'
 
 const Header = () =>{
 
-    const { logout } = useContext(AuthContext)
-    const nome = JSON.parse(sessionStorage.getItem('userData')).NOME
+    const { logout, expired } = useContext(AuthContext)
+    const [nome, setNome] = useState('')
+    
+    useEffect(()=>{
+        if(sessionStorage.getItem('userData') && (localStorage.getItem('isSignedIn') === true)){
+            setNome(JSON.parse(sessionStorage.getItem('userData')).NOME)
+        }
+    },[])
 
     return(
         <>
             <div className='header-bg'>
                 <div className='navbar-title'>
-                    <h1>SafeJob</h1>
+                    <img className='img-header' src={salvaLucroLogoBranco} alt='logo salva lucro'/>
                 </div>
                 <div className='navbar-customer-wrapper'>
                     <div className='navbar-customer'>

@@ -9,22 +9,36 @@ import LoadingModal from '../components/LoadingModal'
 
 export default function Private({children}){
 
-  const { setIsSignedIn, setAccessToken, loading, expired } = useContext(AuthContext)
+  const { isSignedIn, setIsSignedIn, setAccessToken, accessToken, loading, refresh, expired } = useContext(AuthContext)
 
   useEffect(()=>{
     console.log('Private.js')
   },[])
 
-  useEffect(() => {
+  useEffect(()=>{
     setAccessToken(Cookies.get('token'))
-    setIsSignedIn(sessionStorage.getItem('isSignedIn'))
+  },[accessToken])
 
-  },[])
+  const handleTokenExpiration = () => {
+    console.log('acessToken Expirada')
+    refresh()
+  };
 
-  if(localStorage.getItem('isSignedIn') === (false || undefined)){
-    //expired()
-  }
+  useEffect(() => {
+    console.log('checando se o access token é valido...')
+    console.log('accessToken: ', accessToken)
+    if (accessToken) {
+      const decodedToken = jwtDecode(accessToken)
+      const expirationTime = decodedToken.exp * 1000;
 
+      console.log('horário de expiração: ', expirationTime)
+      console.log('Date.now(): ', Date.now())
+
+      if (expirationTime < Date.now()) {
+        handleTokenExpiration()
+      }
+    }
+  }, [accessToken]);
   
   return (
     <>

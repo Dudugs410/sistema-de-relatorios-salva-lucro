@@ -19,6 +19,17 @@
     z-index: 1;
 }
 
+.navbar-title>img{
+    width: 200px;
+    
+}
+
+.img-header{
+    padding-bottom: 5px;
+    padding-right: 3%;
+    padding-top: 13px;
+}
+
 .nav-text{
     margin-left: 20px;
 }
@@ -106,7 +117,7 @@ a.nav-text{
     align-self: start;
     background-color: red;
     border-radius: 6px;
-    border: solid white 1px;
+    border: solid white 2px;
     margin-top: 2px;
     margin-right: 2px;
 }
@@ -141,6 +152,13 @@ polyline, line, path{
         padding-top: 5px;
         font-size: x-large;
         z-index: 1;
+        flex-wrap: wrap;
+        align-content: center;
+    }
+
+    .navbar-title>img{
+        padding-bottom: 15px;
+        
     }
     
     .nav-text{
@@ -215,6 +233,7 @@ polyline, line, path{
         align-self: end;
         position: relative;
         top: -90px;
+        z-index: 99;
 
     }
 

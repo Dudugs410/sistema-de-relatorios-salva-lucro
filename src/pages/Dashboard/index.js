@@ -11,21 +11,26 @@ import { AuthContext } from "../../contexts/auth"
 import LoadingModal from '../../components/LoadingModal'
 //////
 import Grafico from '../../components/Grafico'
+import PieChart from '../../components/00Teste'
 
 
 const Dashboard = () => {
     
-    const { setIsSignedIn, setAccessToken } = useContext(AuthContext)
-    const { vendas, vendasDash, loading, loadPeriodo, cnpj, dateConvertSearch, dateConvertYYYYMMDD } = useContext(AuthContext)
+    const { accessToken, vendas, vendasDash, loading, loadPeriodo, cnpj, dateConvertSearch, dateConvertYYYYMMDD } = useContext(AuthContext)
 
     const vendasDias = []
 
-    let somaValorLiquido
-    let somaValorCredito
-    let somaValorDebito
-    let somaValorVoucher
+    let somaValorLiquido = 0
+    let somaValorCredito = 0
+    let somaValorDebito = 0
+    let somaValorVoucher = 0
 
-    const data01 = [];
+    const [liquido, setLiquido] = useState(0)
+    const [credito, setCredito] = useState(0)
+    const [debito, setDebito] = useState(0)
+    const [voucher, setVoucher] = useState(0)
+
+    const data01 = []
     
     const data02 = [
         { name: 'dia 01', total: 2 },
@@ -33,7 +38,7 @@ const Dashboard = () => {
         { name: 'dia 03', total: 300 },
         { name: 'dia 04', total: 150 },
         { name: 'dia 05', total: 250 },
-    ];
+    ]
 
     const dataRecebiveis01 = [
         { name: 'dia 01', total: 11 },
@@ -51,22 +56,19 @@ const Dashboard = () => {
         { name: 'dia 05', total: 250 },
     ]
 
-
-    useEffect(() => {
-        setIsSignedIn(sessionStorage.getItem('isSignedIn'))
-        setAccessToken(Cookies.get('token'))
-    },[setAccessToken, setIsSignedIn])
-
     useEffect(()=>{
         async function inicializar(){
             await iniciaDashboard()
         }
-        inicializar()
+        if(vendasDias.length === 0){
+            inicializar()
+        }
     },[])
 
     useEffect(()=>{
         loadDados()
         loadTotalLiquido(vendasDias)
+        loadTotalDia(vendasDias)
     },[vendasDash])
 
     async function iniciaDashboard() {
@@ -96,13 +98,36 @@ const Dashboard = () => {
     }
 
     function loadTotalDia(vendasDias){
-        loadTotalCredito(vendasDias)
-        loadTotalDebito(vendasDias)
-        loadTotalVoucher(vendasDias)
-
+        if(vendasDias.length > 0){
+            vendasDias.map((objeto) => {
+                objeto.map((vendaArray) => {
+                    switch(vendaArray.produto.descricaoProduto){
+                        case 'Crédito':
+                            somaValorCredito += vendaArray.valorLiquido
+                            setCredito(somaValorCredito)
+                            break
+                        case 'Débito':
+                            somaValorDebito += vendaArray.valorLiquido
+                            setDebito(somaValorDebito)
+                            break
+                        case 'Voucher':
+                            somaValorVoucher += vendaArray.valorLiquido
+                            setVoucher(somaValorVoucher)
+                            break
+                    }
+                    return 0
+                })
+                return 0
+            })
+            console.log(somaValorCredito, somaValorDebito, somaValorVoucher)
+        }
+        else{
+            console.log(vendasDias)
+        }
     }
 
     function loadTotalLiquido(vendasDias){
+        data01.length = 0
         somaValorLiquido = vendasDias.map((posicao) => {
             return posicao.reduce((sum, objeto) => sum + objeto.valorLiquido, 0);
           });
@@ -110,75 +135,25 @@ const Dashboard = () => {
           for(let i = 0; i < 5; i++){
             let dataTemp = new Date();
             dataTemp.setDate(dataTemp.getDate() - 5 + i)
-            let valorConvertido = parseFloat(somaValorLiquido[i].toFixed(2))
-            console.log('valor convertido', valorConvertido)
+            let valorConvertido = parseFloat(somaValorLiquido[i])
             data01.push({
                 name: `${dateConvertYYYYMMDD(dataTemp)}`,
-                total: valorConvertido,
+                total: valorConvertido.toFixed(2),
             })
           }
+          setLiquido(somaValorLiquido)
           console.log(data01)
     }
-
-    function loadTotalCredito(vendasDias){
-        somaValorCredito = vendasDias.map((posicao) => {
-            return posicao.reduce((sum, objeto) => sum + objeto.valorLiquido, 0);
-          });
-          console.log(somaValorCredito)
-    }
-
-    function loadTotalDebito(vendasDias){
-        somaValorDebito = vendasDias.map((posicao) => {
-            return posicao.reduce((sum, objeto) => sum + objeto.valorLiquido, 0);
-          });
-
-          console.log(somaValorDebito)
-    }
-
-    function loadTotalVoucher(vendasDias){
-        somaValorVoucher = vendasDias.map((posicao) => {
-            return posicao.reduce((sum, objeto) => sum + objeto.valorLiquido, 0);
-          });
-
-          console.log(somaValorVoucher)
-    }
-
-    function loadTotalAdm(vendasDias){
-        
-    }
-
-    function handleLoad(){
-        console.log('handleLoad')
-        loadTotalLiquido(vendasDias)
-    }
-
-    function handleShow(){
-        console.log('handleShow')
-        console.log(vendasDias)
-
-    }
-        
-
 
   return(
     <>
         { loading ? <LoadingModal/> : <div className='appPage'>
-
-            <button className='btn btn-success' onClick={handleLoad}>Load Dados</button>
-            <button className='btn btn-warning' onClick={handleShow}>Log Dados</button>
-
             <div className='content-area dash'>
                 <div className='data-group-area'>
                     <div className='graph-data'>
-                        <Grafico className='custom-chart' data01={data01} data02={data02} color01="#9acd32" color02="#6e9eff"/>
+                        <PieChart data01 = {dataRecebiveis01}/>
                     </div>
-
-                    <div className='graph-data'>
-                        <Grafico className='custom-chart' data01={dataRecebiveis01} data02={dataRecebiveis02} color01="#6e9eff" color02="#9acd32" />
-                    </div>
-                </div>
                 
-                <div className='data-group-area'>
                     <div className='table-data'>
                         <table className="table dash-table">
                             <thead className='dash-thead'>
@@ -190,12 +165,18 @@ const Dashboard = () => {
                             </thead>
                             <tbody className='dash-tbody'>
                                 <tr className='dash-tr'>
-                                    <td className='cell-text dash-td' data-label="Débito">Débito</td>
-                                    <td className='cell-text dash-td' data-label="Crédito">Crédito</td>
-                                    <td className='cell-text dash-td' data-label="Voucher">Voucher</td>
+                                    <td className='cell-text dash-td' data-label="Débito">R$ {debito.toFixed(2).replace('.',',')}</td>
+                                    <td className='cell-text dash-td' data-label="Crédito">R$ {credito.toFixed(2).replace('.',',')}</td>
+                                    <td className='cell-text dash-td' data-label="Voucher">R$ {voucher.toFixed(2).replace('.',',')}</td>
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                </div>
+                
+                <div className='data-group-area'>
+                    <div className='graph-data'>
+                        <PieChart data01 = {dataRecebiveis01}/>
                     </div>
                     
                     <div className='table-data'>

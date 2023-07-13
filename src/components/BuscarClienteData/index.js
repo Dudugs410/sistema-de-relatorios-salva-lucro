@@ -5,60 +5,86 @@ import { AuthContext } from "../../contexts/auth"
 import { VendasContext } from "../../pages/Vendas"
 
 import './reactdatepicker.css'
-import { Background } from "victory"
 
 const BuscarClienteData = () => {
     const [cliente, setCliente] = useState('')
-    const [adm, setAdm] = useState('')
     const [banSelecionada, setBanSelecionada] = useState('')
     const [gruSelecionado, setGruSelecionado] = useState('')
-    const [cliSelecionado, setCliSelecionado] = useState('')
+    const [adqSelecionada, setAdqSelecionada] = useState('')
     const [listaClientes, setListaClientes] = useState('')
 
-    const { vendas, setLoading, loadVendas, bandeiras, grupos } = useContext(AuthContext)
-    const { detalhes, setDetalhes, setShowAdmin, dataBusca, cnpjBusca, setCnpjBusca, admBusca, banBusca, setTotalDebito, setTotalCredito, setTotalVoucher, setTotalLiquido, gerarDados, tableData} = useContext(VendasContext)
+    const [buscou, setBuscou] = useState(false)
+
+    const { vendas, setLoading, loadVendas, bandeiras, grupos, adquirentes } = useContext(AuthContext)
+    const { detalhes, setDetalhes, setShowAdmin, dataBusca, cnpjBusca, setCnpjBusca, banBusca, setBanBusca, adqBusca, setAdqBusca, setTotalDebito, setTotalCredito, setTotalVoucher, setTotalLiquido, gerarDados, tableData} = useContext(VendasContext)
     
     async function handleBusca(e){
+        console.log('handleBusca()')
         e.preventDefault()
-        setLoading(true)
         await buscar()
         await gerarDados()
-        setLoading(false)
     }
 
     async function buscar() {
-        await loadVendas(dataBusca, cnpjBusca, admBusca, banBusca)
+        console.log('buscar()')
+        await loadVendas(dataBusca, cnpjBusca, adqBusca, banBusca)
         .then(() =>{
             if(dataBusca === '' || cnpjBusca === ''){
                 return 0
             }
-            alert(`executou a busca do dia ${dataBusca}`)
-            setDetalhes(true)
+            else{
+                alert(`executou a busca do dia ${dataBusca}`)
+                setBuscou(true)
+            }
+            
         })
         setLoading(false)
       }
 
       useEffect(()=>{
-        console.log(vendas)
-      },[vendas])
+        console.log('buscou: ', buscou)
+        if(buscou === true){
+            if((vendas === null) || (vendas.length === 0)){
+                alert('não existem vendas para a data selecionada')
+                setBuscou(false)
+            }
+            else{
+                setDetalhes(true)
+                setBuscou(false)
+            }
+        }
+      },[buscou])
+
 
       useEffect(()=>{
-        console.log('gruSelecionado', gruSelecionado)
-
         const grupoObj = grupos.find(item => item.CODIGOGRUPO === Number(gruSelecionado));
         let cli = grupoObj ? grupoObj.CLIENTES : [];
         setListaClientes(cli)
       },[gruSelecionado])
 
       useEffect(()=>{
-        console.log(listaClientes)
-      },[listaClientes])
+        setBanBusca(banSelecionada)
+      },[banSelecionada])
 
       useEffect(()=>{
-        console.log(cliente)
+        setAdqBusca(adqSelecionada)
+      },[adqSelecionada])
+
+      useEffect(()=>{
         setCnpjBusca(cliente)
-        
       },[cliente])
+
+      function handleVoltar(){
+        setDetalhes(false)
+        setShowAdmin(false)
+        setTotalLiquido(0.00)
+        setTotalCredito(0.00)
+        setTotalDebito(0.00)
+        setTotalVoucher(0.00)
+        setCnpjBusca('')
+        setBanBusca('')
+        setAdqBusca('')
+      }
 
     return(
         <>
@@ -89,21 +115,18 @@ const BuscarClienteData = () => {
                             <select className='select-disabled' disabled>
                                 <option defaultValue=''>Selecione o Grupo</option>
                             </select>}
-                               
-                            
                         </div>
                     </div>
 
                     <div className='date-column'>
                         <div className='select-card'>
-                            <span>Administradora</span>
-                            <select id='administradora' defaultValue={adm} onChange={(e) => {setAdm(e.target.value)}}>
-                                <option defaultValue=''>selecione</option>
-                                <option>place_holder_01</option>
-                                <option>place_holder_02</option>
-                                <option>place_holder_03</option>
-                                <option>place_holder_04</option>
-                            </select>
+                            <span>Adquirente</span>
+                            <select id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}}>
+                                    <option defaultValue=''>selecione</option>
+                                    {adquirentes.map((ADQ)=>(
+                                        <option key={ADQ.codigoAdquirente} value = {ADQ.codigoAdquirente}>{ADQ.nomeAdquirente}</option>
+                                    ))}
+                                </select>
                         </div>
                     </div>
                     <div  className='date-column'>
@@ -112,14 +135,14 @@ const BuscarClienteData = () => {
                                 <select id='bandeira' value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}}>
                                     <option defaultValue=''>selecione</option>
                                     {bandeiras.map((BAN)=>(
-                                        <option key={BAN.codigoBandeira} value = {BAN.descricaoBandeira}>{BAN.descricaoBandeira}</option>
+                                        <option key={BAN.codigoBandeira} value = {BAN.codigoBandeira}>{BAN.descricaoBandeira}</option>
                                     ))}
                                 </select>
                         </div>
                     </div>
                                         
                     <div className='submit-container'>
-                        { detalhes ? <button className="btn btn-secondary btn-submit" onClick={ () => { setDetalhes(false); setShowAdmin(false); setTotalLiquido(0.00); setTotalCredito(0.00); setTotalDebito(0.00); setTotalVoucher(0.00) }}>Voltar</button> : <button className="btn btn-primary btn-submit" onClick={handleBusca}>Pesquisar</button>}
+                        { detalhes ? <button className="btn btn-secondary btn-submit" onClick={ () => { handleVoltar() }}>Voltar</button> : <button className="btn btn-primary btn-submit" onClick={handleBusca}>Pesquisar</button>}
                     </div>      
                 </form>
             </div>

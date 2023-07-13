@@ -22,12 +22,12 @@
     .container{
         width: 100%;
         display: flex;
-        flex-wrap: wrap;
+        padding-left: 12px;
         margin-top: 20px;
-        margin-left: 0;
         margin-bottom: 20px;
-        justify-content: center;
-        align-content: stretch;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-around;
     
     }
 }

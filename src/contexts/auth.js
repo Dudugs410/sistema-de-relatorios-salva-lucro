@@ -2,7 +2,7 @@
 import { React, createContext, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-
+import axios from 'axios'
 import Cookies from 'js-cookie'
 import api, { config } from '../services/api'
 
@@ -31,6 +31,7 @@ function AuthProvider({ children }){
   const [bandeiras, setBandeiras] = useState([])
   const [grupos, setGrupos] = useState([]) 
   const [clientes, setClientes] = useState([])
+  const [adquirentes, setAdquirentes] = useState([])
 
   const [buscou, setBuscou] = useState(false)
   
@@ -39,10 +40,14 @@ function AuthProvider({ children }){
   useEffect(() =>{
     setDataInicial(new Date())
     console.log('auth.js')
+    setAccessToken('')
   },[])
 
-  /////Login do usuário
+  useEffect(()=>{
+    console.log(accessToken)
+  },[accessToken])
 
+  /////Login do usuário
   async function submitLogin(login, password){
     setLoading(true)
     await api.post('/token', { client_id: login, client_secret: md5(password) })
@@ -51,31 +56,36 @@ function AuthProvider({ children }){
         Cookies.set('refreshToken', response.data.refresh_token)
         setAccessToken(Cookies.get('token'))
         setRefreshToken(Cookies.get('refreshToken'))
+        
         if(response.data.sucess === true){
           sessionStorage.setItem('isSignedIn', true)
         }
         try {
-          const response = await api.get('/usuario', config(Cookies.get('token')));
-          const userList = response.data;
-          const userMatch = userList.find((user) => user.LOGIN === login && user.SENHA === md5(password));
+          const response = await api.get('/usuario')
+          const userList = response.data
+          const userMatch = userList.find((user) => user.LOGIN === login && user.SENHA === md5(password))
         
           if (userMatch) {
             console.log('User found:', userMatch);
             sessionStorage.setItem('isSignedIn', true);
-            sessionStorage.setItem('userData', JSON.stringify(userMatch));
+            sessionStorage.setItem('userData', JSON.stringify(userMatch))
             localStorage.setItem('isSignedIn', true)
-            setIsSignedIn(true);
+            setIsSignedIn(true)
           } else {
-            console.log('User not found');
+            console.log('User not found')
           }
+          setLoading(false)
         } catch (error) {
-          console.error(error);
+          console.error(error)
+          setLoading(false)
         }
+        setLoading(false)
     })
     .catch(error =>{
         console.log('catch: ')
         console.log(error)
         alert(error.message)
+        setLoading(true)
     })
     
     setLoading(false)
@@ -141,23 +151,79 @@ function AuthProvider({ children }){
         setLoading(false)
       })
     }
+
+    async function loadAdquirentes(){
+      setLoading(true)
+      await api.get('/adquirente')
+      .then( response => {
+        setAdquirentes(response.data)
+        setLoading(false)
+      })
+      .catch(error =>{
+        console.log(error)
+        setLoading(false)
+      })
+    }
   
     //loadVendas melhorias
 
     // retorna as vendas da data e cliente específicos.
 
-    async function loadVendas(dataInicial, cnpj, administradora, bandeira){
-      if(dataInicial === '' || cnpj === ''){
+    async function loadVendas(dataInicial, cnpj, adquirente, bandeira){
+      if((dataInicial === '' || undefined) || (cnpj === '' || undefined)){
         alert('Favor selecionar uma data e cliente válidos')
         return 0
       }
 
       setLoading(true)
-      let params = {
+      let params = {}
+      
+      console.log('cnpj: ', cnpj)
+      console.log('adquirente: ', adquirente)
+      console.log('bandeira: ', bandeira)
+
+      if(((adquirente !== '') && (bandeira !== '')) && (buscou === false)){
+          console.log('adquirente e bandeira')
+          params = {
           data: dataInicial,
+          datafinal: dataInicial,
           cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+          adquirente: adquirente,
+          bandeira: bandeira,
         }
-        
+        setBuscou(true)
+      }
+
+      else if(((adquirente !== '') && (bandeira === '')) && (buscou === false)){
+            console.log('adquirente sem bandeira')
+            params = {
+            datainicial: dataInicial,
+            datafinal: dataInicial,
+            cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+            adquirente: adquirente,
+        }
+        setBuscou(true)
+      }
+
+      else if(((bandeira !== '') && (adquirente === '')) && (buscou === false)){
+        console.log('bandeira sem adquirente')
+        params = {
+        datainicial: dataInicial,
+        datafinal: dataInicial,
+        cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+        bandeira: bandeira,
+        }
+        setBuscou(true)
+      }
+
+      else{
+        params = {
+        datainicial: dataInicial,
+        datafinal: dataInicial,
+        cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+        }
+      }
+      
         let config = {
           headers: { 
             'Content-Type': 'application/json', 
@@ -170,23 +236,27 @@ function AuthProvider({ children }){
           .then((response) => {
             setVendas(response.data.VENDAS)
             setLoading(false)
+            setBuscou(false)
             return response.data.VENDAS
           })
           .catch((error) => {
           setLoading(false)
+          console.log('config: ',config)
           console.log(error)
           })
       
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////
+    //Consulta de vendas, com intervalo de datas
 
-    async function loadPeriodo(datainicial, datafinal, cnpj){
+    async function loadPeriodo(datainicial, datafinal, cnpj, adquirente, bandeira){
       setLoading(true);
     let params = {
       dataInicial: dateConvert(datainicial),
       dataFinal: dateConvert(datafinal),
       cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+      adquirente: adquirente,
+      bandeira: bandeira,
     };
 
     let config = {
@@ -208,24 +278,25 @@ function AuthProvider({ children }){
     }
   }
 
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     //refresh
 
     async function refresh(){
       await api.post('/token/refresh/' + Cookies.get('refreshToken'), config(accessToken))
       .then((response) => {
-        console.log (response)
-        if(response.success){
+          console.log (response)
           console.log(response)
           setAccessToken(response.acessToken)
           Cookies.set('token', accessToken)
           setRefreshToken(response.refreshToken)
-          Cookies.set('refreshToken', refreshToken)
-        }
-        else{
-          //expired()
-          console.log('erro')
-        }
-      }).catch(error => console.log(error))
+          Cookies.set('refreshToken', refreshToken)        
+      }).catch(error => {
+          console.log(error)
+          expired()
+      })
     }
 
   function dateConvert(date) {
@@ -293,6 +364,9 @@ function AuthProvider({ children }){
         clientes,
         setClientes,
         loadVendas,
+        adquirentes,
+        setAdquirentes,
+        loadAdquirentes,
         vendaAtual,
         setVendaAtual,
         vendaDias,

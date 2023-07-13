@@ -1,18 +1,11 @@
-import { useContext, useEffect } from "react"
+import { useContext } from "react"
 import { AuthContext } from "../../contexts/auth"
 
 import './detalhesVenda.css'
 
 const DetalhesVenda = () =>{
 
-    const { vendas, dateConvert } = useContext(AuthContext)
-
-    useEffect(()=>{
-        console.log(vendas)
-        console.log(vendas.horaVenda)
-        alert('useEffect detalhes venda')
-    },[])
-    
+    const { vendas, dateConvert } = useContext(AuthContext)    
     return(
         <>
             <div className='dropShadow vendas-view'>
