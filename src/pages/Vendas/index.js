@@ -7,19 +7,22 @@ import DetalhesVenda from '../../components/DetalhesVenda'
 
 import GerarRelatorio from '../../components/GerarRelatorio'
 
-
 import './vendas.css'
 import './Calendar.css'
 import { AuthContext } from '../../contexts/auth'
-
-import Cookies from 'js-cookie'
-
 
 export const VendasContext = createContext({})
 
 const Vendas = () =>{
   
-  const { accessToken, setAccessToken, setIsSignedIn, bandeiras, loadBandeiras, grupos, loadGrupos, adquirentes, loadAdquirentes, vendas, loadVendas, loadPeriodo, dateConvert, dateConvertSearch,  } = useContext(AuthContext)
+  const { 
+    loadBandeiras,
+    loadGrupos,
+    loadAdquirentes,
+    vendas,
+    dateConvert,
+    dateConvertSearch
+  } = useContext(AuthContext)
 
   const [totalCredito, setTotalCredito] = useState(0.00)
   const [totalDebito, setTotalDebito] = useState(0.00)

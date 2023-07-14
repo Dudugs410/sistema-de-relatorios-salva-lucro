@@ -1,14 +1,12 @@
 html, body, .app, #root, .appPage{
   height: 100%;
   width: 100%;
+  background-color: #59659e;
 }
 
 .appPage{
   font: 14px;
   font-family: sans-serif;
-  background-color: white;
-  background-size: cover;
-  background-repeat: no-repeat;
   
 }
 

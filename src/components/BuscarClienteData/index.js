@@ -74,7 +74,8 @@ const BuscarClienteData = () => {
         setCnpjBusca(cliente)
       },[cliente])
 
-      function handleVoltar(){
+      function handleVoltar(e){
+        e.preventDefault()
         setDetalhes(false)
         setShowAdmin(false)
         setTotalLiquido(0.00)
@@ -142,7 +143,7 @@ const BuscarClienteData = () => {
                     </div>
                                         
                     <div className='submit-container'>
-                        { detalhes ? <button className="btn btn-secondary btn-submit" onClick={ () => { handleVoltar() }}>Voltar</button> : <button className="btn btn-primary btn-submit" onClick={handleBusca}>Pesquisar</button>}
+                        { detalhes ? <button className="btn btn-secondary btn-submit" onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className="btn btn-primary btn-submit" onClick={handleBusca}>Pesquisar</button>}
                     </div>      
                 </form>
             </div>

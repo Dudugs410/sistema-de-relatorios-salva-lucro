@@ -20,6 +20,14 @@
   background-color: #59659e;
 }
 
+.title-chart{
+  color: white;
+  font-family: sans-serif;
+  font-size: 1.5em;
+  padding-top: 10px;
+  padding-left: 10px;
+}
+
 .data-group-area:nth-child(2){
   padding-bottom: 4%;
 }
@@ -27,8 +35,8 @@
 .graph-data{
   height: 100%;
   width: 100%;
-  background-color: #444e79;
-  box-shadow:inset 0px 270px 0px 0px #181c2e;
+  background-color: #181c2e;
+  box-shadow:inset 0px 270px 0px 0px;
 
 
 }
@@ -99,5 +107,12 @@
 
 }
 
+@media screen and (max-width: 832px){
+  .title-chart{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+}
 
 

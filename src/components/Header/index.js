@@ -9,13 +9,11 @@ import './header.css'
 
 const Header = () =>{
 
-    const { logout, expired } = useContext(AuthContext)
+    const { logout } = useContext(AuthContext)
     const [nome, setNome] = useState('')
     
     useEffect(()=>{
-        if(sessionStorage.getItem('userData') && (localStorage.getItem('isSignedIn') === true)){
-            setNome(JSON.parse(sessionStorage.getItem('userData')).NOME)
-        }
+        setNome(JSON.parse(sessionStorage.getItem('userData')).NOME)
     },[])
 
     return(
@@ -64,7 +62,6 @@ const Header = () =>{
             </div>
         </>
     )
-
 }
 
 export default Header;

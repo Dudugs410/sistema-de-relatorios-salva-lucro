@@ -150,7 +150,9 @@ const Dashboard = () => {
         { loading ? <LoadingModal/> : <div className='appPage'>
             <div className='content-area dash'>
                 <div className='data-group-area'>
+                    
                     <div className='graph-data'>
+                        <h1 className='title-chart'>Vendas:</h1>
                         <PieChart data01 = {dataRecebiveis01}/>
                     </div>
                 
@@ -176,6 +178,7 @@ const Dashboard = () => {
                 
                 <div className='data-group-area'>
                     <div className='graph-data'>
+                        <h1 className='title-chart'>Recebíveis:</h1>
                         <PieChart data01 = {dataRecebiveis01}/>
                     </div>
                     
