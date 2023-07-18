@@ -22,9 +22,10 @@
     background-color: white;
     display: flex;
     flex-direction: column;
-    align-items: center;
     margin: 0, 20px;
-    cursor:default;
+    cursor: default;
+    flex-wrap: wrap;
+    justify-content: center;
 
 }
 
@@ -41,14 +42,12 @@ input{
 }
 
 .input-container{
+    width: 100%;
     border: 2px solid #bebebe;
     border-radius: 10px;
     display: flex;
     flex-direction: column;
-    /* margin-left: 20px; */
-    /* margin-right: 20px; */
     padding: 40px;
-    position: relative;
     top: 15%;
 }
 
@@ -89,7 +88,7 @@ input{
 }
 
 .img-login{
-    margin-top: 50%;
+
 }
 
 @media screen and (max-width: 1054px){
@@ -114,4 +113,5 @@ input{
         align-items: center;
         cursor: default;
     }
+    
 }

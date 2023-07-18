@@ -4,6 +4,7 @@ import Calendar from 'react-calendar'
 import BuscarClienteData from '../../components/BuscarClienteData'
 import DetalhesData from '../../components/DetalhesData'
 import DetalhesVenda from '../../components/DetalhesVenda'
+import TotalModalidades from '../../components/TotalModalidades'
 
 import GerarRelatorio from '../../components/GerarRelatorio'
 
@@ -15,9 +16,12 @@ export const VendasContext = createContext({})
 
 const Vendas = () =>{
   
-  const { 
+  const {
+    bandeiras, 
     loadBandeiras,
+    grupos,
     loadGrupos,
+    adquirentes,
     loadAdquirentes,
     vendas,
     dateConvert,
@@ -75,9 +79,18 @@ const Vendas = () =>{
 
   useEffect(()=>{
     async function inicializar(){
+      if(bandeiras.length === 0){
         await loadBandeiras()
-        await loadGrupos() 
-        await loadAdquirentes() 
+      }
+      
+      if(grupos.length === 0){
+        await loadGrupos()        
+      }
+      
+      if(adquirentes.length === 0){
+        await loadAdquirentes()
+      }
+      
     }
     inicializar()
   },[])
@@ -130,6 +143,7 @@ const Vendas = () =>{
       <div className='appPage'>
           <div className='page-content'>
               <BuscarClienteData />
+              <TotalModalidades/>
               { detalhes ?  <DetalhesVenda/> : <MyCalendar/> }
               { detalhes ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></>}
               <DetalhesData/>

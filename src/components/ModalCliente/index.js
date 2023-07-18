@@ -1,0 +1,73 @@
+import React, { useContext, useEffect, useState } from "react"
+import './ModalCliente.css'
+import { AuthContext } from "../../contexts/auth"
+
+
+
+const ModalCliente = () => {
+    const{grupos, setGrupos, loadGrupos, clientes, setClientes, loadClientes, setCnpj, setModalCliente} = useContext(AuthContext)
+    
+    const [cliente, setCliente] = useState('')
+    const [listaClientes, setListaClientes] = useState('')
+    const [gruSelecionado, setGruSelecionado] = useState('')
+
+    useEffect(()=>{
+        loadGrupos()
+    },[])
+
+
+    useEffect(()=>{
+        const grupoObj = grupos.find(item => item.CODIGOGRUPO === Number(gruSelecionado));
+        let cli = grupoObj ? grupoObj.CLIENTES : [];
+        setListaClientes(cli)
+      },[gruSelecionado])
+
+    function handleSubmit(e){
+        e.preventDefault()
+        setCnpj(cliente)
+        setModalCliente(false)
+    }
+    
+    return(
+        <>
+            <div className='modal-cliente'>
+                <div className='modal-window'>
+                    <div className='modal-content'>
+                        <form className='date-container' onSubmit={(e)=>handleSubmit(e)}>
+                            <div className='date-column'>
+                                <div className='select-card'>
+                                    <span>Grupo de Clientes</span>
+                                    <select id='grupo' value={gruSelecionado} onChange={(e) => {setGruSelecionado(e.target.value)}}>
+                                            <option defaultValue=''>selecione</option>
+                                            {grupos.map((GRU)=>(
+                                                <option key={GRU.CODIGOGRUPO} value={GRU.CODIGOGRUPO} >{GRU.NOMEGRUPO}</option>
+                                            ))}
+                                        </select>
+                                </div>
+                            </div>
+
+                            <div  className='date-column'>
+                                <div className='select-card'>
+                                    <span>Cliente</span>
+                                    { listaClientes.length > 0 ?
+                                    <select id='cliente' value={cliente} onChange={(e) => {setCliente(e.target.value)}}>
+                                        <option defaultValue=''>selecione</option>
+                                        { listaClientes.map((CLI)=>(
+                                                <option key={CLI.CODIGOCLIENTE} value={CLI.CNPJ}>{CLI.NOMECLIENTE}</option>
+                                            ))}
+                                    </select> : 
+                                    <select className='select-disabled' disabled>
+                                        <option defaultValue=''>Selecione o Grupo</option>
+                                    </select>}
+                                </div>
+                            </div>
+                            <button className='btn btn-primary' type='submit'>Selecionar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </>
+    )
+}
+
+export default ModalCliente

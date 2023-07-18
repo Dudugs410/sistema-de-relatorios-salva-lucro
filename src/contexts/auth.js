@@ -2,7 +2,6 @@
 import { React, createContext, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import axios from 'axios'
 import Cookies from 'js-cookie'
 import api, { config } from '../services/api'
 
@@ -25,6 +24,9 @@ function AuthProvider({ children }){
   const [vendas, setVendas] = useState([])
   const [vendasDash, setVendasDash] = useState([])
 
+  const [recebimentos, setRecebimentos] = useState([])
+  const [recebimentosDash, setRecebimentosDash] = useState([])
+
   const [vendaAtual, setVendaAtual] = useState([])
   const [vendaDias, setVendaDias] = useState([])
 
@@ -32,6 +34,8 @@ function AuthProvider({ children }){
   const [grupos, setGrupos] = useState([]) 
   const [clientes, setClientes] = useState([])
   const [adquirentes, setAdquirentes] = useState([])
+
+  const [modalCliente, setModalCliente] = useState(true)
 
   const [buscou, setBuscou] = useState(false)
   
@@ -42,10 +46,6 @@ function AuthProvider({ children }){
     console.log('auth.js')
     setAccessToken('')
   },[])
-
-  useEffect(()=>{
-    console.log(accessToken)
-  },[accessToken])
 
   /////Login do usuário
   async function submitLogin(login, password){
@@ -177,10 +177,6 @@ function AuthProvider({ children }){
 
       setLoading(true)
       let params = {}
-      
-      console.log('cnpj: ', cnpj)
-      console.log('adquirente: ', adquirente)
-      console.log('bandeira: ', bandeira)
 
       if(((adquirente !== '') && (bandeira !== '')) && (buscou === false)){
           console.log('adquirente e bandeira')
@@ -257,7 +253,7 @@ function AuthProvider({ children }){
       cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
       adquirente: adquirente,
       bandeira: bandeira,
-    };
+    }
 
     let config = {
       headers: { 
@@ -265,20 +261,47 @@ function AuthProvider({ children }){
         'Authorization': `Bearer ${Cookies.get('token')}`
       },
       params: params
-    };
+    }
 
     try {
-      const response = await api.get('vendas', config);
-      const vendasData = response.data.VENDAS; // Access the array using response.data.VENDAS
-      setVendasDash(vendasData);
-      setLoading(false);
+      const response = await api.get('vendas', config)
+      const vendasData = response.data.VENDAS
+      setVendasDash(vendasData)
+      setLoading(false)
     } catch (error) {
-      console.log(error);
-      setLoading(false);
+      console.log(error)
+      setLoading(false)
     }
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  async function loadRecebimentos(cnpj, datainicial, datafinal){
+    setLoading(true);
+  let params = {
+    cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+    dataInicial: dateConvert(datainicial),
+    dataFinal: dateConvert(datafinal),
+  }
+
+  let config = {
+    headers: { 
+      'Content-Type': 'application/json', 
+      'Authorization': `Bearer ${Cookies.get('token')}`
+    },
+    params: params
+  }
+
+  try {
+    const response = await api.get('recebimentos', config)
+    const recebimentosData = response.data
+    setRecebimentosDash(recebimentosData)
+    setLoading(false)
+  } catch (error) {
+    console.log(error)
+    setLoading(false)
+  }
+}
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -287,8 +310,6 @@ function AuthProvider({ children }){
     async function refresh(){
       await api.post('/token/refresh/' + Cookies.get('refreshToken'), config(accessToken))
       .then((response) => {
-          console.log (response)
-          console.log(response)
           setAccessToken(response.acessToken)
           Cookies.set('token', accessToken)
           setRefreshToken(response.refreshToken)
@@ -355,6 +376,10 @@ function AuthProvider({ children }){
         setVendas,
         vendasDash,
         setVendasDash,
+        recebimentos,
+        recebimentosDash,
+        setRecebimentosDash,
+        loadRecebimentos,
         bandeiras,
         setBandeiras,
         loadBandeiras,
@@ -374,6 +399,8 @@ function AuthProvider({ children }){
         buscou,
         setBuscou,
         loadPeriodo,
+        modalCliente,
+        setModalCliente
       }}
     >
       {children}

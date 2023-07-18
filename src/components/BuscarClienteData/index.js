@@ -55,7 +55,6 @@ const BuscarClienteData = () => {
         }
       },[buscou])
 
-
       useEffect(()=>{
         const grupoObj = grupos.find(item => item.CODIGOGRUPO === Number(gruSelecionado));
         let cli = grupoObj ? grupoObj.CLIENTES : [];
@@ -95,11 +94,11 @@ const BuscarClienteData = () => {
                         <div className='select-card'>
                             <span>Grupo de Clientes</span>
                             <select id='grupo' value={gruSelecionado} onChange={(e) => {setGruSelecionado(e.target.value)}}>
-                                    <option defaultValue=''>selecione</option>
-                                    {grupos.map((GRU)=>(
-                                        <option key={GRU.CODIGOGRUPO} value={GRU.CODIGOGRUPO} >{GRU.NOMEGRUPO}</option>
-                                    ))}
-                                </select>
+                                <option defaultValue=''>selecione</option>
+                                {grupos.map((GRU)=>(
+                                    <option key={GRU.CODIGOGRUPO} value={GRU.CODIGOGRUPO} >{GRU.NOMEGRUPO}</option>
+                                ))}
+                            </select>
                         </div>
                     </div>
 

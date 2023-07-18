@@ -5,17 +5,17 @@ import { Pie } from 'react-chartjs-2';
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const PieChart = ({ data01 }) => {
-  // Check if data01 is available
+
   if (!data01 || data01.length === 0) {
     return <div>Loading...</div>; // Display a loading state or alternative content
   }
 
   const chartData = {
-    labels: data01.map((item) => item.name),
+    labels: data01.labels,
     datasets: [
       {
-        label: 'Total de Vendas',
-        data: data01.map((item) => item.total),
+        label: 'Total de Vendas: R$',
+        data: data01.data,
         backgroundColor: [
           'rgba(255, 99, 132, 1)',
           'rgba(54, 162, 235, 1)',
@@ -33,8 +33,8 @@ const PieChart = ({ data01 }) => {
         borderWidth: 1,
       },
     ],
-  };
-  
+  }
+
   return  <div style={{height:"250px",position:"relative", maintainAspectRatio:false }}>
             <Pie data={chartData} options={{ maintainAspectRatio: false }}/>;
           </div>
