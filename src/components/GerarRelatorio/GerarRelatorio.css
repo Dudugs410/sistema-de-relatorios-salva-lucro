@@ -3,13 +3,10 @@
     display: flex;
     flex-wrap: wrap;
     margin-top: 20px;
-    padding-top: 30px;
-    padding-left: 15%;
     margin-bottom: 10px;
+    flex-direction: row;
     justify-content: flex-end;
-    align-content: stretch;
-
-
+    align-content: flex-start;
 }
 
 .btn-exportar{

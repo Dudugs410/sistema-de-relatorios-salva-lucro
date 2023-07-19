@@ -4,6 +4,11 @@ import './buscar.css'
 import { AuthContext } from "../../contexts/auth"
 import { VendasContext } from "../../pages/Vendas"
 
+import { toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify'
+
+import 'react-toastify/dist/ReactToastify.css';
+
 import './reactdatepicker.css'
 
 const BuscarClienteData = () => {
@@ -18,6 +23,19 @@ const BuscarClienteData = () => {
     const { vendas, setLoading, loadVendas, bandeiras, grupos, adquirentes } = useContext(AuthContext)
     const { detalhes, setDetalhes, setShowAdmin, dataBusca, cnpjBusca, setCnpjBusca, banBusca, setBanBusca, adqBusca, setAdqBusca, setTotalDebito, setTotalCredito, setTotalVoucher, setTotalLiquido, gerarDados, tableData} = useContext(VendasContext)
     
+    function alerta(text){
+        toast.info(text, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            })
+    }
+
     async function handleBusca(e){
         console.log('handleBusca()')
         e.preventDefault()
@@ -33,7 +51,7 @@ const BuscarClienteData = () => {
                 return 0
             }
             else{
-                alert(`executou a busca do dia ${dataBusca}`)
+                alerta(`executou a busca do dia ${dataBusca}`)
                 setBuscou(true)
             }
             
@@ -45,7 +63,7 @@ const BuscarClienteData = () => {
         console.log('buscou: ', buscou)
         if(buscou === true){
             if((vendas === null) || (vendas.length === 0)){
-                alert('não existem vendas para a data selecionada')
+                alerta('não existem vendas para a data selecionada')
                 setBuscou(false)
             }
             else{
@@ -88,6 +106,18 @@ const BuscarClienteData = () => {
 
     return(
         <>
+            <ToastContainer
+position="top-center"
+autoClose={5000}
+hideProgressBar
+newestOnTop={false}
+closeOnClick
+rtl={false}
+pauseOnFocusLoss
+draggable
+pauseOnHover
+theme="light"
+/>
             <div className='search-bar'>
                 <form className='date-container'>
                     <div className='date-column'>
@@ -139,8 +169,7 @@ const BuscarClienteData = () => {
                                     ))}
                                 </select>
                         </div>
-                    </div>
-                                        
+                    </div>        
                     <div className='submit-container'>
                         { detalhes ? <button className="btn btn-secondary btn-submit" onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className="btn btn-primary btn-submit" onClick={handleBusca}>Pesquisar</button>}
                     </div>      

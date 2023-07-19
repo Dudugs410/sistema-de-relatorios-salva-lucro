@@ -51,7 +51,8 @@
     padding-bottom: 10px;
 }
 
-.title{
+.title-adm{
+    width: 100%;
     background-color: #444e79;
     color: white;
     align-self: center;

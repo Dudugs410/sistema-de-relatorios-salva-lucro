@@ -4,6 +4,7 @@ import './totais.css'
 import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../../contexts/auth'
 import { VendasContext } from '../../pages/Vendas'
+import { FiDollarSign } from 'react-icons/fi'
 
 const TotalModalidades = () =>{
 
@@ -63,7 +64,9 @@ const TotalModalidades = () =>{
             <div className='content-container'>
                 <div className='total-container'>
                     <div className='text-container'>
-                        <h1 className='title'>Débito</h1>
+                        <div className='card-title'>
+                            <h1 className='title'>Débito</h1>
+                        </div>
                         <p className='text'>TOTAL: R$ <span className='green'>{totalDebito.toFixed(2)}</span></p>
                     </div>
                 </div>

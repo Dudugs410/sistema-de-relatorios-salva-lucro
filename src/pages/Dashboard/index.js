@@ -82,9 +82,8 @@ const Dashboard = () => {
 
     useEffect(()=>{
         console.log('CNPJ', cnpj)
-        zerarValores()
-        if(modalCliente === false){
-            if(cnpj !== ''){
+        zerarValores()        
+            if(cnpj){
                 async function inicializarVendas(){
                     await iniciaDashboard()
                 }
@@ -99,19 +98,22 @@ const Dashboard = () => {
                     inicializarRecebimentos()
                 }
             }
-        }
     },[cnpj])
 
     useEffect(()=>{
-        loadDados()
-        loadTotalLiquido(vendasDias)
-        loadTotalDia(vendasDias)
+        if(vendasDash){
+            loadDados()
+            loadTotalLiquido(vendasDias)
+            loadTotalDia(vendasDias)
+        }
     },[vendasDash])
 
     useEffect(()=>{
-        loadDadosRecebiveis()
-        loadTotalLiquidoRecebimentos(recebimentosDias)
-        loadTotalDiaRecebimentos(recebimentosDias)
+        if(recebimentosDash){
+            loadDadosRecebiveis()
+            loadTotalLiquidoRecebimentos(recebimentosDias)
+            loadTotalDiaRecebimentos(recebimentosDias)
+        }
     },[recebimentosDash])
 
     async function iniciaDashboard() {

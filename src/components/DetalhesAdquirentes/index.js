@@ -5,7 +5,6 @@ import './detalhesAdquirentes.css'
 import { VendasContext } from '../../pages/Vendas'
 
 export default function DetalhesAdquirentes(adquirentes) {
-    console.log(adquirentes)
     const { setShowAdmin } = useContext(VendasContext)
 
     function handleVoltar(){
@@ -15,7 +14,7 @@ export default function DetalhesAdquirentes(adquirentes) {
     return (
         <div>
             <div className='content'>
-                <h1 className='title'>Detalhes por Adquirente:</h1>
+                <h1 className='title-adm'>Detalhes por Adquirente:</h1>
                 <table className="table table-striped det-table adm-table">
                     <thead>
                         <tr>
@@ -25,7 +24,6 @@ export default function DetalhesAdquirentes(adquirentes) {
                     </thead>
                     <tbody>
                         {adquirentes.adquirentes.map((adm) => {
-                            console.log(adm)
                             return (
                                 <tr key={adm.id}>
                                     <td className='det-td' data-label="Adquirente">{adm.nomeAdquirente}</td>

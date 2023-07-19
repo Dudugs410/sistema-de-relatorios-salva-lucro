@@ -35,11 +35,31 @@
     font-size: 2em;
 }
 
+.card-title{
+    display: flex;
+}
+
 .title{
     background-color: #59659e;
     text-shadow: 1px 2px 2px rgba(0,0,0,0.6);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .green{
     color: yellowgreen;
+}
+
+@media screen and (max-width: 832px){
+
+    .title{
+        font-size: 0.9em;
+    }
+
+    .total-container{
+        font-size: 0.9em;
+    }
+
+
 }

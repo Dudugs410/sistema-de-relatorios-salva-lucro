@@ -65,8 +65,6 @@ const DetalhesData = () =>{
     async function loadTotalAdquirentes(vendasTemp){
         setLoading(true)
         vendasTemp.forEach(element => {
-            console.log(element)
-            console.log('length: ', adquirentes.length)
             if(adquirentes.length === 0){
                 let novoObjeto = { 
                     nomeAdquirente: element.adquirente.nomeAdquirente, 

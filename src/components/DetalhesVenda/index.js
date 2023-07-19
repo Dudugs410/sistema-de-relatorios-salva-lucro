@@ -12,7 +12,7 @@ const DetalhesVenda = () =>{
                 <div className='table-wrapper'>
                     <table className="table table-striped det-table">
                             <thead>
-                                <tr className='det-tr'>
+                                <tr className='det-tr-top' >
                                     <th className='det-th'scope="col">Adquirente</th>
                                     <th className='det-th'scope="col">Bandeira</th>
                                     <th className='det-th'scope="col">Produto</th>
@@ -37,9 +37,9 @@ const DetalhesVenda = () =>{
                                     <td className='det-td'data-label="Adquirente">{venda.adquirente.nomeAdquirente}</td>
                                     <td className='det-td'data-label="Bandeira">{venda.bandeira.descricaoBandeira}</td>
                                     <td className='det-td'data-label="Produto">{venda.produto.descricaoProduto}</td>
-                                    <td className='det-td'data-label="Valor Bruto">R${`${venda.valorBruto.toFixed(2)}`.toString().replace('.',',')}</td>
-                                    <td className='det-td'data-label="Valor Líquido">R${`${venda.valorLiquido.toFixed(2)}`.toString().replace('.',',')}</td>
-                                    <td className='det-td'data-label="Taxa">R$ {`${venda.taxa.toFixed(2)}`.toString().replace('.',',')}</td>
+                                    <td className='det-td'data-label="Valor Bruto">R$<span className='green'>{`${venda.valorBruto.toFixed(2)}`.toString().replace('.',',')}</span></td>
+                                    <td className='det-td'data-label="Valor Líquido">R$<span className='green'>{`${venda.valorLiquido.toFixed(2)}`.toString().replace('.',',')}</span></td>
+                                    <td className='det-td'data-label="Taxa">R$ <span className='red'>{`${venda.taxa.toFixed(2)}`.toString().replace('.',',')}</span></td>
                                     <td className='det-td'data-label="Data da Venda">{dateConvert(venda.dataVenda)}</td>
                                     <td className='det-td'data-label="Hora da Venda">{ venda.horaVenda?.replaceAll('-', ':')}</td>
                                     <td className='det-td'data-label="Data do Crédito">{dateConvert(venda.dataCredito)}</td>

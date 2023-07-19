@@ -13,6 +13,21 @@
 }
 .det-table{
     min-height:50%;
+    
+}
+
+.det-th{
+    position: sticky;
+    top: 0;
+    background-color: white;
+
+}
+
+.det-tr-top{
+    position: sticky;
+    top: 0;
+    color: white;
+    background-color: #181c2e;
 }
 
 .det-th, .det-td{
@@ -28,9 +43,11 @@
 }
 
 .green{
-    color: green;
+    color: rgb(0, 255, 0);
+    text-shadow: 1px 1px 1px #000000;
 }
 
 .red{
     color:red;
+    text-shadow: 1px 1px 1px #000000;
 }

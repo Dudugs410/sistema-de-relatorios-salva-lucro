@@ -61,7 +61,9 @@ const ModalCliente = () => {
                                     </select>}
                                 </div>
                             </div>
-                            <button className='btn btn-primary' type='submit'>Selecionar</button>
+                            <div className='btn-container'>
+                                <button className='btn btn-primary btn-modal' type='submit'>Selecionar</button>
+                            </div>
                         </form>
                     </div>
                 </div>

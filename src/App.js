@@ -8,12 +8,25 @@ import React from 'react'
 
 
 import './index.css'
+import { ToastContainer } from 'react-toastify'
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <RoutesApp/>
+      <ToastContainer
+            position="top-center"
+            autoClose={5000}
+            hideProgressBar
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+            />
+              <RoutesApp/>
       </AuthProvider>
     </BrowserRouter>
   )
