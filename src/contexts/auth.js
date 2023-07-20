@@ -79,13 +79,12 @@ function AuthProvider({ children }){
           console.error(error)
           setLoading(false)
         }
-        setLoading(false)
     })
     .catch(error =>{
         console.log('catch: ')
         console.log(error)
         alert(error.message)
-        setLoading(true)
+        setLoading(false)
     })
     
     setLoading(false)

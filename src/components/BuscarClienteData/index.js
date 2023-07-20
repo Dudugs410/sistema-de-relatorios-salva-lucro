@@ -99,9 +99,6 @@ const BuscarClienteData = () => {
         setTotalCredito(0.00)
         setTotalDebito(0.00)
         setTotalVoucher(0.00)
-        setCnpjBusca('')
-        setBanBusca('')
-        setAdqBusca('')
       }
 
     return(

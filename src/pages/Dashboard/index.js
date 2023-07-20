@@ -20,6 +20,7 @@ const Dashboard = () => {
         vendasDash, 
         loading, 
         loadPeriodo,
+        loadGrupos,
         recebimentosDash,
         loadRecebimentos, 
         cnpj, 
