@@ -19,7 +19,7 @@ function AuthProvider({ children }){
 
   const [dataInicial, setDataInicial] = useState(new Date())
   const [dataFinal, setDataFinal] = useState(null)
-  const [cnpj, setCnpj] = useState('03.953.552/0001-02')
+  const [cnpj, setCnpj] = useState('')
   
   const [vendas, setVendas] = useState([])
   const [vendasDash, setVendasDash] = useState([])
@@ -169,6 +169,10 @@ function AuthProvider({ children }){
     // retorna as vendas da data e cliente específicos.
 
     async function loadVendas(dataInicial, cnpj, adquirente, bandeira){
+
+      console.log('Data Inicial: ', dataInicial)
+      console.log('CNPJ: ', cnpj)
+
       if((dataInicial === '' || undefined) || (cnpj === '' || undefined)){
         alert('Favor selecionar uma data e cliente válidos')
         return 0
@@ -180,7 +184,7 @@ function AuthProvider({ children }){
       if(((adquirente !== '') && (bandeira !== '')) && (buscou === false)){
           console.log('adquirente e bandeira')
           params = {
-          data: dataInicial,
+          dataInicial: dataInicial,
           datafinal: dataInicial,
           cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
           adquirente: adquirente,

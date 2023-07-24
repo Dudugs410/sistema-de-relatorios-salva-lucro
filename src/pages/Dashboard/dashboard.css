@@ -54,6 +54,7 @@
 .dash-table{
   border: 0;
   color: #DDD;
+  max-height: 0px;
 };
 
 .custom-chart {

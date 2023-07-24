@@ -6,12 +6,18 @@ import LoadingModal from "../LoadingModal"
 
 
 const ModalCliente = () => {
-    const{grupos, loadGrupos, setCnpj, loading, modalCliente, setModalCliente} = useContext(AuthContext)
+    const{grupos, 
+        loadGrupos, 
+        setCnpj, 
+        loading, 
+        setModalCliente, 
+        carregou, 
+        setCarregou,
+    } = useContext(AuthContext)
     
     const [cliente, setCliente] = useState('')
     const [listaClientes, setListaClientes] = useState('')
     const [gruSelecionado, setGruSelecionado] = useState('')
-    const [carregou, setCarregou] = useState(false)
 
     async function iniciaGrupos(){
         await loadGrupos()

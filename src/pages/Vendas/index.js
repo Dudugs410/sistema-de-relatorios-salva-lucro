@@ -17,6 +17,7 @@ export const VendasContext = createContext({})
 const Vendas = () =>{
   
   const {
+    cnpj,
     bandeiras, 
     loadBandeiras,
     grupos,
@@ -43,7 +44,7 @@ const Vendas = () =>{
   const [dataBusca1, setDataBusca1] = useState('')
   const [dataBusca2, setDataBusca2] = useState('')
 
-  const [cnpjBusca, setCnpjBusca] = useState('')
+  const [cnpjBusca, setCnpjBusca] = useState(cnpj)
   const [banBusca, setBanBusca] = useState('')
   const [adqBusca, setAdqBusca] = useState('')
 
@@ -98,6 +99,10 @@ const Vendas = () =>{
   useEffect(()=>{
     gerarDados()
   },[vendas])
+
+  useEffect(()=>{
+    setCnpjBusca(cnpj)
+  },[cnpj])
 
   function handleDateChange(date){
     setDataBusca(date)

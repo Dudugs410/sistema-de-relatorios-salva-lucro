@@ -84,7 +84,7 @@ const Dashboard = () => {
     useEffect(()=>{
         console.log('CNPJ', cnpj)
         zerarValores()        
-            if(cnpj){
+            if(cnpj && (cnpj !== '')){
                 async function inicializarVendas(){
                     await iniciaDashboard()
                 }
@@ -243,7 +243,7 @@ const Dashboard = () => {
         let dataTemp = new Date();
         dataTemp.setDate(dataTemp.getDate() - 5 + i)
         let valorConvertido = parseFloat(somaValorLiquido[i])
-        label.push(`${dateConvertYYYYMMDD(dataTemp)}`)
+        label.push(`${dateConvertSearch(dataTemp).replaceAll('-','/')}`)
         data.push(Number(valorConvertido.toFixed(2)))
         }
         setDadosVendas({labels: label, data: data})
@@ -263,7 +263,7 @@ const Dashboard = () => {
         for (let i = 0; i < 5; i++) {
           let dataTemp = new Date()
           dataTemp.setDate(dataTemp.getDate() - 1 + i)
-          label.push(`${dateConvertYYYYMMDD(dataTemp)}`)
+          label.push(`${dateConvertSearch(dataTemp).replaceAll('-','/')}`)
         }
       
         setDadosRecebimentos({ labels: label, data: data })

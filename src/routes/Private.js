@@ -1,5 +1,6 @@
 import { React, useEffect, useContext } from 'react'
 import jwtDecode from 'jwt-decode'
+
 import { AuthContext } from '../contexts/auth'
 import Cookies from 'js-cookie'
 
@@ -43,7 +44,9 @@ export default function Private({children}){
   return (
     <>
       <Layout>{ children }</Layout> 
-      { loading ? <LoadingModal/> : <></>} 
+      {loading && (
+            <LoadingModal />
+        )}
     </>
   )
 }

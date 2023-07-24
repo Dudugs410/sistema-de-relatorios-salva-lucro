@@ -57,6 +57,11 @@ export default function GerarRelatorio({tableData, dataAtual}){
         const columns = ['Adquirente', 'Bandeira', 'Produto', 'NSU', 'CNPJ', 'Código da Venda', 'Código da Autorização', 'Número PV', 'Valor Bruto', 'Valor Líquido', 'Taxa', 'Data da Venda', 'Hora da Venda', 'Data do Crédito', 'Qtd Parcelas'];
         const rows = tableData.map(rowData => [rowData.adquirente, rowData.bandeira, rowData.produto, rowData.nsu, rowData.cnpj, rowData.codigoVenda, rowData.codigoAutorizacao, rowData.numeroPV, rowData.valorBruto, rowData.valorLiquido, rowData.taxa, rowData.dataVenda, rowData.horaVenda, rowData.dataCredito, rowData.parcelas]);
     
+        if (!tableData || tableData.length === 0) {
+          alert('No data to export.')
+          return
+        }
+
         const doc = new jsPDF({
         orientation: 'landscape',
         unit: 'mm',

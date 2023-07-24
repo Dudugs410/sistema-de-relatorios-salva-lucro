@@ -1,12 +1,14 @@
 import Calendar from "react-calendar"
 import './recebimentos.css'
+import { useState } from "react"
+import BuscarClienteRecebimentos from "../../components/BuscarClienteRecebimentos"
 
 const Recebiveis = () =>{
 
-    const dataBusca = 0
+    const [dataBusca, setDataBusca] = useState(new Date())
 
-    function handleDateChange(){
-
+    function handleDateChange(date){
+      setDataBusca(date)
     }
 
     function MyCalendar() {
@@ -15,6 +17,7 @@ const Recebiveis = () =>{
             <Calendar
               onChange={ handleDateChange }
               value={ dataBusca }
+              onClick={ console.log(dataBusca) }
             />
           </div>
         )
@@ -25,6 +28,7 @@ const Recebiveis = () =>{
         <div className='appPage'>
             <div>
                 <h1 className='recebimentos-title'>Calendário de Recebimentos</h1>
+
             </div>
             <MyCalendar/> 
         </div>

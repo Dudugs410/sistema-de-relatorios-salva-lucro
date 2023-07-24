@@ -11,16 +11,17 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import './reactdatepicker.css'
 
-const BuscarClienteData = () => {
-    const [banSelecionada, setBanSelecionada] = useState('')
+const BuscarClienteRecebimentos = () => {
+    const [bancoSelecionado, setBancoSelecionado] = useState('')
     const [gruSelecionado, setGruSelecionado] = useState('')
     const [adqSelecionada, setAdqSelecionada] = useState('')
     const [listaClientes, setListaClientes] = useState('')
+    const [bancoBusca, setBancoBusca] = useState('')
 
     const [buscou, setBuscou] = useState(false)
 
     const { cnpj, vendas, setLoading, loadVendas, bandeiras, grupos, adquirentes } = useContext(AuthContext)
-    const { detalhes, setDetalhes, setShowAdmin, dataBusca, cnpjBusca, setCnpjBusca, banBusca, setBanBusca, adqBusca, setAdqBusca, setTotalDebito, setTotalCredito, setTotalVoucher, setTotalLiquido, gerarDados, tableData} = useContext(VendasContext)
+    const { detalhes, setDetalhes, setShowAdmin, dataBusca, cnpjBusca, setCnpjBusca, adqBusca, setAdqBusca, setTotalDebito, setTotalCredito, setTotalVoucher, setTotalLiquido, gerarDados, tableData} = useContext(VendasContext)
     
     useEffect(()=>{
         console.log('Detalhes: ',detalhes)
@@ -48,7 +49,7 @@ const BuscarClienteData = () => {
 
     async function buscar() {
         console.log('buscar()')
-        await loadVendas(dataBusca, cnpjBusca, adqBusca, banBusca)
+        await loadVendas(dataBusca, cnpjBusca, adqBusca, bancoBusca)
         .then(() =>{
             if(dataBusca === '' || cnpjBusca === ''){
                 return 0
@@ -83,8 +84,8 @@ const BuscarClienteData = () => {
       },[gruSelecionado])
 
       useEffect(()=>{
-        setBanBusca(banSelecionada)
-      },[banSelecionada])
+        setBancoBusca(bancoSelecionado)
+      },[bancoSelecionado])
 
       useEffect(()=>{
         setAdqBusca(adqSelecionada)
@@ -102,7 +103,7 @@ const BuscarClienteData = () => {
         console.log('voltar:')
         console.log(cnpj)
         console.log(adqBusca)
-        console.log(banBusca)
+        console.log(bancoBusca)
       }
 
     return(
@@ -145,14 +146,14 @@ theme="light"
                         <div className='select-card'>
                             <span>Bandeira</span>
                             { detalhes ? 
-                                <select disabled className='select-disabled' id='bandeira' value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}}>
+                                <select disabled className='select-disabled' id='bandeira' value={bancoSelecionado} onChange={(e) => {setBancoSelecionado(e.target.value)}}>
                                     <option value='' selected>Todas</option>
                                     {bandeiras.map((BAN)=>(
                                         <option key={BAN.codigoBandeira} value = {BAN.codigoBandeira}>{BAN.descricaoBandeira}</option>
                                     ))}
                                 </select>  
                             :
-                                <select id='bandeira' value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}}>
+                                <select id='bandeira' value={bancoSelecionado} onChange={(e) => {setBancoSelecionado(e.target.value)}}>
                                     <option value='' selected>Todas</option>
                                     {bandeiras.map((BAN)=>(
                                         <option key={BAN.codigoBandeira} value = {BAN.codigoBandeira}>{BAN.descricaoBandeira}</option>
@@ -170,4 +171,4 @@ theme="light"
     )
 }
 
-export default BuscarClienteData
+export default BuscarClienteRecebimentos
