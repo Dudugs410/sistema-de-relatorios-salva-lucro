@@ -48,10 +48,10 @@ theme="light"
                     <div className='date-column'>
                         <div className='select-card'>
                             <span>Grupo de Clientes</span>
-                            <select id='grupo' value={gruSelecionado} onChange={(e) => {setGruSelecionado(e.target.value)}}>
-                                <option defaultValue=''>selecione</option>
+                            <select id='grupo' value={gruSelecionado} onChange={(e) => {setGruSelecionado(e.target.value.cod)}}>
+                                { !gruSelecionado ? <option defaultValue=''>selecione</option> : <option defaultValue='gruSelecionado'>{gruSelecionado.nome}</option>}
                                 {grupos.map((GRU)=>(
-                                    <option key={GRU.CODIGOGRUPO} value={GRU.CODIGOGRUPO} >{GRU.NOMEGRUPO}</option>
+                                    <option key={GRU.CODIGOGRUPO} value={ {cod :GRU.CODIGOGRUPO, nome: GRU.NOMECLIENTE} } >{GRU.NOMEGRUPO}</option>
                                 ))}
                             </select>
                         </div>
