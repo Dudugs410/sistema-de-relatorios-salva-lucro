@@ -90,6 +90,36 @@ function AuthProvider({ children }){
     setLoading(false)
     console.log('************fim submitLogin()************')
   }
+
+  /////Fake Login
+
+  async function submitFake(){
+        Cookies.set('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJTYWx2YWx1Y3JvU2VydmljZUFjZXNzVG9rZW4iLCJqdGkiOiJkZjM2ZTYzZS0wM2E5LTRjNjAtYmY1OS1mNzQ0MjY5ZDdjZWEiLCJpYXQiOiIyNC8wNy8yMDIzIDE0OjE1OjI2IiwiaWQiOiIxNjc1NjEiLCJsb2dpbiI6IkVEVUFSRE8iLCJleHAiOjE2OTAyMTUzMjYsImlzcyI6IlNhbHZhbHVyb0F1dGhlbnRpY2F0aW9uU2VydmVyIiwiYXVkIjoiU2FsdmFsdWNyb1NlcnZpY2VDbGllbnQifQ.OjtzMMsa_HhwGfZtLMbQiloQGiVBTry2htC0TMJpoLA')
+        Cookies.set('refreshToken', 'x21ncF6qmi8oWoHOwOdMvUNjjFA48HYqyXsUqvT2sik=')
+        setAccessToken(Cookies.get('token'))
+        setRefreshToken(Cookies.get('refreshToken'))
+
+        sessionStorage.setItem('isSignedIn', true)
+        sessionStorage.setItem('isSignedIn', true);
+        sessionStorage.setItem('userData', JSON.stringify({
+          "CODIGO": 167561,
+          "GRUCODIGO": 5,
+          "SEDCODIGO": 0,
+          "NOME": "EDUARDO GUERREIRO",
+          "EMAIL": "eduardo@salvalucro.com.br",
+          "LOGIN": "EDUARDO",
+          "SENHA": "227d3332126e730442d8e6596424786f",
+          "NECESSITATROCASENHA": false,
+          "CONTABLOQUEADA": false,
+          "USUARIOINSERCAO": 164385,
+          "DATAINSERCAO": "2022-10-11T09:02:25.18",
+          "USUARIOMODIFICACAO": 167561,
+          "DATAMODIFICACAO": "2022-10-11T09:05:13.707",
+          "ATIVO": true
+      }))
+    setIsSignedIn(true)
+    console.log('************fim submitLogin()************')
+  }
   
   /////desloga usuário
   function logout(){
@@ -403,7 +433,8 @@ function AuthProvider({ children }){
         setBuscou,
         loadPeriodo,
         modalCliente,
-        setModalCliente
+        setModalCliente,
+        submitFake,
       }}
     >
       {children}

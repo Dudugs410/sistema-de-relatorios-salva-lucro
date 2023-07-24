@@ -10,7 +10,7 @@ import { useContext } from "react"
 import LoadingModal from "../../components/LoadingModal"
 
 const Login = () => {
-    const {submitLogin, loading, isSignedIn, setAccessToken} = useContext(AuthContext)
+    const {submitLogin, loading, isSignedIn, setAccessToken, submitFake} = useContext(AuthContext)
     const navigate = useNavigate()
 
     const [login, setLogin] = useState('')
@@ -47,6 +47,7 @@ const Login = () => {
                         { !loading ? <button type='submit' className='btn btn-primary'>Login</button> : <button type='submit' className='btn btn-primary' disabled>Carregando...</button>}
                         <Link className='pw'>esqueci minha senha</Link>
                     </div>
+                    <button className='btn btn-secondary'>Fake Login</button>
                 </form>
             </div>
             
