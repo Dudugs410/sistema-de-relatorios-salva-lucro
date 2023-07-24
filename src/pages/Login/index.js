@@ -47,7 +47,7 @@ const Login = () => {
                         { !loading ? <button type='submit' className='btn btn-primary'>Login</button> : <button type='submit' className='btn btn-primary' disabled>Carregando...</button>}
                         <Link className='pw'>esqueci minha senha</Link>
                     </div>
-                    <button className='btn btn-secondary' onClick={submitFake}>Fake Login</button>
+                    <button className='btn btn-secondary' onClick={submitFake}>Login Teste</button>
                 </form>
             </div>
             
