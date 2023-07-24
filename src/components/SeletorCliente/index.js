@@ -74,10 +74,6 @@ theme="light"
                     </div>
                 </form>
             </div>
-
-            { grupos.length === 0 && (
-                <span>Carregando Grupos...</span>
-            )}
         </>
     )
 }

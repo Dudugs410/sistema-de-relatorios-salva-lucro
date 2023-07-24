@@ -94,8 +94,8 @@ function AuthProvider({ children }){
   /////Fake Login
 
   async function submitFake(){
-        Cookies.set('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJTYWx2YWx1Y3JvU2VydmljZUFjZXNzVG9rZW4iLCJqdGkiOiJkZjM2ZTYzZS0wM2E5LTRjNjAtYmY1OS1mNzQ0MjY5ZDdjZWEiLCJpYXQiOiIyNC8wNy8yMDIzIDE0OjE1OjI2IiwiaWQiOiIxNjc1NjEiLCJsb2dpbiI6IkVEVUFSRE8iLCJleHAiOjE2OTAyMTUzMjYsImlzcyI6IlNhbHZhbHVyb0F1dGhlbnRpY2F0aW9uU2VydmVyIiwiYXVkIjoiU2FsdmFsdWNyb1NlcnZpY2VDbGllbnQifQ.OjtzMMsa_HhwGfZtLMbQiloQGiVBTry2htC0TMJpoLA')
-        Cookies.set('refreshToken', 'x21ncF6qmi8oWoHOwOdMvUNjjFA48HYqyXsUqvT2sik=')
+        Cookies.set('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJTYWx2YWx1Y3JvU2VydmljZUFjZXNzVG9rZW4iLCJqdGkiOiJkY2M0MmU1YS1kNDViLTRmMWEtOTYxOC04MmU4ODQ3MGRhODgiLCJpYXQiOiIyNC8wNy8yMDIzIDE2OjE5OjUyIiwiaWQiOiIxNjc1NjEiLCJsb2dpbiI6IkVEVUFSRE8iLCJleHAiOjE2OTAyMjI3OTIsImlzcyI6IlNhbHZhbHVyb0F1dGhlbnRpY2F0aW9uU2VydmVyIiwiYXVkIjoiU2FsdmFsdWNyb1NlcnZpY2VDbGllbnQifQ.W3goWe_mcnWIqVh5Kv62G21RioI99_T7u9SFVx-Eqzw')
+        Cookies.set('refreshToken', '2023-07-31T13:19:52.8816462-03:00')
         setAccessToken(Cookies.get('token'))
         setRefreshToken(Cookies.get('refreshToken'))
 
@@ -118,6 +118,7 @@ function AuthProvider({ children }){
           "ATIVO": true
       }))
     setIsSignedIn(true)
+    setCnpj('03953552000102')
     console.log('************fim submitLogin()************')
     navigate('/dashboard')
   }

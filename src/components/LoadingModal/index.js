@@ -2,6 +2,7 @@ import React from "react"
 import './loadingModal.css'
 
 const LoadingModal = () => {
+
     return(
         <>
             <div className="loadingModal">
