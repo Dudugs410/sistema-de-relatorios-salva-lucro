@@ -119,6 +119,7 @@ function AuthProvider({ children }){
       }))
     setIsSignedIn(true)
     console.log('************fim submitLogin()************')
+    navigate('/dashboard')
   }
   
   /////desloga usuário
