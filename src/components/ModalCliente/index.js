@@ -7,7 +7,8 @@ import LoadingModal from "../LoadingModal"
 
 const ModalCliente = () => {
     const{grupos, 
-        loadGrupos, 
+        loadGrupos,
+        cnpj, 
         setCnpj, 
         loading, 
         setModalCliente, 
@@ -41,6 +42,10 @@ const ModalCliente = () => {
         setCnpj(cliente)
         setModalCliente(false)
     }
+
+    useEffect(()=>{
+        sessionStorage.setItem('cnpj', cnpj)
+      },[cnpj])
     
     return(
         <>

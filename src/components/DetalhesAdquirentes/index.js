@@ -23,14 +23,14 @@ export default function DetalhesAdquirentes(adquirentes) {
                         </tr>
                     </thead>
                     <tbody>
-                        {adquirentes.adquirentes.map((adm) => {
+                        {adquirentes &&(adquirentes.adquirentes.map((adm) => {
                             return (
                                 <tr key={adm.id}>
                                     <td className='det-td' data-label="Adquirente">{adm.nomeAdquirente}</td>
                                     <td className='det-td' data-label="Total">R$ {`${adm.total.toFixed(2).toString().replace('.', ',')}`}</td>
                                 </tr>
                             )
-                        })}
+                        }))}
                     </tbody>
                 </table>
                 <button className='btn btn-primary' onClick={handleVoltar}>Voltar</button>

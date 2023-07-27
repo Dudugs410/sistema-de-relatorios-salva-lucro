@@ -7,8 +7,7 @@ import { VendasContext } from "../../pages/Vendas"
 import { toast } from 'react-toastify';
 import { ToastContainer } from 'react-toastify'
 
-import 'react-toastify/dist/ReactToastify.css';
-
+import 'react-toastify/dist/ReactToastify.css'
 import './reactdatepicker.css'
 
 const BuscarClienteData = () => {
@@ -19,12 +18,47 @@ const BuscarClienteData = () => {
 
     const [buscou, setBuscou] = useState(false)
 
-    const { cnpj, vendas, setLoading, loadVendas, bandeiras, grupos, adquirentes } = useContext(AuthContext)
-    const { detalhes, setDetalhes, setShowAdmin, dataBusca, cnpjBusca, setCnpjBusca, banBusca, setBanBusca, adqBusca, setAdqBusca, setTotalDebito, setTotalCredito, setTotalVoucher, setTotalLiquido, gerarDados, tableData} = useContext(VendasContext)
+    const { 
+        cnpj, 
+        vendas, 
+        setLoading, 
+        loadVendas, 
+        bandeiras, 
+        grupos, 
+        adquirentes,
+        dateConvertSearch,
+    } = useContext(AuthContext)
+
+    const { 
+        detalhes, 
+        setDetalhes, 
+        setShowAdmin, 
+        dataBusca, 
+        cnpjBusca, 
+        setCnpjBusca, 
+        banBusca, 
+        setBanBusca, 
+        adqBusca, 
+        setAdqBusca, 
+        setTotalDebito, 
+        setTotalCredito, 
+        setTotalVoucher, 
+        setTotalLiquido, 
+        gerarDados, 
+        tableData,
+    } = useContext(VendasContext)
     
     useEffect(()=>{
         console.log('Detalhes: ',detalhes)
     },[detalhes])
+
+    useEffect(()=>{
+        sessionStorage.setItem('cnpj', cnpj)
+      },[cnpj])
+    
+    useEffect(()=>{
+        setCnpjBusca(sessionStorage.getItem('cnpj'))
+    },[])
 
     function alerta(text){
         toast.info(text, {
@@ -54,10 +88,9 @@ const BuscarClienteData = () => {
                 return 0
             }
             else{
-                alerta(`executou a busca do dia ${dataBusca}`)
+                alerta(`executou a busca do dia ${dateConvertSearch(dataBusca)}`)
                 setBuscou(true)
-            }
-            
+            }    
         })
         setLoading(false)
       }
@@ -100,9 +133,9 @@ const BuscarClienteData = () => {
         setTotalVoucher(0.00)
 
         console.log('voltar:')
-        console.log(cnpj)
-        console.log(adqBusca)
-        console.log(banBusca)
+        console.log('cnpj: ', cnpj)
+        console.log('adquirente: ',adqBusca)
+        console.log('bandeira: ', banBusca)
       }
 
     return(

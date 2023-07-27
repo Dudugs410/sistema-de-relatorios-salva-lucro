@@ -35,6 +35,9 @@ function AuthProvider({ children }){
   const [clientes, setClientes] = useState([])
   const [adquirentes, setAdquirentes] = useState([])
 
+  const [gruSelecionado, setGruSelecionado] = useState('')
+  const [listaClientes, setListaClientes] = useState('')
+
   const [modalCliente, setModalCliente] = useState(true)
 
   const [buscou, setBuscou] = useState(false)
@@ -43,7 +46,6 @@ function AuthProvider({ children }){
 
   useEffect(() =>{
     setDataInicial(new Date())
-    console.log('auth.js')
     setAccessToken('')
   },[])
 
@@ -66,11 +68,11 @@ function AuthProvider({ children }){
           const userMatch = userList.find((user) => user.LOGIN === login && user.SENHA === md5(password))
         
           if (userMatch) {
-            console.log('User found:', userMatch);
             sessionStorage.setItem('isSignedIn', true);
             sessionStorage.setItem('userData', JSON.stringify(userMatch))
             localStorage.setItem('isSignedIn', true)
             setIsSignedIn(true)
+            setCnpj(null)
           } else {
             console.log('User not found')
           }
@@ -340,6 +342,138 @@ function AuthProvider({ children }){
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+   //Consulta de vendas, com intervalo de datas
+
+   async function retornaVendasPeriodo(datainicial, datafinal, cnpj, adquirente, bandeira){
+    setLoading(true);
+    if((dataInicial === '' || undefined) || (cnpj === '' || undefined)){
+      alert('Favor selecionar uma data e cliente válidos')
+      return 0
+    }
+
+    setLoading(true)
+    let params = {}
+
+    if(((adquirente !== '') && (bandeira !== '')) && (buscou === false)){
+      console.log('adquirente e bandeira')
+      params = {
+        dataInicial: dataInicial,
+        datafinal: dataFinal,
+        cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+        adquirente: adquirente,
+        bandeira: bandeira,
+      }
+      setBuscou(true)
+    }
+
+    else if(((adquirente !== '') && (bandeira === '')) && (buscou === false)){
+      console.log('adquirente sem bandeira')
+      params = {
+        datainicial: dataInicial,
+        datafinal: dataFinal,
+        cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+        adquirente: adquirente,
+      }
+      setBuscou(true)
+    }
+
+    else if(((bandeira !== '') && (adquirente === '')) && (buscou === false)){
+      console.log('bandeira sem adquirente')
+      params = {
+        datainicial: dataInicial,
+        datafinal: dataFinal,
+        cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+        bandeira: bandeira,
+      }
+      setBuscou(true)
+    }
+
+    else{
+      params = {
+        datainicial: dataInicial,
+        datafinal: dataFinal,
+        cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+      }
+    }
+    
+      let config = {
+        headers: { 
+          'Content-Type': 'application/json', 
+          'Authorization': `Bearer ${Cookies.get('token')}`
+        },
+        params: params
+      }
+
+    await api.get('vendas', config)
+        .then((response) => {
+          setLoading(false)
+          setBuscou(false)
+          return(response.data.VENDAS)
+        })
+        .catch((error) => {
+        setLoading(false)
+        console.log('config: ',config)
+        console.log(error)
+        })
+}
+
+async function returnTotalMes(cnpj, data) {
+  setLoading(true);
+  let params = {
+    cnpj: cnpj,
+    data: data,
+  };
+
+  let config = {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${Cookies.get('token')}`,
+    },
+    params: params,
+  };
+
+  try {
+    const response = await api.get('vendastotais', config);
+    setLoading(false);
+    return response.data;
+  } catch (error) {
+    setLoading(false);
+    console.log('API Call Error:', error);
+    throw error; // Rethrow the error to propagate it
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+async function retornaRecebimentos(cnpj, datainicial, datafinal){
+  setLoading(true);
+  let params = {
+    cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+    dataInicial: dateConvert(datainicial),
+    dataFinal: dateConvert(datafinal),
+  }
+
+  let config = {
+    headers: { 
+      'Content-Type': 'application/json', 
+      'Authorization': `Bearer ${Cookies.get('token')}`
+    },
+    params: params
+  }
+
+  try {
+    const response = await api.get('recebimentos', config)
+    const recebimentosData = response.data
+    setLoading(false)
+      return recebimentosData
+  } catch (error) {
+    console.log(error)
+    setLoading(false)
+  }
+}
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     //refresh
 
     async function refresh(){
@@ -437,6 +571,13 @@ function AuthProvider({ children }){
         modalCliente,
         setModalCliente,
         submitFake,
+        retornaVendasPeriodo,
+        retornaRecebimentos,
+        returnTotalMes,
+        gruSelecionado,
+        setGruSelecionado,
+        listaClientes, 
+        setListaClientes
       }}
     >
       {children}

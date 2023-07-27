@@ -9,10 +9,7 @@ import LoadingModal from '../LoadingModal'
 import 'react-toastify/dist/ReactToastify.css';
 
 const SeletorCliente = () => {
-    const { loading } = useContext(AuthContext)
-
-    const [gruSelecionado, setGruSelecionado] = useState('')
-    const [listaClientes, setListaClientes] = useState('')
+    const { loading, gruSelecionado, setGruSelecionado, listaClientes, setListaClientes } = useContext(AuthContext)
 
     const [loadClientes, setLoadClientes] = useState(loading)
 
@@ -25,9 +22,8 @@ const SeletorCliente = () => {
       },[gruSelecionado])
 
       useEffect(()=>{
-        console.log(grupos.length)
-      },[grupos])
-
+        sessionStorage.setItem('cnpj', cnpj)
+      },[cnpj])
 
     return(
         <>
@@ -48,10 +44,10 @@ theme="light"
                     <div className='date-column'>
                         <div className='select-card'>
                             <span>Grupo de Clientes</span>
-                            <select id='grupo' value={gruSelecionado} onChange={(e) => {setGruSelecionado(e.target.value.cod)}}>
+                            <select id='grupo' value={gruSelecionado} onChange={(e) => {setGruSelecionado(e.target.value)}}>
                                 { !gruSelecionado ? <option defaultValue=''>selecione</option> : <option defaultValue='gruSelecionado'>{gruSelecionado.nome}</option>}
                                 {grupos.map((GRU)=>(
-                                    <option key={GRU.CODIGOGRUPO} value={ {cod :GRU.CODIGOGRUPO, nome: GRU.NOMECLIENTE} } >{GRU.NOMEGRUPO}</option>
+                                    <option key={GRU.CODIGOGRUPO} value={GRU.CODIGOGRUPO} >{GRU.NOMEGRUPO}</option>
                                 ))}
                             </select>
                         </div>

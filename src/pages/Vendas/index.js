@@ -12,11 +12,11 @@ import './vendas.css'
 import './Calendar.css'
 import { AuthContext } from '../../contexts/auth'
 
-export const VendasContext = createContext({})
+export let VendasContext = createContext({})
 
-const Vendas = () =>{
+let Vendas = () =>{
   
-  const {
+  let {
     cnpj,
     bandeiras, 
     loadBandeiras,
@@ -26,29 +26,33 @@ const Vendas = () =>{
     loadAdquirentes,
     vendas,
     dateConvert,
-    dateConvertSearch
+    dateConvertSearch,
+    returnTotalMes,
   } = useContext(AuthContext)
 
-  const [totalCredito, setTotalCredito] = useState(0.00)
-  const [totalDebito, setTotalDebito] = useState(0.00)
-  const [totalVoucher, setTotalVoucher] = useState(0.00)
-  const [totalLiquido, setTotalLiquido] = useState(0.00)
+  let [totalCredito, setTotalCredito] = useState(0.00)
+  let [totalDebito, setTotalDebito] = useState(0.00)
+  let [totalVoucher, setTotalVoucher] = useState(0.00)
+  let [totalLiquido, setTotalLiquido] = useState(0.00)
 
-  const [detalhes, setDetalhes] = useState(false)
-  const [showAdmin, setShowAdmin] = useState(false)
+  let [detalhes, setDetalhes] = useState(false)
+  let [showAdmin, setShowAdmin] = useState(false)
 
-  const [dataBusca, setDataBusca] = useState('')
+  let [dataBusca, setDataBusca] = useState('')
 
   // possivelmente utilizar estes parametros para realizar busca por período
 
-  const [dataBusca1, setDataBusca1] = useState('')
-  const [dataBusca2, setDataBusca2] = useState('')
+  let [dataBusca1, setDataBusca1] = useState('')
+  let [dataBusca2, setDataBusca2] = useState('')
 
-  const [cnpjBusca, setCnpjBusca] = useState(cnpj)
-  const [banBusca, setBanBusca] = useState('')
-  const [adqBusca, setAdqBusca] = useState('')
+  let [cnpjBusca, setCnpjBusca] = useState(cnpj)
+  let [banBusca, setBanBusca] = useState('')
+  let [adqBusca, setAdqBusca] = useState('')
 
-  const tableData = []
+  const [vendasTotais, setVendasTotais] = useState([])
+  
+
+  let tableData = []
 
     async function gerarDados() {
         tableData.length = 0
@@ -97,6 +101,47 @@ const Vendas = () =>{
   },[])
 
   useEffect(()=>{
+    let dataInicial = new Date()
+    dataInicial.setDate(1)
+    let currentDate = new Date();
+    let nextMonthFirstDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
+    let dataFinal = new Date(nextMonthFirstDay.getTime() - 1);
+
+    console.log('dataInicial: ', dataInicial, 'dataFinal: ', dataFinal)
+
+    async function loadTotais(){
+      let totais = [] 
+      let dataAtual = new Date()
+      console.log('dataAtual', dataAtual)
+      dataAtual.setDate(1)
+      console.log('dataAtual após setDate(1)',dataAtual)
+      let i = dataAtual
+      console.log('i: ', i)
+
+      let resp = []
+      
+
+      for(i; i<= dataFinal; i.setDate(i.getDate() + 1)){
+        console.log('FOR i: ', i)
+        
+        await returnTotalMes(cnpjBusca, i)
+        .then((response) => {
+          let obj = (response)
+          resp.push(obj)
+        })
+      }
+      setVendasTotais(resp)
+    }
+    loadTotais()
+  },[])
+
+  
+
+  useEffect(()=>{
+    console.log(vendasTotais)
+  },[vendasTotais])
+
+  useEffect(()=>{
     gerarDados()
   },[vendas])
 
@@ -109,11 +154,13 @@ const Vendas = () =>{
   }
 
   function MyCalendar() {
+
     return (
       <div>
         <Calendar
           onChange={ handleDateChange }
           value={ dataBusca }
+          //tileContent={}
         />
       </div>
     )

@@ -82,7 +82,6 @@ const Dashboard = () => {
     }
 
     useEffect(()=>{
-        console.log('CNPJ', cnpj)
         zerarValores()        
             if(cnpj && (cnpj !== '')){
                 async function inicializarVendas(){
@@ -272,19 +271,45 @@ const Dashboard = () => {
 
   return(
     <>
-        { modalCliente ? <ModalCliente/> : 
-        <>
-            { loading ? <LoadingModal/> : <div className='appPage'>
-                <div className='content-area dash'>
-                    <div className='data-group-area'>
-                        
-                        <div className='graph-data'>
-                            <h1 className='title-chart'>Vendas:</h1>
-                            <PieChart data01 = {dadosVendas}/>
-                        </div>
+        { modalCliente && ( <ModalCliente/> ) }
+        { loading && (<LoadingModal/>) } 
+        <div className='appPage'>
+            <div className='content-area dash'>
+                <div className='data-group-area'>
                     
-                        <div className='table-data'>
-                            <table className="table dash-table">
+                    <div className='graph-data'>
+                        <h1 className='title-chart'>Vendas:</h1>
+                        <PieChart data01 = {dadosVendas}/>
+                    </div>
+                
+                    <div className='table-data'>
+                        <table className="table dash-table">
+                            <thead className='dash-thead'>
+                                <tr className='dash-tr'>
+                                    <th className='dash-th' scope="col">Débito</th>
+                                    <th className='dash-th' scope="col">Crédito</th>
+                                    <th className='dash-th' scope="col">Voucher</th>
+                                </tr>
+                            </thead>
+                            <tbody className='dash-tbody'>
+                                <tr className='dash-tr'>
+                                    <td className='cell-text dash-td' data-label="Débito">R$ {debito.toFixed(2).replace('.',',')}</td>
+                                    <td className='cell-text dash-td' data-label="Crédito">R$ {credito.toFixed(2).replace('.',',')}</td>
+                                    <td className='cell-text dash-td' data-label="Voucher">R$ {voucher.toFixed(2).replace('.',',')}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div className='data-group-area'>
+                    <div className='graph-data'>
+                        <h1 className='title-chart'>Créditos:</h1>
+                        <PieChart data01 = {dadosRecebimentos}/>
+                    </div>
+                    
+                    <div className='table-data'>
+                        <table className="table dash-table">
                                 <thead className='dash-thead'>
                                     <tr className='dash-tr'>
                                         <th className='dash-th' scope="col">Débito</th>
@@ -294,44 +319,16 @@ const Dashboard = () => {
                                 </thead>
                                 <tbody className='dash-tbody'>
                                     <tr className='dash-tr'>
-                                        <td className='cell-text dash-td' data-label="Débito">R$ {debito.toFixed(2).replace('.',',')}</td>
-                                        <td className='cell-text dash-td' data-label="Crédito">R$ {credito.toFixed(2).replace('.',',')}</td>
-                                        <td className='cell-text dash-td' data-label="Voucher">R$ {voucher.toFixed(2).replace('.',',')}</td>
+                                    <td className='cell-text dash-td' data-label="Débito">R$ {recebimentoDebito.toFixed(2).replace('.',',')}</td>
+                                    <td className='cell-text dash-td' data-label="Crédito">R$ {recebimentoCredito.toFixed(2).replace('.',',')}</td>
+                                    <td className='cell-text dash-td' data-label="Voucher">R$ {recebimentoVoucher.toFixed(2).replace('.',',')}</td>
                                     </tr>
                                 </tbody>
-                            </table>
-                        </div>
+                        </table>
                     </div>
-                    
-                    <div className='data-group-area'>
-                        <div className='graph-data'>
-                            <h1 className='title-chart'>Recebimentos:</h1>
-                            <PieChart data01 = {dadosRecebimentos}/>
-                        </div>
-                        
-                        <div className='table-data'>
-                            <table className="table dash-table">
-                                    <thead className='dash-thead'>
-                                        <tr className='dash-tr'>
-                                            <th className='dash-th' scope="col">Débito</th>
-                                            <th className='dash-th' scope="col">Crédito</th>
-                                            <th className='dash-th' scope="col">Voucher</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className='dash-tbody'>
-                                        <tr className='dash-tr'>
-                                        <td className='cell-text dash-td' data-label="Débito">R$ {recebimentoDebito.toFixed(2).replace('.',',')}</td>
-                                        <td className='cell-text dash-td' data-label="Crédito">R$ {recebimentoCredito.toFixed(2).replace('.',',')}</td>
-                                        <td className='cell-text dash-td' data-label="Voucher">R$ {recebimentoVoucher.toFixed(2).replace('.',',')}</td>
-                                        </tr>
-                                    </tbody>
-                            </table>
-                        </div>
-                    </div>            
-                </div>
-            </div> }
-        </>}
-        
+                </div>            
+            </div>
+        </div> 
     </>  
   )  
 }
