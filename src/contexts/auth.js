@@ -357,8 +357,8 @@ function AuthProvider({ children }){
     if(((adquirente !== '') && (bandeira !== '')) && (buscou === false)){
       console.log('adquirente e bandeira')
       params = {
-        dataInicial: dataInicial,
-        datafinal: dataFinal,
+        datainicial: datainicial,
+        datafinal: datafinal,
         cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
         adquirente: adquirente,
         bandeira: bandeira,
@@ -369,8 +369,8 @@ function AuthProvider({ children }){
     else if(((adquirente !== '') && (bandeira === '')) && (buscou === false)){
       console.log('adquirente sem bandeira')
       params = {
-        datainicial: dataInicial,
-        datafinal: dataFinal,
+        datainicial: datainicial,
+        datafinal: datafinal,
         cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
         adquirente: adquirente,
       }
@@ -380,8 +380,8 @@ function AuthProvider({ children }){
     else if(((bandeira !== '') && (adquirente === '')) && (buscou === false)){
       console.log('bandeira sem adquirente')
       params = {
-        datainicial: dataInicial,
-        datafinal: dataFinal,
+        datainicial: datainicial,
+        datafinal: datafinal,
         cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
         bandeira: bandeira,
       }
@@ -390,8 +390,8 @@ function AuthProvider({ children }){
 
     else{
       params = {
-        datainicial: dataInicial,
-        datafinal: dataFinal,
+        datainicial: datainicial,
+        datafinal: datafinal,
         cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
       }
     }
@@ -418,7 +418,7 @@ function AuthProvider({ children }){
 }
 
 async function returnTotalMes(cnpj, data) {
-  setLoading(true);
+  setLoading(true)
   let params = {
     cnpj: cnpj,
     data: data,
@@ -434,12 +434,11 @@ async function returnTotalMes(cnpj, data) {
 
   try {
     const response = await api.get('vendastotais', config);
-    setLoading(false);
-    return response.data;
+    setLoading(false)
+    return response.data
   } catch (error) {
-    setLoading(false);
-    console.log('API Call Error:', error);
-    throw error; // Rethrow the error to propagate it
+    setLoading(false)
+    console.log(error)
   }
 }
 

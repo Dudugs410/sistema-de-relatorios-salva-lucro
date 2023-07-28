@@ -80,7 +80,109 @@ const Dashboard = () => {
         setRecebimentoDebito(0)
         setRecebimentoVoucher(0)
     }
+/////////////////////////////////////////////////////////////////////////////////////////////
 
+//novos dados Dashboard
+
+//vendas dos últimos 4 dias - ok
+
+    const [vendas4dias, setVendas4dias] = useState([])
+
+    function convert(date, index){
+
+        const newDate = new Date(date)
+        newDate.setDate(newDate.getDate() + index)
+
+        const year = newDate.getFullYear()
+        const month = String(newDate.getMonth() + 1).padStart(2, '0')
+        const day = String(newDate.getDate()).padStart(2, '0')
+
+        const convertedDate = `${year}-${month}-${day}`
+        return convertedDate
+    }
+
+    useEffect(()=>{
+        let temp = []
+        async function init(){
+            for(let i = 0; i <= 4; i++){
+                let dataAtual = new Date()
+                dataAtual.setDate(dataAtual.getDate() - 4)
+                dataAtual = convert(dataAtual, i)
+                console.log(dataAtual)
+                await vendasDash.map((venda) => {
+                    if(venda.dataVenda === dataAtual){
+                        console.log(venda.dataVenda, dataAtual)
+                        let obj = {
+                            dataVenda: venda.dataVenda,
+                            valorLiquido: venda.valorLiquido,
+                            administradora: venda.adquirente.nomeAdquirente
+                        }
+                        temp.push(obj)
+                    }
+                })
+            }
+        }
+        init()
+        setVendas4dias(temp)
+    },[vendasDash])
+//
+
+// Vendas dos últimos 4 dias, quebradas por administradora
+const [adm4dias, setAdm4dias] = useState([])
+useEffect(()=>{
+    let temp = []
+    console.log(vendas4dias)
+
+    vendas4dias.forEach(element => {
+        if(temp.length === 0){
+            let novoObjeto = { 
+                nomeAdquirente: element.administradora, 
+                total: element.valorLiquido,
+                id: 0,
+                vendas: []
+            }
+            temp.push(novoObjeto)
+        }else{
+            let novoObjeto = { 
+                nomeAdquirente: element.administradora, 
+                total: element.valorLiquido,
+                id: 0,
+                vendas: []
+            }
+            
+            if(!(temp.find((objeto) => objeto.nomeAdquirente === element.administradora))){
+                novoObjeto.id = (temp.length)
+                temp.push(novoObjeto)
+            }
+            else{
+                for(let i = 0; i < temp.length; i++){
+                    if(temp[i].nomeAdquirente === element.administradora){
+                        temp[i].total += element.valorLiquido
+                    }
+                }
+            }
+        }
+    })
+
+    temp.forEach(element =>{
+        let vendasTemp = []
+        vendas4dias.forEach(venda =>{
+            if(element.nomeAdquirente === venda.administradora)
+            {
+                vendasTemp.push(venda)
+            }
+        })
+        element.vendas = vendasTemp
+    })
+    console.log('vetor de adquirentes: ',temp)
+    setAdm4dias(temp)
+},[vendas4dias])
+
+useEffect(()=>{
+    console.log(adm4dias)
+},[adm4dias])
+
+/////////////////////////////////////////////////////////////////////////////////////////////
     useEffect(()=>{
         zerarValores()        
             if(cnpj && (cnpj !== '')){
@@ -276,12 +378,10 @@ const Dashboard = () => {
         <div className='appPage'>
             <div className='content-area dash'>
                 <div className='data-group-area'>
-                    
                     <div className='graph-data'>
                         <h1 className='title-chart'>Vendas:</h1>
                         <PieChart data01 = {dadosVendas}/>
                     </div>
-                
                     <div className='table-data'>
                         <table className="table dash-table">
                             <thead className='dash-thead'>
