@@ -6,7 +6,6 @@
   flex-direction: column;
   color:  #181c2e;
   background-color: #181c2ed8;
-  
 }
 
 .data-group-area{
@@ -37,8 +36,6 @@
   width: 100%;
   background-color: #181c2e;
   box-shadow:inset 0px 270px 0px 0px;
-
-
 }
 
 .table-data{
@@ -47,8 +44,23 @@
   padding-left: 10px;
   padding-right: 10px;
   background-color: #181c2e;
-  display: flex;
+  /* display: flex; */
   flex-direction: row;
+  flex-wrap: wrap;
+  overflow-y: auto
+}
+
+.tbody-sticky{
+  position: sticky;
+  top: 0;
+  background-color: #181c2e;
+}
+
+.dash-body-flex{
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-content: stretch;
 }
 
 .dash-table{
@@ -104,8 +116,11 @@
   flex-direction: column;
   justify-content: center;
   text-align: center;
-  /*background-color: rgba(0, 0, 0, 0.5);*/
+}
 
+.sticky-th{
+  position: sticky;
+  top: 0;
 }
 
 @media screen and (max-width: 832px){

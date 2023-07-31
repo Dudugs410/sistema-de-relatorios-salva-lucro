@@ -3,7 +3,7 @@
 import './dashboard.css'
 
 //////
-import Cookies from "js-cookie"
+import TabelaGenerica from '../../components/TabelaGenerica'
 //////
 import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "../../contexts/auth"
@@ -12,7 +12,6 @@ import LoadingModal from '../../components/LoadingModal'
 import ModalCliente from '../../components/ModalCliente'
 //////
 import PieChart from '../../components/00Teste'
-
 
 const Dashboard = () => {
     
@@ -90,6 +89,9 @@ const Dashboard = () => {
 //vendas dos últimos 4 dias - ok
 
     const [vendas4dias, setVendas4dias] = useState([])
+
+    const [total4diasTabela, setTotal4diasTabela] = useState(0.00)
+    const [totalMesTabela, setTotalMesTabela] = useState(0.00)
 
     function convert(date, index){
 
@@ -260,13 +262,26 @@ useEffect(()=>{
     const somaTotal4dias = (array) => {
         return array.reduce((sum, item) => sum + item.valorLiquido, 0);
     }
-
     setTotal4dias(somaTotal4dias(vendas4dias))
-
     console.log('total4Dias: ',total4dias)
-
 },[vendas4dias])
 
+//valores da tabela 
+
+useEffect(()=>{
+    if((total4dias !== null) && (total4dias !== undefined)){
+        setTotal4diasTabela(total4dias)
+        console.log('Total4diasTabela: ',total4diasTabela)
+    }
+},[total4dias])
+
+useEffect(()=>{
+    if((totalMes.valorLiquido !== null) && totalMes.valorLiquido !== undefined){
+        setTotalMesTabela(totalMes.valorLiquido)
+        console.log('TotalMes: ',totalMesTabela)
+    }
+
+},[totalMes])
 
 /////////////////////////////////////////////////////////////////////////////////////////////
     useEffect(()=>{
@@ -469,12 +484,14 @@ useEffect(()=>{
                         <PieChart data01 = {dadosVendas}/>
                     </div>
                     <div className='table-data'>
-                        <table className="table dash-table">
+                        <table className="table dash-table det-table dash-body-flex tbody-sticky">
                             <thead className='dash-thead'>
                                 <tr className='dash-tr'>
                                     <th className='dash-th' scope="col">Débito</th>
                                     <th className='dash-th' scope="col">Crédito</th>
                                     <th className='dash-th' scope="col">Voucher</th>
+                                    <th className='dash-th' scope="col">Total dos Últimos 4 dias</th>
+                                    <th className='dash-th' scope="col">Total do Mês</th>
                                 </tr>
                             </thead>
                             <tbody className='dash-tbody'>
@@ -482,27 +499,12 @@ useEffect(()=>{
                                     <td className='cell-text dash-td' data-label="Débito">R$ {debito.toFixed(2).replace('.',',')}</td>
                                     <td className='cell-text dash-td' data-label="Crédito">R$ {credito.toFixed(2).replace('.',',')}</td>
                                     <td className='cell-text dash-td' data-label="Voucher">R$ {voucher.toFixed(2).replace('.',',')}</td>
+                                    <td className='cell-text dash-td' data-label="Total dos Últimos 4 dias">R$ {total4diasTabela.toFixed(2).replace('.',',')}</td>
+                                    <td className='cell-text dash-td' data-label="Total do Mês">R$ {totalMesTabela.toFixed(2).replace('.',',')}</td>
                                 </tr>
                             </tbody>
                         </table>
-                        <table className="table table-striped det-table adm-table">
-                    <thead>
-                        <tr>
-                            <th className='det-td' data-label='Adquirente'>Adquirente</th>
-                            <th className='det-td' data-label='Total'>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {adm4dias.map((adm) => {
-                            return (
-                                <tr key={adm.id}>
-                                    <td className='det-td' data-label="Adquirente">{adm.nomeAdquirente}</td>
-                                    <td className='det-td' data-label="Total">R$ {`${adm.total.toFixed(2).toString().replace('.', ',')}`}</td>
-                                </tr>
-                            )
-                        })}
-                    </tbody>
-                </table>
+                        <TabelaGenerica Array={adm4dias}/>
                     </div>
                 </div>
                 
