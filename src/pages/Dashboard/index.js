@@ -26,7 +26,8 @@ const Dashboard = () => {
         cnpj, 
         dateConvertSearch, 
         dateConvertYYYYMMDD,
-        modalCliente, 
+        modalCliente,
+        returnTotalMes, 
     } = useContext(AuthContext)
 
     const vendasDias = []
@@ -57,6 +58,8 @@ const Dashboard = () => {
 
     const [dadosVendas, setDadosVendas] = useState({labels:[] , data:[]})
     const [dadosRecebimentos, setDadosRecebimentos] = useState({labels:[] , data:[]})
+
+    const [dadosVendas4dias, setDadosVendas4dias] = useState({labels:[], data:[]})
 
     function zerarValores(){
         somaValorLiquido = 0
@@ -127,8 +130,10 @@ const Dashboard = () => {
     },[vendasDash])
 //
 
-// Vendas dos últimos 4 dias, quebradas por administradora
+// Vendas dos últimos 4 dias, quebradas por administradora - ok
+
 const [adm4dias, setAdm4dias] = useState([])
+
 useEffect(()=>{
     let temp = []
     console.log(vendas4dias)
@@ -179,8 +184,89 @@ useEffect(()=>{
 },[vendas4dias])
 
 useEffect(()=>{
+    console.log(vendasDash)
     console.log(adm4dias)
 },[adm4dias])
+
+// total dos últimos 4 dias + total do mês
+
+const [arrayTotalMes, setArrayTotalMes] = useState([])
+const [totalMes, setTotalMes] = useState({})
+
+useEffect(()=>{
+    if(cnpj !== null){
+        let dataInicial = new Date()
+        dataInicial.setDate(1)
+        let currentDate = new Date();
+        let nextMonthFirstDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
+        let dataFinal = new Date(nextMonthFirstDay.getTime() - 1);
+    
+        async function loadTotais(){
+          let dataAtual = new Date()
+          dataAtual.setDate(1)
+          let i = dataAtual
+          let resp = []
+    
+          for(i; i<= dataFinal; i.setDate(i.getDate() + 1)){
+            
+            await returnTotalMes(cnpj, i)
+            .then((response) => {
+              let obj = (response)
+              resp.push(obj)
+            })
+          }
+          setArrayTotalMes(resp)
+        }
+        loadTotais()
+        console.log('arrayTotalMes: ', arrayTotalMes)
+    }
+  },[cnpj])
+
+useEffect(()=>{
+    if(cnpj !== null){
+        let temp = {
+            valorDescontos: 0,
+            valorLiquido: 0,
+            valorVendido: 0,
+        }
+        console.log(temp.valorDescontos, temp.valorLiquido, temp.valorVendido)
+        console.log('arrayTotalMes: ',arrayTotalMes)
+
+        const somaTotalDescontos = (array) => {
+            return array.reduce((sum, item) => sum + item.valordescontos, 0);
+          }
+        
+        const somaTotalLiquido = (array) => {
+            return array.reduce((sum, item) => sum + item.valorliquido, 0);
+        }
+
+        const somaTotalVendido = (array) => {
+            return array.reduce((sum, item) => sum + item.valorvendido, 0);
+        }
+
+        temp.valorDescontos = somaTotalDescontos(arrayTotalMes)
+        temp.valorLiquido = somaTotalLiquido(arrayTotalMes)
+        temp.valorVendido = somaTotalVendido(arrayTotalMes)
+
+        setTotalMes(temp)
+        console.log('totalMes: ', totalMes)
+    }
+},[arrayTotalMes])
+
+const [total4dias, setTotal4dias] = useState(null)
+
+useEffect(()=>{
+
+    const somaTotal4dias = (array) => {
+        return array.reduce((sum, item) => sum + item.valorLiquido, 0);
+    }
+
+    setTotal4dias(somaTotal4dias(vendas4dias))
+
+    console.log('total4Dias: ',total4dias)
+
+},[vendas4dias])
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////
     useEffect(()=>{
@@ -399,6 +485,24 @@ useEffect(()=>{
                                 </tr>
                             </tbody>
                         </table>
+                        <table className="table table-striped det-table adm-table">
+                    <thead>
+                        <tr>
+                            <th className='det-td' data-label='Adquirente'>Adquirente</th>
+                            <th className='det-td' data-label='Total'>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {adm4dias.map((adm) => {
+                            return (
+                                <tr key={adm.id}>
+                                    <td className='det-td' data-label="Adquirente">{adm.nomeAdquirente}</td>
+                                    <td className='det-td' data-label="Total">R$ {`${adm.total.toFixed(2).toString().replace('.', ',')}`}</td>
+                                </tr>
+                            )
+                        })}
+                    </tbody>
+                </table>
                     </div>
                 </div>
                 
