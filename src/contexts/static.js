@@ -10967,3 +10967,23 @@ export const adquirentesStatic = [
         "nomeAdquirente": "Wizeo"
     }
 ]
+
+export const adqTabela = [
+    {
+        nomeAdquirente: 'Cielo',
+        total: '20000.00',
+        id: 1,
+    },
+
+    {
+        nomeAdquirente: 'Alelo',
+        total: '9000.50',
+        id: 2,
+    },
+
+    {
+        nomeAdquirente: 'Vero',
+        total: '13600.92',
+        id: 3,
+    },
+]

@@ -27,7 +27,8 @@ const Dashboard = () => {
         dateConvertYYYYMMDD,
         modalCliente,
         returnTotalMes,
-        retornaRecebimentos, 
+        retornaRecebimentos,
+        teste, 
     } = useContext(AuthContext)
 
     const vendasDias = []
@@ -180,7 +181,7 @@ useEffect(()=>{
   },[cnpj])
 
 useEffect(()=>{
-    if(cnpj !== null){
+    if((cnpj !== null) && (teste === false)){
         let temp = {
             valorDescontos: 0,
             valorLiquido: 0,
@@ -558,38 +559,59 @@ function totalPorAdministradora(array){
         dadosVendas.length = 0
         let label = []
         let data = []
-        somaValorLiquido = vendasDias.map((posicao) => {
-        return posicao.reduce((sum, objeto) => sum + objeto.valorLiquido, 0);
-        });
-        for(let i = 0; i < 5; i++){
-        let dataTemp = new Date();
-        dataTemp.setDate(dataTemp.getDate() - 5 + i)
-        let valorConvertido = parseFloat(somaValorLiquido[i])
-        label.push(`${dateConvertSearch(dataTemp).replaceAll('-','/')}`)
-        data.push(Number(valorConvertido.toFixed(2)))
+
+        if((cnpj) && (teste ===true)){
+            somaValorLiquido = vendasDias.map((posicao) => {
+            return posicao.reduce((sum, objeto) => sum + objeto.valorLiquido, 0);
+            });
+            for(let i = 0; i < 5; i++){
+            let dataTemp = new Date();
+            dataTemp.setDate(dataTemp.getDate() - 5 + i)
+            let valorConvertido = parseFloat(somaValorLiquido[i])
+            label.push(`${dateConvertSearch(dataTemp).replaceAll('-','/')}`)
+            data.push(Number(valorConvertido.toFixed(2)))
+            }
+            setDadosVendas({labels: label, data: data})
+            setLiquido(somaValorLiquido)
         }
-        setDadosVendas({labels: label, data: data})
-        setLiquido(somaValorLiquido)
+
+        else{
+
+            let label = ['01-01-2023','02-01-2023','03-01-2023','04-01-2023','05-01-2023']
+            let data = [2053.00, 11598.99, 12898.50, 8795.12, 32155.02]
+
+            setDadosVendas({ labels: label, data: data })
+            setLiquido(data.slice(-5))
+        }
     }
 
     async function loadTotalLiquidoRecebimentos(recebimentosDias) {
         dadosRecebimentos.length = 0
         let label = []
         let data = [0, 0, 0, 0, 0]
-      
-        recebimentosDias.forEach((posicao) => {
-          const valorTotal = posicao.reduce((sum, objeto) => sum + objeto.valorLiquido, 0)
-          data.push(Number(valorTotal.toFixed(2)))
-        })
-      
-        for (let i = 0; i < 5; i++) {
-          let dataTemp = new Date()
-          dataTemp.setDate(dataTemp.getDate() - 1 + i)
-          label.push(`${dateConvertSearch(dataTemp).replaceAll('-','/')}`)
+        if((cnpj !== null) && (teste === false)){
+            recebimentosDias.forEach((posicao) => {
+                const valorTotal = posicao.reduce((sum, objeto) => sum + objeto.valorLiquido, 0)
+                data.push(Number(valorTotal.toFixed(2)))
+              })
+            
+              for (let i = 0; i < 5; i++) {
+                let dataTemp = new Date()
+                dataTemp.setDate(dataTemp.getDate() - 1 + i)
+                label.push(`${dateConvertSearch(dataTemp).replaceAll('-','/')}`)
+              }
+            
+              setDadosRecebimentos({ labels: label, data: data })
+              setRecebimentoLiquido(data.slice(-5))
         }
-      
-        setDadosRecebimentos({ labels: label, data: data })
-        setRecebimentoLiquido(data.slice(-5))
+        else{
+
+            let label = ['01-01-2023','02-01-2023','03-01-2023','04-01-2023','05-01-2023']
+            let data = [2053.00, 11598.99, 12898.50, 8795.12, 32155.02]
+
+            setDadosRecebimentos({ labels: label, data: data })
+            setRecebimentoLiquido(data.slice(-5))
+        }
       }
 
   return(

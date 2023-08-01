@@ -42,6 +42,8 @@ function AuthProvider({ children }){
 
   const [buscou, setBuscou] = useState(false)
   
+  const [teste, setTeste] = useState(false)
+
   const navigate = useNavigate()
 
   useEffect(() =>{
@@ -119,6 +121,7 @@ function AuthProvider({ children }){
           "DATAMODIFICACAO": "2022-10-11T09:05:13.707",
           "ATIVO": true
       }))
+    setTeste(true)
     setIsSignedIn(true)
     setCnpj('03953552000102')
     console.log('************fim submitLogin()************')
