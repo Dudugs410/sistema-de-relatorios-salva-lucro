@@ -26,7 +26,8 @@ const Dashboard = () => {
         dateConvertSearch, 
         dateConvertYYYYMMDD,
         modalCliente,
-        returnTotalMes, 
+        returnTotalMes,
+        retornaRecebimentos, 
     } = useContext(AuthContext)
 
     const vendasDias = []
@@ -113,10 +114,8 @@ const Dashboard = () => {
                 let dataAtual = new Date()
                 dataAtual.setDate(dataAtual.getDate() - 4)
                 dataAtual = convert(dataAtual, i)
-                console.log(dataAtual)
                 await vendasDash.map((venda) => {
                     if(venda.dataVenda === dataAtual){
-                        console.log(venda.dataVenda, dataAtual)
                         let obj = {
                             dataVenda: venda.dataVenda,
                             valorLiquido: venda.valorLiquido,
@@ -137,57 +136,13 @@ const Dashboard = () => {
 const [adm4dias, setAdm4dias] = useState([])
 
 useEffect(()=>{
-    let temp = []
-    console.log(vendas4dias)
-
-    vendas4dias.forEach(element => {
-        if(temp.length === 0){
-            let novoObjeto = { 
-                nomeAdquirente: element.administradora, 
-                total: element.valorLiquido,
-                id: 0,
-                vendas: []
-            }
-            temp.push(novoObjeto)
-        }else{
-            let novoObjeto = { 
-                nomeAdquirente: element.administradora, 
-                total: element.valorLiquido,
-                id: 0,
-                vendas: []
-            }
-            
-            if(!(temp.find((objeto) => objeto.nomeAdquirente === element.administradora))){
-                novoObjeto.id = (temp.length)
-                temp.push(novoObjeto)
-            }
-            else{
-                for(let i = 0; i < temp.length; i++){
-                    if(temp[i].nomeAdquirente === element.administradora){
-                        temp[i].total += element.valorLiquido
-                    }
-                }
-            }
-        }
-    })
-
-    temp.forEach(element =>{
-        let vendasTemp = []
-        vendas4dias.forEach(venda =>{
-            if(element.nomeAdquirente === venda.administradora)
-            {
-                vendasTemp.push(venda)
-            }
-        })
-        element.vendas = vendasTemp
-    })
-    console.log('vetor de adquirentes: ',temp)
+    const temp = totalPorAdministradora(vendas4dias)
     setAdm4dias(temp)
 },[vendas4dias])
 
 useEffect(()=>{
-    console.log(vendasDash)
-    console.log(adm4dias)
+    console.log('vendasDash: ',vendasDash)
+    console.log('adm4dias: ', adm4dias)
 },[adm4dias])
 
 // total dos últimos 4 dias + total do mês
@@ -251,9 +206,12 @@ useEffect(()=>{
         temp.valorVendido = somaTotalVendido(arrayTotalMes)
 
         setTotalMes(temp)
-        console.log('totalMes: ', totalMes)
     }
 },[arrayTotalMes])
+
+useEffect(()=>{
+    console.log('totalMes: ', totalMes)
+},[totalMes])
 
 const [total4dias, setTotal4dias] = useState(null)
 
@@ -271,19 +229,182 @@ useEffect(()=>{
 useEffect(()=>{
     if((total4dias !== null) && (total4dias !== undefined)){
         setTotal4diasTabela(total4dias)
-        console.log('Total4diasTabela: ',total4diasTabela)
     }
 },[total4dias])
 
 useEffect(()=>{
+    console.log('Total4diasTabela: ',total4diasTabela)
+},[total4diasTabela])
+
+useEffect(()=>{
     if((totalMes.valorLiquido !== null) && totalMes.valorLiquido !== undefined){
         setTotalMesTabela(totalMes.valorLiquido)
-        console.log('TotalMes: ',totalMesTabela)
     }
 
 },[totalMes])
 
+useEffect(()=>{
+    console.log('TotalMes: ',totalMesTabela)
+},[totalMesTabela])
+
+// novos dados RECEBIMENTOS/CREDITOS
+
+const [creditos, setCreditos] = useState([])
+const [creditos5dias, setCreditos5dias] = useState([])
+const [totalCredito5dias, setTotalCredito5dias] = useState(0.00)
+const [totalCreditoHoje, setTotalCreditoHoje] = useState(0.00)
+const [creditosAdm, setCreditosAdm] = useState([])
+
+async function loadCreditos(){
+    console.log('loadCreditos5dias')
+    let dataInicial = new Date()
+    let dataFinal = new Date()
+    dataInicial.setDate(dataInicial.getDate() + 1)
+    dataFinal.setDate(dataFinal.getDate() + 5)
+    try {
+        const credTemp = await retornaRecebimentos(cnpj, dateConvertSearch(dataInicial), dateConvertSearch(dataFinal))
+        setCreditos(credTemp)
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+useEffect(()=>{
+    loadCreditos()
+},[cnpj])
+
+useEffect(()=>{
+    console.log('Créditos: ', creditos)
+    async function loadCreditos5dias(){
+        let temp = []
+        async function init(){
+            for(let i = 0; i <= 5; i++){
+                let dataAtual = new Date()
+                dataAtual = convert(dataAtual, i)
+                creditos.map((credito) => {
+                    if(credito.dataCredito === dataAtual){
+                        let obj = {
+                            dataCredito: credito.dataCredito,
+                            valorLiquido: credito.valorLiquido,
+                            administradora: credito.adquirente.nomeAdquirente
+                        }
+                        temp.push(obj)
+                    }
+                })
+            }
+        }
+        init()
+        setCreditos5dias(temp)
+    }
+
+    loadCreditos5dias()
+},[creditos])
+
+useEffect(()=>{
+    console.log('creditos5dias: ', creditos5dias)
+    async function init(){
+        let total5 = 0.00
+        let totalHoje = 0.00
+
+        for(let i = 0; i <= 5; i++){
+            let dataAtual = new Date()
+            dataAtual = convert(dataAtual, i)
+            // eslint-disable-next-line no-loop-func
+            creditos.map((credito) => {
+                if(credito.dataCredito === dataAtual){
+                   totalHoje += credito.valorLiquido
+                }
+                else{
+                    total5 += credito.valorLiquido
+                }
+            })
+        }
+        setTotalCreditoHoje(totalHoje)
+        setTotalCredito5dias(total5)
+    }
+    init()
+
+    console.log('créditos hoje: ',totalCreditoHoje)
+    console.log('créditos 5 dias: ',totalCredito5dias)
+
+},[creditos5dias])
+
+useEffect(()=>{
+    console.log('créditos hoje: ',totalCreditoHoje)
+
+},[totalCreditoHoje])
+
+useEffect(()=>{
+    console.log('créditos 5 dias: ',totalCredito5dias)
+
+},[totalCredito5dias])
+
+//Créditos por Administradoras
+
+useEffect(()=>{
+    console.log('CREDITOS ADMINISTRADORA')
+    const temp = totalPorAdministradora(creditos5dias)
+    console.log(temp)
+    setCreditosAdm(temp)
+
+},[creditos5dias])
+
+useEffect(()=>{
+    console.log('creditosAdm: ', adm4dias)
+},[creditosAdm])
+
+function totalPorAdministradora(array){
+
+    console.log('total por administradora')
+    let temp = []
+
+    array.forEach(element => {
+        if(temp.length === 0){
+            let novoObjeto = { 
+                nomeAdquirente: element.administradora, 
+                total: element.valorLiquido,
+                id: 0,
+                vendas: []
+            }
+            temp.push(novoObjeto)
+        }else{
+            let novoObjeto = { 
+                nomeAdquirente: element.administradora, 
+                total: element.valorLiquido,
+                id: 0,
+                vendas: []
+            }
+            
+            if(!(temp.find((objeto) => objeto.nomeAdquirente === element.administradora))){
+                novoObjeto.id = (temp.length)
+                temp.push(novoObjeto)
+            }
+            else{
+                for(let i = 0; i < temp.length; i++){
+                    if(temp[i].nomeAdquirente === element.administradora){
+                        temp[i].total += element.valorLiquido
+                    }
+                }
+            }
+        }
+    })
+
+    temp.forEach(element =>{
+        let vendasTemp = []
+        vendas4dias.forEach(venda =>{
+            if(element.nomeAdquirente === venda.administradora)
+            {
+                vendasTemp.push(venda)
+            }
+        })
+        element.vendas = vendasTemp
+    })
+    console.log('vetor de adquirentes: ',temp)
+    return temp
+    }
+
 /////////////////////////////////////////////////////////////////////////////////////////////
+
     useEffect(()=>{
         zerarValores()        
             if(cnpj && (cnpj !== '')){
@@ -339,7 +460,6 @@ useEffect(()=>{
         } catch (error) {
             console.log(error)
         }
-
     }
 
     function loadDados(){
@@ -490,16 +610,16 @@ useEffect(()=>{
                                     <th className='dash-th' scope="col">Débito</th>
                                     <th className='dash-th' scope="col">Crédito</th>
                                     <th className='dash-th' scope="col">Voucher</th>
-                                    <th className='dash-th' scope="col">Total dos Últimos 4 dias</th>
+                                    <th className='dash-th' scope="col">Total Últimos 4 dias</th>
                                     <th className='dash-th' scope="col">Total do Mês</th>
                                 </tr>
                             </thead>
-                            <tbody className='dash-tbody'>
+                            <tbody className='dash-tbody dash-tbody-bg'>
                                 <tr className='dash-tr'>
                                     <td className='cell-text dash-td' data-label="Débito">R$ {debito.toFixed(2).replace('.',',')}</td>
                                     <td className='cell-text dash-td' data-label="Crédito">R$ {credito.toFixed(2).replace('.',',')}</td>
                                     <td className='cell-text dash-td' data-label="Voucher">R$ {voucher.toFixed(2).replace('.',',')}</td>
-                                    <td className='cell-text dash-td' data-label="Total dos Últimos 4 dias">R$ {total4diasTabela.toFixed(2).replace('.',',')}</td>
+                                    <td className='cell-text dash-td' data-label="Total Últimos 4 dias">R$ {total4diasTabela.toFixed(2).replace('.',',')}</td>
                                     <td className='cell-text dash-td' data-label="Total do Mês">R$ {totalMesTabela.toFixed(2).replace('.',',')}</td>
                                 </tr>
                             </tbody>
@@ -515,22 +635,27 @@ useEffect(()=>{
                     </div>
                     
                     <div className='table-data'>
-                        <table className="table dash-table">
+                        <table className="table dash-table det-table dash-body-flex tbody-sticky">
                                 <thead className='dash-thead'>
                                     <tr className='dash-tr'>
                                         <th className='dash-th' scope="col">Débito</th>
                                         <th className='dash-th' scope="col">Crédito</th>
                                         <th className='dash-th' scope="col">Voucher</th>
+                                        <th className='dash-th' scope="col">Previsão de Hoje</th>
+                                        <th className='dash-th' scope="col">Previsão Próx 4 Dias</th>
                                     </tr>
                                 </thead>
-                                <tbody className='dash-tbody'>
+                                <tbody className='dash-tbody dash-tbody-bg'>
                                     <tr className='dash-tr'>
                                     <td className='cell-text dash-td' data-label="Débito">R$ {recebimentoDebito.toFixed(2).replace('.',',')}</td>
                                     <td className='cell-text dash-td' data-label="Crédito">R$ {recebimentoCredito.toFixed(2).replace('.',',')}</td>
                                     <td className='cell-text dash-td' data-label="Voucher">R$ {recebimentoVoucher.toFixed(2).replace('.',',')}</td>
+                                    <td className='cell-text dash-td' data-label="Previsão de Hoje">R$ {totalCreditoHoje.toFixed(2).replace('.',',')}</td>
+                                    <td className='cell-text dash-td' data-label="Previsão Próx 4 Dias">R$ {totalCredito5dias.toFixed(2).replace('.',',')}</td>
                                     </tr>
                                 </tbody>
                         </table>
+                        <TabelaGenerica Array={creditosAdm}/>
                     </div>
                 </div>            
             </div>

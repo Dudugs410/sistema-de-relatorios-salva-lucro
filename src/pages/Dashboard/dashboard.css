@@ -32,7 +32,7 @@
 }
 
 .graph-data{
-  height: 100%;
+  height: 400px;
   width: 100%;
   background-color: #181c2e;
   box-shadow:inset 0px 270px 0px 0px;
@@ -63,11 +63,20 @@
   align-content: stretch;
 }
 
+.thead-admin{
+  position: sticky;
+  top: 190px;
+}
+
 .dash-table{
   border: 0;
   color: #DDD;
   max-height: 0px;
-};
+}
+
+.dash-tbody-bg{
+  background-color: #181c2e;
+}
 
 .custom-chart {
   height:50%;

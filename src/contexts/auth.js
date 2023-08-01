@@ -576,7 +576,8 @@ async function retornaRecebimentos(cnpj, datainicial, datafinal){
         gruSelecionado,
         setGruSelecionado,
         listaClientes, 
-        setListaClientes
+        setListaClientes,
+
       }}
     >
       {children}

@@ -4,14 +4,11 @@ import './tabelaGenerica.css'
 
 export default function TabelaGenerica({Array}) {
 
-
-    console.log(Array)
-
     return (
         <div>
             <div className='content'>
                 <table className="table det-table elemento-table">
-                    <thead>
+                    <thead className='thead-admin'>
                         <tr tbody-sticky>
                             <th className='det-td' data-label='Adquirente'>Adquirente</th>
                             <th className='det-td' data-label='Total'>Total</th>
