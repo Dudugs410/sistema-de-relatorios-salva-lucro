@@ -71,6 +71,8 @@ function AuthProvider({ children }){
         
           if (userMatch) {
             sessionStorage.setItem('isSignedIn', true);
+            setTeste(false)
+            sessionStorage.setItem('teste', teste)
             sessionStorage.setItem('userData', JSON.stringify(userMatch))
             localStorage.setItem('isSignedIn', true)
             setIsSignedIn(true)
@@ -580,6 +582,8 @@ async function retornaRecebimentos(cnpj, datainicial, datafinal){
         setGruSelecionado,
         listaClientes, 
         setListaClientes,
+        teste,
+        setTeste,
 
       }}
     >

@@ -2,6 +2,7 @@ import Calendar from "react-calendar"
 import './recebimentos.css'
 import { useState } from "react"
 import BuscarClienteRecebimentos from "../../components/BuscarClienteRecebimentos"
+import BuscarClienteData from "../../components/BuscarClienteData"
 
 const Recebiveis = () =>{
 
@@ -28,7 +29,6 @@ const Recebiveis = () =>{
         <div className='appPage'>
             <div>
                 <h1 className='recebimentos-title'>Calendário de Recebimentos</h1>
-
             </div>
             <MyCalendar/> 
         </div>

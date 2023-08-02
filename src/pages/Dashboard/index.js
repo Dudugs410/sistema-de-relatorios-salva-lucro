@@ -61,6 +61,7 @@ const Dashboard = () => {
     const [dadosRecebimentos, setDadosRecebimentos] = useState({labels:[] , data:[]})
 
     const [dadosVendas4dias, setDadosVendas4dias] = useState({labels:[], data:[]})
+    const [dadosCreditos5dias, setDadosCreditos5dias] = useState({labels:[], data:[]})
 
     function zerarValores(){
         somaValorLiquido = 0
@@ -137,6 +138,7 @@ const Dashboard = () => {
 const [adm4dias, setAdm4dias] = useState([])
 
 useEffect(()=>{
+    console.log('VENDAS ADMINISTRADORA')
     const temp = totalPorAdministradora(vendas4dias)
     setAdm4dias(temp)
 },[vendas4dias])
@@ -181,7 +183,8 @@ useEffect(()=>{
   },[cnpj])
 
 useEffect(()=>{
-    if((cnpj !== null) && (teste === false)){
+    console.log(teste)
+    if(((cnpj !== null) || (cnpj !== '')) && (teste !== true)){
         let temp = {
             valorDescontos: 0,
             valorLiquido: 0,
@@ -350,10 +353,6 @@ useEffect(()=>{
 
 },[creditos5dias])
 
-useEffect(()=>{
-    console.log('creditosAdm: ', adm4dias)
-},[creditosAdm])
-
 function totalPorAdministradora(array){
 
     console.log('total por administradora')
@@ -404,6 +403,55 @@ function totalPorAdministradora(array){
     return temp
     }
 
+// Carregando os novos Dados para apresentação no gráfico
+
+function carregaGrafico(array){
+    let label = []
+    let data = []
+
+    console.log('carregaGrafico Array: ', array)
+    if(((cnpj !== null) || (cnpj !== '')) && (teste !== true)){
+        array.forEach((posicao) => {
+            const valorTotal = posicao.total
+            const nomeAdq = posicao.nomeAdquirente
+            data.push(Number(valorTotal.toFixed(2)))
+            label.push(nomeAdq)
+          })
+          const obj = {labels: label, data: data}
+          console.log('obj: ', obj)
+          return obj
+    }
+    else{
+
+        let label = ['01-01-2023','02-01-2023','03-01-2023','04-01-2023','05-01-2023']
+        let data = [2053.00, 11598.99, 12898.50, 8795.12, 32155.02]
+
+        setDadosRecebimentos({ labels: label, data: data })
+        setRecebimentoLiquido(data.slice(-5))
+    }
+}
+
+useEffect(()=>{
+    if(adm4dias.length > 0){
+        setDadosVendas4dias(carregaGrafico(adm4dias))
+    }
+
+},[adm4dias])
+
+useEffect(()=>{
+    console.log('dadosVendas: ', dadosVendas)
+},[dadosVendas])
+
+useEffect(()=>{
+    if(creditos5dias.length > 0){
+        setDadosCreditos5dias(carregaGrafico(creditosAdm))
+    }
+},[creditos5dias])
+
+useEffect(()=>{
+    console.log('dadosRecebimentos: ', dadosRecebimentos)
+},[dadosRecebimentos])
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 
     useEffect(()=>{
@@ -428,15 +476,15 @@ function totalPorAdministradora(array){
     useEffect(()=>{
         if(vendasDash){
             loadDados()
-            loadTotalLiquido(vendasDias)
-            loadTotalDia(vendasDias)
+            //loadTotalLiquido(vendasDias)
+            //loadTotalDia(vendasDias)
         }
     },[vendasDash])
 
     useEffect(()=>{
         if(recebimentosDash){
             loadDadosRecebiveis()
-            loadTotalLiquidoRecebimentos(recebimentosDias)
+            //loadTotalLiquidoRecebimentos(recebimentosDias)
             loadTotalDiaRecebimentos(recebimentosDias)
         }
     },[recebimentosDash])
@@ -555,12 +603,12 @@ function totalPorAdministradora(array){
         }
     }
 
-    async function loadTotalLiquido(vendasDias){
+/*    async function loadTotalLiquido(vendasDias){
         dadosVendas.length = 0
         let label = []
         let data = []
 
-        if((cnpj) && (teste ===true)){
+        if(((cnpj !== null) || (cnpj !== '')) && (teste !== true)){
             somaValorLiquido = vendasDias.map((posicao) => {
             return posicao.reduce((sum, objeto) => sum + objeto.valorLiquido, 0);
             });
@@ -583,13 +631,13 @@ function totalPorAdministradora(array){
             setDadosVendas({ labels: label, data: data })
             setLiquido(data.slice(-5))
         }
-    }
+    } */
 
-    async function loadTotalLiquidoRecebimentos(recebimentosDias) {
+ /*   async function loadTotalLiquidoRecebimentos(recebimentosDias) {
         dadosRecebimentos.length = 0
         let label = []
         let data = [0, 0, 0, 0, 0]
-        if((cnpj !== null) && (teste === false)){
+        if(((cnpj !== null) || (cnpj !== '')) && (teste !== true)){
             recebimentosDias.forEach((posicao) => {
                 const valorTotal = posicao.reduce((sum, objeto) => sum + objeto.valorLiquido, 0)
                 data.push(Number(valorTotal.toFixed(2)))
@@ -612,7 +660,20 @@ function totalPorAdministradora(array){
             setDadosRecebimentos({ labels: label, data: data })
             setRecebimentoLiquido(data.slice(-5))
         }
-      }
+      } */
+
+      useEffect(()=>{
+        //console.log('dadosVendas: ',dadosVendas)
+        //console.log('dadosRecebimentos: ',dadosRecebimentos)
+        console.log('dadosVendas4dias: ',dadosVendas4dias)
+        console.log('dadosCreditos5dias: ',dadosCreditos5dias)
+        console.log('total4dias: ',total4dias)
+        console.log('creditos: ',creditos)
+        console.log('creditos5dias: ',creditos5dias)
+        console.log('totalCredito5dias: ',totalCredito5dias)
+        console.log('totalCreditoHoje: ',totalCreditoHoje)
+        console.log('creditosAdm: ',creditosAdm)
+      },[creditos, creditos5dias, creditosAdm, dadosCreditos5dias, dadosRecebimentos, dadosVendas, dadosVendas4dias, total4dias, totalCredito5dias, totalCreditoHoje])
 
   return(
     <>
@@ -623,24 +684,18 @@ function totalPorAdministradora(array){
                 <div className='data-group-area'>
                     <div className='graph-data'>
                         <h1 className='title-chart'>Vendas:</h1>
-                        <PieChart data01 = {dadosVendas}/>
+                        <PieChart data01 = {dadosVendas4dias}/>
                     </div>
                     <div className='table-data'>
                         <table className="table dash-table det-table dash-body-flex tbody-sticky">
                             <thead className='dash-thead'>
                                 <tr className='dash-tr'>
-                                    <th className='dash-th' scope="col">Débito</th>
-                                    <th className='dash-th' scope="col">Crédito</th>
-                                    <th className='dash-th' scope="col">Voucher</th>
                                     <th className='dash-th' scope="col">Total Últimos 4 dias</th>
                                     <th className='dash-th' scope="col">Total do Mês</th>
                                 </tr>
                             </thead>
                             <tbody className='dash-tbody dash-tbody-bg'>
                                 <tr className='dash-tr'>
-                                    <td className='cell-text dash-td' data-label="Débito">R$ {debito.toFixed(2).replace('.',',')}</td>
-                                    <td className='cell-text dash-td' data-label="Crédito">R$ {credito.toFixed(2).replace('.',',')}</td>
-                                    <td className='cell-text dash-td' data-label="Voucher">R$ {voucher.toFixed(2).replace('.',',')}</td>
                                     <td className='cell-text dash-td' data-label="Total Últimos 4 dias">R$ {total4diasTabela.toFixed(2).replace('.',',')}</td>
                                     <td className='cell-text dash-td' data-label="Total do Mês">R$ {totalMesTabela.toFixed(2).replace('.',',')}</td>
                                 </tr>
@@ -653,27 +708,21 @@ function totalPorAdministradora(array){
                 <div className='data-group-area'>
                     <div className='graph-data'>
                         <h1 className='title-chart'>Créditos:</h1>
-                        <PieChart data01 = {dadosRecebimentos}/>
+                        <PieChart data01 = {dadosCreditos5dias}/>
                     </div>
                     
                     <div className='table-data'>
                         <table className="table dash-table det-table dash-body-flex tbody-sticky">
                                 <thead className='dash-thead'>
                                     <tr className='dash-tr'>
-                                        <th className='dash-th' scope="col">Débito</th>
-                                        <th className='dash-th' scope="col">Crédito</th>
-                                        <th className='dash-th' scope="col">Voucher</th>
                                         <th className='dash-th' scope="col">Previsão de Hoje</th>
-                                        <th className='dash-th' scope="col">Previsão Próx 4 Dias</th>
+                                        <th className='dash-th' scope="col">Previsão Próx 5 Dias</th>
                                     </tr>
                                 </thead>
                                 <tbody className='dash-tbody dash-tbody-bg'>
                                     <tr className='dash-tr'>
-                                    <td className='cell-text dash-td' data-label="Débito">R$ {recebimentoDebito.toFixed(2).replace('.',',')}</td>
-                                    <td className='cell-text dash-td' data-label="Crédito">R$ {recebimentoCredito.toFixed(2).replace('.',',')}</td>
-                                    <td className='cell-text dash-td' data-label="Voucher">R$ {recebimentoVoucher.toFixed(2).replace('.',',')}</td>
-                                    <td className='cell-text dash-td' data-label="Previsão de Hoje">R$ {totalCreditoHoje.toFixed(2).replace('.',',')}</td>
-                                    <td className='cell-text dash-td' data-label="Previsão Próx 4 Dias">R$ {totalCredito5dias.toFixed(2).replace('.',',')}</td>
+                                        <td className='cell-text dash-td' data-label="Previsão de Hoje">R$ {totalCreditoHoje.toFixed(2).replace('.',',')}</td>
+                                        <td className='cell-text dash-td' data-label="Previsão Próx 5 Dias">R$ {totalCredito5dias.toFixed(2).replace('.',',')}</td>
                                     </tr>
                                 </tbody>
                         </table>
