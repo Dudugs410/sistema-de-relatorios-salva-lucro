@@ -101,11 +101,14 @@ const Dashboard = () => {
 
     useEffect(()=>{
         async function inicializar(){
-            if(cnpj !== null){
+            if(cnpj !== null && teste !== true){
                 await inicializaVendas()
                 await inicializaCreditos()
                 await inicializaVendasMes()
                 await inicializaVetorVendasMes()
+            }
+            else if(teste === false){
+
             }
         }
         inicializar()
@@ -168,7 +171,8 @@ const Dashboard = () => {
             })
         })
 
-        let vetorVendas = vetorVendasMes
+        console.log ('vendasMes: ',vetorVendasMes)
+        const vetorVendas = vetorVendasMes
 
         temp.forEach(element =>{
             console.log('element: ', element)
@@ -176,9 +180,11 @@ const Dashboard = () => {
             vetorVendas.forEach((venda, index) =>{
                 console.log('venda: ', venda)
                 console.log('elemento: ', element.nomeAdquirente, 'venda: ', venda[index].adquirente.nomeAdquirente)
-                if(element.nomeAdquirente === venda.adquirente.nomeAdquirente)
-                {
-                    vendasTemp.push(venda)
+                if(venda[index].adquirente.nomeAdquirente !== undefined){
+                    if(element.nomeAdquirente === venda[index].adquirente.nomeAdquirente)
+                    {
+                        vendasTemp.push(venda)
+                    }
                 }
             })
             element.vendas = vendasTemp
