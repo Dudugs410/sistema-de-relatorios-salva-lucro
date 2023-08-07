@@ -282,7 +282,6 @@ function AuthProvider({ children }){
           console.log('config: ',config)
           console.log(error)
           })
-      
     }
 
     //Consulta de vendas, com intervalo de datas
@@ -422,31 +421,6 @@ function AuthProvider({ children }){
         })
 }
 
-async function returnTotalMes(cnpj, data) {
-  setLoading(true)
-  let params = {
-    cnpj: cnpj,
-    data: data,
-  };
-
-  let config = {
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${Cookies.get('token')}`,
-    },
-    params: params,
-  };
-
-  try {
-    const response = await api.get('vendastotais', config);
-    setLoading(false)
-    return response.data
-  } catch (error) {
-    setLoading(false)
-    console.log(error)
-  }
-}
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 async function retornaRecebimentos(cnpj, datainicial, datafinal){
@@ -518,7 +492,168 @@ async function retornaRecebimentos(cnpj, datainicial, datafinal){
   function dateConvertYYYYMMDD(date){
     return date.toISOString().split('T')[0]
   }
-////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+
+function converteData(data){
+  const ano = data.getFullYear()
+  const mes = String(data.getMonth() + 1).padStart(2, '0')
+  const dia = String(data.getDate()).padStart(2, '0')
+  return `${ano}-${mes}-${dia}`
+}
+
+async function returnVendas(datainicial, datafinal, cnpj, adquirente, bandeira){
+  setLoading(true)
+  let buscou
+  buscou = false
+  console.log(cnpj)
+
+  if((datainicial === '' || undefined) || (cnpj === '' || undefined)){
+    alert('Favor selecionar uma data e cliente válidos')
+    return 0
+  }
+
+  setLoading(true)
+  let params = {}
+
+  if(((adquirente !== '') && (bandeira !== '')) && (buscou === false)){
+
+    console.log('adquirente e bandeira')
+    params = {
+      datainicial: datainicial,
+      datafinal: datafinal,
+      cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+      adquirente: adquirente,
+      bandeira: bandeira,
+    }
+    buscou = true
+  }
+
+  else if(((adquirente !== '') && (bandeira === '')) && (buscou === false)){
+    console.log('adquirente sem bandeira')
+    params = {
+      datainicial: datainicial,
+      datafinal: datafinal,
+      cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+      adquirente: adquirente,
+    }
+    buscou = true
+  }
+
+  else if(((bandeira !== '') && (adquirente === '')) && (buscou === false)){
+    console.log('bandeira sem adquirente')
+    params = {
+      datainicial: datainicial,
+      datafinal: datafinal,
+      cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+      bandeira: bandeira,
+    }
+    buscou = true
+  }
+
+  else{
+    params = {
+      datainicial: datainicial,
+      datafinal: datafinal,
+      cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+    }
+  }
+  
+    let config = {
+      headers: { 
+        'Content-Type': 'application/json', 
+        'Authorization': `Bearer ${Cookies.get('token')}`
+      },
+      params: params
+    }
+
+    try {
+      const response = await api.get('vendas', config)
+      const vendasData = response.data.VENDAS
+      setLoading(false)
+      setBuscou(false)
+      return vendasData
+    } catch (error) {
+      console.log(error)
+      setLoading(false)
+    }
+}
+
+async function returnCreditos(datainicial, datafinal, cnpj){
+  setLoading(true);
+  console.log(cnpj)
+  let params = {
+    cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+    dataInicial: dateConvert(datainicial),
+    dataFinal: dateConvert(datafinal),
+  }
+
+  let config = {
+    headers: { 
+      'Content-Type': 'application/json', 
+      'Authorization': `Bearer ${Cookies.get('token')}`
+    },
+    params: params
+  }
+
+  try {
+    const response = await api.get('recebimentos', config)
+    const recebimentosData = response.data
+    setLoading(false)
+      return recebimentosData
+  } catch (error) {
+    console.log(error)
+    setLoading(false)
+  }
+}
+
+async function returnTotalDia(cnpj, data) {
+  setLoading(true)
+  let params = {
+    cnpj: cnpj,
+    data: data,
+  };
+
+  let config = {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${Cookies.get('token')}`,
+    },
+    params: params,
+  };
+
+  try {
+    const response = await api.get('vendastotais', config);
+    setLoading(false)
+    return response.data
+  } catch (error) {
+    setLoading(false)
+    console.log(error)
+  }
+}
+
+async function returnTotalMes(cnpj){
+  const currentDate = new Date()
+  const currentYear = currentDate.getFullYear()
+  const currentMonth = currentDate.getMonth()
+  const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate()
+  let mes = []
+  setLoading(true)
+  for (let day = 1; day <= lastDayOfMonth; day++) {
+    const data = new Date(currentYear, currentMonth, day)
+    try{
+      const total = await returnTotalDia(cnpj, data)
+      mes.push(total)
+    } catch (error) {
+      setLoading(false)
+      console.log(error)
+    }
+  }
+  setLoading(false)
+  console.log('VENDAS DO MES: ', mes)
+  return mes
+}
 
   return(
     <AuthContext.Provider
@@ -577,14 +712,17 @@ async function retornaRecebimentos(cnpj, datainicial, datafinal){
         submitFake,
         retornaVendasPeriodo,
         retornaRecebimentos,
-        returnTotalMes,
+        returnTotalDia,
         gruSelecionado,
         setGruSelecionado,
         listaClientes, 
         setListaClientes,
         teste,
         setTeste,
-
+        returnVendas,
+        returnCreditos,
+        converteData,
+        returnTotalMes,
       }}
     >
       {children}

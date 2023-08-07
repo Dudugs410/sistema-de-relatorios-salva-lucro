@@ -99,7 +99,7 @@ let Vendas = () =>{
     }
     inicializar()
   },[])
-
+  /*
   useEffect(()=>{
     let dataInicial = new Date()
     dataInicial.setDate(1)
@@ -123,7 +123,6 @@ let Vendas = () =>{
 
       for(i; i<= dataFinal; i.setDate(i.getDate() + 1)){
         console.log('FOR i: ', i)
-        
         await returnTotalMes(cnpjBusca, i)
         .then((response) => {
           let obj = (response)
@@ -133,7 +132,7 @@ let Vendas = () =>{
       setVendasTotais(resp)
     }
     loadTotais()
-  },[])
+  },[]) */
 
   
 

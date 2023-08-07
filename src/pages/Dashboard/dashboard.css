@@ -49,13 +49,13 @@
   flex-wrap: wrap;
   overflow-y: auto
 }
-
+/*
 .tbody-sticky{
   position: sticky;
   top: 0;
   background-color: #181c2e;
 }
-
+*/
 .dash-body-flex{
   display: flex;
   flex-direction: column;

@@ -12,668 +12,200 @@ import LoadingModal from '../../components/LoadingModal'
 import ModalCliente from '../../components/ModalCliente'
 //////
 import PieChart from '../../components/00Teste'
+import { dateConvert } from '../../contexts/dateConverter'
+
+
 
 const Dashboard = () => {
     
-    const { 
-        vendasDash, 
-        loading, 
-        loadPeriodo,
-        loadGrupos,
-        recebimentosDash,
-        loadRecebimentos, 
+    const {  
+        loading,
+        returnVendas,
+        returnCreditos,
+        returnTotalDia,
+        returnTotalMes,
         cnpj, 
         dateConvertSearch, 
-        dateConvertYYYYMMDD,
         modalCliente,
-        returnTotalMes,
-        retornaRecebimentos,
-        teste, 
+        teste,
+        converteData,
     } = useContext(AuthContext)
 
-    const vendasDias = []
-    const recebimentosDias = []
-
-    let somaValorLiquido = 0
-    let recebimentos = 0
-
-    let somaValorCredito = 0
-    let somaValorDebito = 0
-    let somaValorVoucher = 0
-
-    let somaRecebimentoCredito = 0
-    let somaRecebimentoDebito = 0
-    let somaRecebimentoVoucher = 0
-
+    const [vetorVendasMes, setVetorVendasMes] = useState([])
     
-
-    const [liquido, setLiquido] = useState(0)
-    const [credito, setCredito] = useState(0)
-    const [debito, setDebito] = useState(0)
-    const [voucher, setVoucher] = useState(0)
-
-    const [recebimentoLiquido, setRecebimentoLiquido] = useState(0)
-    const [recebimentoCredito, setRecebimentoCredito] = useState(0)
-    const [recebimentoDebito, setRecebimentoDebito] = useState(0)
-    const [recebimentoVoucher, setRecebimentoVoucher] = useState(0)
-
-    const [dadosVendas, setDadosVendas] = useState({labels:[] , data:[]})
-    const [dadosRecebimentos, setDadosRecebimentos] = useState({labels:[] , data:[]})
-
-    const [dadosVendas4dias, setDadosVendas4dias] = useState({labels:[], data:[]})
-    const [dadosCreditos5dias, setDadosCreditos5dias] = useState({labels:[], data:[]})
-
-    function zerarValores(){
-        somaValorLiquido = 0
-        recebimentos = 0
-    
-        somaValorCredito = 0
-        somaValorDebito = 0
-        somaValorVoucher = 0
-    
-        somaRecebimentoCredito = 0
-        somaRecebimentoDebito = 0
-        somaRecebimentoVoucher = 0
-
-        setLiquido(0)
-        setCredito(0)
-        setDebito(0)
-        setVoucher(0)
-
-        setRecebimentoLiquido(0)
-        setRecebimentoCredito(0)
-        setRecebimentoDebito(0)
-        setRecebimentoVoucher(0)
-    }
-/////////////////////////////////////////////////////////////////////////////////////////////
-
-//novos dados Dashboard
-
-//vendas dos últimos 4 dias - ok
 
     const [vendas4dias, setVendas4dias] = useState([])
+    const [creditosDashboard, setCreditosDashboard] = useState([])
 
-    const [total4diasTabela, setTotal4diasTabela] = useState(0.00)
-    const [totalMesTabela, setTotalMesTabela] = useState(0.00)
+    const [totalVendas4dias, setTotalVendas4dias] = useState(0)
+    const [creditos5dias, setCreditos5dias] = useState(0)
 
-    function convert(date, index){
+    const [vendasMes, setVendasMes] = useState([])
+    const [somatorioVendasMes, setSomatorioVendasMes] = useState(0)
 
-        const newDate = new Date(date)
-        newDate.setDate(newDate.getDate() + index)
+    const [totalCreditosHoje, setTotalCreditosHoje] = useState(0)
+    const [totalCreditos5dias, setTotalCreditos5dias] = useState(0)
 
-        const year = newDate.getFullYear()
-        const month = String(newDate.getMonth() + 1).padStart(2, '0')
-        const day = String(newDate.getDate()).padStart(2, '0')
+    const [admVendas, setAdmVendas] = useState([])
+    const [admCreditos, setAdmCreditos] = useState([])
 
-        const convertedDate = `${year}-${month}-${day}`
-        return convertedDate
+    const [graficoVendas, setGraficoVendas] = useState({ labels: [], data: [] })
+    const [graficoCreditos, setGraficoCreditos] = useState({ labels: [], data: [] })
+
+    async function inicializaVendas(){
+        let vendaDataInicial = new Date()
+        let vendaDataFinal = new Date()
+
+        vendaDataInicial.setDate(vendaDataInicial.getDate() - 4)
+        vendaDataInicial = converteData(vendaDataInicial)
+
+        vendaDataFinal.setDate(vendaDataFinal.getDate() -1)
+        vendaDataFinal = converteData(vendaDataFinal)
+
+        console.log('vendaDataInicial: ',vendaDataInicial)
+        console.log('vendaDataFinal: ',vendaDataFinal)
+
+        const vendasTemp = await returnVendas(vendaDataInicial, vendaDataFinal, cnpj)
+
+        console.log('vendasTemp:', vendasTemp)
+        setVendas4dias(vendasTemp)
+    }
+
+    async function inicializaVetorVendasMes(){
+        const dataAtual = new Date();
+        const anoAtual = dataAtual.getFullYear();
+        const mesAtual = dataAtual.getMonth() + 1;
+        const ultimoDiaDoMes = new Date(anoAtual, mesAtual, 0).getDate();
+
+        const vendasTemp = []
+
+        for (let day = 1; day <= ultimoDiaDoMes; day++) {
+            vendasTemp.push(await returnVendas(`${anoAtual}-${mesAtual}-${day}`, `${anoAtual}-${mesAtual}-${day}`, cnpj))
+        }
+        setVetorVendasMes(vendasTemp)
+    }
+
+    async function inicializaCreditos(){
+        let creditosTemp
+        let data = new Date()
+        let newdata = dateConvertSearch(data)
+
+        creditosTemp = await returnCreditos( newdata, newdata, cnpj)
+        setCreditosDashboard(creditosTemp)
+    }
+
+    async function inicializaVendasMes(){
+        const temp = await returnTotalMes(cnpj)
+        setVendasMes(temp)
     }
 
     useEffect(()=>{
-        let temp = []
-        async function init(){
-            for(let i = 0; i <= 4; i++){
-                let dataAtual = new Date()
-                dataAtual.setDate(dataAtual.getDate() - 4)
-                dataAtual = convert(dataAtual, i)
-                await vendasDash.map((venda) => {
-                    if(venda.dataVenda === dataAtual){
-                        let obj = {
-                            dataVenda: venda.dataVenda,
-                            valorLiquido: venda.valorLiquido,
-                            administradora: venda.adquirente.nomeAdquirente
-                        }
-                        temp.push(obj)
-                    }
-                })
+        async function inicializar(){
+            if(cnpj !== null){
+                await inicializaVendas()
+                await inicializaCreditos()
+                await inicializaVendasMes()
+                await inicializaVetorVendasMes()
             }
         }
-        init()
-        setVendas4dias(temp)
-    },[vendasDash])
-//
+        inicializar()
+    },[cnpj])
 
-// Vendas dos últimos 4 dias, quebradas por administradora - ok
+    useEffect(()=>{
+        async function inicializar(){
+            const total = vendasMes.reduce((total, obj) => total + obj.valorliquido, 0)
+            setSomatorioVendasMes(total)
 
-const [adm4dias, setAdm4dias] = useState([])
+        }
+        inicializar()
+    },[vendasMes])
 
-useEffect(()=>{
-    console.log('VENDAS ADMINISTRADORA')
-    const temp = totalPorAdministradora(vendas4dias)
-    setAdm4dias(temp)
-},[vendas4dias])
-
-useEffect(()=>{
-    console.log('vendasDash: ',vendasDash)
-    console.log('adm4dias: ', adm4dias)
-},[adm4dias])
-
-// total dos últimos 4 dias + total do mês
-
-const [arrayTotalMes, setArrayTotalMes] = useState([])
-const [totalMes, setTotalMes] = useState({})
-
-useEffect(()=>{
-    if(cnpj !== null){
-        let dataInicial = new Date()
-        dataInicial.setDate(1)
-        let currentDate = new Date();
-        let nextMonthFirstDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
-        let dataFinal = new Date(nextMonthFirstDay.getTime() - 1);
+    useEffect(()=>{
+        console.log('vendas4dias: ', vendas4dias)
+        const totalTemp = vendas4dias.reduce((total, obj) => total + obj.valorLiquido, 0)
+        setTotalVendas4dias(totalTemp)
+    },[vendas4dias])
     
-        async function loadTotais(){
-          let dataAtual = new Date()
-          dataAtual.setDate(1)
-          let i = dataAtual
-          let resp = []
-    
-          for(i; i<= dataFinal; i.setDate(i.getDate() + 1)){
-            
-            await returnTotalMes(cnpj, i)
-            .then((response) => {
-              let obj = (response)
-              resp.push(obj)
-            })
-          }
-          setArrayTotalMes(resp)
-        }
-        loadTotais()
-        console.log('arrayTotalMes: ', arrayTotalMes)
-    }
-  },[cnpj])
+    useEffect(()=>{
+        console.log('creditosDashboard: ', creditosDashboard)
+    },[creditosDashboard])
 
-useEffect(()=>{
-    console.log(teste)
-    if(((cnpj !== null) || (cnpj !== '')) && (teste !== true)){
-        let temp = {
-            valorDescontos: 0,
-            valorLiquido: 0,
-            valorVendido: 0,
-        }
-        console.log(temp.valorDescontos, temp.valorLiquido, temp.valorVendido)
-        console.log('arrayTotalMes: ',arrayTotalMes)
-
-        const somaTotalDescontos = (array) => {
-            return array.reduce((sum, item) => sum + item.valordescontos, 0);
-          }
-        
-        const somaTotalLiquido = (array) => {
-            return array.reduce((sum, item) => sum + item.valorliquido, 0);
-        }
-
-        const somaTotalVendido = (array) => {
-            return array.reduce((sum, item) => sum + item.valorvendido, 0);
-        }
-
-        temp.valorDescontos = somaTotalDescontos(arrayTotalMes)
-        temp.valorLiquido = somaTotalLiquido(arrayTotalMes)
-        temp.valorVendido = somaTotalVendido(arrayTotalMes)
-
-        setTotalMes(temp)
-    }
-},[arrayTotalMes])
-
-useEffect(()=>{
-    console.log('totalMes: ', totalMes)
-},[totalMes])
-
-const [total4dias, setTotal4dias] = useState(null)
-
-useEffect(()=>{
-
-    const somaTotal4dias = (array) => {
-        return array.reduce((sum, item) => sum + item.valorLiquido, 0);
-    }
-    setTotal4dias(somaTotal4dias(vendas4dias))
-    console.log('total4Dias: ',total4dias)
-},[vendas4dias])
-
-//valores da tabela 
-
-useEffect(()=>{
-    if((total4dias !== null) && (total4dias !== undefined)){
-        setTotal4diasTabela(total4dias)
-    }
-},[total4dias])
-
-useEffect(()=>{
-    console.log('Total4diasTabela: ',total4diasTabela)
-},[total4diasTabela])
-
-useEffect(()=>{
-    if((totalMes.valorLiquido !== null) && totalMes.valorLiquido !== undefined){
-        setTotalMesTabela(totalMes.valorLiquido)
-    }
-
-},[totalMes])
-
-useEffect(()=>{
-    console.log('TotalMes: ',totalMesTabela)
-},[totalMesTabela])
-
-// novos dados RECEBIMENTOS/CREDITOS
-
-const [creditos, setCreditos] = useState([])
-const [creditos5dias, setCreditos5dias] = useState([])
-const [totalCredito5dias, setTotalCredito5dias] = useState(0.00)
-const [totalCreditoHoje, setTotalCreditoHoje] = useState(0.00)
-const [creditosAdm, setCreditosAdm] = useState([])
-
-async function loadCreditos(){
-    console.log('loadCreditos5dias')
-    let dataInicial = new Date()
-    let dataFinal = new Date()
-    dataInicial.setDate(dataInicial.getDate() + 1)
-    dataFinal.setDate(dataFinal.getDate() + 5)
-    try {
-        const credTemp = await retornaRecebimentos(cnpj, dateConvertSearch(dataInicial), dateConvertSearch(dataFinal))
-        setCreditos(credTemp)
-    } catch (error) {
-        console.log(error)
-    }
-}
-
-useEffect(()=>{
-    loadCreditos()
-},[cnpj])
-
-useEffect(()=>{
-    console.log('Créditos: ', creditos)
-    async function loadCreditos5dias(){
+    useEffect(()=>{
+        console.log('vetorVendasMes: ',vetorVendasMes)
         let temp = []
-        async function init(){
-            for(let i = 0; i <= 5; i++){
-                let dataAtual = new Date()
-                dataAtual = convert(dataAtual, i)
-                creditos.map((credito) => {
-                    if(credito.dataCredito === dataAtual){
-                        let obj = {
-                            dataCredito: credito.dataCredito,
-                            valorLiquido: credito.valorLiquido,
-                            administradora: credito.adquirente.nomeAdquirente
-                        }
-                        temp.push(obj)
+
+        vetorVendasMes.forEach((array)=>{
+            array.forEach((venda)=>{
+                if(temp.length === 0){
+                    let novoObj = {
+                        nomeAdquirente: venda.adquirente.nomeAdquirente,
+                        total: venda.valorLiquido,
+                        id: 0,
+                        vendas: []
                     }
-                })
-            }
-        }
-        init()
-        setCreditos5dias(temp)
-    }
+                    temp.push(novoObj)
+                }else{
+                    let novoObj = {
+                        nomeAdquirente: venda.adquirente.nomeAdquirente,
+                        total: venda.valorLiquido,
+                        id: 0,
+                        vendas: []
+                    }
 
-    loadCreditos5dias()
-},[creditos])
+                    if(!(temp.find((objeto) => objeto.nomeAdquirente === venda.adquirente.nomeAdquirente))){
+                        novoObj.id = (temp.length)
+                        temp.push(novoObj)
+                    }
 
-useEffect(()=>{
-    console.log('creditos5dias: ', creditos5dias)
-    async function init(){
-        let total5 = 0.00
-        let totalHoje = 0.00
-
-        for(let i = 0; i <= 5; i++){
-            let dataAtual = new Date()
-            dataAtual = convert(dataAtual, i)
-            // eslint-disable-next-line no-loop-func
-            creditos.map((credito) => {
-                if(credito.dataCredito === dataAtual){
-                   totalHoje += credito.valorLiquido
-                }
-                else{
-                    total5 += credito.valorLiquido
+                    else{
+                        for(let i = 0; i < temp.length; i++){
+                            if(temp[i].nomeAdquirente === venda.adquirente.nomeAdquirente){
+                                temp[i].total += venda.valorLiquido
+                            }
+                        }
+                    }
                 }
             })
-        }
-        setTotalCreditoHoje(totalHoje)
-        setTotalCredito5dias(total5)
-    }
-    init()
-
-    console.log('créditos hoje: ',totalCreditoHoje)
-    console.log('créditos 5 dias: ',totalCredito5dias)
-
-},[creditos5dias])
-
-useEffect(()=>{
-    console.log('créditos hoje: ',totalCreditoHoje)
-
-},[totalCreditoHoje])
-
-useEffect(()=>{
-    console.log('créditos 5 dias: ',totalCredito5dias)
-
-},[totalCredito5dias])
-
-//Créditos por Administradoras
-
-useEffect(()=>{
-    console.log('CREDITOS ADMINISTRADORA')
-    const temp = totalPorAdministradora(creditos5dias)
-    console.log(temp)
-    setCreditosAdm(temp)
-
-},[creditos5dias])
-
-function totalPorAdministradora(array){
-
-    console.log('total por administradora')
-    let temp = []
-
-    array.forEach(element => {
-        if(temp.length === 0){
-            let novoObjeto = { 
-                nomeAdquirente: element.administradora, 
-                total: element.valorLiquido,
-                id: 0,
-                vendas: []
-            }
-            temp.push(novoObjeto)
-        }else{
-            let novoObjeto = { 
-                nomeAdquirente: element.administradora, 
-                total: element.valorLiquido,
-                id: 0,
-                vendas: []
-            }
-            
-            if(!(temp.find((objeto) => objeto.nomeAdquirente === element.administradora))){
-                novoObjeto.id = (temp.length)
-                temp.push(novoObjeto)
-            }
-            else{
-                for(let i = 0; i < temp.length; i++){
-                    if(temp[i].nomeAdquirente === element.administradora){
-                        temp[i].total += element.valorLiquido
-                    }
-                }
-            }
-        }
-    })
-
-    temp.forEach(element =>{
-        let vendasTemp = []
-        vendas4dias.forEach(venda =>{
-            if(element.nomeAdquirente === venda.administradora)
-            {
-                vendasTemp.push(venda)
-            }
         })
-        element.vendas = vendasTemp
-    })
-    console.log('vetor de adquirentes: ',temp)
-    return temp
-    }
 
-// Carregando os novos Dados para apresentação no gráfico
+        let vetorVendas = vetorVendasMes
 
-function carregaGrafico(array){
-    let label = []
-    let data = []
+        temp.forEach(element =>{
+            console.log('element: ', element)
+            let vendasTemp = []
+            vetorVendas.forEach((venda, index) =>{
+                console.log('venda: ', venda)
+                console.log('elemento: ', element.nomeAdquirente, 'venda: ', venda[index].adquirente.nomeAdquirente)
+                if(element.nomeAdquirente === venda.adquirente.nomeAdquirente)
+                {
+                    vendasTemp.push(venda)
+                }
+            })
+            element.vendas = vendasTemp
+        })
 
-    console.log('carregaGrafico Array: ', array)
-    if(((cnpj !== null) || (cnpj !== '')) && (teste !== true)){
+        setAdmVendas(temp)
+    },[vetorVendasMes])
+
+    useEffect(()=>{
+        console.log('admVendas: ', admVendas)
+    },[admVendas])
+    
+    function carregaGrafico(array){
+        let label = []
+        let data = []
+
+        console.log('carregaGrafico Array: ', array)
         array.forEach((posicao) => {
             const valorTotal = posicao.total
             const nomeAdq = posicao.nomeAdquirente
             data.push(Number(valorTotal.toFixed(2)))
             label.push(nomeAdq)
-          })
-          const obj = {labels: label, data: data}
-          console.log('obj: ', obj)
-          return obj
+        })
+        const obj = {labels: label, data: data}
+        console.log('obj: ', obj)
+        return obj    
     }
-    else{
-
-        let label = ['01-01-2023','02-01-2023','03-01-2023','04-01-2023','05-01-2023']
-        let data = [2053.00, 11598.99, 12898.50, 8795.12, 32155.02]
-
-        setDadosRecebimentos({ labels: label, data: data })
-        setRecebimentoLiquido(data.slice(-5))
-    }
-}
-
-useEffect(()=>{
-    if(adm4dias.length > 0){
-        setDadosVendas4dias(carregaGrafico(adm4dias))
-    }
-
-},[adm4dias])
-
-useEffect(()=>{
-    console.log('dadosVendas: ', dadosVendas)
-},[dadosVendas])
-
-useEffect(()=>{
-    if(creditos5dias.length > 0){
-        setDadosCreditos5dias(carregaGrafico(creditosAdm))
-    }
-},[creditos5dias])
-
-useEffect(()=>{
-    console.log('dadosRecebimentos: ', dadosRecebimentos)
-},[dadosRecebimentos])
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-
-    useEffect(()=>{
-        zerarValores()        
-            if(cnpj && (cnpj !== '')){
-                async function inicializarVendas(){
-                    await iniciaDashboard()
-                }
-                async function inicializarRecebimentos(){
-                    await iniciaRecebimentos()
-                }
-                
-                if(vendasDias.length === 0 ){
-                    inicializarVendas()
-                }
-                if(recebimentosDias.length === 0){
-                    inicializarRecebimentos()
-                }
-            }
-    },[cnpj])
-
-    useEffect(()=>{
-        if(vendasDash){
-            loadDados()
-            //loadTotalLiquido(vendasDias)
-            //loadTotalDia(vendasDias)
-        }
-    },[vendasDash])
-
-    useEffect(()=>{
-        if(recebimentosDash){
-            loadDadosRecebiveis()
-            //loadTotalLiquidoRecebimentos(recebimentosDias)
-            loadTotalDiaRecebimentos(recebimentosDias)
-        }
-    },[recebimentosDash])
-
-    async function iniciaDashboard() {
-        let dataAnterior = new Date()
-        dataAnterior.setDate(dataAnterior.getDate() - 5);
-        try {
-        await loadPeriodo(dateConvertSearch(dataAnterior), dateConvertSearch(new Date()), cnpj)
-        } catch (error) {
-        console.log(error)
-        }
-    }
-
-    async function iniciaRecebimentos(){
-        let dataInicial = new Date()
-        let dataFinal = new Date()
-        dataInicial.setDate(dataInicial.getDate() - 1)
-        dataFinal.setDate(dataFinal.getDate() + 4)
-        try {
-            await loadRecebimentos(cnpj, dateConvertSearch(dataInicial), dateConvertSearch(dataFinal))
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-    function loadDados(){
-        vendasDias.length = 0
-        recebimentosDias.length = 0
-
-        for(let i = 0; i < 5; i++){
-            loadDia(vendasDash, i)
-            recebimentosDias.push(loadDias(recebimentosDash, i -1))
-        }
-    }
-
-    function loadDadosRecebiveis(){
-        recebimentosDias.length = 0
-
-        for(let i = 0; i < 5; i++){
-            recebimentosDias.push(loadDias(recebimentosDash, i))
-        }
-    }
-
-    function loadDia(vendas, indice){
-        let dataTemp = new Date();
-        dataTemp.setDate(dataTemp.getDate() - 5 + indice);
-        dataTemp = dateConvertYYYYMMDD(dataTemp);
-        
-        let arrayTemp = vendas.filter((objeto) => objeto.dataVenda === dataTemp);
-        vendasDias.push(arrayTemp);
-    }
-
-    function loadDias(vendas, indice){
-        let dataTemp = new Date();
-        dataTemp.setDate(dataTemp.getDate() - 5 + indice);
-        dataTemp = dateConvertYYYYMMDD(dataTemp);
-        
-        let arrayTemp = vendas.filter((objeto) => objeto.dataVenda === dataTemp);
-        return arrayTemp
-    }
-
-    function loadTotalDia(vendasDias){
-        if(vendasDias.length > 0){
-            vendasDias.map((objeto) => {
-                objeto.map((vendaArray) => {
-                    switch(vendaArray.produto.descricaoProduto){
-                        case 'Crédito':
-                            somaValorCredito += vendaArray.valorLiquido
-                            setCredito(somaValorCredito)
-                            break
-                        case 'Débito':
-                            somaValorDebito += vendaArray.valorLiquido
-                            setDebito(somaValorDebito)
-                            break
-                        case 'Voucher':
-                            somaValorVoucher += vendaArray.valorLiquido
-                            setVoucher(somaValorVoucher)
-                            break
-                    }
-                    return 0
-                })
-                return 0
-            })
-        }
-        else{
-            console.log(vendasDias)
-        }
-    }
-
-    function loadTotalDiaRecebimentos(recebimentosDias){
-        if(recebimentosDias.length > 0){
-            recebimentosDias.map((objeto) => {
-                objeto.map((recebimentoArray) => {
-                    switch(recebimentoArray.produto.descricaoProduto){
-                        case 'Crédito':
-                            somaRecebimentoCredito += recebimentoArray.valorLiquido
-                            setRecebimentoCredito(somaRecebimentoCredito)
-                            break
-                        case 'Débito':
-                            somaRecebimentoDebito += recebimentoArray.valorLiquido
-                            setRecebimentoDebito(somaRecebimentoDebito)
-                            break
-                        case 'Voucher':
-                            somaRecebimentoVoucher += recebimentoArray.valorLiquido
-                            setRecebimentoVoucher(somaValorVoucher)
-                            break
-                    }
-                    return 0
-                })
-                return 0
-            })
-        }
-        else{
-            console.log(vendasDias)
-        }
-    }
-
-/*    async function loadTotalLiquido(vendasDias){
-        dadosVendas.length = 0
-        let label = []
-        let data = []
-
-        if(((cnpj !== null) || (cnpj !== '')) && (teste !== true)){
-            somaValorLiquido = vendasDias.map((posicao) => {
-            return posicao.reduce((sum, objeto) => sum + objeto.valorLiquido, 0);
-            });
-            for(let i = 0; i < 5; i++){
-            let dataTemp = new Date();
-            dataTemp.setDate(dataTemp.getDate() - 5 + i)
-            let valorConvertido = parseFloat(somaValorLiquido[i])
-            label.push(`${dateConvertSearch(dataTemp).replaceAll('-','/')}`)
-            data.push(Number(valorConvertido.toFixed(2)))
-            }
-            setDadosVendas({labels: label, data: data})
-            setLiquido(somaValorLiquido)
-        }
-
-        else{
-
-            let label = ['01-01-2023','02-01-2023','03-01-2023','04-01-2023','05-01-2023']
-            let data = [2053.00, 11598.99, 12898.50, 8795.12, 32155.02]
-
-            setDadosVendas({ labels: label, data: data })
-            setLiquido(data.slice(-5))
-        }
-    } */
-
- /*   async function loadTotalLiquidoRecebimentos(recebimentosDias) {
-        dadosRecebimentos.length = 0
-        let label = []
-        let data = [0, 0, 0, 0, 0]
-        if(((cnpj !== null) || (cnpj !== '')) && (teste !== true)){
-            recebimentosDias.forEach((posicao) => {
-                const valorTotal = posicao.reduce((sum, objeto) => sum + objeto.valorLiquido, 0)
-                data.push(Number(valorTotal.toFixed(2)))
-              })
-            
-              for (let i = 0; i < 5; i++) {
-                let dataTemp = new Date()
-                dataTemp.setDate(dataTemp.getDate() - 1 + i)
-                label.push(`${dateConvertSearch(dataTemp).replaceAll('-','/')}`)
-              }
-            
-              setDadosRecebimentos({ labels: label, data: data })
-              setRecebimentoLiquido(data.slice(-5))
-        }
-        else{
-
-            let label = ['01-01-2023','02-01-2023','03-01-2023','04-01-2023','05-01-2023']
-            let data = [2053.00, 11598.99, 12898.50, 8795.12, 32155.02]
-
-            setDadosRecebimentos({ labels: label, data: data })
-            setRecebimentoLiquido(data.slice(-5))
-        }
-      } */
-
-      useEffect(()=>{
-        //console.log('dadosVendas: ',dadosVendas)
-        //console.log('dadosRecebimentos: ',dadosRecebimentos)
-        console.log('dadosVendas4dias: ',dadosVendas4dias)
-        console.log('dadosCreditos5dias: ',dadosCreditos5dias)
-        console.log('total4dias: ',total4dias)
-        console.log('creditos: ',creditos)
-        console.log('creditos5dias: ',creditos5dias)
-        console.log('totalCredito5dias: ',totalCredito5dias)
-        console.log('totalCreditoHoje: ',totalCreditoHoje)
-        console.log('creditosAdm: ',creditosAdm)
-      },[creditos, creditos5dias, creditosAdm, dadosCreditos5dias, dadosRecebimentos, dadosVendas, dadosVendas4dias, total4dias, totalCredito5dias, totalCreditoHoje])
 
   return(
     <>
@@ -684,7 +216,7 @@ useEffect(()=>{
                 <div className='data-group-area'>
                     <div className='graph-data'>
                         <h1 className='title-chart'>Vendas:</h1>
-                        <PieChart data01 = {dadosVendas4dias}/>
+                        <PieChart data01 = {graficoVendas}/>
                     </div>
                     <div className='table-data'>
                         <table className="table dash-table det-table dash-body-flex tbody-sticky">
@@ -696,19 +228,19 @@ useEffect(()=>{
                             </thead>
                             <tbody className='dash-tbody dash-tbody-bg'>
                                 <tr className='dash-tr'>
-                                    <td className='cell-text dash-td' data-label="Total Últimos 4 dias">R$ {total4diasTabela.toFixed(2).replace('.',',')}</td>
-                                    <td className='cell-text dash-td' data-label="Total do Mês">R$ {totalMesTabela.toFixed(2).replace('.',',')}</td>
+                                    <td className='cell-text dash-td' data-label="Total Últimos 4 dias">R$ {totalVendas4dias.toFixed(2).replace('.',',')}</td>
+                                    <td className='cell-text dash-td' data-label="Total do Mês">R$ {somatorioVendasMes.toFixed(2).replace('.',',')}</td>
                                 </tr>
                             </tbody>
                         </table>
-                        <TabelaGenerica Array={adm4dias}/>
+                        <TabelaGenerica/>
                     </div>
                 </div>
                 
                 <div className='data-group-area'>
                     <div className='graph-data'>
                         <h1 className='title-chart'>Créditos:</h1>
-                        <PieChart data01 = {dadosCreditos5dias}/>
+                        <PieChart data01 = {graficoCreditos}/>
                     </div>
                     
                     <div className='table-data'>
@@ -721,12 +253,12 @@ useEffect(()=>{
                                 </thead>
                                 <tbody className='dash-tbody dash-tbody-bg'>
                                     <tr className='dash-tr'>
-                                        <td className='cell-text dash-td' data-label="Previsão de Hoje">R$ {totalCreditoHoje.toFixed(2).replace('.',',')}</td>
-                                        <td className='cell-text dash-td' data-label="Previsão Próx 5 Dias">R$ {totalCredito5dias.toFixed(2).replace('.',',')}</td>
+                                        <td className='cell-text dash-td' data-label="Previsão de Hoje">R$ {9999.99.toFixed(2).replace('.',',')}</td>
+                                        <td className='cell-text dash-td' data-label="Previsão Próx 5 Dias">R$ {9999.99.toFixed(2).replace('.',',')}</td>
                                     </tr>
                                 </tbody>
                         </table>
-                        <TabelaGenerica Array={creditosAdm}/>
+                        <TabelaGenerica/>
                     </div>
                 </div>            
             </div>
