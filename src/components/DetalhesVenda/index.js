@@ -1,11 +1,34 @@
-import { useContext } from "react"
+import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "../../contexts/auth"
+import { vendasStatic } from "../../contexts/static"
 
 import './detalhesVenda.css'
 
 const DetalhesVenda = () =>{
 
-    const { vendas, dateConvert } = useContext(AuthContext)    
+    const { vendas, dateConvert, setVendas, setCnpj, teste } = useContext(AuthContext)
+    const [vendasTeste, setVendasTeste] = useState([])
+    useEffect(()=>{
+        if(teste === true){
+            setVendas(vendasStatic)
+            setCnpj('000000000000')
+
+        }
+    },[])
+
+    useEffect(()=>{
+        async function init(){
+            await setVendasTeste(vendas)
+        }
+        init()
+    },[vendas])
+
+    useEffect(()=>{
+        console.log('teste: ', vendasTeste)
+    },[vendasTeste])
+
+  
+    
     return(
         <>
             <div className='dropShadow vendas-view'>
@@ -31,24 +54,24 @@ const DetalhesVenda = () =>{
                                 </tr>
                             </thead>
                         <tbody>
-                            {vendas.map((venda)=>{
+                            {vendasTeste.length > 0 && vendasTeste.map((venda)=>{
                             return(
                                 <tr className='det-tr' key={venda.codigoVenda}>
-                                    <td className='det-td'data-label="Adquirente">{venda.adquirente.nomeAdquirente}</td>
-                                    <td className='det-td'data-label="Bandeira">{venda.bandeira.descricaoBandeira}</td>
-                                    <td className='det-td'data-label="Valor Bruto">R$<span className='green'>{`${venda.valorBruto.toFixed(2)}`.toString().replace('.',',')}</span></td>
-                                    <td className='det-td'data-label="Valor Líquido">R$<span className='green'>{`${venda.valorLiquido.toFixed(2)}`.toString().replace('.',',')}</span></td>
-                                    <td className='det-td'data-label="Taxa">R$ <span className='red'>{`${venda.taxa.toFixed(2)}`.toString().replace('.',',')}</span></td>
-                                    <td className='det-td'data-label="Produto">{venda.produto.descricaoProduto}</td>
-                                    <td className='det-td'data-label="Data da Venda">{dateConvert(venda.dataVenda)}</td>
-                                    <td className='det-td'data-label="Hora da Venda">{ venda.horaVenda?.replaceAll('-', ':')}</td>
-                                    <td className='det-td'data-label="Data do Crédito">{dateConvert(venda.dataCredito)}</td>
-                                    <td className='det-td'data-label="NSU">{venda.nsu}</td>
-                                    <td className='det-td'data-label="CNPJ">{venda.cnpj}</td>
-                                    <td className='det-td'data-label="Código da Venda">{venda.codigoVenda}</td>
-                                    <td className='det-td'data-label="Código da Autorização">{venda.codigoAutorizacao}</td>
-                                    <td className='det-td'data-label="Numero PV">{venda.numeroPV}</td>
-                                    <td className='det-td'data-label="Qtd Parcelas">{venda.quantidadeParcelas}</td>
+                                    <td className='det-td-vendas'data-label="Adquirente">{venda.adquirente.nomeAdquirente}</td>
+                                    <td className='det-td-vendas'data-label="Bandeira">{venda.bandeira.descricaoBandeira}</td>
+                                    <td className='det-td-vendas'data-label="Valor Bruto">R$<span className='green'>{`${venda.valorBruto.toFixed(2)}`.toString().replace('.',',')}</span></td>
+                                    <td className='det-td-vendas'data-label="Valor Líquido">R$<span className='green'>{`${venda.valorLiquido.toFixed(2)}`.toString().replace('.',',')}</span></td>
+                                    <td className='det-td-vendas'data-label="Taxa">R$ <span className='red'>{`${venda.taxa.toFixed(2)}`.toString().replace('.',',')}</span></td>
+                                    <td className='det-td-vendas'data-label="Produto">{venda.produto.descricaoProduto}</td>
+                                    <td className='det-td-vendas'data-label="Data da Venda">{dateConvert(venda.dataVenda)}</td>
+                                    <td className='det-td-vendas'data-label="Hora da Venda">{ venda.horaVenda?.replaceAll('-', ':')}</td>
+                                    <td className='det-td-vendas'data-label="Data do Crédito">{dateConvert(venda.dataCredito)}</td>
+                                    <td className='det-td-vendas'data-label="NSU">{venda.nsu}</td>
+                                    <td className='det-td-vendas'data-label="CNPJ">{venda.cnpj}</td>
+                                    <td className='det-td-vendas'data-label="Código da Venda">{venda.codigoVenda}</td>
+                                    <td className='det-td-vendas'data-label="Código da Autorização">{venda.codigoAutorizacao}</td>
+                                    <td className='det-td-vendas'data-label="Numero PV">{venda.numeroPV}</td>
+                                    <td className='det-td-vendas'data-label="Qtd Parcelas">{venda.quantidadeParcelas}</td>
                                 </tr>
                             )
                             })}

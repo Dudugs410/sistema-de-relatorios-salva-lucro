@@ -10588,112 +10588,304 @@ export const recebimentosStatic = [
 
 export const bandeirasStatic = [
     {
-        "cnpj": "02.011.506/0001-21",
-        "razaoSocial": "FERRAGEM BOM JESUS",
-        "numeroPV": "02011506000121",
-        "dataVenda": "2022-10-06",
-        "horaVenda": "09-07-36",
-        "nsu": "00133358",
-        "adquirente": {
-            "codigoAdquirente": 23,
-            "nomeAdquirente": "Vero"
-        },
-        "produto": {
-            "codigoProduto": 1,
-            "descricaoProduto": "Crédito"
-        },
-        "bandeira": {
-            "codigoBandeira": 29,
-            "descricaoBandeira": "Banricompras"
-        },
-        "modalidade": {
-            "codigoModalidade": 15,
-            "descricaoModalidade": "Parcelado Sem Entrada"
-        },
-        "valorBruto": 199.44,
-        "valorDesconto": 5.98,
-        "valorLiquido": 193.46,
-        "taxa": 3.000000,
-        "dataCredito": "2022-12-05",
-        "parcela": 2,
-        "codigoAutorizacao": "002696",
-        "terminal": "00000827",
-        "antecipada": false,
-        "banco": null,
-        "agencia": null,
-        "conta": null
+        "codigoBandeira": 72,
+        "descricaoBandeira": "Abrapetite"
     },
     {
-        "cnpj": "02.011.506/0001-21",
-        "razaoSocial": "FERRAGEM BOM JESUS",
-        "numeroPV": "1370676        ",
-        "dataVenda": "2022-11-04",
-        "horaVenda": "01-07-18",
-        "nsu": "000000001631",
-        "adquirente": {
-            "codigoAdquirente": 3,
-            "nomeAdquirente": "Getnet"
-        },
-        "produto": {
-            "codigoProduto": 1,
-            "descricaoProduto": "Crédito"
-        },
-        "bandeira": {
-            "codigoBandeira": 2,
-            "descricaoBandeira": "Mastercard"
-        },
-        "modalidade": {
-            "codigoModalidade": 2,
-            "descricaoModalidade": "Crédito À Vista"
-        },
-        "valorBruto": 132.84,
-        "valorDesconto": 3.36,
-        "valorLiquido": 129.48,
-        "taxa": 2.530000,
-        "dataCredito": "2022-12-05",
-        "parcela": 1,
-        "codigoAutorizacao": "0000R05634",
-        "terminal": "12884608",
-        "antecipada": false,
-        "banco": "104",
-        "agencia": "000495",
-        "conta": "03000022060"
+        "codigoBandeira": 7,
+        "descricaoBandeira": "Agiplan"
     },
     {
-        "cnpj": "02.011.506/0001-21",
-        "razaoSocial": "FERRAGEM BOM JESUS",
-        "numeroPV": "02011506000121",
-        "dataVenda": "2022-11-05",
-        "horaVenda": "10-07-05",
-        "nsu": "00413023",
-        "adquirente": {
-            "codigoAdquirente": 30,
-            "nomeAdquirente": "Verdecard"
-        },
-        "produto": {
-            "codigoProduto": 1,
-            "descricaoProduto": "Crédito"
-        },
-        "bandeira": {
-            "codigoBandeira": 18,
-            "descricaoBandeira": "Verdecard"
-        },
-        "modalidade": {
-            "codigoModalidade": 3,
-            "descricaoModalidade": "Crédito Parcelado"
-        },
-        "valorBruto": 116.24,
-        "valorDesconto": 4.65,
-        "valorLiquido": 111.59,
-        "taxa": 4.000000,
-        "dataCredito": "2022-12-05",
-        "parcela": 1,
-        "codigoAutorizacao": "003061",
-        "terminal": "00000827",
-        "antecipada": false,
-        "banco": null,
-        "agencia": null,
-        "conta": null
+        "codigoBandeira": 71,
+        "descricaoBandeira": "Alimentare"
+    },
+    {
+        "codigoBandeira": 3,
+        "descricaoBandeira": "Amex"
+    },
+    {
+        "codigoBandeira": 20,
+        "descricaoBandeira": "Avista"
+    },
+    {
+        "codigoBandeira": 8,
+        "descricaoBandeira": "Banescard"
+    },
+    {
+        "codigoBandeira": 47,
+        "descricaoBandeira": "Banescard"
+    },
+    {
+        "codigoBandeira": 17,
+        "descricaoBandeira": "Banricard"
+    },
+    {
+        "codigoBandeira": 29,
+        "descricaoBandeira": "Banricompras"
+    },
+    {
+        "codigoBandeira": 43,
+        "descricaoBandeira": "Ben Visa Vale"
+    },
+    {
+        "codigoBandeira": 54,
+        "descricaoBandeira": "Biq"
+    },
+    {
+        "codigoBandeira": 65,
+        "descricaoBandeira": "BKBANK"
+    },
+    {
+        "codigoBandeira": 70,
+        "descricaoBandeira": "Bonuscred"
+    },
+    {
+        "codigoBandeira": 77,
+        "descricaoBandeira": "BPF"
+    },
+    {
+        "codigoBandeira": 40,
+        "descricaoBandeira": "Brasilcard"
+    },
+    {
+        "codigoBandeira": 9,
+        "descricaoBandeira": "Cabal"
+    },
+    {
+        "codigoBandeira": 74,
+        "descricaoBandeira": "Cartão Pré-Datado"
+    },
+    {
+        "codigoBandeira": 61,
+        "descricaoBandeira": "ConvCard"
+    },
+    {
+        "codigoBandeira": 57,
+        "descricaoBandeira": "Cooper Card"
+    },
+    {
+        "codigoBandeira": 10,
+        "descricaoBandeira": "Credsystem"
+    },
+    {
+        "codigoBandeira": 14,
+        "descricaoBandeira": "Credz"
+    },
+    {
+        "codigoBandeira": 26,
+        "descricaoBandeira": "Cup"
+    },
+    {
+        "codigoBandeira": 6,
+        "descricaoBandeira": "Diners"
+    },
+    {
+        "codigoBandeira": 55,
+        "descricaoBandeira": "DMCard"
+    },
+    {
+        "codigoBandeira": 5,
+        "descricaoBandeira": "Elo"
+    },
+    {
+        "codigoBandeira": 11,
+        "descricaoBandeira": "Esplanada"
+    },
+    {
+        "codigoBandeira": 56,
+        "descricaoBandeira": "EUCard"
+    },
+    {
+        "codigoBandeira": 51,
+        "descricaoBandeira": "Facecard"
+    },
+    {
+        "codigoBandeira": 67,
+        "descricaoBandeira": "Fitcard"
+    },
+    {
+        "codigoBandeira": 49,
+        "descricaoBandeira": "Flexocard"
+    },
+    {
+        "codigoBandeira": 37,
+        "descricaoBandeira": "Goodcard"
+    },
+    {
+        "codigoBandeira": 32,
+        "descricaoBandeira": "Greencard"
+    },
+    {
+        "codigoBandeira": 15,
+        "descricaoBandeira": "Hiper"
+    },
+    {
+        "codigoBandeira": 12,
+        "descricaoBandeira": "Hipercard"
+    },
+    {
+        "codigoBandeira": 28,
+        "descricaoBandeira": "Indefinida"
+    },
+    {
+        "codigoBandeira": 19,
+        "descricaoBandeira": "Inexistente"
+    },
+    {
+        "codigoBandeira": 75,
+        "descricaoBandeira": "Izi"
+    },
+    {
+        "codigoBandeira": 13,
+        "descricaoBandeira": "Jcb"
+    },
+    {
+        "codigoBandeira": 44,
+        "descricaoBandeira": "Lecard"
+    },
+    {
+        "codigoBandeira": 23,
+        "descricaoBandeira": "Maestro"
+    },
+    {
+        "codigoBandeira": 2,
+        "descricaoBandeira": "Mastercard"
+    },
+    {
+        "codigoBandeira": 73,
+        "descricaoBandeira": "MegaVale"
+    },
+    {
+        "codigoBandeira": 69,
+        "descricaoBandeira": "Nutricard"
+    },
+    {
+        "codigoBandeira": 35,
+        "descricaoBandeira": "Onecard"
+    },
+    {
+        "codigoBandeira": 16,
+        "descricaoBandeira": "Ourocard"
+    },
+    {
+        "codigoBandeira": 24,
+        "descricaoBandeira": "Outras Bandeiras"
+    },
+    {
+        "codigoBandeira": 52,
+        "descricaoBandeira": "Personal Card"
+    },
+    {
+        "codigoBandeira": 48,
+        "descricaoBandeira": "PicPay"
+    },
+    {
+        "codigoBandeira": 50,
+        "descricaoBandeira": "Pix"
+    },
+    {
+        "codigoBandeira": 34,
+        "descricaoBandeira": "Planvale"
+    },
+    {
+        "codigoBandeira": 33,
+        "descricaoBandeira": "Policard"
+    },
+    {
+        "codigoBandeira": 78,
+        "descricaoBandeira": "Private"
+    },
+    {
+        "codigoBandeira": 76,
+        "descricaoBandeira": "QCard"
+    },
+    {
+        "codigoBandeira": 46,
+        "descricaoBandeira": "Romcard"
+    },
+    {
+        "codigoBandeira": 41,
+        "descricaoBandeira": "Safecard"
+    },
+    {
+        "codigoBandeira": 38,
+        "descricaoBandeira": "Senff"
+    },
+    {
+        "codigoBandeira": 63,
+        "descricaoBandeira": "SESIMax"
+    },
+    {
+        "codigoBandeira": 21,
+        "descricaoBandeira": "Sicredi"
+    },
+    {
+        "codigoBandeira": 31,
+        "descricaoBandeira": "Sodexo"
+    },
+    {
+        "codigoBandeira": 4,
+        "descricaoBandeira": "Sorocred"
+    },
+    {
+        "codigoBandeira": 58,
+        "descricaoBandeira": "SoroCred"
+    },
+    {
+        "codigoBandeira": 60,
+        "descricaoBandeira": "SupCard"
+    },
+    {
+        "codigoBandeira": 30,
+        "descricaoBandeira": "Ticket"
+    },
+    {
+        "codigoBandeira": 39,
+        "descricaoBandeira": "Tricard"
+    },
+    {
+        "codigoBandeira": 68,
+        "descricaoBandeira": "Triocard"
+    },
+    {
+        "codigoBandeira": 45,
+        "descricaoBandeira": "Valecard"
+    },
+    {
+        "codigoBandeira": 62,
+        "descricaoBandeira": "ValeShop"
+    },
+    {
+        "codigoBandeira": 42,
+        "descricaoBandeira": "Vegascard"
+    },
+    {
+        "codigoBandeira": 18,
+        "descricaoBandeira": "Verdecard"
+    },
+    {
+        "codigoBandeira": 59,
+        "descricaoBandeira": "VIASoft"
+    },
+    {
+        "codigoBandeira": 1,
+        "descricaoBandeira": "Visa"
+    },
+    {
+        "codigoBandeira": 22,
+        "descricaoBandeira": "Visa Electron"
+    },
+    {
+        "codigoBandeira": 64,
+        "descricaoBandeira": "VOLUS"
+    },
+    {
+        "codigoBandeira": 36,
+        "descricaoBandeira": "VR"
+    },
+    {
+        "codigoBandeira": 66,
+        "descricaoBandeira": "Wizeo"
     }
 ]
 

@@ -14,6 +14,9 @@ import ModalCliente from '../../components/ModalCliente'
 import PieChart from '../../components/00Teste'
 import { dateConvert } from '../../contexts/dateConverter'
 
+import { adquirentesStatic, bandeirasStatic, vendasStatic } from '../../contexts/static'
+
+
 
 
 const Dashboard = () => {
@@ -29,6 +32,19 @@ const Dashboard = () => {
         modalCliente,
         teste,
         converteData,
+        setCnpj,
+
+        clientes,
+        setClientes,
+        grupos,
+        SetGrupos,
+        bandeiras,
+        setBandeiras,
+        vendas,
+        setVendas,
+        adquirentes,
+        setAdquirentes,
+
     } = useContext(AuthContext)
 
     const [vetorVendasMes, setVetorVendasMes] = useState([])
@@ -51,6 +67,14 @@ const Dashboard = () => {
 
     const [graficoVendas, setGraficoVendas] = useState({ labels: [], data: [] })
     const [graficoCreditos, setGraficoCreditos] = useState({ labels: [], data: [] })
+
+
+    useEffect(()=>{
+        if(teste){
+            setCnpj(0)
+        }
+
+    },[])
 
     async function inicializaVendas(){
         let vendaDataInicial = new Date()
@@ -107,8 +131,26 @@ const Dashboard = () => {
                 await inicializaVendasMes()
                 await inicializaVetorVendasMes()
             }
-            else if(teste === false){
+            else if(teste === true){
+                
+                setVendas(vendasStatic)
+                setAdquirentes(adquirentesStatic)
+                setBandeiras(bandeirasStatic)
 
+
+                let label = ['Cielo', 'Alelo', 'Vero', 'GetNet']
+                let data = [12395.66, 8750.43, 15322.56, 19430.22]
+                setTotalVendas4dias(55,898.87)
+                setSomatorioVendasMes(78,264.85)
+
+                let label2 = ['Cielo', 'Alelo', 'Vero', 'GetNet', 'Ticket']
+                let data2 = [33395.66, 12350.43, 43322.56, 21430.22, 11563.85]
+                setTotalCreditosHoje(26344.55)
+                setTotalCreditos5dias(122062.72)
+                
+
+                setGraficoVendas({ labels: label, data: data })
+                setGraficoCreditos({ labels: label2, data: data2 })
             }
         }
         inicializar()
@@ -155,7 +197,7 @@ const Dashboard = () => {
                         vendas: []
                     }
 
-                    if(!(temp.find((objeto) => objeto.nomeAdquirente === venda.adquirente.nomeAdquirente))){
+                    if(!(temp.find((objeto) => objeto.nomeAdquirente === venda.adquirente.nomeAdquirente && objeto !== ( undefined || [] )))){
                         novoObj.id = (temp.length)
                         temp.push(novoObj)
                     }
@@ -215,7 +257,8 @@ const Dashboard = () => {
 
   return(
     <>
-        { modalCliente && ( <ModalCliente/> ) }
+        
+        { modalCliente && !teste && ( <ModalCliente/> ) }
         { loading && (<LoadingModal/>) } 
         <div className='appPage'>
             <div className='content-area dash'>
@@ -259,8 +302,8 @@ const Dashboard = () => {
                                 </thead>
                                 <tbody className='dash-tbody dash-tbody-bg'>
                                     <tr className='dash-tr'>
-                                        <td className='cell-text dash-td' data-label="Previsão de Hoje">R$ {9999.99.toFixed(2).replace('.',',')}</td>
-                                        <td className='cell-text dash-td' data-label="Previsão Próx 5 Dias">R$ {9999.99.toFixed(2).replace('.',',')}</td>
+                                        <td className='cell-text dash-td' data-label="Previsão de Hoje">R$ {totalCreditosHoje.toFixed(2).replace('.',',')}</td>
+                                        <td className='cell-text dash-td' data-label="Previsão Próx 5 Dias">R$ {totalCreditos5dias.toFixed(2).replace('.',',')}</td>
                                     </tr>
                                 </tbody>
                         </table>

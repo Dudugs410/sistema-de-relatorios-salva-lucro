@@ -7,6 +7,8 @@ import { VendasContext } from "../../pages/Vendas"
 import { toast } from 'react-toastify';
 import { ToastContainer } from 'react-toastify'
 
+import { vendasStatic } from "../../contexts/static";
+
 import 'react-toastify/dist/ReactToastify.css'
 import './reactdatepicker.css'
 
@@ -27,6 +29,8 @@ const BuscarClienteData = () => {
         grupos, 
         adquirentes,
         dateConvertSearch,
+        teste,
+        setVendas, 
     } = useContext(AuthContext)
 
     const { 
@@ -44,7 +48,7 @@ const BuscarClienteData = () => {
         setTotalCredito, 
         setTotalVoucher, 
         setTotalLiquido, 
-        gerarDados, 
+        gerarDados,
         tableData,
     } = useContext(VendasContext)
     
@@ -74,37 +78,44 @@ const BuscarClienteData = () => {
     }
 
     async function handleBusca(e){
-        console.log('handleBusca()')
-        e.preventDefault()
-        await buscar()
-        await gerarDados()
+            console.log('handleBusca()')
+            e.preventDefault()
+            await buscar()
+            await gerarDados()
     }
 
     async function buscar() {
         console.log('buscar()')
-        await loadVendas(dataBusca, cnpjBusca, adqBusca, banBusca)
-        .then(() =>{
-            if(dataBusca === '' || cnpjBusca === ''){
-                return 0
-            }
-            else{
-                alerta(`executou a busca do dia ${dateConvertSearch(dataBusca)}`)
-                setBuscou(true)
-            }    
-        })
-        setLoading(false)
+        if(teste !== true){
+            await loadVendas(dataBusca, cnpjBusca, adqBusca, banBusca)
+            .then(() =>{
+                if(dataBusca === '' || cnpjBusca === ''){
+                    return 0
+                }
+                else{
+                    alerta(`executou a busca do dia ${dateConvertSearch(dataBusca)}`)
+                    setBuscou(true)
+                }    
+            })
+            setLoading(false)
+        }else{
+            setVendas(vendasStatic)
+            setDetalhes(true)
+        }
       }
 
       useEffect(()=>{
         console.log('buscou: ', buscou)
-        if(buscou === true){
-            if((vendas === null) || (vendas.length === 0)){
-                alerta('não existem vendas para a data selecionada')
-                setBuscou(false)
-            }
-            else{
-                setDetalhes(true)
-                setBuscou(false)
+        if(teste !== true){
+            if(buscou === true){
+                if((vendas === null) || (vendas.length === 0)){
+                    alerta('não existem vendas para a data selecionada')
+                    setBuscou(false)
+                }
+                else{
+                    setDetalhes(true)
+                    setBuscou(false)
+                }
             }
         }
       },[buscou])

@@ -36,6 +36,13 @@
     white-space: nowrap;
 }
 
+.det-td-vendas{
+    color: black;
+    width: 200px;
+    text-align: center;
+    white-space: nowrap;
+}
+
 .table-btn{
     height: 1em;
     text-align: center;

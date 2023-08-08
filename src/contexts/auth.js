@@ -208,80 +208,81 @@ function AuthProvider({ children }){
     // retorna as vendas da data e cliente específicos.
 
     async function loadVendas(dataInicial, cnpj, adquirente, bandeira){
-
-      console.log('Data Inicial: ', dataInicial)
-      console.log('CNPJ: ', cnpj)
-
-      if((dataInicial === '' || undefined) || (cnpj === '' || undefined)){
-        alert('Favor selecionar uma data e cliente válidos')
-        return 0
-      }
-
-      setLoading(true)
-      let params = {}
-
-      if(((adquirente !== '') && (bandeira !== '')) && (buscou === false)){
-          console.log('adquirente e bandeira')
-          params = {
-          dataInicial: dataInicial,
-          datafinal: dataInicial,
-          cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-          adquirente: adquirente,
-          bandeira: bandeira,
+      if(teste !== true){
+        console.log('Data Inicial: ', dataInicial)
+        console.log('CNPJ: ', cnpj)
+  
+        if((dataInicial === '' || undefined) || (cnpj === '' || undefined)){
+          alert('Favor selecionar uma data e cliente válidos')
+          return 0
         }
-        setBuscou(true)
-      }
-
-      else if(((adquirente !== '') && (bandeira === '')) && (buscou === false)){
-            console.log('adquirente sem bandeira')
+  
+        setLoading(true)
+        let params = {}
+  
+        if(((adquirente !== '') && (bandeira !== '')) && (buscou === false)){
+            console.log('adquirente e bandeira')
             params = {
-            datainicial: dataInicial,
+            dataInicial: dataInicial,
             datafinal: dataInicial,
             cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
             adquirente: adquirente,
+            bandeira: bandeira,
+          }
+          setBuscou(true)
         }
-        setBuscou(true)
-      }
-
-      else if(((bandeira !== '') && (adquirente === '')) && (buscou === false)){
-        console.log('bandeira sem adquirente')
-        params = {
-        datainicial: dataInicial,
-        datafinal: dataInicial,
-        cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-        bandeira: bandeira,
+  
+        else if(((adquirente !== '') && (bandeira === '')) && (buscou === false)){
+              console.log('adquirente sem bandeira')
+              params = {
+              datainicial: dataInicial,
+              datafinal: dataInicial,
+              cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+              adquirente: adquirente,
+          }
+          setBuscou(true)
         }
-        setBuscou(true)
-      }
-
-      else{
-        params = {
-        datainicial: dataInicial,
-        datafinal: dataInicial,
-        cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+  
+        else if(((bandeira !== '') && (adquirente === '')) && (buscou === false)){
+          console.log('bandeira sem adquirente')
+          params = {
+          datainicial: dataInicial,
+          datafinal: dataInicial,
+          cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+          bandeira: bandeira,
+          }
+          setBuscou(true)
         }
-      }
-      
-        let config = {
-          headers: { 
-            'Content-Type': 'application/json', 
-            'Authorization': `Bearer ${Cookies.get('token')}`
-          },
-          params: params
+  
+        else{
+          params = {
+          datainicial: dataInicial,
+          datafinal: dataInicial,
+          cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+          }
         }
-
-      await api.get('vendas', config)
-          .then((response) => {
-            setVendas(response.data.VENDAS)
+        
+          let config = {
+            headers: { 
+              'Content-Type': 'application/json', 
+              'Authorization': `Bearer ${Cookies.get('token')}`
+            },
+            params: params
+          }
+  
+        await api.get('vendas', config)
+            .then((response) => {
+              setVendas(response.data.VENDAS)
+              setLoading(false)
+              setBuscou(false)
+              return response.data.VENDAS
+            })
+            .catch((error) => {
             setLoading(false)
-            setBuscou(false)
-            return response.data.VENDAS
-          })
-          .catch((error) => {
-          setLoading(false)
-          console.log('config: ',config)
-          console.log(error)
-          })
+            console.log('config: ',config)
+            console.log(error)
+            })
+      }
     }
 
     //Consulta de vendas, com intervalo de datas
