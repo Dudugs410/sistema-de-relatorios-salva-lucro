@@ -51,16 +51,16 @@ const Dashboard = () => {
     
 
     const [vendas4dias, setVendas4dias] = useState([])
-    const [creditosDashboard, setCreditosDashboard] = useState([])
+    const [creditos5dias, setCreditos5dias] = useState([])
 
     const [totalVendas4dias, setTotalVendas4dias] = useState(0)
-    const [creditos5dias, setCreditos5dias] = useState(0)
+    const [totalCreditos5dias, setTotalCreditos5dias] = useState(0)
 
     const [vendasMes, setVendasMes] = useState([])
     const [somatorioVendasMes, setSomatorioVendasMes] = useState(0)
 
-    const [totalCreditosHoje, setTotalCreditosHoje] = useState(0)
-    const [totalCreditos5dias, setTotalCreditos5dias] = useState(0)
+    const [creditosMes, setCreditosMes] = useState([])
+    const [somatorioCreditosHoje, setSomatorioCreditosHoje] = useState(0)
 
     const [admVendas, setAdmVendas] = useState([])
     const [admCreditos, setAdmCreditos] = useState([])
@@ -115,7 +115,7 @@ const Dashboard = () => {
         let newdata = dateConvertSearch(data)
 
         creditosTemp = await returnCreditos( newdata, newdata, cnpj)
-        setCreditosDashboard(creditosTemp)
+        setCreditos5dias(creditosTemp)
     }
 
     async function inicializaVendasMes(){
@@ -126,6 +126,7 @@ const Dashboard = () => {
     useEffect(()=>{
         async function inicializar(){
             if(cnpj !== null && teste !== true){
+                console.log('inicializando dados de vendas e créditos...')
                 await inicializaVendas()
                 await inicializaCreditos()
                 await inicializaVendasMes()
@@ -145,7 +146,7 @@ const Dashboard = () => {
 
                 let label2 = ['Cielo', 'Alelo', 'Vero', 'GetNet', 'Ticket']
                 let data2 = [33395.66, 12350.43, 43322.56, 21430.22, 11563.85]
-                setTotalCreditosHoje(26344.55)
+                setSomatorioCreditosHoje(26344.55)
                 setTotalCreditos5dias(122062.72)
                 
 
@@ -160,7 +161,6 @@ const Dashboard = () => {
         async function inicializar(){
             const total = vendasMes.reduce((total, obj) => total + obj.valorliquido, 0)
             setSomatorioVendasMes(total)
-
         }
         inicializar()
     },[vendasMes])
@@ -172,8 +172,8 @@ const Dashboard = () => {
     },[vendas4dias])
     
     useEffect(()=>{
-        console.log('creditosDashboard: ', creditosDashboard)
-    },[creditosDashboard])
+        console.log('Creditos5dias: ', creditos5dias)
+    },[creditos5dias])
 
     useEffect(()=>{
         console.log('vetorVendasMes: ',vetorVendasMes)
@@ -213,30 +213,26 @@ const Dashboard = () => {
             })
         })
 
-        console.log ('vendasMes: ',vetorVendasMes)
-        const vetorVendas = vetorVendasMes
-
-        temp.forEach(element =>{
-            console.log('element: ', element)
+        temp.forEach((adq) => {
             let vendasTemp = []
-            vetorVendas.forEach((venda, index) =>{
-                console.log('venda: ', venda)
-                console.log('elemento: ', element.nomeAdquirente, 'venda: ', venda[index].adquirente.nomeAdquirente)
-                if(venda[index].adquirente.nomeAdquirente !== undefined){
-                    if(element.nomeAdquirente === venda[index].adquirente.nomeAdquirente)
-                    {
-                        vendasTemp.push(venda)
-                    }
+            vendasTemp.length = 0
+            vetorVendasMes.forEach((vendasDia) => {
+                if(vendasDia.length > 0){
+                    vendasDia.forEach((venda) => {
+                        if(venda.adquirente.nomeAdquirente === adq.nomeAdquirente){
+                            vendasTemp.push(venda)
+                        }
+                        adq.vendas = vendasTemp
+                    })
                 }
             })
-            element.vendas = vendasTemp
         })
-
         setAdmVendas(temp)
     },[vetorVendasMes])
 
     useEffect(()=>{
         console.log('admVendas: ', admVendas)
+        setGraficoVendas(carregaGrafico(admVendas))
     },[admVendas])
     
     function carregaGrafico(array){
@@ -282,7 +278,7 @@ const Dashboard = () => {
                                 </tr>
                             </tbody>
                         </table>
-                        <TabelaGenerica/>
+                        <TabelaGenerica data01={graficoVendas}/>
                     </div>
                 </div>
                 
@@ -302,7 +298,7 @@ const Dashboard = () => {
                                 </thead>
                                 <tbody className='dash-tbody dash-tbody-bg'>
                                     <tr className='dash-tr'>
-                                        <td className='cell-text dash-td' data-label="Previsão de Hoje">R$ {totalCreditosHoje.toFixed(2).replace('.',',')}</td>
+                                        <td className='cell-text dash-td' data-label="Previsão de Hoje">R$ {somatorioCreditosHoje.toFixed(2).replace('.',',')}</td>
                                         <td className='cell-text dash-td' data-label="Previsão Próx 5 Dias">R$ {totalCreditos5dias.toFixed(2).replace('.',',')}</td>
                                     </tr>
                                 </tbody>

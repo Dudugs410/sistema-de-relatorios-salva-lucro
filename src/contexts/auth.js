@@ -508,7 +508,6 @@ async function returnVendas(datainicial, datafinal, cnpj, adquirente, bandeira){
   setLoading(true)
   let buscou
   buscou = false
-  console.log(cnpj)
 
   if((datainicial === '' || undefined) || (cnpj === '' || undefined)){
     alert('Favor selecionar uma data e cliente válidos')
@@ -520,7 +519,6 @@ async function returnVendas(datainicial, datafinal, cnpj, adquirente, bandeira){
 
   if(((adquirente !== '') && (bandeira !== '')) && (buscou === false)){
 
-    console.log('adquirente e bandeira')
     params = {
       datainicial: datainicial,
       datafinal: datafinal,
@@ -532,7 +530,7 @@ async function returnVendas(datainicial, datafinal, cnpj, adquirente, bandeira){
   }
 
   else if(((adquirente !== '') && (bandeira === '')) && (buscou === false)){
-    console.log('adquirente sem bandeira')
+
     params = {
       datainicial: datainicial,
       datafinal: datafinal,
@@ -543,7 +541,7 @@ async function returnVendas(datainicial, datafinal, cnpj, adquirente, bandeira){
   }
 
   else if(((bandeira !== '') && (adquirente === '')) && (buscou === false)){
-    console.log('bandeira sem adquirente')
+
     params = {
       datainicial: datainicial,
       datafinal: datafinal,
