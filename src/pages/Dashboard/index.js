@@ -140,8 +140,8 @@ const Dashboard = () => {
 
                 let label = ['Cielo', 'Alelo', 'Vero', 'GetNet']
                 let data = [12395.66, 8750.43, 15322.56, 19430.22]
-                setTotalVendas4dias(55,898.87)
-                setSomatorioVendasMes(78,264.85)
+                setTotalVendas4dias(55898.87)
+                setSomatorioVendasMes(78264.85)
 
                 let label2 = ['Cielo', 'Alelo', 'Vero', 'GetNet', 'Ticket']
                 let data2 = [33395.66, 12350.43, 43322.56, 21430.22, 11563.85]
