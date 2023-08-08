@@ -48,7 +48,7 @@ const Dashboard = () => {
     } = useContext(AuthContext)
 
     const [vetorVendasMes, setVetorVendasMes] = useState([])
-    
+    const [vetorCreditosMes, setVetorCreditosMes] = useState([])
 
     const [vendas4dias, setVendas4dias] = useState([])
     const [creditos5dias, setCreditos5dias] = useState([])
@@ -76,7 +76,7 @@ const Dashboard = () => {
 
     },[])
 
-    async function inicializaVendas(){
+    async function inicializaVendas4dias(){
         let vendaDataInicial = new Date()
         let vendaDataFinal = new Date()
 
@@ -109,7 +109,12 @@ const Dashboard = () => {
         setVetorVendasMes(vendasTemp)
     }
 
-    async function inicializaCreditos(){
+    async function inicializaVendas4diasMes(){
+        const temp = await returnTotalMes(cnpj)
+        setVendasMes(temp)
+    }
+
+    async function inicializaCreditos5dias(){
         let creditosTemp
         let data = new Date()
         let newdata = dateConvertSearch(data)
@@ -118,19 +123,34 @@ const Dashboard = () => {
         setCreditos5dias(creditosTemp)
     }
 
-    async function inicializaVendasMes(){
-        const temp = await returnTotalMes(cnpj)
-        setVendasMes(temp)
+    async function inicializaVetorCreditosMes(){
+        const dataAtual = new Date();
+        const anoAtual = dataAtual.getFullYear();
+        const mesAtual = dataAtual.getMonth() + 1;
+        const ultimoDiaDoMes = new Date(anoAtual, mesAtual, 0).getDate();
+
+        const creditosTemp = []
+
+        for (let day = 1; day <= ultimoDiaDoMes; day++) {
+            creditosTemp.push(await returnCreditos(`${anoAtual}-${mesAtual}-${day}`, `${anoAtual}-${mesAtual}-${day}`, cnpj))
+        }
+        setVetorCreditosMes(creditosTemp)
     }
+
+///////////////////////////////////////////////////////////////////////////////
+//// Inicializar Dados de Vendas e Créditos ///////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
     useEffect(()=>{
         async function inicializar(){
             if(cnpj !== null && teste !== true){
                 console.log('inicializando dados de vendas e créditos...')
-                await inicializaVendas()
-                await inicializaCreditos()
-                await inicializaVendasMes()
+                await inicializaVendas4dias()
+                await inicializaVendas4diasMes()
                 await inicializaVetorVendasMes()
+
+                await inicializaCreditos5dias()
+                await inicializaVetorCreditosMes()
             }
             else if(teste === true){
                 
@@ -173,6 +193,28 @@ const Dashboard = () => {
     
     useEffect(()=>{
         console.log('Creditos5dias: ', creditos5dias)
+        let dataHoje = new Date()
+        dataHoje = converteData(dataHoje)
+        let totalHoje = 0
+        let total5dias = 0
+        creditos5dias.forEach((venda) => {
+            if(venda.dataCredito === dataHoje){
+                totalHoje += venda.valorLiquido
+            }
+        })
+        creditos5dias.forEach((venda) => {
+            for(let i = 0; i < 5; i++){
+                let dataHoje2 = new Date()
+                dataHoje2.setDate(dataHoje2.getDate() + i)
+                dataHoje2 = converteData(dataHoje2)
+                if(venda.dataCredito === dataHoje){
+                    total5dias += venda.valorLiquido
+                }
+            }
+        })
+
+        setSomatorioCreditosHoje(totalHoje)
+        setTotalCreditos5dias(total5dias)
     },[creditos5dias])
 
     useEffect(()=>{
@@ -234,6 +276,66 @@ const Dashboard = () => {
         console.log('admVendas: ', admVendas)
         setGraficoVendas(carregaGrafico(admVendas))
     },[admVendas])
+
+    useEffect(()=>{
+        console.log('vetorCreditosMes: ',vetorCreditosMes)
+        let temp = []
+
+        vetorCreditosMes.forEach((array)=>{
+            array.forEach((venda)=>{
+                if(temp.length === 0){
+                    let novoObj = {
+                        nomeAdquirente: venda.adquirente.nomeAdquirente,
+                        total: venda.valorLiquido,
+                        id: 0,
+                        vendas: []
+                    }
+                    temp.push(novoObj)
+                }else{
+                    let novoObj = {
+                        nomeAdquirente: venda.adquirente.nomeAdquirente,
+                        total: venda.valorLiquido,
+                        id: 0,
+                        vendas: []
+                    }
+
+                    if(!(temp.find((objeto) => objeto.nomeAdquirente === venda.adquirente.nomeAdquirente && objeto !== ( undefined || [] )))){
+                        novoObj.id = (temp.length)
+                        temp.push(novoObj)
+                    }
+
+                    else{
+                        for(let i = 0; i < temp.length; i++){
+                            if(temp[i].nomeAdquirente === venda.adquirente.nomeAdquirente){
+                                temp[i].total += venda.valorLiquido
+                            }
+                        }
+                    }
+                }
+            })
+        })
+
+        temp.forEach((adq) => {
+            let creditosTemp = []
+            creditosTemp.length = 0
+            vetorCreditosMes.forEach((creditosDia) => {
+                if(creditosDia.length > 0){
+                    creditosDia.forEach((credito) => {
+                        if(credito.adquirente.nomeAdquirente === adq.nomeAdquirente){
+                            creditosTemp.push(credito)
+                        }
+                        adq.vendas = creditosTemp
+                    })
+                }
+            })
+        })
+        setAdmCreditos(temp)
+    },[vetorCreditosMes])
+
+    useEffect(()=>{
+        console.log('admCreditos: ', admCreditos)
+        setGraficoCreditos(carregaGrafico(admCreditos))
+    },[admCreditos])
     
     function carregaGrafico(array){
         let label = []

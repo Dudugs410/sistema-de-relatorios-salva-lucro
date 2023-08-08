@@ -18,16 +18,16 @@ export default function DetalhesAdquirentes(adquirentes) {
                 <table className="table table-striped det-table adm-table">
                     <thead>
                         <tr>
-                            <th className='det-td' data-label='Adquirente'>Adquirente</th>
-                            <th className='det-td' data-label='Total'>Total</th>
+                            <th className='det-td det-td-adq' data-label='Adquirente'>Adquirente</th>
+                            <th className='det-td det-td-adq' data-label='Total'>Total</th>
                         </tr>
                     </thead>
                     <tbody>
                         {adquirentes &&(adquirentes.adquirentes.map((adm) => {
                             return (
                                 <tr key={adm.id}>
-                                    <td className='det-td' data-label="Adquirente">{adm.nomeAdquirente}</td>
-                                    <td className='det-td' data-label="Total">R$ {`${adm.total.toFixed(2).toString().replace('.', ',')}`}</td>
+                                    <td className='det-td det-td-adq' data-label="Adquirente">{adm.nomeAdquirente}</td>
+                                    <td className='det-td det-td-adq' data-label="Total">R$ {`${adm.total.toFixed(2).toString().replace('.', ',')}`}</td>
                                 </tr>
                             )
                         }))}

@@ -90,6 +90,10 @@
     background-color: #181c2e;
 }
 
+.det-td-adq{
+    color: black;
+}
+
 @media screen and (max-width: 832px){
     .vendas-container{
         height: 90%;
