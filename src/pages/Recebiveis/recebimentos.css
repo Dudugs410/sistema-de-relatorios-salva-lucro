@@ -3,6 +3,9 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     padding: 20px;
     background-color: #181c2e;
-    
+}
+
+.btn-div-recebimentos{
+    display: flex;
 
 }

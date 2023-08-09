@@ -273,8 +273,10 @@ const Dashboard = () => {
     },[vetorVendasMes])
 
     useEffect(()=>{
-        console.log('admVendas: ', admVendas)
-        setGraficoVendas(carregaGrafico(admVendas))
+        if(teste !== true){
+            console.log('admVendas: ', admVendas)
+            setGraficoVendas(carregaGrafico(admVendas))
+        }
     },[admVendas])
 
     useEffect(()=>{
@@ -333,8 +335,10 @@ const Dashboard = () => {
     },[vetorCreditosMes])
 
     useEffect(()=>{
-        console.log('admCreditos: ', admCreditos)
-        setGraficoCreditos(carregaGrafico(admCreditos))
+        if(teste !== true){
+            console.log('admCreditos: ', admCreditos)
+            setGraficoCreditos(carregaGrafico(admCreditos))
+        }
     },[admCreditos])
     
     function carregaGrafico(array){
