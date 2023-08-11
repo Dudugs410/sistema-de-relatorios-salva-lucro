@@ -97,6 +97,7 @@ const Dashboard = () => {
     }
 
     async function inicializaVetorVendasMes(){
+        
         const dataAtual = new Date();
         const anoAtual = dataAtual.getFullYear();
         const mesAtual = dataAtual.getMonth() + 1;
@@ -360,7 +361,7 @@ const Dashboard = () => {
 
   return(
     <>
-        { modalCliente && !teste && ( <ModalCliente/> ) }
+        { modalCliente && ( <ModalCliente/> ) }
         { loading && (<LoadingModal/>) } 
         <div className='appPage'>
             <div className='content-area dash'>

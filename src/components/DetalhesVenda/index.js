@@ -8,13 +8,6 @@ const DetalhesVenda = () =>{
 
     const { vendas, dateConvert, setVendas, setCnpj, teste } = useContext(AuthContext)
     const [vendasTeste, setVendasTeste] = useState([])
-    useEffect(()=>{
-        if(teste === true){
-            setVendas(vendasStatic)
-            setCnpj('000000000000')
-
-        }
-    },[])
 
     useEffect(()=>{
         async function init(){
@@ -26,8 +19,6 @@ const DetalhesVenda = () =>{
     useEffect(()=>{
         console.log('teste: ', vendasTeste)
     },[vendasTeste])
-
-  
     
     return(
         <>

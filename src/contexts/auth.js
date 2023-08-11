@@ -6,6 +6,7 @@ import Cookies from 'js-cookie'
 import api, { config } from '../services/api'
 
 import md5 from 'md5'
+import { adquirentesStatic, bandeirasStatic, gruposStatic, recebimentosStatic, totaisStatic, vendasStatic } from './static'
 
 export const AuthContext = createContext({})
 
@@ -108,10 +109,10 @@ function AuthProvider({ children }){
         sessionStorage.setItem('isSignedIn', true)
         sessionStorage.setItem('isSignedIn', true);
         sessionStorage.setItem('userData', JSON.stringify({
-          "CODIGO": 167561,
+          "CODIGO": '000000',
           "GRUCODIGO": 5,
           "SEDCODIGO": 0,
-          "NOME": "EDUARDO GUERREIRO",
+          "NOME": "Teste",
           "EMAIL": "eduardo@salvalucro.com.br",
           "LOGIN": "EDUARDO",
           "SENHA": "227d3332126e730442d8e6596424786f",
@@ -163,44 +164,56 @@ function AuthProvider({ children }){
     //Bandeiras
     
     async function loadBandeiras(){
-      setLoading(true)
-      await api.get('/bandeira')
-      .then( response => {
-        setBandeiras(response.data)
-        setLoading(false)
-      })
-      .catch(error =>{
-        console.log(error)
-        setLoading(false)
-      })
+      if(teste !== true){
+        setLoading(true)
+        await api.get('/bandeira')
+        .then( response => {
+          setBandeiras(response.data)
+          setLoading(false)
+        })
+        .catch(error =>{
+          console.log(error)
+          setLoading(false)
+        })
+      }else{
+        setBandeiras(bandeirasStatic)
+      }
     }
 
     //Grupo de Clientes
 
     async function loadGrupos(){
-      setLoading(true)
-      await api.get('/grupo')
-      .then( response => {
-        setGrupos(response.data)
-        setLoading(false)
-      })
-      .catch(error =>{
-        console.log(error)
-        setLoading(false)
-      })
+      if(teste !== true){
+        setLoading(true)
+        await api.get('/grupo')
+        .then( response => {
+          setGrupos(response.data)
+          setLoading(false)
+        })
+        .catch(error =>{
+          console.log(error)
+          setLoading(false)
+        })
+      }else{
+        setGrupos(gruposStatic)
+      }
     }
 
     async function loadAdquirentes(){
-      setLoading(true)
-      await api.get('/adquirente')
-      .then( response => {
-        setAdquirentes(response.data)
-        setLoading(false)
-      })
-      .catch(error =>{
-        console.log(error)
-        setLoading(false)
-      })
+      if(teste !== true){
+        setLoading(true)
+        await api.get('/adquirente')
+        .then( response => {
+          setAdquirentes(response.data)
+          setLoading(false)
+        })
+        .catch(error =>{
+          console.log(error)
+          setLoading(false)
+        })
+      }else{
+        setAdquirentes(adquirentesStatic)
+      }
     }
   
     //loadVendas melhorias
@@ -282,19 +295,173 @@ function AuthProvider({ children }){
             console.log('config: ',config)
             console.log(error)
             })
+      }else{
+        setVendas(vendasStatic.VENDAS)
       }
     }
 
     //Consulta de vendas, com intervalo de datas
 
     async function loadPeriodo(datainicial, datafinal, cnpj, adquirente, bandeira){
+      if(teste !== true){
+          setLoading(true);
+          let params = {
+            dataInicial: dateConvert(datainicial),
+            dataFinal: dateConvert(datafinal),
+            cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+            adquirente: adquirente,
+            bandeira: bandeira,
+          }
+
+          let config = {
+            headers: { 
+              'Content-Type': 'application/json', 
+              'Authorization': `Bearer ${Cookies.get('token')}`
+            },
+            params: params
+          }
+
+          try {
+            const response = await api.get('vendas', config)
+            const vendasData = response.data.VENDAS
+            setVendasDash(vendasData)
+            setLoading(false)
+          } catch (error) {
+            console.log(error)
+            setLoading(false)
+          }
+        }else{
+          setVendasDash(vendasStatic)
+        }
+      }
+      
+
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  async function loadRecebimentos(cnpj, datainicial, datafinal){
+    if(teste !== true){
       setLoading(true);
+      let params = {
+        cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+        dataInicial: dateConvert(datainicial),
+        dataFinal: dateConvert(datafinal),
+      }
+
+      let config = {
+        headers: { 
+          'Content-Type': 'application/json', 
+          'Authorization': `Bearer ${Cookies.get('token')}`
+        },
+        params: params
+      }
+
+      try {
+        const response = await api.get('recebimentos', config)
+        const recebimentosData = response.data
+        setRecebimentosDash(recebimentosData)
+        setLoading(false)
+      } catch (error) {
+        console.log(error)
+        setLoading(false)
+      }
+    }else{
+      setRecebimentosDash(recebimentosStatic)
+      setRecebimentos(recebimentosStatic)
+    }
+
+}
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+   //Consulta de vendas, com intervalo de datas
+
+   async function retornaVendasPeriodo(datainicial, datafinal, cnpj, adquirente, bandeira){
+    if(teste !== true){
+      setLoading(true);
+      if((dataInicial === '' || undefined) || (cnpj === '' || undefined)){
+        alert('Favor selecionar uma data e cliente válidos')
+        return 0
+      }
+
+      setLoading(true)
+      let params = {}
+
+      if(((adquirente !== '') && (bandeira !== '')) && (buscou === false)){
+        console.log('adquirente e bandeira')
+        params = {
+          datainicial: datainicial,
+          datafinal: datafinal,
+          cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+          adquirente: adquirente,
+          bandeira: bandeira,
+        }
+        setBuscou(true)
+      }
+
+      else if(((adquirente !== '') && (bandeira === '')) && (buscou === false)){
+        console.log('adquirente sem bandeira')
+        params = {
+          datainicial: datainicial,
+          datafinal: datafinal,
+          cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+          adquirente: adquirente,
+        }
+        setBuscou(true)
+      }
+
+      else if(((bandeira !== '') && (adquirente === '')) && (buscou === false)){
+        console.log('bandeira sem adquirente')
+        params = {
+          datainicial: datainicial,
+          datafinal: datafinal,
+          cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+          bandeira: bandeira,
+        }
+        setBuscou(true)
+      }
+
+      else{
+        params = {
+          datainicial: datainicial,
+          datafinal: datafinal,
+          cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+        }
+      }
+      
+        let config = {
+          headers: { 
+            'Content-Type': 'application/json', 
+            'Authorization': `Bearer ${Cookies.get('token')}`
+          },
+          params: params
+        }
+
+      await api.get('vendas', config)
+          .then((response) => {
+            setLoading(false)
+            setBuscou(false)
+            return(response.data.VENDAS)
+          })
+          .catch((error) => {
+          setLoading(false)
+          console.log('config: ',config)
+          console.log(error)
+          })
+    }else{
+      return vendasStatic
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+async function retornaRecebimentos(cnpj, datainicial, datafinal){
+  if(teste !== true){
+    setLoading(true);
     let params = {
+      cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
       dataInicial: dateConvert(datainicial),
       dataFinal: dateConvert(datafinal),
-      cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-      adquirente: adquirente,
-      bandeira: bandeira,
     }
 
     let config = {
@@ -306,148 +473,16 @@ function AuthProvider({ children }){
     }
 
     try {
-      const response = await api.get('vendas', config)
-      const vendasData = response.data.VENDAS
-      setVendasDash(vendasData)
+      const response = await api.get('recebimentos', config)
+      const recebimentosData = response.data
       setLoading(false)
+        return recebimentosData
     } catch (error) {
       console.log(error)
       setLoading(false)
     }
-  }
-
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-  async function loadRecebimentos(cnpj, datainicial, datafinal){
-    setLoading(true);
-  let params = {
-    cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-    dataInicial: dateConvert(datainicial),
-    dataFinal: dateConvert(datafinal),
-  }
-
-  let config = {
-    headers: { 
-      'Content-Type': 'application/json', 
-      'Authorization': `Bearer ${Cookies.get('token')}`
-    },
-    params: params
-  }
-
-  try {
-    const response = await api.get('recebimentos', config)
-    const recebimentosData = response.data
-    setRecebimentosDash(recebimentosData)
-    setLoading(false)
-  } catch (error) {
-    console.log(error)
-    setLoading(false)
-  }
-}
-
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-   //Consulta de vendas, com intervalo de datas
-
-   async function retornaVendasPeriodo(datainicial, datafinal, cnpj, adquirente, bandeira){
-    setLoading(true);
-    if((dataInicial === '' || undefined) || (cnpj === '' || undefined)){
-      alert('Favor selecionar uma data e cliente válidos')
-      return 0
-    }
-
-    setLoading(true)
-    let params = {}
-
-    if(((adquirente !== '') && (bandeira !== '')) && (buscou === false)){
-      console.log('adquirente e bandeira')
-      params = {
-        datainicial: datainicial,
-        datafinal: datafinal,
-        cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-        adquirente: adquirente,
-        bandeira: bandeira,
-      }
-      setBuscou(true)
-    }
-
-    else if(((adquirente !== '') && (bandeira === '')) && (buscou === false)){
-      console.log('adquirente sem bandeira')
-      params = {
-        datainicial: datainicial,
-        datafinal: datafinal,
-        cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-        adquirente: adquirente,
-      }
-      setBuscou(true)
-    }
-
-    else if(((bandeira !== '') && (adquirente === '')) && (buscou === false)){
-      console.log('bandeira sem adquirente')
-      params = {
-        datainicial: datainicial,
-        datafinal: datafinal,
-        cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-        bandeira: bandeira,
-      }
-      setBuscou(true)
-    }
-
-    else{
-      params = {
-        datainicial: datainicial,
-        datafinal: datafinal,
-        cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-      }
-    }
-    
-      let config = {
-        headers: { 
-          'Content-Type': 'application/json', 
-          'Authorization': `Bearer ${Cookies.get('token')}`
-        },
-        params: params
-      }
-
-    await api.get('vendas', config)
-        .then((response) => {
-          setLoading(false)
-          setBuscou(false)
-          return(response.data.VENDAS)
-        })
-        .catch((error) => {
-        setLoading(false)
-        console.log('config: ',config)
-        console.log(error)
-        })
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-async function retornaRecebimentos(cnpj, datainicial, datafinal){
-  setLoading(true);
-  let params = {
-    cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-    dataInicial: dateConvert(datainicial),
-    dataFinal: dateConvert(datafinal),
-  }
-
-  let config = {
-    headers: { 
-      'Content-Type': 'application/json', 
-      'Authorization': `Bearer ${Cookies.get('token')}`
-    },
-    params: params
-  }
-
-  try {
-    const response = await api.get('recebimentos', config)
-    const recebimentosData = response.data
-    setLoading(false)
-      return recebimentosData
-  } catch (error) {
-    console.log(error)
-    setLoading(false)
+  }else{
+    return recebimentosStatic
   }
 }
 
@@ -505,60 +540,94 @@ function converteData(data){
 }
 
 async function returnVendas(datainicial, datafinal, cnpj, adquirente, bandeira){
-  setLoading(true)
-  let buscou
-  buscou = false
+  if(teste !== true){
+    setLoading(true)
+    let buscou
+    buscou = false
 
-  if((datainicial === '' || undefined) || (cnpj === '' || undefined)){
-    alert('Favor selecionar uma data e cliente válidos')
-    return 0
-  }
-
-  setLoading(true)
-  let params = {}
-
-  if(((adquirente !== '') && (bandeira !== '')) && (buscou === false)){
-
-    params = {
-      datainicial: datainicial,
-      datafinal: datafinal,
-      cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-      adquirente: adquirente,
-      bandeira: bandeira,
+    if((datainicial === '' || undefined) || (cnpj === '' || undefined)){
+      alert('Favor selecionar uma data e cliente válidos')
+      return 0
     }
-    buscou = true
-  }
 
-  else if(((adquirente !== '') && (bandeira === '')) && (buscou === false)){
+    setLoading(true)
+    let params = {}
 
-    params = {
-      datainicial: datainicial,
-      datafinal: datafinal,
-      cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-      adquirente: adquirente,
+    if(((adquirente !== '') && (bandeira !== '')) && (buscou === false)){
+
+      params = {
+        datainicial: datainicial,
+        datafinal: datafinal,
+        cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+        adquirente: adquirente,
+        bandeira: bandeira,
+      }
+      buscou = true
     }
-    buscou = true
-  }
 
-  else if(((bandeira !== '') && (adquirente === '')) && (buscou === false)){
+    else if(((adquirente !== '') && (bandeira === '')) && (buscou === false)){
 
-    params = {
-      datainicial: datainicial,
-      datafinal: datafinal,
-      cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-      bandeira: bandeira,
+      params = {
+        datainicial: datainicial,
+        datafinal: datafinal,
+        cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+        adquirente: adquirente,
+      }
+      buscou = true
     }
-    buscou = true
-  }
 
-  else{
-    params = {
-      datainicial: datainicial,
-      datafinal: datafinal,
-      cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+    else if(((bandeira !== '') && (adquirente === '')) && (buscou === false)){
+
+      params = {
+        datainicial: datainicial,
+        datafinal: datafinal,
+        cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+        bandeira: bandeira,
+      }
+      buscou = true
     }
+
+    else{
+      params = {
+        datainicial: datainicial,
+        datafinal: datafinal,
+        cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+      }
+    }
+    
+      let config = {
+        headers: { 
+          'Content-Type': 'application/json', 
+          'Authorization': `Bearer ${Cookies.get('token')}`
+        },
+        params: params
+      }
+
+      try {
+        const response = await api.get('vendas', config)
+        const vendasData = response.data.VENDAS
+        setLoading(false)
+        setBuscou(false)
+        return vendasData
+      } catch (error) {
+        console.log(error)
+        setLoading(false)
+      }
+  }else{
+    return vendasStatic
   }
-  
+}
+
+async function returnCreditos(datainicial, datafinal, cnpj){
+  if(teste !== true){
+    setLoading(true);
+    console.log(cnpj)
+    let params = {
+      cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+      dataInicial: dateConvert(datainicial),
+      dataFinal: dateConvert(datafinal),
+    }
+
     let config = {
       headers: { 
         'Content-Type': 'application/json', 
@@ -568,71 +637,50 @@ async function returnVendas(datainicial, datafinal, cnpj, adquirente, bandeira){
     }
 
     try {
-      const response = await api.get('vendas', config)
-      const vendasData = response.data.VENDAS
+      const response = await api.get('recebimentos', config)
+      const recebimentosData = response.data
       setLoading(false)
-      setBuscou(false)
-      return vendasData
+        return recebimentosData
     } catch (error) {
       console.log(error)
       setLoading(false)
     }
-}
-
-async function returnCreditos(datainicial, datafinal, cnpj){
-  setLoading(true);
-  console.log(cnpj)
-  let params = {
-    cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-    dataInicial: dateConvert(datainicial),
-    dataFinal: dateConvert(datafinal),
-  }
-
-  let config = {
-    headers: { 
-      'Content-Type': 'application/json', 
-      'Authorization': `Bearer ${Cookies.get('token')}`
-    },
-    params: params
-  }
-
-  try {
-    const response = await api.get('recebimentos', config)
-    const recebimentosData = response.data
-    setLoading(false)
-      return recebimentosData
-  } catch (error) {
-    console.log(error)
-    setLoading(false)
+  }else{
+    return(recebimentosStatic)
   }
 }
 
 async function returnTotalDia(cnpj, data) {
-  setLoading(true)
-  let params = {
-    cnpj: cnpj,
-    data: data,
-  };
+  if(teste !== true){
+    setLoading(true)
+    let params = {
+      cnpj: cnpj,
+      data: data,
+    };
 
-  let config = {
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${Cookies.get('token')}`,
-    },
-    params: params,
-  };
+    let config = {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${Cookies.get('token')}`,
+      },
+      params: params,
+    };
 
-  try {
-    const response = await api.get('vendastotais', config);
-    setLoading(false)
-    return response.data
-  } catch (error) {
-    setLoading(false)
-    console.log(error)
+    try {
+      const response = await api.get('vendastotais', config);
+      setLoading(false)
+      return response.data
+    } catch (error) {
+      setLoading(false)
+      console.log(error)
+    }
+  }else{
+    return(totaisStatic)
   }
 }
 
 async function returnTotalMes(cnpj){
+  
   const currentDate = new Date()
   const currentYear = currentDate.getFullYear()
   const currentMonth = currentDate.getMonth()
