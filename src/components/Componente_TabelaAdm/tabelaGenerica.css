@@ -104,6 +104,15 @@
     background-color: #181c2e;
 }
 
+.det-adm{
+    background-color: white;
+    color: black;
+}
+
+.tabela-adm-content{
+    background-color: white;
+}
+
 .content{
     height: 100%;
     width: 100%;

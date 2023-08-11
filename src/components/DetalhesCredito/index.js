@@ -15,10 +15,6 @@ const DetalhesCredito = ({array}) =>{
         }
     },[])
 
-    useEffect(()=>{
-        console.log('teste: ', array)
-    },[])
-
     return(
         <>
             <div className='dropShadow vendas-view'>
@@ -41,9 +37,9 @@ const DetalhesCredito = ({array}) =>{
                                 </tr>
                             </thead>
                         <tbody>
-                            {array.length > 0 && array.map((venda)=>{
+                            {array.length > 0 && array.map((venda, index)=>{
                             return(
-                                <tr className='det-tr' key={venda.codigoVenda}>
+                                <tr key={index} className='det-tr' >
                                     <td className='det-td-vendas'data-label="Adquirente">{venda.adquirente.nomeAdquirente}</td>
                                     <td className='det-td-vendas'data-label="Bandeira">{venda.bandeira.descricaoBandeira}</td>
                                     <td className='det-td-vendas'data-label="Valor Bruto">R$<span className='green'>{`${venda.valorBruto.toFixed(2)}`.toString().replace('.',',')}</span></td>

@@ -9,7 +9,7 @@ import { FiDollarSign } from 'react-icons/fi'
 const TotalModalidades = () =>{
 
     const { vendas, setLoading, loadVendas } = useContext(AuthContext)
-    const { dataBusca, cnpjBusca, banBusca, adqBusca, setDetalhes, detalhes, setShowAdmin, showAdmin, totalDebito, totalCredito, totalVoucher, totalLiquido, setTotalDebito, setTotalCredito, setTotalVoucher, setTotalLiquido } = useContext(VendasContext)
+    const { setShowAdmin, totalDebito, totalCredito, totalVoucher, totalLiquido, setTotalDebito, setTotalCredito, setTotalVoucher, setTotalLiquido } = useContext(VendasContext)
 
     const [adquirentes, setAdquirentes] = useState([])
     const [encontrou, setEncontrou] = useState(false)

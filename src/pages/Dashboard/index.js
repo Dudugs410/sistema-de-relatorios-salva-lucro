@@ -3,7 +3,7 @@
 import './dashboard.css'
 
 //////
-import TabelaGenerica from '../../components/TabelaGenerica'
+
 //////
 import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "../../contexts/auth"
@@ -15,6 +15,7 @@ import PieChart from '../../components/00Teste'
 import { dateConvert } from '../../contexts/dateConverter'
 
 import { adquirentesStatic, bandeirasStatic, vendasStatic } from '../../contexts/static'
+import TabelaGenerica from '../../components/Componente_TabelaAdm'
 
 
 
@@ -359,7 +360,6 @@ const Dashboard = () => {
 
   return(
     <>
-        
         { modalCliente && !teste && ( <ModalCliente/> ) }
         { loading && (<LoadingModal/>) } 
         <div className='appPage'>
@@ -367,7 +367,7 @@ const Dashboard = () => {
                 <div className='data-group-area'>
                     <div className='graph-data'>
                         <h1 className='title-chart'>Vendas:</h1>
-                        <PieChart data01 = {graficoVendas}/>
+                        <PieChart data01 = {graficoVendas} arrayAdm={admVendas}/>
                     </div>
                     <div className='table-data'>
                         <table className="table dash-table det-table dash-body-flex tbody-sticky">
@@ -384,14 +384,14 @@ const Dashboard = () => {
                                 </tr>
                             </tbody>
                         </table>
-                        <TabelaGenerica data01={graficoVendas}/>
+                        <TabelaGenerica Array={admVendas} />
                     </div>
                 </div>
                 
                 <div className='data-group-area'>
                     <div className='graph-data'>
                         <h1 className='title-chart'>Créditos:</h1>
-                        <PieChart data01 = {graficoCreditos}/>
+                        <PieChart data01 = {graficoCreditos} arrayAdm={admCreditos}/>
                     </div>
                     
                     <div className='table-data'>
@@ -409,7 +409,7 @@ const Dashboard = () => {
                                     </tr>
                                 </tbody>
                         </table>
-                        <TabelaGenerica/>
+                        <TabelaGenerica Array={admCreditos}/>
                     </div>
                 </div>            
             </div>
