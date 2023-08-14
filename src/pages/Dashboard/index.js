@@ -14,7 +14,7 @@ import ModalCliente from '../../components/ModalCliente'
 import PieChart from '../../components/00Teste'
 import { dateConvert } from '../../contexts/dateConverter'
 
-import { adquirentesStatic, bandeirasStatic, vendasStatic } from '../../contexts/static'
+import { adquirentesStatic, bandeirasStatic, recebimentosStatic, vendasStatic } from '../../contexts/static'
 import TabelaGenerica from '../../components/Componente_TabelaAdm'
 
 
@@ -271,10 +271,40 @@ const Dashboard = () => {
                 }
             })
         })
+        if(teste === true){
+            temp = [
+                {
+                    nomeAdquirente: 'Cielo',
+                    total: 27568.00,
+                    id: 0,
+                    vendas: vendasStatic.VENDAS,
+                },
+                {
+                    nomeAdquirente: 'Alelo',
+                    total: 5587.00,
+                    id: 1,
+                    vendas: vendasStatic.VENDAS,
+                },
+                {
+                    nomeAdquirente: 'Vero',
+                    total: 3220.00,
+                    id: 2,
+                    vendas: vendasStatic.VENDAS,
+                },
+                {
+                    nomeAdquirente: 'Ticket',
+                    total: 326.60,
+                    id: 3,
+                    vendas: vendasStatic.VENDAS,
+                }
+            ]
+        }
+
         setAdmVendas(temp)
     },[vetorVendasMes])
 
     useEffect(()=>{
+        console.log(admVendas)
         if(teste !== true){
             console.log('admVendas: ', admVendas)
             setGraficoVendas(carregaGrafico(admVendas))
@@ -333,6 +363,41 @@ const Dashboard = () => {
                 }
             })
         })
+
+        if(teste === true){
+            temp = [
+                {
+                    nomeAdquirente: 'Cielo',
+                    total: 27568.00,
+                    id: 0,
+                    vendas: recebimentosStatic,
+                },
+                {
+                    nomeAdquirente: 'Alelo',
+                    total: 5587.00,
+                    id: 1,
+                    vendas: recebimentosStatic,
+                },
+                {
+                    nomeAdquirente: 'GetNet',
+                    total: 3220.00,
+                    id: 2,
+                    vendas: recebimentosStatic,
+                },
+                {
+                    nomeAdquirente: 'Vero',
+                    total: 3220.00,
+                    id: 3,
+                    vendas: recebimentosStatic,
+                },
+                {
+                    nomeAdquirente: 'Ticket',
+                    total: 326.60,
+                    id: 4,
+                    vendas: recebimentosStatic,
+                }
+            ]
+        }
         setAdmCreditos(temp)
     },[vetorCreditosMes])
 

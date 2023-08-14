@@ -92,8 +92,6 @@ const PieChart = ({ data01, arrayAdm }) => {
       {showAdmModal && selectedAdm && (
         <Modal onClose={() => setShowAdmModal(false)}>
           <div className='modal-adm'>
-            <span>nome: {selectedAdm.nomeAdquirente}</span>
-            <span>total: {selectedAdm.total}</span>
             <DetalhesCredito array={selectedAdm.vendas} />
           </div>
         </Modal>
