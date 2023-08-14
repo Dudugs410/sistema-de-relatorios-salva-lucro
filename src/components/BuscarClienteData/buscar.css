@@ -149,7 +149,7 @@
         width: 100%;
         align-self: center;
         display: flex;
-        flex-direction: column;
+        /*flex-direction: column;*/
         justify-content: space-evenly;
         background-color: #181c2e;
         padding: 10px;
