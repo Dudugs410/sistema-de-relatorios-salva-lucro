@@ -31,6 +31,20 @@
   padding-bottom: 4%;
 }
 
+.table-chart-dash{
+  display: flex;
+  flex-wrap: wrap;
+  align-content: stretch;
+  justify-content: center;
+  align-items: stretch;
+  flex-direction: column;
+  /* position: relative; */
+  top: 0;
+  position: sticky;
+  background-color: #181c2e;
+  z-index: 1;
+}
+
 .graph-data{
   height: 400px;
   width: 100%;

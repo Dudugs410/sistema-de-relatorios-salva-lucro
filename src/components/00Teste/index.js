@@ -3,6 +3,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
 import DetalhesCredito from '../DetalhesCredito';
 import Modal from '../Modal';
+import './modal.css'
 
 
 

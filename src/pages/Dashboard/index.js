@@ -371,7 +371,7 @@ const Dashboard = () => {
                         <PieChart data01 = {graficoVendas} arrayAdm={admVendas}/>
                     </div>
                     <div className='table-data'>
-                        <table className="table dash-table det-table dash-body-flex tbody-sticky">
+                        <table className="table dash-table det-table dash-body-flex tbody-sticky table-chart-dash">
                             <thead className='dash-thead'>
                                 <tr className='dash-tr'>
                                     <th className='dash-th' scope="col">Total Últimos 4 dias</th>
@@ -396,7 +396,7 @@ const Dashboard = () => {
                     </div>
                     
                     <div className='table-data'>
-                        <table className="table dash-table det-table dash-body-flex tbody-sticky">
+                        <table className="table dash-table det-table dash-body-flex tbody-sticky table-chart-dash">
                                 <thead className='dash-thead'>
                                     <tr className='dash-tr'>
                                         <th className='dash-th' scope="col">Previsão de Hoje</th>
