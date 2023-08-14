@@ -193,9 +193,9 @@ let Vendas = () =>{
       }}>
       <div className='appPage'>
           <div className='page-content'>
-              <BuscarClienteData />
               <TotalModalidades/>
               { detalhes ?  <DetalhesVenda/> : <MyCalendar/> }
+              <BuscarClienteData />
               { detalhes ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></>}
               <DetalhesData/>
           </div>

@@ -20,8 +20,31 @@ const BuscarClienteRecebimentos = () => {
 
     const [buscou, setBuscou] = useState(false)
 
-    const { cnpj, vendas, setLoading, loadVendas, bandeiras, grupos, adquirentes } = useContext(AuthContext)
-    const { detalhes, setDetalhes, setShowAdmin, dataBusca, cnpjBusca, setCnpjBusca, adqBusca, setAdqBusca, setTotalDebito, setTotalCredito, setTotalVoucher, setTotalLiquido, gerarDados, tableData} = useContext(VendasContext)
+    const { 
+        cnpj, 
+        vendas, 
+        setLoading, 
+        loadVendas, 
+        bandeiras, 
+        grupos, 
+        adquirentes 
+    } = useContext(AuthContext)
+    const { 
+        detalhes, 
+        setDetalhes, 
+        setShowAdmin, 
+        dataBusca, 
+        cnpjBusca, 
+        setCnpjBusca, 
+        adqBusca, 
+        setAdqBusca, 
+        setTotalDebito, 
+        setTotalCredito, 
+        setTotalVoucher, 
+        setTotalLiquido, 
+        gerarDados, 
+        tableData
+    } = useContext(VendasContext)
     
     useEffect(()=>{
         console.log('Detalhes: ',detalhes)

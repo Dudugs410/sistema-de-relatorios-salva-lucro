@@ -1,12 +1,21 @@
 .recebimentos-title{
     color: white;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    padding: 20px;
     background-color: #181c2e;
     margin: 0;
 }
 
 .btn-div-recebimentos{
     display: flex;
+
+}
+
+.recebimentos-title-container{
+    height: 100px;
+    width: 100%;
+    display: inline-flex;
+    justify-content: space-evenly;
+    background-color: #181c2e;
+    padding: 20px;
 
 }

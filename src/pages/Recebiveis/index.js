@@ -3,7 +3,7 @@ import './recebimentos.css'
 import { useContext, useEffect, useState } from "react"
 import DetalhesCredito from "../../components/DetalhesCredito"
 import { AuthContext } from "../../contexts/auth"
-import DetalhesData from "../../components/DetalhesData"
+import DetalhesData from "../../components/Componente_DetalhesData"
 import TotalModalidadesComp from "../../components/Componente_TotalModalidades"
 import TabelaGenericaAdm from "../../components/Componente_TabelaAdm"
 
@@ -182,12 +182,15 @@ const Recebiveis = () =>{
     return(
         <div className='appPage'>
           <div className='page-content'>
+          <div className='recebimentos-title-container'>
             <h1 className='recebimentos-title'>Calendário de Recebimentos</h1>
-            <TotalModalidadesComp texto1={'Crédito'} valor1={totalCredito} texto2={'Debito'} valor2={totalDebito} texto3={'Voucher'} valor3={totalVoucher} texto4={'Total Líquido'} valor4={totalTotal} />
+          </div>
+            <TotalModalidadesComp texto1={'Débito'} valor1={totalDebito} texto2={'Crédito'} valor2={totalCredito} texto3={'Voucher'} valor3={totalVoucher} texto4={'Total Líquido'} valor4={totalTotal} />
               { detalhes ? <DetalhesCredito array={creditosTemp}/> :  <MyCalendar/> }
             <div className='btn-div-recebimentos'>
               { detalhes ? <button className='btn btn-danger' onClick={handleVoltar}>Voltar</button> : <button className='btn btn-primary' onClick={handleBuscar}>Pesquisar</button> }
             </div>
+            {detalhes ? <DetalhesData arrayVendas={creditosTemp} arrayAdq={arrayAdm} /> : <></>}
             {arrayAdm ? <TabelaGenericaAdm Array={arrayAdm}/> : <></>}
           </div>
         </div>
