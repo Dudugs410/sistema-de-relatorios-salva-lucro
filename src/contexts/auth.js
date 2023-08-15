@@ -8,6 +8,10 @@ import api, { config } from '../services/api'
 import md5 from 'md5'
 import { adquirentesStatic, bandeirasStatic, gruposStatic, recebimentosStatic, totaisStatic, vendasStatic } from './static'
 
+import { toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+
 export const AuthContext = createContext({})
 
 function AuthProvider({ children }){
@@ -702,9 +706,23 @@ async function returnTotalMes(cnpj){
   return mes
 }
 
+function alerta(text){
+  toast.info(text, {
+      position: "top-center",
+      autoClose: 5000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+  })
+}
+
   return(
     <AuthContext.Provider
       value={{
+        alerta,
         isSignedIn,
         setIsSignedIn,
         loading,

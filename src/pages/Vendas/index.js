@@ -28,6 +28,7 @@ let Vendas = () =>{
     dateConvert,
     dateConvertSearch,
     returnTotalMes,
+    loadVendas,
   } = useContext(AuthContext)
 
   let [totalCredito, setTotalCredito] = useState(0.00)
@@ -195,7 +196,7 @@ let Vendas = () =>{
           <div className='page-content'>
               <TotalModalidades/>
               { detalhes ?  <DetalhesVenda/> : <MyCalendar/> }
-              <BuscarClienteData />
+              <BuscarClienteData funcao={loadVendas} />
               { detalhes ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></>}
               <DetalhesData/>
           </div>

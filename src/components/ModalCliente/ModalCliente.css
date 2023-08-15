@@ -1,13 +1,17 @@
 .modal-cliente{
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.5);
+    top: 0;
     height: 100%;
     width: 100%;
     margin: 0;
     border: none;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     flex-wrap: wrap;
     align-content: center;
-    align-items: center;
+    justify-content: center;
+    z-index: 2;
 }
 
 .modal-window{
@@ -19,20 +23,21 @@
     flex-direction: column;
     flex-wrap: wrap;
     align-content: stretch;
-    justify-content: center;
-    align-items: stretch;
+    z-index: 2;
+    align-items: center;
 }
 
 .modal-content{
     height: 100%;
-    width: 100%;
+    width: 65%;
     margin: 0;
     border: none;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    align-content: stretch;
+    align-content: center;
     align-items: center;
+    justify-content: flex-end;
 }
 
 .btn-container{

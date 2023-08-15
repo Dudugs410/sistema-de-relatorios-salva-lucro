@@ -77,6 +77,10 @@ const Dashboard = () => {
 
     },[])
 
+    useEffect(()=>{
+        setCnpj(sessionStorage.getItem('cnpj'))
+    },[])
+
     async function inicializaVendas4dias(){
         let vendaDataInicial = new Date()
         let vendaDataFinal = new Date()
@@ -145,6 +149,7 @@ const Dashboard = () => {
 
     useEffect(()=>{
         async function inicializar(){
+            setCnpj(sessionStorage.getItem('cnpj'))
             if(cnpj !== null && teste !== true){
                 console.log('inicializando dados de vendas e créditos...')
                 await inicializaVendas4dias()
@@ -426,34 +431,35 @@ const Dashboard = () => {
 
   return(
     <>
+        <div className='appPage'>
         { modalCliente && ( <ModalCliente/> ) }
         { loading && (<LoadingModal/>) } 
-        <div className='appPage'>
             <div className='content-area dash'>
-                <div className='data-group-area'>
-                    <div className='graph-data'>
-                        <h1 className='title-chart'>Vendas:</h1>
-                        <PieChart data01 = {graficoVendas} arrayAdm={admVendas}/>
-                    </div>
-                    <div className='table-data'>
-                        <table className="table dash-table det-table dash-body-flex tbody-sticky table-chart-dash">
-                            <thead className='dash-thead'>
-                                <tr className='dash-tr'>
-                                    <th className='dash-th' scope="col">Total Últimos 4 dias</th>
-                                    <th className='dash-th' scope="col">Total do Mês</th>
-                                </tr>
-                            </thead>
-                            <tbody className='dash-tbody dash-tbody-bg'>
-                                <tr className='dash-tr'>
-                                    <td className='cell-text dash-td' data-label="Total Últimos 4 dias">R$ {totalVendas4dias.toFixed(2).replace('.',',')}</td>
-                                    <td className='cell-text dash-td' data-label="Total do Mês">R$ {somatorioVendasMes.toFixed(2).replace('.',',')}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <TabelaGenerica Array={admVendas} />
+                <div className='chart-table-block'>
+                    <div className='data-group-area'>
+                        <div className='graph-data'>
+                            <h1 className='title-chart'>Vendas:</h1>
+                            <PieChart data01 = {graficoVendas} arrayAdm={admVendas}/>
+                        </div>
+                        <div className='table-data'>
+                            <table className="table dash-table det-table dash-body-flex tbody-sticky table-chart-dash">
+                                <thead className='dash-thead'>
+                                    <tr className='dash-tr'>
+                                        <th className='dash-th' scope="col">Total Últimos 4 dias</th>
+                                        <th className='dash-th' scope="col">Total do Mês</th>
+                                    </tr>
+                                </thead>
+                                <tbody className='dash-tbody dash-tbody-bg'>
+                                    <tr className='dash-tr'>
+                                        <td className='cell-text dash-td' data-label="Total Últimos 4 dias">R$ {totalVendas4dias.toFixed(2).replace('.',',')}</td>
+                                        <td className='cell-text dash-td' data-label="Total do Mês">R$ {somatorioVendasMes.toFixed(2).replace('.',',')}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <TabelaGenerica Array={admVendas} />
+                        </div>
                     </div>
                 </div>
-                
                 <div className='data-group-area'>
                     <div className='graph-data'>
                         <h1 className='title-chart'>Créditos:</h1>

@@ -5,6 +5,10 @@
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 999;
+    z-index: 99999999;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
 
 }

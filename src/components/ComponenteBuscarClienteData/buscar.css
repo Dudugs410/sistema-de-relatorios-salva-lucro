@@ -1,0 +1,258 @@
+.search-bar{
+    height: auto;
+    width: 100%;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    
+}
+
+.date-container{
+    height: 100px;
+    width: 100%;
+    display: inline-flex;
+    justify-content: space-evenly;
+    background-color: #181c2e;
+    padding: 20px;
+}
+
+.date-column{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+.date-text{
+    color:white;
+}
+
+.date-picker{
+    text-align: center;
+    display: flex;
+    border-radius: 10px;
+    height:2.2em;
+    width: 80%;
+    font-style: italic;
+    color: black;
+
+}
+
+.date-container>.date-column>input{
+    height: 2.2em;
+    border-radius: 10px;
+    width: 80%;
+    
+}
+
+.date-container>.date-column>span{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-weight: bold;
+    
+}
+
+.date-container>.date-column>select{
+    display: flex;
+    height: 2.2em;
+    text-align: center;
+    width: 80%;
+    font-style: italic;
+}
+
+.date-column>.select-card>select{
+    display: flex;
+    height: 2.2em;
+    border-radius: 10px;
+    text-align: center;
+    width: 80%;
+    font-style: italic;
+    color: gray;
+}
+
+.select-card>span{
+    color: white;
+    font-weight: bold;
+    
+}
+
+.date-column>button{
+    height: 2.2em;
+    width: 80%;
+    border-radius: 10px;
+    text-align: center;
+    margin-top: 1.5em;
+}
+
+.date-column>.export{
+    height: 2.2em;
+    width: 80%;
+    border-radius: 10px;
+    text-align: center;
+    margin-top: 1.5em;
+}
+
+.select-card:not(:first-child){
+    margin-top: 10px;
+}
+
+.date-column>.date-text{
+    margin-top: 10px;
+}
+
+.btn-export{
+    width: 80%;
+}
+
+.submit-container{
+    width: 100%;
+}
+
+.btn-submit{
+    margin-top: 22px;
+    width: 100%;
+    display: flex;
+    height: 2.2em;
+    text-align: center;
+    width: 80%;
+    justify-content: center;
+    background-color: #181c2e;
+    border: solid #7985bb 2px;
+    font-weight: bold;
+}
+
+.btn-submit:hover{
+    color: yellowgreen;
+    background-color: #444e79;
+}
+
+.select-disabled{
+    background-color: #444e79;
+    
+}
+
+@media screen and (max-width: 832px){
+
+    .search-bar{
+        height: auto;
+        width: 100%;
+        background-color: rgba(0,0,0,0.5);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        
+    }
+    
+    .date-container{
+        width: 100%;
+        align-self: center;
+        display: flex;
+        /*flex-direction: column;*/
+        justify-content: space-evenly;
+        background-color: #181c2e;
+        padding: 10px;
+        
+    }
+
+    .date-column{
+        text-align: center;
+        display: inline-flex;
+        align-items: center;
+    }
+    
+    .select-card{
+        width: 100%;
+    }
+
+    .select-card>select{
+        display: flex;
+        margin-left: 10%;
+    }
+
+    .select-card>.date-picker{
+        display: flex;
+        border-radius: 10px;
+        height:2.2em;
+        width: 80%;
+        margin-left: 10%;
+    }
+
+    .date-text{
+        color:white;
+    }
+    
+    .date-picker{
+        height: 2em;
+    }
+    
+    .date-container>input{
+        height: auto;
+        border-radius: 10px;
+    }
+    
+    .date-container>select{
+        height: auto;
+        border-radius: 10px;
+    }
+    
+    .date-container>span{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        font-weight: bold;
+    }
+    
+    .date-container>select{
+        display: flex;
+        text-align: center;
+    }
+
+    .date-column:not(:nth-child(3)){
+        display: flex;
+        flex-direction: row;
+
+    }
+
+    body{
+        min-width: 300px;
+    }
+
+    .select-card:not(:first-child){
+        margin-top: 0;
+    }
+    
+    .date-column:nth-child(4){
+        margin-left: 0;
+    }
+
+    table{
+        height: 500px;
+    }
+
+    .submit-container{
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .btn-submit{
+        margin-top: 22px;
+        width: 30%;
+        display: flex;
+        height: 2.2em;
+        text-align: center;
+        justify-content: center;
+        background-color: #181c2e;
+        border: solid white 2px;
+        font-weight: bold;
+        
+    }
+    
+    .btn-submit:hover{
+        color: yellowgreen;
+        background-color: #444e79;
+    }
+}

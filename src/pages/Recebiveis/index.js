@@ -6,17 +6,38 @@ import { AuthContext } from "../../contexts/auth"
 import DetalhesData from "../../components/Componente_DetalhesData"
 import TotalModalidadesComp from "../../components/Componente_TotalModalidades"
 import TabelaGenericaAdm from "../../components/Componente_TabelaAdm"
+import ComponenteBuscarClienteData from '../../components/ComponenteBuscarClienteData'
 
 const Recebiveis = () =>{
 
-    const { cnpj, returnCreditos, converteData, grupos, loadGrupos } = useContext(AuthContext)
+    const { 
+      cnpj,
+      setCnpj, 
+      returnCreditos, 
+      converteData, 
+      grupos, 
+      loadGrupos, 
+      loadRecebimentos,
+      bandeiras, 
+      loadBandeiras,
+      adquirentes,
+      loadAdquirentes,
+      vendas,
+      dateConvert,
+      dateConvertSearch,
+      returnTotalMes,
+      loadVendas, 
+    } = useContext(AuthContext)
 
     const [dataBusca, setDataBusca] = useState(new Date())
     const [buscou, setBuscou] = useState(false)
-    const [detalhes, setDetalhes] = useState(false)
 
     const [creditosTemp, setCreditosTemp] = useState([])
     const [arrayAdm, setArrayAdm] = useState([])
+
+    const [detalhes, setDetalhes] = useState(false)
+    const [admBusca, setAdmBusca] = useState('')
+    const [banBusca, setBanBusca] = useState('')
 
     const [totalCredito, setTotalCredito] = useState(0)
     const [totalDebito, setTotalDebito] = useState(0)
@@ -25,13 +46,14 @@ const Recebiveis = () =>{
 
     useEffect(()=>{
       async function inicializar(){
-        /*if(bandeiras.length === 0){
+        setCnpj(sessionStorage.getItem('cnpj'))
+        if(bandeiras.length === 0){
           await loadBandeiras()
-        }*/
+        }
         
-        /*if(adquirentes.length === 0){
-          await loadAdquirentesTemp()
-        }*/
+        if(adquirentes.length === 0){
+          await loadAdquirentes()
+        }
         
         if(grupos.length === 0){
           await loadGrupos()        
@@ -48,13 +70,51 @@ const Recebiveis = () =>{
     async function handleBuscar(){
       if(cnpj){
         setBuscou(true)
-        const temp = await returnCreditos(converteData(dataBusca), converteData(dataBusca), cnpj)
+        let temp = await returnCreditos(converteData(dataBusca), converteData(dataBusca), cnpj)
+        let tempAux = []
+        if(admBusca && banBusca){
+          temp.forEach((elemento) => {
+            if(elemento.adquirente.nomeAdquirente === admBusca && elemento.bandeira.descricaoBandeira === banBusca){
+              tempAux.push(elemento)
+            }
+          })
+        }
+        else if(admBusca && !banBusca){
+          temp.forEach((elemento) => {
+            if(elemento.adquirente.nomeBandeira === admBusca){
+              tempAux.push(elemento)
+           }
+          })
+        }
+        else if(!admBusca && banBusca){
+          temp.forEach((elemento) => {
+           if(elemento.bandeira.descricaoBandeira === banBusca){
+             tempAux.push(elemento)
+            }
+          })
+        }
+        temp = tempAux
+        console.log('temp: ', temp)
+        
         setCreditosTemp(temp)
       }
-      else{
-        alert('Selecione um Cliente Válido')
-      }
     }
+
+    useEffect(()=>{
+      if(buscou && cnpj){
+        async function init(){
+          setBuscou(true)
+          const temp = await returnCreditos(converteData(dataBusca), converteData(dataBusca), cnpj)
+          
+          setCreditosTemp(temp)
+          console.log('temp:', temp)
+        }
+        init()
+      } 
+      else if(!buscou){
+        handleVoltar()
+      }
+    },[buscou])
 
     function handleVoltar(){
       setTotalCredito(0)
@@ -62,8 +122,10 @@ const Recebiveis = () =>{
       setTotalVoucher(0)
       setTotalTotal(0)
       setArrayAdm([])
-
+      setBuscou(false)
       setDetalhes(false)
+      setAdmBusca(null)
+      setBanBusca(null)
     }
 
     useEffect(()=>{
@@ -159,13 +221,31 @@ const Recebiveis = () =>{
                 }
             })
         })
+        console.log('TEPM: ', temp)
       return temp
     }
   }
 
-  useEffect(()=>{
+  function handleDetalhes(childData){
+    setDetalhes(detalhes)
+    console.log(detalhes)
 
-  },[])
+  }
+
+  function handleAdm(childData){
+    setAdmBusca(childData)
+    console.log(admBusca)
+  }
+
+  function handleBan(childData){
+    setBanBusca(childData)
+    console.log(banBusca)
+  }
+
+  function handleUpdate(childData){
+    setBuscou(childData)
+    console.log(buscou)
+  }
 
     function MyCalendar() {
         return (
@@ -188,10 +268,10 @@ const Recebiveis = () =>{
             <TotalModalidadesComp texto1={'Débito'} valor1={totalDebito} texto2={'Crédito'} valor2={totalCredito} texto3={'Voucher'} valor3={totalVoucher} texto4={'Total Líquido'} valor4={totalTotal} />
               { detalhes ? <DetalhesCredito array={creditosTemp}/> :  <MyCalendar/> }
             <div className='btn-div-recebimentos'>
-              { detalhes ? <button className='btn btn-danger' onClick={handleVoltar}>Voltar</button> : <button className='btn btn-primary' onClick={handleBuscar}>Pesquisar</button> }
+            <ComponenteBuscarClienteData detalhes={detalhes} adquirentes={adquirentes} bandeiras={bandeiras} onAdmUpdate={handleAdm} onBanUpdate={handleBan} onBuscaUpdate={handleUpdate}/>
             </div>
             {detalhes ? <DetalhesData arrayVendas={creditosTemp} arrayAdq={arrayAdm} /> : <></>}
-            {arrayAdm ? <TabelaGenericaAdm Array={arrayAdm}/> : <></>}
+            {arrayAdm && detalhes ? <TabelaGenericaAdm Array={arrayAdm}/> : <></>}
           </div>
         </div>
     )
