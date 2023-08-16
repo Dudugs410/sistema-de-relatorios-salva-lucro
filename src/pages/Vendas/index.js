@@ -2,9 +2,9 @@ import { useEffect, useContext, createContext, useState } from 'react'
 import Calendar from 'react-calendar'
 
 import BuscarClienteData from '../../components/BuscarClienteData'
-import DetalhesData from '../../components/DetalhesData'
+import TabelaGenericaAdm from '../../components/Componente_TabelaAdm'
 import DetalhesVenda from '../../components/DetalhesVenda'
-import TotalModalidades from '../../components/TotalModalidades'
+import TotalModalidadesComp from '../../components/Componente_TotalModalidades'
 
 import GerarRelatorio from '../../components/GerarRelatorio'
 
@@ -25,16 +25,19 @@ let Vendas = () =>{
     adquirentes,
     loadAdquirentes,
     vendas,
+    setVendas,
     dateConvert,
     dateConvertSearch,
     returnTotalMes,
     loadVendas,
   } = useContext(AuthContext)
 
-  let [totalCredito, setTotalCredito] = useState(0.00)
-  let [totalDebito, setTotalDebito] = useState(0.00)
-  let [totalVoucher, setTotalVoucher] = useState(0.00)
-  let [totalLiquido, setTotalLiquido] = useState(0.00)
+  const [totalCredito, setTotalCredito] = useState(0.00)
+  const [totalDebito, setTotalDebito] = useState(0.00)
+  const [totalVoucher, setTotalVoucher] = useState(0.00)
+  const [totalLiquido, setTotalLiquido] = useState(0.00)
+
+  let [arrayAdm, setArrayAdm] = useState([])
 
   let [detalhes, setDetalhes] = useState(false)
   let [showAdmin, setShowAdmin] = useState(false)
@@ -96,53 +99,32 @@ let Vendas = () =>{
       if(adquirentes.length === 0){
         await loadAdquirentes()
       }
-      
     }
     inicializar()
   },[])
-  /*
+
   useEffect(()=>{
-    let dataInicial = new Date()
-    dataInicial.setDate(1)
-    let currentDate = new Date();
-    let nextMonthFirstDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
-    let dataFinal = new Date(nextMonthFirstDay.getTime() - 1);
-
-    console.log('dataInicial: ', dataInicial, 'dataFinal: ', dataFinal)
-
-    async function loadTotais(){
-      let totais = [] 
-      let dataAtual = new Date()
-      console.log('dataAtual', dataAtual)
-      dataAtual.setDate(1)
-      console.log('dataAtual após setDate(1)',dataAtual)
-      let i = dataAtual
-      console.log('i: ', i)
-
-      let resp = []
-      
-
-      for(i; i<= dataFinal; i.setDate(i.getDate() + 1)){
-        console.log('FOR i: ', i)
-        await returnTotalMes(cnpjBusca, i)
-        .then((response) => {
-          let obj = (response)
-          resp.push(obj)
-        })
-      }
-      setVendasTotais(resp)
-    }
-    loadTotais()
-  },[]) */
-
+    vendas.length = 0
+    setTotalCredito(0.00)
+    setTotalDebito(0.00)
+    setTotalVoucher(0.00)
+    setTotalLiquido(0.00)
+  },[])
   
-
   useEffect(()=>{
     console.log(vendasTotais)
   },[vendasTotais])
 
   useEffect(()=>{
+    if(vendas.length === 0){
+      setTotalCredito(0.00)
+      setTotalDebito(0.00)
+      setTotalVoucher(0.00)
+      setTotalLiquido(0.00)
+    }
     gerarDados()
+    setArrayAdm(separaAdm(vendas))
+    
   },[vendas])
 
   useEffect(()=>{
@@ -151,6 +133,91 @@ let Vendas = () =>{
 
   function handleDateChange(date){
     setDataBusca(date)
+  }
+
+  function separaAdm(array){
+    console.log('array: ', array)
+    if(array.length > 0){
+      let temp = []
+      let totalCreditoTemp = 0
+      let totalDebitoTemp = 0
+      let totalVoucherTemp = 0
+      let totalLiquidoTemp = 0
+
+      array.forEach((venda)=>{
+        if(temp.length === 0){
+          let novoObj = {
+              nomeAdquirente: venda.adquirente.nomeAdquirente,
+              total: venda.valorLiquido,
+              id: 0,
+              vendas: []
+          }
+          temp.push(novoObj)
+        }else{
+          let novoObj = {
+              nomeAdquirente: venda.adquirente.nomeAdquirente,
+              total: venda.valorLiquido,
+              id: 0,
+              vendas: []
+          }
+
+          if(!(temp.find((objeto) => objeto.nomeAdquirente === venda.adquirente.nomeAdquirente && objeto !== ( undefined || [] )))){
+              novoObj.id = (temp.length)
+              temp.push(novoObj)
+          }
+
+          else{
+              for(let i = 0; i < temp.length; i++){
+                  if(temp[i].nomeAdquirente === venda.adquirente.nomeAdquirente){
+                      temp[i].total += venda.valorLiquido
+                  }
+              }
+          }
+        }
+        // eslint-disable-next-line default-case
+        switch(venda.produto.descricaoProduto){
+          case 'Crédito':
+            totalCreditoTemp += venda.valorLiquido
+            break;
+
+          case 'Débito':
+            totalDebitoTemp += venda.valorLiquido
+            break;
+
+          case 'Voucher':
+            totalVoucherTemp += venda.valorLiquido
+            break;
+        }
+        totalLiquidoTemp += venda.valorLiquido
+      })
+        temp.forEach((adq) => {
+            let vendasTemp = []
+            vendasTemp.length = 0
+            array.forEach((vendasDia) => {
+                if(vendasDia.length > 0){
+                    vendasDia.forEach((venda) => {
+                        if(venda.adquirente.nomeAdquirente === adq.nomeAdquirente){
+                            vendasTemp.push(venda)
+                        }
+                        adq.vendas = vendasTemp
+                    })
+                }
+            })
+        })
+        
+        console.log('TEPM: ', temp)
+
+        setTotalCredito(totalCreditoTemp)
+        setTotalDebito(totalDebitoTemp)
+        setTotalVoucher(totalVoucherTemp)
+        setTotalLiquido(totalLiquidoTemp)
+
+        console.log('total Credito:', totalCredito)
+        console.log('total Debito:', totalDebito)
+        console.log('total Voucher:', totalVoucher)
+        console.log('total Liquido:', totalLiquido)
+      return temp
+    }
   }
 
   function MyCalendar() {
@@ -194,11 +261,15 @@ let Vendas = () =>{
       }}>
       <div className='appPage'>
           <div className='page-content'>
-              <TotalModalidades/>
-              { detalhes ?  <DetalhesVenda/> : <MyCalendar/> }
-              <BuscarClienteData funcao={loadVendas} />
-              { detalhes ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></>}
-              <DetalhesData/>
+            <div className='recebimentos-title-container'>
+              <h1 className='recebimentos-title'>Calendário de Vendas</h1>
+            </div>
+            <TotalModalidadesComp texto1={'Débito'} valor1={totalDebito} texto2={'Crédito'} valor2={totalCredito} texto3={'Voucher'} valor3={totalVoucher} texto4={'Total Líquido'} valor4={totalLiquido} />
+            { detalhes ?  <DetalhesVenda/> : <MyCalendar/> }
+            <BuscarClienteData funcao={loadVendas} />
+            { detalhes ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></>}
+            <hr/>
+            { detalhes ? <TabelaGenericaAdm Array={arrayAdm}/> : <></>}
           </div>
       </div>
     </VendasContext.Provider>

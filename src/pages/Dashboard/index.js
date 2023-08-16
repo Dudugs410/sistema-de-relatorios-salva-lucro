@@ -12,7 +12,6 @@ import LoadingModal from '../../components/LoadingModal'
 import ModalCliente from '../../components/ModalCliente'
 //////
 import PieChart from '../../components/00Teste'
-import { dateConvert } from '../../contexts/dateConverter'
 
 import { adquirentesStatic, bandeirasStatic, recebimentosStatic, vendasStatic } from '../../contexts/static'
 import TabelaGenerica from '../../components/Componente_TabelaAdm'
@@ -26,7 +25,6 @@ const Dashboard = () => {
         loading,
         returnVendas,
         returnCreditos,
-        returnTotalDia,
         returnTotalMes,
         cnpj, 
         dateConvertSearch, 
@@ -34,16 +32,8 @@ const Dashboard = () => {
         teste,
         converteData,
         setCnpj,
-
-        clientes,
-        setClientes,
-        grupos,
-        SetGrupos,
-        bandeiras,
         setBandeiras,
-        vendas,
         setVendas,
-        adquirentes,
         setAdquirentes,
 
     } = useContext(AuthContext)
@@ -74,11 +64,6 @@ const Dashboard = () => {
         if(teste){
             setCnpj(0)
         }
-
-    },[])
-
-    useEffect(()=>{
-        setCnpj(sessionStorage.getItem('cnpj'))
     },[])
 
     async function inicializaVendas4dias(){
@@ -149,7 +134,6 @@ const Dashboard = () => {
 
     useEffect(()=>{
         async function inicializar(){
-            setCnpj(sessionStorage.getItem('cnpj'))
             if(cnpj !== null && teste !== true){
                 console.log('inicializando dados de vendas e créditos...')
                 await inicializaVendas4dias()
@@ -433,8 +417,9 @@ const Dashboard = () => {
     <>
         <div className='appPage'>
         { modalCliente && ( <ModalCliente/> ) }
-        { loading && (<LoadingModal/>) } 
-            <div className='content-area dash'>
+        { loading && (<LoadingModal/>) }
+        {cnpj && (
+                        <div className='content-area dash'>
                 <div className='chart-table-block'>
                     <div className='data-group-area'>
                         <div className='graph-data'>
@@ -485,6 +470,7 @@ const Dashboard = () => {
                     </div>
                 </div>            
             </div>
+        )}
         </div> 
     </>  
   )  

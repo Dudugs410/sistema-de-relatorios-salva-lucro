@@ -1,5 +1,5 @@
 
-import './totais.css'
+import './totalModalidade.css'
 
 const TotalModalidadesComp = ({texto1, valor1, texto2, valor2, texto3, valor3, texto4, valor4}) =>{
     

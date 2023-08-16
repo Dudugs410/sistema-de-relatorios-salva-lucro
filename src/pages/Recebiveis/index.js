@@ -270,7 +270,7 @@ const Recebiveis = () =>{
             <div className='btn-div-recebimentos'>
             <ComponenteBuscarClienteData detalhes={detalhes} adquirentes={adquirentes} bandeiras={bandeiras} onAdmUpdate={handleAdm} onBanUpdate={handleBan} onBuscaUpdate={handleUpdate}/>
             </div>
-            {detalhes ? <DetalhesData arrayVendas={creditosTemp} arrayAdq={arrayAdm} /> : <></>}
+            <hr/>
             {arrayAdm && detalhes ? <TabelaGenericaAdm Array={arrayAdm}/> : <></>}
           </div>
         </div>
