@@ -34,23 +34,6 @@
     margin-left: 20px;
 }
 
-.header-content{
-    width: 100%;
-    height: 70px;
-    background-color:#444e79;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
-    align-items: center;
-
-}
-
-.li-container{
-    font-weight: bold;
-    color: #181c2e;
-    width:100%;
-}
-
 .navbar-customer-wrapper{
     display: flex;
     flex-direction: row;
@@ -73,39 +56,12 @@
     margin-left: 20%;
 }
 
-ul.navbar-nav{
+.teste{
     display: flex;
     flex-direction: row;
-    width: 100%;
-    justify-content: space-evenly;
-    
-}
-
-li:hover{
-    color: yellowgreen;
-}
-
-li.nav-item:hover{
-    background-color: darkgray;
-    box-shadow:inset 0px 38px 0px 0px #444e79;
-	background-color:#181c2e;
-    color: yellowgreen;
-    transition: all 0.2s;
-}
-
-li.nav-item{
-    width:100%;
-    height: 100%;
-	background-color:#181c2e;
-	display:inline-block;
-	cursor:pointer;
-	color:#ffffff;
-	font-family:Arial;
-	font-size:15px;
-	font-weight:bold;
-	padding:0px 23px;
-	text-decoration:none;
-	text-shadow:0px -1px 0px #7a2a1d;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-around;
 }
 
 a.nav-text{
@@ -130,6 +86,52 @@ polyline, line, path{
     color: white;
 }
 
+.nav-item{
+    width: 100%;
+    color: white;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-item:not(:first-child){
+    margin-left: 0;
+}
+
+.navbar-nav{
+    display: inline-flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: center;
+    justify-content: space-around;
+    flex-wrap: nowrap;
+}
+
+.li-button-content{
+    width: 100%;
+    color: white;
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    border: solid 2px;
+    border-left: none;
+    border-right: none;
+    background-color: #181c2e;
+}
+
+.li-button-content:hover{
+    color: yellowgreen;
+    background-color: #59659e;
+    transition: all, 0.4s;
+}
+
+.nav-link{
+
+}
+
 @media screen and (max-width: 832px){
 
     .header-bg{
@@ -140,7 +142,6 @@ polyline, line, path{
         display: flex;
         flex-direction: column;
         height: auto;
-    
     }
     
     .navbar-title{
@@ -165,15 +166,6 @@ polyline, line, path{
         margin-left: 0px;
     }
     
-    .header-content{
-        width: 100%;
-        background-color: #dfdfdf;
-        color:black;
-        display: flex;
-        height: auto;
-    
-    }
-    
     .navbar-customer-wrapper{
         display: flex;
         flex-direction: row;
@@ -191,40 +183,12 @@ polyline, line, path{
         
     }
     
-    .navbar-customer:not(:first-child){
-        margin-left: 20%;
-    }
-    
-    ul.navbar-nav{
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        justify-content: space-evenly;
-        align-items: center;
-    }
-    
     li>a{
         color: #181c2e;
     }
 
-    .li-container{
-        width: 100%;
-    }
-
     li{
         transition: all 0.4s;
-    }
-
-    li:hover{
-        color: yellowgreen;
-        background-color: rgba(0, 0, 0, 0.322);
-
-    }
-
-    .nav-item{
-        width: 100%;
-        text-align: center;
-        border: solid black 1px;
     }
 
     .btn-exit{
@@ -234,15 +198,46 @@ polyline, line, path{
         position: relative;
         top: -90px;
         z-index: 99;
-
     }
 
-    svg{
+    .navbar-nav{
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        position: fixed;
+        left: -270px;
+        top: 35%;
+        z-index: 2;
+    }
+
+    .nav-item{
+        display: inline-flex;
+        z-index: 2;
+        justify-content: flex-start;
+    }
+
+    .li-button-content{
+        width: 300px;
+        height: 35px;
+        display: inline-flex;
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
+        border-right: solid white 2px;
+        flex-direction: column;
+        flex-wrap: wrap;
+        align-content: flex-end;
+    }
+
+    .li-button-content:hover{
+        border-right: solid yellowgreen 2px;
+        border-top: solid yellowgreen 2px;
+        border-bottom: solid yellowgreen 2px;
+        transition: all, 0.5s;
+        width: 420px;
+    }
+    .li-button-content:hover,.li-btn-text{
+        display: inline-flex;
         color: white;
-    }
 
-    polyline, line, path{
-        color: white;
     }
-
 }

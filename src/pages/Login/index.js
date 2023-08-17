@@ -17,6 +17,10 @@ const Login = () => {
     const [password, setPassword] = useState('')
 
     useEffect(()=>{
+        sessionStorage.setItem('cnpj', '')
+    },[])
+
+    useEffect(()=>{
         if(isSignedIn){
             navigate('/Dashboard')
         }

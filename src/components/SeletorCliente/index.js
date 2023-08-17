@@ -53,7 +53,7 @@ theme="light"
                         </div>
                     </div>
 
-                    <div  className='date-column'>
+                    <div  className='date-column '>
                         <div className='select-card'>
                             <span>Cliente</span>
                             { listaClientes.length > 0 ?

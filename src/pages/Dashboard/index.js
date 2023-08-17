@@ -59,10 +59,12 @@ const Dashboard = () => {
     const [graficoVendas, setGraficoVendas] = useState({ labels: [], data: [] })
     const [graficoCreditos, setGraficoCreditos] = useState({ labels: [], data: [] })
 
+    const [cnpjSelecionado, setCnpjSelecionado] = useState(false)
 
     useEffect(()=>{
         if(teste){
             setCnpj(0)
+            setCnpjSelecionado(true)
         }
     },[])
 
@@ -134,7 +136,7 @@ const Dashboard = () => {
 
     useEffect(()=>{
         async function inicializar(){
-            if(cnpj !== null && teste !== true){
+            if((cnpj !== null && cnpj !== '') && teste !== true){
                 console.log('inicializando dados de vendas e créditos...')
                 await inicializaVendas4dias()
                 await inicializaVendas4diasMes()

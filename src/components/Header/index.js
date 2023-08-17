@@ -3,6 +3,9 @@ import { FiPower } from "react-icons/fi"
 import { AuthContext } from "../../contexts/auth"
 import { useContext, useEffect, useState } from "react"
 
+
+import { FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText } from "react-icons/fi"
+
 import salvaLucroLogoBranco from '../../assets/LogoTopo.png'
 
 import './header.css'
@@ -18,6 +21,7 @@ const Header = () =>{
 
     return(
         <>
+        <sideBar/>
             <div className='header-bg'>
                 <div className='navbar-title'>
                     <img className='img-header' src={salvaLucroLogoBranco} alt='logo salva lucro'/>
@@ -27,7 +31,6 @@ const Header = () =>{
                         <span>Filial Placeholder</span>
                         <span>123456789101112</span>
                     </div>
-                    
                     <div className='navbar-customer'>
                         <span className='client-name'>{`${nome}`}</span>
                         <span className='client-code'>123456789101112</span> 
@@ -36,26 +39,52 @@ const Header = () =>{
                 <button type='button' className='btn-exit' onClick={logout}><FiPower color="#000000" size={24}/></button>
             </div>
             
-            <div className='header-content drop-shadow'>
+            <div className='header-content'>
                 <div className="li-container">
                     <ul className="navbar-nav">
                         <li className="nav-item">
-                            <Link to='/dashboard' className="nav-hover nav-text nav-link active text-shadow" aria-current="page">Início</Link>
+                            <Link to='/dashboard' className="nav-hover nav-text nav-link active text-shadow" aria-current="page">
+                                <button className="li-button-content">
+                                <span className="li-btn-text">Início</span>&nbsp;&nbsp;&nbsp;<FiHome/>
+                                </button>
+                            </Link>
                         </li>
                         <li className="nav-item">
-                            <Link to='/vendas' className="nav-hover nav-text nav-link active text-shadow" aria-current="page">Vendas</Link>
+                            <Link to='/vendas' className="nav-hover nav-text nav-link active text-shadow" aria-current="page">
+                                <button className="li-button-content">
+                                <span className="li-btn-text">Vendas</span>&nbsp;&nbsp;&nbsp;<FiDollarSign/>
+                                </button>
+                            </Link>
                         </li>
                         <li className="nav-item">
-                            <Link to='/recebiveis' className="nav-hover nav-text nav-link active text-shadow" aria-current="page">Recebíveis</Link>
+                            <Link to='/recebiveis' className="nav-hover nav-text nav-link active text-shadow" aria-current="page">
+                                <button className="li-button-content">
+                                <span className="li-btn-text">Recebíveis</span>&nbsp;&nbsp;&nbsp;<FiCreditCard/>
+                                </button>
+                            </Link>
                         </li>
                         <li className="nav-item">
-                            <Link to='/antecipacoes' className="nav-hover nav-text nav-link active text-shadow" aria-current="page">Antecipações</Link>
+                            <Link to='/antecipacoes' className="nav-hover nav-text nav-link active text-shadow" aria-current="page">
+                                <button className="li-button-content">
+                                <span className="li-btn-text">Antecipações</span>&nbsp;&nbsp;&nbsp;&nbsp;<FiRefreshCcw/>
+                                </button>
+                            </Link>
                         </li>
                         <li className="nav-item">
-                            <Link to='/servicos' className="nav-hover nav-text nav-link active text-shadow" aria-current="page">Serviços</Link>
+                            <Link to='/servicos' className="nav-hover nav-text nav-link active text-shadow" aria-current="page">
+                                <button className="li-button-content">
+                                <span className="li-btn-text">Serviços</span>&nbsp;&nbsp;&nbsp;<FiTool/>
+                                </button>
+                            </Link>  
                         </li>
                         <li className="nav-item">
-                            <Link to='/relatorios' className="nav-hover nav-text nav-link active text-shadow" aria-current="page">Relatórios</Link>
+                            <Link to='/relatorios' className="nav-hover nav-text nav-link active text-shadow" aria-current="page">
+                                <div className="li-btn-bg">
+                                    <button className="li-button-content">
+                                    <span className="li-btn-text">Relatórios</span>&nbsp;&nbsp;&nbsp;<FiFileText/>
+                                    </button>
+                                </div>
+                            </Link>  
                         </li>
                     </ul>
                 </div>

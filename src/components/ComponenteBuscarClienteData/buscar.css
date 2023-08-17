@@ -212,7 +212,7 @@
     .date-column:not(:nth-child(3)){
         display: flex;
         flex-direction: row;
-
+        align-items: flex-end;
     }
 
     body{

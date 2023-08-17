@@ -18,12 +18,10 @@ const ComponenteBuscarClienteData = ({detalhes, adquirentes, bandeiras, onAdmUpd
         console.log('handleVoltar()')
         e.preventDefault()
         onBuscaUpdate(false)
-
     }
 
     useEffect(()=>{
         onAdmUpdate(adqSelecionada)
-
     },[adqSelecionada])
 
     useEffect(()=>{
