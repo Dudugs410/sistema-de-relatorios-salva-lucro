@@ -20,7 +20,7 @@ export default function TabelaGenericaAdm({Array}) {
                                     return (
                                         <tr key={elemento.id}>
                                             <td className='det-td det-adm' data-label="Adquirente">{elemento.nomeAdquirente}</td>
-                                            <td className='det-td det-adm' data-label="Total">R$ {`${elemento.total.toFixed(2).toString().replace('.', ',')}`}</td>
+                                            <td className='det-td det-adm' data-label="Total">R$ <span className='green-tabela-adm'>{`${elemento.total.toFixed(2).toString().replace('.', ',')}`}</span></td>
                                         </tr>
                                     )
                                 })}

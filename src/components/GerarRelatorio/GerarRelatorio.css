@@ -23,8 +23,8 @@
         width: 100%;
         display: flex;
         padding-left: 12px;
-        margin-top: 20px;
-        margin-bottom: 20px;
+        margin-top: 0;
+        margin-bottom: 0;
         flex-direction: row;
         flex-wrap: wrap;
         justify-content: space-around;

@@ -201,19 +201,23 @@ polyline, line, path{
     }
 
     .navbar-nav{
+        width: 50px;
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         flex-wrap: wrap;
         position: fixed;
-        left: -270px;
+        left: -269px;
         top: 35%;
         z-index: 2;
     }
 
     .nav-item{
+        width: 100px;
         display: inline-flex;
         z-index: 2;
         justify-content: flex-start;
+        flex-direction: column;
+        flex-wrap: wrap;
     }
 
     .li-button-content{
@@ -235,9 +239,9 @@ polyline, line, path{
         transition: all, 0.5s;
         width: 420px;
     }
+    
     .li-button-content:hover,.li-btn-text{
         display: inline-flex;
         color: white;
-
     }
 }

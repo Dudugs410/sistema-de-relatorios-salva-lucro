@@ -125,6 +125,11 @@
 
 }
 
+.green-tabela-adm{
+    color: rgb(0, 255, 0);
+    text-shadow: 1px 1px 1px #000000;
+}
+
 @media screen and (max-width: 832px){
     .vendas-container{
         height: 90%;
