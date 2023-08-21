@@ -207,7 +207,7 @@ polyline, line, path{
         flex-wrap: wrap;
         position: fixed;
         left: -269px;
-        top: 35%;
+        top: 15px;
         z-index: 2;
     }
 
