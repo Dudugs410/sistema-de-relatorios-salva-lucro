@@ -301,6 +301,9 @@ function AuthProvider({ children }){
             })
       }else{
         setVendas(vendasStatic.VENDAS)
+        setLoading(false)
+        setBuscou(false)
+        return vendasStatic.VENDAS
       }
     }
 

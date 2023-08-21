@@ -81,7 +81,8 @@ const BuscarClienteData = () => {
             console.log('handleBusca()')
             e.preventDefault()
             await buscar()
-            await gerarDados()
+            console.log('vendas gerar dados',vendas)
+            await gerarDados(vendas)
     }
 
     async function buscar() {

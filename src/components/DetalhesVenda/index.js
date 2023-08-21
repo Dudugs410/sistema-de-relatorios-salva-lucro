@@ -14,10 +14,6 @@ const DetalhesVenda = () =>{
         }
         init()
     },[vendas])
-
-    useEffect(()=>{
-        console.log('teste: ', vendasTeste.VENDAS)
-    },[vendasTeste])
     
     return(
         <>

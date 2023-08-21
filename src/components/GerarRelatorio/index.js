@@ -7,8 +7,12 @@ import ExcelJS from 'exceljs'
 import { FiFilePlus } from 'react-icons/fi'
 
 import './GerarRelatorio.css'
+import { useContext, useEffect } from 'react'
+import { AuthContext } from '../../contexts/auth'
 
 export default function GerarRelatorio({tableData, dataAtual}){
+
+  const { dateConvert } = useContext(AuthContext)
 
     // EXCEL ////////////////////////////////////////////////////////////
     const exportToExcel = () => {
@@ -51,7 +55,6 @@ export default function GerarRelatorio({tableData, dataAtual}){
       }
 
       // PDF ////////////////////////////////////////////////////////////
-    
       
     const generatePdf = () => {
         const columns = ['Adquirente', 'Bandeira', 'Produto', 'NSU', 'CNPJ', 'Código da Venda', 'Código da Autorização', 'Número PV', 'Valor Bruto', 'Valor Líquido', 'Taxa', 'Data da Venda', 'Hora da Venda', 'Data do Crédito', 'Qtd Parcelas'];
@@ -80,8 +83,8 @@ export default function GerarRelatorio({tableData, dataAtual}){
     return(
         <>
             <div className='container'>
-                <button className="btn btn-success btn-exportar" onClick={exportToExcel}>Gerar Excel <FiFilePlus /></button>
-                <button className='btn btn-danger btn-exportar' onClick={generatePdf}>Gerar PDF <FiFilePlus /></button>
+                <button className="btn btn-success btn-exportar" onClick={exportToExcel}>Download Excel <FiFilePlus /></button>
+                <button className='btn btn-danger btn-exportar' onClick={generatePdf}>Download PDF <FiFilePlus /></button>
             </div>
         </>
     )

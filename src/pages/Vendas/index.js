@@ -36,6 +36,7 @@ let Vendas = () =>{
   const [totalLiquido, setTotalLiquido] = useState(0.00)
 
   let [arrayAdm, setArrayAdm] = useState([])
+  const [arrayRelatorio, setArrayRelatorio] = useState([])
 
   let [detalhes, setDetalhes] = useState(false)
   let [showAdmin, setShowAdmin] = useState(false)
@@ -49,37 +50,6 @@ let Vendas = () =>{
   let [adqBusca, setAdqBusca] = useState('')
 
   const [vendasTotais, setVendasTotais] = useState([])
-  
-
-  let tableData = []
-
-    async function gerarDados() {
-        tableData.length = 0
-        console.log('vendas ao gerar Dados: ', vendas)
-        if (vendas.length > 0) {
-          vendas.map((venda) => {
-            tableData.push({
-              adquirente: venda.adquirente.nomeAdquirente,
-              bandeira: venda.bandeira.descricaoBandeira,
-              produto: venda.produto.descricaoProduto,
-              nsu: venda.nsu,
-              cnpj: venda.cnpj,
-              codigoVenda: venda.codigoVenda,
-              codigoAutorizacao: venda.codigoAutorizacao,
-              numeroPV: venda.numeroPV,
-              valorBruto: 'R$' + venda.valorBruto.toFixed(2).replaceAll('.', ','),
-              valorLiquido: 'R$' + venda.valorLiquido.toFixed(2).replaceAll('.', ','),
-              taxa: 'R$' + venda.taxa.toFixed(2).replaceAll('.', ','),
-              dataVenda: dateConvert(venda.dataVenda),
-              horaVenda: venda.horaVenda,
-              dataCredito: dateConvert(venda.dataCredito),
-              parcelas: venda.quantidadeParcelas,
-            })
-            return 0
-          })
-        }
-        console.log('tableData: ', tableData)
-      }
 
   useEffect(()=>{
     async function inicializar(){
@@ -110,6 +80,37 @@ let Vendas = () =>{
     console.log(vendasTotais)
   },[vendasTotais])
 
+  const [tableData, setTableData] = useState([])
+
+  function gerarDados(array){
+    tableData.length = 0
+    console.log('vendas ao gerar Dados: ', array)
+    if (array.length > 0) {
+      array.map((venda) => {
+        tableData.push({
+          adquirente: venda.adquirente.nomeAdquirente,
+          bandeira: venda.bandeira.descricaoBandeira,
+          produto: venda.produto.descricaoProduto,
+          nsu: venda.nsu,
+          cnpj: venda.cnpj,
+          codigoVenda: venda.codigoVenda,
+          codigoAutorizacao: venda.codigoAutorizacao,
+          numeroPV: venda.numeroPV,
+          valorBruto: 'R$' + venda.valorBruto.toFixed(2).replaceAll('.', ','),
+          valorLiquido: 'R$' + venda.valorLiquido.toFixed(2).replaceAll('.', ','),
+          taxa: 'R$' + venda.taxa.toFixed(2).replaceAll('.', ','),
+          dataVenda: dateConvert(venda.dataVenda),
+          horaVenda: venda.horaVenda,
+          dataCredito: dateConvert(venda.dataCredito),
+          parcelas: venda.quantidadeParcelas,
+        })
+        console.log('tableData: ', tableData)
+        return tableData
+      })
+    }
+    console.log('arrayRelatorio: ', arrayRelatorio)
+  }
+
   useEffect(()=>{
     if(vendas.length === 0){
       setTotalCredito(0.00)
@@ -117,10 +118,16 @@ let Vendas = () =>{
       setTotalVoucher(0.00)
       setTotalLiquido(0.00)
     }
-    gerarDados()
-    setArrayAdm(separaAdm(vendas))
-    
+    else if(vendas.length > 0){
+      console.log(vendas)
+      setArrayRelatorio(gerarDados(vendas))
+      setArrayAdm(separaAdm(vendas))
+    }
   },[vendas])
+
+  useEffect(()=>{
+    console.log('arrayRelatorio: ', arrayRelatorio)
+  },[arrayRelatorio])
 
   useEffect(()=>{
     setCnpjBusca(cnpj)
@@ -245,14 +252,12 @@ let Vendas = () =>{
       setTotalVoucher,
       totalLiquido,
       setTotalLiquido,
-      gerarDados,
       cnpjBusca,
       setCnpjBusca,
       banBusca,
       setBanBusca,
       adqBusca,
       setAdqBusca,
-      tableData
       }}>
 
       <div className='appPage'>
