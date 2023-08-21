@@ -7,6 +7,7 @@ import DetalhesData from "../../components/Componente_DetalhesData"
 import TotalModalidadesComp from "../../components/Componente_TotalModalidades"
 import TabelaGenericaAdm from "../../components/Componente_TabelaAdm"
 import ComponenteBuscarClienteData from '../../components/ComponenteBuscarClienteData'
+import GerarRelatorio from "../../components/GerarRelatorio"
 
 const Recebiveis = () =>{
 
@@ -259,6 +260,46 @@ const Recebiveis = () =>{
         )
       }
 
+      const [tableData, setTableData] = useState([])
+      const [arrayRelatorio, setArrayRelatorio] = useState([])
+
+      function gerarDados(array){
+        tableData.length = 0
+        console.log('vendas ao gerar Dados: ', array)
+        if (array.length > 0) {
+          array.map((venda) => {
+            tableData.push({
+              adquirente: venda.adquirente.nomeAdquirente,
+              bandeira: venda.bandeira.descricaoBandeira,
+              produto: venda.produto.descricaoProduto,
+              nsu: venda.nsu,
+              cnpj: venda.cnpj,
+              codigoVenda: venda.codigoVenda,
+              codigoAutorizacao: venda.codigoAutorizacao,
+              numeroPV: venda.numeroPV,
+              valorBruto: 'R$' + venda.valorBruto.toFixed(2).replaceAll('.', ','),
+              valorLiquido: 'R$' + venda.valorLiquido.toFixed(2).replaceAll('.', ','),
+              taxa: 'R$' + venda.taxa.toFixed(2).replaceAll('.', ','),
+              dataVenda: dateConvert(venda.dataVenda),
+              horaVenda: venda.horaVenda,
+              dataCredito: dateConvert(venda.dataCredito),
+              parcelas: venda.quantidadeParcelas,
+            })
+            console.log('tableData: ', tableData)
+            return tableData
+          })
+        }
+        console.log('arrayRelatorio: ', arrayRelatorio)
+      }
+    
+    useEffect(()=>{
+      if(creditosTemp.length > 0){
+        console.log(creditosTemp)
+        setArrayRelatorio(gerarDados(creditosTemp))
+        setArrayAdm(separaAdm(creditosTemp))
+      }
+    },[creditosTemp])
+
     return(
         <div className='appPage'>
           <div className='page-content'>
@@ -266,10 +307,11 @@ const Recebiveis = () =>{
             <h1 className='recebimentos-title'>Calendário de Recebimentos</h1>
           </div>
             <TotalModalidadesComp texto1={'Débito'} valor1={totalDebito} texto2={'Crédito'} valor2={totalCredito} texto3={'Voucher'} valor3={totalVoucher} texto4={'Total Líquido'} valor4={totalTotal} />
-              { detalhes ? <DetalhesCredito array={creditosTemp}/> :  <MyCalendar/> }
+            { detalhes ? <DetalhesCredito array={creditosTemp}/> :  <MyCalendar/> }
             <div className='btn-div-recebimentos'>
             <ComponenteBuscarClienteData detalhes={detalhes} adquirentes={adquirentes} bandeiras={bandeiras} onAdmUpdate={handleAdm} onBanUpdate={handleBan} onBuscaUpdate={handleUpdate}/>
             </div>
+            { detalhes ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
             <hr/>
             {arrayAdm && detalhes ? <TabelaGenericaAdm Array={arrayAdm}/> : <></>}
           </div>
