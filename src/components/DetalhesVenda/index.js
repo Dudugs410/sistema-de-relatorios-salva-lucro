@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "../../contexts/auth"
-import { vendasStatic } from "../../contexts/static"
 
 import './detalhesVenda.css'
 
@@ -11,13 +10,13 @@ const DetalhesVenda = () =>{
 
     useEffect(()=>{
         async function init(){
-            await setVendasTeste(vendas)
+            setVendasTeste(vendas)
         }
         init()
     },[vendas])
 
     useEffect(()=>{
-        console.log('teste: ', vendasTeste)
+        console.log('teste: ', vendasTeste.VENDAS)
     },[vendasTeste])
     
     return(

@@ -86,68 +86,61 @@ const BuscarClienteData = () => {
 
     async function buscar() {
         console.log('buscar()')
-        if(teste !== true){
-            await loadVendas(dataBusca, cnpjBusca, adqBusca, banBusca)
-            .then(() =>{
-                if(dataBusca === '' || cnpjBusca === ''){
-                    return 0
-                }
-                else{
-                    alerta(`executou a busca do dia ${dateConvertSearch(dataBusca)}`)
-                    setBuscou(true)
-                }    
-            })
-            setLoading(false)
-        }else{
-            setVendas(vendasStatic)
-            setDetalhes(true)
-        }
-      }
+        await loadVendas(dataBusca, cnpjBusca, adqBusca, banBusca)
+        .then(() =>{
+            if(dataBusca === '' || cnpjBusca === ''){
+                return 0
+            }
+            else{
+                alerta(`executou a busca do dia ${dateConvertSearch(dataBusca)}`)
+                setBuscou(true)
+            }    
+        })
+        setLoading(false)
+    }
 
-      useEffect(()=>{
-        console.log('buscou: ', buscou)
-        if(teste !== true){
-            if(buscou === true){
-                if((vendas === null) || (vendas.length === 0)){
-                    alerta('não existem vendas para a data selecionada')
-                    setBuscou(false)
-                }
-                else{
-                    setDetalhes(true)
-                    setBuscou(false)
-                }
+    useEffect(()=>{
+    console.log('buscou: ', buscou)
+    if(buscou === true){
+            if((vendas === null) || (vendas.length === 0)){
+                alerta('não existem vendas para a data selecionada')
+                setBuscou(false)
+            }
+            else{
+                setDetalhes(true)
+                setBuscou(false)
             }
         }
-      },[buscou])
+    },[buscou])
 
-      useEffect(()=>{
-        const grupoObj = grupos.find(item => item.CODIGOGRUPO === Number(gruSelecionado));
-        let cli = grupoObj ? grupoObj.CLIENTES : [];
-        setListaClientes(cli)
-      },[gruSelecionado])
+    useEffect(()=>{
+    const grupoObj = grupos.find(item => item.CODIGOGRUPO === Number(gruSelecionado));
+    let cli = grupoObj ? grupoObj.CLIENTES : [];
+    setListaClientes(cli)
+    },[gruSelecionado])
 
-      useEffect(()=>{
-        setBanBusca(banSelecionada)
-      },[banSelecionada])
+    useEffect(()=>{
+    setBanBusca(banSelecionada)
+    },[banSelecionada])
 
-      useEffect(()=>{
-        setAdqBusca(adqSelecionada)
-      },[adqSelecionada])
+    useEffect(()=>{
+    setAdqBusca(adqSelecionada)
+    },[adqSelecionada])
 
-      function handleVoltar(e){
-        e.preventDefault()
-        setDetalhes(false)
-        setShowAdmin(false)
-        setTotalLiquido(0.00)
-        setTotalCredito(0.00)
-        setTotalDebito(0.00)
-        setTotalVoucher(0.00)
+    function handleVoltar(e){
+    e.preventDefault()
+    setDetalhes(false)
+    setShowAdmin(false)
+    setTotalLiquido(0.00)
+    setTotalCredito(0.00)
+    setTotalDebito(0.00)
+    setTotalVoucher(0.00)
 
-        console.log('voltar:')
-        console.log('cnpj: ', cnpj)
-        console.log('adquirente: ',adqBusca)
-        console.log('bandeira: ', banBusca)
-      }
+    console.log('voltar:')
+    console.log('cnpj: ', cnpj)
+    console.log('adquirente: ',adqBusca)
+    console.log('bandeira: ', banBusca)
+    }
 
     return(
         <>

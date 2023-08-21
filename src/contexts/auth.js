@@ -618,7 +618,7 @@ async function returnVendas(datainicial, datafinal, cnpj, adquirente, bandeira){
         setLoading(false)
       }
   }else{
-    return vendasStatic
+    return vendasStatic.VENDAS
   }
 }
 
