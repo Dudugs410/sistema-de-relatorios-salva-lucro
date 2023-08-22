@@ -7,6 +7,8 @@ import TotalModalidadesComp from "../../components/Componente_TotalModalidades"
 import TabelaGenericaAdm from "../../components/Componente_TabelaAdm"
 import ComponenteBuscarClienteData from '../../components/ComponenteBuscarClienteData'
 import GerarRelatorio from "../../components/GerarRelatorio"
+import ModalBanco from "../../components/ModalBanco"
+import DetalhesBanco from "../../components/DetalhesBanco"
 
 const Recebiveis = () =>{
 
@@ -23,12 +25,14 @@ const Recebiveis = () =>{
       loadAdquirentes,
       dateConvert,
       dateConvertSearch,
+      returnCreditosBanco,
     } = useContext(AuthContext)
 
     const [dataBusca, setDataBusca] = useState(new Date())
     const [buscou, setBuscou] = useState(false)
 
     const [creditosTemp, setCreditosTemp] = useState([])
+    const [bancosTemp, setBancosTemp] = useState([])
     const [arrayAdm, setArrayAdm] = useState([])
 
     const [detalhes, setDetalhes] = useState(false)
@@ -101,7 +105,6 @@ const Recebiveis = () =>{
         async function init(){
           setBuscou(true)
           const temp = await returnCreditos(converteData(dataBusca), converteData(dataBusca), cnpj)
-          
           setCreditosTemp(temp)
           console.log('temp:', temp)
         }
@@ -122,6 +125,7 @@ const Recebiveis = () =>{
       setDetalhes(false)
       setAdmBusca(null)
       setBanBusca(null)
+      bancosTemp.length = 0
     }
 
     useEffect(()=>{
@@ -295,8 +299,63 @@ const Recebiveis = () =>{
       }
     },[creditosTemp])
 
+    useEffect(()=>{
+      let temp = []
+        creditosTemp.forEach((element)=>{
+          if(temp.length === 0){
+            let novoObj = {
+                codigoBanco: element.banco,
+                id: 0,
+                creditos: []
+            }
+            temp.push(novoObj)
+        }else{
+            let novoObj = {
+                codigoBanco: element.banco,
+                id: 0,
+                creditos: []
+            }
+
+            if(!(temp.find((objeto) => objeto.banco === creditosTemp.banco && objeto !== ( undefined || [] )))){
+                novoObj.id = (temp.length)
+                temp.push(novoObj)
+            }
+        }
+
+        temp.forEach((element) => {
+          let credTemp = []
+          credTemp.length = 0
+          creditosTemp.forEach((credito) => {
+            if(credito.banco === element.codigoBanco){
+                credTemp.push(credito)
+            }
+            element.creditos = credTemp
+          })
+        })
+      })
+      setBancosTemp(temp)
+    },[creditosTemp])
+
+    useEffect(()=>{
+      console.log('bancosTemp: ',bancosTemp)
+
+    },[bancosTemp])
+
+    const [showBanco, setShowBanco] = useState(false)
+
+    async function handleShowBanco(){
+      setBancosTemp(await returnCreditosBanco(cnpj, converteData(dataBusca), converteData(dataBusca), '341'))
+      setShowBanco(true)
+    }
+
     return(
         <div className='appPage'>
+        { showBanco && 
+          <ModalBanco onClose={() => setShowBanco(false)}>
+            <div className='modal-adm'>
+              <DetalhesBanco array={bancosTemp}/>
+            </div>
+          </ModalBanco>}
           <div className='page-content'>
           <div className='recebimentos-title-container'>
             <h1 className='recebimentos-title'>Calendário de Recebimentos</h1>
@@ -304,7 +363,10 @@ const Recebiveis = () =>{
             <TotalModalidadesComp texto1={'Débito'} valor1={totalDebito} texto2={'Crédito'} valor2={totalCredito} texto3={'Voucher'} valor3={totalVoucher} texto4={'Total Líquido'} valor4={totalTotal} />
             { detalhes ? <DetalhesCredito array={creditosTemp}/> :  <MyCalendar/> }
             <div className='btn-div-recebimentos'>
-            <ComponenteBuscarClienteData detalhes={detalhes} adquirentes={adquirentes} bandeiras={bandeiras} onAdmUpdate={handleAdm} onBanUpdate={handleBan} onBuscaUpdate={handleUpdate}/>
+              <ComponenteBuscarClienteData detalhes={detalhes} adquirentes={adquirentes} bandeiras={bandeiras} onAdmUpdate={handleAdm} onBanUpdate={handleBan} onBuscaUpdate={handleUpdate}/>
+            </div>
+            <div className='btn-banco-container'>
+              <button className="btn btn-primary" onClick={handleShowBanco}>Valores por Banco</button>
             </div>
             { detalhes ? <hr/> : <></> }
             { detalhes ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }

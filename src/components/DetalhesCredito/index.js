@@ -6,7 +6,7 @@ import './detalhesCredito.css'
 
 const DetalhesCredito = ({array}) =>{
 
-    const { vendas, dateConvert, setVendas, setCnpj, teste } = useContext(AuthContext)
+    const { dateConvert, setVendas, setCnpj, teste } = useContext(AuthContext)
     
     useEffect(()=>{
         if(teste === true){

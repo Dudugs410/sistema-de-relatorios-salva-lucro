@@ -443,7 +443,6 @@ const Dashboard = () => {
                                     </tr>
                                 </tbody>
                             </table>
-                            <TabelaGenerica Array={admVendas} />
                         </div>
                     </div>
                 </div>
@@ -468,7 +467,7 @@ const Dashboard = () => {
                                     </tr>
                                 </tbody>
                         </table>
-                        <TabelaGenerica Array={admCreditos}/>
+
                     </div>
                 </div>            
             </div>

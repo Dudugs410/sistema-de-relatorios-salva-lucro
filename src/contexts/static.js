@@ -21628,6 +21628,23 @@ export const totaisStatic = {
     "valorliquido": 30667.20
 }
 
+export const bancosStatic = [
+    {
+        "Conta": "341/8303/15732",
+        "DataPrevista": "10/05/2023",
+        "ValorBruto": 28818.55,
+        "ValorTaxa": 206.38,
+        "ValorLiquido": 28612.17
+    },
+    {
+        "Conta": "341/8303/15732",
+        "DataPrevista": "11/05/2023",
+        "ValorBruto": 34156.07,
+        "ValorTaxa": 274.14,
+        "ValorLiquido": 33881.93
+    }
+]
+
 export const accessStatic = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJTYWx2YWx1Y3JvU2VydmljZUFjZXNzVG9rZW4iLCJqdGkiOiJmZGI4NDIwZC0zYjQ0LTQzOTAtYTVlYi1lYWMwYWNjYTJjMmUiLCJpYXQiOiIxMS8wOC8yMDIzIDE3OjM5OjQyIiwiaWQiOiIxNjc1NjEiLCJsb2dpbiI6IkVEVUFSRE8iLCJleHAiOjE2OTE3ODI3ODIsImlzcyI6IlNhbHZhbHVyb0F1dGhlbnRpY2F0aW9uU2VydmVyIiwiYXVkIjoiU2FsdmFsdWNyb1NlcnZpY2VDbGllbnQifQ.QqvNIICzw2Wl_xvZkp5myD3nMCkmqkGanxPfjngRRTE'
 
 export const refreshStatic = 'cxDQR8bezVqZ1kQsjcGCGTuiI0yRRofEXyGqujFTA+E='

@@ -111,9 +111,16 @@
 }
 
 .dash-table .dash-tr{
-  border-bottom: 3px solid  #DDD;
-  display: block;
-  margin-bottom: 0.60em;
+  border-bottom: 3px solid #DDD;
+  display: flex;
+  margin-bottom: 0.6em;
+  border: solid white 1px;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-content: stretch;
+  align-items: stretch;
+  position: relative;
+  top: 50px;
 }
 
 .dash-table .dash-td{

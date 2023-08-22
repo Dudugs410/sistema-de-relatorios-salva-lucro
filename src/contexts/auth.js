@@ -6,10 +6,9 @@ import Cookies from 'js-cookie'
 import api, { config } from '../services/api'
 
 import md5 from 'md5'
-import { adquirentesStatic, bandeirasStatic, gruposStatic, recebimentosStatic, totaisStatic, vendasStatic } from './static'
+import { adquirentesStatic, bandeirasStatic, gruposStatic, recebimentosStatic, totaisStatic, vendasStatic, bancosStatic } from './static'
 
 import { toast } from 'react-toastify';
-import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 export const AuthContext = createContext({})
@@ -709,6 +708,55 @@ async function returnTotalMes(cnpj){
   return mes
 }
 
+async function returnCreditosBanco(cnpj, dataInicial, dataFinal, codigoBanco){
+  if(teste !== true){
+    setLoading(true)
+    let buscou
+    buscou = false
+
+    if((dataInicial === '' || undefined) || (cnpj === '' || undefined)){
+      alert('Favor selecionar uma data e cliente válidos')
+      setLoading(false)
+      return 0
+    }
+
+    setLoading(true)
+    let params = {}
+
+    if(((codigoBanco !== '' || undefined))){
+      params = {
+        cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+        dataInicial: dataInicial,
+        dataFinal: dataFinal,
+        codigoBanco: codigoBanco,
+      }
+      buscou = true
+    }
+
+      let config = {
+        headers: { 
+          'Content-Type': 'application/json', 
+          'Authorization': `Bearer ${Cookies.get('token')}`
+        },
+        params: params
+      }
+
+      try {
+        const response = await api.get('recebimentos', config)
+        const creditosBanco = response.data
+        setLoading(false)
+        setBuscou(false)
+        return creditosBanco
+      } catch (error) {
+        console.log(error)
+        setLoading(false)
+      }
+  }else{
+    setLoading(false)
+    return bancosStatic
+  }
+}
+
 function alerta(text){
   toast.info(text, {
       position: "top-center",
@@ -791,6 +839,7 @@ function alerta(text){
         returnCreditos,
         converteData,
         returnTotalMes,
+        returnCreditosBanco,
       }}
     >
       {children}
