@@ -40,8 +40,8 @@ pauseOnHover
 theme="light"
 />
             <div className='search-bar'>
-                <form className='date-container'>
-                    <div className='date-column'>
+                <form className='date-container date-container-seletor'>
+                    <div className='date-column date-column-seletor'>
                         <div className='select-card'>
                             <span>Grupo de Clientes</span>
                             <select id='grupo' value={gruSelecionado} onChange={(e) => {setGruSelecionado(e.target.value)}}>
@@ -53,7 +53,7 @@ theme="light"
                         </div>
                     </div>
 
-                    <div  className='date-column '>
+                    <div  className='date-column date-column-seletor'>
                         <div className='select-card'>
                             <span>Cliente</span>
                             { listaClientes.length > 0 ?

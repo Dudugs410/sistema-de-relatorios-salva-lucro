@@ -29,15 +29,17 @@
 
 .modal-content{
     height: 100%;
-    width: 65%;
+    width: 100%;
+    padding-left: 5%;
+    padding-right: 5%;
     margin: 0;
     border: none;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     align-content: center;
-    align-items: center;
-    justify-content: flex-end;
+    justify-content: space-evenly;
+    align-items: stretch;
 }
 
 .btn-container{

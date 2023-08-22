@@ -4,3 +4,30 @@
     flex-wrap: wrap;
     align-content: flex-end;
 }
+
+.date-container-seletor{
+    height: 100px;
+    width: 100%;
+    display: inline-flex;
+    justify-content: space-evenly;
+    background-color: #181c2e;
+    padding: 20px;
+}
+
+.date-column-seletor{
+    display: flex;
+    flex-direction: row;
+}
+
+@media screen and (max-width: 832px){
+
+    .date-container-seletor {
+        height: 100px;
+        width: 100%;
+        display: inline-flex;
+        justify-content: space-evenly;
+        background-color: #181c2e;
+        padding: 20px;
+    }
+
+}

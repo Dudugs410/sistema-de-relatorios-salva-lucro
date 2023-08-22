@@ -15,7 +15,7 @@ import { AuthContext } from '../../contexts/auth'
 export let VendasContext = createContext({})
 
 let Vendas = () =>{
-  
+
   let {
     cnpj,
     bandeiras, 
@@ -223,7 +223,6 @@ let Vendas = () =>{
   }
 
   function MyCalendar() {
-
     return (
       <div>
         <Calendar

@@ -3,7 +3,6 @@ import './recebimentos.css'
 import { useContext, useEffect, useState } from "react"
 import DetalhesCredito from "../../components/DetalhesCredito"
 import { AuthContext } from "../../contexts/auth"
-import DetalhesData from "../../components/Componente_DetalhesData"
 import TotalModalidadesComp from "../../components/Componente_TotalModalidades"
 import TabelaGenericaAdm from "../../components/Componente_TabelaAdm"
 import ComponenteBuscarClienteData from '../../components/ComponenteBuscarClienteData'
@@ -16,18 +15,14 @@ const Recebiveis = () =>{
       setCnpj, 
       returnCreditos, 
       converteData, 
-      grupos, 
+      grupos,
       loadGrupos, 
-      loadRecebimentos,
       bandeiras, 
       loadBandeiras,
       adquirentes,
       loadAdquirentes,
-      vendas,
       dateConvert,
       dateConvertSearch,
-      returnTotalMes,
-      loadVendas, 
     } = useContext(AuthContext)
 
     const [dataBusca, setDataBusca] = useState(new Date())
@@ -311,9 +306,11 @@ const Recebiveis = () =>{
             <div className='btn-div-recebimentos'>
             <ComponenteBuscarClienteData detalhes={detalhes} adquirentes={adquirentes} bandeiras={bandeiras} onAdmUpdate={handleAdm} onBanUpdate={handleBan} onBuscaUpdate={handleUpdate}/>
             </div>
+            { detalhes ? <hr/> : <></> }
             { detalhes ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
-            <hr/>
+            { detalhes ? <hr/> : <></> }
             {arrayAdm && detalhes ? <TabelaGenericaAdm Array={arrayAdm}/> : <></>}
+            { detalhes ? <hr/> : <></> }
           </div>
         </div>
     )
