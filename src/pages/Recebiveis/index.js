@@ -284,7 +284,6 @@ const Recebiveis = () =>{
               dataCredito: dateConvert(venda.dataCredito),
               parcelas: venda.quantidadeParcelas,
             })
-            console.log('tableData: ', tableData)
             return tableData
           })
         }
@@ -366,7 +365,7 @@ const Recebiveis = () =>{
               <ComponenteBuscarClienteData detalhes={detalhes} adquirentes={adquirentes} bandeiras={bandeiras} onAdmUpdate={handleAdm} onBanUpdate={handleBan} onBuscaUpdate={handleUpdate}/>
             </div>
             <div className='btn-banco-container'>
-              <button className="btn btn-primary" onClick={handleShowBanco}>Valores por Banco</button>
+              { detalhes ? <button className="btn btn-primary" onClick={handleShowBanco}>Valores por Banco</button> : <></> }
             </div>
             { detalhes ? <hr/> : <></> }
             { detalhes ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
