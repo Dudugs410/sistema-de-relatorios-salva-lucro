@@ -731,6 +731,17 @@ async function returnCreditosBanco(cnpj, dataInicial, dataFinal, codigoBanco){
         codigoBanco: codigoBanco,
       }
       buscou = true
+    }else{
+      let objTemp = {
+        "Banco": "Não identificado",
+        "Conta": "Não identificado",
+        "DataPrevista": "Não identificado",
+        "ValorBruto": "Não identificado",
+        "ValorTaxa": "Não identificado",
+        "ValorLiquido": "Não identificado"
+      }
+
+      return objTemp
     }
 
       let config = {

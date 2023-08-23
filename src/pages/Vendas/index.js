@@ -267,9 +267,7 @@ let Vendas = () =>{
             <TotalModalidadesComp texto1={'Débito'} valor1={totalDebito} texto2={'Crédito'} valor2={totalCredito} texto3={'Voucher'} valor3={totalVoucher} texto4={'Total Líquido'} valor4={totalLiquido} />
             { detalhes ?  <DetalhesVenda/> : <MyCalendar/> }
             <BuscarClienteData funcao={loadVendas} />
-            { detalhes ? <hr/> : <></> }
             { detalhes ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
-            { detalhes ? <hr/> : <></> }
             { detalhes ? <TabelaGenericaAdm Array={arrayAdm}/> : <></> }
             { detalhes ? <hr/> : <></> }
           </div>

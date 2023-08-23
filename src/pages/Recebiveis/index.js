@@ -298,52 +298,46 @@ const Recebiveis = () =>{
       }
     },[creditosTemp])
 
+    const [listaBancos, setListaBancos] = useState([])
+
     useEffect(()=>{
       let temp = []
-        creditosTemp.forEach((element)=>{
-          if(temp.length === 0){
-            let novoObj = {
-                codigoBanco: element.banco,
-                id: 0,
-                creditos: []
-            }
-            temp.push(novoObj)
-        }else{
-            let novoObj = {
-                codigoBanco: element.banco,
-                id: 0,
-                creditos: []
-            }
+      temp.length = 0
 
-            if(!(temp.find((objeto) => objeto.banco === creditosTemp.banco && objeto !== ( undefined || [] )))){
-                novoObj.id = (temp.length)
-                temp.push(novoObj)
-            }
+      creditosTemp.forEach((element)=>{
+        let newObj = {
+          nomeBanco: '',
+          id: '',
+          codigoBanco: '',
+          creditos: [],
         }
-
-        temp.forEach((element) => {
-          let credTemp = []
-          credTemp.length = 0
-          creditosTemp.forEach((credito) => {
-            if(credito.banco === element.codigoBanco){
-                credTemp.push(credito)
-            }
-            element.creditos = credTemp
-          })
-        })
+        const encontrouBanco = temp.find(banco => banco.codigoBanco === element.banco)
+        if(!encontrouBanco){
+          newObj.id = temp.length
+          newObj.codigoBanco = element.banco
+          temp.push(newObj)
+        }
       })
-      setBancosTemp(temp)
+      temp.forEach((banco)=>{
+        let credTemp = []
+        credTemp.length = 0
+        creditosTemp.forEach((credito)=>{
+          if(credito.banco === banco.codigoBanco){
+            credTemp.push(credito)
+          }
+          banco.creditos = credTemp
+        })  
+      })
+      setListaBancos(temp)
     },[creditosTemp])
 
     useEffect(()=>{
-      console.log('bancosTemp: ',bancosTemp)
-
-    },[bancosTemp])
+      console.log('listaBancos: ', listaBancos)
+    },[listaBancos])
 
     const [showBanco, setShowBanco] = useState(false)
 
     async function handleShowBanco(){
-      setBancosTemp(await returnCreditosBanco(cnpj, converteData(dataBusca), converteData(dataBusca), '341'))
       setShowBanco(true)
     }
 

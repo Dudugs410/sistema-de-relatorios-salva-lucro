@@ -67,7 +67,7 @@
     height: 2.2em;
     border-radius: 10px;
     text-align: center;
-    width: 80%;
+    width: 100%;
     font-style: italic;
     color: gray;
 }
@@ -164,6 +164,8 @@
     
     .select-card{
         width: 100%;
+        padding-left: 5%;
+        padding-right: 5%;
     }
 
     .select-card>select{

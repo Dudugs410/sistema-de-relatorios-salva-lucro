@@ -8,6 +8,7 @@
     position: fixed;
     bottom: 0;
     text-align: center;
+    border-top: solid #7985bb 2px;
     z-index: 999999999999999999999999;
 
 }

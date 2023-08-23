@@ -20,11 +20,17 @@
 }
 
 .title-chart{
+  width: 95%;
+  display: block;
+  text-align: center;
+  border: solid white 1px;
   color: white;
   font-family: sans-serif;
   font-size: 1.5em;
-  padding-top: 10px;
-  padding-left: 10px;
+  margin-top: 8px;
+  margin-left: 2.5%;
+  align-self: center;
+  padding: 5px;
 }
 
 .data-group-area:nth-child(2){
@@ -155,9 +161,10 @@
 
 @media screen and (max-width: 832px){
   .title-chart{
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
+    display: inline-flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: stretch;
   }
 
   .data-group-area{
