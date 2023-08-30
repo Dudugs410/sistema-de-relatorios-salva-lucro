@@ -1,3 +1,7 @@
+
+
+import './servicos.css'
+
 const Servicos = () =>{
     return(
         <div className='appPage'>

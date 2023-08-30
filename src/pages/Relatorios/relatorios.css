@@ -1,0 +1,85 @@
+
+.relatorios-page-container{
+    position: relative;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.dados-busca-relatorios{
+    width: 100%;
+    padding: 10px;
+
+}
+
+.result-container-relatorios{
+    height: 100%;
+    width: 100%;
+    border-top: solid white 2px;
+    display: flex;
+    justify-content: start;
+
+}
+
+.form-dados-busca-relatorios{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.h1-relatorios{
+    color: white;
+    text-align: center;
+
+}
+
+.table-container-relatorios{
+    height: 100%;
+    width: 100%;
+    border-left: solid #181c2ed8 2px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: space-around;
+    overflow-x: scroll;
+
+}
+
+.table-relatorios{
+    height: 100%;
+    width: 100%;
+    border: solid white 2px;
+    display: flex;
+
+}
+
+.select-relatorios{
+    display: flex;
+    height: 2.2em;
+    border-radius: 10px;
+    text-align: center;
+    width: 200px;
+    font-style: italic;
+    color: gray;
+    flex-direction: row;
+
+}
+
+.seletor-relatorio-container{
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.select-relatorios{
+    margin-right: 60px;
+    
+}

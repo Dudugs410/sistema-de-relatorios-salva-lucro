@@ -732,15 +732,16 @@ async function returnCreditosBanco(cnpj, dataInicial, dataFinal, codigoBanco){
       }
       buscou = true
     }else{
-      let objTemp = {
-        "Banco": "Não identificado",
-        "Conta": "Não identificado",
-        "DataPrevista": "Não identificado",
-        "ValorBruto": "Não identificado",
-        "ValorTaxa": "Não identificado",
-        "ValorLiquido": "Não identificado"
-      }
-
+      let objTemp = [
+          {
+              "Banco": "ITAÚ UNIBANCO S.A",
+              "Conta": "341/6321/996438",
+              "DataPrevista": "23/08/2023",
+              "ValorBruto": 18185.83,
+              "ValorTaxa": 236.57,
+              "ValorLiquido": 17949.26
+          }
+      ]
       return objTemp
     }
 

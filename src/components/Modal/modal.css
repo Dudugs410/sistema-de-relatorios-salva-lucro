@@ -5,10 +5,19 @@
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 99999999;
+    z-index: 9;
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
     justify-content: center;
 
+}
+
+.modal-window-content{
+    background-color: #181c2e;
+    height: 100%;
+    width: 100%;
+    border: solid green 2px;
+    z-index: 9;
+    
 }

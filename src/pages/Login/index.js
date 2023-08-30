@@ -17,7 +17,7 @@ const Login = () => {
     const [password, setPassword] = useState('')
 
     useEffect(()=>{
-        sessionStorage.setItem('cnpj', '')
+        sessionStorage.clear()
     },[])
 
     useEffect(()=>{

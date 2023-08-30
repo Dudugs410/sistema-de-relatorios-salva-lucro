@@ -19,6 +19,7 @@ const ModalCliente = () => {
     const [cliente, setCliente] = useState('')
     const [listaClientes, setListaClientes] = useState('')
     const [gruSelecionado, setGruSelecionado] = useState('')
+    const [clienteNome, setClienteNome] = useState('')
 
     async function iniciaGrupos(){
         await loadGrupos()
@@ -35,16 +36,18 @@ const ModalCliente = () => {
         const grupoObj = grupos.find(item => item.CODIGOGRUPO === Number(gruSelecionado))
         let cli = grupoObj ? grupoObj.CLIENTES : [];
         setListaClientes(cli)
+        sessionStorage.setItem('codigoGrupo', gruSelecionado)
       },[gruSelecionado])
 
     function handleSubmit(e){
         e.preventDefault()
+        sessionStorage.setItem('cnpj', cliente)
         setCnpj(cliente)
         setModalCliente(false)
     }
 
     useEffect(()=>{
-        sessionStorage.setItem('cnpj', cnpj)
+        sessionStorage.setItem('cnpj', cnpj)    
       },[cnpj])
     
     return(

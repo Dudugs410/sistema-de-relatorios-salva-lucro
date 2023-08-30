@@ -21630,6 +21630,7 @@ export const totaisStatic = {
 
 export const bancosStatic = [
     {
+        "Banco": "Itaú",
         "Conta": "341/8303/15732",
         "DataPrevista": "10/05/2023",
         "ValorBruto": 28818.55,
@@ -21637,6 +21638,7 @@ export const bancosStatic = [
         "ValorLiquido": 28612.17
     },
     {
+        "Banco": "Itaú",
         "Conta": "341/8303/15732",
         "DataPrevista": "11/05/2023",
         "ValorBruto": 34156.07,

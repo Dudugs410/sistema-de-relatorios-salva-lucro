@@ -1,5 +1,5 @@
 
-
+import './ModalWindow.css'
 
 const ModalBanco = ({onClose, children}) => {
     return (

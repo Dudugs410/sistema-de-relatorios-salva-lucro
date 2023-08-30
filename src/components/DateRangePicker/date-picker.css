@@ -1,3 +1,35 @@
+.picker{
+  display: inline-flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.picker-container{
+    border: solid cyan 1px;
+    width: 100%;
+}
+
+.label-picker{
+  display: inline-block;
+  color: white;
+
+}
+
+.date-picker-css{
+  display: flex;
+  height: 2.2em;
+  border-radius: 10px;
+  text-align: center;
+  width: 200px;
+  font-style: italic;
+  color: gray;
+  flex-direction: row;
+}
+
 .react-datepicker-wrapper {
     display: inline-block;
     position: relative;

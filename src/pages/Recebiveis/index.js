@@ -32,8 +32,8 @@ const Recebiveis = () =>{
     const [buscou, setBuscou] = useState(false)
 
     const [creditosTemp, setCreditosTemp] = useState([])
-    const [bancosTemp, setBancosTemp] = useState([])
     const [arrayAdm, setArrayAdm] = useState([])
+    const [arrayBancos, setArrayBancos] = useState([])
 
     const [detalhes, setDetalhes] = useState(false)
     const [admBusca, setAdmBusca] = useState('')
@@ -67,39 +67,6 @@ const Recebiveis = () =>{
 
     }
 
-    async function handleBuscar(){
-      if(cnpj){
-        setBuscou(true)
-        let temp = await returnCreditos(converteData(dataBusca), converteData(dataBusca), cnpj)
-        let tempAux = []
-        if(admBusca && banBusca){
-          temp.forEach((elemento) => {
-            if(elemento.adquirente.nomeAdquirente === admBusca && elemento.bandeira.descricaoBandeira === banBusca){
-              tempAux.push(elemento)
-            }
-          })
-        }
-        else if(admBusca && !banBusca){
-          temp.forEach((elemento) => {
-            if(elemento.adquirente.nomeBandeira === admBusca){
-              tempAux.push(elemento)
-           }
-          })
-        }
-        else if(!admBusca && banBusca){
-          temp.forEach((elemento) => {
-           if(elemento.bandeira.descricaoBandeira === banBusca){
-             tempAux.push(elemento)
-            }
-          })
-        }
-        temp = tempAux
-        console.log('temp: ', temp)
-        
-        setCreditosTemp(temp)
-      }
-    }
-
     useEffect(()=>{
       if(buscou && cnpj){
         async function init(){
@@ -125,7 +92,7 @@ const Recebiveis = () =>{
       setDetalhes(false)
       setAdmBusca(null)
       setBanBusca(null)
-      bancosTemp.length = 0
+      arrayBancos.length = 0
     }
 
     useEffect(()=>{
@@ -292,48 +259,50 @@ const Recebiveis = () =>{
     
     useEffect(()=>{
       if(creditosTemp.length > 0){
-        console.log(creditosTemp)
+        console.log('creditosTemp: ', creditosTemp)
         setArrayRelatorio(gerarDados(creditosTemp))
         setArrayAdm(separaAdm(creditosTemp))
       }
     },[creditosTemp])
 
-    const [listaBancos, setListaBancos] = useState([])
+    const [codigoBancos, setCodigoBancos] = useState([])
 
     useEffect(()=>{
-      let temp = []
-      temp.length = 0
+      let listaCodigo = []
+      creditosTemp.forEach((credito) =>{
+        if(listaCodigo.length === 0){          
+          listaCodigo.push(credito.banco)
+        }else{
+          ///////////////////////////////////////////////////////////////////
+          const foundValue = listaCodigo.find(item => item === credito.banco);
+          if (foundValue !== undefined) {
 
-      creditosTemp.forEach((element)=>{
-        let newObj = {
-          nomeBanco: '',
-          id: '',
-          codigoBanco: '',
-          creditos: [],
-        }
-        const encontrouBanco = temp.find(banco => banco.codigoBanco === element.banco)
-        if(!encontrouBanco){
-          newObj.id = temp.length
-          newObj.codigoBanco = element.banco
-          temp.push(newObj)
-        }
-      })
-      temp.forEach((banco)=>{
-        let credTemp = []
-        credTemp.length = 0
-        creditosTemp.forEach((credito)=>{
-          if(credito.banco === banco.codigoBanco){
-            credTemp.push(credito)
+          } else {
+            listaCodigo.push(credito.banco)
           }
-          banco.creditos = credTemp
-        })  
+          ///////////////////////////////////////////////////////////////////
+        }
       })
-      setListaBancos(temp)
+      console.log('listaCodigo: ', listaCodigo)
+      setCodigoBancos(listaCodigo)
     },[creditosTemp])
 
+    useEffect(() => {
+      const fetchData = async () => {
+        let promises = codigoBancos.map(async (codigo) => {
+          return await returnCreditosBanco(cnpj, dataBusca, dataBusca, codigo.substring(codigo.length - 3));
+        });
+    
+        let tempArray = await Promise.all(promises);
+        setArrayBancos(tempArray);
+      };
+    
+      fetchData();
+    }, [codigoBancos]);
+
     useEffect(()=>{
-      console.log('listaBancos: ', listaBancos)
-    },[listaBancos])
+      console.log('arrayBancos: ', arrayBancos)
+    },[arrayBancos])
 
     const [showBanco, setShowBanco] = useState(false)
 
@@ -346,7 +315,7 @@ const Recebiveis = () =>{
         { showBanco && 
           <ModalBanco onClose={() => setShowBanco(false)}>
             <div className='modal-adm'>
-              <DetalhesBanco array={bancosTemp}/>
+              <DetalhesBanco array={arrayBancos}/>
             </div>
           </ModalBanco>}
           <div className='page-content'>
@@ -361,9 +330,7 @@ const Recebiveis = () =>{
             <div className='btn-banco-container'>
               { detalhes ? <button className="btn btn-primary" onClick={handleShowBanco}>Valores por Banco</button> : <></> }
             </div>
-            { detalhes ? <hr/> : <></> }
             { detalhes ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
-            { detalhes ? <hr/> : <></> }
             {arrayAdm && detalhes ? <TabelaGenericaAdm Array={arrayAdm}/> : <></>}
             { detalhes ? <hr/> : <></> }
           </div>

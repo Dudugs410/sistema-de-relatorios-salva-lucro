@@ -7,33 +7,57 @@ import { useContext, useEffect, useState } from "react"
 import { FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText } from "react-icons/fi"
 
 import salvaLucroLogoBranco from '../../assets/LogoTopo.png'
+import { gruposStatic } from "../../contexts/static"
+
 
 import './header.css'
 
 const Header = () =>{
 
-    const { logout } = useContext(AuthContext)
+    const { cnpj, logout } = useContext(AuthContext)
     const [nome, setNome] = useState('')
+    const [email, setEmail] = useState('')
+
+    const [nomeCliente, setNomeCliente] = useState('-')
+    const [codCliente, setCodCliente] = useState('-')
+    const [headerCnpj, setHeaderCnpj] = useState('-')
     
     useEffect(()=>{
         setNome(JSON.parse(sessionStorage.getItem('userData')).NOME)
+        setEmail(JSON.parse(sessionStorage.getItem('userData')).EMAIL)
+
+        setCodCliente(sessionStorage.getItem('codigoCliente'))
     },[])
+
+    useEffect(()=>{
+        setHeaderCnpj(sessionStorage.getItem('cnpj'))
+        if(sessionStorage.getItem('cnpj') === null){
+            setHeaderCnpj(cnpj)
+        }
+        gruposStatic.map((element) => {
+            element.CLIENTES.map((cli)=>{
+                if(cli.CNPJ === cnpj){
+                    setNomeCliente(cli.RAZAOSOCIAL)
+                    return 0;
+                }
+            })
+        })
+    },[cnpj])
 
     return(
         <>
-        <sideBar/>
             <div className='header-bg'>
                 <div className='navbar-title'>
                     <img className='img-header' src={salvaLucroLogoBranco} alt='logo salva lucro'/>
                 </div>
                 <div className='navbar-customer-wrapper'>
                     <div className='navbar-customer'>
-                        <span>Filial Placeholder</span>
-                        <span>123456789101112</span>
+                        <span>{`${nomeCliente}`}</span>
+                        <span>{`${headerCnpj}`}</span>
                     </div>
                     <div className='navbar-customer'>
                         <span className='client-name'>{`${nome}`}</span>
-                        <span className='client-code'>123456789101112</span> 
+                        <span className='client-code'>{`${email}`}</span> 
                     </div>              
                 </div>
                 <button type='button' className='btn-exit' onClick={logout}><FiPower color="#000000" size={24}/></button>

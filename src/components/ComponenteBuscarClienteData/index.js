@@ -2,7 +2,6 @@ import { useState, useEffect, useContext } from "react"
 import { vendasStatic } from "../../contexts/static";
 
 import './buscar.css'
-import './reactdatepicker.css'
 
 const ComponenteBuscarClienteData = ({detalhes, adquirentes, bandeiras, onAdmUpdate, onBanUpdate, onBuscaUpdate}) => {
     const [banSelecionada, setBanSelecionada] = useState('')

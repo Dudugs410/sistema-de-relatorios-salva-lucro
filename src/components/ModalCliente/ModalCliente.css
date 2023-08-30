@@ -33,7 +33,7 @@
     padding-left: 5%;
     padding-right: 5%;
     margin: 0;
-    border: none;
+    border: solid white 1px;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;

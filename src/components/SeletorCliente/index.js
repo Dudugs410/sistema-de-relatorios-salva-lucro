@@ -3,16 +3,10 @@ import { useState, useEffect, useContext } from "react"
 import { AuthContext } from "../../contexts/auth"
 import { ToastContainer } from 'react-toastify'
 
-import LoadingModal from '../LoadingModal'
-
-
 import 'react-toastify/dist/ReactToastify.css';
 
 const SeletorCliente = () => {
-    const { loading, gruSelecionado, setGruSelecionado, listaClientes, setListaClientes } = useContext(AuthContext)
-
-    const [loadClientes, setLoadClientes] = useState(loading)
-
+    const { gruSelecionado, setGruSelecionado, listaClientes, setListaClientes } = useContext(AuthContext)
     const { grupos, cnpj, setCnpj } = useContext(AuthContext)
 
       useEffect(()=>{
@@ -28,17 +22,18 @@ const SeletorCliente = () => {
     return(
         <>
             <ToastContainer
-position="top-center"
-autoClose={5000}
-hideProgressBar
-newestOnTop={false}
-closeOnClick
-rtl={false}
-pauseOnFocusLoss
-draggable
-pauseOnHover
-theme="light"
-/>
+                position="top-center"
+                autoClose={5000}
+                hideProgressBar
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
+            
             <div className='search-bar'>
                 <form className='date-container date-container-seletor'>
                     <div className='date-column date-column-seletor'>
