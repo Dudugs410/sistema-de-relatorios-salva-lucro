@@ -1,11 +1,11 @@
 import { useContext, useEffect, useState } from 'react'
 import DetalhesVenda from '../../components/DetalhesVenda'
-import GerarRelatorio from '../../components/GerarRelatorio'
 import { AuthContext } from '../../contexts/auth'
 import DetalhesCredito from '../../components/DetalhesCredito'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import './date-picker.css'
+import GerarRelatorio from '../../components/Componente_GerarRelatorio'
 
 import './relatorios.css'
 
@@ -81,7 +81,7 @@ function DateRangePicker() {
     return (
       <div className='picker'>
         <div className='pickerContainer'>
-          <label className='label-picker'>Start Date:</label>
+          <label className='label-picker'>Data Inicial:</label>
             <DatePicker className='date-picker-css'
               selected={dataInicial}
               onChange={handleStartDateChange}
@@ -92,7 +92,7 @@ function DateRangePicker() {
         </div>
         
         <div className='pickerContainer'>
-          <label className='label-picker'>End Date:</label>
+          <label className='label-picker'>Data Final:</label>
             <DatePicker className='date-picker-css'
               selected={dataFinal}
               onChange={handleEndDateChange}
@@ -112,7 +112,7 @@ function DateRangePicker() {
         <div className='appPage'>
             <div className='relatorios-page-container'>
                 <div className='dados-busca-relatorios'>
-                    <form className='form-dados-busca-relatorios' onSubmit={handleSubmit}>
+                    <div className='form-dados-busca-relatorios'>
                         <DateRangePicker />
                         <div className='seletor-relatorio-container'>
                             <select className='select-relatorios' id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}}>
@@ -128,19 +128,19 @@ function DateRangePicker() {
                                 ))}
                             </select>
                         </div>
-                        <button type='submit' className='btn btn-primary'>Pesquisar</button>
-                    </form>
+                        <button onClick={handleSubmit} className='btn btn-primary'>Pesquisar</button>
+                    </div>
                 </div>
                 <div className='result-container-relatorios'>
                     <div className='table-container-relatorios'>
                         <h1 className='h1-relatorios'>Vendas</h1>
                         { vendasRelatorios.length > 0 ? <DetalhesCredito array={ vendasRelatorios }/> : <></> }
-                        { vendasRelatorios.length > 0 ? <GerarRelatorio /> : <></> }
+                        { vendasRelatorios.length > 0 ? <GerarRelatorio array={ vendasRelatorios }/> : <></> }
                     </div>
                     <div className='table-container-relatorios'>
                         <h1 className='h1-relatorios'>Créditos</h1>
                         { creditosRelatorios.length > 0 ? <DetalhesCredito array={ creditosRelatorios }/> : <></> }
-                        { creditosRelatorios.length > 0 ? <GerarRelatorio /> : <></> }
+                        { creditosRelatorios.length > 0 ? <GerarRelatorio array={ creditosRelatorios } /> : <></> }
                     </div>
                 </div>
             </div>

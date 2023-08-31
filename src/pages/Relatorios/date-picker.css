@@ -27,6 +27,7 @@
   width: 200px;
   font-style: italic;
   color: gray;
+  background-color: white;
   flex-direction: row;
 }
 
@@ -105,7 +106,8 @@
   .react-datepicker__input-container input {
     padding: 8px;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    height: 2.2em;
+    border-radius: 10px;
     font-size: 14px;
     outline: none;
   }

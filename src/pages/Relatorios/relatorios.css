@@ -34,6 +34,8 @@
 .h1-relatorios{
     color: white;
     text-align: center;
+    border-bottom: solid white 1px;
+    width: 100%;
 
 }
 
