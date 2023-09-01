@@ -1,16 +1,14 @@
-.picker{
+
+.picker {
   display: inline-flex;
   flex-direction: row;
   flex-wrap: wrap;
-  align-content: center;
-  justify-content: center;
-  align-items: center;
+  align-content: stretch;
   margin-bottom: 20px;
 }
 
 .picker-container{
-    border: solid cyan 1px;
-    width: 100%;
+  width: 100%;
 }
 
 .label-picker{
@@ -21,7 +19,7 @@
 
 .date-picker-css{
   display: flex;
-  height: 2.2em;
+  height: 33px;
   border-radius: 10px;
   text-align: center;
   width: 200px;
@@ -29,6 +27,7 @@
   color: gray;
   background-color: white;
   flex-direction: row;
+
 }
 
 .react-datepicker-wrapper {
@@ -106,8 +105,18 @@
   .react-datepicker__input-container input {
     padding: 8px;
     border: 1px solid #ccc;
-    height: 2.2em;
+    height: 33px;
     border-radius: 10px;
     font-size: 14px;
     outline: none;
+  }
+
+  @media screen and (max-width: 832px){
+    .picker{
+      display: inline-flex;
+      flex-direction: column;
+      flex-wrap: wrap;
+      align-content: stretch;
+      margin-bottom: 20px;
+    }
   }

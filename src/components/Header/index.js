@@ -9,7 +9,6 @@ import { FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText } 
 import salvaLucroLogoBranco from '../../assets/LogoTopo.png'
 import { gruposStatic } from "../../contexts/static"
 
-
 import './header.css'
 
 const Header = () =>{

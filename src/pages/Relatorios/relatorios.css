@@ -85,3 +85,16 @@
     margin-right: 60px;
     
 }
+
+.select-container-dropdown{
+    display: flex;
+}
+
+@media screen and (max-width: 832px){
+    .select-container-dropdown {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        align-items: flex-start;
+    }
+}

@@ -33,7 +33,7 @@ const Relatorios = () =>{
     const [banSelecionada, setBanSelecionada] = useState('')
 
     useEffect(()=>{
-        async function init(){
+        function init(){
             loadAdquirentes()
             loadBandeiras()
         }
@@ -105,6 +105,37 @@ function DateRangePicker() {
       </div>
     )
   }
+
+  function SelectPicker() {
+  
+    return (
+      <div className='picker'>
+        <div className='pickerContainer'>
+          <label className='label-picker'>Adquirente</label>
+          <div className='react-datepicker-wrapper'>
+            <select className='date-picker-css' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}}>
+                <option value=''>Todas</option>
+                {adquirentes.map((ADQ)=>(
+                    <option key={ADQ.codigoAdquirente} value = {ADQ.codigoAdquirente}>{ADQ.nomeAdquirente}</option>
+                ))}
+            </select>
+          </div>
+        </div>
+        
+        <div className='pickerContainer'>
+          <label className='label-picker'>Bandeira</label>
+          <div className='react-datepicker-wrapper'>
+            <select className='date-picker-css'value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}}>
+                <option value=''>Todas</option>
+                {bandeiras.map((BAN)=>(
+                    <option key={BAN.codigoBandeira} value = {BAN.codigoBandeira}>{BAN.descricaoBandeira}</option>
+                ))}
+            </select>
+          </div>
+        </div>
+      </div>
+    )
+  }
 ////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -113,20 +144,9 @@ function DateRangePicker() {
             <div className='relatorios-page-container'>
                 <div className='dados-busca-relatorios'>
                     <div className='form-dados-busca-relatorios'>
-                        <DateRangePicker />
-                        <div className='seletor-relatorio-container'>
-                            <select className='select-relatorios' id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}}>
-                                <option value=''>Todas</option>
-                                {adquirentes.map((ADQ)=>(
-                                    <option key={ADQ.codigoAdquirente} value = {ADQ.codigoAdquirente}>{ADQ.nomeAdquirente}</option>
-                                ))}
-                            </select>
-                            <select className='select-relatorios' id='bandeira' value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}}>
-                                <option value=''>Todas</option>
-                                {bandeiras.map((BAN)=>(
-                                    <option key={BAN.codigoBandeira} value = {BAN.codigoBandeira}>{BAN.descricaoBandeira}</option>
-                                ))}
-                            </select>
+                        <div className='select-container-dropdown'>
+                            <DateRangePicker />
+                            <SelectPicker />
                         </div>
                         <button onClick={handleSubmit} className='btn btn-primary'>Pesquisar</button>
                     </div>
