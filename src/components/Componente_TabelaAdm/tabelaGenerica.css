@@ -130,7 +130,7 @@
     text-shadow: 1px 1px 1px #000000;
 }
 
-@media screen and (max-width: 832px){
+@media screen and (max-width: 869px){
     .vendas-container{
         height: 90%;
     }

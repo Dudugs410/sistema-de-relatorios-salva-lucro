@@ -94,7 +94,7 @@
     color: black;
 }
 
-@media screen and (max-width: 832px){
+@media screen and (max-width: 869px){
     .vendas-container{
         height: 90%;
     }

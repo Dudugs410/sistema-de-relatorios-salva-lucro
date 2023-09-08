@@ -4,6 +4,7 @@ import { AuthContext } from "../../contexts/auth"
 import { ToastContainer } from 'react-toastify'
 
 import 'react-toastify/dist/ReactToastify.css';
+import './Seletor.css'
 
 const SeletorCliente = () => {
     const { gruSelecionado, setGruSelecionado, listaClientes, setListaClientes } = useContext(AuthContext)
@@ -34,10 +35,10 @@ const SeletorCliente = () => {
                 theme="light"
             />
             
-            <div className='search-bar'>
-                <form className='date-container date-container-seletor'>
-                    <div className='date-column date-column-seletor'>
-                        <div className='select-card'>
+            <div className='search-bar-seletor'>
+                <form className='date-container-seletor'>
+                    <div className='date-column-seletor'>
+                        <div className='select-card-seletor'>
                             <span>Grupo de Clientes</span>
                             <select id='grupo' value={gruSelecionado} onChange={(e) => {setGruSelecionado(e.target.value)}}>
                                 { !gruSelecionado ? <option defaultValue=''>selecione</option> : <option defaultValue='gruSelecionado'>{gruSelecionado.nome}</option>}
@@ -48,8 +49,8 @@ const SeletorCliente = () => {
                         </div>
                     </div>
 
-                    <div  className='date-column date-column-seletor'>
-                        <div className='select-card'>
+                    <div  className='date-column-seletor'>
+                        <div className='select-card-seletor'>
                             <span>Cliente</span>
                             { listaClientes.length > 0 ?
                             <select id='cliente' value={cnpj} onChange={(e) => {setCnpj(e.target.value)}}>

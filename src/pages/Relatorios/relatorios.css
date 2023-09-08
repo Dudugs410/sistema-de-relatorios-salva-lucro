@@ -9,7 +9,11 @@
 
 .dados-busca-relatorios{
     width: 100%;
-    padding: 10px;
+    padding: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-between;
 
 }
 
@@ -24,10 +28,11 @@
 
 .form-dados-busca-relatorios{
     display: flex;
-    flex-direction: row;
     flex-wrap: wrap;
-    justify-content: center;
     align-items: center;
+    flex-direction: row;
+    align-content: space-between;
+    justify-content: flex-start;
 
 }
 
@@ -90,11 +95,29 @@
     display: flex;
 }
 
-@media screen and (max-width: 832px){
+@media screen and (max-width: 869px){
     .select-container-dropdown {
         display: flex;
         flex-direction: column;
         flex-wrap: wrap;
         align-items: flex-start;
+    }
+
+    .form-dados-busca-relatorios{
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .dados-busca-relatorios{
+        width: 100%;
+        padding: 20px;
+        padding-left: 40px;
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row;
+        justify-content: space-between;
     }
 }

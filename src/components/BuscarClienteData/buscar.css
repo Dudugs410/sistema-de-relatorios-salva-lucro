@@ -133,7 +133,7 @@
     
 }
 
-@media screen and (max-width: 832px){
+@media screen and (max-width: 869px){
 
     .search-bar{
         height: auto;
@@ -164,6 +164,7 @@
     
     .select-card{
         width: 100%;
+        min-width: 200px;
         padding-left: 5%;
         padding-right: 5%;
     }
