@@ -31,6 +31,8 @@
   margin-left: 2.5%;
   align-self: center;
   padding: 5px;
+  border-radius: 20px;
+  background-color: #59659e
 }
 
 .data-group-area:nth-child(2){

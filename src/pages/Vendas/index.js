@@ -260,9 +260,9 @@ let Vendas = () =>{
       }}>
 
       <div className='appPage'>
-          <div className='page-content'>
-            <div className='recebimentos-title-container'>
-              <h1 className='recebimentos-title'>Calendário de Vendas</h1>
+          <div className='page-content-vendas'>
+            <div className='vendas-title-container'>
+              <h1 className='vendas-title'>Calendário de Vendas</h1>
             </div>
             <TotalModalidadesComp texto1={'Débito'} valor1={totalDebito} texto2={'Crédito'} valor2={totalCredito} texto3={'Voucher'} valor3={totalVoucher} texto4={'Total Líquido'} valor4={totalLiquido} />
             { detalhes ?  <DetalhesVenda/> : <MyCalendar/> }

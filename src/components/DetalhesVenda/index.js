@@ -20,7 +20,7 @@ const DetalhesVenda = () =>{
             <div className='dropShadow vendas-view'>
                 <div className='table-wrapper'>
                     <table className="table table-striped det-table">
-                            <thead>
+                            <thead className='thead-admin'>
                                 <tr className='det-tr-top' >
                                     <th className='det-th'scope="col">Adquirente</th>
                                     <th className='det-th'scope="col">Bandeira</th>

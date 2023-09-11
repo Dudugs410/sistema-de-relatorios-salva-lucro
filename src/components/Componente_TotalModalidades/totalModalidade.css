@@ -15,12 +15,21 @@
     font-weight: bold;
     background-color: #59659e;
     border: solid #7985bb 2px;
-    border-radius: 10px;
+    border-radius: 20px;
     margin: 5px;
     box-shadow: 3px 3px 4px 0px rgba(0,0,0,0.75);
     flex-wrap: wrap;
     align-content: center;
     justify-content: center;
+    border-bottom: solid white 1px;
+}
+
+.total-container-modalidade:first-of-type{
+    margin-left: 0px;
+}
+
+.total-container-modalidade:last-of-type{
+    margin-right: 0px;
 }
 
 .text-container-modalidade{

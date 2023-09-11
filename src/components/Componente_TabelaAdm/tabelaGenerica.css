@@ -76,7 +76,13 @@
 }
 
 .thead-admin{
-    background-color: #181c2e;
+    color: white;
+    text-align: center;
+    border-bottom: solid white 1px;
+    background-color:#59659e;
+    width: 100%;
+    border-radius: 20px;
+    padding: 10px;
 }
 
 .content-adq{

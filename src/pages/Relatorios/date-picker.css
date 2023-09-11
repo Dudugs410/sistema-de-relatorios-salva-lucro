@@ -4,7 +4,7 @@
 }
 
 .picker-container{
-
+  display: grid;
 }
 
 .label-picker{
@@ -23,6 +23,11 @@
   color: gray;
   background-color: white;
   flex-direction: row;
+
+}
+
+.react-datepicker-wrapper:first-child{
+  margin-right: 20%;
 
 }
 
@@ -114,5 +119,9 @@
       flex-wrap: wrap;
       align-content: stretch;
       margin-bottom: 20px;
+    }
+
+    .picker-container {
+      display: grid;
     }
   }
