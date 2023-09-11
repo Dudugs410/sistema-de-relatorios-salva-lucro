@@ -180,7 +180,13 @@ polyline, line, path{
         flex-direction: column;
         justify-content: space-evenly;
         text-align: start;
+        margin: 0;
+        margin-left: 40px;
         
+    }
+
+    .navbar-customer:not(:first-child){
+        margin-left: 10px;
     }
     
     li>a{

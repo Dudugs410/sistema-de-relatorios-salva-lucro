@@ -1,45 +1,23 @@
-
-.relatorios-page-container{
-    position: relative;
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
-.dados-busca-relatorios{
+.dados-busca-relatorios-container{
     width: 100%;
     padding: 20px;
     display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    justify-content: space-between;
-
+    background-color: #59659e;
 }
 
-.result-container-relatorios{
-    height: 100%;
-    width: 100%;
-    border-top: solid white 2px;
+.dados-busca-select-relatorios{
+    width: 80%;
+    padding: 20px;
     display: flex;
-    justify-content: start;
-
-}
-
-.form-dados-busca-relatorios{
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    flex-direction: row;
-    align-content: space-between;
-    justify-content: flex-start;
-
+    background-color: #59659e;
+    margin-left: 10%;
 }
 
 .h1-relatorios{
     color: white;
     text-align: center;
     border-bottom: solid white 1px;
+    background-color:#59659e;
     width: 100%;
 
 }
@@ -52,7 +30,7 @@
     flex-direction: column;
     flex-wrap: wrap;
     align-content: space-around;
-    overflow-x: scroll;
+    padding-bottom: 100px;
 
 }
 
@@ -64,60 +42,29 @@
 
 }
 
-.select-relatorios{
-    display: flex;
-    height: 2.2em;
-    border-radius: 10px;
-    text-align: center;
-    width: 200px;
-    font-style: italic;
-    color: gray;
-    flex-direction: row;
-
+.table-container-relatorios:nth-child(2){
+    padding-bottom: 100px
 }
 
-.seletor-relatorio-container{
+.btn-relatorios-container{
     display: inline-flex;
-    flex-direction: row;
+    width: 100%;
+    height: 90px;
     flex-wrap: wrap;
-    align-content: center;
     justify-content: center;
-    align-items: center;
-
-}
-
-.select-relatorios{
-    margin-right: 60px;
-    
-}
-
-.select-container-dropdown{
-    display: flex;
+    align-content: center;
 }
 
 @media screen and (max-width: 869px){
-    .select-container-dropdown {
-        display: flex;
-        flex-direction: column;
-        flex-wrap: wrap;
-        align-items: flex-start;
+    .dados-busca-relatorios-container{
+        padding-left: 40px;
+        
     }
 
-    .form-dados-busca-relatorios{
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .dados-busca-relatorios{
+    .dados-busca-select-relatorios{
         width: 100%;
         padding: 20px;
-        padding-left: 40px;
         display: flex;
-        flex-wrap: wrap;
-        flex-direction: row;
-        justify-content: space-between;
+        background-color: #59659e;
     }
 }

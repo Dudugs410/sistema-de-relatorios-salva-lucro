@@ -23,6 +23,16 @@ const Relatorios = () =>{
         bandeiras,
      } = useContext(AuthContext)
 
+     const [selectedDate, setSelectedDate] = useState(null);
+
+    // Custom date format for Brazilian format (dd/MM/yyyy)
+    const brazilianDateFormat = 'dd/MM/yyyy';
+
+    // Handle date change
+    const handleDateChange = (date) => {
+      setSelectedDate(date)
+    }
+
     const [ vendasRelatorios, setVendasRelatorios ] = useState([])
     const [ creditosRelatorios, setCreditosRelatorios ] = useState([])
 
@@ -79,23 +89,29 @@ function DateRangePicker() {
     }
   
     return (
-      <div className='picker'>
-        <div className='pickerContainer'>
+      <div className='dados-busca-select-relatorios'>
+        <div className='picker-container'>
           <label className='label-picker'>Data Inicial:</label>
             <DatePicker className='date-picker-css'
               selected={dataInicial}
               onChange={handleStartDateChange}
+              dateFormat={brazilianDateFormat} // Set the desired date format
+              locale="pt-BR" // Set the locale to Brazilian Portuguese
+              placeholderText="Selecione uma data"
               selectsStart
               startDate={dataInicial}
               endDate={dataFinal}
             />
         </div>
         
-        <div className='pickerContainer'>
+        <div className='picker-container'>
           <label className='label-picker'>Data Final:</label>
             <DatePicker className='date-picker-css'
               selected={dataFinal}
               onChange={handleEndDateChange}
+              dateFormat={brazilianDateFormat} // Set the desired date format
+              locale="pt-BR" // Set the locale to Brazilian Portuguese
+              placeholderText="Selecione uma data"
               selectsEnd
               startDate={dataInicial}
               endDate={dataFinal}
@@ -109,20 +125,20 @@ function DateRangePicker() {
   function SelectPicker() {
   
     return (
-      <div className='picker'>
-        <div className='pickerContainer'>
+      <div className='dados-busca-select-relatorios'>
+        <div className='picker-container'>
           <label className='label-picker'>Adquirente</label>
           <div className='react-datepicker-wrapper'>
             <select className='date-picker-css' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}}>
-                <option value=''>Todas</option>
-                {adquirentes.map((ADQ)=>(
-                    <option key={ADQ.codigoAdquirente} value = {ADQ.codigoAdquirente}>{ADQ.nomeAdquirente}</option>
-                ))}
+              <option value=''>Todas</option>
+              {adquirentes.map((ADQ)=>(
+                  <option key={ADQ.codigoAdquirente} value = {ADQ.codigoAdquirente}>{ADQ.nomeAdquirente}</option>
+              ))}
             </select>
           </div>
         </div>
-        
-        <div className='pickerContainer'>
+
+        <div className='picker-container'>
           <label className='label-picker'>Bandeira</label>
           <div className='react-datepicker-wrapper'>
             <select className='date-picker-css'value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}}>
@@ -136,20 +152,18 @@ function DateRangePicker() {
       </div>
     )
   }
-////////////////////////////////////////////////////////////////////////////////////////
 
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
     return(
         <div className='appPage'>
             <div className='relatorios-page-container'>
-                <div className='dados-busca-relatorios'>
-                    <div className='form-dados-busca-relatorios'>
-                        <div className='select-container-dropdown'>
-                            <DateRangePicker />
-                            <SelectPicker />
-                        </div>
-                        <button onClick={handleSubmit} className='btn btn-primary'>Pesquisar</button>
-                    </div>
+                <div className='dados-busca-relatorios-container'>
+                  <DateRangePicker />
+                  <SelectPicker />
+                </div>
+                <div className='btn-relatorios-container'>
+                <button onClick={handleSubmit} className='btn btn-primary'>Pesquisar</button>
                 </div>
                 <div className='result-container-relatorios'>
                     <div className='table-container-relatorios'>

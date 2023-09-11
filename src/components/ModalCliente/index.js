@@ -57,7 +57,7 @@ const ModalCliente = () => {
                     <div className='modal-cliente'>
                         <div className='modal-window'>
                             <div className='modal-content'>
-                                <form className='date-container' onSubmit={(e)=>handleSubmit(e)}>
+                                <form className='date-container-modal-cliente' onSubmit={(e)=>handleSubmit(e)}>
                                     <div className='date-column'>
                                         <div className='select-card'>
                                             <span>Grupo de Clientes</span>
@@ -85,7 +85,7 @@ const ModalCliente = () => {
                                             </select>}
                                         </div>
                                     </div>
-                                    <div className='btn-container'>
+                                    <div className='btn-container-modal-cliente'>
                                         <button className='btn btn-primary btn-modal' type='submit'>Selecionar</button>
                                     </div>
                                 </form>

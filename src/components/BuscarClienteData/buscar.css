@@ -108,6 +108,11 @@
 
 .submit-container{
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-wrap: wrap;
+    align-content: center;
 }
 
 .btn-submit{
@@ -164,9 +169,11 @@
     
     .select-card{
         width: 100%;
-        min-width: 200px;
-        padding-left: 5%;
-        padding-right: 5%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex-wrap: wrap;
+        align-content: center;
     }
 
     .select-card>select{
