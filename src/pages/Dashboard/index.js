@@ -421,29 +421,27 @@ const Dashboard = () => {
         { modalCliente && ( <ModalCliente/> ) }
         { loading && (<LoadingModal/>) }
         {cnpj && (
-                        <div className='content-area dash'>
-                <div className='chart-table-block'>
-                    <div className='data-group-area'>
-                        <div className='graph-data'>
-                            <h1 className='title-chart'>Vendas:</h1>
-                            <PieChart data01 = {graficoVendas} arrayAdm={admVendas}/>
-                        </div>
-                        <div className='table-data'>
-                            <table className="table dash-table det-table dash-body-flex tbody-sticky table-chart-dash">
-                                <thead className='dash-thead'>
-                                    <tr className='dash-tr'>
-                                        <th className='dash-th' scope="col">Total Últimos 4 dias</th>
-                                        <th className='dash-th' scope="col">Total do Mês</th>
-                                    </tr>
-                                </thead>
-                                <tbody className='dash-tbody dash-tbody-bg'>
-                                    <tr className='dash-tr'>
-                                        <td className='cell-text dash-td' data-label="Total Últimos 4 dias">R$ {totalVendas4dias.toFixed(2).replace('.',',')}</td>
-                                        <td className='cell-text dash-td' data-label="Total do Mês">R$ {somatorioVendasMes.toFixed(2).replace('.',',')}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+            <div className='content-area dash'>
+                <div className='data-group-area'>
+                    <div className='graph-data'>
+                        <h1 className='title-chart'>Vendas:</h1>
+                        <PieChart data01 = {graficoVendas} arrayAdm={admVendas}/>
+                    </div>
+                    <div className='table-data'>
+                        <table className="table dash-table det-table dash-body-flex tbody-sticky table-chart-dash">
+                            <thead className='dash-thead'>
+                                <tr className='dash-tr'>
+                                    <th className='dash-th' scope="col">Total Últimos 4 dias</th>
+                                    <th className='dash-th' scope="col">Total do Mês</th>
+                                </tr>
+                            </thead>
+                            <tbody className='dash-tbody dash-tbody-bg'>
+                                <tr className='dash-tr'>
+                                    <td className='cell-text dash-td' data-label="Total Últimos 4 dias">R$ {totalVendas4dias.toFixed(2).replace('.',',')}</td>
+                                    <td className='cell-text dash-td' data-label="Total do Mês">R$ {somatorioVendasMes.toFixed(2).replace('.',',')}</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
                 <div className='data-group-area'>

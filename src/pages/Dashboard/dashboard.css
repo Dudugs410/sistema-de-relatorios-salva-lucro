@@ -2,10 +2,12 @@
 .content-area{
   height: 100%;
   width: 100%;
+  /* margin-left: 10%; */
   display: flex;
   flex-direction: column;
-  color:  #181c2e;
-  background-color: #181c2ed8;
+  color: #181c2e;
+  background-color: #59659e;
+
 }
 
 .data-group-area{
@@ -17,6 +19,7 @@
   display: flex;
   flex-direction: column;
   background-color: #59659e;
+
 }
 
 .title-chart{
@@ -33,10 +36,12 @@
   padding: 5px;
   border-radius: 20px;
   background-color: #59659e
+
 }
 
 .data-group-area:nth-child(2){
   padding-bottom: 4%;
+
 }
 
 .table-chart-dash{
@@ -51,13 +56,16 @@
   position: sticky;
   background-color: #181c2e;
   z-index: 1;
+
 }
 
 .graph-data{
   height: 400px;
   width: 100%;
   background-color: #181c2e;
+  border-radius: 20px 20px 0 0;
   box-shadow:inset 0px 270px 0px 0px;
+
 }
 
 .table-data{
@@ -66,16 +74,18 @@
   padding-left: 10px;
   padding-right: 10px;
   background-color: #181c2e;
-  /* display: flex; */
+  border-radius: 0 0 20px 20px;
   flex-direction: row;
   flex-wrap: wrap;
   overflow-y: auto
+
 }
 /*
 .tbody-sticky{
   position: sticky;
   top: 0;
   background-color: #181c2e;
+
 }
 */
 .dash-body-flex{
@@ -83,29 +93,35 @@
   flex-direction: column;
   flex-wrap: wrap;
   align-content: stretch;
+
 }
 
 .thead-admin{
   position: sticky;
   top: 0px;
+
 }
 
 .dash-table{
   border: 0;
   color: #DDD;
   max-height: 0px;
+
 }
 
 .dash-tbody-bg{
   background-color: #181c2e;
+
 }
 
 .custom-chart {
   height:50%;
+
 }
 
 .dash-table caption{
   font-size: 1.3em;
+
 }
 
 .dash-table .dash-thead{
@@ -116,19 +132,20 @@
   padding: 0;
   position: absolute;
   width: 1px;
+
 }
 
 .dash-table .dash-tr{
   border-bottom: 3px solid #DDD;
   display: flex;
   margin-bottom: 0.6em;
-  border: solid white 1px;
   flex-direction: column;
   flex-wrap: wrap;
   align-content: stretch;
   align-items: stretch;
   position: relative;
   top: 50px;
+
 }
 
 .dash-table .dash-td{
@@ -136,6 +153,7 @@
   display: block;
   font-size: 0.8em;
   text-align: right;
+
 }
 
 .dash-table .dash-td::before{
@@ -143,6 +161,7 @@
   float: left;
   font-weight: bold;
   text-transform: uppercase;
+
 }
 
 .modal-card{
@@ -154,11 +173,13 @@
   flex-direction: column;
   justify-content: center;
   text-align: center;
+
 }
 
 .sticky-th{
   position: sticky;
   top: 0;
+
 }
 
 @media screen and (max-width: 869px){
@@ -167,6 +188,7 @@
     flex-direction: column;
     flex-wrap: wrap;
     align-content: stretch;
+
   }
 
   .data-group-area{
@@ -178,7 +200,13 @@
     display: flex;
     flex-direction: column;
     background-color: #59659e;
+
   }
+
+  .data-group-area{
+    padding: 1% 5% 1% 5%;
+  }
+
 }
 
 

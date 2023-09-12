@@ -56,40 +56,35 @@ const ModalCliente = () => {
                 <>
                     <div className='modal-cliente'>
                         <div className='modal-window'>
-                            <div className='modal-content'>
-                                <form className='date-container-modal-cliente' onSubmit={(e)=>handleSubmit(e)}>
-                                    <div className='date-column'>
-                                        <div className='select-card'>
-                                            <span>Grupo de Clientes</span>
-                                            <select id='grupo' value={gruSelecionado} onChange={(e) => {setGruSelecionado(e.target.value)}}>
-                                                    <option defaultValue=''>selecione</option>
-                                                    {grupos.map((GRU)=>(
-                                                        <option key={GRU.CODIGOGRUPO} value={GRU.CODIGOGRUPO} >{GRU.NOMEGRUPO}</option>
-                                                    ))}
-                                                </select>
-                                        </div>
-                                    </div>
+                            <form className='form-modal-cliente' onSubmit={(e)=>handleSubmit(e)}>
+                                <div className='select-card-modal-cliente'>
+                                    <span>Grupo de Clientes</span>
+                                    <select id='grupo' value={gruSelecionado} onChange={(e) => {setGruSelecionado(e.target.value)}}>
+                                            <option defaultValue=''>selecione</option>
+                                            {grupos.map((GRU)=>(
+                                                <option key={GRU.CODIGOGRUPO} value={GRU.CODIGOGRUPO} >{GRU.NOMEGRUPO}</option>
+                                            ))}
+                                        </select>
+                                </div>
 
-                                    <div  className='date-column'>
-                                        <div className='select-card'>
-                                            <span>Cliente</span>
-                                            { listaClientes.length > 0 ?
-                                            <select id='cliente' value={cliente} onChange={(e) => {setCliente(e.target.value)}}>
-                                                <option defaultValue=''>selecione</option>
-                                                { listaClientes.map((CLI)=>(
-                                                        <option key={CLI.CODIGOCLIENTE} value={CLI.CNPJ}>{CLI.NOMECLIENTE}</option>
-                                                    ))}
-                                            </select> : 
-                                            <select className='select-disabled' disabled>
-                                                <option defaultValue=''>Selecione o Grupo</option>
-                                            </select>}
-                                        </div>
-                                    </div>
-                                    <div className='btn-container-modal-cliente'>
-                                        <button className='btn btn-primary btn-modal' type='submit'>Selecionar</button>
-                                    </div>
-                                </form>
-                            </div>
+                                <div className='select-card-modal-cliente'>
+                                    <span>Cliente</span>
+                                    { listaClientes.length > 0 ?
+                                    <select id='cliente' value={cliente} onChange={(e) => {setCliente(e.target.value)}}>
+                                        <option defaultValue=''>selecione</option>
+                                        { listaClientes.map((CLI)=>(
+                                                <option key={CLI.CODIGOCLIENTE} value={CLI.CNPJ}>{CLI.NOMECLIENTE}</option>
+                                            ))}
+                                    </select> : 
+                                    <select className='select-disabled' disabled>
+                                        <option defaultValue=''>Selecione o Grupo</option>
+                                    </select>}
+                                </div>
+                                
+                                <div className='btn-container-modal-cliente'>
+                                    <button className='btn btn-primary btn-modal' type='submit'>Selecionar</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </>}
