@@ -153,6 +153,28 @@ function DateRangePicker() {
     )
   }
 
+  function RadioSelect(){
+    return (
+      <>
+        <div className='radio-container'>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" />
+            <label class="form-check-label radio-text" for="flexRadioDefault1">
+              Relatório Simplificado
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked />
+            <label class="form-check-label radio-text" for="flexRadioDefault2">
+              Relatório Detalhado
+            </label>
+          </div>
+        </div>
+      </>
+    )
+
+  }
+
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
     return(
@@ -161,6 +183,8 @@ function DateRangePicker() {
                 <div className='dados-busca-relatorios-container'>
                   <DateRangePicker />
                   <SelectPicker />
+                  <RadioSelect />
+                  
                 </div>
                 <div className='btn-relatorios-container'>
                 <button onClick={handleSubmit} className='btn btn-primary'>Pesquisar</button>

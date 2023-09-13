@@ -54,7 +54,7 @@
 .select-card-modal-cliente>select{
     display: flex;
     height: 2.2em;
-    width: 200px;
+    width: 400px;
     border-radius: 10px;
     text-align: center;
     font-style: italic;

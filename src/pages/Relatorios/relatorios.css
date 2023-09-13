@@ -73,6 +73,14 @@
 
 }
 
+.radio-container{
+    display: flex;
+}
+
+.radio-text{
+    color: white;
+}
+
 @media screen and (max-width: 869px){
     .dados-busca-relatorios-container{
         width: 80%;

@@ -260,17 +260,21 @@ let Vendas = () =>{
       }}>
 
       <div className='appPage'>
+        <div className='page-vendas-background'>
           <div className='page-content-vendas'>
             <div className='vendas-title-container'>
               <h1 className='vendas-title'>Calendário de Vendas</h1>
             </div>
             <TotalModalidadesComp texto1={'Débito'} valor1={totalDebito} texto2={'Crédito'} valor2={totalCredito} texto3={'Voucher'} valor3={totalVoucher} texto4={'Total Líquido'} valor4={totalLiquido} />
-            { detalhes ?  <DetalhesVenda/> : <MyCalendar/> }
-            <BuscarClienteData funcao={loadVendas} />
-            { detalhes ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
-            { detalhes ? <TabelaGenericaAdm Array={arrayAdm}/> : <></> }
-            { detalhes ? <hr/> : <></> }
+            <div className='component-container-vendas'>
+              { detalhes ? <TabelaGenericaAdm Array={arrayAdm}/> : <></> }
+              { detalhes ?  <DetalhesVenda/> : <MyCalendar/> }
+              <BuscarClienteData funcao={loadVendas} />
+              { detalhes ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
+              { detalhes ? <hr/> : <></> }
+            </div>
           </div>
+        </div>
       </div>
     </VendasContext.Provider>
   )

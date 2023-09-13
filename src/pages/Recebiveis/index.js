@@ -318,21 +318,22 @@ const Recebiveis = () =>{
               <DetalhesBanco array={arrayBancos}/>
             </div>
           </ModalBanco>}
-          <div className='page-content-recebimentos'>
-            <div className='recebimentos-title-container'>
-              <h1 className='recebimentos-title'>Calendário de Recebimentos</h1>
+
+          <div className='page-recebimentos-background'>
+            <div className='page-content-recebimentos'>
+              <div className='recebimentos-title-container'>
+                <h1 className='recebimentos-title'>Calendário de Recebimentos</h1>
+              </div>
+              <TotalModalidadesComp texto1={'Débito'} valor1={totalDebito} texto2={'Crédito'} valor2={totalCredito} texto3={'Voucher'} valor3={totalVoucher} texto4={'Total Líquido'} valor4={totalTotal} />
+              <div className='component-container-recebimentos'>
+                {arrayAdm && detalhes ? <TabelaGenericaAdm Array={arrayAdm}/> : <></>}
+                { detalhes ? <DetalhesCredito array={creditosTemp}/> :  <MyCalendar/> }
+                <ComponenteBuscarClienteData detalhes={detalhes} adquirentes={adquirentes} bandeiras={bandeiras} onAdmUpdate={handleAdm} onBanUpdate={handleBan} onBuscaUpdate={handleUpdate}/>
+                { detalhes ? <button className="btn btn-primary btn-banco-recebimentos" onClick={handleShowBanco}>Valores por Banco</button> : <></> }
+                { detalhes ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
+                { detalhes ? <hr/> : <></> }
+              </div>
             </div>
-            <TotalModalidadesComp texto1={'Débito'} valor1={totalDebito} texto2={'Crédito'} valor2={totalCredito} texto3={'Voucher'} valor3={totalVoucher} texto4={'Total Líquido'} valor4={totalTotal} />
-            { detalhes ? <DetalhesCredito array={creditosTemp}/> :  <MyCalendar/> }
-            <div className='btn-div-recebimentos'>
-              <ComponenteBuscarClienteData detalhes={detalhes} adquirentes={adquirentes} bandeiras={bandeiras} onAdmUpdate={handleAdm} onBanUpdate={handleBan} onBuscaUpdate={handleUpdate}/>
-            </div>
-            <div className='btn-banco-container'>
-              { detalhes ? <button className="btn btn-primary" onClick={handleShowBanco}>Valores por Banco</button> : <></> }
-            </div>
-            { detalhes ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
-            {arrayAdm && detalhes ? <TabelaGenericaAdm Array={arrayAdm}/> : <></>}
-            { detalhes ? <hr/> : <></> }
           </div>
         </div>
     )
