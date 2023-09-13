@@ -23,10 +23,10 @@ const Relatorios = () =>{
         bandeiras,
      } = useContext(AuthContext)
 
-     const [selectedDate, setSelectedDate] = useState(null);
+    const [selectedDate, setSelectedDate] = useState(null)
 
     // Custom date format for Brazilian format (dd/MM/yyyy)
-    const brazilianDateFormat = 'dd/MM/yyyy';
+    const brazilianDateFormat = 'dd/MM/yyyy'
 
     // Handle date change
     const handleDateChange = (date) => {
@@ -41,6 +41,8 @@ const Relatorios = () =>{
 
     const [adqSelecionada, setAdqSelecionada] = useState('')
     const [banSelecionada, setBanSelecionada] = useState('')
+
+    const [detalhado, setDetalhado] = useState(false)
 
     useEffect(()=>{
         function init(){
@@ -96,7 +98,6 @@ function DateRangePicker() {
               selected={dataInicial}
               onChange={handleStartDateChange}
               dateFormat={brazilianDateFormat} // Set the desired date format
-              locale="pt-BR" // Set the locale to Brazilian Portuguese
               placeholderText="Selecione uma data"
               selectsStart
               startDate={dataInicial}
@@ -110,7 +111,6 @@ function DateRangePicker() {
               selected={dataFinal}
               onChange={handleEndDateChange}
               dateFormat={brazilianDateFormat} // Set the desired date format
-              locale="pt-BR" // Set the locale to Brazilian Portuguese
               placeholderText="Selecione uma data"
               selectsEnd
               startDate={dataInicial}
@@ -158,15 +158,15 @@ function DateRangePicker() {
       <>
         <div className='radio-container'>
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" />
+            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" value='false' onChange={()=>{setDetalhado(false)}} />
             <label class="form-check-label radio-text" for="flexRadioDefault1">
-              Relatório Simplificado
+              Simples
             </label>
           </div>
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked />
+            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value='false' onChange={()=>{setDetalhado(true)}} />
             <label class="form-check-label radio-text" for="flexRadioDefault2">
-              Relatório Detalhado
+              Detalhado
             </label>
           </div>
         </div>
@@ -175,19 +175,24 @@ function DateRangePicker() {
 
   }
 
+  useEffect(()=>{
+    console.log('detalhado: ', detalhado)
+
+  },[detalhado])
+
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
     return(
         <div className='appPage'>
             <div className='relatorios-page-container'>
+                <h1 className='h1-relatorios'>Relatórios</h1>
                 <div className='dados-busca-relatorios-container'>
                   <DateRangePicker />
                   <SelectPicker />
                   <RadioSelect />
-                  
                 </div>
                 <div className='btn-relatorios-container'>
-                <button onClick={handleSubmit} className='btn btn-primary'>Pesquisar</button>
+                  <button onClick={handleSubmit} className='btn btn-primary'>Pesquisar</button>
                 </div>
                 <div className='result-container-relatorios'>
                     <div className='table-container-relatorios'>

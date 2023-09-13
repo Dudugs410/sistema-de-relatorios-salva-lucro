@@ -197,12 +197,11 @@ polyline, line, path{
         transition: all 0.4s;
     }
 
-    .btn-exit{
-        cursor: pointer;
+    .btn-exit {
         text-align: center;
         align-self: end;
-        position: relative;
-        top: -90px;
+        position: absolute;
+        top: 0px;
         z-index: 99;
     }
 

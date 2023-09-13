@@ -1,13 +1,19 @@
 .dados-busca-relatorios-container{
     width: 80%;
     padding: 20px;
+    margin-top: 20px;
     display: inline-flex;
     background-color: #59659e;
     border-radius: 20px;
     margin-left: 10%;
     border-bottom: solid white 1px;
+}
 
-
+.dados-busca-relatorios-container .radio-container:last-child{
+display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
 }
 
 .dados-busca-select-relatorios{
@@ -81,6 +87,15 @@
     color: white;
 }
 
+.form-check{
+    min-height: 1.5rem;
+    padding-left: 1.5em;
+    margin-bottom: 0.125rem;
+    padding: 20px;
+    margin-top: 10px;
+    flex-direction: row;
+
+}
 @media screen and (max-width: 869px){
     .dados-busca-relatorios-container{
         width: 80%;
@@ -101,5 +116,21 @@
         flex-wrap: wrap;
         align-items: stretch;
         align-content: center;
+    }
+
+    .radio-container {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+    }
+
+    .dados-busca-relatorios-container .radio-container:last-child{
+        display: inline-flex;
+        flex-wrap: wrap;
+        align-items: center;
+        align-content: center;
+        justify-content: space-evenly;
+        flex-direction: row;
     }
 }
