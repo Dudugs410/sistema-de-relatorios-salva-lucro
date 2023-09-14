@@ -14,7 +14,7 @@
 }
 
 .page-vendas-background{
-    height: 170%;
+    height: 100%;
     width: 100%;
     background-color: #59659e;
 }
@@ -26,7 +26,7 @@
     margin-left: 10%;
     /* border-radius: 10px; */
     background-color: #181c2e;
-    /* display: flex; */
+    display: flex;
     flex-direction: row;
     justify-content: flex-start;
     flex-wrap: wrap;
@@ -45,7 +45,7 @@
     color: white;
     text-align: center;
     border-bottom: solid white 1px;
-    background-color:#59659e;
+    background-color: #59659e;
     width: 100%;
     border-radius: 20px;
     padding: 10px;
@@ -53,12 +53,10 @@
 }
 
 .component-container-vendas{
+    height: 100%;
+    width: 100%;
     display: flex;
-    flex-direction: column-reverse;
-    flex-wrap: wrap;
-    align-content: center;
-    justify-content: center;
-    align-items: stretch;
+    flex-direction: column;
 }
 
 

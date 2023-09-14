@@ -1,0 +1,189 @@
+.servicos-page{
+    /*height: 100%; */
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 54px;
+}
+
+.header-tabs-container{
+    display: inline-flex;
+    height: 2em;
+    width: 100%;
+    /* margin-right: 25%; */
+    border-bottom: solid white 1px;
+}
+
+.header-tabs{
+    width: 160px;
+    height: 100%;
+    border-right: solid white 1px;
+    background-color: #7985bb;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: center;
+    transition: all 0.4s;
+}
+
+.span-tab-servicos{
+    color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: left;
+    margin-left:6px;
+    text-shadow: 2px 2px 4px #000000;
+
+}
+
+.header-tabs:hover{
+    background-color: yellowgreen;
+    cursor: pointer;
+}
+
+.card-resumo-total-ajustes{
+    height: 45%;
+    width: 70%;
+    padding: 10px 10px 0 20px;
+    border: solid white 1px;
+    border-radius: 20px;
+    margin: 2%;
+    background-color: #7985bb;
+}
+
+.card-resumo-content-container{
+    height:100%;
+    width:100%;
+}
+
+.h1-total-ajustes{
+    color: white;
+    font-size: 1.7em;
+    text-shadow: 2px 2px 4px #000000;
+
+}
+
+.card-ajuste-container{
+    height: 40%;
+    width: 100%;
+    display: inline-flex;
+
+
+}
+
+.card-ajuste{
+    display: inline-flex;
+    height: 100%;
+    width: 50%;
+    margin-right: 10px;
+    border: solid white 1px;
+    border-radius: 20px;
+    background-color: #181c2e;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: center;
+    padding-bottom: 20px;
+
+}
+
+.card-ajuste:last-child{
+    width: 100%;
+    display: inline-flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: flex-end;
+    align-items: flex-end;
+    padding-right: 20px;
+}
+
+.h5-valores{
+    color: #616161;
+    padding: 5px;
+    margin: 20px 0 0 5px;
+    font-size: 1em;
+    text-shadow: 2px 2px 4px #000000;
+}
+
+.span-valores{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 1.2em;
+    color: white;
+    font-weight: bolder;
+}
+
+
+.btn-relatorio-container{
+    height: 50%;
+    width: 100%;
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: flex-end;
+    justify-content: flex-end;
+    padding: 20px;
+}
+
+.btn-relatorio{
+    border: solid white 2px;
+    background-color: #181c2e;
+    transition: all 0.4s;
+}
+
+.btn-relatorio:hover{
+    background-color: yellowgreen
+}
+
+.filial-container{
+    height: 100%;
+    width: 75%;
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.card-filial{
+    height: 40%;
+    width: 30%;
+    margin: 1%;
+    display: inline-table;
+    border-radius: 20px;
+    background-color: #7985bb;
+    border: solid white 1px;
+}
+
+.card-filial>.card-ajuste-container{
+    display: flex;
+    flex-direction: column;
+    padding:2%;
+}
+
+.card-filial>.card-ajuste-container>.btn-relatorio-container{
+    display: flex;
+}
+
+.card-filial>.card-ajuste-container>.card-ajuste{
+    display: inline-flex;
+    height: 100%;
+    width: 100%;
+    margin-right: 0px;
+    border: solid white 1px;
+    border-radius: 20px;
+    background-color: #181c2e;
+    flex-direction: column;
+    align-items: center;
+    align-content: space-around;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    margin-bottom: 2%;
+}
+
+.h3-valores{
+    color: white;
+    text-align: center;
+    padding: 10px;
+    text-shadow: 2px 2px 4px #000000;
+}

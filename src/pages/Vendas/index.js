@@ -267,10 +267,10 @@ let Vendas = () =>{
             </div>
             <TotalModalidadesComp texto1={'Débito'} valor1={totalDebito} texto2={'Crédito'} valor2={totalCredito} texto3={'Voucher'} valor3={totalVoucher} texto4={'Total Líquido'} valor4={totalLiquido} />
             <div className='component-container-vendas'>
-              { detalhes ? <TabelaGenericaAdm Array={arrayAdm}/> : <></> }
+            <BuscarClienteData funcao={loadVendas} />
               { detalhes ?  <DetalhesVenda/> : <MyCalendar/> }
-              <BuscarClienteData funcao={loadVendas} />
               { detalhes ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
+              { detalhes ? <TabelaGenericaAdm Array={arrayAdm}/> : <></> }
               { detalhes ? <hr/> : <></> }
             </div>
           </div>
