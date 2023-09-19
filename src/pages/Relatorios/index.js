@@ -2,9 +2,8 @@ import { useContext, useEffect, useState } from 'react'
 import DetalhesVenda from '../../components/DetalhesVenda'
 import { AuthContext } from '../../contexts/auth'
 import DetalhesCredito from '../../components/DetalhesCredito'
-import DatePicker from 'react-datepicker'
-import 'react-datepicker/dist/react-datepicker.css'
-import './date-picker.css'
+import DateRangePicker from '../../components/Componente_DateRangePicker'
+
 import GerarRelatorio from '../../components/Componente_GerarRelatorio'
 
 import './relatorios.css'
@@ -21,23 +20,12 @@ const Relatorios = () =>{
         loadBandeiras,
         adquirentes,
         bandeiras,
+        dataInicial,
+        dataFinal,
      } = useContext(AuthContext)
-
-    const [selectedDate, setSelectedDate] = useState(null)
-
-    // Custom date format for Brazilian format (dd/MM/yyyy)
-    const brazilianDateFormat = 'dd/MM/yyyy'
-
-    // Handle date change
-    const handleDateChange = (date) => {
-      setSelectedDate(date)
-    }
 
     const [ vendasRelatorios, setVendasRelatorios ] = useState([])
     const [ creditosRelatorios, setCreditosRelatorios ] = useState([])
-
-    const [dataInicial, setDataInicial] = useState(new Date())
-    const [dataFinal, setDataFinal] = useState(new Date())
 
     const [adqSelecionada, setAdqSelecionada] = useState('')
     const [banSelecionada, setBanSelecionada] = useState('')
@@ -80,47 +68,6 @@ const Relatorios = () =>{
 
     },[dataFinal])
 ////////////////////////////////////////////////////////////////////////////////////////
-function DateRangePicker() {
-
-    const handleStartDateChange = date => {
-      setDataInicial(date)
-    }
-  
-    const handleEndDateChange = date => {
-      setDataFinal(date)
-    }
-  
-    return (
-      <div className='dados-busca-select-relatorios'>
-        <div className='picker-container'>
-          <label className='label-picker'>Data Inicial:</label>
-            <DatePicker className='date-picker-css'
-              selected={dataInicial}
-              onChange={handleStartDateChange}
-              dateFormat={brazilianDateFormat} // Set the desired date format
-              placeholderText="Selecione uma data"
-              selectsStart
-              startDate={dataInicial}
-              endDate={dataFinal}
-            />
-        </div>
-        
-        <div className='picker-container'>
-          <label className='label-picker'>Data Final:</label>
-            <DatePicker className='date-picker-css'
-              selected={dataFinal}
-              onChange={handleEndDateChange}
-              dateFormat={brazilianDateFormat} // Set the desired date format
-              placeholderText="Selecione uma data"
-              selectsEnd
-              startDate={dataInicial}
-              endDate={dataFinal}
-              minDate={dataInicial}
-            />
-        </div>
-      </div>
-    )
-  }
 
   function SelectPicker() {
   

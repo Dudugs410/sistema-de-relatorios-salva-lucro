@@ -1,3 +1,9 @@
+.app-page-recebimentos{
+    height: auto;
+    font-family: sans-serif;
+    
+}
+
 .page-recebimentos-background{
     height: 170%;
     width: 100%;
@@ -19,6 +25,14 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     text-shadow: 1px 2px 2px rgba(0,0,0,0.6);
+}
+
+.hr-recebimentos{
+    margin: 1rem 0;
+    color: white;
+    border: 0;
+    border-top: var(--bs-border-width) solid;
+    opacity: .25;
 }
 
 .btn-div-recebimentos{

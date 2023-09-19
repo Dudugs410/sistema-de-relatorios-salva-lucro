@@ -1,12 +1,23 @@
 
 .header-bg{
     width: 100%;
-    background-color: #181c2e;
     color:white;
     font-weight: bold;
     display: flex;
     height: 74.77px;
+    background-image: url("../../assets/financ.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+}
 
+.header-bg::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 75px;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
 .navbar-title{
@@ -41,6 +52,7 @@
     font-size: 0.8em;
     justify-content: flex-end;
     margin-right: 10%;
+    z-index: 1;
     
 }
 
@@ -76,6 +88,7 @@ a.nav-text{
     border: solid white 2px;
     margin-top: 2px;
     margin-right: 2px;
+    z-index: 1;
 }
 
 svg{

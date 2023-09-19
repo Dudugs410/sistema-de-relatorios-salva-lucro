@@ -22,7 +22,7 @@ function AuthProvider({ children }){
 ////////////////////////////////////////////////////////////////
 
   const [dataInicial, setDataInicial] = useState(new Date())
-  const [dataFinal, setDataFinal] = useState(null)
+  const [dataFinal, setDataFinal] = useState(new Date())
   const [cnpj, setCnpj] = useState('')
   
   const [vendas, setVendas] = useState([])
@@ -492,7 +492,45 @@ async function retornaRecebimentos(cnpj, datainicial, datafinal){
   }
 }
 
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //Ajustes
+
+    async function loadAjustes(cnpj, dataInicial, dataFinal){
+      console.log('dataInicial: ', dataInicial, 'dataFinal: ', dataFinal)
+      console.log(dateConvertSearch(dataInicial), dateConvertSearch(dataFinal))
+      if(teste !== true){
+        setLoading(true)
+
+      let params = {
+        cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+        data: dateConvertSearch(dataInicial),
+      }
+
+      let config = {
+        headers: { 
+          'Content-Type': 'application/json', 
+          'Authorization': `Bearer ${Cookies.get('token')}`
+        },
+        params: params
+      }
+
+      try {
+        const response = await api.get('/ajustes', config)
+        const recebimentosData = response.data
+        setLoading(false)
+          return recebimentosData
+      } catch (error) {
+        console.log(error)
+        setLoading(false)
+      }
+    } else{
+      setLoading(false)
+      return 0;
+    }
+  }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //refresh
 
@@ -782,6 +820,8 @@ function alerta(text){
   })
 }
 
+  
+
   return(
     <AuthContext.Provider
       value={{
@@ -852,6 +892,7 @@ function alerta(text){
         converteData,
         returnTotalMes,
         returnCreditosBanco,
+        loadAjustes,
       }}
     >
       {children}

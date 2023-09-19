@@ -1,4 +1,15 @@
 
+.date-picker-component{
+  padding: 20px;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  justify-items: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
 .picker {
   display: grid;
 }
@@ -10,7 +21,6 @@
 .label-picker{
   display: inline-block;
   color: white;
-
 }
 
 .date-picker-css{

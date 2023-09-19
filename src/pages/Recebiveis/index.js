@@ -96,7 +96,7 @@ const Recebiveis = () =>{
     }
 
     useEffect(()=>{
-      if(creditosTemp.length > 0){
+      if(creditosTemp.length > 0 || null){
         let cred = 0.00
         let deb = 0.00
         let vou = 0.00
@@ -311,7 +311,7 @@ const Recebiveis = () =>{
     }
 
     return(
-        <div className='appPage'>
+        <div className='appPage app-page-recebimentos'>
         { showBanco && 
           <ModalBanco onClose={() => setShowBanco(false)}>
             <div className='modal-adm'>
@@ -324,14 +324,16 @@ const Recebiveis = () =>{
               <div className='recebimentos-title-container'>
                 <h1 className='recebimentos-title'>Calendário de Recebimentos</h1>
               </div>
+              <hr className='hr-recebimentos'/>
               <TotalModalidadesComp texto1={'Débito'} valor1={totalDebito} texto2={'Crédito'} valor2={totalCredito} texto3={'Voucher'} valor3={totalVoucher} texto4={'Total Líquido'} valor4={totalTotal} />
+              <hr className='hr-recebimentos'/>
+              { detalhes ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
               <div className='component-container-recebimentos'>
                 {arrayAdm && detalhes ? <TabelaGenericaAdm Array={arrayAdm}/> : <></>}
                 { detalhes ? <DetalhesCredito array={creditosTemp}/> :  <MyCalendar/> }
                 <ComponenteBuscarClienteData detalhes={detalhes} adquirentes={adquirentes} bandeiras={bandeiras} onAdmUpdate={handleAdm} onBanUpdate={handleBan} onBuscaUpdate={handleUpdate}/>
                 { detalhes ? <button className="btn btn-primary btn-banco-recebimentos" onClick={handleShowBanco}>Valores por Banco</button> : <></> }
-                { detalhes ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
-                { detalhes ? <hr/> : <></> }
+                { detalhes ? <hr className='hr-recebimentos' /> : <></> }
               </div>
             </div>
           </div>
