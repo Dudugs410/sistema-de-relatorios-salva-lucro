@@ -134,8 +134,10 @@ const Relatorios = () =>{
             <div className='relatorios-page-container'>
                 <h1 className='h1-relatorios'>Relatórios</h1>
                 <div className='dados-busca-relatorios-container'>
-                  <DateRangePicker />
-                  <SelectPicker />
+                  <div className='dropdown-container-relatorios'>
+                    <DateRangePicker />
+                    <SelectPicker />
+                  </div>
                   <RadioSelect />
                 </div>
                 <div className='btn-relatorios-container'>

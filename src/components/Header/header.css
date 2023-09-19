@@ -156,6 +156,16 @@ polyline, line, path{
         flex-direction: column;
         height: auto;
     }
+
+    .header-bg::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 101px;
+        width: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
     
     .navbar-title{
         display: flex;
