@@ -1,6 +1,5 @@
 .app-page-servicos{
-    display: flex;
-    background-color: #59659e;
+
 }
 
 .servicos-page{
@@ -58,12 +57,10 @@
     display: inline-flex;
     height: 2em;
     width: 100%;
-    margin-right: 366px;
     flex-direction: row;
+    margin-top: 10px;
     flex-wrap: wrap;
     justify-content: center;
-    margin-top: 10px;
-    align-items: stretch;
 }
 
 .header-tabs{
@@ -196,8 +193,9 @@
     width: 100%;
     display: inline-flex;
     flex-direction: row;
-    flex-wrap: wrap;
     justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 100px;
 }
 
 .card-filial{

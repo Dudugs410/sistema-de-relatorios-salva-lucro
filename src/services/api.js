@@ -11,10 +11,7 @@ const api = axios.create({
 
 api.interceptors.request.use(
     (config) => { const updatedAccessToken = Cookies.get('token')
-  
-      // Update the Authorization header with the new access token
       config.headers['Authorization'] = `Bearer ${updatedAccessToken}`
-  
       return config
     },
     (error) => {
@@ -22,7 +19,7 @@ api.interceptors.request.use(
     }
   )
 
-export function config(token){
+export function config(){
     const config = { headers:{ 
         'Accept': 'application/json',
         'Content-Type': 'application/json',

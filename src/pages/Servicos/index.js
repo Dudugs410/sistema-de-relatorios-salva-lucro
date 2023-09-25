@@ -12,12 +12,15 @@ const Servicos = () =>{
 
     const [arrayTeste, setArrayTeste] = useState([])
     const [ajustesTemp, setAjustesTemp] = useState([])
+    const [totalAjustes, setTotalAjustes] = useState([])
     const [buscou, setBuscou] = useState([])
 
     async function buscarAjustes(){
         const response = await loadAjustes(sessionStorage.getItem('cnpj'), dataInicial, dataFinal)
         setAjustesTemp(response)
     }
+
+
 
     useEffect(()=>{
         console.log(ajustesTemp)
@@ -34,6 +37,44 @@ const Servicos = () =>{
         console.log(cnpj)
         buscarAjustes()
     },[cnpj])
+
+    useEffect(() => {
+        let totalTemp = [];
+        console.log('totalTemp: ', totalTemp);
+      
+        ajustesTemp.forEach((elemento) => {
+          let obj = { descricao: '', valor: 0 };
+          let found = false;
+      
+          for (let i = 0; i < totalTemp.length; i++) {
+            if (totalTemp[i].descricao === elemento.descricao) {
+              console.log(
+                'total ajuste desc: ',
+                totalTemp[i].descricao,
+                'elemento desc: ',
+                elemento.descricao
+              );
+              obj.valor = elemento.valor;
+              totalTemp[i].valor += elemento.valor;
+              found = true;
+              break;
+            }
+          }
+      
+          if (!found) {
+            obj.descricao = elemento.descricao;
+            obj.valor = elemento.valor;
+            totalTemp.push(obj);
+          }
+        });
+      
+        console.log('totalTemp', totalTemp);
+        setTotalAjustes(totalTemp)
+      }, [ajustesTemp]);
+
+      useEffect(()=>{
+        console.log('totalAjustes: ', totalAjustes)
+      },[totalAjustes])
 
     function CardServicos(filialAjuste){
                 return(
@@ -55,6 +96,19 @@ const Servicos = () =>{
                         </div>
                 )
     }
+
+    function CardServicosTotais(filialAjuste){
+        return(
+                <div className='card-filial'>
+                    <div className='card-ajuste-container'>
+                        <div className='card-ajuste'>
+                            <h5 className='h5-valores'>{filialAjuste.descricao}</h5>
+                            <span className='span-valores red'>{filialAjuste.valor}</span>
+                        </div>
+                    </div>
+                </div>
+        )
+}
 
 
     function handleBuscar(e){
@@ -90,22 +144,11 @@ const Servicos = () =>{
                         <div className='card-resumo-content-container'>
                             <h1 className='h1-total-ajustes'>Resumo Total</h1>
                             <div className='card-ajuste-container'>
-                                <div className='card-ajuste'>
-                                    <h5 className='h5-valores'>Ajuste a Débito</h5>
-                                    <span className='span-valores'>R$ 100,12</span>
-                                </div>
-                                <div className='card-ajuste'>
-                                    <h5 className='h5-valores'>Ajuste a Crédito</h5>
-                                    <span className='span-valores'>R$ 100,12</span>
-                                </div>
-                                <div className='card-ajuste'>
-                                    <h5 className='h5-valores'>Aluguel de POS</h5>
-                                    <span className='span-valores'>R$ 100,12</span>
-                                </div>
-                                <div className='card-ajuste'>
-                                    <h5 className='h5-valores'>Total </h5>
-                                    <span className='span-valores'>R$ 100,12</span>
-                                </div>
+                            { totalAjustes.map((elemento) => {
+                                return(
+                                    CardServicosTotais(elemento)
+                                )
+                            })}
                             </div>
                             <GerarRelatorio array={ arrayTeste }/>
                         </div>
