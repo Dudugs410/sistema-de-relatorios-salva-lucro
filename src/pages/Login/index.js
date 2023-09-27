@@ -12,7 +12,7 @@ import LoadingModal from "../../components/LoadingModal"
 ///////////////////////////////////////////////////////////////
 
 const Login = () => {
-    const {submitLogin, loading, isSignedIn, accessToken, setAccessToken, submitFake, loadBandeiras, bandeiras } = useContext(AuthContext)
+    const {submitLogin, loading, isSignedIn, accessToken, setAccessToken, submitFake, } = useContext(AuthContext)
     const navigate = useNavigate()
 
     const [login, setLogin] = useState('')
@@ -39,46 +39,10 @@ const Login = () => {
         }
     }
 
-    /////////////////////////////
-
-    const [banSelecionada, setBanSelecionada] = useState([])
-
-    useEffect(()=>{
-        async function init(){
-            await loadBandeiras()
-        }
-        init()
-    },[])
-
     useEffect(()=>{
         console.log('accessToken: ', accessToken)
 
     },[accessToken])
-
-    useEffect(()=>{
-        console.log('bandeiras: ', bandeiras)
-
-    },[bandeiras])
-
-    //////////////////////////////
-
-    function BandeirasSelect(){
-        return(
-            <div className='date-column'>
-            <div className='select-card'>
-                <span>Bandeira</span>
-                    <select id='bandeira' value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}}>
-                        <option value='' selected>Todas</option>
-                        {bandeiras.map((BAN)=>(
-                            <option key={BAN.codigoBandeira} value = {BAN.codigoBandeira}>{BAN.descricaoBandeira}</option>
-                        ))}
-                    </select>
-            </div>
-        </div>   
-        )
-    }     
-
-    /////////////////////////////
 
     return(
         <div className='appPage'>
@@ -95,9 +59,7 @@ const Login = () => {
                     </div>
                     <button className='btn btn-secondary' onClick={submitFake}>Login Teste</button>
                 </form>
-                <BandeirasSelect/>
             </div>
-            
             { loading ? <LoadingModal/> : <></>}
         </div>
     )

@@ -5,9 +5,12 @@
 }
 
 .page-recebimentos-background{
-    height: 170%;
-    width: 100%;
+    display: flex;
     background-color: #59659e;
+    width: 100%;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: center;
 }
 
 .recebimentos-title-container{
@@ -28,6 +31,7 @@
 }
 
 .hr-recebimentos{
+    width: 100%;
     margin: 1rem 0;
     color: white;
     border: 0;
@@ -49,26 +53,20 @@
 }
 
 .page-content-recebimentos{
-    height: 100%;
-    width: 80%;
-    padding: 1%;
-    margin-left: 10%;
-    /* border-radius: 10px; */
     background-color: #181c2e;
-    /* display: flex; */
     flex-direction: row;
-    justify-content: flex-start;
     flex-wrap: wrap;
+    height: 100%;
+    justify-content: flex-start;
+    padding: 1%;
     
 }
 
 .component-container-recebimentos{
-    display: flex;
-    flex-direction: column-reverse;
-    flex-wrap: wrap;
-    align-content: center;
-    justify-content: center;
     align-items: stretch;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
 
 }
 

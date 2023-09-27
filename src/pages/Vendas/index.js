@@ -265,15 +265,15 @@ let Vendas = () =>{
             <div className='vendas-title-container'>
               <h1 className='vendas-title'>Calendário de Vendas</h1>
             </div>
-            <hr className='hr-recebimentos'/>
+            <hr className="hr-recebimentos"/>
             <TotalModalidadesComp texto1={'Débito'} valor1={totalDebito} texto2={'Crédito'} valor2={totalCredito} texto3={'Voucher'} valor3={totalVoucher} texto4={'Total Líquido'} valor4={totalLiquido} />
-            <hr className='hr-recebimentos'/>
+            <hr className="hr-recebimentos"/>
             { detalhes ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
             <div className='component-container-vendas'>
-            <BuscarClienteData funcao={loadVendas} />
               { detalhes ?  <DetalhesVenda/> : <MyCalendar/> }
               { detalhes ? <TabelaGenericaAdm Array={arrayAdm}/> : <></> }
               { detalhes ? <hr className='hr-recebimentos'/> : <></> }
+              <BuscarClienteData funcao={loadVendas} />
             </div>
           </div>
         </div>

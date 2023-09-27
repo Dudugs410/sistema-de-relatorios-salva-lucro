@@ -327,7 +327,6 @@ const Recebiveis = () =>{
               <hr className='hr-recebimentos'/>
               <TotalModalidadesComp texto1={'Débito'} valor1={totalDebito} texto2={'Crédito'} valor2={totalCredito} texto3={'Voucher'} valor3={totalVoucher} texto4={'Total Líquido'} valor4={totalTotal} />
               <hr className='hr-recebimentos'/>
-              { detalhes ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
               <div className='component-container-recebimentos'>
                 {arrayAdm && detalhes ? <TabelaGenericaAdm Array={arrayAdm}/> : <></>}
                 { detalhes ? <DetalhesCredito array={creditosTemp}/> :  <MyCalendar/> }
@@ -335,6 +334,7 @@ const Recebiveis = () =>{
                 { detalhes ? <button className="btn btn-primary btn-banco-recebimentos" onClick={handleShowBanco}>Valores por Banco</button> : <></> }
                 { detalhes ? <hr className='hr-recebimentos' /> : <></> }
               </div>
+              { detalhes ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
             </div>
           </div>
         </div>

@@ -99,14 +99,10 @@ const Servicos = () =>{
 
     function CardServicosTotais(filialAjuste){
         return(
-                <div className='card-filial'>
-                    <div className='card-ajuste-container'>
-                        <div className='card-ajuste'>
-                            <h5 className='h5-valores'>{filialAjuste.descricao}</h5>
-                            <span className='span-valores red'>{filialAjuste.valor}</span>
-                        </div>
-                    </div>
-                </div>
+            <div className='card-ajuste'>
+                <h5 className='h5-valores'>{filialAjuste.descricao}</h5>
+                <span className='span-valores red'>{filialAjuste.valor}</span>
+            </div>
         )
 }
 

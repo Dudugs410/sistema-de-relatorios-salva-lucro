@@ -203,7 +203,7 @@
     .date-column-seletor>.select-card-seletor>select{
         display: flex;
         height: 2.2em;
-        width: 200px;
+        max-width: 200px;
         border-radius: 10px;
         text-align: center;
         font-style: italic;
