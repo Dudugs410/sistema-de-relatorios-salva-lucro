@@ -130,7 +130,7 @@ const Relatorios = () =>{
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
     return(
-        <div className='appPage'>
+        <div className='appPage app-page-relatorios'>
             <div className='relatorios-page-container'>
                 <h1 className='h1-relatorios'>Relatórios</h1>
                 <div className='dados-busca-relatorios-container'>

@@ -327,14 +327,14 @@ const Recebiveis = () =>{
               <hr className='hr-recebimentos'/>
               <TotalModalidadesComp texto1={'Débito'} valor1={totalDebito} texto2={'Crédito'} valor2={totalCredito} texto3={'Voucher'} valor3={totalVoucher} texto4={'Total Líquido'} valor4={totalTotal} />
               <hr className='hr-recebimentos'/>
-              <div className='component-container-recebimentos'>
-                {arrayAdm && detalhes ? <TabelaGenericaAdm Array={arrayAdm}/> : <></>}
-                { detalhes ? <DetalhesCredito array={creditosTemp}/> :  <MyCalendar/> }
-                <ComponenteBuscarClienteData detalhes={detalhes} adquirentes={adquirentes} bandeiras={bandeiras} onAdmUpdate={handleAdm} onBanUpdate={handleBan} onBuscaUpdate={handleUpdate}/>
-                { detalhes ? <button className="btn btn-primary btn-banco-recebimentos" onClick={handleShowBanco}>Valores por Banco</button> : <></> }
-                { detalhes ? <hr className='hr-recebimentos' /> : <></> }
-              </div>
               { detalhes ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
+              <div className='component-container-recebimentos'>
+                { detalhes ? <DetalhesCredito array={creditosTemp}/> :  <MyCalendar/> }
+                {arrayAdm && detalhes ? <TabelaGenericaAdm Array={arrayAdm}/> : <></>}
+                { detalhes ? <hr className='hr-recebimentos' /> : <></> }
+                { detalhes ? <button className="btn btn-primary btn-banco-recebimentos" onClick={handleShowBanco}>Valores por Banco</button> : <></> }
+                <ComponenteBuscarClienteData detalhes={detalhes} adquirentes={adquirentes} bandeiras={bandeiras} onAdmUpdate={handleAdm} onBanUpdate={handleBan} onBuscaUpdate={handleUpdate}/>
+              </div>
             </div>
           </div>
         </div>

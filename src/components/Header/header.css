@@ -194,7 +194,7 @@ polyline, line, path{
         flex-direction: row;
         width: 100%;
         font-size: 0.8em;
-        justify-content: center;
+        justify-content: space-around;
         margin-right: 10%;
     }
     

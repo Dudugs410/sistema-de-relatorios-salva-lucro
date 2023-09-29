@@ -1,13 +1,24 @@
 .relatorios-page-container{
     margin-top: 20px;
+    /* height: 100%; */
     width: 80%;
-    margin-left: 10%;
+    background-color: #181c2e;
+    border-radius: 20px;
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 54px;
+}
+
+.app-page-relatorios{
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #59659e;
 }
 
 .dados-busca-relatorios-container{
     width: 100%;
     padding: 20px;
-    margin-top: 20px;
     display: inline-flex;
     background-color: #59659e;
     border-radius: 20px;
@@ -59,7 +70,6 @@
     flex-direction: column;
     flex-wrap: wrap;
     align-content: space-around;
-    padding-bottom: 100px;
     align-items: center;
 
 }
@@ -109,10 +119,20 @@
         display: contents;
     }
 
+    .relatorios-page-container{
+        margin-top: 20px;
+        /* height: 100%; */
+        width: 100%;
+        background-color: #181c2e;
+        border-radius: 0;
+        padding: 10px;
+        margin-top: 10px;
+        margin-bottom: 54px;
+    }
+
     .dados-busca-relatorios-container{
         width: 100%;
         padding: 20px;
-        margin-top: 20px;
         display: inline-flex;
         background-color: #59659e;
         border-radius: 20px;

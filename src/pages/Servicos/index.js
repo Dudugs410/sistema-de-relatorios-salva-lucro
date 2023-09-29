@@ -114,48 +114,38 @@ const Servicos = () =>{
 
     return(
         <div className='appPage app-page-servicos'>
-            <div className='servicos-page'>
-                <div className='date-picker-ajustes'>
-                    <DateRangePicker/>
-                    <div className='btn-container-servicos'>
-                        <button className='btn btn-primary btn-busca-servicos' onClick={handleBuscar}>Pesquisar</button>
+            <div className='page-servicos-background'>
+                <div className='page-content-servicos'>
+                    <div className='vendas-title-container'>
+                        <h1 className='vendas-title'>Serviços</h1>
                     </div>
-                </div>
-                <div className='header-tabs-container'>
-                    <div className='header-tabs'>
-                        <span className='span-tab-servicos'>Filiais</span>
-                    </div>
-                    <div className='header-tabs'>
-                        <span className='span-tab-servicos'>Produtos</span>
-                    </div>
-                    <div className='header-tabs'>
-                        <span className='span-tab-servicos'>Administradoras</span>
-                    </div>
-                    <div className='header-tabs'>
-                        <span className='span-tab-servicos'>Bandeiras</span>
-                    </div>
-                </div>
-                <div className='container-ajustes'>
-                    <div className='card-resumo-total-ajustes'>
-                        <div className='card-resumo-content-container'>
-                            <h1 className='h1-total-ajustes'>Resumo Total</h1>
-                            <div className='card-ajuste-container'>
-                            { totalAjustes.map((elemento) => {
-                                return(
-                                    CardServicosTotais(elemento)
-                                )
-                            })}
-                            </div>
-                            <GerarRelatorio array={ arrayTeste }/>
+                    <div className='date-picker-ajustes'>
+                        <DateRangePicker/>
+                        <div className='btn-container-servicos'>
+                            <button className='btn btn-primary btn-busca-servicos' onClick={handleBuscar}>Pesquisar</button>
                         </div>
                     </div>
+                    <div className='container-ajustes'>
+                        <div className='card-resumo-total-ajustes'>
+                            <div className='card-resumo-content-container'>
+                                <h1 className='h1-total-ajustes'>Resumo Total</h1>
+                                <div className='card-ajuste-container'>
+                                { totalAjustes.map((elemento) => {
+                                    return(
+                                        CardServicosTotais(elemento)
+                                    )
+                                })}
+                                </div>
+                            </div>
+                        </div>
 
-                    <div className='filial-container'>
-                        { ajustesTemp.map((elemento) => {
-                            return(
-                                CardServicos(elemento)
-                            )
-                        })}
+                        <div className='filial-container'>
+                            { ajustesTemp.map((elemento) => {
+                                return(
+                                    CardServicos(elemento)
+                                )
+                            })}
+                        </div>
                     </div>
                 </div>
             </div>
