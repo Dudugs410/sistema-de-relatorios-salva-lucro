@@ -12,12 +12,15 @@ const Relatorios = () =>{
     const { 
         dateConvertSearch,
         converteData,
-        cnpj, 
+        cnpj,
+        setCnpj,
+        grupos,
         setVendas, 
         returnVendas, 
         returnCreditos, 
         loadAdquirentes, 
         loadBandeiras,
+        loadGrupos,
         adquirentes,
         bandeiras,
         dataInicial,
@@ -33,11 +36,21 @@ const Relatorios = () =>{
     const [detalhado, setDetalhado] = useState(false)
 
     useEffect(()=>{
-        function init(){
-            loadAdquirentes()
-            loadBandeiras()
+      async function inicializar(){
+        setCnpj(sessionStorage.getItem('cnpj'))
+        if(bandeiras.length === 0){
+          await loadBandeiras()
         }
-        init()
+        
+        if(adquirentes.length === 0){
+          await loadAdquirentes()
+        }
+        
+        if(grupos.length === 0){
+          await loadGrupos()        
+        }
+      }
+      inicializar()
     },[])
     
     async function handleSubmit(e){
@@ -131,6 +144,7 @@ const Relatorios = () =>{
 
     return(
         <div className='appPage app-page-relatorios'>
+          <div className='page-relatorios-background'>
             <div className='relatorios-page-container'>
                 <h1 className='h1-relatorios'>Relatórios</h1>
                 <div className='dados-busca-relatorios-container'>
@@ -143,12 +157,14 @@ const Relatorios = () =>{
                 <div className='btn-relatorios-container'>
                   <button onClick={handleSubmit} className='btn btn-primary'>Pesquisar</button>
                 </div>
+                <hr/>
                 <div className='result-container-relatorios'>
                     <div className='table-container-relatorios'>
                         <h1 className='h1-relatorios'>Vendas</h1>
                         { vendasRelatorios.length > 0 ? <DetalhesCredito array={ vendasRelatorios }/> : <></> }
                         { vendasRelatorios.length > 0 ? <GerarRelatorio array={ vendasRelatorios }/> : <></> }
                     </div>
+                    <hr/>
                     <div className='table-container-relatorios'>
                         <h1 className='h1-relatorios'>Créditos</h1>
                         { creditosRelatorios.length > 0 ? <DetalhesCredito array={ creditosRelatorios }/> : <></> }
@@ -156,6 +172,7 @@ const Relatorios = () =>{
                     </div>
                 </div>
             </div>
+          </div>  
         </div>
     )
 }

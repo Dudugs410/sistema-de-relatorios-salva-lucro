@@ -16,6 +16,12 @@
     background-color: #59659e;
 }
 
+.page-relatorios-background{
+    display: flex;
+    justify-content: center;
+    background-color: #59659e;
+}
+
 .dados-busca-relatorios-container{
     width: 100%;
     padding: 20px;

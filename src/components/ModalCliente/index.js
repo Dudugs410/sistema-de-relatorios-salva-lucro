@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react"
 import './ModalCliente.css'
 import { AuthContext } from "../../contexts/auth"
 import LoadingModal from "../LoadingModal"
+import Cookies from "js-cookie"
 
 
 
@@ -47,7 +48,8 @@ const ModalCliente = () => {
     }
 
     useEffect(()=>{
-        sessionStorage.setItem('cnpj', cnpj)    
+        sessionStorage.setItem('cnpj', cnpj)
+        Cookies.set('cnpj', cnpj)
       },[cnpj])
     
     return(

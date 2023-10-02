@@ -10,7 +10,7 @@ import LoadingModal from '../components/LoadingModal'
 
 export default function Private({children}){
 
-  const { isSignedIn, setIsSignedIn, setAccessToken, accessToken, loading, refresh, expired } = useContext(AuthContext)
+  const { isSignedIn, setIsSignedIn, setAccessToken, accessToken, loading, refresh, expired, cnpj, setCnpj } = useContext(AuthContext)
 
   useEffect(()=>{
     setAccessToken(Cookies.get('token'))
@@ -31,6 +31,12 @@ export default function Private({children}){
       }
     }
   }, [accessToken]);
+
+  useEffect(()=>{
+    if(Cookies.get('cnpj') !== '' && null){
+      setCnpj(Cookies.get('cnpj'))
+    }
+  },[])
   
   return (
     <>

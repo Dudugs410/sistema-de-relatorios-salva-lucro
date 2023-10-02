@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from "react"
 
 import { AuthContext } from "../../contexts/auth"
 import { ToastContainer } from 'react-toastify'
+import Cookies from "js-cookie";
 
 import 'react-toastify/dist/ReactToastify.css';
 import './Seletor.css'
@@ -18,6 +19,7 @@ const SeletorCliente = () => {
 
       useEffect(()=>{
         sessionStorage.setItem('cnpj', cnpj)
+        Cookies.set('cnpj', cnpj)
       },[cnpj])
 
     return(

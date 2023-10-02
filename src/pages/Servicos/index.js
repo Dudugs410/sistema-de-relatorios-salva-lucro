@@ -8,7 +8,7 @@ import DateRangePicker from '../../components/Componente_DateRangePicker'
 
 const Servicos = () =>{
 
-    const { loadAjustes, cnpj, alerta, dataInicial, dataFinal, dateConvert } = useContext(AuthContext)
+    const { loadAjustes, cnpj, alerta, dataInicial, setDataInicial, dataFinal, setDataFinal, dateConvert } = useContext(AuthContext)
 
     const [arrayTeste, setArrayTeste] = useState([])
     const [ajustesTemp, setAjustesTemp] = useState([])
@@ -19,57 +19,65 @@ const Servicos = () =>{
         const response = await loadAjustes(sessionStorage.getItem('cnpj'), dataInicial, dataFinal)
         setAjustesTemp(response)
     }
+    
+    useEffect(()=>{
+        setDataInicial(new Date())
+        setDataFinal(new Date())
+
+        ajustesTemp.length = 0
+        totalAjustes.length = 0
+
+    },[])
 
 
 
     useEffect(()=>{
         console.log(ajustesTemp)
-        if(buscou === false){
-            buscarAjustes()
-            if(ajustesTemp.length === 0){
-                alerta('Não existem ajustes para o período selecionado')
+        if(ajustesTemp !== undefined){
+            if(buscou === false){
+                buscarAjustes()
+                if(ajustesTemp.length === 0){
+                    alerta('Não existem ajustes para o período selecionado')
+                }
+                setBuscou(true)
             }
-            setBuscou(true)
         }
     },[ajustesTemp])
 
-    useEffect(()=>{
-        console.log(cnpj)
-        buscarAjustes()
-    },[cnpj])
-
     useEffect(() => {
-        let totalTemp = [];
-        console.log('totalTemp: ', totalTemp);
-      
-        ajustesTemp.forEach((elemento) => {
-          let obj = { descricao: '', valor: 0 };
-          let found = false;
-      
-          for (let i = 0; i < totalTemp.length; i++) {
-            if (totalTemp[i].descricao === elemento.descricao) {
-              console.log(
-                'total ajuste desc: ',
-                totalTemp[i].descricao,
-                'elemento desc: ',
-                elemento.descricao
-              );
-              obj.valor = elemento.valor;
-              totalTemp[i].valor += elemento.valor;
-              found = true;
-              break;
-            }
-          }
-      
-          if (!found) {
-            obj.descricao = elemento.descricao;
-            obj.valor = elemento.valor;
-            totalTemp.push(obj);
-          }
-        });
-      
-        console.log('totalTemp', totalTemp);
-        setTotalAjustes(totalTemp)
+        if(ajustesTemp !== undefined){
+            let totalTemp = [];
+            console.log('totalTemp: ', totalTemp);
+          
+            ajustesTemp.forEach((elemento) => {
+              let obj = { descricao: '', valor: 0 };
+              let found = false;
+          
+              for (let i = 0; i < totalTemp.length; i++) {
+                if (totalTemp[i].descricao === elemento.descricao) {
+                  console.log(
+                    'total ajuste desc: ',
+                    totalTemp[i].descricao,
+                    'elemento desc: ',
+                    elemento.descricao
+                  );
+                  obj.valor = elemento.valor;
+                  totalTemp[i].valor += elemento.valor;
+                  found = true;
+                  break;
+                }
+              }
+          
+              if (!found) {
+                obj.descricao = elemento.descricao;
+                obj.valor = elemento.valor;
+                totalTemp.push(obj);
+              }
+            });   
+
+            console.log('totalTemp', totalTemp);
+            setTotalAjustes(totalTemp)
+        }
       }, [ajustesTemp]);
 
       useEffect(()=>{
@@ -130,21 +138,21 @@ const Servicos = () =>{
                             <div className='card-resumo-content-container'>
                                 <h1 className='h1-total-ajustes'>Resumo Total</h1>
                                 <div className='card-ajuste-container'>
-                                { totalAjustes.map((elemento) => {
+                                { totalAjustes !== undefined && (totalAjustes.map((elemento) => {
                                     return(
                                         CardServicosTotais(elemento)
                                     )
-                                })}
+                                }))}
                                 </div>
                             </div>
                         </div>
 
                         <div className='filial-container'>
-                            { ajustesTemp.map((elemento) => {
+                            { ajustesTemp !== undefined && (ajustesTemp.map((elemento) => {
                                 return(
                                     CardServicos(elemento)
                                 )
-                            })}
+                            }))}
                         </div>
                     </div>
                 </div>

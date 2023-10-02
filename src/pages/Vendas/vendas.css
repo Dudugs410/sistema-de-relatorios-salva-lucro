@@ -24,12 +24,7 @@
 
 .page-vendas-background{
     display: flex;
-    background-color: #59659e;
-    /* min-height: 100vh; */
-    width: 100%;
-    flex-wrap: wrap;
-    align-content: center;
-    flex-direction: column;
+    justify-content: center;
 }
 
 .page-content-vendas{

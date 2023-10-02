@@ -8,6 +8,7 @@ import salvaLucroLogo from '../../assets/salva-lucro-logo.jpg'
 import './login.css'
 import { useContext } from "react"
 import LoadingModal from "../../components/LoadingModal"
+import { all } from "axios"
 
 ///////////////////////////////////////////////////////////////
 
@@ -20,6 +21,10 @@ const Login = () => {
 
     useEffect(()=>{
         sessionStorage.clear()
+        localStorage.clear()
+        Cookies.remove('cnpj')
+        Cookies.remove('token')
+        Cookies.remove('refreshToken')
     },[])
 
     useEffect(()=>{
