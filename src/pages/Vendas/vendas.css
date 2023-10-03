@@ -25,6 +25,7 @@
 .page-vendas-background{
     display: flex;
     justify-content: center;
+    background-color: #59659e;
 }
 
 .page-content-vendas{

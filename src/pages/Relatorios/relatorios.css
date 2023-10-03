@@ -20,6 +20,7 @@
     display: flex;
     justify-content: center;
     background-color: #59659e;
+    width: 100%;
 }
 
 .dados-busca-relatorios-container{
