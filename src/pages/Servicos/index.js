@@ -8,7 +8,18 @@ import DateRangePicker from '../../components/Componente_DateRangePicker'
 
 const Servicos = () =>{
 
-    const { loadAjustes, cnpj, alerta, dataInicial, setDataInicial, dataFinal, setDataFinal, dateConvert } = useContext(AuthContext)
+    const { 
+        loadAjustes,
+        loadGrupos,
+        grupos, 
+        cnpj, 
+        alerta, 
+        dataInicial, 
+        setDataInicial, 
+        dataFinal, 
+        setDataFinal, 
+        dateConvert 
+    } = useContext(AuthContext)
 
     const [arrayTeste, setArrayTeste] = useState([])
     const [ajustesTemp, setAjustesTemp] = useState([])
@@ -28,6 +39,15 @@ const Servicos = () =>{
         totalAjustes.length = 0
 
     },[])
+
+    useEffect(()=>{
+        async function inicializar(){
+          if(grupos.length === 0){
+            await loadGrupos()        
+          }
+        }
+        inicializar()
+      },[])
 
 
 

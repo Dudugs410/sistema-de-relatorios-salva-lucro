@@ -31,7 +31,7 @@ export default function GerarRelatorio({array}){
           produto: venda.produto.descricaoProduto,
           nsu: venda.nsu,
           cnpj: venda.cnpj,
-          codigoVenda: venda.codigoVenda,
+          codigoVenda: venda.co2,
           codigoAutorizacao: venda.codigoAutorizacao,
           numeroPV: venda.numeroPV,
           valorBruto: 'R$' + venda.valorBruto.toFixed(2).replaceAll('.', ','),

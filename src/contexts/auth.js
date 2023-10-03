@@ -76,8 +76,9 @@ function AuthProvider({ children }){
           if (userMatch) {
             sessionStorage.setItem('isSignedIn', true);
             setTeste(false)
+            const userData = { NOME: userMatch.NOME, EMAIL: userMatch.EMAIL }
             sessionStorage.setItem('teste', teste)
-            sessionStorage.setItem('userData', JSON.stringify(userMatch))
+            sessionStorage.setItem('userData', JSON.stringify(userData))
             localStorage.setItem('isSignedIn', true)
             setIsSignedIn(true)
             setCnpj(null)
