@@ -14,7 +14,6 @@ import ModalCliente from '../../components/ModalCliente'
 import PieChart from '../../components/00Teste'
 
 import { adquirentesStatic, bandeirasStatic, recebimentosStatic, vendasStatic } from '../../contexts/static'
-import TabelaGenerica from '../../components/Componente_TabelaAdm'
 
 
 

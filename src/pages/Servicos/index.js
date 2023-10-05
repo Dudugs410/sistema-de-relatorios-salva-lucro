@@ -147,11 +147,17 @@ const Servicos = () =>{
                     <div className='vendas-title-container'>
                         <h1 className='vendas-title'>Serviços</h1>
                     </div>
+                    <div className='hr-container'>
+                        <hr/>
+                    </div>
                     <div className='date-picker-ajustes'>
                         <DateRangePicker/>
                         <div className='btn-container-servicos'>
                             <button className='btn btn-primary btn-busca-servicos' onClick={handleBuscar}>Pesquisar</button>
                         </div>
+                    </div>
+                    <div className='hr-container'>
+                        <hr/>
                     </div>
                     <div className='container-ajustes'>
                         <div className='card-resumo-total-ajustes'>

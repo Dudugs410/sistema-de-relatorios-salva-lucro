@@ -1,13 +1,15 @@
 import React from 'react';
 import './modal.css'
+import { FiX } from 'react-icons/fi';
+
 
 const Modal = ({ onClose, children }) => {
   return (
     <div className="modal-overlay">
       <div className="modal-window-content">
-        <div className="modal-content">
+        <div className="modal-content-adq">
           <button className="btn btn-danger modal-close" onClick={onClose}>
-            Close
+            <FiX />
           </button>
           {children}
         </div>

@@ -81,7 +81,6 @@ function AuthProvider({ children }){
             sessionStorage.setItem('userData', JSON.stringify(userData))
             localStorage.setItem('isSignedIn', true)
             setIsSignedIn(true)
-            setCnpj(null)
           } else {
             console.log('User not found')
           }

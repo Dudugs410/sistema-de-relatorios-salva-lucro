@@ -30,14 +30,14 @@ const Header = () =>{
 
     useEffect(()=>{
         setHeaderCnpj(sessionStorage.getItem('cnpj'))
-        if(sessionStorage.getItem('cnpj') === null){
+        if(sessionStorage.getItem('cnpj') === null || ''){
             setHeaderCnpj(cnpj)
         }
         gruposStatic.map((element) => {
             element.CLIENTES.map((cli)=>{
                 if(cli.CNPJ === cnpj){
                     setNomeCliente(cli.RAZAOSOCIAL)
-                    return 0;
+
                 }
             })
         })

@@ -1,5 +1,6 @@
 import { React, useEffect, useContext } from 'react'
 import jwtDecode from 'jwt-decode'
+import { useNavigate } from 'react-router-dom'
 
 import { AuthContext } from '../contexts/auth'
 import Cookies from 'js-cookie'
@@ -9,6 +10,8 @@ import LoadingModal from '../components/LoadingModal'
 
 
 export default function Private({children}){
+
+  const navigate = useNavigate()
 
   const { isSignedIn, setIsSignedIn, setAccessToken, accessToken, loading, refresh, expired, cnpj, setCnpj } = useContext(AuthContext)
 
@@ -28,6 +31,7 @@ export default function Private({children}){
       if (expirationTime < Date.now()) {
         handleTokenExpiration()
         setIsSignedIn(false)
+        navigate('/')
       }
     }
   }, [accessToken]);

@@ -45,9 +45,9 @@ let Vendas = () =>{
 
   // possivelmente utilizar estes parametros para realizar busca por período
 
-  let [cnpjBusca, setCnpjBusca] = useState(cnpj)
-  let [banBusca, setBanBusca] = useState('')
-  let [adqBusca, setAdqBusca] = useState('')
+  const [cnpjBusca, setCnpjBusca] = useState(cnpj)
+  const [banBusca, setBanBusca] = useState('')
+  const [adqBusca, setAdqBusca] = useState('')
 
   const [vendasTotais, setVendasTotais] = useState([])
 

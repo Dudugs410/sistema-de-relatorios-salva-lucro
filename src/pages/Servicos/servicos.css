@@ -6,6 +6,13 @@
     height: 100%;
 }
 
+.hr-container{
+    color: white;
+    text-align: center;
+    width: 100%;
+    border-radius: 20px;
+}
+
 .page-servicos-background{
     display: flex;
     background-color: #59659e;
@@ -47,8 +54,6 @@
     border-radius: 20px;
     border: solid white 1px;
     background-color: #59659e;
-    margin-top: 10px;
-    /* margin-bottom: 10px;*/
 }
 
 .btn-container-servicos{
@@ -113,11 +118,10 @@
 
 .card-resumo-total-ajustes{
     height: 45%;
-    width: 94%;
+    width: 100%;
     padding: 10px 10px 20px 20px;
     border: solid white 1px;
     border-radius: 20px;
-    margin: 2%;
     margin-bottom: 1%;
     background-color: #59659e;
 }
@@ -200,9 +204,9 @@
     width: 100%;
     display: inline-flex;
     flex-direction: row;
-    justify-content: center;
     flex-wrap: wrap;
-    /* margin-bottom: 100px;*/
+    /* margin-bottom: 100px; */
+    justify-content: space-between;
 }
 
 .card-filial{

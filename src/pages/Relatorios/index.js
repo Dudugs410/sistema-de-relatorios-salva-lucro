@@ -35,6 +35,8 @@ const Relatorios = () =>{
 
     const [detalhado, setDetalhado] = useState(false)
 
+    const [buscou, setBuscou] = useState(false)
+
     useEffect(()=>{
       async function inicializar(){
         setCnpj(sessionStorage.getItem('cnpj'))
@@ -59,6 +61,7 @@ const Relatorios = () =>{
         const creditosTemp = await returnCreditos(dateConvertSearch(dataInicial), dateConvertSearch(dataFinal), cnpj)
         setVendasRelatorios(vendasTemp)
         setCreditosRelatorios(creditosTemp)
+        setBuscou(true)
     }
 
     useEffect(()=>{
@@ -140,6 +143,39 @@ const Relatorios = () =>{
 
   },[detalhado])
 
+  function RelatorioRenderer(){
+    return(
+      <div className='result-container-relatorios'>
+        <div className='table-container-relatorios'>
+            <h1 className='h1-relatorios'>Vendas</h1>
+            { vendasRelatorios.length > 0 ? <DetalhesCredito array={ vendasRelatorios }/> : <></> }
+            <div className='hr-container'>
+              <hr/>
+            </div>
+            { vendasRelatorios.length > 0 ? <GerarRelatorio array={ vendasRelatorios }/> : <></> }
+        </div>
+        <div className='hr-container'>
+            <hr/>
+        </div>
+        <div className='table-container-relatorios'>
+            <h1 className='h1-relatorios'>Créditos</h1>
+            { creditosRelatorios.length > 0 ? <DetalhesCredito array={ creditosRelatorios }/> : <></> }
+            <div className='hr-container'>
+              <hr/>
+            </div>
+            { creditosRelatorios.length > 0 ? <GerarRelatorio array={ creditosRelatorios } /> : <></> }
+            <div className='hr-container'>
+              <hr/>
+            </div>
+        </div>
+      </div>
+    )
+  }
+
+  function handleVoltar(){
+    setBuscou(false)
+  }
+
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
     return(
@@ -147,6 +183,9 @@ const Relatorios = () =>{
           <div className='page-relatorios-background'>
             <div className='relatorios-page-container'>
                 <h1 className='h1-relatorios'>Relatórios</h1>
+                <div className='hr-container'>
+                        <hr/>
+                    </div>
                 <div className='dados-busca-relatorios-container'>
                   <div className='dropdown-container-relatorios'>
                     <DateRangePicker />
@@ -154,23 +193,16 @@ const Relatorios = () =>{
                   </div>
                   <RadioSelect />
                 </div>
+                <div className='hr-container'>
+                  <hr/>
+                </div>
                 <div className='btn-relatorios-container'>
-                  <button onClick={handleSubmit} className='btn btn-primary'>Pesquisar</button>
+                  { buscou ? <button onClick={handleVoltar} className='btn btn-secondary btn-submit'>Voltar</button> : <button onClick={handleSubmit} className='btn btn-primary'>Pesquisar</button>}
                 </div>
-                <hr/>
-                <div className='result-container-relatorios'>
-                    <div className='table-container-relatorios'>
-                        <h1 className='h1-relatorios'>Vendas</h1>
-                        { vendasRelatorios.length > 0 ? <DetalhesCredito array={ vendasRelatorios }/> : <></> }
-                        { vendasRelatorios.length > 0 ? <GerarRelatorio array={ vendasRelatorios }/> : <></> }
-                    </div>
-                    <hr/>
-                    <div className='table-container-relatorios'>
-                        <h1 className='h1-relatorios'>Créditos</h1>
-                        { creditosRelatorios.length > 0 ? <DetalhesCredito array={ creditosRelatorios }/> : <></> }
-                        { creditosRelatorios.length > 0 ? <GerarRelatorio array={ creditosRelatorios } /> : <></> }
-                    </div>
+                <div className='hr-container'>
+                  <hr/>
                 </div>
+                { buscou && <RelatorioRenderer/> }
             </div>
           </div>  
         </div>
