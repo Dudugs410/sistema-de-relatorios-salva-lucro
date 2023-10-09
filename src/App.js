@@ -12,7 +12,7 @@ import { ToastContainer } from 'react-toastify'
 
 function App() {
   return (
-    <BrowserRouter basename='/salvalucro2'>
+    <BrowserRouter basename='/salvalucro3'>
       <AuthProvider>
       <ToastContainer
             position="top-center"

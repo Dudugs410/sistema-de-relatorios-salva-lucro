@@ -53,7 +53,7 @@ const Header = () =>{
 
     return(
         <>
-            <div className="header-bg-image">
+        <div className="header-bg-image">
                 <div className='header-bg'>
                     <div className='navbar-title'>
                         <img className='img-header' src={salvaLucroLogoBranco} alt='logo salva lucro'/>

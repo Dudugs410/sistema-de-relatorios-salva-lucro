@@ -123,6 +123,11 @@
     flex-direction: row;
 
 }
+
+.btn-page-relatorios{
+    margin-top: 0px;
+}
+
 @media screen and (max-width: 869px){
     .dropdown-container-relatorios{
         display: contents;

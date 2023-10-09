@@ -144,32 +144,37 @@ const Relatorios = () =>{
   },[detalhado])
 
   function RelatorioRenderer(){
-    return(
-      <div className='result-container-relatorios'>
-        <div className='table-container-relatorios'>
-            <h1 className='h1-relatorios'>Vendas</h1>
-            { vendasRelatorios.length > 0 ? <DetalhesCredito array={ vendasRelatorios }/> : <></> }
-            <div className='hr-container'>
+    if(creditosRelatorios === undefined || vendasRelatorios === undefined){
+      return 0;
+    }
+    else{
+      return(
+        <div className='result-container-relatorios'>
+          <div className='table-container-relatorios'>
+              <h1 className='h1-relatorios'>Vendas</h1>
+              { vendasRelatorios.length > 0 ? <DetalhesCredito array={ vendasRelatorios }/> : <></> }
+              <div className='hr-container'>
+                <hr/>
+              </div>
+              { vendasRelatorios.length > 0 ? <GerarRelatorio array={ vendasRelatorios }/> : <></> }
+          </div>
+          <div className='hr-container'>
               <hr/>
-            </div>
-            { vendasRelatorios.length > 0 ? <GerarRelatorio array={ vendasRelatorios }/> : <></> }
+          </div>
+          <div className='table-container-relatorios'>
+              <h1 className='h1-relatorios'>Créditos</h1>
+              { creditosRelatorios.length > 0 ? <DetalhesCredito array={ creditosRelatorios }/> : <></> }
+              <div className='hr-container'>
+                <hr/>
+              </div>
+              { creditosRelatorios.length > 0 ? <GerarRelatorio array={ creditosRelatorios } /> : <></> }
+              <div className='hr-container'>
+                <hr/>
+              </div>
+          </div>
         </div>
-        <div className='hr-container'>
-            <hr/>
-        </div>
-        <div className='table-container-relatorios'>
-            <h1 className='h1-relatorios'>Créditos</h1>
-            { creditosRelatorios.length > 0 ? <DetalhesCredito array={ creditosRelatorios }/> : <></> }
-            <div className='hr-container'>
-              <hr/>
-            </div>
-            { creditosRelatorios.length > 0 ? <GerarRelatorio array={ creditosRelatorios } /> : <></> }
-            <div className='hr-container'>
-              <hr/>
-            </div>
-        </div>
-      </div>
-    )
+      )
+    }
   }
 
   function handleVoltar(){
@@ -197,7 +202,7 @@ const Relatorios = () =>{
                   <hr/>
                 </div>
                 <div className='btn-relatorios-container'>
-                  { buscou ? <button onClick={handleVoltar} className='btn btn-secondary btn-submit'>Voltar</button> : <button onClick={handleSubmit} className='btn btn-primary'>Pesquisar</button>}
+                  { buscou ? <button onClick={handleVoltar} className='btn btn-secondary btn-submit btn-page-relatorios'>Voltar</button> : <button onClick={handleSubmit} className='btn btn-primary'>Pesquisar</button>}
                 </div>
                 <div className='hr-container'>
                   <hr/>
