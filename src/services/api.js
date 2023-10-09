@@ -5,8 +5,8 @@ axios.defaults.headers.common['Content-Type'] = 'application/json';
 axios.defaults.headers.common['Authorization'] = `Bearer ${Cookies.get('token')}`
 
 const api = axios.create({
-    /*baseURL: 'https://app.salvalucro.com.br/api/v1'*/
-    baseURL: 'http://app2.salvalucro.com.br/api/v1'
+    baseURL: 'https://app.salvalucro.com.br/api/v1'
+    /*baseURL: 'http://app2.salvalucro.com.br/api/v1'*/
 })
 
 api.interceptors.request.use(

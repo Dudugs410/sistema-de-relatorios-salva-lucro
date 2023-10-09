@@ -138,10 +138,6 @@ polyline, line, path{
     transition: all, 0.4s;
 }
 
-.nav-link{
-
-}
-
 @media screen and (max-width: 869px){
 
     .header-bg-image{
@@ -149,7 +145,6 @@ polyline, line, path{
         display: flex;
         flex-direction: column;
         height: auto;
-        
     }
 
     .header-bg{
@@ -176,7 +171,6 @@ polyline, line, path{
 
     .navbar-title>img{
         padding-bottom: 15px;
-        
     }
     
     .nav-text{
