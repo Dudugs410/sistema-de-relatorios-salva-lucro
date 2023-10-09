@@ -11,16 +11,26 @@ const SeletorCliente = () => {
     const { gruSelecionado, setGruSelecionado, listaClientes, setListaClientes } = useContext(AuthContext)
     const { grupos, cnpj, setCnpj } = useContext(AuthContext)
 
+    const [cliSelecionado, setCliSelecionado] = useState('')
+
       useEffect(()=>{
         const grupoObj = grupos.find(item => item.CODIGOGRUPO === Number(gruSelecionado));
         let cli = grupoObj ? grupoObj.CLIENTES : []
         setListaClientes(cli)
       },[gruSelecionado])
 
-      useEffect(()=>{
+      /*useEffect(()=>{
         sessionStorage.setItem('cnpj', cnpj)
         Cookies.set('cnpj', cnpj)
-      },[cnpj])
+      },[cnpj])*/
+
+      function handleCnpj(e){
+        e.preventDefault()
+        console.log(cliSelecionado)
+        console.log('CNPJ antes: ', cnpj)
+        setCnpj(cliSelecionado)
+        Cookies.set('cnpj', cliSelecionado)
+      }
 
     return(
         <>
@@ -55,7 +65,7 @@ const SeletorCliente = () => {
                         <div className='select-card-seletor'>
                             <span>Cliente</span>
                             { listaClientes.length > 0 ?
-                            <select id='cliente' value={cnpj} onChange={(e) => {setCnpj(e.target.value)}}>
+                            <select id='cliente' value={cliSelecionado} onChange={(e) => {setCliSelecionado(e.target.value)}}>
                                 <option defaultValue=''>selecione</option>
                                 { listaClientes.map((CLI)=>(
                                         <option key={CLI.CODIGOCLIENTE} value={CLI.CNPJ}>{CLI.NOMECLIENTE}</option>
@@ -65,6 +75,10 @@ const SeletorCliente = () => {
                                 <option defaultValue=''>Selecione o Cliente / Filial</option>
                             </select>}
                         </div>
+                    </div>
+
+                    <div className="select-btn-seletor">
+                        <button className="btn btn-primary btn-seletor" onClick={handleCnpj}>Selecionar</button>
                     </div>
                 </form>
             </div>

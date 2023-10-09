@@ -1,10 +1,10 @@
 
 
 import './servicos.css'
-import GerarRelatorio from '../../components/Componente_GerarRelatorio'
 import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../../contexts/auth'
 import DateRangePicker from '../../components/Componente_DateRangePicker'
+import Cookies from 'js-cookie'
 
 const Servicos = () =>{
 
@@ -27,17 +27,15 @@ const Servicos = () =>{
     const [buscou, setBuscou] = useState([])
 
     async function buscarAjustes(){
-        const response = await loadAjustes(sessionStorage.getItem('cnpj'), dataInicial, dataFinal)
+        const response = await loadAjustes(Cookies.get('cnpj'), dataInicial, dataFinal)
         setAjustesTemp(response)
     }
     
     useEffect(()=>{
         setDataInicial(new Date())
         setDataFinal(new Date())
-
         ajustesTemp.length = 0
         totalAjustes.length = 0
-
     },[])
 
     useEffect(()=>{
@@ -134,11 +132,18 @@ const Servicos = () =>{
         )
 }
 
-
     function handleBuscar(e){
         e.preventDefault()
         buscarAjustes()
     }
+
+    function handleBuscar2(){
+        buscarAjustes()
+    }
+
+    useEffect(()=>{
+        handleBuscar2()
+    },[cnpj])
 
     return(
         <div className='appPage app-page-servicos'>

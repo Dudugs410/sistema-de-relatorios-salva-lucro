@@ -16,6 +16,13 @@ export default function Private({children}){
   const { isSignedIn, setIsSignedIn, setAccessToken, accessToken, loading, refresh, expired, cnpj, setCnpj } = useContext(AuthContext)
 
   useEffect(()=>{
+    if(sessionStorage.getItem('isSignedIn') !== 'true'){
+      setIsSignedIn(false)
+      navigate('/')
+    }
+  })
+
+  useEffect(()=>{
     setAccessToken(Cookies.get('token'))
   },[accessToken])
 
@@ -42,12 +49,14 @@ export default function Private({children}){
     }
   },[])
   
-  return (
-    <>
-      <Layout>{ children }</Layout> 
-      {loading && (
-            <LoadingModal />
-        )}
-    </>
-  )
+  if(sessionStorage.getItem('isSignedIn') === 'true'){
+    return (
+      <>
+        <Layout>{ children }</Layout> 
+        {loading && (
+              <LoadingModal />
+          )}
+      </>
+    )
+  }
 }

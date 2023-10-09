@@ -8,7 +8,6 @@ import salvaLucroLogo from '../../assets/salva-lucro-logo.jpg'
 import './login.css'
 import { useContext } from "react"
 import LoadingModal from "../../components/LoadingModal"
-import { all } from "axios"
 
 ///////////////////////////////////////////////////////////////
 
@@ -62,7 +61,7 @@ const Login = () => {
                         { !loading ? <button type='submit' className='btn btn-primary'>Login</button> : <button type='submit' className='btn btn-primary' disabled>Carregando...</button>}
                         <Link className='pw'>esqueci minha senha</Link>
                     </div>
-                    <button className='btn btn-secondary' onClick={submitFake}>Login Teste</button>
+                    
                 </form>
             </div>
             { loading ? <LoadingModal/> : <></>}

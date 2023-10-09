@@ -142,6 +142,19 @@
     
 }
 
+.select-btn-seletor{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: flex-end;
+    /* min-width: 141px; */
+    justify-content: center;
+}
+
+.btn-seletor{
+    height: 35.19px;
+}
+
 @media screen and (max-width: 869px){
 
     .search-bar{
@@ -273,4 +286,6 @@
         color: yellowgreen;
         background-color: #444e79;
     }
+
+
 }
