@@ -7,8 +7,10 @@ import './login.css'
 import { useContext } from "react"
 import LoadingModal from "../../components/LoadingModal"
 
+///////////////////////////////////////////////////////////////
+
 const Login = () => {
-    const {submitLogin, loading, isSignedIn, setAccessToken, submitFake} = useContext(AuthContext)
+    const {submitLogin, loading, isSignedIn, accessToken, setAccessToken, submitFake, } = useContext(AuthContext)
     const navigate = useNavigate()
 
     const [login, setLogin] = useState('')
@@ -16,6 +18,10 @@ const Login = () => {
 
     useEffect(()=>{
         sessionStorage.clear()
+        localStorage.clear()
+        Cookies.remove('cnpj')
+        Cookies.remove('token')
+        Cookies.remove('refreshToken')
     },[])
 
     useEffect(()=>{
@@ -35,6 +41,11 @@ const Login = () => {
         }
     }
 
+    useEffect(()=>{
+        console.log('accessToken: ', accessToken)
+
+    },[accessToken])
+
     return(
         <div className='appPage'>
             <div className='body-login'> 
@@ -48,7 +59,7 @@ const Login = () => {
                         { !loading ? <button type='submit' className='btn btn-primary'>Login</button> : <button type='submit' className='btn btn-primary' disabled>Carregando...</button>}
                         <Link className='pw'>esqueci minha senha</Link>
                     </div>
-                    <button className='btn btn-secondary' onClick={submitFake}>Login Teste</button>
+                    
                 </form>
             </div>
 

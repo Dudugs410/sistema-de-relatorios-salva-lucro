@@ -1,5 +1,6 @@
 import { React, useEffect, useContext } from 'react'
 import jwtDecode from 'jwt-decode'
+import { useNavigate } from 'react-router-dom'
 
 import { AuthContext } from '../contexts/auth'
 import Cookies from 'js-cookie'
@@ -10,7 +11,16 @@ import LoadingModal from '../components/LoadingModal'
 
 export default function Private({children}){
 
-  const { isSignedIn, setIsSignedIn, setAccessToken, accessToken, loading, refresh, expired } = useContext(AuthContext)
+  const navigate = useNavigate()
+
+  const { isSignedIn, setIsSignedIn, setAccessToken, accessToken, loading, refresh, expired, cnpj, setCnpj } = useContext(AuthContext)
+
+  useEffect(()=>{
+    if(sessionStorage.getItem('isSignedIn') !== 'true'){
+      setIsSignedIn(false)
+      navigate('/')
+    }
+  })
 
   useEffect(()=>{
     setAccessToken(Cookies.get('token'))
@@ -28,16 +38,25 @@ export default function Private({children}){
       if (expirationTime < Date.now()) {
         handleTokenExpiration()
         setIsSignedIn(false)
+        navigate('/')
       }
     }
   }, [accessToken]);
+
+  useEffect(()=>{
+    if(Cookies.get('cnpj') !== '' && null){
+      setCnpj(Cookies.get('cnpj'))
+    }
+  },[])
   
-  return (
-    <>
-      <Layout>{ children }</Layout> 
-      {loading && (
-            <LoadingModal />
-        )}
-    </>
-  )
+  if(sessionStorage.getItem('isSignedIn') === 'true'){
+    return (
+      <>
+        <Layout>{ children }</Layout> 
+        {loading && (
+              <LoadingModal />
+          )}
+      </>
+    )
+  }
 }

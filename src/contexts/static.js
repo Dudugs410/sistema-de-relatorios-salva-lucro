@@ -21647,6 +21647,59 @@ export const bancosStatic = [
     }
 ]
 
+export const ajustesStatic = [
+    {
+        "cnpj": "24.405.204/0001-70",
+        "razao_social": "MARISUL",
+        "codigo_estabelecimento": "024405204000170",
+        "data": "2023-08-30",
+        "codigo_adquirente": "9",
+        "nome_adquirente": "Sodexo",
+        "descricao": "Doc",
+        "valor": -8.89
+    },
+    {
+        "cnpj": "24.405.204/0001-70",
+        "razao_social": "MARISUL",
+        "codigo_estabelecimento": "024405204000170",
+        "data": "2023-08-30",
+        "codigo_adquirente": "9",
+        "nome_adquirente": "Sodexo",
+        "descricao": "Doc",
+        "valor": -8.89
+    },
+    {
+        "cnpj": "24.405.204/0001-70",
+        "razao_social": "MARISUL",
+        "codigo_estabelecimento": "024405204000170",
+        "data": "2023-08-30",
+        "codigo_adquirente": "9",
+        "nome_adquirente": "Sodexo",
+        "descricao": "Doc",
+        "valor": -8.89
+    },
+    {
+        "cnpj": "24.405.204/0001-70",
+        "razao_social": "MARISUL",
+        "codigo_estabelecimento": "000000006847820",
+        "data": "2023-08-30",
+        "codigo_adquirente": "12",
+        "nome_adquirente": "Ticket",
+        "descricao": "Valor Tarifa Bancária",
+        "valor": -8.37
+    },
+    {
+        "cnpj": "24.405.204/0001-70",
+        "razao_social": "MARISUL",
+        "codigo_estabelecimento": "000000006847820",
+        "data": "2023-08-30",
+        "codigo_adquirente": "12",
+        "nome_adquirente": "Ticket",
+        "descricao": "Valor Tarifa Transação",
+        "valor": -2.08
+    }
+]
+
 export const accessStatic = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJTYWx2YWx1Y3JvU2VydmljZUFjZXNzVG9rZW4iLCJqdGkiOiJmZGI4NDIwZC0zYjQ0LTQzOTAtYTVlYi1lYWMwYWNjYTJjMmUiLCJpYXQiOiIxMS8wOC8yMDIzIDE3OjM5OjQyIiwiaWQiOiIxNjc1NjEiLCJsb2dpbiI6IkVEVUFSRE8iLCJleHAiOjE2OTE3ODI3ODIsImlzcyI6IlNhbHZhbHVyb0F1dGhlbnRpY2F0aW9uU2VydmVyIiwiYXVkIjoiU2FsdmFsdWNyb1NlcnZpY2VDbGllbnQifQ.QqvNIICzw2Wl_xvZkp5myD3nMCkmqkGanxPfjngRRTE'
 
 export const refreshStatic = 'cxDQR8bezVqZ1kQsjcGCGTuiI0yRRofEXyGqujFTA+E='

@@ -142,6 +142,19 @@
     
 }
 
+.select-btn-seletor{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: flex-end;
+    /* min-width: 141px; */
+    justify-content: center;
+}
+
+.btn-seletor{
+    height: 35.19px;
+}
+
 @media screen and (max-width: 869px){
 
     .search-bar{
@@ -156,11 +169,11 @@
     
     .date-container-seletor{
         width: 100%;
-        display: inline-flex;
-        justify-content: space-evenly;
+        display: flex;
         background-color: #181c2e;
         padding: 20px;
         padding-left: 40px;
+        align-items: flex-end;
         
     }
 
@@ -203,7 +216,7 @@
     .date-column-seletor>.select-card-seletor>select{
         display: flex;
         height: 2.2em;
-        width: 200px;
+        max-width: 200px;
         border-radius: 10px;
         text-align: center;
         font-style: italic;
@@ -273,4 +286,6 @@
         color: yellowgreen;
         background-color: #444e79;
     }
+
+
 }

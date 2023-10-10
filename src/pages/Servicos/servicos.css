@@ -1,34 +1,51 @@
 .app-page-servicos{
-    display: flex;
-    height:auto;
+    display: contents;
+    flex-direction: column;
+    align-items: center;
     background-color: #59659e;
+    height: 100%;
 }
 
-.servicos-page{
-    height:100%;
-    width: 80%;
-    margin-left: 10%;
+.hr-container{
+    color: white;
+    text-align: center;
+    width: 100%;
+    border-radius: 20px;
+}
+
+.page-servicos-background{
     display: flex;
-    flex-direction: row;
+    background-color: #59659e;
+    min-height: 100vh;
+    /* width: 100%; */
+    align-content: center;
+    flex-direction: column;
     flex-wrap: wrap;
-    align-content: flex-start;
-    align-items: center;
-    justify-content: center;
-    padding: 0 1%;
-    padding-bottom: 54px; 
+}
+
+.page-content-servicos{
+    /*height: 100vh; */
+    width: 80%;
+    padding: 1%;
+    /* margin-left: 10%; */
     background-color: #181c2e;
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    border-radius: 20px;
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 54px;
 }
 
 .container-ajustes{
-    width: 100%;
+    height: 100%;
     display: flex;
-    flex-direction: column;
+    width: 100%;
     flex-wrap: wrap;
     align-content: center;
     align-items: center;
-    background-color: #59659e;
-    border-radius: 20px;
-    border: solid white 1px;
+    flex-direction: column;
 
 }
 
@@ -37,8 +54,6 @@
     border-radius: 20px;
     border: solid white 1px;
     background-color: #59659e;
-    margin-top: 10px;
-    margin-bottom: 10px;
 }
 
 .btn-container-servicos{
@@ -59,12 +74,10 @@
     display: inline-flex;
     height: 2em;
     width: 100%;
-    margin-right: 366px;
     flex-direction: row;
+    margin-top: 10px;
     flex-wrap: wrap;
     justify-content: center;
-    margin-top: 10px;
-    align-items: stretch;
 }
 
 .header-tabs{
@@ -104,20 +117,13 @@
 }
 
 .card-resumo-total-ajustes{
-    display: flex;
     height: 45%;
-    width: 94%;
-    padding: 10px 10px 0 20px;
-    border-bottom: solid white 1px;
+    width: 100%;
+    padding: 10px 10px 20px 20px;
+    border: solid white 1px;
     border-radius: 20px;
-    margin: 2%;
-    background-color: #7985bb;
-    flex-wrap: wrap;
-    flex-direction: column;
-    align-items: stretch;
-    -webkit-box-shadow: 0px 10px 10px 0px rgba(0,0,0,0.75);
-    -moz-box-shadow: 0px 10px 10px 0px rgba(0,0,0,0.75);
-    box-shadow: 0px 10px 10px 0px rgba(0,0,0,0.75);
+    margin-bottom: 1%;
+    background-color: #59659e;
 }
 
 .card-resumo-content-container{
@@ -137,12 +143,11 @@
     width: 100%;
     display: inline-flex;
 
-
 }
 
 .card-ajuste{
     display: inline-flex;
-    height: 100%;
+    /* height: 100%; */
     width: 50%;
     margin-right: 10px;
     border-bottom: solid white 1px;
@@ -193,12 +198,15 @@
 }
 
 .filial-container{
+    position: relative;
+    top: 0;
     height: 100%;
     width: 100%;
     display: inline-flex;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: center;
+    /* margin-bottom: 100px; */
+    justify-content: space-between;
 }
 
 .card-filial{
@@ -260,12 +268,12 @@
 @media screen and (max-width: 1074px){
     .card-resumo-total-ajustes {
         height: 45%;
-        width: 80%;
+        width: 100%;
         padding: 10px 10px 0 20px;
         border: solid white 1px;
         border-radius: 20px;
-        margin: 2%;
-        background-color: #7985bb;
+        /* margin: 2%; */
+        background-color: #59659e;
     }
 
     .card-ajuste-container {
@@ -402,7 +410,7 @@
         border: solid white 1px;
         border-radius: 20px;
         margin: 2%;
-        background-color: #7985bb;
+        background-color: #59659e;
     }
 
 }

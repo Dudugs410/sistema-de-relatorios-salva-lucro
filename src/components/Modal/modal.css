@@ -10,13 +10,34 @@
     flex-wrap: wrap;
     flex-direction: row;
     justify-content: center;
+    align-content: center;
 
 }
 
 .modal-window-content{
-    height: 100%;
-    width: 100%;
-    border: solid green 2px;
+    /* height: 100%; */
+    width: 80%;
+    border-radius: 20px;
+    /* border: solid green 2px; */
+    background-color: #181c2e;
+    padding: 16px;
     z-index: 9;
     
+}
+
+.modal-content-adq{
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    border: none;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: flex-end;
+}
+
+.modal-close{
+    margin-bottom: 10px;
+
 }

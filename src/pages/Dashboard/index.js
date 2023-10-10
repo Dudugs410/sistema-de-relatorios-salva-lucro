@@ -1,7 +1,7 @@
 /* eslint-disable default-case */
 
 import './dashboard.css'
-
+import api from '../../services/api'
 //////
 
 //////
@@ -14,7 +14,6 @@ import ModalCliente from '../../components/ModalCliente'
 import PieChart from '../../components/00Teste'
 
 import { adquirentesStatic, bandeirasStatic, recebimentosStatic, vendasStatic } from '../../contexts/static'
-import TabelaGenerica from '../../components/Componente_TabelaAdm'
 
 
 
@@ -30,11 +29,13 @@ const Dashboard = () => {
         dateConvertSearch, 
         modalCliente,
         teste,
+        setTeste,
         converteData,
         setCnpj,
         setBandeiras,
         setVendas,
         setAdquirentes,
+        refresh,
 
     } = useContext(AuthContext)
 
@@ -135,6 +136,9 @@ const Dashboard = () => {
 ///////////////////////////////////////////////////////////////////////////////
 
     useEffect(()=>{
+        if(api.defaults.baseURL === 'http://app2.salvalucro.com.br/api/v1'){
+            setTeste(true)
+        }
         async function inicializar(){
             if((cnpj !== null && cnpj !== '') && teste !== true){
                 console.log('inicializando dados de vendas e créditos...')

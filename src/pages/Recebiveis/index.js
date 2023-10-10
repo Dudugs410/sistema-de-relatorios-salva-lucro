@@ -329,11 +329,11 @@ const Recebiveis = () =>{
               <hr className='hr-recebimentos'/>
               { detalhes ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
               <div className='component-container-recebimentos'>
-                {arrayAdm && detalhes ? <TabelaGenericaAdm Array={arrayAdm}/> : <></>}
                 { detalhes ? <DetalhesCredito array={creditosTemp}/> :  <MyCalendar/> }
-                <ComponenteBuscarClienteData detalhes={detalhes} adquirentes={adquirentes} bandeiras={bandeiras} onAdmUpdate={handleAdm} onBanUpdate={handleBan} onBuscaUpdate={handleUpdate}/>
-                { detalhes ? <button className="btn btn-primary btn-banco-recebimentos" onClick={handleShowBanco}>Valores por Banco</button> : <></> }
+                {arrayAdm && detalhes ? <TabelaGenericaAdm Array={arrayAdm}/> : <></>}
                 { detalhes ? <hr className='hr-recebimentos' /> : <></> }
+                { detalhes ? <button className="btn btn-primary btn-banco-recebimentos" onClick={handleShowBanco}>Valores por Banco</button> : <></> }
+                <ComponenteBuscarClienteData detalhes={detalhes} adquirentes={adquirentes} bandeiras={bandeiras} onAdmUpdate={handleAdm} onBanUpdate={handleBan} onBuscaUpdate={handleUpdate}/>
               </div>
             </div>
           </div>

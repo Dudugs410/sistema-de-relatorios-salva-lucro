@@ -6,7 +6,7 @@ import Cookies from 'js-cookie'
 import api, { config } from '../services/api'
 
 import md5 from 'md5'
-import { adquirentesStatic, bandeirasStatic, gruposStatic, recebimentosStatic, totaisStatic, vendasStatic, bancosStatic } from './static'
+import { adquirentesStatic, bandeirasStatic, gruposStatic, recebimentosStatic, totaisStatic, vendasStatic, bancosStatic, ajustesStatic } from './static'
 
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'
@@ -76,11 +76,11 @@ function AuthProvider({ children }){
           if (userMatch) {
             sessionStorage.setItem('isSignedIn', true);
             setTeste(false)
+            const userData = { NOME: userMatch.NOME, EMAIL: userMatch.EMAIL }
             sessionStorage.setItem('teste', teste)
-            sessionStorage.setItem('userData', JSON.stringify(userMatch))
+            sessionStorage.setItem('userData', JSON.stringify(userData))
             localStorage.setItem('isSignedIn', true)
             setIsSignedIn(true)
-            setCnpj(null)
           } else {
             console.log('User not found')
           }
@@ -526,7 +526,7 @@ async function retornaRecebimentos(cnpj, datainicial, datafinal){
       }
     } else{
       setLoading(false)
-      return 0;
+      return ajustesStatic;
     }
   }
 
