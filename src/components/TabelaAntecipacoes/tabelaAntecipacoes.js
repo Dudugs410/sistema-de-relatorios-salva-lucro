@@ -8,10 +8,10 @@ function Tabela({ dados }) {
       <table className="table table-bordered table-dark">
         <thead>
           <tr className="table-secondary">
-            <th scope="col">#</th>
-            <th scope="col">Coluna 1</th>
-            <th scope="col">Coluna 2</th>
-            <th scope="col">Coluna 3</th>
+            <th scope="col"></th>
+            <th scope="col">Bandeira</th>
+            <th scope="col">tx%</th>
+            <th scope="col">Data</th>
           </tr>
         </thead>
         <tbody>

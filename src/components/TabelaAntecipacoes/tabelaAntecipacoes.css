@@ -1,4 +1,8 @@
 .table-responsive{
     margin: 24px;
+    height: 100%;
    
+}
+.table-secondary{
+    height: 100%;
 }

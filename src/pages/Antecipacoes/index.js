@@ -15,36 +15,36 @@ export default function TabelaFiltrada() {
   const [erroBusca, setErroBusca] = useState(false);
 
   const dados = [
-              { id: 1, col1: "One", col2: "A", col3: "X", data: new Date("2023-10-01") },
-              { id: 2, col1: "Two", col2: "B", col3: "Y", data: new Date("2023-10-02") },
-              { id: 3, col1: "Three", col2: "C", col3: "Z", data: new Date("2023-10-03") },
-              { id: 4, col1: "Four", col2: "A", col3: "X", data: new Date("2023-10-01") },
-              { id: 5, col1: "Five", col2: "B", col3: "Y", data: new Date("2023-10-01") },
-              { id: 6, col1: "Six", col2: "C", col3: "Z", data: new Date("2023-10-01") },
-              { id: 7, col1: "Seven", col2: "A", col3: "X", data: new Date("2023-10-01") },
-              { id: 8, col1: "Eight", col2: "B", col3: "Y", data: new Date("2023-10-01") },
-              { id: 9, col1: "Nine", col2: "C", col3: "Z", data: new Date("2023-10-01") },
-              { id: 10, col1: "Ten", col2: "A", col3: "X", data: new Date("2023-10-01") },
-              { id: 11, col1: "Eleven", col2: "B", col3: "Y", data: new Date("2023-10-01") },
-              { id: 12, col1: "Twelve", col2: "C", col3: "Z", data: new Date("2023-10-01") },
-              { id: 13, col1: "Thirteen", col2: "A", col3: "X", data: new Date("2023-10-02") },
-              { id: 14, col1: "Fourteen", col2: "B", col3: "Y", data: new Date("2023-10-02") },
-              { id: 15, col1: "Fifteen", col2: "C", col3: "Z", data: new Date("2023-10-02") },
-              { id: 16, col1: "Sixteen", col2: "A", col3: "X", data: new Date("2023-10-02") },
-              { id: 17, col1: "Seventeen", col2: "B", col3: "Y", data: new Date("2023-10-02") },
-              { id: 18, col1: "Eighteen", col2: "C", col3: "Z", data: new Date("2023-10-02") },
-              { id: 19, col1: "Nineteen", col2: "A", col3: "X", data: new Date("2023-10-02") },
-              { id: 20, col1: "Twenty", col2: "B", col3: "Y", data: new Date("2023-10-02") },
-              { id: 21, col1: "Twenty-One", col2: "C", col3: "Z", data: new Date("2023-10-02") },
-              { id: 22, col1: "Twenty-Two", col2: "A", col3: "X", data: new Date("2023-10-03") },
-              { id: 23, col1: "Twenty-Three", col2: "B", col3: "Y", data: new Date("2023-10-03") },
-              { id: 24, col1: "Twenty-Four", col2: "C", col3: "Z", data: new Date("2023-10-03") },
-              { id: 25, col1: "Twenty-Five", col2: "A", col3: "X", data: new Date("2023-10-03") },
-              { id: 26, col1: "Twenty-Six", col2: "B", col3: "Y", data: new Date("2023-10-03") },
-              { id: 27, col1: "Twenty-Seven", col2: "C", col3: "Z", data: new Date("2023-10-03") },
-              { id: 28, col1: "Twenty-Eight", col2: "A", col3: "X", data: new Date("2023-10-03") },
-              { id: 29, col1: "Twenty-Nine", col2: "B", col3: "Y", data: new Date("2023-10-03") },
-              { id: 30, col1: "Thirty", col2: "C", col3: "Z", data: new Date("2023-10-03") },
+              { col1:"One", col2: "A", col3: "X", data: new Date("2023-10-01") },
+              { col1: "Two", col2: "B", col3: "Y", data: new Date("2023-10-02") },
+              { col1: "Three", col2: "C", col3: "Z", data: new Date("2023-10-03") },
+              { col1: "Four", col2: "A", col3: "X", data: new Date("2023-10-01") },
+              { col1: "Five", col2: "B", col3: "Y", data: new Date("2023-10-01") },
+              { col1: "Six", col2: "C", col3: "Z", data: new Date("2023-10-01") },
+              { col1: "Seven", col2: "A", col3: "X", data: new Date("2023-10-01") },
+              { col1: "Eight", col2: "B", col3: "Y", data: new Date("2023-10-01") },
+              { col1: "Nine", col2: "C", col3: "Z", data: new Date("2023-10-01") },
+              { col1: "Ten", col2: "A", col3: "X", data: new Date("2023-10-01") },
+              { col1: "Eleven", col2: "B", col3: "Y", data: new Date("2023-10-01") },
+              { col1: "Twelve", col2: "C", col3: "Z", data: new Date("2023-10-01") },
+              { col1: "Thirteen", col2: "A", col3: "X", data: new Date("2023-10-02") },
+              { col1: "Fourteen", col2: "B", col3: "Y", data: new Date("2023-10-02") },
+              { col1: "Fifteen", col2: "C", col3: "Z", data: new Date("2023-10-02") },
+              { col1: "Sixteen", col2: "A", col3: "X", data: new Date("2023-10-02") },
+              { col1: "Seventeen", col2: "B", col3: "Y", data: new Date("2023-10-02") },
+              { col1: "Eighteen", col2: "C", col3: "Z", data: new Date("2023-10-02") },
+              { col1: "Nineteen", col2: "A", col3: "X", data: new Date("2023-10-02") },
+              { col1: "Twenty", col2: "B", col3: "Y", data: new Date("2023-10-02") },
+              { col1: "Twenty-One", col2: "C", col3: "Z", data: new Date("2023-10-02") },
+              { col1: "Twenty-Two", col2: "A", col3: "X", data: new Date("2023-10-03") },
+              { col1: "Twenty-Three", col2: "B", col3: "Y", data: new Date("2023-10-03") },
+              { col1: "Twenty-Four", col2: "C", col3: "Z", data: new Date("2023-10-03") },
+              { col1: "Twenty-Five", col2: "A", col3: "X", data: new Date("2023-10-03") },
+              { col1: "Twenty-Six", col2: "B", col3: "Y", data: new Date("2023-10-03") },
+              { col1: "Twenty-Seven", col2: "C", col3: "Z", data: new Date("2023-10-03") },
+              { col1: "Twenty-Eight", col2: "A", col3: "X", data: new Date("2023-10-03") },
+              { col1: "Twenty-Nine", col2: "B", col3: "Y", data: new Date("2023-10-03") },
+              { col1: "Thirty", col2: "C", col3: "Z", data: new Date("2023-10-03") },
             ];
 
   useEffect(() => {
@@ -92,11 +92,13 @@ export default function TabelaFiltrada() {
           <h1 className="title-anteipacoes"> Antecipações </h1>
         </div>
 
+      <div className="card-main">
         <Calendar
           onChange={handleDateChange}
           value={dataBusca}
           onClickDay={handleCalendarClick}
         />
+      </div>
 
         <div className="filtro">
           <Filtro
