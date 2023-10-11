@@ -30,7 +30,7 @@ export default function Private({children}){
     refresh()
   };
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (accessToken) {
       const decodedToken = jwtDecode(accessToken)
       const expirationTime = decodedToken.exp * 1000;
@@ -41,7 +41,7 @@ export default function Private({children}){
         navigate('/')
       }
     }
-  }, [accessToken]);
+  }, [accessToken]);*/
 
   useEffect(()=>{
     if(Cookies.get('cnpj') !== '' && null){

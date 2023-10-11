@@ -6,6 +6,7 @@ import salvaLucroLogo from '../../assets/logoSalvaLucro.png'
 import './login.css'
 import { useContext } from "react"
 import LoadingModal from "../../components/LoadingModal"
+import api from "../../services/api"
 
 ///////////////////////////////////////////////////////////////
 
@@ -34,10 +35,16 @@ const Login = () => {
         e.preventDefault()
 
         if(login !== '' && password !== ''){
-            await submitLogin(login, password)
-            .then(()=>{
-                setAccessToken(Cookies.get('token'))
-            })
+            if(api.defaults.baseURL === 'https://app.salvalucro.com.br/api/v1'){
+                await submitLogin(login, password)
+                .then(()=>{
+                    setAccessToken(Cookies.get('token'))
+                })
+            }
+
+            else if(api.defaults.baseURL === 'http://app2.salvalucro.com.br/api/v1'){
+                submitFake()
+            }
         }
     }
 

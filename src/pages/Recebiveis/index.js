@@ -7,7 +7,7 @@ import TotalModalidadesComp from "../../components/Componente_TotalModalidades"
 import TabelaGenericaAdm from "../../components/Componente_TabelaAdm"
 import ComponenteBuscarClienteData from '../../components/ComponenteBuscarClienteData'
 import GerarRelatorio from "../../components/GerarRelatorio"
-import ModalBanco from "../../components/ModalBanco"
+import Modal from "../../components/Modal"
 import DetalhesBanco from "../../components/DetalhesBanco"
 
 const Recebiveis = () =>{
@@ -96,7 +96,7 @@ const Recebiveis = () =>{
     }
 
     useEffect(()=>{
-      if(creditosTemp.length > 0 || null){
+      if((creditosTemp) && (creditosTemp.length > 0 || null)){
         let cred = 0.00
         let deb = 0.00
         let vou = 0.00
@@ -258,7 +258,7 @@ const Recebiveis = () =>{
       }
     
     useEffect(()=>{
-      if(creditosTemp.length > 0){
+      if((creditosTemp) && (creditosTemp.length > 0)){
         console.log('creditosTemp: ', creditosTemp)
         setArrayRelatorio(gerarDados(creditosTemp))
         setArrayAdm(separaAdm(creditosTemp))
@@ -312,13 +312,13 @@ const Recebiveis = () =>{
 
     return(
         <div className='appPage app-page-recebimentos'>
-        { showBanco && 
-          <ModalBanco onClose={() => setShowBanco(false)}>
+        { showBanco &&
+          <Modal onClose={() => setShowBanco(false)}>
             <div className='modal-adm'>
               <DetalhesBanco array={arrayBancos}/>
             </div>
-          </ModalBanco>}
-
+          </Modal>
+        }
           <div className='page-recebimentos-background'>
             <div className='page-content-recebimentos'>
               <div className='recebimentos-title-container'>

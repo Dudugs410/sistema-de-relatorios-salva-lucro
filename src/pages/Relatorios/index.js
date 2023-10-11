@@ -27,9 +27,6 @@ const Relatorios = () =>{
         dataFinal,
      } = useContext(AuthContext)
 
-    const [ vendasRelatorios, setVendasRelatorios ] = useState([])
-    const [ creditosRelatorios, setCreditosRelatorios ] = useState([])
-
     const [adqSelecionada, setAdqSelecionada] = useState('')
     const [banSelecionada, setBanSelecionada] = useState('')
 
@@ -57,22 +54,9 @@ const Relatorios = () =>{
     
     async function handleSubmit(e){
         e.preventDefault()
-        const vendasTemp = await returnVendas(dateConvertSearch(dataInicial), dateConvertSearch(dataFinal), cnpj, adqSelecionada, banSelecionada)
-        const creditosTemp = await returnCreditos(dateConvertSearch(dataInicial), dateConvertSearch(dataFinal), cnpj)
-        setVendasRelatorios(vendasTemp)
-        setCreditosRelatorios(creditosTemp)
+        console.log('handleSubmit()')
         setBuscou(true)
     }
-
-    useEffect(()=>{
-        console.log('vendasRelatorios: ', vendasRelatorios )
-
-    },[vendasRelatorios])
-
-    useEffect(()=>{
-        console.log('creditosRelatorios: ', creditosRelatorios )
-
-    },[creditosRelatorios])
 
     useEffect(()=>{
         console.log('dataInicial: ', dateConvertSearch(dataInicial))
@@ -143,40 +127,6 @@ const Relatorios = () =>{
 
   },[detalhado])
 
-  function RelatorioRenderer(){
-    if(creditosRelatorios === undefined || vendasRelatorios === undefined){
-      return 0;
-    }
-    else{
-      return(
-        <div className='result-container-relatorios'>
-          <div className='table-container-relatorios'>
-              <h1 className='h1-relatorios'>Vendas</h1>
-              { vendasRelatorios.length > 0 ? <DetalhesCredito array={ vendasRelatorios }/> : <></> }
-              <div className='hr-container'>
-                <hr/>
-              </div>
-              { vendasRelatorios.length > 0 ? <GerarRelatorio array={ vendasRelatorios }/> : <></> }
-          </div>
-          <div className='hr-container'>
-              <hr/>
-          </div>
-          <div className='table-container-relatorios'>
-              <h1 className='h1-relatorios'>Créditos</h1>
-              { creditosRelatorios.length > 0 ? <DetalhesCredito array={ creditosRelatorios }/> : <></> }
-              <div className='hr-container'>
-                <hr/>
-              </div>
-              { creditosRelatorios.length > 0 ? <GerarRelatorio array={ creditosRelatorios } /> : <></> }
-              <div className='hr-container'>
-                <hr/>
-              </div>
-          </div>
-        </div>
-      )
-    }
-  }
-
   function handleVoltar(){
     setBuscou(false)
   }
@@ -189,8 +139,8 @@ const Relatorios = () =>{
             <div className='relatorios-page-container'>
                 <h1 className='h1-relatorios'>Relatórios</h1>
                 <div className='hr-container'>
-                        <hr/>
-                    </div>
+                  <hr/>
+                </div>
                 <div className='dados-busca-relatorios-container'>
                   <div className='dropdown-container-relatorios'>
                     <DateRangePicker />
@@ -207,7 +157,6 @@ const Relatorios = () =>{
                 <div className='hr-container'>
                   <hr/>
                 </div>
-                { buscou && <RelatorioRenderer/> }
             </div>
           </div>  
         </div>

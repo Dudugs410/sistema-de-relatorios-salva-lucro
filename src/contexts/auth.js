@@ -108,9 +108,7 @@ function AuthProvider({ children }){
         Cookies.set('refreshToken', 'kqSzxR/x30fEhCm9L1T+WoLbkqVxS+/PRXW/MSugc58=')
         setAccessToken(Cookies.get('token'))
         setRefreshToken(Cookies.get('refreshToken'))
-
         sessionStorage.setItem('isSignedIn', true)
-        sessionStorage.setItem('isSignedIn', true);
         sessionStorage.setItem('userData', JSON.stringify({
           "CODIGO": '000000',
           "GRUCODIGO": 5,
@@ -535,6 +533,9 @@ async function retornaRecebimentos(cnpj, datainicial, datafinal){
     //refresh
 
     async function refresh(){
+      if(teste){
+        return
+      }
       await api.post('/token/refresh/' + Cookies.get('refreshToken'), config(accessToken))
       .then((response) => {
           setAccessToken(response.acessToken)

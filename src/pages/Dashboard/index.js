@@ -136,9 +136,6 @@ const Dashboard = () => {
 ///////////////////////////////////////////////////////////////////////////////
 
     useEffect(()=>{
-        if(api.defaults.baseURL === 'http://app2.salvalucro.com.br/api/v1'){
-            setTeste(true)
-        }
         async function inicializar(){
             if((cnpj !== null && cnpj !== '') && teste !== true){
                 console.log('inicializando dados de vendas e créditos...')
