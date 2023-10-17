@@ -1,3 +1,4 @@
+@import '../../styles/variables';
 
 .content-area{
   height: 100%;
@@ -5,8 +6,8 @@
   /* margin-left: 10%; */
   display: flex;
   flex-direction: column;
-  color: #181c2e;
-  background-color: #59659e;
+  color: $font-color-light;
+  background-color: $primary-color-light;
 
 }
 

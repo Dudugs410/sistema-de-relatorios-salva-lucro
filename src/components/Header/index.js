@@ -68,7 +68,15 @@ const Header = () =>{
                             <span className='client-code'>{`${email}`}</span> 
                         </div>              
                     </div>
-                    <button type='button' className='btn-exit' onClick={logout}><FiPower color="#000000" size={24}/></button>
+                    <div className='btn-container'>
+                        <button type='button' className='btn-exit' onClick={logout}><FiPower color="#000000" size={24}/></button>
+                        <div class="toggle-container">
+                            <label class="switch">
+                                <input type="checkbox" id="toggleButton" />
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
                 
                 <div className='header-content'>

@@ -7,7 +7,7 @@ import RoutesApp from './routes'
 import React from 'react'
 
 
-import './index.css'
+import './index.scss'
 import { ToastContainer } from 'react-toastify'
 
 function App() {

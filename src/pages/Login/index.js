@@ -19,7 +19,7 @@ const Login = () => {
 
     useEffect(()=>{
         sessionStorage.clear()
-        localStorage.clear()
+        //localStorage.clear()
         Cookies.remove('cnpj')
         Cookies.remove('token')
         Cookies.remove('refreshToken')
@@ -33,18 +33,11 @@ const Login = () => {
 
     async function handleLogin(e){
         e.preventDefault()
-
         if(login !== '' && password !== ''){
-            if(api.defaults.baseURL === 'https://app.salvalucro.com.br/api/v1'){
-                await submitLogin(login, password)
-                .then(()=>{
-                    setAccessToken(Cookies.get('token'))
-                })
-            }
-
-            else if(api.defaults.baseURL === 'http://app2.salvalucro.com.br/api/v1'){
-                submitFake()
-            }
+            await submitLogin(login, password)
+            .then(()=>{
+                setAccessToken(Cookies.get('token'))
+            })
         }
     }
 
@@ -65,6 +58,7 @@ const Login = () => {
                         <hr/>
                         { !loading ? <button type='submit' className='btn btn-primary'>Login</button> : <button type='submit' className='btn btn-primary' disabled>Carregando...</button>}
                         <Link className='pw'>esqueci minha senha</Link>
+                        <button className='btn btn-secondary' onClick={()=>{submitFake()}}>Login Teste</button>
                     </div>
                     
                 </form>

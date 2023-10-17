@@ -45,6 +45,8 @@ function AuthProvider({ children }){
   const [modalCliente, setModalCliente] = useState(true)
 
   const [buscou, setBuscou] = useState(false)
+
+  const [isDarkTheme, setIsDarkTheme] = useState(false)
   
   const [teste, setTeste] = useState(false)
 
@@ -80,6 +82,12 @@ function AuthProvider({ children }){
             sessionStorage.setItem('teste', teste)
             sessionStorage.setItem('userData', JSON.stringify(userData))
             localStorage.setItem('isSignedIn', true)
+            if(localStorage.getItem('isDark')){
+              setIsDarkTheme(localStorage.getItem('isDark'))
+            }
+            else{
+              localStorage.setItem('isDark', false)
+            }
             setIsSignedIn(true)
           } else {
             console.log('User not found')
@@ -894,6 +902,8 @@ function alerta(text){
         returnTotalMes,
         returnCreditosBanco,
         loadAjustes,
+        isDarkTheme,
+        setIsDarkTheme,
       }}
     >
       {children}

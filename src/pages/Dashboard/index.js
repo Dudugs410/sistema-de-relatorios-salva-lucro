@@ -1,6 +1,6 @@
 /* eslint-disable default-case */
 
-import './dashboard.css'
+import './dashboard.scss'
 import api from '../../services/api'
 //////
 

@@ -10,7 +10,9 @@ import Recebiveis from "../pages/Recebiveis";
 import Antecipacoes from "../pages/Antecipacoes";
 import Servicos from "../pages/Servicos";
 import Relatorios from "../pages/Relatorios";
-
+//
+import Teste from "../pages/00Teste";
+//
 function RoutesApp(){
     return(
     <Routes>
@@ -21,6 +23,7 @@ function RoutesApp(){
         <Route path='/antecipacoes' element = { <Private><Antecipacoes/></Private> } />
         <Route path='/servicos' element = { <Private><Servicos/></Private> } />
         <Route path='/relatorios' element = { <Private><Relatorios/></Private> } />
+        <Route path='/teste' element = {<Teste/>} />
     </Routes>
     )  
 }
