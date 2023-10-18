@@ -1,8 +1,10 @@
+@import '../../styles/variables';
+
 .app-page-vendas{
     display: contents;
     flex-direction: column;
     align-items: center;
-    background-color: #59659e;
+    background-color: $background-color-light;
     height: 100%;
 
 }
@@ -12,7 +14,7 @@
     width: 100%;
     display: flex;
     flex-direction: column;
-    background-color: white;
+    background-color: $background-color-light;
 }
 
 .content{
@@ -25,7 +27,7 @@
 .page-vendas-background{
     display: flex;
     justify-content: center;
-    background-color: #59659e;
+    background-color: $primary-color-light;
 }
 
 .page-content-vendas{
@@ -33,7 +35,7 @@
     width: 80%;
     padding: 1%;
     /* margin-left: 10%; */
-    background-color: #181c2e;
+    background-color: $background-color-light;
     display: flex;
     justify-content: flex-start;
     flex-wrap: wrap;
@@ -44,17 +46,16 @@
 }
 
 .vendas-title{
-    color: white;
+    color: $font-color-light;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
-    text-shadow: 1px 2px 2px rgba(0,0,0,0.6);
 }
 
 .vendas-title-container{
-    color: white;
+    color: $primary-color-light;
     text-align: center;
     border-bottom: solid white 1px;
-    background-color: #59659e;
+    background-color: $secondary-color-light;
     width: 100%;
     border-radius: 20px;
     padding: 10px;
@@ -81,7 +82,6 @@
     width: 100%;
     padding: 1%;
     margin-left: 0%;
-    background-color: #181c2e;
     flex-direction: row;
     justify-content: flex-start;
     flex-wrap: wrap;

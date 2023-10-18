@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from "react"
 
-import './buscar.css'
+import './buscarVendas.scss'
 import { AuthContext } from "../../contexts/auth"
 import { VendasContext } from "../../pages/Vendas"
 

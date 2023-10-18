@@ -1,3 +1,5 @@
+@import '../../styles/variables';
+
 .header-bg-image{
     display: inline-table;
     width: 100%;
@@ -139,12 +141,12 @@ polyline, line, path{
     border: solid 2px;
     border-left: none;
     border-right: none;
-    background-color: #181c2e;
+    background-color: $primary-color-light;
 }
 
 .li-button-content:hover{
-    color: yellowgreen;
-    background-color: #59659e;
+    color: $primary-color-light;
+    background-color: $secondary-color-light;
     transition: all, 0.4s;
 }
 

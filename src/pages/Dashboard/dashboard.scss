@@ -6,8 +6,8 @@
   /* margin-left: 10%; */
   display: flex;
   flex-direction: column;
-  color: $font-color-light;
-  background-color: $primary-color-light;
+  color: $background-color-light;
+  background-color: $background-color-light;
 
 }
 
@@ -19,7 +19,7 @@
   padding-right: 20%;
   display: flex;
   flex-direction: column;
-  background-color: #59659e;
+  background-color: $primary-color-light;
 
 }
 
@@ -28,7 +28,7 @@
   display: block;
   text-align: center;
   border-bottom: solid white 1px;
-  color: white;
+  color: $font-color-light;
   font-family: sans-serif;
   font-size: 1.5em;
   margin-top: 8px;
@@ -36,8 +36,8 @@
   align-self: center;
   padding: 5px;
   border-radius: 20px;
-  text-shadow: 0px 4px 4px rgba(0,0,0,0.9);
-  background-color: #59659e;
+
+  background-color: $secondary-color-light;
 
 }
 
@@ -64,7 +64,7 @@
 .graph-data{
   height: 400px;
   width: 100%;
-  background-color: #181c2e;
+  background-color: $background-color-light;
   border-radius: 20px 20px 0 0;
   box-shadow:inset 0px 270px 0px 0px;
 }
@@ -74,7 +74,7 @@
   width: 100%;
   padding-left: 10px;
   padding-right: 10px;
-  background-color: #181c2e;
+  background-color: $background-color-light;
   border-radius: 0 0 20px 20px;
   flex-direction: row;
   flex-wrap: wrap;
@@ -109,13 +109,13 @@
 
 .dash-table{
   border: 0;
-  color: #DDD;
+  color: $font-color-light;
   max-height: 0px;
 
 }
 
 .dash-tbody-bg{
-  background-color: #181c2e;
+  background-color: $background-color-light;
 
 }
 
@@ -130,6 +130,7 @@
 }
 
 .dash-table .dash-thead{
+  border-radius: 10px;
   border:none;
   height: 1px;
   margin: -1px;
@@ -141,7 +142,7 @@
 }
 
 .dash-table .dash-tr{
-  border-bottom: 3px solid #DDD;
+  
   display: flex;
   margin-bottom: 4.6em;
   flex-direction: column;
@@ -154,7 +155,7 @@
 }
 
 .dash-table .dash-td{
-  border-bottom: 1px solid  #DDD;
+  border-bottom: 1px solid  $primary-color-light;
   display: block;
   font-size: 0.8em;
   text-align: right;
@@ -204,7 +205,6 @@
     padding-right: 0%;
     display: flex;
     flex-direction: column;
-    background-color: #59659e;
 
   }
 

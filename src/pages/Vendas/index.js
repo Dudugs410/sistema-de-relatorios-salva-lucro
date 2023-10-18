@@ -8,8 +8,8 @@ import TotalModalidadesComp from '../../components/Componente_TotalModalidades'
 
 import GerarRelatorio from '../../components/GerarRelatorio'
 
-import './vendas.css'
-import './Calendar.css'
+import './vendas.scss'
+import './Calendar.scss'
 import { AuthContext } from '../../contexts/auth'
 
 export let VendasContext = createContext({})

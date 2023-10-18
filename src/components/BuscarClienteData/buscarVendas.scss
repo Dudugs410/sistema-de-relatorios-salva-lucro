@@ -1,3 +1,5 @@
+@import '../../styles/variables';
+
 .search-bar{
     height: auto;
     width: 100%;
@@ -9,12 +11,12 @@
 }
 
 .date-container{
-    height: 100px;
     width: 100%;
     display: inline-flex;
     justify-content: space-evenly;
-    background-color: #181c2e;
+    background-color: $background-color-light;
     padding: 20px;
+
 }
 
 .date-column{
@@ -67,13 +69,13 @@
     height: 2.2em;
     border-radius: 10px;
     text-align: center;
-    width: 100%;
+    width: 80%;
     font-style: italic;
     color: gray;
 }
 
 .select-card>span{
-    color: white;
+    color: $primary-color-light;
     font-weight: bold;
     
 }
@@ -108,12 +110,6 @@
 
 .submit-container{
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex-wrap: wrap;
-    align-content: center;
-    justify-content: center;
 }
 
 .btn-submit{
@@ -124,14 +120,17 @@
     text-align: center;
     width: 80%;
     justify-content: center;
-    background-color: #181c2e;
-    border: solid #7985bb 2px;
-    font-weight: bold;
+    background-color: $background-color-light;
+    color:gray;
+    font-style: italic;
+    font-weight: 200;
+    border: solid gray 1px;
+    border-radius: 10px;
 }
 
 .btn-submit:hover{
-    color: yellowgreen;
-    background-color: #444e79;
+    color: $primary-color-light;
+    background-color: $secondary-color-light;
 }
 
 .select-disabled{
@@ -155,9 +154,9 @@
         width: 100%;
         align-self: center;
         display: flex;
-        /*flex-direction: column;*/
+        flex-direction: column;
         justify-content: space-evenly;
-        background-color: #181c2e;
+        background-color: $background-color-light;
         padding: 10px;
         
     }
@@ -247,7 +246,6 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: flex-end;
     }
 
     .btn-submit{

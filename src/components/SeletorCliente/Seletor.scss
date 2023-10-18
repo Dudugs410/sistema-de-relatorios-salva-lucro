@@ -1,3 +1,5 @@
+@import '../../styles/variables';
+
 .search-bar-seletor{
     height: auto;
     width: 100%;
@@ -12,9 +14,10 @@
     width: 100%;
     display: inline-flex;
     justify-content: space-evenly;
-    background-color: #181c2e;
+    background-color: $primary-color-light;
     padding: 20px;
-    border-bottom: solid white 1px;
+    border-top: solid $secondary-color-light 1px;
+    border-bottom: solid $secondary-color-light 1px;
 }
 
 .date-column-seletor{
