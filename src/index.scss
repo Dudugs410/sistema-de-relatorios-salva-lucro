@@ -1,7 +1,9 @@
 @import './styles/variables';
 
 
-
+*{
+  font-family: $default-font;
+}
 
 html, body, .app, #root, .appPage{
   height: 100%;

@@ -138,15 +138,15 @@ polyline, line, path{
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    border: solid 2px;
+    border: solid $secondary-color-light 1px;
     border-left: none;
     border-right: none;
     background-color: $primary-color-light;
 }
 
 .li-button-content:hover{
-    color: $primary-color-light;
     background-color: $secondary-color-light;
+    border: solid $background-color-light 1px;
     transition: all, 0.4s;
 }
 
@@ -304,16 +304,16 @@ polyline, line, path{
         display: inline-flex;
         border-top-right-radius: 5px;
         border-bottom-right-radius: 5px;
-        border-right: solid white 2px;
+        border-right: solid $secondary-color-light 1px;
         flex-direction: column;
         flex-wrap: wrap;
         align-content: flex-end;
     }
 
     .li-button-content:hover{
-        border-right: solid yellowgreen 2px;
-        border-top: solid yellowgreen 2px;
-        border-bottom: solid yellowgreen 2px;
+        border-right: solid $background-color-light 2px;
+        border-top: solid $background-color-light 2px;
+        border-bottom: solid $background-color-light 2px;
         transition: all, 0.5s;
         width: 420px;
     }

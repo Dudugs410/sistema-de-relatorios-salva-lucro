@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from "react";
 import { AuthContext } from "../../contexts/auth";
 import { bancosStatic } from "../../contexts/static";
 
-import './detalhesBanco.css';
+import './detalhesBanco.scss';
 
 const DetalhesBanco = ({ array }) => {
     const { setVendas, setCnpj, teste } = useContext(AuthContext);

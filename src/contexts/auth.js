@@ -58,55 +58,55 @@ function AuthProvider({ children }){
   },[])
 
   /////Login do usuário
-  async function submitLogin(login, password) {
+  async function submitLogin(login, password){
     setLoading(true)
-    
-    try {
-      const response = await api.post('/token', { client_id: login, client_secret: md5(password) })
-      const responseData = response.data
-  
-      if (responseData.success) {
-        Cookies.set('token', responseData.access_token)
-        Cookies.set('refreshToken', responseData.refresh_token)
+    await api.post('/token', { client_id: login, client_secret: md5(password) })
+    .then(async response => {
+        Cookies.set('token', response.data.acess_token)
+        Cookies.set('refreshToken', response.data.refresh_token)
         setAccessToken(Cookies.get('token'))
         setRefreshToken(Cookies.get('refreshToken'))
-
-        sessionStorage.setItem('isSignedIn', true)
-  
-        const userResponse = await api.get('/usuario', {
-          headers: {
-            Authorization: `Bearer ${responseData.access_token}`
-          }
-        })
-  
-        const userList = userResponse.data
-        const userMatch = userList.find((user) => user.LOGIN === login && user.SENHA === md5(password));
-  
-        if (userMatch) {
-          const userData = { NOME: userMatch.NOME, EMAIL: userMatch.EMAIL }
-          sessionStorage.setItem('userData', JSON.stringify(userData))
-          localStorage.setItem('isSignedIn', true)
-  
-          if (localStorage.getItem('isDark')) {
-            setIsDarkTheme(localStorage.getItem('isDark'))
-          } else {
-            localStorage.setItem('isDark', false)
-          }
-  
-          setIsSignedIn(true);
-        } else {
-          console.log('User not found')
+        
+        if(response.data.sucess === true){
+          sessionStorage.setItem('isSignedIn', true)
         }
-      } else {
-        console.log('Authentication failed')
-      }
-  
-      setLoading(false)
-    } catch (error) {
-      console.error(error)
-      alert(error.message)
-      setLoading(false)
-    }
+        try {
+          const response = await api.get('/usuario')
+          const userList = response.data
+          const userMatch = userList.find((user) => user.LOGIN === login && user.SENHA === md5(password))
+        
+          if (userMatch) {
+            sessionStorage.setItem('isSignedIn', true);
+            setTeste(false)
+            const userData = { NOME: userMatch.NOME, EMAIL: userMatch.EMAIL }
+            sessionStorage.setItem('teste', teste)
+            sessionStorage.setItem('userData', JSON.stringify(userData))
+            localStorage.setItem('isSignedIn', true)
+            if(localStorage.getItem('isDark')){
+              setIsDarkTheme(localStorage.getItem('isDark'))
+            }
+            else{
+              localStorage.setItem('isDark', false)
+            }
+            setIsSignedIn(true)
+          } else {
+            console.log('User not found')
+          }
+          setLoading(false)
+        } catch (error) {
+          console.error(error)
+          setLoading(false)
+        }
+    })
+    .catch(error =>{
+        console.log('catch: ')
+        console.log(error)
+        alert(error.message)
+        setLoading(false)
+    })
+    
+    setLoading(false)
+    console.log('************fim submitLogin()************')
   }
 
   /////Fake Login

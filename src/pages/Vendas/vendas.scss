@@ -47,7 +47,6 @@
 
 .vendas-title{
     color: $font-color-light;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
 }
 
@@ -86,5 +85,11 @@
     justify-content: flex-start;
     flex-wrap: wrap;
     border-radius: 0;
+    }
+
+    .page-vendas-background{
+        display: flex;
+        justify-content: center;
+        background-color: $background-color-light;
     }
 }

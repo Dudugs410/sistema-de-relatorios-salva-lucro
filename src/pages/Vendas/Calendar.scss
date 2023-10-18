@@ -57,7 +57,7 @@
 
 .react-calendar__navigation button {
   min-width: 44px;
-  background: $secondary-color-light;
+  background: $background-color-light;
   color: $primary-color-light;
   font-weight: bold;
   transition: all 0.4s;
@@ -69,8 +69,8 @@
 
 .react-calendar__navigation button:enabled:hover,
 .react-calendar__navigation button:enabled:focus {
-  background-color: #e6e6e6;
-  box-shadow:inset 0px 38px 0px 0px #e6e6e6;
+  background-color: $secondary-color-light;
+  box-shadow:inset 0px 38px 0px 0px $secondary-color-light;
   color: black;
 }
 
@@ -123,8 +123,8 @@
 
 .react-calendar__tile:enabled:hover,
 .react-calendar__tile:enabled:focus {
-  background-color: #e6e6e6;
-  box-shadow:inset 0px 38px 0px 0px #e6e6e6;
+  background-color: $secondary-color-light;
+  box-shadow:inset 0px 38px 0px 0px $secondary-color-light;
   transition: all 0.4s;
 }
 
@@ -143,7 +143,7 @@
 
 .react-calendar__tile--hasActive:enabled:hover,
 .react-calendar__tile--hasActive:enabled:focus {
-  background: $primary-color-light;
+  background: $secondary-color-light;
 }
 
 .react-calendar__tile--active {

@@ -155,7 +155,21 @@
 }
 
 .btn-seletor{
-    height: 35.19px;
+    margin-top: 22px;
+    display: flex;
+    height: 2.2em;
+    text-align: center;
+    justify-content: center;
+    background-color: $secondary-color-light;
+    color: $primary-color-light;
+    font-weight: 200;
+    border: solid $secondary-color-light 1px;
+
+}
+
+.btn-seletor:hover{
+    color: $background-color-light;
+    background-color: $secondary-color-light;
 }
 
 @media screen and (max-width: 869px){
@@ -173,7 +187,6 @@
     .date-container-seletor{
         width: 100%;
         display: flex;
-        background-color: #181c2e;
         padding: 20px;
         padding-left: 40px;
         align-items: flex-end;

@@ -1,5 +1,5 @@
 import React from "react"
-import './loadingModal.css'
+import './loadingModal.scss'
 
 const LoadingModal = () => {
 

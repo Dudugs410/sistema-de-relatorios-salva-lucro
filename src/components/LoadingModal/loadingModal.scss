@@ -1,3 +1,5 @@
+@import '../../styles/_variables.scss';
+
 /* The Modal (background) */
 .modal {
     position: fixed; /* Stay in place */
@@ -25,8 +27,8 @@
   
   /* Spinner */
   .spinner {
-    border: 16px solid #f3f3f3; /* Light grey */
-    border-top: 2px solid yellowgreen; /* Blue */
+    border: 16px solid $background-color-light; /* Light grey */
+    border-top: 2px solid $secondary-color-light; /* Blue */
     border-radius: 50%;
     width: 40px;
     height: 40px;
@@ -57,7 +59,7 @@
   }
 
   .spinner-container{
-    background-color: rgb(35, 35, 66);
+    background-color: $primary-color-light;
     width: 100px;
     height: 100px;
     display: flex;
@@ -69,6 +71,6 @@
 
   .modal-text{
     padding-top: 0.5em;
-    color: yellowgreen;
+    color: $secondary-color-light;
     
   }

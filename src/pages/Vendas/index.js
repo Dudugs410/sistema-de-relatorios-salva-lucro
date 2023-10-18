@@ -1,7 +1,7 @@
 import { useEffect, useContext, createContext, useState } from 'react'
 import Calendar from 'react-calendar'
 
-import BuscarClienteData from '../../components/BuscarClienteData'
+import BuscarClienteData from '../../components/Componente_BuscarClienteData'
 import TabelaGenericaAdm from '../../components/Componente_TabelaAdm'
 import DetalhesVenda from '../../components/DetalhesVenda'
 import TotalModalidadesComp from '../../components/Componente_TotalModalidades'
