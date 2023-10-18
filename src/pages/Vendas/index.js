@@ -1,15 +1,15 @@
 import { useEffect, useContext, createContext, useState } from 'react'
 import Calendar from 'react-calendar'
 
-import BuscarClienteData from '../../components/BuscarClienteData'
+import BuscarClienteData from '../../components/Componente_BuscarClienteData'
 import TabelaGenericaAdm from '../../components/Componente_TabelaAdm'
 import DetalhesVenda from '../../components/DetalhesVenda'
 import TotalModalidadesComp from '../../components/Componente_TotalModalidades'
 
 import GerarRelatorio from '../../components/GerarRelatorio'
 
-import './vendas.css'
-import './Calendar.css'
+import './vendas.scss'
+import './Calendar.scss'
 import { AuthContext } from '../../contexts/auth'
 
 export let VendasContext = createContext({})

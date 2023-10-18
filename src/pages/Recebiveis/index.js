@@ -1,5 +1,5 @@
 import Calendar from "react-calendar"
-import './recebimentos.css'
+import './recebimentos.scss'
 import { useContext, useEffect, useState } from "react"
 import DetalhesCredito from "../../components/DetalhesCredito"
 import { AuthContext } from "../../contexts/auth"

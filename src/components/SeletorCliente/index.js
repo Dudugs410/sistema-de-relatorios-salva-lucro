@@ -5,7 +5,7 @@ import { ToastContainer } from 'react-toastify'
 import Cookies from "js-cookie";
 
 import 'react-toastify/dist/ReactToastify.css';
-import './Seletor.css'
+import './Seletor.scss'
 
 const SeletorCliente = () => {
     const { gruSelecionado, setGruSelecionado, listaClientes, setListaClientes } = useContext(AuthContext)

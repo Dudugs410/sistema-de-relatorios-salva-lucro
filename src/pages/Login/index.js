@@ -41,6 +41,11 @@ const Login = () => {
         }
     }
 
+    async function handleTeste(e){
+        e.preventDefault()
+        submitFake()
+    }
+
     useEffect(()=>{
         console.log('accessToken: ', accessToken)
 
@@ -58,7 +63,7 @@ const Login = () => {
                         <hr/>
                         { !loading ? <button type='submit' className='btn btn-primary'>Login</button> : <button type='submit' className='btn btn-primary' disabled>Carregando...</button>}
                         <Link className='pw'>esqueci minha senha</Link>
-                        <button className='btn btn-secondary' onClick={()=>{submitFake()}}>Login Teste</button>
+                        <button className='btn btn-secondary' onClick={handleTeste}>Login Teste</button>
                     </div>
                     
                 </form>

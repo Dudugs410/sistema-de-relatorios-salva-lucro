@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from "react"
 
-import './buscar.css'
+import './buscarCreditos.scss'
 import { AuthContext } from "../../contexts/auth"
 import { VendasContext } from "../../pages/Vendas"
 
@@ -146,7 +146,7 @@ theme="light"
             <div className='search-bar'>
                 <form className='date-container'>
                     <div className='date-column'>
-                        <div className='select-card'>
+                        <div className='select-card select-align'>
                             <span>Adquirente</span>
                             { detalhes ? 
                                 <select disabled className='select-disabled' id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}}>
@@ -166,7 +166,7 @@ theme="light"
                         </div>
                     </div>
                     <div  className='date-column'>
-                        <div className='select-card'>
+                        <div className='select-card select-align'>
                             <span>Bandeira</span>
                             { detalhes ? 
                                 <select disabled className='select-disabled' id='bandeira' value={bancoSelecionado} onChange={(e) => {setBancoSelecionado(e.target.value)}}>
@@ -185,7 +185,7 @@ theme="light"
                                  }
                         </div>
                     </div>        
-                    <div className='submit-container'>
+                    <div className='submit-container select-align'>
                         { detalhes ? <button className="btn btn-secondary btn-submit" onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className="btn btn-primary btn-submit" onClick={handleBusca}>Pesquisar</button>}
                     </div>      
                 </form>

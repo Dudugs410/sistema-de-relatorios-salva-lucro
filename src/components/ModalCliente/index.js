@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react"
-import './ModalCliente.css'
+import './ModalCliente.scss'
 import { AuthContext } from "../../contexts/auth"
 import LoadingModal from "../LoadingModal"
 import Cookies from "js-cookie"

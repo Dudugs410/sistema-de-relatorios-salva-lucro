@@ -1,5 +1,5 @@
 import React from "react"
-import './tabelaGenerica.css'
+import './tabelaGenerica.scss'
 
 export default function TabelaGenericaAdm({Array}) {
 

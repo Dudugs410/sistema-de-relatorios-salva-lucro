@@ -1,4 +1,6 @@
-.search-bar{
+@import '../../styles/variables';
+
+.search-bar-seletor{
     height: auto;
     width: 100%;
     background-color: rgba(0,0,0,0.5);
@@ -8,27 +10,28 @@
     
 }
 
-.date-container{
-    height: 100px;
+.date-container-seletor{
     width: 100%;
     display: inline-flex;
     justify-content: space-evenly;
-    background-color: #181c2e;
+    background-color: $primary-color-light;
     padding: 20px;
+    border-top: solid $secondary-color-light 1px;
+    border-bottom: solid $secondary-color-light 1px;
 }
 
-.date-column{
+.date-column-seletor{
     display: flex;
     flex-direction: column;
     height: 100%;
     width: 100%;
 }
 
-.date-text{
+.date-text-seletor{
     color:white;
 }
 
-.date-picker{
+.date-picker-seletor{
     text-align: center;
     display: flex;
     border-radius: 10px;
@@ -39,14 +42,14 @@
 
 }
 
-.date-container>.date-column>input{
+.date-container-seletor>.date-column-seletor>input{
     height: 2.2em;
     border-radius: 10px;
     width: 80%;
     
 }
 
-.date-container>.date-column>span{
+.date-container-seletor>.date-column-seletor>span{
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -54,7 +57,7 @@
     
 }
 
-.date-container>.date-column>select{
+.date-container-seletor>.date-column-seletor>select{
     display: flex;
     height: 2.2em;
     text-align: center;
@@ -62,23 +65,32 @@
     font-style: italic;
 }
 
-.date-column>.select-card>select{
+.select-card-seletor{
+    position: relative;
+    display: inline-flex;
+    width: 100%;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: space-around;
+}
+
+.date-column-seletor>.select-card-seletor>select{
     display: flex;
     height: 2.2em;
     border-radius: 10px;
     text-align: center;
-    width: 100%;
+    width: 80%;
     font-style: italic;
     color: gray;
 }
 
-.select-card>span{
+.select-card-seletor>span{
     color: white;
     font-weight: bold;
     
 }
 
-.date-column>button{
+.date-column-seletor>button{
     height: 2.2em;
     width: 80%;
     border-radius: 10px;
@@ -86,7 +98,7 @@
     margin-top: 1.5em;
 }
 
-.date-column>.export{
+.date-column-seletor>.export{
     height: 2.2em;
     width: 80%;
     border-radius: 10px;
@@ -94,11 +106,11 @@
     margin-top: 1.5em;
 }
 
-.select-card:not(:first-child){
+.select-card-seletor:not(:first-child){
     margin-top: 10px;
 }
 
-.date-column>.date-text{
+.date-column-seletor>.date-text{
     margin-top: 10px;
 }
 
@@ -108,12 +120,6 @@
 
 .submit-container{
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex-wrap: wrap;
-    align-content: center;
-    justify-content: center;
 }
 
 .btn-submit{
@@ -139,6 +145,33 @@
     
 }
 
+.select-btn-seletor{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: flex-end;
+    /* min-width: 141px; */
+    justify-content: center;
+}
+
+.btn-seletor{
+    margin-top: 22px;
+    display: flex;
+    height: 2.2em;
+    text-align: center;
+    justify-content: center;
+    background-color: $secondary-color-light;
+    color: $primary-color-light;
+    font-weight: 200;
+    border: solid $secondary-color-light 1px;
+
+}
+
+.btn-seletor:hover{
+    color: $background-color-light;
+    background-color: $secondary-color-light;
+}
+
 @media screen and (max-width: 869px){
 
     .search-bar{
@@ -151,14 +184,12 @@
         
     }
     
-    .date-container{
+    .date-container-seletor{
         width: 100%;
-        align-self: center;
         display: flex;
-        /*flex-direction: column;*/
-        justify-content: space-evenly;
-        background-color: #181c2e;
-        padding: 10px;
+        padding: 20px;
+        padding-left: 40px;
+        align-items: flex-end;
         
     }
 
@@ -170,11 +201,6 @@
     
     .select-card{
         width: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        flex-wrap: wrap;
-        align-content: center;
     }
 
     .select-card>select{
@@ -203,6 +229,16 @@
         border-radius: 10px;
     }
     
+    .date-column-seletor>.select-card-seletor>select{
+        display: flex;
+        height: 2.2em;
+        max-width: 200px;
+        border-radius: 10px;
+        text-align: center;
+        font-style: italic;
+        color: gray;
+    }
+
     .date-container>select{
         height: auto;
         border-radius: 10px;
@@ -247,7 +283,6 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: flex-end;
     }
 
     .btn-submit{
@@ -267,4 +302,6 @@
         color: yellowgreen;
         background-color: #444e79;
     }
+
+
 }
