@@ -6,7 +6,7 @@ import TabelaGenericaAdm from '../../components/Componente_TabelaAdm'
 import DetalhesVenda from '../../components/DetalhesVenda'
 import TotalModalidadesComp from '../../components/Componente_TotalModalidades'
 
-import GerarRelatorio from '../../components/GerarRelatorio'
+import GerarRelatorio from "../../components/Componente_GerarRelatorio"
 
 import './vendas.scss'
 import './Calendar.scss'

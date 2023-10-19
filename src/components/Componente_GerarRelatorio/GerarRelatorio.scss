@@ -1,0 +1,73 @@
+@import '../../styles/_variables.scss';
+
+.container{
+    width: 100%;
+    max-width: none;
+    display: flex;
+    margin-left: 0;
+    margin-right: 0;
+    justify-content: center;
+    padding-bottom: 13px;
+}
+
+.btn-exportar{
+    width: 40%;
+    margin-top: 12px;
+    background-color: white;
+}
+
+.btn-exportar:not(:first-child){
+    margin-left: 20px;
+}
+
+.btn-exportar-pdf{
+    border: solid red 1px;
+    background-color:rgba(255, 0, 0, 0.2);
+    color: red;
+}
+
+.btn-exportar-pdf svg polyline,
+.btn-exportar-pdf svg line,
+.btn-exportar-pdf svg path {
+    fill: red;
+}
+
+.btn-exportar-pdf:hover{
+    background-color: red;
+    color: white;
+}
+
+.btn-exportar-excel{
+    border: solid green 1px;
+    background-color: rgba(0, 255, 0, 0.2);
+    color: green;
+}
+
+.btn-exportar-excel svg polyline,
+.btn-exportar-excel svg line,
+.btn-exportar-excel svg path {
+    fill: green;
+}
+
+.btn-exportar-excel:hover{
+    background-color: green;
+    color: white;
+}
+
+@media screen and (max-width: 869px){
+    .container{
+        width: 100%;
+        display: flex;
+        padding-left: 12px;
+        margin-top: 0;
+        margin-bottom: 0;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-around;
+    
+    }
+    
+    .btn-exportar{
+        width: 38%;
+    }
+}

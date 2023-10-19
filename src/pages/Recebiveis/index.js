@@ -6,7 +6,7 @@ import { AuthContext } from "../../contexts/auth"
 import TotalModalidadesComp from "../../components/Componente_TotalModalidades"
 import TabelaGenericaAdm from "../../components/Componente_TabelaAdm"
 import ComponenteBuscarClienteData from '../../components/ComponenteBuscarClienteData'
-import GerarRelatorio from "../../components/GerarRelatorio"
+import GerarRelatorio from "../../components/Componente_GerarRelatorio"
 import Modal from "../../components/Modal"
 import DetalhesBanco from "../../components/DetalhesBanco"
 

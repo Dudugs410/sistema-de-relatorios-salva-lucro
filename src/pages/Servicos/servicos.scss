@@ -1,8 +1,10 @@
+@import '../../styles/_variables.scss';
+
 .app-page-servicos{
     display: contents;
     flex-direction: column;
     align-items: center;
-    background-color: #59659e;
+    background-color: $primary-color-light;
     height: 100%;
 }
 
@@ -13,9 +15,13 @@
     border-radius: 20px;
 }
 
+.hr-ajustes{
+    color: $primary-color-light;
+}
+
 .page-servicos-background{
     display: flex;
-    background-color: #59659e;
+    background-color: $primary-color-light;
     min-height: 100vh;
     /* width: 100%; */
     align-content: center;
@@ -28,7 +34,7 @@
     width: 80%;
     padding: 1%;
     /* margin-left: 10%; */
-    background-color: #181c2e;
+    background-color: $background-color-light;
     display: flex;
     justify-content: flex-start;
     flex-wrap: wrap;
@@ -52,8 +58,16 @@
 .date-picker-ajustes{
     width: 100%;
     border-radius: 20px;
-    border: solid white 1px;
-    background-color: #59659e;
+    border: solid $primary-color-light 1px;
+    background-color: $background-color-light;
+}
+
+.label-picker-servicos{
+    color: $primary-color-light;
+}
+
+.label-picker-servicos .label-picker {
+    color: $primary-color-light; /* Your desired color */
 }
 
 .btn-container-servicos{
@@ -67,7 +81,9 @@
 }
 
 .btn-busca-servicos{
-    border: solid white 1px;
+    background-color: $secondary-color-light;
+    color: $primary-color-light;
+    border: solid $secondary-color-light 1px;
 }
 
 .header-tabs-container{
@@ -80,61 +96,29 @@
     justify-content: center;
 }
 
-.header-tabs{
-    width: 160px;
-    height: 100%;
-    border-right: solid white 1px;
-    border-top: solid white 1px;
-    background-color: #59659e;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-content: center;
-    transition: all 0.4s;
-}
-
-.header-tabs:first-child{
-    border-top-left-radius: 10px;
-    border-left: solid white 1px;
-}
-
-.header-tabs:last-child{
-    border-top-right-radius: 10px;
-}
-
-.span-tab-servicos{
-    color: white;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    text-align: left;
-    margin-left:6px;
-    text-shadow: 2px 2px 4px #000000;
-
-}
-
-.header-tabs:hover{
-    background-color: yellowgreen;
-    cursor: pointer;
-}
-
 .card-resumo-total-ajustes{
     height: 45%;
     width: 100%;
     padding: 10px 10px 20px 20px;
-    border: solid white 1px;
+    border: solid $primary-color-light 1px;
     border-radius: 20px;
     margin-bottom: 1%;
-    background-color: #59659e;
+    background-color: $background-color-light;
 }
 
 .card-resumo-content-container{
-    height:100%;
-    width:100%;
+    display: flex;
+    height: 100%;
+    width: 100%;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: center;
+    align-items: center;
 }
 
 .h1-total-ajustes{
-    color: white;
+    color: $primary-color-light;
     font-size: 1.7em;
-    text-shadow: 2px 2px 4px #000000;
 
 }
 
@@ -142,6 +126,7 @@
     height: 40%;
     width: 100%;
     display: inline-flex;
+    justify-content: center;
 
 }
 
@@ -150,9 +135,9 @@
     /* height: 100%; */
     width: 50%;
     margin-right: 10px;
-    border-bottom: solid white 1px;
+    border: solid $primary-color-light 1px;
     border-radius: 20px;
-    background-color: #181c2e;
+    background-color: $background-color-light;
     flex-direction: column;
     flex-wrap: wrap;
     align-items: center;
@@ -161,17 +146,16 @@
 }
 
 .h5-valores{
-    color: #616161;
+    color: $primary-color-light;
     padding: 5px;
     margin: 20px 0 0 5px;
     font-size: 1em;
-    text-shadow: 2px 2px 4px #000000;
 }
 
 .span-valores{
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: $default-font;
     font-size: 1.2em;
-    color: white;
+    color: $secondary-color-light;
     font-weight: bolder;
 }
 
@@ -214,12 +198,9 @@
     width: 30%;
     margin: 1%;
     display: inline-table;
+    border: solid $primary-color-light 1px;
     border-radius: 20px;
-    background-color: #7985bb;
-    border-bottom: solid white 1px;
-    -webkit-box-shadow: 0px 10px 10px 0px rgba(0,0,0,0.75);
-    -moz-box-shadow: 0px 10px 10px 0px rgba(0,0,0,0.75);
-    box-shadow: 0px 10px 10px 0px rgba(0,0,0,0.75);
+    background-color: $background-color-light;
 }
 
 .card-filial>.card-ajuste-container{
@@ -237,9 +218,9 @@
     height: 100%;
     width: 100%;
     margin-right: 0px;
-    border-bottom: solid white 1px;
+    border: solid $secondary-color-light 1px;
     border-radius: 20px;
-    background-color: #181c2e;
+    background-color: $background-color-light;
     flex-direction: column;
     align-items: center;
     align-content: space-around;
@@ -249,31 +230,27 @@
 }
 
 .h3-valores{
-    color: white;
+    color: $primary-color-light;
     text-align: center;
     padding: 10px;
-    text-shadow: 2px 2px 4px #000000;
 }
 
 .green{
     color: rgb(0, 255, 0);
-    text-shadow: 1px 1px 1px #000000;
 }
 
 .red{
     color:red;
-    text-shadow: 1px 1px 1px #000000;
 }
 
 @media screen and (max-width: 1074px){
+
     .card-resumo-total-ajustes {
         height: 45%;
         width: 100%;
         padding: 10px 10px 0 20px;
-        border: solid white 1px;
         border-radius: 20px;
         /* margin: 2%; */
-        background-color: #59659e;
     }
 
     .card-ajuste-container {
@@ -292,9 +269,7 @@
         width: 100%;
         margin-right: 10px;
         margin-bottom: 10px;
-        border: solid white 1px;
         border-radius: 20px;
-        background-color: #181c2e;
         flex-direction: column;
         flex-wrap: wrap;
         align-items: center;
@@ -302,10 +277,9 @@
     }
 
     .h1-total-ajustes {
-        color: white;
+        color: $primary-color-light;
         text-align: center;
         font-size: 1.7em;
-        text-shadow: 2px 2px 4px #000000;
     }
 
     .btn-relatorio-container {
@@ -324,6 +298,15 @@
 }
 @media screen and (max-width: 869px){
 
+    .page-content-servicos{
+        width: 100%;
+        border-radius: 0px;
+    }
+
+    .page-servicos-background{
+        background-color: $background-color-light;
+    }
+
     .header-tabs-container {
         display: none;
     }
@@ -331,8 +314,6 @@
     .header-tabs {
         width: 160px;
         height: 100%;
-        border-right: solid white 1px;
-        background-color: #7985bb;
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
@@ -372,9 +353,7 @@
         width: 100%;
         margin-right: 10px;
         margin-bottom: 10px;
-        border: solid white 1px;
         border-radius: 20px;
-        background-color: #181c2e;
         flex-direction: column;
         flex-wrap: wrap;
         align-items: center;
@@ -399,18 +378,14 @@
         margin: 1%;
         display: inline-table;
         border-radius: 20px;
-        background-color: #7985bb;
-        border: solid white 1px;
     }
 
     .card-resumo-total-ajustes {
         height: 45%;
         width: 80%;
         padding: 10px 10px 0 20px;
-        border: solid white 1px;
         border-radius: 20px;
         margin: 2%;
-        background-color: #59659e;
     }
 
 }

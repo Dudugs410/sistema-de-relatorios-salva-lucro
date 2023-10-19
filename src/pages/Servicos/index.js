@@ -1,6 +1,6 @@
 
 
-import './servicos.css'
+import './servicos.scss'
 import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../../contexts/auth'
 import DateRangePicker from '../../components/Componente_DateRangePicker'
@@ -153,16 +153,18 @@ const Servicos = () =>{
                         <h1 className='vendas-title'>Serviços</h1>
                     </div>
                     <div className='hr-container'>
-                        <hr/>
+                        <hr className='hr-ajustes'/>
                     </div>
                     <div className='date-picker-ajustes'>
-                        <DateRangePicker/>
+                        <div className='label-picker-servicos'>
+                            <DateRangePicker/>
+                        </div>
                         <div className='btn-container-servicos'>
                             <button className='btn btn-primary btn-busca-servicos' onClick={handleBuscar}>Pesquisar</button>
                         </div>
                     </div>
                     <div className='hr-container'>
-                        <hr/>
+                        <hr className='hr-ajustes'/>
                     </div>
                     <div className='container-ajustes'>
                         <div className='card-resumo-total-ajustes'>
