@@ -11,6 +11,7 @@ import GerarRelatorio from "../../components/Componente_GerarRelatorio"
 import './vendas.scss'
 import './Calendar.scss'
 import { AuthContext } from '../../contexts/auth'
+import Cookies from 'js-cookie'
 
 export let VendasContext = createContext({})
 
@@ -18,6 +19,7 @@ let Vendas = () =>{
 
   let {
     cnpj,
+    setCnpj,
     bandeiras, 
     loadBandeiras,
     grupos,
@@ -45,7 +47,7 @@ let Vendas = () =>{
 
   // possivelmente utilizar estes parametros para realizar busca por período
 
-  const [cnpjBusca, setCnpjBusca] = useState(cnpj)
+  const [cnpjBusca, setCnpjBusca] = useState(Cookies.get('cnpj'))
   const [banBusca, setBanBusca] = useState('')
   const [adqBusca, setAdqBusca] = useState('')
 
@@ -79,6 +81,10 @@ let Vendas = () =>{
   useEffect(()=>{
     console.log(vendasTotais)
   },[vendasTotais])
+
+  useEffect(()=>{
+    setCnpj(Cookies.get('cnpj'))
+  },[])
 
   const [tableData, setTableData] = useState([])
 

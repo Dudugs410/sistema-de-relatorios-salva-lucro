@@ -11,6 +11,7 @@ import { vendasStatic } from "../../contexts/static";
 
 import 'react-toastify/dist/ReactToastify.css'
 import './reactdatepicker.css'
+import Cookies from "js-cookie";
 
 const BuscarClienteData = () => {
     const [banSelecionada, setBanSelecionada] = useState('')
@@ -21,7 +22,8 @@ const BuscarClienteData = () => {
     const [buscou, setBuscou] = useState(false)
 
     const { 
-        cnpj, 
+        cnpj,
+        setCnpj, 
         vendas, 
         setLoading, 
         loadVendas, 
@@ -55,13 +57,10 @@ const BuscarClienteData = () => {
     useEffect(()=>{
         console.log('Detalhes: ',detalhes)
     },[detalhes])
-
-    useEffect(()=>{
-        sessionStorage.setItem('cnpj', cnpj)
-      },[cnpj])
     
     useEffect(()=>{
-        setCnpjBusca(sessionStorage.getItem('cnpj'))
+        setCnpj(Cookies.get('cnpj'))
+        setCnpjBusca(Cookies.get('cnpj'))
     },[])
 
     function alerta(text){
@@ -78,11 +77,12 @@ const BuscarClienteData = () => {
     }
 
     async function handleBusca(e){
-            console.log('handleBusca()')
-            e.preventDefault()
-            await buscar()
-            console.log('vendas gerar dados',vendas)
-            await gerarDados(vendas)
+        e.preventDefault()
+        console.log('handleBusca()')
+        setCnpj(Cookies.get('cnpj'))
+        await buscar()
+        console.log('vendas gerar dados',vendas)
+        await gerarDados(vendas)
     }
 
     async function buscar() {

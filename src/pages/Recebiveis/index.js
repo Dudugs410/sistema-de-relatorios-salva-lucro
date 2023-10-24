@@ -9,6 +9,7 @@ import ComponenteBuscarClienteData from '../../components/ComponenteBuscarClient
 import GerarRelatorio from "../../components/Componente_GerarRelatorio"
 import Modal from "../../components/Modal"
 import DetalhesBanco from "../../components/DetalhesBanco"
+import Cookies from "js-cookie"
 
 const Recebiveis = () =>{
 
@@ -46,7 +47,7 @@ const Recebiveis = () =>{
 
     useEffect(()=>{
       async function inicializar(){
-        setCnpj(sessionStorage.getItem('cnpj'))
+        setCnpj(Cookies.get('cnpj'))
         if(bandeiras.length === 0){
           await loadBandeiras()
         }

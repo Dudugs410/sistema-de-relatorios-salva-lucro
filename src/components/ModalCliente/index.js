@@ -9,18 +9,15 @@ import Cookies from "js-cookie"
 const ModalCliente = () => {
     const{grupos, 
         loadGrupos,
-        cnpj, 
         setCnpj, 
         loading, 
-        setModalCliente, 
-        carregou, 
-        setCarregou,
+        setModalCliente,
+        alerta, 
     } = useContext(AuthContext)
     
     const [cliente, setCliente] = useState('')
     const [listaClientes, setListaClientes] = useState('')
     const [gruSelecionado, setGruSelecionado] = useState('')
-    const [clienteNome, setClienteNome] = useState('')
 
     async function iniciaGrupos(){
         await loadGrupos()
@@ -42,15 +39,14 @@ const ModalCliente = () => {
 
     function handleSubmit(e){
         e.preventDefault()
-        sessionStorage.setItem('cnpj', cliente)
-        setCnpj(cliente)
-        setModalCliente(false)
+        Cookies.set('cnpj', cliente)
+        if((cliente === 'selecione') || (cliente === '')){
+            alerta('Selecione um cliente válido')
+        } else {
+            setCnpj(cliente)
+            setModalCliente(false)
+        }
     }
-
-    useEffect(()=>{
-        sessionStorage.setItem('cnpj', cnpj)
-        Cookies.set('cnpj', cnpj)
-      },[cnpj])
     
     return(
         <>

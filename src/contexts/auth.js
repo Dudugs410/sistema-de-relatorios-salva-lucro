@@ -43,12 +43,21 @@ function AuthProvider({ children }){
   const [listaClientes, setListaClientes] = useState('')
 
   const [modalCliente, setModalCliente] = useState(true)
-
   const [buscou, setBuscou] = useState(false)
 
   const [isDarkTheme, setIsDarkTheme] = useState(false)
-  
   const [teste, setTeste] = useState(false)
+
+  const [admVendasAux, setAdmVendasAux] = useState([])
+  const [admCreditosAux, setAdmCreditosAux] = useState([])
+  const [somatorioCreditosHojeAux, setSomatorioCreditosHojeAux] = useState(0)
+  const [totalCreditos5diasAux, setTotalCreditos5diasAux] = useState(0)
+  const [somatorioVendasMesAux, setSomatorioVendasMesAux] = useState(0)
+  const [totalVendas4diasAux, setTotalVendas4diasAux] = useState(0)
+  const [graficoVendasAux, setGraficoVendasAux] = useState({data: [], labels: []})
+  const [graficoCreditosAux, setGraficoCreditosAux] = useState({data: [], labels: []})
+  const [inicializouAux, setInicializouAux] = useState(false)
+
 
   const navigate = useNavigate()
 
@@ -247,7 +256,7 @@ function AuthProvider({ children }){
             params = {
             dataInicial: dataInicial,
             datafinal: dataInicial,
-            cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+            cnpj: Cookies.get('cnpj').replace(/[^a-zA-Z0-9 ]/g, ''),
             adquirente: adquirente,
             bandeira: bandeira,
           }
@@ -904,6 +913,24 @@ function alerta(text){
         loadAjustes,
         isDarkTheme,
         setIsDarkTheme,
+        admVendasAux,
+        setAdmVendasAux,
+        admCreditosAux,
+        setAdmCreditosAux,
+        somatorioCreditosHojeAux,
+        setSomatorioCreditosHojeAux,
+        totalCreditos5diasAux,
+        setTotalCreditos5diasAux,
+        somatorioVendasMesAux,
+        setSomatorioVendasMesAux,
+        totalVendas4diasAux,
+        setTotalVendas4diasAux,
+        graficoVendasAux,
+        setGraficoVendasAux,
+        graficoCreditosAux,
+        setGraficoCreditosAux,
+        inicializouAux,
+        setInicializouAux,
       }}
     >
       {children}

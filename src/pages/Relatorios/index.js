@@ -3,6 +3,7 @@ import { AuthContext } from '../../contexts/auth'
 import DateRangePicker from '../../components/Componente_DateRangePicker'
 
 import './relatorios.scss'
+import Cookies from 'js-cookie'
 
 const Relatorios = () =>{
     const { 
@@ -27,7 +28,7 @@ const Relatorios = () =>{
 
     useEffect(()=>{
       async function inicializar(){
-        setCnpj(sessionStorage.getItem('cnpj'))
+        setCnpj(Cookies.get('cnpj'))
         if(bandeiras.length === 0){
           await loadBandeiras()
         }

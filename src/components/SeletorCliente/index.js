@@ -9,9 +9,13 @@ import './Seletor.scss'
 
 const SeletorCliente = () => {
     const { gruSelecionado, setGruSelecionado, listaClientes, setListaClientes } = useContext(AuthContext)
-    const { grupos, cnpj, setCnpj } = useContext(AuthContext)
+    const { grupos, cnpj, setCnpj, inicializouAux, setInicializouAux } = useContext(AuthContext)
 
     const [cliSelecionado, setCliSelecionado] = useState('')
+
+    useEffect(()=>{
+        setCnpj(sessionStorage.getItem('cnpj'))
+    },[])
 
       useEffect(()=>{
         const grupoObj = grupos.find(item => item.CODIGOGRUPO === Number(gruSelecionado));
@@ -28,8 +32,12 @@ const SeletorCliente = () => {
         e.preventDefault()
         console.log(cliSelecionado)
         console.log('CNPJ antes: ', cnpj)
-        setCnpj(cliSelecionado)
-        Cookies.set('cnpj', cliSelecionado)
+        if(cliSelecionado !== cnpj){
+            setCnpj(cliSelecionado)
+            setInicializouAux(false)
+            sessionStorage.setItem('inicializou', false)
+            Cookies.set('cnpj', cliSelecionado)
+        }
       }
 
     return(
