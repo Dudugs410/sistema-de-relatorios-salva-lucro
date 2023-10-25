@@ -13,11 +13,11 @@ import './Calendar.scss'
 import { AuthContext } from '../../contexts/auth'
 import Cookies from 'js-cookie'
 
-export let VendasContext = createContext({})
+export const VendasContext = createContext({})
 
-let Vendas = () =>{
+const Vendas = () =>{
 
-  let {
+  const {
     cnpj,
     setCnpj,
     bandeiras, 
@@ -30,6 +30,11 @@ let Vendas = () =>{
     dateConvert,
     dateConvertSearch,
     loadVendas,
+    gerarDados,
+    tableData,
+    setTableData,
+    totaisGlobal,
+    setTotaisGlobal,
   } = useContext(AuthContext)
 
   const [totalCredito, setTotalCredito] = useState(0.00)
@@ -76,6 +81,7 @@ let Vendas = () =>{
     setTotalDebito(0.00)
     setTotalVoucher(0.00)
     setTotalLiquido(0.00)
+    setTotaisGlobal({debito: 0, credito: 0, voucher: 0, liquido: 0})
   },[])
   
   useEffect(()=>{
@@ -85,37 +91,6 @@ let Vendas = () =>{
   useEffect(()=>{
     setCnpj(Cookies.get('cnpj'))
   },[])
-
-  const [tableData, setTableData] = useState([])
-
-  function gerarDados(array){
-    tableData.length = 0
-    console.log('vendas ao gerar Dados: ', array)
-    if (array.length > 0) {
-      array.map((venda) => {
-        tableData.push({
-          adquirente: venda.adquirente.nomeAdquirente,
-          bandeira: venda.bandeira.descricaoBandeira,
-          produto: venda.produto.descricaoProduto,
-          nsu: venda.nsu,
-          cnpj: venda.cnpj,
-          codigoVenda: venda.codigoVenda,
-          codigoAutorizacao: venda.codigoAutorizacao,
-          numeroPV: venda.numeroPV,
-          valorBruto: 'R$' + venda.valorBruto.toFixed(2).replaceAll('.', ','),
-          valorLiquido: 'R$' + venda.valorLiquido.toFixed(2).replaceAll('.', ','),
-          taxa: 'R$' + venda.taxa.toFixed(2).replaceAll('.', ','),
-          dataVenda: dateConvert(venda.dataVenda),
-          horaVenda: venda.horaVenda,
-          dataCredito: dateConvert(venda.dataCredito),
-          parcelas: venda.quantidadeParcelas,
-        })
-        console.log('tableData: ', tableData)
-        return tableData
-      })
-    }
-    console.log('arrayRelatorio: ', arrayRelatorio)
-  }
 
   useEffect(()=>{
     if(vendas.length === 0){
@@ -214,17 +189,13 @@ let Vendas = () =>{
         })
         
         console.log('TEPM: ', temp)
+        
+        let totalTemp = {debito: totalDebitoTemp, credito: totalCreditoTemp, voucher: totalVoucherTemp, liquido: totalLiquidoTemp}
 
-        setTotalCredito(totalCreditoTemp)
-        setTotalDebito(totalDebitoTemp)
-        setTotalVoucher(totalVoucherTemp)
-        setTotalLiquido(totalLiquidoTemp)
+        console.log('totalTemp:', totalTemp)
+        setTotaisGlobal(totalTemp)
 
-        console.log('total Credito:', totalCredito)
-        console.log('total Debito:', totalDebito)
-        console.log('total Voucher:', totalVoucher)
-        console.log('total Liquido:', totalLiquido)
-      return temp
+        return temp
     }
   }
 
@@ -234,7 +205,6 @@ let Vendas = () =>{
         <Calendar
           onChange={ handleDateChange }
           value={ dataBusca }
-          //tileContent={}
         />
       </div>
     )
@@ -272,14 +242,14 @@ let Vendas = () =>{
               <h1 className='vendas-title'>Calendário de Vendas</h1>
             </div>
             <hr className="hr-recebimentos"/>
-            <TotalModalidadesComp texto1={'Débito'} valor1={totalDebito} texto2={'Crédito'} valor2={totalCredito} texto3={'Voucher'} valor3={totalVoucher} texto4={'Total Líquido'} valor4={totalLiquido} />
+            <TotalModalidadesComp />
             <hr className="hr-recebimentos"/>
             { detalhes ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
             <div className='component-container-vendas'>
               { detalhes ?  <DetalhesVenda/> : <MyCalendar/> }
               { detalhes ? <TabelaGenericaAdm Array={arrayAdm}/> : <></> }
               { detalhes ? <hr className='hr-recebimentos'/> : <></> }
-              <BuscarClienteData funcao={loadVendas} />
+              <BuscarClienteData />
             </div>
           </div>
         </div>

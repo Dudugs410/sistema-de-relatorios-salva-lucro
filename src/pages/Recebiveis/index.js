@@ -24,9 +24,13 @@ const Recebiveis = () =>{
       loadBandeiras,
       adquirentes,
       loadAdquirentes,
-      dateConvert,
       dateConvertSearch,
       returnCreditosBanco,
+      totaisGlobal,
+      setTotaisGlobal,
+      tableData,
+      gerarDados,
+
     } = useContext(AuthContext)
 
     const [dataBusca, setDataBusca] = useState(new Date())
@@ -93,6 +97,7 @@ const Recebiveis = () =>{
       setDetalhes(false)
       setAdmBusca(null)
       setBanBusca(null)
+      setTotaisGlobal({debito: 0, credito: 0, voucher: 0, liquido: 0})
       arrayBancos.length = 0
     }
 
@@ -134,8 +139,9 @@ const Recebiveis = () =>{
         const temp = separaAdm(creditosTemp)
         console.log(temp)
         setArrayAdm(temp)
-
         setDetalhes(true)
+
+        setTotaisGlobal({debito: deb, credito: cred, voucher: vou, liquido: total})
       }
     },[creditosTemp])
 
@@ -227,36 +233,7 @@ const Recebiveis = () =>{
         )
       }
 
-      const [tableData, setTableData] = useState([])
       const [arrayRelatorio, setArrayRelatorio] = useState([])
-
-      function gerarDados(array){
-        tableData.length = 0
-        console.log('vendas ao gerar Dados: ', array)
-        if (array.length > 0) {
-          array.map((venda) => {
-            tableData.push({
-              adquirente: venda.adquirente.nomeAdquirente,
-              bandeira: venda.bandeira.descricaoBandeira,
-              produto: venda.produto.descricaoProduto,
-              nsu: venda.nsu,
-              cnpj: venda.cnpj,
-              codigoVenda: venda.codigoVenda,
-              codigoAutorizacao: venda.codigoAutorizacao,
-              numeroPV: venda.numeroPV,
-              valorBruto: 'R$' + venda.valorBruto.toFixed(2).replaceAll('.', ','),
-              valorLiquido: 'R$' + venda.valorLiquido.toFixed(2).replaceAll('.', ','),
-              taxa: 'R$' + venda.taxa.toFixed(2).replaceAll('.', ','),
-              dataVenda: dateConvert(venda.dataVenda),
-              horaVenda: venda.horaVenda,
-              dataCredito: dateConvert(venda.dataCredito),
-              parcelas: venda.quantidadeParcelas,
-            })
-            return tableData
-          })
-        }
-        console.log('arrayRelatorio: ', arrayRelatorio)
-      }
     
     useEffect(()=>{
       if((creditosTemp) && (creditosTemp.length > 0)){

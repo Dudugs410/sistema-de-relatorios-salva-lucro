@@ -27,6 +27,9 @@ function AuthProvider({ children }){
   
   const [vendas, setVendas] = useState([])
   const [vendasDash, setVendasDash] = useState([])
+  const [tableData, setTableData] = useState([])
+
+  const [totaisGlobal, setTotaisGlobal] = useState({debito: 0, credito: 0, voucher: 0, liquido: 0})
 
   const [recebimentos, setRecebimentos] = useState([])
   const [recebimentosDash, setRecebimentosDash] = useState([])
@@ -702,6 +705,7 @@ async function returnCreditos(datainicial, datafinal, cnpj){
       const response = await api.get('recebimentos', config)
       const recebimentosData = response.data
       setLoading(false)
+        setRecebimentos(recebimentosData)
         return recebimentosData
     } catch (error) {
       console.log(error)
@@ -838,6 +842,35 @@ function alerta(text){
   })
 }
 
+
+function gerarDados(array){
+  tableData.length = 0
+  console.log('vendas ao gerar Dados: ', array)
+  if (array.length > 0) {
+    array.map((venda) => {
+      tableData.push({
+        adquirente: venda.adquirente.nomeAdquirente,
+        bandeira: venda.bandeira.descricaoBandeira,
+        produto: venda.produto.descricaoProduto,
+        nsu: venda.nsu,
+        cnpj: venda.cnpj,
+        codigoVenda: venda.codigoVenda,
+        codigoAutorizacao: venda.codigoAutorizacao,
+        numeroPV: venda.numeroPV,
+        valorBruto: 'R$' + venda.valorBruto.toFixed(2).replaceAll('.', ','),
+        valorLiquido: 'R$' + venda.valorLiquido.toFixed(2).replaceAll('.', ','),
+        taxa: 'R$' + venda.taxa.toFixed(2).replaceAll('.', ','),
+        dataVenda: dateConvert(venda.dataVenda),
+        horaVenda: venda.horaVenda,
+        dataCredito: dateConvert(venda.dataCredito),
+        parcelas: venda.quantidadeParcelas,
+      })
+    })
+  } 
+  console.log('tableData: ', tableData)
+  return tableData
+}
+
   
 
   return(
@@ -931,6 +964,11 @@ function alerta(text){
         setGraficoCreditosAux,
         inicializouAux,
         setInicializouAux,
+        tableData,
+        setTableData,
+        gerarDados,
+        totaisGlobal,
+        setTotaisGlobal,
       }}
     >
       {children}

@@ -1,33 +1,35 @@
 
+import { useContext } from 'react'
 import './totalModalidade.scss'
+import { AuthContext } from '../../contexts/auth'
 
-const TotalModalidadesComp = ({texto1, valor1, texto2, valor2, texto3, valor3, texto4, valor4}) =>{
-    
+const TotalModalidadesComp = () =>{
+const { totaisGlobal } = useContext(AuthContext)    
     return(
         <>
             <div className='content-container-modalidade'>
                 <div className='total-container-modalidade'>
                     <div className='text-container-modalidade'>
-                        <h1 className='title-modalidade'>{texto1}</h1>
-                        <p className='text-modalidade'>TOTAL: R$ <span className='green-modalidade'>{valor1.toFixed(2)}</span></p>
+                        <h1 className='title-modalidade'>Débito</h1>
+                        <p className='text-modalidade'>TOTAL: R$ <span className='green-modalidade'>{totaisGlobal.debito.toFixed(2)}</span></p>
                     </div>
                 </div>
                 <div className='total-container-modalidade'>
                     <div className='text-container-modalidade'>
-                        <h1 className='title-modalidade'>{texto2}</h1>
-                        <p className='text-modalidade'>TOTAL: R$ <span className='green-modalidade'>{valor2.toFixed(2)}</span></p>
+                        <h1 className='title-modalidade'>Crédito</h1>
+                        <p className='text-modalidade'>TOTAL: R$ <span className='green-modalidade'>{totaisGlobal.credito.toFixed(2)}</span></p>
                     </div>
                 </div>
                 <div className='total-container-modalidade'> 
                     <div className='text-container-modalidade'>
-                        <h1 className='title-modalidade'>{texto3}</h1>
-                        <p className='text-modalidade'>TOTAL: R$ <span className='green-modalidade span-modalidade'>{valor3.toFixed(2)}</span></p>
+                        <h1 className='title-modalidade'>Voucher</h1>
+                        <p className='text-modalidade'>TOTAL: R$ <span className='green-modalidade span-modalidade'>{totaisGlobal.voucher.toFixed(2)}</span></p>
                     </div>
                 </div>
                 <div className='total-container-modalidade'> 
                     <div className='text-container-modalidade'>
-                        <h1 className='title-modalidade'>{texto4}</h1>
-                        <p className='text-modalidade'>TOTAL: R$ <span className='green-modalidade'>{valor4.toFixed(2)}</span></p>
+                        <h1 className='title-modalidade'>Total Líquido</h1>
+                        <p className='text-modalidade'>TOTAL: R$ <span className='green-modalidade'>{totaisGlobal.liquido.toFixed(2)}</span></p>
                     </div>
                 </div>
             </div>

@@ -27,7 +27,9 @@ const BuscarClienteRecebimentos = () => {
         loadVendas, 
         bandeiras, 
         grupos, 
-        adquirentes 
+        adquirentes,
+        totaisGlobal,
+        setTotaisGlobal,
     } = useContext(AuthContext)
     const { 
         detalhes, 
@@ -132,17 +134,17 @@ const BuscarClienteRecebimentos = () => {
     return(
         <>
             <ToastContainer
-position="top-center"
-autoClose={5000}
-hideProgressBar
-newestOnTop={false}
-closeOnClick
-rtl={false}
-pauseOnFocusLoss
-draggable
-pauseOnHover
-theme="light"
-/>
+                position="top-center"
+                autoClose={5000}
+                hideProgressBar
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+                />
             <div className='search-bar'>
                 <form className='date-container'>
                     <div className='date-column'>
