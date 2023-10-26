@@ -44,6 +44,7 @@ function AuthProvider({ children }){
 
   const [gruSelecionado, setGruSelecionado] = useState('')
   const [listaClientes, setListaClientes] = useState('')
+  const [inicializouGruposAux, setInicializouGruposAux] = useState(false)
 
   const [modalCliente, setModalCliente] = useState(true)
   const [buscou, setBuscou] = useState(false)
@@ -204,18 +205,23 @@ function AuthProvider({ children }){
     //Grupo de Clientes
 
     async function loadGrupos(){
-      if(teste !== true){
+      if((teste !== true) && (!inicializouGruposAux)){
         setLoading(true)
         await api.get('/grupo')
         .then( response => {
           setGrupos(response.data)
+          sessionStorage.setItem('grupos', JSON.stringify(response.data))
+          setInicializouGruposAux(true)
           setLoading(false)
         })
         .catch(error =>{
           console.log(error)
           setLoading(false)
         })
-      }else{
+      } 
+      else if((teste !== true) && (inicializouGruposAux)){
+        setGrupos(JSON.parse(sessionStorage.getItem('grupos')))
+      } else {
         setGrupos(gruposStatic)
       }
     }
@@ -685,35 +691,43 @@ async function returnVendas(datainicial, datafinal, cnpj, adquirente, bandeira){
 
 async function returnCreditos(datainicial, datafinal, cnpj){
   if(teste !== true){
-    setLoading(true);
-    console.log(cnpj)
-    let params = {
-      cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-      dataInicial: dateConvert(datainicial),
-      dataFinal: dateConvert(datafinal),
-    }
-
-    let config = {
-      headers: { 
-        'Content-Type': 'application/json', 
-        'Authorization': `Bearer ${Cookies.get('token')}`
-      },
-      params: params
-    }
-
     try {
-      const response = await api.get('recebimentos', config)
-      const recebimentosData = response.data
-      setLoading(false)
-        setRecebimentos(recebimentosData)
-        return recebimentosData
+      setLoading(true);
+      console.log(cnpj)
+      console.log(datainicial)
+      let params = {
+        cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+        dataInicial: dateConvert(datainicial),
+        dataFinal: dateConvert(datafinal),
+      }
+  
+      let config = {
+        headers: { 
+          'Content-Type': 'application/json', 
+          'Authorization': `Bearer ${Cookies.get('token')}`
+        },
+        params: params
+      }
+  
+      try {
+        const response = await api.get('recebimentos', config)
+        const recebimentosData = response.data
+        setLoading(false)
+          setRecebimentos(recebimentosData)
+          if(response.data.length === 0){
+            alerta('Não existem créditos para a data selecionada')
+          }
+          return recebimentosData
+      } catch (error) {
+        console.log(error)
+        setLoading(false)
+      }
     } catch (error) {
-      console.log(error)
-      setLoading(false)
-    }
-  }else{
-    return(recebimentosStatic)
-  }
+      console.log('error')
+      setLoading(false)}
+    } else{
+      return(recebimentosStatic)
+    } 
 }
 
 async function returnTotalDia(cnpj, data) {
@@ -913,6 +927,8 @@ function gerarDados(array){
         grupos,
         setGrupos,
         loadGrupos,
+        inicializouGruposAux,
+        setInicializouGruposAux,
         clientes,
         setClientes,
         loadVendas,

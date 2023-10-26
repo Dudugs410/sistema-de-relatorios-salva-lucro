@@ -68,7 +68,7 @@ const Header = () =>{
     const [optionsWithIcons, setOptionsWithIcons] = useState({})
 
     useEffect(()=>{
-        arrayOpcoes.length = 1
+        arrayOpcoes.length = 0
         if(tipoCliente === 0){
             setArrayOpcoes([
                 {rota: '/dashboard', nome: 'Início', id: 0, icone: 'FiHome'},
@@ -150,7 +150,6 @@ const Header = () =>{
             </div>
         </>
     )
-
     ////////////////////////////////////////////////////////////////////////////////////
 }
 

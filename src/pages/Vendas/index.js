@@ -93,16 +93,20 @@ const Vendas = () =>{
   },[])
 
   useEffect(()=>{
-    if(vendas.length === 0){
-      setTotalCredito(0.00)
-      setTotalDebito(0.00)
-      setTotalVoucher(0.00)
-      setTotalLiquido(0.00)
-    }
-    else if(vendas.length > 0){
-      console.log(vendas)
-      setArrayRelatorio(gerarDados(vendas))
-      setArrayAdm(separaAdm(vendas))
+    try {
+      if(vendas.length === 0){
+        setTotalCredito(0.00)
+        setTotalDebito(0.00)
+        setTotalVoucher(0.00)
+        setTotalLiquido(0.00)
+      }
+      else if(vendas.length > 0){
+        console.log(vendas)
+        setArrayRelatorio(gerarDados(vendas))
+        setArrayAdm(separaAdm(vendas))
+      }
+    } catch (error) {
+      console.log(error)
     }
   },[vendas])
 

@@ -1,32 +1,43 @@
 import { useState, useEffect, useContext } from "react"
 import { vendasStatic } from "../../contexts/static";
 import '../Componente_BuscarClienteRecebimentos/buscarCreditos.scss'
+import { CreditosContext } from "../../pages/Recebiveis";
+import { AuthContext } from "../../contexts/auth";
 
 
 
-const ComponenteBuscarClienteData = ({detalhes, adquirentes, bandeiras, onAdmUpdate, onBanUpdate, onBuscaUpdate}) => {
-    const [banSelecionada, setBanSelecionada] = useState('')
-    const [adqSelecionada, setAdqSelecionada] = useState('')
+const ComponenteBuscarClienteData = () => {
 
-    function handleBusca(e){
+    const { detalhes, setDetalhes, dataBusca, cnpjBusca, creditosTemp, setCreditosTemp } = useContext(CreditosContext)
+    const { returnCreditos, converteData, alerta } = useContext(AuthContext) 
+
+    useEffect(()=>{
+        setCreditosTemp([])
+    },[])
+
+    async function handleBusca(e){
         console.log('handleBusca()')
         e.preventDefault()
-        onBuscaUpdate(true)
+        console.log(converteData(dataBusca), cnpjBusca)
+        const response = await returnCreditos(converteData(dataBusca), converteData(dataBusca), cnpjBusca)
+        setCreditosTemp(response)
+        setDetalhes(true)
     }
 
     function handleVoltar(e){
         console.log('handleVoltar()')
         e.preventDefault()
-        onBuscaUpdate(false)
+        setDetalhes(false)
     }
 
     useEffect(()=>{
-        onAdmUpdate(adqSelecionada)
-    },[adqSelecionada])
+        console.log('CREDITOS TEMP: ',creditosTemp)
+        if(((detalhes === true) && creditosTemp.length === 0)){
 
-    useEffect(()=>{
-        onBanUpdate(banSelecionada)
-    },[banSelecionada])
+            setDetalhes(false)
+        }
+
+    },[creditosTemp])
 
     return(
         <>

@@ -200,11 +200,16 @@ const DetalhesVenda = () =>{
         if(adquirentesExistentes.length > 0 && bandeirasExistentes.length > 0){
             atualizaADQ()
         }
+
         if(banSelecionada === '' && adqSelecionada === ''){
             setVendasExibicao(vendasTeste)
         } 
         else if(banSelecionada !== '' && adqSelecionada === ''){
             let arrayFiltrado = vendasTeste.filter(venda => venda.bandeira.descricaoBandeira === banSelecionada)
+            setVendasExibicao(arrayFiltrado)
+        }
+        else if(banSelecionada === '' && adqSelecionada !== ''){
+            let arrayFiltrado = vendasTeste.filter(venda => venda.adquirente.nomeAdquirente === adqSelecionada)
             setVendasExibicao(arrayFiltrado)
         } else {
             let arrayFiltrado = vendasTeste.filter(venda => (venda.bandeira.descricaoBandeira === banSelecionada) && (venda.adquirente.nomeAdquirente === adqSelecionada))
@@ -214,7 +219,6 @@ const DetalhesVenda = () =>{
                 setVendasExibicao(vendasTeste)
             }
         }
-
     },[banSelecionada])
 
     useEffect(()=>{
@@ -222,11 +226,16 @@ const DetalhesVenda = () =>{
         if(adquirentesExistentes.length > 0 && bandeirasExistentes.length > 0){
             atualizaBAN()
         }
+        
         if(adqSelecionada === '' && banSelecionada === ''){
             setVendasExibicao(vendasTeste)
         }
         else if(adqSelecionada !== '' && banSelecionada === ''){
             let arrayFiltrado = vendasTeste.filter(venda => venda.adquirente.nomeAdquirente === adqSelecionada)
+            setVendasExibicao(arrayFiltrado)
+        }
+        else if(adqSelecionada === '' && banSelecionada !== ''){
+            let arrayFiltrado = vendasTeste.filter(venda => venda.bandeira.descricaoBandeira === banSelecionada)
             setVendasExibicao(arrayFiltrado)
         } else {
             let arrayFiltrado = vendasTeste.filter(venda => (venda.bandeira.descricaoBandeira === banSelecionada) && (venda.adquirente.nomeAdquirente === adqSelecionada))
@@ -236,7 +245,6 @@ const DetalhesVenda = () =>{
                 setVendasExibicao(vendasTeste)
             }
         }
-
     },[adqSelecionada])
 
 

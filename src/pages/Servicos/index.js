@@ -47,21 +47,6 @@ const Servicos = () =>{
         inicializar()
       },[])
 
-
-
-    useEffect(()=>{
-        console.log(ajustesTemp)
-        if(ajustesTemp !== undefined){
-            if(buscou === false){
-                buscarAjustes()
-                if(ajustesTemp.length === 0){
-                    alerta('Não existem ajustes para o período selecionado')
-                }
-                setBuscou(true)
-            }
-        }
-    },[ajustesTemp])
-
     useEffect(() => {
         if(ajustesTemp !== undefined){
             let totalTemp = [];
@@ -140,10 +125,6 @@ const Servicos = () =>{
     function handleBuscar2(){
         buscarAjustes()
     }
-
-    useEffect(()=>{
-        handleBuscar2()
-    },[cnpj])
 
     return(
         <div className='appPage app-page-servicos'>
