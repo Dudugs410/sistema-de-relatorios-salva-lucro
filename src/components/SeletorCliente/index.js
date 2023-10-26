@@ -28,8 +28,7 @@ const SeletorCliente = () => {
         Cookies.set('cnpj', cnpj)
       },[cnpj])*/
 
-      function handleCnpj(e){
-        e.preventDefault()
+      function handleCnpj(){
         console.log(cliSelecionado)
         console.log('CNPJ antes: ', cnpj)
         if(cliSelecionado !== cnpj){

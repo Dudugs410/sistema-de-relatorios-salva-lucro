@@ -530,7 +530,7 @@ const Dashboard = () => {
   return(
     <>
         <div className='appPage'>
-        { modalCliente && !(sessionStorage.getItem('cnpj') && sessionStorage.getItem('cnpj') !== 'selecione') && ( <ModalCliente/> ) }
+        { (modalCliente) && (!inicializouAux) && ( <ModalCliente/> ) }
         { loading && (<LoadingModal/>) }
         {cnpj && (
             <div className='content-area dash'>

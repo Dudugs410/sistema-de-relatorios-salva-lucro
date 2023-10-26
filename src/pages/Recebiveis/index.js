@@ -265,10 +265,12 @@ const Recebiveis = () =>{
       setCodigoBancos(listaCodigo)
     },[creditosTemp])
 
+    //codigo.substring(codigo.length - 3)//
+
     useEffect(() => {
       const fetchData = async () => {
         let promises = codigoBancos.map(async (codigo) => {
-          return await returnCreditosBanco(cnpj, dataBusca, dataBusca, codigo.substring(codigo.length - 3));
+          return await returnCreditosBanco(cnpj, dataBusca, dataBusca, codigo);
         });
     
         let tempArray = await Promise.all(promises);
