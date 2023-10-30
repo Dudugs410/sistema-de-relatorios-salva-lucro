@@ -10,7 +10,7 @@ const Servicos = () =>{
 
     const { 
         loadAjustes,
-        loadGrupos,
+        setGrupos,
         grupos, 
         cnpj, 
         alerta, 
@@ -41,7 +41,7 @@ const Servicos = () =>{
     useEffect(()=>{
         async function inicializar(){
           if(grupos.length === 0){
-            await loadGrupos()        
+            setGrupos(JSON.parse(sessionStorage.getItem('grupos')))       
           }
         }
         inicializar()

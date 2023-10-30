@@ -82,6 +82,10 @@ function AuthProvider({ children }){
         
         if(response.data.sucess === true){
           sessionStorage.setItem('isSignedIn', true)
+          await loadGrupos()
+          .then(
+            sessionStorage.setItem('grupos', JSON.stringify(grupos))
+          )
         }
         try {
           const response = await api.get('/usuario')
@@ -149,6 +153,8 @@ function AuthProvider({ children }){
     setTeste(true)
     setIsSignedIn(true)
     setCnpj('03953552000102')
+    setGrupos(gruposStatic)
+    sessionStorage.setItem('grupos', JSON.stringify(gruposStatic))
     console.log('************fim submitLogin()************')
     navigate('/dashboard')
   }
@@ -714,9 +720,6 @@ async function returnCreditos(datainicial, datafinal, cnpj){
         const recebimentosData = response.data
         setLoading(false)
           setRecebimentos(recebimentosData)
-          if(response.data.length === 0){
-            alerta('Não existem créditos para a data selecionada')
-          }
           return recebimentosData
       } catch (error) {
         console.log(error)

@@ -3,7 +3,6 @@ import Calendar from 'react-calendar'
 
 import BuscarClienteData from '../../components/Componente_BuscarClienteData'
 import TabelaGenericaAdm from '../../components/Componente_TabelaAdm'
-import DetalhesVenda from '../../components/DetalhesVenda'
 import TotalModalidadesComp from '../../components/Componente_TotalModalidades'
 
 import GerarRelatorio from "../../components/Componente_GerarRelatorio"
@@ -12,6 +11,7 @@ import './vendas.scss'
 import './Calendar.scss'
 import { AuthContext } from '../../contexts/auth'
 import Cookies from 'js-cookie'
+import DetalhesCredito from '../../components/DetalhesCredito'
 
 export const VendasContext = createContext({})
 
@@ -23,17 +23,13 @@ const Vendas = () =>{
     bandeiras, 
     loadBandeiras,
     grupos,
-    loadGrupos,
+    setGrupos,
     adquirentes,
     loadAdquirentes,
     vendas,
-    dateConvert,
     dateConvertSearch,
-    loadVendas,
     gerarDados,
     tableData,
-    setTableData,
-    totaisGlobal,
     setTotaisGlobal,
   } = useContext(AuthContext)
 
@@ -65,7 +61,7 @@ const Vendas = () =>{
       }
       
       if(grupos.length === 0){
-        await loadGrupos()        
+        setGrupos(JSON.parse(sessionStorage.getItem('grupos')))     
       }
       
       if(adquirentes.length === 0){
@@ -250,7 +246,7 @@ const Vendas = () =>{
             <hr className="hr-recebimentos"/>
             { detalhes ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
             <div className='component-container-vendas'>
-              { detalhes ?  <DetalhesVenda/> : <MyCalendar/> }
+              { detalhes ?  <DetalhesCredito array={vendas}/> : <MyCalendar/> }
               { detalhes ? <TabelaGenericaAdm Array={arrayAdm}/> : <></> }
               { detalhes ? <hr className='hr-recebimentos'/> : <></> }
               <BuscarClienteData />

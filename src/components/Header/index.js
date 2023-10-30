@@ -52,7 +52,7 @@ const Header = () =>{
     }
     ////////////////////////////////////////////////////////////////////////////////////
 
-    let tipoCliente = 0
+    let tipoCliente = 1
 
     const [arrayOpcoes, setArrayOpcoes] = useState([])
     const icones = {
@@ -122,10 +122,10 @@ const Header = () =>{
                     </div>
                     <div className='btn-container'>
                         <button type='button' className='btn-exit' onClick={logout}><FiPower color="#000000" size={24}/></button>
-                        <div class="toggle-container">
-                            <label class="switch">
+                        <div className="toggle-container">
+                            <label className="switch">
                                 <input type="checkbox" id="toggleButton" />
-                                <span class="slider"></span>
+                                <span className="slider"></span>
                             </label>
                         </div>
                     </div>

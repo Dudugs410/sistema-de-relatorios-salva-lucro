@@ -212,21 +212,27 @@ const DetalhesCredito = ({array}) =>{
     useEffect(()=>{
         console.log('mudou a bandeira selecionada')
         if(adquirentesExistentes.length > 0 && bandeirasExistentes.length > 0){
+            console.log('**** adquirentes e bandeiras > 0 ****')
             atualizaADQ()
         }
+
         if(banSelecionada === '' && adqSelecionada === ''){
             setVendasExibicao(vendasTeste)
         } 
         else if(banSelecionada !== '' && adqSelecionada === ''){
             let arrayFiltrado = vendasTeste.filter(venda => venda.bandeira.descricaoBandeira === banSelecionada)
             setVendasExibicao(arrayFiltrado)
-        } else {
+        } 
+        else if(banSelecionada !== '' && adqSelecionada !== ''){   
             let arrayFiltrado = vendasTeste.filter(venda => (venda.bandeira.descricaoBandeira === banSelecionada) && (venda.adquirente.nomeAdquirente === adqSelecionada))
             if(arrayFiltrado.length > 0){
                 setVendasExibicao(arrayFiltrado)
             } else if(arrayFiltrado.length === 0){
                 setVendasExibicao(vendasTeste)
             }
+        } else {
+            let arrayFiltrado = vendasTeste.filter(venda => venda.adquirente.nomeAdquirente === adqSelecionada)
+            setVendasExibicao(arrayFiltrado)
         }
 
     },[banSelecionada])
@@ -242,13 +248,16 @@ const DetalhesCredito = ({array}) =>{
         else if(adqSelecionada !== '' && banSelecionada === ''){
             let arrayFiltrado = vendasTeste.filter(venda => venda.adquirente.nomeAdquirente === adqSelecionada)
             setVendasExibicao(arrayFiltrado)
-        } else {
+        } else if (adqSelecionada !== '' && banSelecionada !== '') {
             let arrayFiltrado = vendasTeste.filter(venda => (venda.bandeira.descricaoBandeira === banSelecionada) && (venda.adquirente.nomeAdquirente === adqSelecionada))
             if(arrayFiltrado.length > 0){
                 setVendasExibicao(arrayFiltrado)
             } else if(arrayFiltrado.length === 0) {
                 setVendasExibicao(vendasTeste)
             }
+        } else {
+            let arrayFiltrado = vendasTeste.filter(venda => venda.bandeira.descricaoBandeira === banSelecionada)
+            setVendasExibicao(arrayFiltrado)
         }
 
     },[adqSelecionada])

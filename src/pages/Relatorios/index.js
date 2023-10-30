@@ -12,7 +12,7 @@ const Relatorios = () =>{
         grupos,
         loadAdquirentes, 
         loadBandeiras,
-        loadGrupos,
+        setGrupos,
         adquirentes,
         bandeiras,
         dataInicial,
@@ -38,7 +38,7 @@ const Relatorios = () =>{
         }
         
         if(grupos.length === 0){
-          await loadGrupos()        
+          setGrupos(JSON.parse(sessionStorage.getItem('grupos')))       
         }
       }
       inicializar()

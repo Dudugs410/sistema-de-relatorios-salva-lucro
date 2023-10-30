@@ -22,7 +22,7 @@ const Recebiveis = () =>{
       returnCreditos, 
       converteData, 
       grupos,
-      loadGrupos, 
+      setGrupos, 
       bandeiras, 
       loadBandeiras,
       adquirentes,
@@ -63,7 +63,7 @@ const Recebiveis = () =>{
         }
         
         if(grupos.length === 0){
-          await loadGrupos()        
+          setGrupos(JSON.parse(sessionStorage.getItem('grupos')))        
         }
       }
       inicializar()
@@ -249,15 +249,15 @@ const Recebiveis = () =>{
     useEffect(() => {
       const fetchData = async () => {
         let promises = codigoBancos.map(async (codigo) => {
-          return await returnCreditosBanco(cnpj, dataBusca, dataBusca, codigo.substring(codigo.length - 3));
-        });
+          return await returnCreditosBanco(cnpj, dataBusca, dataBusca, codigo.substring(codigo.length - 3))
+        })
     
-        let tempArray = await Promise.all(promises);
-        setArrayBancos(tempArray);
-      };
+        let tempArray = await Promise.all(promises)
+        setArrayBancos(tempArray)
+      }
     
-      fetchData();
-    }, [codigoBancos]);
+      fetchData()
+    }, [codigoBancos])
 
     useEffect(()=>{
       console.log('arrayBancos: ', arrayBancos)

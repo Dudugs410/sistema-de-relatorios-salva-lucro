@@ -12,7 +12,8 @@ const ModalCliente = () => {
         setCnpj, 
         loading, 
         setModalCliente,
-        alerta, 
+        alerta,
+        setGrupos, 
     } = useContext(AuthContext)
     
     const [cliente, setCliente] = useState('')
@@ -20,7 +21,10 @@ const ModalCliente = () => {
     const [gruSelecionado, setGruSelecionado] = useState('')
 
     async function iniciaGrupos(){
-        await loadGrupos()
+        setGrupos(JSON.parse(sessionStorage.getItem('grupos')))
+        if(grupos.length === 0){
+            loadGrupos()
+        }
     }
 
     useEffect(()=>{
