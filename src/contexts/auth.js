@@ -81,6 +81,8 @@ function AuthProvider({ children }){
         setRefreshToken(Cookies.get('refreshToken'))
         
         if(response.data.sucess === true){
+          setTeste(false)
+          sessionStorage.setItem('teste', false)
           sessionStorage.setItem('isSignedIn', true)
           await loadGrupos()
           .then(
@@ -94,9 +96,7 @@ function AuthProvider({ children }){
         
           if (userMatch) {
             sessionStorage.setItem('isSignedIn', true);
-            setTeste(false)
             const userData = { NOME: userMatch.NOME, EMAIL: userMatch.EMAIL }
-            sessionStorage.setItem('teste', teste)
             sessionStorage.setItem('userData', JSON.stringify(userData))
             localStorage.setItem('isSignedIn', true)
             if(localStorage.getItem('isDark')){
@@ -151,18 +151,17 @@ function AuthProvider({ children }){
           "ATIVO": true
       }))
     setTeste(true)
+    sessionStorage.setItem('teste', true)
     setIsSignedIn(true)
     setCnpj('03953552000102')
     setGrupos(gruposStatic)
     sessionStorage.setItem('grupos', JSON.stringify(gruposStatic))
-    console.log('************fim submitLogin()************')
     navigate('/dashboard')
   }
   
   /////desloga usuário
   function logout(){
     setLoading(true)
-    console.log('logout()')
     sessionStorage.clear()
     setIsSignedIn(false)
     Cookies.remove('token')
@@ -170,7 +169,6 @@ function AuthProvider({ children }){
     localStorage.setItem('isSignedIn', false)
     setLoading(false)
     navigate('/')
-    console.log('************fim logout()************')
   }
 
   function expired(){
@@ -181,7 +179,6 @@ function AuthProvider({ children }){
     Cookies.remove('refreshToken')
     localStorage.setItem('isSignedIn', false)
     navigate('/')
-    console.log('************fim sessão expirada************')
   }
 
   //////////////////////////////////////////////////////////////////
@@ -255,8 +252,6 @@ function AuthProvider({ children }){
 
     async function loadVendas(dataInicial, cnpj, adquirente, bandeira){
       if(teste !== true){
-        console.log('Data Inicial: ', dataInicial)
-        console.log('CNPJ: ', cnpj)
   
         if((dataInicial === '' || undefined) || (cnpj === '' || undefined)){
           alert('Favor selecionar uma data e cliente válidos')
@@ -267,7 +262,6 @@ function AuthProvider({ children }){
         let params = {}
   
         if(((adquirente !== '') && (bandeira !== '')) && (buscou === false)){
-            console.log('adquirente e bandeira')
             params = {
             dataInicial: dataInicial,
             datafinal: dataInicial,
@@ -290,7 +284,6 @@ function AuthProvider({ children }){
         }
   
         else if(((bandeira !== '') && (adquirente === '')) && (buscou === false)){
-          console.log('bandeira sem adquirente')
           params = {
           datainicial: dataInicial,
           datafinal: dataInicial,
@@ -325,7 +318,6 @@ function AuthProvider({ children }){
             })
             .catch((error) => {
             setLoading(false)
-            console.log('config: ',config)
             console.log(error)
             })
       }else{
@@ -424,7 +416,6 @@ function AuthProvider({ children }){
       let params = {}
 
       if(((adquirente !== '') && (bandeira !== '')) && (buscou === false)){
-        console.log('adquirente e bandeira')
         params = {
           datainicial: datainicial,
           datafinal: datafinal,
@@ -436,7 +427,6 @@ function AuthProvider({ children }){
       }
 
       else if(((adquirente !== '') && (bandeira === '')) && (buscou === false)){
-        console.log('adquirente sem bandeira')
         params = {
           datainicial: datainicial,
           datafinal: datafinal,
@@ -447,7 +437,6 @@ function AuthProvider({ children }){
       }
 
       else if(((bandeira !== '') && (adquirente === '')) && (buscou === false)){
-        console.log('bandeira sem adquirente')
         params = {
           datainicial: datainicial,
           datafinal: datafinal,
@@ -481,7 +470,6 @@ function AuthProvider({ children }){
           })
           .catch((error) => {
           setLoading(false)
-          console.log('config: ',config)
           console.log(error)
           })
     }else{
@@ -527,8 +515,6 @@ async function retornaRecebimentos(cnpj, datainicial, datafinal){
     //Ajustes
 
     async function loadAjustes(cnpj, dataInicial, dataFinal){
-      console.log('dataInicial: ', dataInicial, 'dataFinal: ', dataFinal)
-      console.log(dateConvertSearch(dataInicial), dateConvertSearch(dataFinal))
       if(teste !== true){
         setLoading(true)
 
@@ -699,8 +685,6 @@ async function returnCreditos(datainicial, datafinal, cnpj){
   if(teste !== true){
     try {
       setLoading(true);
-      console.log(cnpj)
-      console.log(datainicial)
       let params = {
         cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
         dataInicial: dateConvert(datainicial),
@@ -781,7 +765,6 @@ async function returnTotalMes(cnpj){
     }
   }
   setLoading(false)
-  console.log('VENDAS DO MES: ', mes)
   return mes
 }
 
@@ -862,7 +845,6 @@ function alerta(text){
 
 function gerarDados(array){
   tableData.length = 0
-  console.log('vendas ao gerar Dados: ', array)
   if (array.length > 0) {
     array.map((venda) => {
       tableData.push({
@@ -884,7 +866,6 @@ function gerarDados(array){
       })
     })
   } 
-  console.log('tableData: ', tableData)
   return tableData
 }
 
@@ -988,6 +969,7 @@ function gerarDados(array){
         gerarDados,
         totaisGlobal,
         setTotaisGlobal,
+        setIsDarkTheme,
       }}
     >
       {children}

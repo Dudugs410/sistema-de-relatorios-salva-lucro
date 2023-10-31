@@ -85,7 +85,7 @@ const Dashboard = () => {
 
     useEffect(()=>{
         if(teste){
-            setCnpj(0)
+            setCnpj(Cookies.get('cnpj'))
             setCnpjSelecionado(true)
         }
     },[])
@@ -110,12 +110,7 @@ const Dashboard = () => {
         vendaDataFinal.setDate(vendaDataFinal.getDate() -1)
         vendaDataFinal = converteData(vendaDataFinal)
 
-        console.log('vendaDataInicial: ',vendaDataInicial)
-        console.log('vendaDataFinal: ',vendaDataFinal)
-
         const vendasTemp = await returnVendas(vendaDataInicial, vendaDataFinal, cnpj)
-
-        console.log('vendasTemp:', vendasTemp)
         setVendas4dias(vendasTemp)
     }
 
@@ -157,28 +152,12 @@ const Dashboard = () => {
         const mesAtual = dataAtual.getMonth() + 1;
         const ultimoDiaDoMes = new Date(anoAtual, mesAtual, 0).getDate();
 
-        console.log('dataAtual: ',)
-        console.log('anoAtual: ',)
-        console.log('mesAtual: ',)
-        console.log('ultimoDiaDoMes: ',)
-
         let creditosTemp = []
 
-        console.log('********** inicio do for **********')
         for (let day = 1; day <= ultimoDiaDoMes; day++) {
             creditosTemp.push(await returnCreditos(`${anoAtual}-${mesAtual}-${day}`, `${anoAtual}-${mesAtual}-${day}`, cnpj))
         }
-        console.log('********** Fim do for **********')
-
-        console.log('********************************')
-        console.log('creditosTemp: ', creditosTemp)
-        console.log('********************************')
-
         setVetorCreditosMes(creditosTemp)
-
-        console.log('********************************')
-        console.log('vetorCreditosMes: ', vetorCreditosMes)
-        console.log('********************************')
     }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -242,20 +221,14 @@ const Dashboard = () => {
     },[vendasMes])
 
     useEffect(()=>{
-
-        console.log('vendas4dias: ', vendas4dias)
         const totalTemp = vendas4dias.reduce((total, obj) => total + obj.valorLiquido, 0)
         setTotalVendas4dias(totalTemp)
         if(totalTemp > 0){
             setTotalVendas4diasAux(totalTemp)
         }
-
-
     },[vendas4dias])
     
     useEffect(()=>{
-
-            console.log('Creditos5dias: ', creditos5dias)
             let dataHoje = new Date()
             dataHoje = converteData(dataHoje)
             let totalHoje = 0
@@ -286,8 +259,6 @@ const Dashboard = () => {
     },[creditos5dias])
 
     useEffect(()=>{
-
-            console.log('vetorVendasMes: ',vetorVendasMes)
             let temp = []
     
             vetorVendasMes.forEach((array)=>{
@@ -376,10 +347,7 @@ const Dashboard = () => {
     },[vetorVendasMes])
 
     useEffect(()=>{
-
-            console.log(admVendas)
             if(teste !== true){
-                console.log('admVendas: ', admVendas)
                 setGraficoVendas(carregaGrafico(admVendas))
                 if(admVendasAux.length > 0){
                     setGraficoVendasAux(carregaGrafico(admVendasAux))
@@ -389,8 +357,6 @@ const Dashboard = () => {
     },[admVendas])
 
     useEffect(()=>{
-
-            console.log('vetorCreditosMes: ',vetorCreditosMes)
             let temp = []
     
             vetorCreditosMes.forEach((array)=>{
@@ -476,7 +442,6 @@ const Dashboard = () => {
                     }
                 ]
             }
-            console.log('temp antes de setar admCreditos / admCreditosAux: ', temp)
             setAdmCreditos(temp)
             if(temp.length > 0){
                 setAdmCreditosAux(temp)
@@ -486,8 +451,6 @@ const Dashboard = () => {
 
     useEffect(()=>{
             if(teste !== true){
-                console.log('carrega grafico de créditos com o vetor admCreditos / admCreditosAux')
-                console.log('admCreditos: ', admCreditos)
                 setGraficoCreditos(carregaGrafico(admCreditos))
                 if(admCreditosAux.length > 0){
                     setGraficoCreditosAux(carregaGrafico(admCreditosAux))
@@ -500,7 +463,6 @@ const Dashboard = () => {
         let label = []
         let data = []
 
-        console.log('carregaGrafico Array: ', array)
         array.forEach((posicao) => {
             const valorTotal = posicao.total
             const nomeAdq = posicao.nomeAdquirente
@@ -508,7 +470,6 @@ const Dashboard = () => {
             label.push(nomeAdq)
         })
         const obj = {labels: label, data: data}
-        console.log('obj: ', obj)
         return obj    
     }
 
@@ -576,14 +537,15 @@ const Dashboard = () => {
                                         { inicializouAux === true ? <td className='cell-text dash-td' data-label="Previsão Próx 5 Dias">R$ {totalCreditos5diasAux.toFixed(2).replace('.',',')}</td> : <td className='cell-text dash-td' data-label="Previsão Próx 5 Dias">R$ {totalCreditos5dias.toFixed(2).replace('.',',')}</td>}
                                     </tr>
                                 </tbody>
-                        </table>
-                    </div>
-                </div>            
-            </div>
-        )}
+                            </table>
+                        </div>
+                    </div>            
+                </div>
+            )}
         </div> 
     </>  
   )  
 }
 
 export default Dashboard
+
