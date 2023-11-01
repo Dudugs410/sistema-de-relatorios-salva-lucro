@@ -81,6 +81,8 @@ function AuthProvider({ children }){
         setRefreshToken(Cookies.get('refreshToken'))
         
         if(response.data.sucess === true){
+          setCnpj('')
+          Cookies.set('cnpj', '')
           setTeste(false)
           sessionStorage.setItem('teste', false)
           sessionStorage.setItem('isSignedIn', true)
