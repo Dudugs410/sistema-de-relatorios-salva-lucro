@@ -8,7 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import './Seletor.scss'
 
 const SeletorCliente = () => {
-    const { gruSelecionado, setGruSelecionado, listaClientes, setListaClientes,setGrupos } = useContext(AuthContext)
+    const { gruSelecionado, setGruSelecionado, listaClientes, setListaClientes, setGrupos, resetaSomatorios, alerta } = useContext(AuthContext)
     const { grupos, cnpj, setCnpj, inicializouAux, setInicializouAux } = useContext(AuthContext)
 
     const [cliSelecionado, setCliSelecionado] = useState('')
@@ -33,13 +33,16 @@ const SeletorCliente = () => {
         e.preventDefault()
         console.log(cliSelecionado)
         console.log('CNPJ antes: ', cnpj)
-        if(cliSelecionado !== cnpj){
+        if((cliSelecionado !== cnpj) && (cliSelecionado !== '') && (cliSelecionado !== 'selecione')){
+            resetaSomatorios()
             setCnpj(cliSelecionado)
             setInicializouAux(false)
             sessionStorage.setItem('inicializou', false)
             sessionStorage.setItem('codigoGrupo', gruSelecionado)
             Cookies.set('cnpj', cliSelecionado)
-
+        } 
+        else if((cliSelecionado === '') || (cliSelecionado ==='selecione')){
+            alerta('Selecione um cliente válido')
         }
       }
 

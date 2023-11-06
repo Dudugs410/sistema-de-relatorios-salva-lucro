@@ -111,6 +111,7 @@ const Dashboard = () => {
         vendaDataFinal = converteData(vendaDataFinal)
 
         const vendasTemp = await returnVendas(vendaDataInicial, vendaDataFinal, cnpj)
+        
         setVendas4dias(vendasTemp)
     }
 

@@ -161,14 +161,76 @@ function AuthProvider({ children }){
     navigate('/dashboard')
   }
   
+  /////Reseta valores globais
+  function resetaValores(){
+    sessionStorage.clear()
+    setIsSignedIn(false)
+    
+    Cookies.remove('token')
+    Cookies.remove('refreshToken')
+    Cookies.remove('cnpj')
+
+    setVendas([])
+    setRecebimentos([])
+
+    localStorage.setItem('isSignedIn', false)
+
+    setDataInicial(new Date())
+    setDataFinal(new Date())
+    setCnpj('')
+    setVendas([])
+    setVendasDash([])
+    setTableData([])
+    setTotaisGlobal({debito: 0, credito: 0, voucher: 0, liquido: 0})
+  
+    setRecebimentos([])
+    setRecebimentosDash([])
+  
+    setVendaAtual([])
+    setVendaDias([])
+  
+    setBandeiras([])
+    setGrupos([]) 
+    setClientes([])
+    setAdquirentes([])
+  
+    setGruSelecionado('')
+    setListaClientes('')
+    setInicializouGruposAux(false)
+  
+    setModalCliente(true)
+    setBuscou(false)
+  
+    setIsDarkTheme(false)
+    setTeste(false)
+  
+    setAdmVendasAux([])
+    setAdmCreditosAux([])
+    setSomatorioCreditosHojeAux(0)
+    setTotalCreditos5diasAux(0)
+    setSomatorioVendasMesAux(0)
+    setTotalVendas4diasAux(0)
+    setGraficoVendasAux({data: [], labels: []})
+    setGraficoCreditosAux({data: [], labels: []})
+    setInicializouAux(false)
+
+    console.log('<<< * Valores Resetados * >>>')
+  }
+
+  /////reseta somatorios globais dos valores de vendas/créditos
+
+  function resetaSomatorios(){
+    setTotaisGlobal({debito: 0, credito: 0, voucher: 0, liquido: 0})
+    setSomatorioCreditosHojeAux(0)
+    setTotalCreditos5diasAux(0)
+    setSomatorioVendasMesAux(0)
+    setTotalVendas4diasAux(0)
+  }
+
   /////desloga usuário
   function logout(){
     setLoading(true)
-    sessionStorage.clear()
-    setIsSignedIn(false)
-    Cookies.remove('token')
-    Cookies.remove('refreshToken')
-    localStorage.setItem('isSignedIn', false)
+    resetaValores()
     setLoading(false)
     navigate('/')
   }
@@ -675,7 +737,13 @@ async function returnVendas(datainicial, datafinal, cnpj, adquirente, bandeira){
         setBuscou(false)
         return vendasData
       } catch (error) {
-        console.log(error)
+        console.log(error.response.status)
+        if(error.response.status === 401){
+          alerta('Sessão expirada. Você deve fazer o Login novamente para continuar a utilizar o sistema')
+          setLoading(false)
+          navigate('/')
+          return
+        }
         setLoading(false)
       }
   }else{
@@ -709,6 +777,11 @@ async function returnCreditos(datainicial, datafinal, cnpj){
           return recebimentosData
       } catch (error) {
         console.log(error)
+        if(error.status === 401){
+          alerta('Sessão expirada. Você deve fazer o Login novamente para continuar a utilizar o sistema')
+          setLoading(false)
+          navigate('/')
+        }
         setLoading(false)
       }
     } catch (error) {
@@ -972,6 +1045,7 @@ function gerarDados(array){
         totaisGlobal,
         setTotaisGlobal,
         setIsDarkTheme,
+        resetaSomatorios,
       }}
     >
       {children}

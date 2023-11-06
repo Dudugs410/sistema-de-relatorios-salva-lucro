@@ -23,6 +23,27 @@ const Header = () =>{
     const [nomeCliente, setNomeCliente] = useState('-')
     const [codCliente, setCodCliente] = useState('-')
     const [headerCnpj, setHeaderCnpj] = useState('-')
+
+/////////////////////////////////////////////////////////////////////////////
+
+    const {isDarkTheme, setIsDarkTheme} = useContext(AuthContext)
+
+    useEffect(()=>{
+        setIsDarkTheme(JSON.parse(localStorage.getItem('isDark')))
+    },[])
+
+    const toggleTheme = (e) => {
+      e.preventDefault()
+      setIsDarkTheme(!isDarkTheme);
+      
+    }
+
+    useEffect(()=>{
+      console.log('isDarkTheme: ', isDarkTheme)
+        localStorage.setItem('isDark', isDarkTheme)
+    },[isDarkTheme])
+
+/////////////////////////////////////////////////////////////////////////////
     
     useEffect(()=>{
         setNome(JSON.parse(sessionStorage.getItem('userData')).NOME)
@@ -125,7 +146,7 @@ const Header = () =>{
                         <div className="toggle-container">
                             <label className="switch">
                                 <input type="checkbox" id="toggleButton" />
-                                <span className="slider"></span>
+                                <span className="slider" onClick={toggleTheme}></span>
                             </label>
                         </div>
                     </div>
