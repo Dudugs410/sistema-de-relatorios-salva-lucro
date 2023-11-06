@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
 import DetalhesCredito from '../DetalhesCredito';
@@ -14,6 +14,14 @@ const PieChart = ({ data01, arrayAdm }) => {
   const [showAdm, setShowAdm] = useState(false)
   const [selectedAdm, setSelectedAdm] = useState(null)
   const [showAdmModal, setShowAdmModal] = useState(false)
+
+  useEffect(()=>{
+    console.log('data01: ', data01)
+  },[data01])
+
+  useEffect(()=>{
+    console.log('arrayAdm: ', arrayAdm)
+  },[arrayAdm])
   
   if (!data01 || data01.length === 0) {
     return <div>Loading...</div>; // Display a loading state or alternative content
@@ -119,19 +127,17 @@ const PieChart = ({ data01, arrayAdm }) => {
   }
 
   const generateColors = (labels) => {
-    console.log('label:', labels)
-    console.log('generateColors: ', labelColors[labels])
     return labels.map(label => labelColors[label] || 'grey');
   }
 
 
   const chartData = {
-    labels: data01.labels,
+    labels: data01.labels.slice().sort(),
     datasets: [
       {
         label: 'Total de Vendas: R$',
         data: data01.data,
-        backgroundColor: generateColors(data01.labels),
+        backgroundColor: generateColors(data01.labels.slice().sort()),
         borderWidth: 0.2,
       },
     ],
