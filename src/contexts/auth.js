@@ -101,7 +101,7 @@ function AuthProvider({ children }){
             const userData = { NOME: userMatch.NOME, EMAIL: userMatch.EMAIL }
             sessionStorage.setItem('userData', JSON.stringify(userData))
             localStorage.setItem('isSignedIn', true)
-            if(localStorage.getItem('isDark')){
+            if(localStorage.getItem('isDark') && (localStorage.getItem('isDark') !== undefined)){
               setIsDarkTheme(localStorage.getItem('isDark'))
             }
             else{
@@ -1044,7 +1044,6 @@ function gerarDados(array){
         gerarDados,
         totaisGlobal,
         setTotaisGlobal,
-        setIsDarkTheme,
         resetaSomatorios,
       }}
     >

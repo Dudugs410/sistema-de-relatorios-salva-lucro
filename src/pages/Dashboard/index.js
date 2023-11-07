@@ -55,6 +55,7 @@ const Dashboard = () => {
         setGraficoCreditosAux,
         inicializouAux,
         setInicializouAux,
+        isDarkTheme,
 
     } = useContext(AuthContext)
 
@@ -259,6 +260,23 @@ const Dashboard = () => {
         
     },[creditos5dias])
 
+    const sortArray = (arrayAdq) => {
+        const sortedArray = [...arrayAdq].sort((a, b) => {
+          const nameA = a.nomeAdquirente.toUpperCase();
+          const nameB = b.nomeAdquirente.toUpperCase();
+      
+          if (nameA < nameB) {
+            return -1;
+          }
+          if (nameA > nameB) {
+            return 1;
+          }
+          return 0;
+        });
+      
+        return sortedArray;
+      };
+
     useEffect(()=>{
             let temp = []
     
@@ -339,10 +357,10 @@ const Dashboard = () => {
                 ]
             }
     
-            setAdmVendas(temp)
+            setAdmVendas(sortArray(temp))
 
             if(temp.length > 0){
-                setAdmVendasAux(temp)
+                setAdmVendasAux(sortArray(temp))
             }
         
     },[vetorVendasMes])
@@ -443,14 +461,15 @@ const Dashboard = () => {
                     }
                 ]
             }
-            setAdmCreditos(temp)
+            setAdmCreditos(sortArray(temp))
             if(temp.length > 0){
-                setAdmCreditosAux(temp)
+                setAdmCreditosAux(sortArray(temp))
             }
         
     },[vetorCreditosMes])
 
     useEffect(()=>{
+        console.log(admCreditos)
             if(teste !== true){
                 setGraficoCreditos(carregaGrafico(admCreditos))
                 if(admCreditosAux.length > 0){
@@ -491,26 +510,26 @@ const Dashboard = () => {
 
   return(
     <>
-        <div className='appPage'>
+        <div className={`appPage ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
         { (modalCliente) && (!inicializouAux) && ( <ModalCliente/> ) }
         { loading && (<LoadingModal/>) }
         {cnpj && (
-            <div className='content-area dash'>
-                <div className='data-group-area'>
-                    <div className='graph-data'>
-                        <h1 className='title-chart'>Vendas:</h1>
+            <div className={`content-area dash ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                <div className={`data-group-area ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                    <div className={`graph-data ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                        <h1 className={`title-chart ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Vendas:</h1>
                         { inicializouAux === true ? <PieChart data01 = {graficoVendasAux} arrayAdm={admVendasAux}/> : <PieChart data01 = {graficoVendas} arrayAdm={admVendas}/>}
                     </div>
-                    <div className='table-data table-data-dashboard'>
-                        <table className="table dash-table det-table dash-body-flex tbody-sticky table-chart-dash">
+                    <div className={`table-data table-data-dashboard ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                        <table className={`table dash-table det-table dash-body-flex tbody-sticky table-chart-dash${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                             <thead className='dash-thead'>
-                                <tr className='dash-tr'>
+                                <tr className={`dash-tr ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                                     <th className='dash-th' scope="col">Total Últimos 4 dias</th>
                                     <th className='dash-th' scope="col">Total do Mês</th>
                                 </tr>
                             </thead>
-                            <tbody className='dash-tbody dash-tbody-bg'>
-                                <tr className='dash-tr'>
+                            <tbody className={`dash-tbody dash-tbody-bg ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                                <tr className={`dash-tr ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                                 { inicializouAux === true ? <td className='cell-text dash-td' data-label="Total Últimos 4 dias">R$ {totalVendas4diasAux.toFixed(2).replace('.',',')}</td> : <td className='cell-text dash-td' data-label="Total Últimos 4 dias">R$ {totalVendas4dias.toFixed(2).replace('.',',')}</td>}
                                 { inicializouAux === true ? <td className='cell-text dash-td' data-label="Total do Mês">R$ {somatorioVendasMesAux.toFixed(2).replace('.',',')}</td> : <td className='cell-text dash-td' data-label="Total do Mês">R$ {somatorioVendasMes.toFixed(2).replace('.',',')}</td>}
                                 </tr>
@@ -518,22 +537,22 @@ const Dashboard = () => {
                         </table>
                     </div>
                 </div>
-                <div className='data-group-area'>
-                    <div className='graph-data'>
-                        <h1 className='title-chart'>Créditos:</h1>
+                <div className={`data-group-area ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                    <div className={`graph-data ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                        <h1 className={`title-chart ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Créditos:</h1>
                         { inicializouAux === true ? <PieChart data01 = {graficoCreditosAux} arrayAdm={admCreditosAux}/> : <PieChart data01 = {graficoCreditos} arrayAdm={admCreditos}/>}
                     </div>
                     
-                    <div className='table-data table-data-dashboard'>
-                        <table className="table dash-table det-table dash-body-flex tbody-sticky table-chart-dash">
+                    <div className={`table-data table-data-dashboard ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                        <table className={`table dash-table det-table dash-body-flex tbody-sticky table-chart-dash${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                                 <thead className='dash-thead'>
-                                    <tr className='dash-tr'>
+                                    <tr className={`dash-tr ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                                         <th className='dash-th' scope="col">Previsão de Hoje</th>
                                         <th className='dash-th' scope="col">Previsão Próx 5 Dias</th>
                                     </tr>
                                 </thead>
-                                <tbody className='dash-tbody dash-tbody-bg'>
-                                    <tr className='dash-tr'>
+                                <tbody className={`dash-tbody dash-tbody-bg ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                                    <tr className={`dash-tr ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                                         { inicializouAux === true ? <td className='cell-text dash-td' data-label="Previsão de Hoje">R$ {somatorioCreditosHojeAux.toFixed(2).replace('.',',')}</td> : <td className='cell-text dash-td' data-label="Previsão de Hoje">R$ {somatorioCreditosHoje.toFixed(2).replace('.',',')}</td>}
                                         { inicializouAux === true ? <td className='cell-text dash-td' data-label="Previsão Próx 5 Dias">R$ {totalCreditos5diasAux.toFixed(2).replace('.',',')}</td> : <td className='cell-text dash-td' data-label="Previsão Próx 5 Dias">R$ {totalCreditos5dias.toFixed(2).replace('.',',')}</td>}
                                     </tr>

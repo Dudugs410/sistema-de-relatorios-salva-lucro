@@ -24,24 +24,37 @@ const Header = () =>{
     const [codCliente, setCodCliente] = useState('-')
     const [headerCnpj, setHeaderCnpj] = useState('-')
 
+    const [isChecked, setIsChecked] = useState(localStorage.getItem('isChecked') === 'true');
+
 /////////////////////////////////////////////////////////////////////////////
 
     const {isDarkTheme, setIsDarkTheme} = useContext(AuthContext)
 
-    useEffect(()=>{
-        setIsDarkTheme(JSON.parse(localStorage.getItem('isDark')))
-    },[])
+    const handleCheckboxChange = () => {
+        const updatedChecked = !isChecked
 
-    const toggleTheme = (e) => {
-      e.preventDefault()
-      setIsDarkTheme(!isDarkTheme);
-      
-    }
+        setIsChecked(updatedChecked)
+        setIsDarkTheme(updatedChecked)
+        localStorage.setItem('isChecked', updatedChecked)
+        localStorage.setItem('isDark', updatedChecked)
+    };
 
-    useEffect(()=>{
-      console.log('isDarkTheme: ', isDarkTheme)
-        localStorage.setItem('isDark', isDarkTheme)
+    useEffect(() =>{
+        console.log('isChecked: ', isChecked)
+    },[isChecked])
+
+    useEffect(() =>{
+        console.log('isDarkTheme: ', isDarkTheme)
     },[isDarkTheme])
+
+    useEffect(() => {
+        const savedState = localStorage.getItem('isChecked')
+        if (savedState !== null) {
+          setIsChecked(savedState === 'true')
+          setIsDarkTheme(savedState === 'true')
+        }
+      }, [])
+    
 
 /////////////////////////////////////////////////////////////////////////////
     
@@ -49,7 +62,6 @@ const Header = () =>{
         setNome(JSON.parse(sessionStorage.getItem('userData')).NOME)
         setEmail(JSON.parse(sessionStorage.getItem('userData')).EMAIL)
         setCodCliente(sessionStorage.getItem('codigoCliente'))
-    
     },[])
 
     useEffect(()=>{
@@ -67,10 +79,6 @@ const Header = () =>{
         })
     },[cnpj])
 
-    async function handleRefresh(e){
-        e.preventDefault()
-        await refresh()
-    }
     ////////////////////////////////////////////////////////////////////////////////////
 
     let tipoCliente = 1
@@ -144,9 +152,9 @@ const Header = () =>{
                     <div className='btn-container'>
                         <button type='button' className='btn-exit' onClick={logout}><FiPower color="#000000" size={24}/></button>
                         <div className="toggle-container">
-                            <label className="switch">
-                                <input type="checkbox" id="toggleButton" />
-                                <span className="slider" onClick={toggleTheme}></span>
+                            <label className="switch" >
+                                <input type="checkbox" id="toggleButton" checked={isChecked} onChange={handleCheckboxChange}/>
+                                <span className="slider"></span>
                             </label>
                         </div>
                     </div>
