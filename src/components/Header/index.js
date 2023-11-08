@@ -166,7 +166,7 @@ const Header = () =>{
                                 return(
                                     <li className="nav-item" key={opcao.id}>
                                         <Link to={opcao.rota} className="nav-hover nav-text nav-link active text-shadow" aria-current="page">
-                                            <button className="li-button-content">
+                                            <button className={`li-button-content ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                                             <span className="li-btn-text">{opcao.nome}</span>&nbsp;&nbsp;&nbsp;{optionsWithIcons.length > 0 ? React.createElement(optionsWithIcons[opcao.id].icone) : null}
                                             </button>
                                         </Link>

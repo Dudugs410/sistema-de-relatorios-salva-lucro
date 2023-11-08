@@ -10,14 +10,32 @@
     
 }
 
-.date-container{
+.date-container-recebimentos{
     width: 100%;
     display: inline-flex;
-    background-color: $background-color-light;
     padding: 20px;
     flex-direction: row;
     align-items: center;
+    &.light-theme{
+        background-color: $background-color-light;
+    }
+    &.dark-theme{
+        background-color: $background-color-dark;
+    }
+}
 
+.date-container{
+    width: 100%;
+    display: inline-flex;
+    padding: 20px;
+    flex-direction: row;
+    align-items: center;
+    &.light-theme{
+        background-color: $background-color-light;
+    }
+    &.dark-theme{
+        background-color: $background-color-dark;
+    }
 }
 
 .date-column{
@@ -42,14 +60,14 @@
 
 }
 
-.date-container>.date-column>input{
+.date-container-recebimentos>.date-column>input{
     height: 2.2em;
     border-radius: 10px;
     width: 80%;
     
 }
 
-.date-container>.date-column>span{
+.date-container-recebimentos>.date-column>span{
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -57,7 +75,7 @@
     
 }
 
-.date-container>.date-column>select{
+.date-container-recebimentos>.date-column>select{
     display: flex;
     height: 2.2em;
     text-align: center;
@@ -157,7 +175,7 @@
         
     }
     
-    .date-container{
+    .date-container-recebimentos{
         width: 100%;
         align-self: center;
         display: flex;
@@ -203,24 +221,24 @@
         height: 2em;
     }
     
-    .date-container>input{
+    .date-container-recebimentos>input{
         height: auto;
         border-radius: 10px;
     }
     
-    .date-container>select{
+    .date-container-recebimentos>select{
         height: auto;
         border-radius: 10px;
     }
     
-    .date-container>span{
+    .date-container-recebimentos>span{
         display: flex;
         flex-direction: column;
         justify-content: center;
         font-weight: bold;
     }
     
-    .date-container>select{
+    .date-container-recebimentos>select{
         display: flex;
         text-align: center;
     }

@@ -33,7 +33,8 @@ const BuscarClienteData = () => {
         dateConvertSearch,
         teste,
         setVendas,
-        setTotaisGlobal, 
+        setTotaisGlobal,
+        isDarkTheme, 
     } = useContext(AuthContext)
 
     const { 
@@ -160,9 +161,9 @@ const BuscarClienteData = () => {
                 theme="light"
         />
             <div className='search-bar'>
-                <form className='date-container'>       
+                <form className={`date-container-vendas ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>       
                     <div className='submit-container select-align'>
-                        { detalhes ? <button className="btn btn-secondary btn-submit" onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className="btn btn-primary btn-submit" onClick={handleBusca}>Pesquisar</button>}
+                        { detalhes ? <button className={`btn btn-secondary btn-submit ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className="btn btn-primary btn-submit" onClick={handleBusca}>Pesquisar</button>}
                     </div>      
                 </form>
             </div>

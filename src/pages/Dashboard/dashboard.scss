@@ -25,6 +25,7 @@
   padding-right: 20%;
   display: flex;
   flex-direction: column;
+  transition: all 2s;
 
   &.light-theme{
     background-color: $primary-color-light;
@@ -48,6 +49,7 @@
   align-self: center;
   padding: 5px;
   border-radius: 20px;
+  transition: all 2s;
 
     &.light-theme{
       color: $font-color-light;
@@ -83,6 +85,7 @@
   width: 100%;
   border-radius: 20px 20px 0 0;
   box-shadow:inset 0px 270px 0px 0px;
+  transition: all 2s;
 
 
   &.light-theme{
@@ -106,6 +109,7 @@
   flex-direction: row;
   flex-wrap: wrap;
   overflow-y: auto;
+  transition: all 2s;
 
   &.light-theme{
     background-color: $background-color-light;
@@ -147,6 +151,7 @@
 .dash-table{
   border: 0;
   max-height: 0px;
+  transition: all 2s;
   &.light-theme{
     color: $font-color-light;
   }
@@ -157,6 +162,7 @@
 }
 
 .dash-tbody-bg{
+  transition: all 2s;
   &.light-theme{
     background-color: $background-color-light;
   }
@@ -199,16 +205,15 @@
   align-content: stretch;
   align-items: stretch;
   position: relative;
-  top: 50px;
+  top: 3px;
 
   &.light-theme{
-    color: $secondary-color-light;
+    color: $primary-color-light;
   }
 
   &.dark-theme{
     color: $secondary-color-dark;
   }
-
 }
 
 .dash-table .dash-td{
@@ -226,19 +231,15 @@
 }
 
 .dash-table .dash-td::before{
+  content: attr(data-label);
+  float: left;
+  font-weight: bold;
+  text-transform: uppercase;
   &.light-theme{
-    content: attr(data-label);
-    float: left;
-    font-weight: bold;
-    text-transform: uppercase;
-    color: $font-color-light
+    color: $font-color-light;
   }
 
   &.dark-theme{
-    content: attr(data-label);
-    float: left;
-    font-weight: bold;
-    text-transform: uppercase;
     color: $font-color-dark;
   }
 }
@@ -252,13 +253,11 @@
   flex-direction: column;
   justify-content: center;
   text-align: center;
-
 }
 
 .sticky-th{
   position: sticky;
   top: 0;
-
 }
 
 @media screen and (max-width: 869px){
@@ -267,7 +266,6 @@
     flex-direction: column;
     flex-wrap: wrap;
     align-content: stretch;
-
   }
 
   .data-group-area{
@@ -278,7 +276,6 @@
     padding-right: 0%;
     display: flex;
     flex-direction: column;
-
   }
 
   .data-group-area{
@@ -286,5 +283,3 @@
   }
 
 }
-
-

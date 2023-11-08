@@ -8,7 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import './Seletor.scss'
 
 const SeletorCliente = () => {
-    const { gruSelecionado, setGruSelecionado, listaClientes, setListaClientes, setGrupos, resetaSomatorios, alerta } = useContext(AuthContext)
+    const { gruSelecionado, setGruSelecionado, listaClientes, setListaClientes, setGrupos, resetaSomatorios, alerta, isDarkTheme } = useContext(AuthContext)
     const { grupos, cnpj, setCnpj, inicializouAux, setInicializouAux } = useContext(AuthContext)
 
     const [cliSelecionado, setCliSelecionado] = useState('')
@@ -62,7 +62,7 @@ const SeletorCliente = () => {
             />
             
             <div className='search-bar-seletor'>
-                <form className='date-container-seletor'>
+                <form className={`date-container-seletor ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                     <div className='date-column-seletor'>
                         <div className='select-card-seletor'>
                             <span>Grupo de Clientes</span>
@@ -92,7 +92,7 @@ const SeletorCliente = () => {
                     </div>
 
                     <div className="select-btn-seletor">
-                        <button className="btn btn-primary btn-seletor" onClick={handleCnpj}>Selecionar</button>
+                        <button className={`btn btn-primary btn-seletor ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleCnpj}>Selecionar</button>
                     </div>
                 </form>
             </div>

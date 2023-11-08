@@ -28,6 +28,7 @@ const BuscarClienteRecebimentos = () => {
         bandeiras, 
         grupos, 
         adquirentes,
+        isDarkTheme,
         totaisGlobal,
         setTotaisGlobal,
     } = useContext(AuthContext)
@@ -146,7 +147,7 @@ const BuscarClienteRecebimentos = () => {
                 theme="light"
                 />
             <div className='search-bar'>
-                <form className='date-container'>
+                <form className={`date-container-recebimentos ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                     <div className='date-column'>
                         <div className='select-card select-align'>
                             <span>Adquirente</span>

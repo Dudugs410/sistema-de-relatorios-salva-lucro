@@ -33,6 +33,7 @@ const Recebiveis = () =>{
       setTotaisGlobal,
       tableData,
       gerarDados,
+      isDarkTheme,
 
     } = useContext(AuthContext)
 
@@ -204,8 +205,11 @@ const Recebiveis = () =>{
         return (
           <div>
             <Calendar
+              style={{ color:'white' }}
+              className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
               onChange={ handleDateChange }
               value={ dataBusca }
+              tileClassName={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
               onClick={ console.log(dataBusca) }
             />
           </div>
@@ -281,7 +285,8 @@ const Recebiveis = () =>{
       setDataBusca,
       setCreditosTemp,
     }}>
-        <div className='appPage app-page-recebimentos'>
+
+        <div className={`appPage app-page-recebimentos ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
         { showBanco &&
           <Modal onClose={() => setShowBanco(false)}>
             <div className='modal-adm'>
@@ -289,20 +294,20 @@ const Recebiveis = () =>{
             </div>
           </Modal>
         }
-          <div className='page-recebimentos-background'>
-            <div className='page-content-recebimentos'>
-              <div className='recebimentos-title-container'>
-                <h1 className='recebimentos-title'>Calendário de Recebimentos</h1>
+          <div className={`page-recebimentos-background ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+            <div className={`page-content-recebimentos ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+              <div className={`recebimentos-title-container ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                <h1 className={`recebimentos-title ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Calendário de Recebimentos</h1>
               </div>
-              <hr className='hr-recebimentos'/>
+              <hr className={`hr-recebimentos ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
               <TotalModalidadesComp texto1={'Débito'} valor1={totalDebito} texto2={'Crédito'} valor2={totalCredito} texto3={'Voucher'} valor3={totalVoucher} texto4={'Total Líquido'} valor4={totalTotal} />
-              <hr className='hr-recebimentos'/>
+              <hr className={`hr-recebimentos ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
               { detalhes && (creditosTemp.length > 0) ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
               <div className='component-container-recebimentos'>
                 { detalhes && (creditosTemp.length > 0) ? <DetalhesCredito array={creditosTemp}/> :  <MyCalendar/> }
                 {arrayAdm && detalhes && (creditosTemp.length > 0) ? <TabelaGenericaAdm Array={arrayAdm}/> : <></>}
-                { detalhes && (creditosTemp.length > 0) ? <hr className='hr-recebimentos' /> : <></> }
-                { detalhes && (creditosTemp.length > 0) ? <button className="btn btn-primary btn-banco-recebimentos" onClick={handleShowBanco}>Valores por Banco</button> : <></> }
+                { detalhes && (creditosTemp.length > 0) ? <hr className={`hr-recebimentos ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} /> : <></> }
+                { detalhes && (creditosTemp.length > 0) ? <button className={`btn btn-primary btn-banco-recebimentos ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleShowBanco}>Valores por Banco</button> : <></> }
                 <ComponenteBuscarClienteData />
               </div>
             </div>

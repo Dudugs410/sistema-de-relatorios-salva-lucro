@@ -4,42 +4,69 @@
     display: contents;
     flex-direction: column;
     align-items: center;
-    background-color: $background-color-light;
     height: 100%;
+
+    &.light-theme{
+        background-color: $background-color-light;
+    }
+    &.dark-theme{
+        background-color: $primary-color-dark;
+    }
     
 }
 
 .page-recebimentos-background{
     display: flex;
-    background-color: $primary-color-light;
     width: 100%;
     flex-wrap: wrap;
     align-content: center;
     flex-direction: column;
+    &.light-theme{
+        background-color: $primary-color-light;
+    }
+    &.dark-theme{
+        background-color: $primary-color-dark;
+    }
 }
 
 .recebimentos-title-container{
-    color: $primary-color-light;
     text-align: center;
     border-bottom: solid white 1px;
-    background-color: $secondary-color-light;
     width: 100%;
     border-radius: 20px;
     padding: 10px;
+    &.light-theme{
+        color: $primary-color-light;
+        background-color: $secondary-color-light;
+    }
+    &.dark-theme{
+        color: $font-color-dark;
+        background-color: $primary-color-dark;
+    }
 }
 
 .recebimentos-title{
-    color: $font-color-light;
     margin: 0;
+    &.light-theme{
+        color: $font-color-light;
+    }
+    &.dark-theme{
+        color: $font-color-dark;
+    }
 }
 
 .hr-recebimentos{
     width: 100%;
     margin: 1rem 0;
-    color: $primary-color-light;
     border: 0;
     border-top: var(--bs-border-width) solid;
     opacity: .25;
+    &.light-theme{
+        color: $primary-color-light;
+    }
+    &.dark-theme{
+        color: $primary-color-dark;
+    }
 }
 
 .btn-div-recebimentos{
@@ -56,11 +83,8 @@
 }
 
 .page-content-recebimentos{
-    /*height: 100vh; */
     width: 80%;
     padding: 1%;
-    /* margin-left: 10%; */
-    background-color: $background-color-light;
     display: flex;
     justify-content: flex-start;
     flex-wrap: wrap;
@@ -68,6 +92,13 @@
     padding: 10px;
     margin-top: 10px;
     margin-bottom: 54px;
+
+    &.light-theme{
+        background-color: $background-color-light;
+    }
+    &.dark-theme{
+        background-color: $background-color-dark;
+    }
     
 }
 
@@ -88,13 +119,24 @@
     flex-wrap: wrap;
     align-content: center;
     border-radius: 10px;
-    background-color: $primary-color-light;
+    &.light-theme{
+        background-color: $primary-color-light;
+    }
+    &.dark-theme{
+        background-color: $primary-color-dark;
+    }
+
 }
 
 @media screen and (max-width: 869px){
 
     .page-recebimentos-background{
-        background-color: $background-color-light;
+        &.light-theme{
+            background-color: $primary-color-light;
+        }
+        &.dark-theme{
+            background-color: $primary-color-dark;
+        }
     }
 
     .page-content-recebimentos {

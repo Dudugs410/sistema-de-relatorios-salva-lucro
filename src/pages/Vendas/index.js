@@ -6,9 +6,8 @@ import TabelaGenericaAdm from '../../components/Componente_TabelaAdm'
 import TotalModalidadesComp from '../../components/Componente_TotalModalidades'
 
 import GerarRelatorio from "../../components/Componente_GerarRelatorio"
-
-import './vendas.scss'
 import './Calendar.scss'
+import './vendas.scss'
 import { AuthContext } from '../../contexts/auth'
 import Cookies from 'js-cookie'
 import DetalhesCredito from '../../components/DetalhesCredito'
@@ -31,6 +30,7 @@ const Vendas = () =>{
     gerarDados,
     tableData,
     setTotaisGlobal,
+    isDarkTheme,
   } = useContext(AuthContext)
 
   const [totalCredito, setTotalCredito] = useState(0.00)
@@ -203,8 +203,11 @@ const Vendas = () =>{
     return (
       <div>
         <Calendar
+          style={{ color:'white' }}
+          className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
           onChange={ handleDateChange }
           value={ dataBusca }
+          tileClassName={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
         />
       </div>
     )
@@ -235,18 +238,18 @@ const Vendas = () =>{
       setAdqBusca,
       }}>
 
-      <div className='appPage app-page-vendas'>
-        <div className='page-vendas-background'>
-          <div className='page-content-vendas'>
-            <div className='vendas-title-container'>
-              <h1 className='vendas-title'>Calendário de Vendas</h1>
+      <div className={`appPage app-page-vendas ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+        <div className={`page-vendas-background ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+          <div className={`page-content-vendas ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+            <div className={`vendas-title-container ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+              <h1 className={`vendas-title ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Calendário de Vendas</h1>
             </div>
             <hr className="hr-recebimentos"/>
             <TotalModalidadesComp />
             <hr className="hr-recebimentos"/>
             { detalhes ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
             <div className='component-container-vendas'>
-              { detalhes ?  <DetalhesCredito array={vendas}/> : <MyCalendar/> }
+              { detalhes ?  <DetalhesCredito array={vendas}/> : <MyCalendar className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/> }
               { detalhes ? <TabelaGenericaAdm Array={arrayAdm}/> : <></> }
               { detalhes ? <hr className='hr-recebimentos'/> : <></> }
               <BuscarClienteData />
