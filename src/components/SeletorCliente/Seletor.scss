@@ -131,24 +131,6 @@
     width: 100%;
 }
 
-.btn-submit{
-    margin-top: 22px;
-    width: 100%;
-    display: flex;
-    height: 2.2em;
-    text-align: center;
-    width: 80%;
-    justify-content: center;
-    background-color: #181c2e;
-    border: solid #7985bb 2px;
-    font-weight: bold;
-}
-
-.btn-submit:hover{
-    color: yellowgreen;
-    background-color: #444e79;
-}
-
 .select-disabled{
     background-color: #444e79;
     
@@ -310,24 +292,4 @@
         flex-direction: column;
         align-items: center;
     }
-
-    .btn-submit{
-        margin-top: 22px;
-        width: 30%;
-        display: flex;
-        height: 2.2em;
-        text-align: center;
-        justify-content: center;
-        background-color: #181c2e;
-        border: solid white 2px;
-        font-weight: bold;
-        
-    }
-    
-    .btn-submit:hover{
-        color: yellowgreen;
-        background-color: #444e79;
-    }
-
-
 }

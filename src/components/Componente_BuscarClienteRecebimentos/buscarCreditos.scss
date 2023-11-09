@@ -3,11 +3,15 @@
 .search-bar{
     height: auto;
     width: 100%;
-    background-color: rgba(0,0,0,0.5);
     display: flex;
     flex-direction: column;
     justify-content: center;
-    
+    &.light-theme{
+        background-color: $background-color-light;
+    }
+    &.dark-theme{
+        background-color: $background-color-dark;
+    }
 }
 
 .date-container-recebimentos{
@@ -131,31 +135,6 @@
     width: 100%;
 }
 
-.btn-submit{
-    margin-top: 22px;
-    width: 100%;
-    display: flex;
-    height: 2.2em;
-    text-align: center;
-    width: 80%;
-    justify-content: center;
-    background-color: $secondary-color-light;
-    color:$font-color-light;
-    font-weight: 200;
-    border: solid $secondary-color-light 1px;
-    border-radius: 10px;
-}
-
-.btn-submit:hover{
-    color: $primary-color-light;
-    background-color: $secondary-color-light;
-}
-
-.select-disabled{
-    background-color: $primary-color-light;
-    
-}
-
 .select-align{
     display: flex;
     flex-direction: column;
@@ -270,25 +249,5 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-    }
-
-    .btn-submit{
-        margin-top: 22px;
-        width: 100%;
-        display: flex;
-        height: 2.2em;
-        text-align: center;
-        width: 80%;
-        justify-content: center;
-        background-color: $secondary-color-light;
-        color:$font-color-light;
-        font-weight: 200;
-        border: solid $secondary-color-light 1px;
-        border-radius: 10px;
-    }
-    
-    .btn-submit:hover{
-        color: $secondary-color-light;
-        background-color: $primary-color-light;
     }
 }

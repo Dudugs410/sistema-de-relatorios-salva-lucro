@@ -44,7 +44,7 @@ const ComponenteBuscarClienteData = () => {
             <div className='search-bar'>
                 <form className='date-container'>     
                     <div className='submit-container select-align'>
-                        { detalhes ? <button className="btn btn-secondary btn-submit" onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className="btn btn-primary btn-submit" onClick={handleBusca}>Pesquisar</button>}
+                        { detalhes ? <button className="btn btn-secondary btn-global" onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className="btn btn-primary btn-submit" onClick={handleBusca}>Pesquisar</button>}
                     </div>      
                 </form>
             </div>

@@ -3,11 +3,15 @@
 .search-bar{
     height: auto;
     width: 100%;
-    background-color: rgba(0,0,0,0.5);
     display: flex;
     flex-direction: column;
     justify-content: center;
-    
+    &.light-theme{
+        background-color: $background-color-light;
+    }
+    &.dark-theme{
+        background-color: $background-color-dark;
+    }
 }
 
 .date-container-vendas{
@@ -137,52 +141,6 @@
     width: 100%;
 }
 
-.btn-submit{
-    margin-top: 22px;
-    width: 100%;
-    display: flex;
-    height: 2.2em;
-    text-align: center;
-    width: 80%;
-    justify-content: center;
-    font-weight: 200;
-    border-radius: 10px;
-    transition: all 2s;
-    &.light-theme{
-        background-color: $secondary-color-light;
-        color:$font-color-light;
-        border: solid $secondary-color-light 1px;
-    }
-    &.dark-theme{
-        background-color: $secondary-color-dark;
-        color:$font-color-dark;
-        border: solid $secondary-color-dark 1px;
-    }
-}
-
-.btn-submit:hover{
-    transition: all 2s;
-    &.light-theme{
-        color: $primary-color-light;
-        background-color: $secondary-color-light;
-    }
-    &.dark-theme{
-        color: $primary-color-dark;
-        background-color: $secondary-color-dark;
-    }
-}
-
-.select-disabled{
-    transition: all 2s;
-    &.light-theme{
-        background-color: $primary-color-light;
-    }
-    &.dark-theme{
-        background-color: $primary-color-dark;
-    }
-    
-}
-
 @media screen and (max-width: 869px){
 
     .search-bar{
@@ -296,40 +254,5 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-    }
-
-    .btn-submit{
-        margin-top: 22px;
-        width: 100%;
-        display: flex;
-        height: 2.2em;
-        text-align: center;
-        width: 80%;
-        justify-content: center;
-        font-weight: 200;
-        border-radius: 10px;
-        transition: all 2s;
-        &.light-theme{
-            background-color: $secondary-color-light;
-            color:$font-color-light;
-            border: solid $secondary-color-light 1px;
-        }
-        &.dark-theme{
-            background-color: $secondary-color-dark;
-            color:$font-color-dark;
-            border: solid $secondary-color-dark 1px;
-        }
-    }
-    
-    .btn-submit:hover{
-        transition: all 2s;
-        &.light-theme{
-            color: $secondary-color-light;
-            background-color: $primary-color-light;
-        }
-        &.dark-theme{
-            color: $secondary-color-dark;
-            background-color: $primary-color-dark;
-        }
     }
 }

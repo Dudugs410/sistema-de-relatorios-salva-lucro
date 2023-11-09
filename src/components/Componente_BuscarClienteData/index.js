@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 import { ToastContainer } from 'react-toastify'
 
 import { vendasStatic } from "../../contexts/static";
-
+import '../../styles/global.scss'
 import 'react-toastify/dist/ReactToastify.css'
 import './reactdatepicker.css'
 import Cookies from "js-cookie";
@@ -163,7 +163,7 @@ const BuscarClienteData = () => {
             <div className='search-bar'>
                 <form className={`date-container-vendas ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>       
                     <div className='submit-container select-align'>
-                        { detalhes ? <button className={`btn btn-secondary btn-submit ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className="btn btn-primary btn-submit" onClick={handleBusca}>Pesquisar</button>}
+                        { detalhes ? <button className={`btn btn-secondary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleBusca}>Pesquisar</button>}
                     </div>      
                 </form>
             </div>

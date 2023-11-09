@@ -1,14 +1,18 @@
 import React from "react"
 import './tabelaGenerica.scss'
+import { useContext } from "react"
+import { AuthContext } from "../../contexts/auth"
 
 export default function TabelaGenericaAdm({Array}) {
+
+    const { isDarkTheme } = useContext(AuthContext)
 
     return (
         <div>
             { 
                 Array ?
                     <div className='content tabela-adm-content'>
-                        <table className="table table-striped det-table elemento-table">
+                        <table className={`table table-striped det-table elemento-table ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                             <thead className='thead-admin'>
                                 <tr tbody-sticky>
                                     <th className='det-td' data-label='Adquirente'>Adquirente</th>

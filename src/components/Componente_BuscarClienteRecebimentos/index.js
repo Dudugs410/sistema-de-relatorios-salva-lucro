@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import { ToastContainer } from 'react-toastify'
 
 import 'react-toastify/dist/ReactToastify.css';
+import '../../styles/global.scss'
 
 import './reactdatepicker.css'
 
@@ -146,7 +147,7 @@ const BuscarClienteRecebimentos = () => {
                 pauseOnHover
                 theme="light"
                 />
-            <div className='search-bar'>
+            <div className={`search-bar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                 <form className={`date-container-recebimentos ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                     <div className='date-column'>
                         <div className='select-card select-align'>
@@ -189,7 +190,7 @@ const BuscarClienteRecebimentos = () => {
                         </div>
                     </div>        
                     <div className='submit-container select-align'>
-                        { detalhes ? <button className="btn btn-secondary btn-submit" onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className="btn btn-primary btn-submit" onClick={handleBusca}>Pesquisar</button>}
+                        { detalhes ? <button className={`btn btn-secondary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className="btn btn-primary btn-submit" onClick={handleBusca}>Pesquisar</button>}
                     </div>      
                 </form>
             </div>
