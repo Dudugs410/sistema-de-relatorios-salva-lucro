@@ -94,7 +94,15 @@
     text-align: center;
     width: 80%;
     font-style: italic;
-    color: gray;
+    &.light-theme{
+        background-color: $background-color-light;
+        color: $primary-color-light;
+    }
+
+    &.dark-theme{
+        background-color: $background-color-dark;
+        color: $font-color-dark;
+    }  
 }
 
 .select-card>span{

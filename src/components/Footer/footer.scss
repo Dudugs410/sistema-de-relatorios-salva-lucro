@@ -5,12 +5,19 @@
     flex-direction: column;
     width: 100%;
     height: 2.2em;;
-    background-color: $primary-color-light;
     justify-content: center;
     bottom: 0;
     text-align: center;
-    border-top: solid $secondary-color-light 1px;
     z-index: 999999999999999999999999;
+
+    &.light-theme{
+        background-color: $primary-color-light;
+        border-top: solid $secondary-color-light 1px;
+    }
+    &.dark-theme{
+        background-color: $background-color-dark;
+        border-top: solid $secondary-color-dark 1px;
+    }
 
 }
 

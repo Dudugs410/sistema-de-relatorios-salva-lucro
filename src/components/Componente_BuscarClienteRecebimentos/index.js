@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from "react"
-
+import '../../styles/global.scss'
 import './buscarCreditos.scss'
+
 import { AuthContext } from "../../contexts/auth"
 import { VendasContext } from "../../pages/Vendas"
 
@@ -8,7 +9,6 @@ import { toast } from 'react-toastify';
 import { ToastContainer } from 'react-toastify'
 
 import 'react-toastify/dist/ReactToastify.css';
-import '../../styles/global.scss'
 
 import './reactdatepicker.css'
 
@@ -153,14 +153,14 @@ const BuscarClienteRecebimentos = () => {
                         <div className='select-card select-align'>
                             <span>Adquirente</span>
                             { detalhes ? 
-                                <select disabled className='select-disabled' id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}}>
+                                <select disabled className={`select-global select-disabled ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}}>
                                     <option value='' selected>Todas</option>
                                     {adquirentes.map((ADQ)=>(
                                         <option key={ADQ.codigoAdquirente} value = {ADQ.codigoAdquirente}>{ADQ.nomeAdquirente}</option>
                                     ))}
                                 </select>
                             : 
-                                <select  id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}}>
+                                <select className={`select-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}}>
                                     <option value='' selected>Todas</option>
                                     {adquirentes.map((ADQ)=>(
                                         <option key={ADQ.codigoAdquirente} value = {ADQ.codigoAdquirente}>{ADQ.nomeAdquirente}</option>
@@ -173,14 +173,14 @@ const BuscarClienteRecebimentos = () => {
                         <div className='select-card select-align'>
                             <span>Bandeira</span>
                             { detalhes ? 
-                                <select disabled className='select-disabled' id='bandeira' value={bancoSelecionado} onChange={(e) => {setBancoSelecionado(e.target.value)}}>
+                                <select disabled className={`select-global select-disabled ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} id='bandeira' value={bancoSelecionado} onChange={(e) => {setBancoSelecionado(e.target.value)}}>
                                     <option value='' selected>Todas</option>
                                     {bandeiras.map((BAN)=>(
                                         <option key={BAN.codigoBandeira} value = {BAN.codigoBandeira}>{BAN.descricaoBandeira}</option>
                                     ))}
                                 </select>  
                             :
-                                <select id='bandeira' value={bancoSelecionado} onChange={(e) => {setBancoSelecionado(e.target.value)}}>
+                                <select className={`select-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} id='bandeira' value={bancoSelecionado} onChange={(e) => {setBancoSelecionado(e.target.value)}}>
                                     <option value='' selected>Todas</option>
                                     {bandeiras.map((BAN)=>(
                                         <option key={BAN.codigoBandeira} value = {BAN.codigoBandeira}>{BAN.descricaoBandeira}</option>
@@ -190,7 +190,7 @@ const BuscarClienteRecebimentos = () => {
                         </div>
                     </div>        
                     <div className='submit-container select-align'>
-                        { detalhes ? <button className={`btn btn-secondary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className="btn btn-primary btn-submit" onClick={handleBusca}>Pesquisar</button>}
+                        { detalhes ? <button className={`btn btn-secondary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className="btn btn-primary btn-global" onClick={handleBusca}>Pesquisar</button>}
                     </div>      
                 </form>
             </div>

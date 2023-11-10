@@ -146,22 +146,6 @@
     }
 }
 
-.det-table{
-    &.dark-theme{
-        --bs-table-striped-color: var($primary-color-dark);
-    }
-}
-
-.tabela-adm-content{
-    background-color: white;
-    &.light-theme{
-        background-color: $primary-color-light;
-    }
-    &.dark-theme{
-        background-color: $primary-color-dark;
-    }
-}
-
 .content{
     height: 100%;
     width: 100%;

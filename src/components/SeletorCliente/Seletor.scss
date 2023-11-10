@@ -90,7 +90,15 @@
     text-align: center;
     width: 80%;
     font-style: italic;
-    color: gray;
+    &.light-theme{
+        background-color: $background-color-light;
+        color: $primary-color-light;
+    }
+
+    &.dark-theme{
+        background-color: $background-color-dark;
+        color: $font-color-dark;
+    }  
 }
 
 .select-card-seletor>span{
@@ -132,8 +140,15 @@
 }
 
 .select-disabled{
-    background-color: #444e79;
-    
+    &.light-theme{
+        background-color: $primary-color-light;
+        color: $primary-color-light;
+    }
+
+    &.dark-theme{
+        background-color: $primary-color-dark;
+        color: $secondary-color-dark;
+    }  
 }
 
 .select-btn-seletor{

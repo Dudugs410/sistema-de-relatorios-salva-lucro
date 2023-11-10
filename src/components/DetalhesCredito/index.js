@@ -2,11 +2,12 @@ import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "../../contexts/auth"
 import { recebimentosStatic } from "../../contexts/static"
 
-import './detalhesCredito.css'
+import './detalhesCredito.scss'
+import '../../styles/global.scss'
 
 const DetalhesCredito = ({array}) =>{
 
-    const { vendas, dateConvert, setVendas, setCnpj, teste, tableData, setTableData, gerarDados, totaisGlobal, setTotaisGlobal } = useContext(AuthContext)
+    const { vendas, dateConvert, setVendas, setCnpj, teste, tableData, setTableData, gerarDados, totaisGlobal, setTotaisGlobal, isDarkTheme } = useContext(AuthContext)
 
     const [vendasArray, setVendasArray] = useState([])
 
@@ -275,8 +276,8 @@ const DetalhesCredito = ({array}) =>{
             <div className='date-container'>
                 <div className='date-column'>
                     <div className='select-card select-align'>
-                        <span>Adquirente</span>
-                        <select id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}}>
+                        <span className={`span-str ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>Adquirente</span>
+                        <select className={`${isDarkTheme ? 'dark-theme' : 'light-theme'}`} id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}}>
                             <option value='' selected>Todas</option>
                             {adquirentesExistentes.map((ADQ)=>(
                                 <option key={ADQ} value={ADQ}>{ADQ}</option>
@@ -286,8 +287,8 @@ const DetalhesCredito = ({array}) =>{
                 </div>
                 <div className='date-column'>
                     <div className='select-card select-align'>
-                        <span>Bandeira</span>
-                        <select id='bandeira' value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}}>
+                        <span className={`span-str ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>Bandeira</span>
+                        <select className={`${isDarkTheme ? 'dark-theme' : 'light-theme'}`} id='bandeira' value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}}>
                             <option value='' selected>Todas</option>
                             {bandeirasExistentes.map((BAN)=>(
                                 <option key={BAN} value={BAN}>{BAN}</option>
@@ -298,39 +299,39 @@ const DetalhesCredito = ({array}) =>{
             </div>
             <div className='dropShadow vendas-view'>
                 <div className='table-wrapper'>
-                    <table className="table table-striped det-table">
+                    <table className={`table table-striped det-table-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                             <thead>
-                                <tr className='det-tr-top' >
-                                    <th className='det-th'scope="col">Adquirente</th>
-                                    <th className='det-th'scope="col">Bandeira</th>
-                                    <th className='det-th'scope="col">Valor Bruto</th>
-                                    <th className='det-th'scope="col">Valor Líquido</th>
-                                    <th className='det-th'scope="col">Valor Desconto</th>
-                                    <th className='det-th'scope="col">Produto</th>
-                                    <th className='det-th'scope="col">Data da Venda</th>
-                                    <th className='det-th'scope="col">Hora da Venda</th>
-                                    <th className='det-th'scope="col">Data do Crédito</th>
-                                    <th className='det-th'scope="col">NSU</th>
-                                    <th className='det-th'scope="col">Código da Autorização</th>
-                                    <th className='det-th'scope="col">Número PV</th>
+                                <tr className={`det-tr-top-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                                    <th className='det-th-global'scope="col">Adquirente</th>
+                                    <th className='det-th-global'scope="col">Bandeira</th>
+                                    <th className='det-th-global'scope="col">Valor Bruto</th>
+                                    <th className='det-th-global'scope="col">Valor Líquido</th>
+                                    <th className='det-th-global'scope="col">Valor Desconto</th>
+                                    <th className='det-th-global'scope="col">Produto</th>
+                                    <th className='det-th-global'scope="col">Data da Venda</th>
+                                    <th className='det-th-global'scope="col">Hora da Venda</th>
+                                    <th className='det-th-global'scope="col">Data do Crédito</th>
+                                    <th className='det-th-global'scope="col">NSU</th>
+                                    <th className='det-th-global'scope="col">Código da Autorização</th>
+                                    <th className='det-th-global'scope="col">Número PV</th>
                                 </tr>
                             </thead>
                         <tbody>
                             {vendasExibicao.length > 0 && vendasExibicao.map((venda, index)=>{
                             return(
-                                <tr key={index} className='det-tr' >
-                                    <td className='det-td-vendas'data-label="Adquirente">{venda.adquirente.nomeAdquirente}</td>
-                                    <td className='det-td-vendas'data-label="Bandeira">{venda.bandeira.descricaoBandeira}</td>
-                                    <td className='det-td-vendas'data-label="Valor Bruto">R$<span className='green'>{`${venda.valorBruto.toFixed(2)}`.toString().replace('.',',')}</span></td>
-                                    <td className='det-td-vendas'data-label="Valor Líquido">R$<span className='green'>{`${venda.valorLiquido.toFixed(2)}`.toString().replace('.',',')}</span></td>
-                                    <td className='det-td-vendas'data-label="Valor Desconto">R$ <span className='red'>{`${venda.valorDesconto.toFixed(2)}`.toString().replace('.',',')}</span></td>
-                                    <td className='det-td-vendas'data-label="Produto">{venda.produto.descricaoProduto}</td>
-                                    <td className='det-td-vendas'data-label="Data da Venda">{dateConvert(venda.dataVenda)}</td>
-                                    <td className='det-td-vendas'data-label="Hora da Venda">{ venda.horaVenda?.replaceAll('-', ':')}</td>
-                                    <td className='det-td-vendas'data-label="Data do Crédito">{dateConvert(venda.dataCredito)}</td>
-                                    <td className='det-td-vendas'data-label="NSU">{venda.nsu}</td>
-                                    <td className='det-td-vendas'data-label="Código da Autorização">{venda.codigoAutorizacao}</td>
-                                    <td className='det-td-vendas'data-label="Numero PV">{venda.numeroPV}</td>
+                                <tr key={index} className={`det-tr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}  >
+                                    <td className='det-td-vendas-global'data-label="Adquirente">{venda.adquirente.nomeAdquirente}</td>
+                                    <td className='det-td-vendas-global'data-label="Bandeira">{venda.bandeira.descricaoBandeira}</td>
+                                    <td className='det-td-vendas-global'data-label="Valor Bruto">R$<span className={`green-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>{`${venda.valorBruto.toFixed(2)}`.toString().replace('.',',')}</span></td>
+                                    <td className='det-td-vendas-global'data-label="Valor Líquido">R$<span className={`green-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>{`${venda.valorLiquido.toFixed(2)}`.toString().replace('.',',')}</span></td>
+                                    <td className='det-td-vendas-global'data-label="Valor Desconto">R$ <span className='red-global'>{`${venda.valorDesconto.toFixed(2)}`.toString().replace('.',',')}</span></td>
+                                    <td className='det-td-vendas-global'data-label="Produto">{venda.produto.descricaoProduto}</td>
+                                    <td className='det-td-vendas-global'data-label="Data da Venda">{dateConvert(venda.dataVenda)}</td>
+                                    <td className='det-td-vendas-global'data-label="Hora da Venda">{ venda.horaVenda?.replaceAll('-', ':')}</td>
+                                    <td className='det-td-vendas-global'data-label="Data do Crédito">{dateConvert(venda.dataCredito)}</td>
+                                    <td className='det-td-vendas-global'data-label="NSU">{venda.nsu}</td>
+                                    <td className='det-td-vendas-global'data-label="Código da Autorização">{venda.codigoAutorizacao}</td>
+                                    <td className='det-td-vendas-global'data-label="Numero PV">{venda.numeroPV}</td>
                                 </tr>
                             )
                             })}

@@ -9,7 +9,7 @@ import { AuthContext } from "../../contexts/auth";
 const ComponenteBuscarClienteData = () => {
 
     const { detalhes, setDetalhes, dataBusca, cnpjBusca, creditosTemp, setCreditosTemp } = useContext(CreditosContext)
-    const { returnCreditos, converteData, alerta } = useContext(AuthContext) 
+    const { returnCreditos, converteData, isDarkTheme } = useContext(AuthContext) 
 
     useEffect(()=>{
         setCreditosTemp([])
@@ -32,8 +32,8 @@ const ComponenteBuscarClienteData = () => {
 
     useEffect(()=>{
         console.log('CREDITOS TEMP: ',creditosTemp)
-        if(((detalhes === true) && creditosTemp.length === 0)){
-
+        if((detalhes === true) && (creditosTemp.length === 0)){
+            alert('não foram encontrados dados para a data selecionada')
             setDetalhes(false)
         }
 
@@ -44,7 +44,7 @@ const ComponenteBuscarClienteData = () => {
             <div className='search-bar'>
                 <form className='date-container'>     
                     <div className='submit-container select-align'>
-                        { detalhes ? <button className="btn btn-secondary btn-global" onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className="btn btn-primary btn-submit" onClick={handleBusca}>Pesquisar</button>}
+                        { detalhes ? <button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleBusca}>Pesquisar</button>}
                     </div>      
                 </form>
             </div>

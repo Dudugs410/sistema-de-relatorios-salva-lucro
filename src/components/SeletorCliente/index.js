@@ -66,7 +66,7 @@ const SeletorCliente = () => {
                     <div className='date-column-seletor'>
                         <div className='select-card-seletor'>
                             <span>Grupo de Clientes</span>
-                            <select id='grupo' value={gruSelecionado} onChange={(e) => {setGruSelecionado(e.target.value)}}>
+                            <select className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} id='grupo' value={gruSelecionado} onChange={(e) => {setGruSelecionado(e.target.value)}}>
                                 { !gruSelecionado ? <option defaultValue=''>selecione</option> : <option defaultValue='gruSelecionado'>{gruSelecionado.nome}</option>}
                                 {grupos.map((GRU)=>(
                                     <option key={GRU.CODIGOGRUPO} value={GRU.CODIGOGRUPO} >{GRU.NOMEGRUPO}</option>
@@ -79,13 +79,13 @@ const SeletorCliente = () => {
                         <div className='select-card-seletor'>
                             <span>Cliente</span>
                             { listaClientes.length > 0 ?
-                            <select id='cliente' value={cliSelecionado} onChange={(e) => {setCliSelecionado(e.target.value)}}>
+                            <select className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} id='cliente' value={cliSelecionado} onChange={(e) => {setCliSelecionado(e.target.value)}}>
                                 <option defaultValue=''>selecione</option>
                                 { listaClientes.map((CLI)=>(
                                         <option key={CLI.CODIGOCLIENTE} value={CLI.CNPJ}>{CLI.NOMECLIENTE}</option>
                                     ))}
                             </select> : 
-                            <select className='select-disabled' disabled>
+                            <select className={`${isDarkTheme === true ? 'dark-theme-disabled' : 'light-theme-disabled'} select-disabled`} disabled>
                                 <option defaultValue=''>Selecione o Cliente / Filial</option>
                             </select>}
                         </div>

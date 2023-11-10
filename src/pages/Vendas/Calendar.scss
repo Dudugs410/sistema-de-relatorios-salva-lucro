@@ -77,6 +77,9 @@
   min-width: 44px;
   font-weight: bold;
   transition: all 0.4s;
+}
+
+.react-calendar__navigation{
   &.light-theme{
     background: $background-color-light;
     color: $primary-color-light;
@@ -85,6 +88,7 @@
     background: $background-color-dark;
     color: $font-color-dark;
   }
+  
 }
 
 .react-calendar__navigation button:disabled {

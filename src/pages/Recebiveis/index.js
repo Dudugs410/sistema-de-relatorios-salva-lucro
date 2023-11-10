@@ -307,7 +307,9 @@ const Recebiveis = () =>{
                 { detalhes && (creditosTemp.length > 0) ? <DetalhesCredito array={creditosTemp}/> :  <MyCalendar/> }
                 {arrayAdm && detalhes && (creditosTemp.length > 0) ? <TabelaGenericaAdm Array={arrayAdm}/> : <></>}
                 { detalhes && (creditosTemp.length > 0) ? <hr className={`hr-recebimentos ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} /> : <></> }
-                { detalhes && (creditosTemp.length > 0) ? <button className={`btn btn-primary btn-banco-recebimentos ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleShowBanco}>Valores por Banco</button> : <></> }
+                <div className='btn-banco-container'>
+                  { detalhes && (creditosTemp.length > 0) ? <button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleShowBanco}>Valores por Banco</button> : <></> }
+                </div>
                 <ComponenteBuscarClienteData />
               </div>
             </div>
