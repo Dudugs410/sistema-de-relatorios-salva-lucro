@@ -7,11 +7,13 @@ import './login.css'
 import { useContext } from "react"
 import LoadingModal from "../../components/LoadingModal"
 import api from "../../services/api"
+import md5 from "md5"
 
 ///////////////////////////////////////////////////////////////
 
 const Login = () => {
-    const {submitLogin, loading, isSignedIn, accessToken, setAccessToken, submitFake, } = useContext(AuthContext)
+    const {submitLogin, loading, isSignedIn, accessToken, setAccessToken, submitFake,
+    setCnpj, setTeste, setRefreshToken, setIsDarkTheme, setIsSignedIn, loadGrupos, grupos, setLoading } = useContext(AuthContext)
     const navigate = useNavigate()
 
     const [login, setLogin] = useState('')
@@ -65,7 +67,6 @@ const Login = () => {
                         <Link className='pw'>esqueci minha senha</Link>
                         <button className='btn btn-secondary' onClick={handleTeste}>Login Teste</button>
                     </div>
-                    
                 </form>
             </div>
 

@@ -10,6 +10,7 @@ import { adquirentesStatic, bandeirasStatic, gruposStatic, recebimentosStatic, t
 
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'
+import jwtDecode from 'jwt-decode'
 
 export const AuthContext = createContext({})
 
@@ -944,6 +945,30 @@ function gerarDados(array){
   return tableData
 }
 
+  async function getCli(){
+    jwtDecode(Cookies.get('token'))
+
+    let params = {
+      codigo: JSON.parse(Cookies.get('cliCodigo'))
+    }
+
+    let config = {
+      headers: { 
+        'Content-Type': 'application/json', 
+        'Authorization': `Bearer ${Cookies.get('token')}`
+      },
+      params: params
+    }
+
+    try{
+      const response = await api.get('Cliente', config)
+      console.log(response)
+      return response;
+    } catch (error) {
+      setLoading(false)
+      console.log(error)
+    }
+  }
   
 
   return(
@@ -1045,6 +1070,7 @@ function gerarDados(array){
         totaisGlobal,
         setTotaisGlobal,
         resetaSomatorios,
+        getCli,
       }}
     >
       {children}

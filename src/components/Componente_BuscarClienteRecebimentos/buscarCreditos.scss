@@ -162,14 +162,17 @@
         
     }
     
-    .date-container-recebimentos{
+    .date-container{
         width: 100%;
         align-self: center;
         display: flex;
         flex-direction: column;
         justify-content: space-evenly;
-        background-color: $background-color-light;
         padding: 10px;
+        background-color: $background-color-light;
+        &.dark-theme{
+            background-color: $background-color-dark;
+        }
         
     }
 

@@ -125,10 +125,10 @@
         justify-content: center;
         transition: all 2s;
         &.light-theme{
-            background-color: $secondary-color-light;
+            background-color: $background-color-light;
         }
         &.dark-theme{
-            background-color: $secondary-color-dark;
+            background-color: $background-color-dark;
         }
     }
 }

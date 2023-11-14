@@ -1,7 +1,7 @@
 /* eslint-disable default-case */
 
 import './dashboard.scss'
-import api from '../../services/api'
+
 //////
 
 //////
@@ -15,6 +15,7 @@ import PieChart from '../../components/GraficoDashboard'
 
 import { adquirentesStatic, bandeirasStatic, recebimentosStatic, vendasStatic } from '../../contexts/static'
 import Cookies from 'js-cookie'
+import jwtDecode from 'jwt-decode'
 
 
 
@@ -56,6 +57,8 @@ const Dashboard = () => {
         inicializouAux,
         setInicializouAux,
         isDarkTheme,
+        getCli,
+
 
     } = useContext(AuthContext)
 
@@ -167,6 +170,7 @@ const Dashboard = () => {
 ///////////////////////////////////////////////////////////////////////////////
 
     useEffect(()=>{
+        console.log('**** JWT DECODE ****', jwtDecode(Cookies.get('token')))
         console.log('inicializou ao carregar pagina: ', inicializou)
         async function inicializar(){
             if((cnpj !== null && cnpj !== '') && (teste !== true)){
@@ -210,16 +214,14 @@ const Dashboard = () => {
     },[cnpj])
 
     useEffect(()=>{
-
-            async function inicializar(){
-                const total = vendasMes.reduce((total, obj) => total + obj.valorliquido, 0)
-                setSomatorioVendasMes(total)
-                if(total > 0){
-                    setSomatorioVendasMesAux(total)
-                }
+        async function inicializar(){
+            const total = vendasMes.reduce((total, obj) => total + obj.valorliquido, 0)
+            setSomatorioVendasMes(total)
+            if(total > 0){
+                setSomatorioVendasMesAux(total)
             }
-            inicializar()
-        
+        }
+        inicializar()
     },[vendasMes])
 
     useEffect(()=>{
@@ -264,7 +266,6 @@ const Dashboard = () => {
         const sortedArray = [...arrayAdq].sort((a, b) => {
           const nameA = a.nomeAdquirente.toUpperCase();
           const nameB = b.nomeAdquirente.toUpperCase();
-      
           if (nameA < nameB) {
             return -1;
           }
@@ -273,13 +274,11 @@ const Dashboard = () => {
           }
           return 0;
         });
-      
         return sortedArray;
       };
 
     useEffect(()=>{
             let temp = []
-    
             vetorVendasMes.forEach((array)=>{
                 array.forEach((venda)=>{
                     if(temp.length === 0){
@@ -366,13 +365,12 @@ const Dashboard = () => {
     },[vetorVendasMes])
 
     useEffect(()=>{
-            if(teste !== true){
-                setGraficoVendas(carregaGrafico(admVendas))
-                if(admVendasAux.length > 0){
-                    setGraficoVendasAux(carregaGrafico(admVendasAux))
-                }
+        if(teste !== true){
+            setGraficoVendas(carregaGrafico(admVendas))
+            if(admVendasAux.length > 0){
+                setGraficoVendasAux(carregaGrafico(admVendasAux))
             }
-        
+        }
     },[admVendas])
 
     useEffect(()=>{

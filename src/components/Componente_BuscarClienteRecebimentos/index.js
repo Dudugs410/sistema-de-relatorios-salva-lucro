@@ -148,7 +148,7 @@ const BuscarClienteRecebimentos = () => {
                 theme="light"
                 />
             <div className={`search-bar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                <form className={`date-container-recebimentos ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                <form className={`date-container ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                     <div className='date-column'>
                         <div className='select-card select-align'>
                             <span>Adquirente</span>

@@ -33,12 +33,21 @@
 }
 
 .footer-content{
+    position: fixed;
     color: white;
     width: 100%;
     text-align: center;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+    justify-content: center;
     height: 2.2em;
     bottom: 0;
+    &.light-theme{
+        background-color: $primary-color-light;
+        border-top: solid $secondary-color-light 1px;
+    }
+    &.dark-theme{
+        background-color: $background-color-dark;
+        border-top: solid $secondary-color-dark 1px;
+    }
 }
