@@ -9,7 +9,7 @@ import './Seletor.scss'
 
 const SeletorCliente = () => {
     const { gruSelecionado, setGruSelecionado, listaClientes, setListaClientes, setGrupos, resetaSomatorios, alerta, isDarkTheme } = useContext(AuthContext)
-    const { grupos, cnpj, setCnpj, inicializouAux, setInicializouAux } = useContext(AuthContext)
+    const { grupos, loadGrupos, cnpj, setCnpj, inicializouAux, setInicializouAux } = useContext(AuthContext)
 
     const [cliSelecionado, setCliSelecionado] = useState('')
 
@@ -18,18 +18,18 @@ const SeletorCliente = () => {
         setGrupos(JSON.parse(sessionStorage.getItem('grupos')))
     },[])
 
-      useEffect(()=>{
-        const grupoObj = grupos.find(item => item.CODIGOGRUPO === Number(gruSelecionado));
-        let cli = grupoObj ? grupoObj.CLIENTES : []
-        setListaClientes(cli)
-      },[gruSelecionado])
+    useEffect(()=>{
+    const grupoObj = grupos.find(item => item.CODIGOGRUPO === Number(gruSelecionado));
+    let cli = grupoObj ? grupoObj.CLIENTES : []
+    setListaClientes(cli)
+    },[gruSelecionado])
 
-      /*useEffect(()=>{
-        sessionStorage.setItem('cnpj', cnpj)
-        Cookies.set('cnpj', cnpj)
-      },[cnpj])*/
+    /*useEffect(()=>{
+    sessionStorage.setItem('cnpj', cnpj)
+    Cookies.set('cnpj', cnpj)
+    },[cnpj])*/
 
-      function handleCnpj(e){
+    function handleCnpj(e){
         e.preventDefault()
         console.log(cliSelecionado)
         console.log('CNPJ antes: ', cnpj)
@@ -43,10 +43,12 @@ const SeletorCliente = () => {
         } 
         else if((cliSelecionado === '') || (cliSelecionado ==='selecione')){
             alerta('Selecione um cliente válido')
-        }
-      }
+        }  
+    }
 
     return(
+        <>
+        { grupos === null ? <></> : 
         <>
             <ToastContainer
                 position="top-center"
@@ -60,7 +62,6 @@ const SeletorCliente = () => {
                 pauseOnHover
                 theme="light"
             />
-            
             <div className='search-bar-seletor'>
                 <form className={`date-container-seletor ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                     <div className='date-column-seletor'>
@@ -96,6 +97,8 @@ const SeletorCliente = () => {
                     </div>
                 </form>
             </div>
+        </>
+        }
         </>
     )
 }

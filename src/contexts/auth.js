@@ -73,60 +73,85 @@ function AuthProvider({ children }){
 
   /////Login do usuário
   async function submitLogin(login, password){
-    setLoading(true)
-    await api.post('/token', { client_id: login, client_secret: md5(password) })
-    .then(async response => {
-        Cookies.set('token', response.data.acess_token)
-        Cookies.set('refreshToken', response.data.refresh_token)
-        setAccessToken(Cookies.get('token'))
-        setRefreshToken(Cookies.get('refreshToken'))
-        
-        if(response.data.sucess === true){
-          setCnpj('')
-          Cookies.set('cnpj', '')
-          setTeste(false)
-          sessionStorage.setItem('teste', false)
-          sessionStorage.setItem('isSignedIn', true)
-          await loadGrupos()
-          .then(
-            sessionStorage.setItem('grupos', JSON.stringify(grupos))
-          )
-        }
-        try {
-          const response = await api.get('/usuario')
-          const userList = response.data
-          const userMatch = userList.find((user) => user.LOGIN === login && user.SENHA === md5(password))
-        
-          if (userMatch) {
-            sessionStorage.setItem('isSignedIn', true);
-            const userData = { NOME: userMatch.NOME, EMAIL: userMatch.EMAIL }
-            sessionStorage.setItem('userData', JSON.stringify(userData))
-            localStorage.setItem('isSignedIn', true)
-            if(localStorage.getItem('isDark') && (localStorage.getItem('isDark') !== undefined)){
-              setIsDarkTheme(localStorage.getItem('isDark'))
-            }
-            else{
-              localStorage.setItem('isDark', false)
-            }
-            setIsSignedIn(true)
-          } else {
-            console.log('User not found')
-          }
-          setLoading(false)
-        } catch (error) {
-          console.error(error)
-          setLoading(false)
-        }
-    })
-    .catch(error =>{
-        console.log('catch: ')
-        console.log(error)
-        alert(error.message)
-        setLoading(false)
-    })
-    
-    setLoading(false)
-    console.log('************fim submitLogin()************')
+    try {
+      setLoading(true)
+  
+      const response = await api.post('token', { client_id: login, client_secret: md5(password) })
+      const responseData = response.data
+  
+      Cookies.set('token', responseData.acess_token)
+      Cookies.set('refreshToken', responseData.refresh_token)
+      setAccessToken(responseData.acess_token)
+      setRefreshToken(responseData.refresh_token)
+      console.log('---> ', jwtDecode(responseData.acess_token).id)
+      const userId = jwtDecode(responseData.acess_token).id
+      console.log('userId ---> ', userId)
+      Cookies.set('userID', userId)
+  
+      const loggedSuccessfully = JSON.parse(responseData.sucess)
+  
+      if (loggedSuccessfully) {
+        console.log('logged in')
+        setCnpj('')
+        Cookies.set('cnpj', '')
+        setTeste(false)
+        sessionStorage.setItem('teste', false)
+        sessionStorage.setItem('isSignedIn', true)
+        const opt = await loadOptions()
+        console.log('opt: ',opt)
+        sessionStorage.setItem('options', JSON.stringify(opt))
+  
+        const gru = await loadGrupos()
+        sessionStorage.setItem('grupos', JSON.stringify(gru))
+      }
+  
+      const userResponse = await api.get('/usuario')
+      const userList = userResponse.data
+      const userMatch = userList.find((user) => user.LOGIN === login && user.SENHA === md5(password))
+  
+      if (userMatch) {
+        const userData = { NOME: userMatch.NOME, EMAIL: userMatch.EMAIL }
+        sessionStorage.setItem('isSignedIn', true)
+        sessionStorage.setItem('userData', JSON.stringify(userData))
+        localStorage.setItem('isSignedIn', true)
+  
+        const isDark = localStorage.getItem('isDark')
+        setIsDarkTheme(isDark ? isDark : false)
+        setIsSignedIn(true)
+      } else {
+        console.log('User not found')
+      }
+  
+      setLoading(false)
+    } catch (error) {
+      console.error(error)
+      alert(error.message)
+      setLoading(false)
+    }
+  
+    console.log('************fim submitLogin()************');
+  }
+
+  async function loadOptions() {
+    try {
+      let params = {
+        codigo: Cookies.get('userID')
+      };
+  
+      let config = {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${Cookies.get('token')}`
+        },
+        params: params
+      };
+  
+      const response = await api.get('Menu', config);
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      return null; // or handle the error as needed
+    }
   }
 
   /////Fake Login
@@ -272,25 +297,30 @@ function AuthProvider({ children }){
 
     //Grupo de Clientes
 
-    async function loadGrupos(){
-      if((teste !== true) && (!inicializouGruposAux)){
-        setLoading(true)
-        await api.get('/grupo')
-        .then( response => {
-          setGrupos(response.data)
-          sessionStorage.setItem('grupos', JSON.stringify(response.data))
-          setInicializouGruposAux(true)
-          setLoading(false)
-        })
-        .catch(error =>{
-          console.log(error)
-          setLoading(false)
-        })
-      } 
-      else if((teste !== true) && (inicializouGruposAux)){
-        setGrupos(JSON.parse(sessionStorage.getItem('grupos')))
-      } else {
-        setGrupos(gruposStatic)
+    async function loadGrupos() {
+      try {
+        if (!teste && !inicializouGruposAux) {
+          setLoading(true);
+          const response = await api.get('/grupo');
+          const gru = response.data;
+    
+          setGrupos(gru);
+          sessionStorage.setItem('grupos', JSON.stringify(gru));
+          setInicializouGruposAux(true);
+          setLoading(false);
+    
+          return gru;
+        } else if (!teste && inicializouGruposAux) {
+          setGrupos(JSON.parse(sessionStorage.getItem('grupos')));
+          return JSON.parse(sessionStorage.getItem('grupos'));
+        } else {
+          setGrupos(gruposStatic);
+          return gruposStatic;
+        }
+      } catch (error) {
+        console.error(error);
+        setLoading(false);
+        throw new Error(error.message); // Re-throw the error for handling in the caller function
       }
     }
 

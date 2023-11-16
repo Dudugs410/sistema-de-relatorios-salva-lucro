@@ -90,9 +90,19 @@
     text-align: center;
     width: 80%;
     font-style: italic;
+
+    &.light-theme{
+        color: $primary-color-light;
+    }
+
     &.light-theme-disabled{
         background-color: $primary-color-light;
         color: $primary-color-dark;
+    }
+
+    &.dark-theme{
+        background-color: $background-color-dark;
+        color: $font-color-dark;
     }
 
     &.dark-theme-disabled{
