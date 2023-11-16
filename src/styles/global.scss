@@ -117,11 +117,9 @@
     color: white;
     &.light-theme{
         background-color: $primary-color-light;
-        border-bottom: solid $primary-color-light 0.005px;
     }
     &.dark-theme{
         background-color: $background-color-dark;
-        border: solid $primary-color-dark 0.005px;
     }
 }
 
