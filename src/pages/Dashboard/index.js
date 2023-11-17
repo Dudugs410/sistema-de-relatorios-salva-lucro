@@ -24,6 +24,7 @@ const Dashboard = () => {
     
     const {  
         loading,
+        setLoading,
         returnVendas,
         returnCreditos,
         returnTotalMes,
@@ -120,6 +121,7 @@ const Dashboard = () => {
     }
 
     async function inicializaVetorVendasMes(){
+        setLoading(true)
         
         const dataAtual = new Date();
         const anoAtual = dataAtual.getFullYear();
@@ -137,24 +139,30 @@ const Dashboard = () => {
         vendasTemp = vendasPromises.filter(Boolean);
       
         setVetorVendasMes(vendasTemp);
+        setLoading(false)
     }
 
     async function inicializaVendas4diasMes(){
+        setLoading(true)
         const temp = await returnTotalMes(cnpj)
         setVendasMes(temp)
+        setLoading(false)
     }
 
     async function inicializaCreditos5dias(){
+        setLoading(true)
         let creditosTemp
         let data = new Date()
         let newdata = dateConvertSearch(data)
 
         creditosTemp = await returnCreditos( newdata, newdata, cnpj)
         setCreditos5dias(creditosTemp)
+        setLoading(false)
     }
 
     async function inicializaVetorCreditosMes() {
         console.log('********** inicializaVetorCreditoMes **********');
+        setLoading(true)
       
         const dataAtual = new Date();
         const anoAtual = dataAtual.getFullYear();
@@ -172,6 +180,7 @@ const Dashboard = () => {
         creditosTemp = creditosPromises.filter(Boolean);
       
         setVetorCreditosMes(creditosTemp);
+        setLoading(false)
       }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -179,8 +188,8 @@ const Dashboard = () => {
 ///////////////////////////////////////////////////////////////////////////////
 
     useEffect(()=>{
-        console.log('**** JWT DECODE ****', jwtDecode(Cookies.get('token')))
         console.log('inicializou ao carregar pagina: ', inicializou)
+        setLoading(true)
         async function inicializar(){
             if((cnpj !== null && cnpj !== '') && (teste !== true)){
                 console.log('inicializando dados de vendas e créditos...')
@@ -220,9 +229,11 @@ const Dashboard = () => {
         if(inicializouAux !== true){
             inicializar()
         }
+        setLoading(false)
     },[cnpj])
 
     useEffect(()=>{
+        setLoading(true)
         async function inicializar(){
             const total = vendasMes.reduce((total, obj) => total + obj.valorliquido, 0)
             setSomatorioVendasMes(total)
@@ -231,17 +242,21 @@ const Dashboard = () => {
             }
         }
         inicializar()
+        setLoading(false)
     },[vendasMes])
 
     useEffect(()=>{
+        setLoading(true)
         const totalTemp = vendas4dias.reduce((total, obj) => total + obj.valorLiquido, 0)
         setTotalVendas4dias(totalTemp)
         if(totalTemp > 0){
             setTotalVendas4diasAux(totalTemp)
         }
+        setLoading(false)
     },[vendas4dias])
     
     useEffect(()=>{
+        setLoading(true)
             let dataHoje = new Date()
             dataHoje = converteData(dataHoje)
             let totalHoje = 0
@@ -268,7 +283,7 @@ const Dashboard = () => {
                 setSomatorioCreditosHojeAux(totalHoje)
                 setTotalCreditos5diasAux(total5dias)
             }
-        
+            setLoading(false)
     },[creditos5dias])
 
     const sortArray = (arrayAdq) => {
@@ -287,6 +302,7 @@ const Dashboard = () => {
       };
 
     useEffect(()=>{
+        setLoading(true)
             let temp = []
             vetorVendasMes.forEach((array)=>{
                 array.forEach((venda)=>{
@@ -370,21 +386,23 @@ const Dashboard = () => {
             if(temp.length > 0){
                 setAdmVendasAux(sortArray(temp))
             }
-        
+            setLoading(false)
     },[vetorVendasMes])
 
     useEffect(()=>{
+        setLoading(true)
         if(teste !== true){
             setGraficoVendas(carregaGrafico(admVendas))
             if(admVendasAux.length > 0){
                 setGraficoVendasAux(carregaGrafico(admVendasAux))
             }
         }
+        setLoading(false)
     },[admVendas])
 
     useEffect(()=>{
             let temp = []
-    
+            setLoading(true)
             vetorCreditosMes.forEach((array)=>{
                 array.forEach((venda)=>{
                     if(temp.length === 0){
@@ -472,10 +490,11 @@ const Dashboard = () => {
             if(temp.length > 0){
                 setAdmCreditosAux(sortArray(temp))
             }
-        
+            setLoading(false)
     },[vetorCreditosMes])
 
     useEffect(()=>{
+        setLoading(true)
         console.log(admCreditos)
             if(teste !== true){
                 setGraficoCreditos(carregaGrafico(admCreditos))
@@ -484,9 +503,11 @@ const Dashboard = () => {
                 }
 
             }
+            setLoading(false)
     },[admCreditos])
     
     function carregaGrafico(array){
+        setLoading(true)
         let label = []
         let data = []
 
@@ -497,6 +518,7 @@ const Dashboard = () => {
             label.push(nomeAdq)
         })
         const obj = {labels: label, data: data}
+        setLoading(false)
         return obj    
     }
 

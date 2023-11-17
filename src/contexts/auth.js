@@ -83,7 +83,6 @@ function AuthProvider({ children }){
       Cookies.set('refreshToken', responseData.refresh_token)
       setAccessToken(responseData.acess_token)
       setRefreshToken(responseData.refresh_token)
-      console.log('---> ', jwtDecode(responseData.acess_token).id)
       const userId = jwtDecode(responseData.acess_token).id
       console.log('userId ---> ', userId)
       Cookies.set('userID', userId)
