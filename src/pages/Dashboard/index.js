@@ -126,12 +126,17 @@ const Dashboard = () => {
         const mesAtual = dataAtual.getMonth() + 1;
         const ultimoDiaDoMes = new Date(anoAtual, mesAtual, 0).getDate();
 
-        const vendasTemp = []
-
+        let vendasTemp = [];
+        let paramDiasBusca = [];
         for (let day = 1; day <= ultimoDiaDoMes; day++) {
-            vendasTemp.push(await returnVendas(`${anoAtual}-${mesAtual}-${day}`, `${anoAtual}-${mesAtual}-${day}`, cnpj))
+          paramDiasBusca.push({dataInicial: `${anoAtual}-${mesAtual}-${day}`, dataFinal: `${anoAtual}-${mesAtual}-${day}`, cnpj: cnpj});
         }
-        setVetorVendasMes(vendasTemp)
+      
+        const carregaVendasMes = paramDiasBusca.map(dia => returnVendas(dia.dataInicial, dia.dataFinal, dia.cnpj));
+        const vendasPromises = await Promise.all(carregaVendasMes);
+        vendasTemp = vendasPromises.filter(Boolean);
+      
+        setVetorVendasMes(vendasTemp);
     }
 
     async function inicializaVendas4diasMes(){
@@ -148,22 +153,26 @@ const Dashboard = () => {
         setCreditos5dias(creditosTemp)
     }
 
-    async function inicializaVetorCreditosMes(){
-
-        console.log('********** inicializaVetorCreditoMes **********')
-
+    async function inicializaVetorCreditosMes() {
+        console.log('********** inicializaVetorCreditoMes **********');
+      
         const dataAtual = new Date();
         const anoAtual = dataAtual.getFullYear();
         const mesAtual = dataAtual.getMonth() + 1;
         const ultimoDiaDoMes = new Date(anoAtual, mesAtual, 0).getDate();
-
-        let creditosTemp = []
-
+      
+        let creditosTemp = [];
+        let paramDiasBusca = [];
         for (let day = 1; day <= ultimoDiaDoMes; day++) {
-            creditosTemp.push(await returnCreditos(`${anoAtual}-${mesAtual}-${day}`, `${anoAtual}-${mesAtual}-${day}`, cnpj))
+          paramDiasBusca.push({dataInicial: `${anoAtual}-${mesAtual}-${day}`, dataFinal: `${anoAtual}-${mesAtual}-${day}`, cnpj: cnpj});
         }
-        setVetorCreditosMes(creditosTemp)
-    }
+      
+        const carregaCreditosMes = paramDiasBusca.map(dia => returnCreditos(dia.dataInicial, dia.dataFinal, dia.cnpj));
+        const creditosPromises = await Promise.all(carregaCreditosMes);
+        creditosTemp = creditosPromises.filter(Boolean);
+      
+        setVetorCreditosMes(creditosTemp);
+      }
 
 ///////////////////////////////////////////////////////////////////////////////
 //// Inicializar Dados de Vendas e Créditos ///////////////////////////////////

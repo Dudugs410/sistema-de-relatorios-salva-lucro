@@ -95,25 +95,35 @@ const Header = () =>{
     }
 
     const [optionsWithIcons, setOptionsWithIcons] = useState({})
+    let optionsTemp = JSON.parse(sessionStorage.getItem('options'))
 
     useEffect(()=>{
         arrayOpcoes.length = 0
-        if(tipoCliente === 0){
-            setArrayOpcoes([
-                {rota: '/dashboard', nome: 'Início', id: 0, icone: 'FiHome'},
-                {rota: '/vendas', nome: 'Vendas', id: 1, icone: 'FiDollarSign'},
-                {rota: '/recebiveis', nome: 'Recebíveis', id: 2, icone: 'FiCreditCard'},
-                {rota: '/servicos', nome: 'Serviços', id: 3, icone: 'FiRefreshCcw'},
-                {rota: '/antecipacoes', nome: 'Antecipações', id: 4, icone: 'FiTool'},
-                {rota: '/relatorios', nome: 'Relatórios', id: 5, icone: 'FiFileText'},
-                {rota: '/teste', nome: 'TESTE', id: 6, icone: 'FiHome'}])
-        } else if(tipoCliente === 1){
-            setArrayOpcoes([
-                {rota: '/dashboard', nome: 'Início', id: 0, icone: 'FiHome'},
-                {rota: '/vendas', nome: 'Vendas', id: 1, icone: 'FiDollarSign'},
-                {rota: '/recebiveis', nome: 'Recebíveis', id: 2, icone: 'FiCreditCard'},
-            ])
-        }
+
+        optionsTemp.map((obj)=>{
+            switch (obj.nome) {
+                case 'Dashboard':
+                    arrayOpcoes.push({rota: '/dashboard', nome: 'Início', id: obj.id, icone: 'FiHome'})
+                    break;
+                case 'Vendas':
+                    arrayOpcoes.push({rota: '/vendas', nome: 'Vendas', id: obj.id, icone: 'FiDollarSign'},)
+                    break;
+                case 'Créditos':
+                    arrayOpcoes.push({rota: '/recebiveis', nome: 'Recebíveis', id: obj.id, icone: 'FiCreditCard'},)
+                    break;
+                case 'Serviços':
+                    arrayOpcoes.push({rota: '/servicos', nome: 'Serviços', id: obj.id, icone: 'FiRefreshCcw'},)
+                    break;
+                case 'Antecipações':
+                    arrayOpcoes.push({rota: '/antecipacoes', nome: 'Antecipações', id: obj.id, icone: 'FiTool'},)
+                    break;
+                case 'Relatório de Importação':
+                    arrayOpcoes.push({rota: '/relatorios', nome: 'Relatórios', id: obj.id, icone: 'FiFileText'},)
+                    break;
+                default:
+                    console.log('Não encontrado ou não implementado...')
+                }
+        })
     },[])
 
     useEffect(()=>{
@@ -162,17 +172,16 @@ const Header = () =>{
                 <div className='header-content'>
                     <div className="li-container">
                         <ul className="navbar-nav">
-                            { optionsWithIcons.length > 0 && optionsWithIcons.map((opcao) => {
-                                return(
-                                    <li className="nav-item" key={opcao.id}>
-                                        <Link to={opcao.rota} className="nav-hover nav-text nav-link active text-shadow" aria-current="page">
-                                            <button className={`li-button-content ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                                            <span className="li-btn-text">{opcao.nome}</span>&nbsp;&nbsp;&nbsp;{optionsWithIcons.length > 0 ? React.createElement(optionsWithIcons[opcao.id].icone) : null}
-                                            </button>
-                                        </Link>
-                                    </li>
-                                )
-                            })}
+                            {optionsWithIcons.length > 0 && optionsWithIcons.map((opcao) => (
+                                <li className="nav-item" key={opcao.id}>
+                                    <Link to={opcao.rota} className="nav-hover nav-text nav-link active text-shadow" aria-current="page">
+                                        <button className={`li-button-content ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                                            <span className="li-btn-text">{opcao.nome}</span>
+                                            {optionsWithIcons[opcao.id]?.icone && React.createElement(optionsWithIcons[opcao.id].icone)}
+                                        </button>
+                                    </Link>
+                                </li>
+                            ))}
                         </ul>
                     </div>
                 </div>

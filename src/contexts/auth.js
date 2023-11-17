@@ -817,6 +817,7 @@ async function returnCreditos(datainicial, datafinal, cnpj){
       }
     } catch (error) {
       console.log('error')
+      console.log('parametros: ', 'datainicial: ', datainicial, 'datafinal: ', datafinal, 'cnpj: ', cnpj)
       setLoading(false)}
     } else{
       return(recebimentosStatic)
@@ -852,26 +853,31 @@ async function returnTotalDia(cnpj, data) {
   }
 }
 
-async function returnTotalMes(cnpj){
-  
+async function returnTotalMes(cnpj) {
   const currentDate = new Date()
   const currentYear = currentDate.getFullYear()
   const currentMonth = currentDate.getMonth()
   const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate()
   let mes = []
   setLoading(true)
-  for (let day = 1; day <= lastDayOfMonth; day++) {
-    const data = new Date(currentYear, currentMonth, day)
-    try{
-      const total = await returnTotalDia(cnpj, data)
-      mes.push(total)
-    } catch (error) {
-      setLoading(false)
-      console.log(error)
-    }
+  
+  try {
+    const promises = Array.from({ length: lastDayOfMonth }, (_, day) => {
+      const data = new Date(currentYear, currentMonth, day + 1)
+      return returnTotalDia(cnpj, data).catch(error => {
+        console.log(error)
+        return null
+      });
+    });
+
+    const results = await Promise.all(promises)
+    mes = results.filter(result => result !== null)
+  } catch (error) {
+    console.error(error)
   }
-  setLoading(false)
-  return mes
+
+  setLoading(false);
+  return mes;
 }
 
 async function returnCreditosBanco(cnpj, dataInicial, dataFinal, codigoBanco){
