@@ -25,6 +25,7 @@ const Login = () => {
         Cookies.remove('cnpj')
         Cookies.remove('token')
         Cookies.remove('refreshToken')
+        Cookies.remove('userID')
     },[])
 
     useEffect(()=>{

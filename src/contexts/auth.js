@@ -84,31 +84,32 @@ function AuthProvider({ children }){
       setAccessToken(responseData.acess_token)
       setRefreshToken(responseData.refresh_token)
       const userId = jwtDecode(responseData.acess_token).id
+      const userLogin = jwtDecode(responseData.acess_token).login
+      console.log('userLogin --->', userLogin)
       console.log('userId ---> ', userId)
       Cookies.set('userID', userId)
   
       const loggedSuccessfully = JSON.parse(responseData.sucess)
+      console.log('--', loggedSuccessfully ,'--')
   
       if (loggedSuccessfully) {
-        console.log('logged in')
+        console.log('>>> entrou <<<')
+        setTeste(false)
         setCnpj('')
         Cookies.set('cnpj', '')
-        setTeste(false)
-        sessionStorage.setItem('teste', false)
-        sessionStorage.setItem('isSignedIn', true)
         const opt = await loadOptions()
         console.log('opt: ',opt)
         sessionStorage.setItem('options', JSON.stringify(opt))
-  
         const gru = await loadGrupos()
         sessionStorage.setItem('grupos', JSON.stringify(gru))
       }
   
       const userResponse = await api.get('/usuario')
       const userList = userResponse.data
-      const userMatch = userList.find((user) => user.LOGIN === login && user.SENHA === md5(password))
-  
+      const userMatch = userList.find((user) => (user.LOGIN.toLowerCase() === login.toLowerCase()) && (user.SENHA === md5(password)))
+      
       if (userMatch) {
+        console.log('Matched')
         const userData = { NOME: userMatch.NOME, EMAIL: userMatch.EMAIL }
         sessionStorage.setItem('isSignedIn', true)
         sessionStorage.setItem('userData', JSON.stringify(userData))
@@ -120,7 +121,8 @@ function AuthProvider({ children }){
       } else {
         console.log('User not found')
       }
-  
+      sessionStorage.setItem('teste', false)
+      sessionStorage.setItem('isSignedIn', true)
       setLoading(false)
     } catch (error) {
       console.error(error)

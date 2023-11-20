@@ -111,7 +111,7 @@ const Header = () =>{
                 case 'Créditos':
                     arrayOpcoes.push({rota: '/recebiveis', nome: 'Recebíveis', id: obj.id, icone: 'FiCreditCard'},)
                     break;
-                case 'Serviços':
+                /*case 'Serviços':
                     arrayOpcoes.push({rota: '/servicos', nome: 'Serviços', id: obj.id, icone: 'FiRefreshCcw'},)
                     break;
                 case 'Antecipações':
@@ -119,7 +119,7 @@ const Header = () =>{
                     break;
                 case 'Relatório de Importação':
                     arrayOpcoes.push({rota: '/relatorios', nome: 'Relatórios', id: obj.id, icone: 'FiFileText'},)
-                    break;
+                    break; */
                 default:
                     console.log('Não encontrado ou não implementado...')
                 }

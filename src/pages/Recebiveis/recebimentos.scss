@@ -71,7 +71,6 @@
 
 .btn-div-recebimentos{
     display: flex;
-
 }
 
 .btn-banco-container{
@@ -79,7 +78,6 @@
     flex-wrap: wrap;
     flex-direction: column;
     align-items: center;
-    padding-top: 13px;
 }
 
 .page-content-recebimentos{
@@ -99,7 +97,6 @@
     &.dark-theme{
         background-color: $background-color-dark;
     }
-    
 }
 
 .component-container-recebimentos{
