@@ -37,7 +37,23 @@ const Header = () =>{
         setIsDarkTheme(updatedChecked)
         localStorage.setItem('isChecked', updatedChecked)
         localStorage.setItem('isDark', updatedChecked)
-    };
+        
+        if(localStorage.getItem('localUsers') !== null){
+            let localUsersTemp = JSON.parse(localStorage.getItem('localUsers'))
+            localUsersTemp.map(user => {
+                if(user.id === Cookies.get('userID')){
+                    user.theme = updatedChecked
+                }
+            })
+            localStorage.setItem('localUsers', JSON.stringify(localUsersTemp))
+        } else {
+            let localUsersTemp = []
+            let userTemp = { id: Cookies.get('userID'), theme: updatedChecked } 
+
+            localUsersTemp.push(userTemp)
+            localStorage.setItem('localUsers', JSON.stringify(localUsersTemp))
+        }
+    }
 
     useEffect(() =>{
         console.log('isChecked: ', isChecked)

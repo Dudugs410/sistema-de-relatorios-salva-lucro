@@ -63,6 +63,7 @@ function AuthProvider({ children }){
   const [graficoCreditosAux, setGraficoCreditosAux] = useState({data: [], labels: []})
   const [inicializouAux, setInicializouAux] = useState(false)
 
+  const [localUsers, setLocalUsers] = useState([])
 
   const navigate = useNavigate()
 
@@ -72,62 +73,96 @@ function AuthProvider({ children }){
   },[])
 
   /////Login do usuário
-  async function submitLogin(login, password){
+  async function submitLogin(login, password) {
     try {
-      setLoading(true)
+      setLoading(true);
   
-      const response = await api.post('token', { client_id: login, client_secret: md5(password) })
-      const responseData = response.data
+      const response = await api.post('token', { client_id: login, client_secret: md5(password) });
+      const responseData = response.data;
   
-      Cookies.set('token', responseData.acess_token)
-      Cookies.set('refreshToken', responseData.refresh_token)
-      setAccessToken(responseData.acess_token)
-      setRefreshToken(responseData.refresh_token)
-      const userId = jwtDecode(responseData.acess_token).id
-      const userLogin = jwtDecode(responseData.acess_token).login
-      console.log('userLogin --->', userLogin)
-      console.log('userId ---> ', userId)
-      Cookies.set('userID', userId)
+      Cookies.set('token', responseData.acess_token);
+      Cookies.set('refreshToken', responseData.refresh_token);
+      setAccessToken(responseData.acess_token);
+      setRefreshToken(responseData.refresh_token);
   
-      const loggedSuccessfully = JSON.parse(responseData.sucess)
-      console.log('--', loggedSuccessfully ,'--')
+      const userId = jwtDecode(responseData.acess_token).id;
+      const userLogin = jwtDecode(responseData.acess_token).login;
+      console.log('userLogin --->', userLogin);
+      console.log('userId ---> ', userId);
+      Cookies.set('userID', userId);
+      
+      const loggedSuccessfully = JSON.parse(responseData.sucess);
+      console.log('--', loggedSuccessfully ,'--');
   
       if (loggedSuccessfully) {
-        console.log('>>> entrou <<<')
-        setTeste(false)
-        setCnpj('')
-        Cookies.set('cnpj', '')
-        const opt = await loadOptions()
-        console.log('opt: ',opt)
-        sessionStorage.setItem('options', JSON.stringify(opt))
-        const gru = await loadGrupos()
-        sessionStorage.setItem('grupos', JSON.stringify(gru))
+        console.log('>>> entrou <<<');
+  
+        let localUsers = [];
+        if (localStorage.getItem('localUsers') !== null) {
+          localUsers = JSON.parse(localStorage.getItem('localUsers'));
+        }
+        
+        let userTemp = {}
+
+        const userExists = localUsers.some(storedUser => storedUser.id === userId);
+  
+        if (userExists) {
+          // Handle existing user in localUsers
+          const updatedUsers = localUsers.map(user => {
+            if (user.id === userId) {
+              userTemp = {id: userId, theme: JSON.parse(user.theme)}
+              setIsDarkTheme(JSON.parse(user.theme));
+              localStorage.setItem('isDark', JSON.parse(user.theme));
+              localStorage.setItem('isChecked', JSON.parse(user.theme));
+              return { ...user, theme: user.theme }; // Update the theme if needed
+            }
+            return user;
+          });
+          localStorage.setItem('localUsers', JSON.stringify(updatedUsers));
+        } else {
+          // Add new user to localUsers
+          userTemp = { id: userId, theme: false}
+          localUsers.push(userTemp);
+          setIsDarkTheme(false);
+          localStorage.setItem('isDark', false);
+          localStorage.setItem('isChecked', false);
+          localStorage.setItem('localUsers', JSON.stringify(localUsers));
+        }
+  
+        setTeste(false);
+        setCnpj('');
+        Cookies.set('cnpj', '');
+        const opt = await loadOptions();
+        console.log('opt: ', opt);
+        sessionStorage.setItem('options', JSON.stringify(opt));
+        const gru = await loadGrupos();
+        sessionStorage.setItem('grupos', JSON.stringify(gru));
       }
   
-      const userResponse = await api.get('/usuario')
-      const userList = userResponse.data
-      const userMatch = userList.find((user) => (user.LOGIN.toLowerCase() === login.toLowerCase()) && (user.SENHA === md5(password)))
-      
+      const userResponse = await api.get('/usuario');
+      const userList = userResponse.data;
+      const userMatch = userList.find((user) => (user.LOGIN.toLowerCase() === login.toLowerCase()) && (user.SENHA === md5(password)));
+  
       if (userMatch) {
-        console.log('Matched')
-        const userData = { NOME: userMatch.NOME, EMAIL: userMatch.EMAIL }
-        sessionStorage.setItem('isSignedIn', true)
-        sessionStorage.setItem('userData', JSON.stringify(userData))
-        localStorage.setItem('isSignedIn', true)
+        console.log('Matched');
+        const userData = { NOME: userMatch.NOME, EMAIL: userMatch.EMAIL };
+        sessionStorage.setItem('isSignedIn', true);
+        sessionStorage.setItem('userData', JSON.stringify(userData));
+        localStorage.setItem('isSignedIn', true);
   
-        const isDark = localStorage.getItem('isDark')
-        setIsDarkTheme(isDark ? isDark : false)
-        setIsSignedIn(true)
+        const isDark = localStorage.getItem('isDark');
+        setIsDarkTheme(isDark ? isDark : false);
+        setIsSignedIn(true);
       } else {
-        console.log('User not found')
+        console.log('User not found');
       }
-      sessionStorage.setItem('teste', false)
-      sessionStorage.setItem('isSignedIn', true)
-      setLoading(false)
+      sessionStorage.setItem('teste', false);
+      sessionStorage.setItem('isSignedIn', true);
+      setLoading(false);
     } catch (error) {
-      console.error(error)
-      alert(error.message)
-      setLoading(false)
+      console.error(error);
+      alert(error.message);
+      setLoading(false);
     }
   
     console.log('************fim submitLogin()************');
@@ -201,6 +236,8 @@ function AuthProvider({ children }){
     setRecebimentos([])
 
     localStorage.setItem('isSignedIn', false)
+    localStorage.removeItem('isChecked')
+    localStorage.removeItem('isDark')
 
     setDataInicial(new Date())
     setDataFinal(new Date())
