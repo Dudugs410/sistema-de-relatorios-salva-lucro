@@ -8,9 +8,10 @@ import { toast } from 'react-toastify';
 import { ToastContainer } from 'react-toastify'
 
 import { vendasStatic } from "../../contexts/static";
-
+import '../../styles/global.scss'
 import 'react-toastify/dist/ReactToastify.css'
 import './reactdatepicker.css'
+import Cookies from "js-cookie";
 
 const BuscarClienteData = () => {
     const [banSelecionada, setBanSelecionada] = useState('')
@@ -21,7 +22,8 @@ const BuscarClienteData = () => {
     const [buscou, setBuscou] = useState(false)
 
     const { 
-        cnpj, 
+        cnpj,
+        setCnpj, 
         vendas, 
         setLoading, 
         loadVendas, 
@@ -30,7 +32,9 @@ const BuscarClienteData = () => {
         adquirentes,
         dateConvertSearch,
         teste,
-        setVendas, 
+        setVendas,
+        setTotaisGlobal,
+        isDarkTheme, 
     } = useContext(AuthContext)
 
     const { 
@@ -55,13 +59,10 @@ const BuscarClienteData = () => {
     useEffect(()=>{
         console.log('Detalhes: ',detalhes)
     },[detalhes])
-
-    useEffect(()=>{
-        sessionStorage.setItem('cnpj', cnpj)
-      },[cnpj])
     
     useEffect(()=>{
-        setCnpjBusca(sessionStorage.getItem('cnpj'))
+        setCnpj(Cookies.get('cnpj'))
+        setCnpjBusca(Cookies.get('cnpj'))
     },[])
 
     function alerta(text){
@@ -78,11 +79,12 @@ const BuscarClienteData = () => {
     }
 
     async function handleBusca(e){
-            console.log('handleBusca()')
-            e.preventDefault()
-            await buscar()
-            console.log('vendas gerar dados',vendas)
-            await gerarDados(vendas)
+        e.preventDefault()
+        console.log('handleBusca()')
+        setCnpj(Cookies.get('cnpj'))
+        await buscar()
+        console.log('vendas gerar dados',vendas)
+        await gerarDados(vendas)
     }
 
     async function buscar() {
@@ -136,6 +138,7 @@ const BuscarClienteData = () => {
     setTotalCredito(0.00)
     setTotalDebito(0.00)
     setTotalVoucher(0.00)
+    setTotaisGlobal({debito: 0, credito: 0, voucher: 0, liquido: 0})
 
     console.log('voltar:')
     console.log('cnpj: ', cnpj)
@@ -158,49 +161,9 @@ const BuscarClienteData = () => {
                 theme="light"
         />
             <div className='search-bar'>
-                <form className='date-container'>
-                    <div className='date-column'>
-                        <div className='select-card select-align'>
-                            <span>Adquirente</span>
-                            { detalhes ? 
-                                <select disabled className='select-disabled' id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}}>
-                                    <option value='' selected>Todas</option>
-                                    {adquirentes.map((ADQ)=>(
-                                        <option key={ADQ.codigoAdquirente} value = {ADQ.codigoAdquirente}>{ADQ.nomeAdquirente}</option>
-                                    ))}
-                                </select>
-                            : 
-                                <select  id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}}>
-                                    <option value='' selected>Todas</option>
-                                    {adquirentes.map((ADQ)=>(
-                                        <option key={ADQ.codigoAdquirente} value = {ADQ.codigoAdquirente}>{ADQ.nomeAdquirente}</option>
-                                    ))}
-                                </select>
-                            }
-                        </div>
-                    </div>
-                    <div  className='date-column'>
-                        <div className='select-card select-align'>
-                            <span>Bandeira</span>
-                            { detalhes ? 
-                                <select disabled className='select-disabled' id='bandeira' value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}}>
-                                    <option value='' selected>Todas</option>
-                                    {bandeiras.map((BAN)=>(
-                                        <option key={BAN.codigoBandeira} value = {BAN.codigoBandeira}>{BAN.descricaoBandeira}</option>
-                                    ))}
-                                </select>  
-                            :
-                                <select id='bandeira' value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}}>
-                                    <option value='' selected>Todas</option>
-                                    {bandeiras.map((BAN)=>(
-                                        <option key={BAN.codigoBandeira} value = {BAN.codigoBandeira}>{BAN.descricaoBandeira}</option>
-                                    ))}
-                                </select>
-                                 }
-                        </div>
-                    </div>        
+                <form className={`date-container-vendas ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>       
                     <div className='submit-container select-align'>
-                        { detalhes ? <button className="btn btn-secondary btn-submit" onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className="btn btn-primary btn-submit" onClick={handleBusca}>Pesquisar</button>}
+                        { detalhes ? <button className={`btn btn-secondary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleBusca}>Pesquisar</button>}
                     </div>      
                 </form>
             </div>

@@ -13,15 +13,23 @@
     display: flex;
     flex-direction: row;
     text-align: center;
-    color: $primary-color-light;
     font-weight: bold;
-    background-color: $background-color-light;
     border-radius: 20px;
     margin: 5px;
     flex-wrap: wrap;
     align-content: center;
     justify-content: center;
-    border: solid $primary-color-light 1px;
+    transition: all 2s;
+        &.light-theme{
+            color: $primary-color-light;
+            background-color: $background-color-light;
+            border: solid $primary-color-light 1px;
+        }
+        &.dark-theme{
+            color: $font-color-dark;
+            background-color: $primary-color-dark;
+            border: solid $primary-color-dark 1px;
+        }
 }
 
 .total-container-modalidade:first-of-type{
@@ -50,14 +58,22 @@
 }
 
 .title-modalidade{
-    color: $primary-color-light;
     font-size: 1.3em;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    transition: all 2s;
+    &.light-theme{
+        color: $font-color-light;
+    }
+
+    &.dark-theme{
+        color: $font-color-dark;
+    }
 }
 
 .green-modalidade{
+    transition: all 2s;
     color: $secondary-color-light;
     font-weight: bold;
 

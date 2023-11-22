@@ -6,9 +6,15 @@
   /* margin-left: 10%; */
   display: flex;
   flex-direction: column;
-  color: $background-color-light;
-  background-color: $background-color-light;
+    &.light-theme{
+      color: $background-color-light;
+      background-color: $background-color-light;
+    }
 
+    &.dark-theme{
+      color: $background-color-light;
+      background-color: $background-color-light;
+    }
 }
 
 .data-group-area{
@@ -19,8 +25,15 @@
   padding-right: 20%;
   display: flex;
   flex-direction: column;
-  background-color: $primary-color-light;
+  transition: all 2s;
 
+  &.light-theme{
+    background-color: $primary-color-light;
+  }
+
+  &.dark-theme{
+    background-color: $primary-color-dark;
+  }
 }
 
 .title-chart{
@@ -28,7 +41,7 @@
   display: block;
   text-align: center;
   border-bottom: solid white 1px;
-  color: $font-color-light;
+  
   font-family: sans-serif;
   font-size: 1.5em;
   margin-top: 8px;
@@ -36,9 +49,16 @@
   align-self: center;
   padding: 5px;
   border-radius: 20px;
+  transition: all 2s;
 
-  background-color: $secondary-color-light;
-
+    &.light-theme{
+      color: $font-color-light;
+      background-color: $secondary-color-light;
+    }
+    &.dark-theme{
+      color: $font-color-dark;
+      background-color: $primary-color-dark;
+    }
 }
 
 .data-group-area:nth-child(2){
@@ -53,7 +73,6 @@
   justify-content: center;
   align-items: stretch;
   flex-direction: column;
-  /* position: relative; */
   top: 0;
   position: sticky;
   background-color: #181c2e;
@@ -64,9 +83,20 @@
 .graph-data{
   height: 400px;
   width: 100%;
-  background-color: $background-color-light;
   border-radius: 20px 20px 0 0;
   box-shadow:inset 0px 270px 0px 0px;
+  transition: all 2s;
+
+
+  &.light-theme{
+    background-color: $background-color-light;
+    color:white;
+  }
+
+  &.dark-theme{
+    background-color: $background-color-dark;
+    color: black;
+  }
 }
 
 .table-data{
@@ -74,17 +104,27 @@
   width: 100%;
   padding-left: 10px;
   padding-right: 10px;
-  background-color: $background-color-light;
+
   border-radius: 0 0 20px 20px;
   flex-direction: row;
   flex-wrap: wrap;
-  overflow-y: auto
+  overflow-y: auto;
+  transition: all 2s;
 
+  &.light-theme{
+    background-color: $background-color-light;
+  }
+
+  &.dark-theme{
+    background-color: $background-color-dark;
+  }
 }
 
 .table-data-dashboard{
   border-bottom: solid white 1px;
+  overflow: hidden;
 }
+
 /*
 .tbody-sticky{
   position: sticky;
@@ -93,6 +133,7 @@
 
 }
 */
+
 .dash-body-flex{
   display: flex;
   flex-direction: column;
@@ -109,13 +150,27 @@
 
 .dash-table{
   border: 0;
-  color: $font-color-light;
   max-height: 0px;
+  transition: all 2s;
+  &.light-theme{
+    color: $font-color-light;
+  }
 
+  &.dark-theme{
+    color: $font-color-dark;
+  }
 }
 
 .dash-tbody-bg{
-  background-color: $background-color-light;
+  transition: all 2s;
+  &.light-theme{
+    background-color: $background-color-light;
+  }
+
+  &.dark-theme{
+    background-color: $background-color-dark;
+  }
+
 
 }
 
@@ -150,16 +205,29 @@
   align-content: stretch;
   align-items: stretch;
   position: relative;
-  top: 50px;
+  top: 3px;
 
+  &.light-theme{
+    color: $primary-color-light;
+  }
+
+  &.dark-theme{
+    color: $secondary-color-dark;
+  }
 }
 
 .dash-table .dash-td{
-  border-bottom: 1px solid  $primary-color-light;
   display: block;
   font-size: 0.8em;
   text-align: right;
 
+  &.light-theme{
+    border-bottom: 1px solid  $primary-color-light;
+  }
+
+  &.dark-theme{
+    border-bottom: 1px solid $primary-color-dark;
+  }
 }
 
 .dash-table .dash-td::before{
@@ -167,7 +235,13 @@
   float: left;
   font-weight: bold;
   text-transform: uppercase;
+  &.light-theme{
+    color: $font-color-light;
+  }
 
+  &.dark-theme{
+    color: $font-color-dark;
+  }
 }
 
 .modal-card{
@@ -179,13 +253,11 @@
   flex-direction: column;
   justify-content: center;
   text-align: center;
-
 }
 
 .sticky-th{
   position: sticky;
   top: 0;
-
 }
 
 @media screen and (max-width: 869px){
@@ -194,7 +266,6 @@
     flex-direction: column;
     flex-wrap: wrap;
     align-content: stretch;
-
   }
 
   .data-group-area{
@@ -205,7 +276,6 @@
     padding-right: 0%;
     display: flex;
     flex-direction: column;
-
   }
 
   .data-group-area{
@@ -213,5 +283,3 @@
   }
 
 }
-
-

@@ -10,6 +10,7 @@ import { adquirentesStatic, bandeirasStatic, gruposStatic, recebimentosStatic, t
 
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'
+import jwtDecode from 'jwt-decode'
 
 export const AuthContext = createContext({})
 
@@ -27,6 +28,9 @@ function AuthProvider({ children }){
   
   const [vendas, setVendas] = useState([])
   const [vendasDash, setVendasDash] = useState([])
+  const [tableData, setTableData] = useState([])
+
+  const [totaisGlobal, setTotaisGlobal] = useState({debito: 0, credito: 0, voucher: 0, liquido: 0})
 
   const [recebimentos, setRecebimentos] = useState([])
   const [recebimentosDash, setRecebimentosDash] = useState([])
@@ -41,14 +45,25 @@ function AuthProvider({ children }){
 
   const [gruSelecionado, setGruSelecionado] = useState('')
   const [listaClientes, setListaClientes] = useState('')
+  const [inicializouGruposAux, setInicializouGruposAux] = useState(false)
 
   const [modalCliente, setModalCliente] = useState(true)
-
   const [buscou, setBuscou] = useState(false)
 
   const [isDarkTheme, setIsDarkTheme] = useState(false)
-  
   const [teste, setTeste] = useState(false)
+
+  const [admVendasAux, setAdmVendasAux] = useState([])
+  const [admCreditosAux, setAdmCreditosAux] = useState([])
+  const [somatorioCreditosHojeAux, setSomatorioCreditosHojeAux] = useState(0)
+  const [totalCreditos5diasAux, setTotalCreditos5diasAux] = useState(0)
+  const [somatorioVendasMesAux, setSomatorioVendasMesAux] = useState(0)
+  const [totalVendas4diasAux, setTotalVendas4diasAux] = useState(0)
+  const [graficoVendasAux, setGraficoVendasAux] = useState({data: [], labels: []})
+  const [graficoCreditosAux, setGraficoCreditosAux] = useState({data: [], labels: []})
+  const [inicializouAux, setInicializouAux] = useState(false)
+
+  const [localUsers, setLocalUsers] = useState([])
 
   const navigate = useNavigate()
 
@@ -58,55 +73,121 @@ function AuthProvider({ children }){
   },[])
 
   /////Login do usuário
-  async function submitLogin(login, password){
-    setLoading(true)
-    await api.post('/token', { client_id: login, client_secret: md5(password) })
-    .then(async response => {
-        Cookies.set('token', response.data.acess_token)
-        Cookies.set('refreshToken', response.data.refresh_token)
-        setAccessToken(Cookies.get('token'))
-        setRefreshToken(Cookies.get('refreshToken'))
-        
-        if(response.data.sucess === true){
-          sessionStorage.setItem('isSignedIn', true)
+  async function submitLogin(login, password) {
+    try {
+      setLoading(true);
+  
+      const response = await api.post('token', { client_id: login, client_secret: md5(password) });
+      const responseData = response.data;
+  
+      Cookies.set('token', responseData.acess_token);
+      Cookies.set('refreshToken', responseData.refresh_token);
+      setAccessToken(responseData.acess_token);
+      setRefreshToken(responseData.refresh_token);
+  
+      const userId = jwtDecode(responseData.acess_token).id;
+      const userLogin = jwtDecode(responseData.acess_token).login;
+      console.log('userLogin --->', userLogin);
+      console.log('userId ---> ', userId);
+      Cookies.set('userID', userId);
+      
+      const loggedSuccessfully = JSON.parse(responseData.sucess);
+      console.log('--', loggedSuccessfully ,'--');
+  
+      if (loggedSuccessfully) {
+        console.log('>>> entrou <<<');
+  
+        let localUsers = [];
+        if (localStorage.getItem('localUsers') !== null) {
+          localUsers = JSON.parse(localStorage.getItem('localUsers'));
         }
-        try {
-          const response = await api.get('/usuario')
-          const userList = response.data
-          const userMatch = userList.find((user) => user.LOGIN === login && user.SENHA === md5(password))
         
-          if (userMatch) {
-            sessionStorage.setItem('isSignedIn', true);
-            setTeste(false)
-            const userData = { NOME: userMatch.NOME, EMAIL: userMatch.EMAIL }
-            sessionStorage.setItem('teste', teste)
-            sessionStorage.setItem('userData', JSON.stringify(userData))
-            localStorage.setItem('isSignedIn', true)
-            if(localStorage.getItem('isDark')){
-              setIsDarkTheme(localStorage.getItem('isDark'))
+        let userTemp = {}
+
+        const userExists = localUsers.some(storedUser => storedUser.id === userId);
+  
+        if (userExists) {
+          // Handle existing user in localUsers
+          const updatedUsers = localUsers.map(user => {
+            if (user.id === userId) {
+              userTemp = {id: userId, theme: JSON.parse(user.theme)}
+              setIsDarkTheme(JSON.parse(user.theme));
+              localStorage.setItem('isDark', JSON.parse(user.theme));
+              localStorage.setItem('isChecked', JSON.parse(user.theme));
+              return { ...user, theme: user.theme }; // Update the theme if needed
             }
-            else{
-              localStorage.setItem('isDark', false)
-            }
-            setIsSignedIn(true)
-          } else {
-            console.log('User not found')
-          }
-          setLoading(false)
-        } catch (error) {
-          console.error(error)
-          setLoading(false)
+            return user;
+          });
+          localStorage.setItem('localUsers', JSON.stringify(updatedUsers));
+        } else {
+          // Add new user to localUsers
+          userTemp = { id: userId, theme: false}
+          localUsers.push(userTemp);
+          setIsDarkTheme(false);
+          localStorage.setItem('isDark', false);
+          localStorage.setItem('isChecked', false);
+          localStorage.setItem('localUsers', JSON.stringify(localUsers));
         }
-    })
-    .catch(error =>{
-        console.log('catch: ')
-        console.log(error)
-        alert(error.message)
-        setLoading(false)
-    })
-    
-    setLoading(false)
-    console.log('************fim submitLogin()************')
+  
+        setTeste(false);
+        setCnpj('');
+        Cookies.set('cnpj', '');
+        const opt = await loadOptions();
+        console.log('opt: ', opt);
+        sessionStorage.setItem('options', JSON.stringify(opt));
+        const gru = await loadGrupos();
+        sessionStorage.setItem('grupos', JSON.stringify(gru));
+      }
+  
+      const userResponse = await api.get('/usuario');
+      const userList = userResponse.data;
+      const userMatch = userList.find((user) => (user.LOGIN.toLowerCase() === login.toLowerCase()) && (user.SENHA === md5(password)));
+  
+      if (userMatch) {
+        console.log('Matched');
+        const userData = { NOME: userMatch.NOME, EMAIL: userMatch.EMAIL };
+        sessionStorage.setItem('isSignedIn', true);
+        sessionStorage.setItem('userData', JSON.stringify(userData));
+        localStorage.setItem('isSignedIn', true);
+  
+        const isDark = localStorage.getItem('isDark');
+        setIsDarkTheme(isDark ? isDark : false);
+        setIsSignedIn(true);
+      } else {
+        console.log('User not found');
+      }
+      sessionStorage.setItem('teste', false);
+      sessionStorage.setItem('isSignedIn', true);
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+      alert(error.message);
+      setLoading(false);
+    }
+  
+    console.log('************fim submitLogin()************');
+  }
+
+  async function loadOptions() {
+    try {
+      let params = {
+        codigo: Cookies.get('userID')
+      };
+  
+      let config = {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${Cookies.get('token')}`
+        },
+        params: params
+      };
+  
+      const response = await api.get('Menu', config);
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      return null; // or handle the error as needed
+    }
   }
 
   /////Fake Login
@@ -134,24 +215,88 @@ function AuthProvider({ children }){
           "ATIVO": true
       }))
     setTeste(true)
+    sessionStorage.setItem('teste', true)
     setIsSignedIn(true)
     setCnpj('03953552000102')
-    console.log('************fim submitLogin()************')
+    setGrupos(gruposStatic)
+    sessionStorage.setItem('grupos', JSON.stringify(gruposStatic))
     navigate('/dashboard')
   }
   
+  /////Reseta valores globais
+  function resetaValores(){
+    sessionStorage.clear()
+    setIsSignedIn(false)
+    
+    Cookies.remove('token')
+    Cookies.remove('refreshToken')
+    Cookies.remove('cnpj')
+
+    setVendas([])
+    setRecebimentos([])
+
+    localStorage.setItem('isSignedIn', false)
+    localStorage.removeItem('isChecked')
+    localStorage.removeItem('isDark')
+
+    setDataInicial(new Date())
+    setDataFinal(new Date())
+    setCnpj('')
+    setVendas([])
+    setVendasDash([])
+    setTableData([])
+    setTotaisGlobal({debito: 0, credito: 0, voucher: 0, liquido: 0})
+  
+    setRecebimentos([])
+    setRecebimentosDash([])
+  
+    setVendaAtual([])
+    setVendaDias([])
+  
+    setBandeiras([])
+    setGrupos([]) 
+    setClientes([])
+    setAdquirentes([])
+  
+    setGruSelecionado('')
+    setListaClientes('')
+    setInicializouGruposAux(false)
+  
+    setModalCliente(true)
+    setBuscou(false)
+  
+    setIsDarkTheme(false)
+    setTeste(false)
+  
+    setAdmVendasAux([])
+    setAdmCreditosAux([])
+    setSomatorioCreditosHojeAux(0)
+    setTotalCreditos5diasAux(0)
+    setSomatorioVendasMesAux(0)
+    setTotalVendas4diasAux(0)
+    setGraficoVendasAux({data: [], labels: []})
+    setGraficoCreditosAux({data: [], labels: []})
+    setInicializouAux(false)
+
+    console.log('<<< * Valores Resetados * >>>')
+  }
+
+  /////reseta somatorios globais dos valores de vendas/créditos
+
+  function resetaSomatorios(){
+    setTotaisGlobal({debito: 0, credito: 0, voucher: 0, liquido: 0})
+    setSomatorioCreditosHojeAux(0)
+    setTotalCreditos5diasAux(0)
+    setSomatorioVendasMesAux(0)
+    setTotalVendas4diasAux(0)
+  }
+
   /////desloga usuário
   function logout(){
     setLoading(true)
-    console.log('logout()')
-    sessionStorage.clear()
-    setIsSignedIn(false)
-    Cookies.remove('token')
-    Cookies.remove('refreshToken')
-    localStorage.setItem('isSignedIn', false)
+    resetaValores()
     setLoading(false)
     navigate('/')
-    console.log('************fim logout()************')
   }
 
   function expired(){
@@ -162,7 +307,6 @@ function AuthProvider({ children }){
     Cookies.remove('refreshToken')
     localStorage.setItem('isSignedIn', false)
     navigate('/')
-    console.log('************fim sessão expirada************')
   }
 
   //////////////////////////////////////////////////////////////////
@@ -191,20 +335,30 @@ function AuthProvider({ children }){
 
     //Grupo de Clientes
 
-    async function loadGrupos(){
-      if(teste !== true){
-        setLoading(true)
-        await api.get('/grupo')
-        .then( response => {
-          setGrupos(response.data)
-          setLoading(false)
-        })
-        .catch(error =>{
-          console.log(error)
-          setLoading(false)
-        })
-      }else{
-        setGrupos(gruposStatic)
+    async function loadGrupos() {
+      try {
+        if (!teste && !inicializouGruposAux) {
+          setLoading(true);
+          const response = await api.get('/grupo');
+          const gru = response.data;
+    
+          setGrupos(gru);
+          sessionStorage.setItem('grupos', JSON.stringify(gru));
+          setInicializouGruposAux(true);
+          setLoading(false);
+    
+          return gru;
+        } else if (!teste && inicializouGruposAux) {
+          setGrupos(JSON.parse(sessionStorage.getItem('grupos')));
+          return JSON.parse(sessionStorage.getItem('grupos'));
+        } else {
+          setGrupos(gruposStatic);
+          return gruposStatic;
+        }
+      } catch (error) {
+        console.error(error);
+        setLoading(false);
+        throw new Error(error.message); // Re-throw the error for handling in the caller function
       }
     }
 
@@ -231,8 +385,6 @@ function AuthProvider({ children }){
 
     async function loadVendas(dataInicial, cnpj, adquirente, bandeira){
       if(teste !== true){
-        console.log('Data Inicial: ', dataInicial)
-        console.log('CNPJ: ', cnpj)
   
         if((dataInicial === '' || undefined) || (cnpj === '' || undefined)){
           alert('Favor selecionar uma data e cliente válidos')
@@ -243,11 +395,10 @@ function AuthProvider({ children }){
         let params = {}
   
         if(((adquirente !== '') && (bandeira !== '')) && (buscou === false)){
-            console.log('adquirente e bandeira')
             params = {
             dataInicial: dataInicial,
             datafinal: dataInicial,
-            cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+            cnpj: Cookies.get('cnpj').replace(/[^a-zA-Z0-9 ]/g, ''),
             adquirente: adquirente,
             bandeira: bandeira,
           }
@@ -266,7 +417,6 @@ function AuthProvider({ children }){
         }
   
         else if(((bandeira !== '') && (adquirente === '')) && (buscou === false)){
-          console.log('bandeira sem adquirente')
           params = {
           datainicial: dataInicial,
           datafinal: dataInicial,
@@ -301,7 +451,6 @@ function AuthProvider({ children }){
             })
             .catch((error) => {
             setLoading(false)
-            console.log('config: ',config)
             console.log(error)
             })
       }else{
@@ -400,7 +549,6 @@ function AuthProvider({ children }){
       let params = {}
 
       if(((adquirente !== '') && (bandeira !== '')) && (buscou === false)){
-        console.log('adquirente e bandeira')
         params = {
           datainicial: datainicial,
           datafinal: datafinal,
@@ -412,7 +560,6 @@ function AuthProvider({ children }){
       }
 
       else if(((adquirente !== '') && (bandeira === '')) && (buscou === false)){
-        console.log('adquirente sem bandeira')
         params = {
           datainicial: datainicial,
           datafinal: datafinal,
@@ -423,7 +570,6 @@ function AuthProvider({ children }){
       }
 
       else if(((bandeira !== '') && (adquirente === '')) && (buscou === false)){
-        console.log('bandeira sem adquirente')
         params = {
           datainicial: datainicial,
           datafinal: datafinal,
@@ -457,7 +603,6 @@ function AuthProvider({ children }){
           })
           .catch((error) => {
           setLoading(false)
-          console.log('config: ',config)
           console.log(error)
           })
     }else{
@@ -503,8 +648,6 @@ async function retornaRecebimentos(cnpj, datainicial, datafinal){
     //Ajustes
 
     async function loadAjustes(cnpj, dataInicial, dataFinal){
-      console.log('dataInicial: ', dataInicial, 'dataFinal: ', dataFinal)
-      console.log(dateConvertSearch(dataInicial), dateConvertSearch(dataFinal))
       if(teste !== true){
         setLoading(true)
 
@@ -663,7 +806,13 @@ async function returnVendas(datainicial, datafinal, cnpj, adquirente, bandeira){
         setBuscou(false)
         return vendasData
       } catch (error) {
-        console.log(error)
+        console.log(error.response.status)
+        if(error.response.status === 401){
+          alerta('Sessão expirada. Você deve fazer o Login novamente para continuar a utilizar o sistema')
+          setLoading(false)
+          navigate('/')
+          return
+        }
         setLoading(false)
       }
   }else{
@@ -673,34 +822,44 @@ async function returnVendas(datainicial, datafinal, cnpj, adquirente, bandeira){
 
 async function returnCreditos(datainicial, datafinal, cnpj){
   if(teste !== true){
-    setLoading(true);
-    console.log(cnpj)
-    let params = {
-      cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-      dataInicial: dateConvert(datainicial),
-      dataFinal: dateConvert(datafinal),
-    }
-
-    let config = {
-      headers: { 
-        'Content-Type': 'application/json', 
-        'Authorization': `Bearer ${Cookies.get('token')}`
-      },
-      params: params
-    }
-
     try {
-      const response = await api.get('recebimentos', config)
-      const recebimentosData = response.data
-      setLoading(false)
-        return recebimentosData
+      setLoading(true);
+      let params = {
+        cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+        dataInicial: dateConvert(datainicial),
+        dataFinal: dateConvert(datafinal),
+      }
+  
+      let config = {
+        headers: { 
+          'Content-Type': 'application/json', 
+          'Authorization': `Bearer ${Cookies.get('token')}`
+        },
+        params: params
+      }
+  
+      try {
+        const response = await api.get('recebimentos', config)
+        const recebimentosData = response.data
+        setLoading(false)
+          setRecebimentos(recebimentosData)
+          return recebimentosData
+      } catch (error) {
+        console.log(error)
+        if(error.status === 401){
+          alerta('Sessão expirada. Você deve fazer o Login novamente para continuar a utilizar o sistema')
+          setLoading(false)
+          navigate('/')
+        }
+        setLoading(false)
+      }
     } catch (error) {
-      console.log(error)
-      setLoading(false)
-    }
-  }else{
-    return(recebimentosStatic)
-  }
+      console.log('error')
+      console.log('parametros: ', 'datainicial: ', datainicial, 'datafinal: ', datafinal, 'cnpj: ', cnpj)
+      setLoading(false)}
+    } else{
+      return(recebimentosStatic)
+    } 
 }
 
 async function returnTotalDia(cnpj, data) {
@@ -732,27 +891,31 @@ async function returnTotalDia(cnpj, data) {
   }
 }
 
-async function returnTotalMes(cnpj){
-  
+async function returnTotalMes(cnpj) {
   const currentDate = new Date()
   const currentYear = currentDate.getFullYear()
   const currentMonth = currentDate.getMonth()
   const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate()
   let mes = []
   setLoading(true)
-  for (let day = 1; day <= lastDayOfMonth; day++) {
-    const data = new Date(currentYear, currentMonth, day)
-    try{
-      const total = await returnTotalDia(cnpj, data)
-      mes.push(total)
-    } catch (error) {
-      setLoading(false)
-      console.log(error)
-    }
+  
+  try {
+    const promises = Array.from({ length: lastDayOfMonth }, (_, day) => {
+      const data = new Date(currentYear, currentMonth, day + 1)
+      return returnTotalDia(cnpj, data).catch(error => {
+        console.log(error)
+        return null
+      });
+    });
+
+    const results = await Promise.all(promises)
+    mes = results.filter(result => result !== null)
+  } catch (error) {
+    console.error(error)
   }
-  setLoading(false)
-  console.log('VENDAS DO MES: ', mes)
-  return mes
+
+  setLoading(false);
+  return mes;
 }
 
 async function returnCreditosBanco(cnpj, dataInicial, dataFinal, codigoBanco){
@@ -829,6 +992,57 @@ function alerta(text){
   })
 }
 
+
+function gerarDados(array){
+  tableData.length = 0
+  if (array.length > 0) {
+    array.map((venda) => {
+      tableData.push({
+        adquirente: venda.adquirente.nomeAdquirente,
+        bandeira: venda.bandeira.descricaoBandeira,
+        produto: venda.produto.descricaoProduto,
+        nsu: venda.nsu,
+        cnpj: venda.cnpj,
+        codigoVenda: venda.codigoVenda,
+        codigoAutorizacao: venda.codigoAutorizacao,
+        numeroPV: venda.numeroPV,
+        valorBruto: 'R$' + venda.valorBruto.toFixed(2).replaceAll('.', ','),
+        valorLiquido: 'R$' + venda.valorLiquido.toFixed(2).replaceAll('.', ','),
+        taxa: 'R$' + venda.taxa.toFixed(2).replaceAll('.', ','),
+        dataVenda: dateConvert(venda.dataVenda),
+        horaVenda: venda.horaVenda,
+        dataCredito: dateConvert(venda.dataCredito),
+        parcelas: venda.quantidadeParcelas,
+      })
+    })
+  } 
+  return tableData
+}
+
+  async function getCli(){
+    jwtDecode(Cookies.get('token'))
+
+    let params = {
+      codigo: JSON.parse(Cookies.get('cliCodigo'))
+    }
+
+    let config = {
+      headers: { 
+        'Content-Type': 'application/json', 
+        'Authorization': `Bearer ${Cookies.get('token')}`
+      },
+      params: params
+    }
+
+    try{
+      const response = await api.get('Cliente', config)
+      console.log(response)
+      return response;
+    } catch (error) {
+      setLoading(false)
+      console.log(error)
+    }
+  }
   
 
   return(
@@ -871,6 +1085,8 @@ function alerta(text){
         grupos,
         setGrupos,
         loadGrupos,
+        inicializouGruposAux,
+        setInicializouGruposAux,
         clientes,
         setClientes,
         loadVendas,
@@ -904,6 +1120,31 @@ function alerta(text){
         loadAjustes,
         isDarkTheme,
         setIsDarkTheme,
+        admVendasAux,
+        setAdmVendasAux,
+        admCreditosAux,
+        setAdmCreditosAux,
+        somatorioCreditosHojeAux,
+        setSomatorioCreditosHojeAux,
+        totalCreditos5diasAux,
+        setTotalCreditos5diasAux,
+        somatorioVendasMesAux,
+        setSomatorioVendasMesAux,
+        totalVendas4diasAux,
+        setTotalVendas4diasAux,
+        graficoVendasAux,
+        setGraficoVendasAux,
+        graficoCreditosAux,
+        setGraficoCreditosAux,
+        inicializouAux,
+        setInicializouAux,
+        tableData,
+        setTableData,
+        gerarDados,
+        totaisGlobal,
+        setTotaisGlobal,
+        resetaSomatorios,
+        getCli,
       }}
     >
       {children}

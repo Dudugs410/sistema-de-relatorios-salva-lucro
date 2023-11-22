@@ -1,26 +1,18 @@
 import { useContext, useEffect, useState } from 'react'
-import DetalhesVenda from '../../components/DetalhesVenda'
 import { AuthContext } from '../../contexts/auth'
-import DetalhesCredito from '../../components/DetalhesCredito'
 import DateRangePicker from '../../components/Componente_DateRangePicker'
 
-import GerarRelatorio from '../../components/Componente_GerarRelatorio'
-
-import './relatorios.css'
+import './relatorios.scss'
+import Cookies from 'js-cookie'
 
 const Relatorios = () =>{
     const { 
         dateConvertSearch,
-        converteData,
-        cnpj,
         setCnpj,
         grupos,
-        setVendas, 
-        returnVendas, 
-        returnCreditos, 
         loadAdquirentes, 
         loadBandeiras,
-        loadGrupos,
+        setGrupos,
         adquirentes,
         bandeiras,
         dataInicial,
@@ -36,7 +28,7 @@ const Relatorios = () =>{
 
     useEffect(()=>{
       async function inicializar(){
-        setCnpj(sessionStorage.getItem('cnpj'))
+        setCnpj(Cookies.get('cnpj'))
         if(bandeiras.length === 0){
           await loadBandeiras()
         }
@@ -46,7 +38,7 @@ const Relatorios = () =>{
         }
         
         if(grupos.length === 0){
-          await loadGrupos()        
+          setGrupos(JSON.parse(sessionStorage.getItem('grupos')))       
         }
       }
       inicializar()
@@ -143,8 +135,10 @@ const Relatorios = () =>{
                 </div>
                 <div className='dados-busca-relatorios-container'>
                   <div className='dropdown-container-relatorios'>
-                    <DateRangePicker />
-                    <SelectPicker />
+                    <div className='label-relatorios'>
+                      <DateRangePicker />
+                      <SelectPicker />
+                    </div>
                   </div>
                   <RadioSelect />
                 </div>
@@ -152,7 +146,7 @@ const Relatorios = () =>{
                   <hr/>
                 </div>
                 <div className='btn-relatorios-container'>
-                  { buscou ? <button onClick={handleVoltar} className='btn btn-secondary btn-submit btn-page-relatorios'>Voltar</button> : <button onClick={handleSubmit} className='btn btn-primary'>Pesquisar</button>}
+                  { buscou ? <button onClick={handleVoltar} className='btn btn-secondary btn-submit btn-page-relatorios'>Voltar</button> : <button onClick={handleSubmit} className='btn btn-primary btn-page-relatorios'>Pesquisar</button>}
                 </div>
                 <div className='hr-container'>
                   <hr/>

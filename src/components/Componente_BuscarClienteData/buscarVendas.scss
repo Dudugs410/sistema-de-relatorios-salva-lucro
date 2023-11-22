@@ -3,21 +3,30 @@
 .search-bar{
     height: auto;
     width: 100%;
-    background-color: rgba(0,0,0,0.5);
     display: flex;
     flex-direction: column;
     justify-content: center;
-    
+    &.light-theme{
+        background-color: $background-color-light;
+    }
+    &.dark-theme{
+        background-color: $background-color-dark;
+    }
 }
 
-.date-container{
+.date-container-vendas{
     width: 100%;
     display: inline-flex;
-    background-color: $background-color-light;
     padding: 20px;
     flex-direction: row;
     align-items: center;
-
+    transition: all 2s;
+    &.light-theme{
+        background-color: $background-color-light;
+    }
+    &.dark-theme{
+        background-color: $background-color-dark;
+    }
 }
 
 .date-column{
@@ -28,7 +37,13 @@
 }
 
 .date-text{
-    color:white;
+    transition: all 2s;
+    &.light-theme{
+        color: $font-color-light;
+    }
+    &.dark-theme{
+        color: $font-color-dark;
+    }
 }
 
 .date-picker{
@@ -42,14 +57,14 @@
 
 }
 
-.date-container>.date-column>input{
+.date-container-vendas>.date-column>input{
     height: 2.2em;
     border-radius: 10px;
     width: 80%;
     
 }
 
-.date-container>.date-column>span{
+.date-container-vendas>.date-column>span{
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -57,7 +72,7 @@
     
 }
 
-.date-container>.date-column>select{
+.date-container-vendas>.date-column>select{
     display: flex;
     height: 2.2em;
     text-align: center;
@@ -76,8 +91,14 @@
 }
 
 .select-card>span{
-    color: $font-color-light;
     font-weight: bold;
+    transition: all 2s;
+    &.light-theme{
+        color: $font-color-light;
+    }
+    &.dark-theme{
+        color: $font-color-dark;
+    }
     
 }
 
@@ -120,31 +141,6 @@
     width: 100%;
 }
 
-.btn-submit{
-    margin-top: 22px;
-    width: 100%;
-    display: flex;
-    height: 2.2em;
-    text-align: center;
-    width: 80%;
-    justify-content: center;
-    background-color: $secondary-color-light;
-    color:$font-color-light;
-    font-weight: 200;
-    border: solid $secondary-color-light 1px;
-    border-radius: 10px;
-}
-
-.btn-submit:hover{
-    color: $primary-color-light;
-    background-color: $secondary-color-light;
-}
-
-.select-disabled{
-    background-color: $primary-color-light;
-    
-}
-
 @media screen and (max-width: 869px){
 
     .search-bar{
@@ -157,15 +153,20 @@
         
     }
     
-    .date-container{
+    .date-container-vendas{
         width: 100%;
         align-self: center;
         display: flex;
         flex-direction: column;
         justify-content: space-evenly;
-        background-color: $background-color-light;
         padding: 10px;
-        
+        transition: all 2s;
+        &.light-theme{
+            background-color: $background-color-light;
+        }
+        &.dark-theme{
+            background-color: $background-color-dark;
+        }
     }
 
     .date-column{
@@ -204,24 +205,24 @@
         height: 2em;
     }
     
-    .date-container>input{
+    .date-container-vendas>input{
         height: auto;
         border-radius: 10px;
     }
     
-    .date-container>select{
+    .date-container-vendas>select{
         height: auto;
         border-radius: 10px;
     }
     
-    .date-container>span{
+    .date-container-vendas>span{
         display: flex;
         flex-direction: column;
         justify-content: center;
         font-weight: bold;
     }
     
-    .date-container>select{
+    .date-container-vendas>select{
         display: flex;
         text-align: center;
     }
@@ -253,25 +254,5 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-    }
-
-    .btn-submit{
-        margin-top: 22px;
-        width: 100%;
-        display: flex;
-        height: 2.2em;
-        text-align: center;
-        width: 80%;
-        justify-content: center;
-        background-color: $secondary-color-light;
-        color:$font-color-light;
-        font-weight: 200;
-        border: solid $secondary-color-light 1px;
-        border-radius: 10px;
-    }
-    
-    .btn-submit:hover{
-        color: $secondary-color-light;
-        background-color: $primary-color-light;
     }
 }

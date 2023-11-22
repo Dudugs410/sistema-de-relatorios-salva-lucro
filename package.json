@@ -2,8 +2,8 @@
   "name": "sistema-de-relatorios",
   "version": "0.1.0",
   "private": true,
-  "homepage": "/reactapp",
-  "proxy": "http://app2.salvalucro.com.br/",
+  "homepage": "/salvalucro3",
+  "proxy": "https://app.salvalucro.com.br/",
   "dependencies": {
     "@iconscout/react-unicons": "^2.0.2",
     "@testing-library/jest-dom": "^5.16.5",

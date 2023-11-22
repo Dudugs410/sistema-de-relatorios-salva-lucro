@@ -3,31 +3,34 @@ import Calendar from 'react-calendar'
 
 import BuscarClienteData from '../../components/Componente_BuscarClienteData'
 import TabelaGenericaAdm from '../../components/Componente_TabelaAdm'
-import DetalhesVenda from '../../components/DetalhesVenda'
 import TotalModalidadesComp from '../../components/Componente_TotalModalidades'
 
-import GerarRelatorio from '../../components/GerarRelatorio'
-
-import './vendas.scss'
+import GerarRelatorio from "../../components/Componente_GerarRelatorio"
 import './Calendar.scss'
+import './vendas.scss'
 import { AuthContext } from '../../contexts/auth'
+import Cookies from 'js-cookie'
+import DetalhesCredito from '../../components/DetalhesCredito'
 
-export let VendasContext = createContext({})
+export const VendasContext = createContext({})
 
-let Vendas = () =>{
+const Vendas = () =>{
 
-  let {
+  const {
     cnpj,
+    setCnpj,
     bandeiras, 
     loadBandeiras,
     grupos,
-    loadGrupos,
+    setGrupos,
     adquirentes,
     loadAdquirentes,
     vendas,
-    dateConvert,
     dateConvertSearch,
-    loadVendas,
+    gerarDados,
+    tableData,
+    setTotaisGlobal,
+    isDarkTheme,
   } = useContext(AuthContext)
 
   const [totalCredito, setTotalCredito] = useState(0.00)
@@ -45,7 +48,7 @@ let Vendas = () =>{
 
   // possivelmente utilizar estes parametros para realizar busca por período
 
-  const [cnpjBusca, setCnpjBusca] = useState(cnpj)
+  const [cnpjBusca, setCnpjBusca] = useState(Cookies.get('cnpj'))
   const [banBusca, setBanBusca] = useState('')
   const [adqBusca, setAdqBusca] = useState('')
 
@@ -58,7 +61,7 @@ let Vendas = () =>{
       }
       
       if(grupos.length === 0){
-        await loadGrupos()        
+        setGrupos(JSON.parse(sessionStorage.getItem('grupos')))     
       }
       
       if(adquirentes.length === 0){
@@ -74,54 +77,32 @@ let Vendas = () =>{
     setTotalDebito(0.00)
     setTotalVoucher(0.00)
     setTotalLiquido(0.00)
+    setTotaisGlobal({debito: 0, credito: 0, voucher: 0, liquido: 0})
   },[])
   
   useEffect(()=>{
     console.log(vendasTotais)
   },[vendasTotais])
 
-  const [tableData, setTableData] = useState([])
-
-  function gerarDados(array){
-    tableData.length = 0
-    console.log('vendas ao gerar Dados: ', array)
-    if (array.length > 0) {
-      array.map((venda) => {
-        tableData.push({
-          adquirente: venda.adquirente.nomeAdquirente,
-          bandeira: venda.bandeira.descricaoBandeira,
-          produto: venda.produto.descricaoProduto,
-          nsu: venda.nsu,
-          cnpj: venda.cnpj,
-          codigoVenda: venda.codigoVenda,
-          codigoAutorizacao: venda.codigoAutorizacao,
-          numeroPV: venda.numeroPV,
-          valorBruto: 'R$' + venda.valorBruto.toFixed(2).replaceAll('.', ','),
-          valorLiquido: 'R$' + venda.valorLiquido.toFixed(2).replaceAll('.', ','),
-          taxa: 'R$' + venda.taxa.toFixed(2).replaceAll('.', ','),
-          dataVenda: dateConvert(venda.dataVenda),
-          horaVenda: venda.horaVenda,
-          dataCredito: dateConvert(venda.dataCredito),
-          parcelas: venda.quantidadeParcelas,
-        })
-        console.log('tableData: ', tableData)
-        return tableData
-      })
-    }
-    console.log('arrayRelatorio: ', arrayRelatorio)
-  }
+  useEffect(()=>{
+    setCnpj(Cookies.get('cnpj'))
+  },[])
 
   useEffect(()=>{
-    if(vendas.length === 0){
-      setTotalCredito(0.00)
-      setTotalDebito(0.00)
-      setTotalVoucher(0.00)
-      setTotalLiquido(0.00)
-    }
-    else if(vendas.length > 0){
-      console.log(vendas)
-      setArrayRelatorio(gerarDados(vendas))
-      setArrayAdm(separaAdm(vendas))
+    try {
+      if(vendas.length === 0){
+        setTotalCredito(0.00)
+        setTotalDebito(0.00)
+        setTotalVoucher(0.00)
+        setTotalLiquido(0.00)
+      }
+      else if(vendas.length > 0){
+        console.log(vendas)
+        setArrayRelatorio(gerarDados(vendas))
+        setArrayAdm(separaAdm(vendas))
+      }
+    } catch (error) {
+      console.log(error)
     }
   },[vendas])
 
@@ -208,17 +189,13 @@ let Vendas = () =>{
         })
         
         console.log('TEPM: ', temp)
+        
+        let totalTemp = {debito: totalDebitoTemp, credito: totalCreditoTemp, voucher: totalVoucherTemp, liquido: totalLiquidoTemp}
 
-        setTotalCredito(totalCreditoTemp)
-        setTotalDebito(totalDebitoTemp)
-        setTotalVoucher(totalVoucherTemp)
-        setTotalLiquido(totalLiquidoTemp)
+        console.log('totalTemp:', totalTemp)
+        setTotaisGlobal(totalTemp)
 
-        console.log('total Credito:', totalCredito)
-        console.log('total Debito:', totalDebito)
-        console.log('total Voucher:', totalVoucher)
-        console.log('total Liquido:', totalLiquido)
-      return temp
+        return temp
     }
   }
 
@@ -226,9 +203,11 @@ let Vendas = () =>{
     return (
       <div>
         <Calendar
+          style={{ color:'white' }}
+          className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
           onChange={ handleDateChange }
           value={ dataBusca }
-          //tileContent={}
+          tileClassName={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
         />
       </div>
     )
@@ -259,21 +238,21 @@ let Vendas = () =>{
       setAdqBusca,
       }}>
 
-      <div className='appPage app-page-vendas'>
-        <div className='page-vendas-background'>
-          <div className='page-content-vendas'>
-            <div className='vendas-title-container'>
-              <h1 className='vendas-title'>Calendário de Vendas</h1>
+      <div className={`appPage app-page-vendas ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+        <div className={`page-vendas-background ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+          <div className={`page-content-vendas ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+            <div className={`vendas-title-container ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+              <h1 className={`vendas-title ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Calendário de Vendas</h1>
             </div>
             <hr className="hr-recebimentos"/>
-            <TotalModalidadesComp texto1={'Débito'} valor1={totalDebito} texto2={'Crédito'} valor2={totalCredito} texto3={'Voucher'} valor3={totalVoucher} texto4={'Total Líquido'} valor4={totalLiquido} />
+            <TotalModalidadesComp />
             <hr className="hr-recebimentos"/>
             { detalhes ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
             <div className='component-container-vendas'>
-              { detalhes ?  <DetalhesVenda/> : <MyCalendar/> }
+              { detalhes ?  <DetalhesCredito array={vendas}/> : <MyCalendar className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/> }
               { detalhes ? <TabelaGenericaAdm Array={arrayAdm}/> : <></> }
               { detalhes ? <hr className='hr-recebimentos'/> : <></> }
-              <BuscarClienteData funcao={loadVendas} />
+              <BuscarClienteData />
             </div>
           </div>
         </div>

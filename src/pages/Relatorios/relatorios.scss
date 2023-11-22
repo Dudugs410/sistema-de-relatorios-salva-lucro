@@ -1,8 +1,10 @@
+@import '../../styles/_variables.scss';
+
 .relatorios-page-container{
     margin-top: 20px;
     /* height: 100%; */
     width: 80%;
-    background-color: #181c2e;
+    background-color: $background-color-light;
     border-radius: 20px;
     padding: 10px;
     margin-top: 10px;
@@ -10,16 +12,17 @@
 }
 
 .app-page-relatorios{
-    display:flex;
+    display: contents;
     flex-direction: column;
     align-items: center;
-    background-color: #59659e;
+    background-color: #fff;
+    height: 100%;
 }
 
 .page-relatorios-background{
     display: flex;
     justify-content: center;
-    background-color: #59659e;
+    background-color: $primary-color-light;
     width: 100%;
 }
 
@@ -27,9 +30,9 @@
     width: 100%;
     padding: 20px;
     display: inline-flex;
-    background-color: #59659e;
+    background-color: $background-color-light;
     border-radius: 20px;
-    border-bottom: solid white 1px;
+    border: solid $primary-color-light 1px;
     flex-direction: column;
     flex-wrap: wrap;
     align-content: center;
@@ -48,20 +51,17 @@
     padding: 20px;
     width: 100%;
     display: flex;
-    background-color: #59659e;
     justify-content: space-around;
     align-items: center;
     justify-items: center;
-    flex-direction: row;
+    flex-direction: column;
     flex-wrap: wrap;
-
 }
 
 .h1-relatorios{
-    color: white;
+    color: $primary-color-light;
     text-align: center;
-    border-bottom: solid white 1px;
-    background-color:#59659e;
+    background-color: $secondary-color-light;
     width: 100%;
     border-radius: 20px;
     padding: 10px;
@@ -111,7 +111,7 @@
 }
 
 .radio-text{
-    color: white;
+    color: $primary-color-light;
 }
 
 .form-check{
@@ -126,6 +126,23 @@
 
 .btn-page-relatorios{
     margin-top: 0px;
+    color: $primary-color-light;
+    background-color: $secondary-color-light;
+    border: none;
+}
+
+.btn-page-relatorios:hover{
+    margin-top: 0px;
+    background-color: $secondary-color-light;
+    border: none;
+}
+
+.label-relatorios .label-picker {
+    color: $primary-color-light;
+}
+
+.label-picker-servicos .label-picker {
+    color: $primary-color-light; /* Your desired color */
 }
 
 @media screen and (max-width: 869px){
@@ -137,20 +154,21 @@
         margin-top: 20px;
         /* height: 100%; */
         width: 100%;
-        background-color: #181c2e;
         border-radius: 0;
         padding: 10px;
         margin-top: 10px;
         margin-bottom: 54px;
     }
 
+    .page-relatorios-background {
+        display: contents;
+    }
+
     .dados-busca-relatorios-container{
         width: 100%;
         padding: 20px;
         display: inline-flex;
-        background-color: #59659e;
         border-radius: 20px;
-        border-bottom: solid white 1px;
         flex-direction: column;
         flex-wrap: wrap;
         align-content: center;

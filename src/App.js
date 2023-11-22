@@ -6,13 +6,12 @@ import { BrowserRouter } from 'react-router-dom'
 import RoutesApp from './routes'
 import React from 'react'
 
-
 import './index.scss'
 import { ToastContainer } from 'react-toastify'
 
 function App() {
   return (
-    <BrowserRouter basename='/reactapp'>
+    <BrowserRouter basename='/salvalucro3'>
       <AuthProvider>
       <ToastContainer
             position="top-center"

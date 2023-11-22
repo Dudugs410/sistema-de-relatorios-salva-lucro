@@ -11,7 +11,7 @@ const Teste = () =>{
     const {isDarkTheme, setIsDarkTheme} = useContext(AuthContext)
 
     useEffect(()=>{
-        setIsDarkTheme(localStorage.getItem('isDark'))
+        setIsDarkTheme(JSON.parse(localStorage.getItem('isDark')))
     },[])
 
     const toggleTheme = (e) => {
@@ -21,6 +21,7 @@ const Teste = () =>{
     };
 
     useEffect(()=>{
+      console.log('isDarkTheme: ', isDarkTheme)
         localStorage.setItem('isDark', isDarkTheme)
     },[isDarkTheme])
   

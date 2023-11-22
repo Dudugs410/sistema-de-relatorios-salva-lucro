@@ -1,6 +1,5 @@
 @import './styles/variables';
 
-
 *{
   font-family: $default-font;
 }
@@ -8,13 +7,21 @@
 html, body, .app, #root, .appPage{
   height: 100%;
   width: 100%;
-  background-color: $background-color-light;
+   &.light-theme{
+    background-color: $background-color-light;
+    font-family: $default-font;
+   }
+   &.dark-theme{
+    background-color: $background-color-dark;
+    color: $font-color-dark;
+   }
   
 }
 
 .appPage{
   min-height: 100vh;
   font-family: sans-serif;
+  transition: all 0.4s;
   
 }
 

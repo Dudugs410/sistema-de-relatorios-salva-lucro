@@ -6,9 +6,13 @@ import { AuthContext } from "../../contexts/auth"
 import TotalModalidadesComp from "../../components/Componente_TotalModalidades"
 import TabelaGenericaAdm from "../../components/Componente_TabelaAdm"
 import ComponenteBuscarClienteData from '../../components/ComponenteBuscarClienteData'
-import GerarRelatorio from "../../components/GerarRelatorio"
+import GerarRelatorio from "../../components/Componente_GerarRelatorio"
 import Modal from "../../components/Modal"
 import DetalhesBanco from "../../components/DetalhesBanco"
+import Cookies from "js-cookie"
+import { createContext } from "react"
+
+export const CreditosContext = createContext({})
 
 const Recebiveis = () =>{
 
@@ -18,17 +22,23 @@ const Recebiveis = () =>{
       returnCreditos, 
       converteData, 
       grupos,
-      loadGrupos, 
+      setGrupos, 
       bandeiras, 
       loadBandeiras,
       adquirentes,
       loadAdquirentes,
-      dateConvert,
       dateConvertSearch,
       returnCreditosBanco,
+      totaisGlobal,
+      setTotaisGlobal,
+      tableData,
+      gerarDados,
+      isDarkTheme,
+
     } = useContext(AuthContext)
 
     const [dataBusca, setDataBusca] = useState(new Date())
+    const [cnpjBusca, setCnpjBusca] = useState(Cookies.get('cnpj'))
     const [buscou, setBuscou] = useState(false)
 
     const [creditosTemp, setCreditosTemp] = useState([])
@@ -36,8 +46,6 @@ const Recebiveis = () =>{
     const [arrayBancos, setArrayBancos] = useState([])
 
     const [detalhes, setDetalhes] = useState(false)
-    const [admBusca, setAdmBusca] = useState('')
-    const [banBusca, setBanBusca] = useState('')
 
     const [totalCredito, setTotalCredito] = useState(0)
     const [totalDebito, setTotalDebito] = useState(0)
@@ -46,7 +54,7 @@ const Recebiveis = () =>{
 
     useEffect(()=>{
       async function inicializar(){
-        setCnpj(sessionStorage.getItem('cnpj'))
+        setCnpj(Cookies.get('cnpj'))
         if(bandeiras.length === 0){
           await loadBandeiras()
         }
@@ -56,7 +64,7 @@ const Recebiveis = () =>{
         }
         
         if(grupos.length === 0){
-          await loadGrupos()        
+          setGrupos(JSON.parse(sessionStorage.getItem('grupos')))        
         }
       }
       inicializar()
@@ -90,8 +98,7 @@ const Recebiveis = () =>{
       setArrayAdm([])
       setBuscou(false)
       setDetalhes(false)
-      setAdmBusca(null)
-      setBanBusca(null)
+      setTotaisGlobal({debito: 0, credito: 0, voucher: 0, liquido: 0})
       arrayBancos.length = 0
     }
 
@@ -133,8 +140,9 @@ const Recebiveis = () =>{
         const temp = separaAdm(creditosTemp)
         console.log(temp)
         setArrayAdm(temp)
-
         setDetalhes(true)
+
+        setTotaisGlobal({debito: deb, credito: cred, voucher: vou, liquido: total})
       }
     },[creditosTemp])
 
@@ -193,69 +201,22 @@ const Recebiveis = () =>{
     }
   }
 
-  function handleDetalhes(childData){
-    setDetalhes(detalhes)
-    console.log(detalhes)
-
-  }
-
-  function handleAdm(childData){
-    setAdmBusca(childData)
-    console.log(admBusca)
-  }
-
-  function handleBan(childData){
-    setBanBusca(childData)
-    console.log(banBusca)
-  }
-
-  function handleUpdate(childData){
-    setBuscou(childData)
-    console.log(buscou)
-  }
-
     function MyCalendar() {
         return (
           <div>
             <Calendar
+              style={{ color:'white' }}
+              className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
               onChange={ handleDateChange }
               value={ dataBusca }
+              tileClassName={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
               onClick={ console.log(dataBusca) }
             />
           </div>
         )
       }
 
-      const [tableData, setTableData] = useState([])
       const [arrayRelatorio, setArrayRelatorio] = useState([])
-
-      function gerarDados(array){
-        tableData.length = 0
-        console.log('vendas ao gerar Dados: ', array)
-        if (array.length > 0) {
-          array.map((venda) => {
-            tableData.push({
-              adquirente: venda.adquirente.nomeAdquirente,
-              bandeira: venda.bandeira.descricaoBandeira,
-              produto: venda.produto.descricaoProduto,
-              nsu: venda.nsu,
-              cnpj: venda.cnpj,
-              codigoVenda: venda.codigoVenda,
-              codigoAutorizacao: venda.codigoAutorizacao,
-              numeroPV: venda.numeroPV,
-              valorBruto: 'R$' + venda.valorBruto.toFixed(2).replaceAll('.', ','),
-              valorLiquido: 'R$' + venda.valorLiquido.toFixed(2).replaceAll('.', ','),
-              taxa: 'R$' + venda.taxa.toFixed(2).replaceAll('.', ','),
-              dataVenda: dateConvert(venda.dataVenda),
-              horaVenda: venda.horaVenda,
-              dataCredito: dateConvert(venda.dataCredito),
-              parcelas: venda.quantidadeParcelas,
-            })
-            return tableData
-          })
-        }
-        console.log('arrayRelatorio: ', arrayRelatorio)
-      }
     
     useEffect(()=>{
       if((creditosTemp) && (creditosTemp.length > 0)){
@@ -287,18 +248,20 @@ const Recebiveis = () =>{
       setCodigoBancos(listaCodigo)
     },[creditosTemp])
 
+    //codigo.substring(codigo.length - 3)
+
     useEffect(() => {
       const fetchData = async () => {
         let promises = codigoBancos.map(async (codigo) => {
-          return await returnCreditosBanco(cnpj, dataBusca, dataBusca, codigo.substring(codigo.length - 3));
-        });
+          return await returnCreditosBanco(cnpj, dataBusca, dataBusca, codigo.substring(codigo.length - 3))
+        })
     
-        let tempArray = await Promise.all(promises);
-        setArrayBancos(tempArray);
-      };
+        let tempArray = await Promise.all(promises)
+        setArrayBancos(tempArray)
+      }
     
-      fetchData();
-    }, [codigoBancos]);
+      fetchData()
+    }, [codigoBancos])
 
     useEffect(()=>{
       console.log('arrayBancos: ', arrayBancos)
@@ -311,7 +274,19 @@ const Recebiveis = () =>{
     }
 
     return(
-        <div className='appPage app-page-recebimentos'>
+
+      <CreditosContext.Provider 
+    value={{
+      detalhes,
+      setDetalhes,
+      cnpjBusca,
+      setCnpjBusca,
+      dataBusca,
+      setDataBusca,
+      setCreditosTemp,
+    }}>
+
+        <div className={`appPage app-page-recebimentos ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
         { showBanco &&
           <Modal onClose={() => setShowBanco(false)}>
             <div className='modal-adm'>
@@ -319,25 +294,28 @@ const Recebiveis = () =>{
             </div>
           </Modal>
         }
-          <div className='page-recebimentos-background'>
-            <div className='page-content-recebimentos'>
-              <div className='recebimentos-title-container'>
-                <h1 className='recebimentos-title'>Calendário de Recebimentos</h1>
+          <div className={`page-recebimentos-background ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+            <div className={`page-content-recebimentos ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+              <div className={`recebimentos-title-container ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                <h1 className={`recebimentos-title ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Calendário de Recebimentos</h1>
               </div>
-              <hr className='hr-recebimentos'/>
+              <hr className={`hr-recebimentos ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
               <TotalModalidadesComp texto1={'Débito'} valor1={totalDebito} texto2={'Crédito'} valor2={totalCredito} texto3={'Voucher'} valor3={totalVoucher} texto4={'Total Líquido'} valor4={totalTotal} />
-              <hr className='hr-recebimentos'/>
-              { detalhes ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
+              <hr className={`hr-recebimentos ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
+              { detalhes && (creditosTemp.length > 0) ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
               <div className='component-container-recebimentos'>
-                { detalhes ? <DetalhesCredito array={creditosTemp}/> :  <MyCalendar/> }
-                {arrayAdm && detalhes ? <TabelaGenericaAdm Array={arrayAdm}/> : <></>}
-                { detalhes ? <hr className='hr-recebimentos' /> : <></> }
-                { detalhes ? <button className="btn btn-primary btn-banco-recebimentos" onClick={handleShowBanco}>Valores por Banco</button> : <></> }
-                <ComponenteBuscarClienteData detalhes={detalhes} adquirentes={adquirentes} bandeiras={bandeiras} onAdmUpdate={handleAdm} onBanUpdate={handleBan} onBuscaUpdate={handleUpdate}/>
+                { detalhes && (creditosTemp.length > 0) ? <DetalhesCredito array={creditosTemp}/> :  <MyCalendar/> }
+                {arrayAdm && detalhes && (creditosTemp.length > 0) ? <TabelaGenericaAdm Array={arrayAdm}/> : <></>}
+                { detalhes && (creditosTemp.length > 0) ? <hr className={`hr-recebimentos ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} /> : <></> }
+                <div className='btn-banco-container'>
+                  { detalhes && (creditosTemp.length > 0) ? <button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleShowBanco}>Valores por Banco</button> : <></> }
+                </div>
+                <ComponenteBuscarClienteData />
               </div>
             </div>
           </div>
         </div>
+      </CreditosContext.Provider>
     )
 }
 

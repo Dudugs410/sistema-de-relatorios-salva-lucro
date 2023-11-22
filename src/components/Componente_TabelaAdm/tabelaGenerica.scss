@@ -81,10 +81,16 @@
     color: white;
     text-align: center;
     border-bottom: solid white 1px;
-    background-color: $primary-color-light;
     width: 100%;
     border-radius: 20px;
     padding: 10px;
+
+    &.light-theme{
+        background-color: $primary-color-light;
+    }
+    &.dark-theme{
+        background-color: $primary-color-dark;
+    }
 }
 
 .content-adq{
@@ -102,23 +108,42 @@
     position: sticky;
     top: 0;
     color: white;
-    background-color: #181c2e;
+    text-align: center;
+    border-bottom: solid white 1px;
+    width: 100%;
+    border-radius: 20px;
+    padding: 10px;
+    &.light-theme{
+        background-color: $primary-color-light;
+    }
+    &.dark-theme{
+        background-color: $primary-color-dark;
+    }
 }
 
 .det-td--top{
     position: sticky;
     top: 0;
     color: white;
-    background-color: #181c2e;
+    &.light-theme{
+        background-color: $primary-color-light;
+    }
+    &.dark-theme{
+        background-color: $primary-color-dark;
+    }
 }
 
 .det-adm{
     background-color: white;
     color: black;
-}
-
-.tabela-adm-content{
-    background-color: white;
+    &.light-theme{
+        color: $font-color-light;
+        background-color: $background-color-light;
+    }
+    &.dark-theme{
+        color: $font-color-dark;
+        background-color: $background-color-dark;
+    }
 }
 
 .content{
@@ -130,7 +155,6 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
-
 }
 
 .green-tabela-adm{

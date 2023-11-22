@@ -3,21 +3,43 @@
 .search-bar{
     height: auto;
     width: 100%;
-    background-color: rgba(0,0,0,0.5);
     display: flex;
     flex-direction: column;
     justify-content: center;
-    
+    &.light-theme{
+        background-color: $background-color-light;
+    }
+    &.dark-theme{
+        background-color: $background-color-dark;
+    }
+}
+
+.date-container-recebimentos{
+    width: 100%;
+    display: inline-flex;
+    padding: 20px;
+    flex-direction: row;
+    align-items: center;
+    &.light-theme{
+        background-color: $background-color-light;
+    }
+    &.dark-theme{
+        background-color: $background-color-dark;
+    }
 }
 
 .date-container{
     width: 100%;
     display: inline-flex;
-    background-color: $background-color-light;
     padding: 20px;
     flex-direction: row;
     align-items: center;
-
+    &.light-theme{
+        background-color: $background-color-light;
+    }
+    &.dark-theme{
+        background-color: $background-color-dark;
+    }
 }
 
 .date-column{
@@ -42,14 +64,14 @@
 
 }
 
-.date-container>.date-column>input{
+.date-container-recebimentos>.date-column>input{
     height: 2.2em;
     border-radius: 10px;
     width: 80%;
     
 }
 
-.date-container>.date-column>span{
+.date-container-recebimentos>.date-column>span{
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -57,7 +79,7 @@
     
 }
 
-.date-container>.date-column>select{
+.date-container-recebimentos>.date-column>select{
     display: flex;
     height: 2.2em;
     text-align: center;
@@ -72,7 +94,15 @@
     text-align: center;
     width: 80%;
     font-style: italic;
-    color: gray;
+    &.light-theme{
+        background-color: $background-color-light;
+        color: $primary-color-light;
+    }
+
+    &.dark-theme{
+        background-color: $background-color-dark;
+        color: $font-color-dark;
+    }  
 }
 
 .select-card>span{
@@ -113,31 +143,6 @@
     width: 100%;
 }
 
-.btn-submit{
-    margin-top: 22px;
-    width: 100%;
-    display: flex;
-    height: 2.2em;
-    text-align: center;
-    width: 80%;
-    justify-content: center;
-    background-color: $secondary-color-light;
-    color:$font-color-light;
-    font-weight: 200;
-    border: solid $secondary-color-light 1px;
-    border-radius: 10px;
-}
-
-.btn-submit:hover{
-    color: $primary-color-light;
-    background-color: $secondary-color-light;
-}
-
-.select-disabled{
-    background-color: $primary-color-light;
-    
-}
-
 .select-align{
     display: flex;
     flex-direction: column;
@@ -163,8 +168,11 @@
         display: flex;
         flex-direction: column;
         justify-content: space-evenly;
-        background-color: $background-color-light;
         padding: 10px;
+        background-color: $background-color-light;
+        &.dark-theme{
+            background-color: $background-color-dark;
+        }
         
     }
 
@@ -185,7 +193,6 @@
 
     .select-card>select{
         display: flex;
-        margin-left: 10%;
     }
 
     .select-card>.date-picker{
@@ -204,24 +211,24 @@
         height: 2em;
     }
     
-    .date-container>input{
+    .date-container-recebimentos>input{
         height: auto;
         border-radius: 10px;
     }
     
-    .date-container>select{
+    .date-container-recebimentos>select{
         height: auto;
         border-radius: 10px;
     }
     
-    .date-container>span{
+    .date-container-recebimentos>span{
         display: flex;
         flex-direction: column;
         justify-content: center;
         font-weight: bold;
     }
     
-    .date-container>select{
+    .date-container-recebimentos>select{
         display: flex;
         text-align: center;
     }
@@ -253,25 +260,5 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-    }
-
-    .btn-submit{
-        margin-top: 22px;
-        width: 100%;
-        display: flex;
-        height: 2.2em;
-        text-align: center;
-        width: 80%;
-        justify-content: center;
-        background-color: $secondary-color-light;
-        color:$font-color-light;
-        font-weight: 200;
-        border: solid $secondary-color-light 1px;
-        border-radius: 10px;
-    }
-    
-    .btn-submit:hover{
-        color: $secondary-color-light;
-        background-color: $primary-color-light;
     }
 }

@@ -1,79 +1,50 @@
 import { useState, useEffect, useContext } from "react"
 import { vendasStatic } from "../../contexts/static";
 import '../Componente_BuscarClienteRecebimentos/buscarCreditos.scss'
+import { CreditosContext } from "../../pages/Recebiveis";
+import { AuthContext } from "../../contexts/auth";
 
 
 
-const ComponenteBuscarClienteData = ({detalhes, adquirentes, bandeiras, onAdmUpdate, onBanUpdate, onBuscaUpdate}) => {
-    const [banSelecionada, setBanSelecionada] = useState('')
-    const [adqSelecionada, setAdqSelecionada] = useState('')
+const ComponenteBuscarClienteData = () => {
 
-    function handleBusca(e){
+    const { detalhes, setDetalhes, dataBusca, cnpjBusca, creditosTemp, setCreditosTemp } = useContext(CreditosContext)
+    const { returnCreditos, converteData, isDarkTheme } = useContext(AuthContext) 
+
+    useEffect(()=>{
+        setCreditosTemp([])
+    },[])
+
+    async function handleBusca(e){
         console.log('handleBusca()')
         e.preventDefault()
-        onBuscaUpdate(true)
+        console.log(converteData(dataBusca), cnpjBusca)
+        const response = await returnCreditos(converteData(dataBusca), converteData(dataBusca), cnpjBusca)
+        setCreditosTemp(response)
+        setDetalhes(true)
     }
 
     function handleVoltar(e){
         console.log('handleVoltar()')
         e.preventDefault()
-        onBuscaUpdate(false)
+        setDetalhes(false)
     }
 
     useEffect(()=>{
-        onAdmUpdate(adqSelecionada)
-    },[adqSelecionada])
+        console.log('CREDITOS TEMP: ',creditosTemp)
+        if((detalhes === true) && (creditosTemp.length === 0)){
+            alert('não foram encontrados dados para a data selecionada')
+            setDetalhes(false)
+        }
 
-    useEffect(()=>{
-        onBanUpdate(banSelecionada)
-    },[banSelecionada])
+    },[creditosTemp])
 
     return(
         <>
             <div className='search-bar'>
-                <form className='date-container'>
-                    <div className='date-column'>
-                        <div className='select-card select-align'>
-                            <span>Adquirente</span>
-                            { detalhes ? 
-                                <select disabled className='select-disabled' id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}}>
-                                    <option value='' selected>Todas</option>
-                                    {adquirentes.map((ADQ)=>(
-                                        <option key={ADQ.codigoAdquirente} value = {ADQ.codigoAdquirente}>{ADQ.nomeAdquirente}</option>
-                                    ))}
-                                </select>
-                            : 
-                                <select  id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}}>
-                                    <option value='' selected>Todas</option>
-                                    {adquirentes.map((ADQ)=>(
-                                        <option key={ADQ.codigoAdquirente} value = {ADQ.codigoAdquirente}>{ADQ.nomeAdquirente}</option>
-                                    ))}
-                                </select>
-                            }
-                        </div>
-                    </div>
-                    <div  className='date-column'>
-                        <div className='select-card select-align'>
-                            <span>Bandeira</span>
-                            { detalhes ? 
-                                <select disabled className='select-disabled' id='bandeira' value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}}>
-                                    <option value='' selected>Todas</option>
-                                    {bandeiras.map((BAN)=>(
-                                        <option key={BAN.codigoBandeira} value = {BAN.codigoBandeira}>{BAN.descricaoBandeira}</option>
-                                    ))}
-                                </select>  
-                            :
-                                <select id='bandeira' value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}}>
-                                    <option value='' selected>Todas</option>
-                                    {bandeiras.map((BAN)=>(
-                                        <option key={BAN.codigoBandeira} value = {BAN.codigoBandeira}>{BAN.descricaoBandeira}</option>
-                                    ))}
-                                </select>
-                                 }
-                        </div>
-                    </div>        
+                <form className='date-container'>     
                     <div className='submit-container select-align'>
-                        { detalhes ? <button className="btn btn-secondary btn-submit" onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className="btn btn-primary btn-submit" onClick={handleBusca}>Pesquisar</button>}
+                        { detalhes ? <button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleBusca}>Pesquisar</button>}
                     </div>      
                 </form>
             </div>

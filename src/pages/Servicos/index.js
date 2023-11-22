@@ -1,6 +1,6 @@
 
 
-import './servicos.css'
+import './servicos.scss'
 import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../../contexts/auth'
 import DateRangePicker from '../../components/Componente_DateRangePicker'
@@ -10,7 +10,7 @@ const Servicos = () =>{
 
     const { 
         loadAjustes,
-        loadGrupos,
+        setGrupos,
         grupos, 
         cnpj, 
         alerta, 
@@ -41,26 +41,11 @@ const Servicos = () =>{
     useEffect(()=>{
         async function inicializar(){
           if(grupos.length === 0){
-            await loadGrupos()        
+            setGrupos(JSON.parse(sessionStorage.getItem('grupos')))       
           }
         }
         inicializar()
       },[])
-
-
-
-    useEffect(()=>{
-        console.log(ajustesTemp)
-        if(ajustesTemp !== undefined){
-            if(buscou === false){
-                buscarAjustes()
-                if(ajustesTemp.length === 0){
-                    alerta('Não existem ajustes para o período selecionado')
-                }
-                setBuscou(true)
-            }
-        }
-    },[ajustesTemp])
 
     useEffect(() => {
         if(ajustesTemp !== undefined){
@@ -141,10 +126,6 @@ const Servicos = () =>{
         buscarAjustes()
     }
 
-    useEffect(()=>{
-        handleBuscar2()
-    },[cnpj])
-
     return(
         <div className='appPage app-page-servicos'>
             <div className='page-servicos-background'>
@@ -153,16 +134,18 @@ const Servicos = () =>{
                         <h1 className='vendas-title'>Serviços</h1>
                     </div>
                     <div className='hr-container'>
-                        <hr/>
+                        <hr className='hr-ajustes'/>
                     </div>
                     <div className='date-picker-ajustes'>
-                        <DateRangePicker/>
+                        <div className='label-picker-servicos'>
+                            <DateRangePicker/>
+                        </div>
                         <div className='btn-container-servicos'>
                             <button className='btn btn-primary btn-busca-servicos' onClick={handleBuscar}>Pesquisar</button>
                         </div>
                     </div>
                     <div className='hr-container'>
-                        <hr/>
+                        <hr className='hr-ajustes'/>
                     </div>
                     <div className='container-ajustes'>
                         <div className='card-resumo-total-ajustes'>
