@@ -17,7 +17,16 @@
 .table-wrapper{
     height: 500px;
     padding-bottom: 10%;
+    
+    &.light-theme{
+        
+    }
+
+    &.dark-theme{
+
+    }
 }
+
 .det-table{
     min-height:30%;
     

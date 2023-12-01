@@ -20,7 +20,7 @@ export default function Private({children}){
       setIsSignedIn(false)
       navigate('/')
     }
-  })
+  },[])
 
   useEffect(()=>{
     setCnpj(Cookies.get('cnpj'))

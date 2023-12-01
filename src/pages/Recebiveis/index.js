@@ -1,11 +1,11 @@
 import Calendar from "react-calendar"
 import './recebimentos.scss'
 import { useContext, useEffect, useState } from "react"
-import DetalhesCredito from "../../components/DetalhesCredito"
+import TabelaVendasCreditos from "../../components/Componente_TabelaVendasCreditos"
 import { AuthContext } from "../../contexts/auth"
 import TotalModalidadesComp from "../../components/Componente_TotalModalidades"
 import TabelaGenericaAdm from "../../components/Componente_TabelaAdm"
-import ComponenteBuscarClienteData from '../../components/ComponenteBuscarClienteData'
+import ComponenteBuscarClienteData from "../../components/ComponenteBuscarClienteData"
 import GerarRelatorio from "../../components/Componente_GerarRelatorio"
 import Modal from "../../components/Modal"
 import DetalhesBanco from "../../components/DetalhesBanco"
@@ -29,7 +29,6 @@ const Recebiveis = () =>{
       loadAdquirentes,
       dateConvertSearch,
       returnCreditosBanco,
-      totaisGlobal,
       setTotaisGlobal,
       tableData,
       gerarDados,
@@ -54,6 +53,7 @@ const Recebiveis = () =>{
 
     useEffect(()=>{
       async function inicializar(){
+        Cookies.set('contexto', 'recebimentos')
         setCnpj(Cookies.get('cnpj'))
         if(bandeiras.length === 0){
           await loadBandeiras()
@@ -304,7 +304,7 @@ const Recebiveis = () =>{
               <hr className={`hr-recebimentos ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
               { detalhes && (creditosTemp.length > 0) ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
               <div className='component-container-recebimentos'>
-                { detalhes && (creditosTemp.length > 0) ? <DetalhesCredito array={creditosTemp}/> :  <MyCalendar/> }
+                { detalhes && (creditosTemp.length > 0) ? <TabelaVendasCreditos array={creditosTemp}/> :  <MyCalendar/> }
                 {arrayAdm && detalhes && (creditosTemp.length > 0) ? <TabelaGenericaAdm Array={arrayAdm}/> : <></>}
                 { detalhes && (creditosTemp.length > 0) ? <hr className={`hr-recebimentos ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} /> : <></> }
                 <div className='btn-banco-container'>

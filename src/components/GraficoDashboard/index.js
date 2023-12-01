@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
-import DetalhesCredito from '../DetalhesCredito';
+import TabelaVendasCreditos from '../Componente_TabelaVendasCreditos';
 import Modal from '../Modal';
 import './grafico.scss'
 
@@ -11,7 +11,6 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 const PieChart = ({ data01, arrayAdm }) => {
   
-  const [showAdm, setShowAdm] = useState(false)
   const [selectedAdm, setSelectedAdm] = useState(null)
   const [showAdmModal, setShowAdmModal] = useState(false)
 
@@ -22,10 +21,6 @@ const PieChart = ({ data01, arrayAdm }) => {
   useEffect(()=>{
     console.log('arrayAdm: ', arrayAdm)
   },[arrayAdm])
-  
-  if (!data01 || data01.length === 0) {
-    return <div>Loading...</div>; // Display a loading state or alternative content
-  }
 
   const handleChartClick = (event, elements) => {
     if (elements.length > 0) {
@@ -34,20 +29,6 @@ const PieChart = ({ data01, arrayAdm }) => {
 
       setSelectedAdm(selectedAdmData);
       setShowAdmModal(true);
-    }
-  }
-
-  function modalAdm(adm){
-    console.log('modalAdm')
-    setShowAdm(true)
-    if(showAdm){
-      return(
-        <div className='modal-adm'>
-          <span>nome: {adm.nomeAdquirente}</span>
-          <span>total: {adm.total}</span>
-          <DetalhesCredito array={adm.vendas}/>
-        </div>
-      )
     }
   }
 
@@ -155,7 +136,7 @@ const PieChart = ({ data01, arrayAdm }) => {
       {showAdmModal && selectedAdm && (
         <Modal onClose={() => setShowAdmModal(false)}>
           <div className='modal-adm'>
-            <DetalhesCredito array={selectedAdm.vendas} />
+            <TabelaVendasCreditos array={selectedAdm.vendas} />
           </div>
         </Modal>
       )}

@@ -2,9 +2,6 @@
 
 import './dashboard.scss'
 
-//////
-
-//////
 import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "../../contexts/auth"
 //////
@@ -15,10 +12,6 @@ import PieChart from '../../components/GraficoDashboard'
 
 import { adquirentesStatic, bandeirasStatic, recebimentosStatic, vendasStatic } from '../../contexts/static'
 import Cookies from 'js-cookie'
-import jwtDecode from 'jwt-decode'
-
-
-
 
 const Dashboard = () => {
     
@@ -30,13 +23,11 @@ const Dashboard = () => {
         dateConvertSearch, 
         modalCliente,
         teste,
-        setTeste,
         converteData,
         setCnpj,
         setBandeiras,
         setVendas,
         setAdquirentes,
-        refresh,
         admVendasAux,
         setAdmVendasAux,
         admCreditosAux,
@@ -56,9 +47,6 @@ const Dashboard = () => {
         inicializouAux,
         setInicializouAux,
         isDarkTheme,
-        getCli,
-
-
     } = useContext(AuthContext)
 
     const [vetorVendasMes, setVetorVendasMes] = useState([])
@@ -120,22 +108,22 @@ const Dashboard = () => {
     }
 
     async function inicializaVetorVendasMes(){   
-        const dataAtual = new Date();
-        const anoAtual = dataAtual.getFullYear();
-        const mesAtual = dataAtual.getMonth() + 1;
-        const ultimoDiaDoMes = new Date(anoAtual, mesAtual, 0).getDate();
+        const dataAtual = new Date()
+        const anoAtual = dataAtual.getFullYear()
+        const mesAtual = dataAtual.getMonth() + 1
+        const ultimoDiaDoMes = new Date(anoAtual, mesAtual, 0).getDate()
 
-        let vendasTemp = [];
-        let paramDiasBusca = [];
+        let vendasTemp = []
+        let paramDiasBusca = []
         for (let day = 1; day <= ultimoDiaDoMes; day++) {
-          paramDiasBusca.push({dataInicial: `${anoAtual}-${mesAtual}-${day}`, dataFinal: `${anoAtual}-${mesAtual}-${day}`, cnpj: cnpj});
+          paramDiasBusca.push({dataInicial: `${anoAtual}-${mesAtual}-${day}`, dataFinal: `${anoAtual}-${mesAtual}-${day}`, cnpj: cnpj})
         }
       
-        const carregaVendasMes = paramDiasBusca.map(dia => returnVendas(dia.dataInicial, dia.dataFinal, dia.cnpj));
-        const vendasPromises = await Promise.all(carregaVendasMes);
-        vendasTemp = vendasPromises.filter(Boolean);
+        const carregaVendasMes = paramDiasBusca.map(dia => returnVendas(dia.dataInicial, dia.dataFinal, dia.cnpj))
+        const vendasPromises = await Promise.all(carregaVendasMes)
+        vendasTemp = vendasPromises.filter(Boolean)
       
-        setVetorVendasMes(vendasTemp);
+        setVetorVendasMes(vendasTemp)
     }
 
     async function inicializaVendas4diasMes(){
