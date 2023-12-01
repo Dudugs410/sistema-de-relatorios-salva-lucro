@@ -1,6 +1,5 @@
-import { useState, useEffect, useContext } from "react"
-import { vendasStatic } from "../../contexts/static";
-import '../Componente_BuscarClienteRecebimentos/buscarCreditos.scss'
+import { useEffect, useContext } from "react"
+import './buscarCreditos.scss'
 import { CreditosContext } from "../../pages/Recebiveis";
 import { AuthContext } from "../../contexts/auth";
 
@@ -8,8 +7,8 @@ import { AuthContext } from "../../contexts/auth";
 
 const ComponenteBuscarClienteData = () => {
 
-    const { detalhes, setDetalhes, dataBusca, cnpjBusca, creditosTemp, setCreditosTemp } = useContext(CreditosContext)
-    const { returnCreditos, converteData, isDarkTheme } = useContext(AuthContext) 
+    const { returnCreditos, converteData, isDarkTheme } = useContext(AuthContext)
+    const { detalhes, setDetalhes, dataBusca, cnpjBusca, creditosTemp, setCreditosTemp } = useContext(CreditosContext) 
 
     useEffect(()=>{
         setCreditosTemp([])
@@ -36,7 +35,6 @@ const ComponenteBuscarClienteData = () => {
             alert('não foram encontrados dados para a data selecionada')
             setDetalhes(false)
         }
-
     },[creditosTemp])
 
     return(

@@ -97,64 +97,46 @@ const Header = () =>{
 
     ////////////////////////////////////////////////////////////////////////////////////
 
-    let tipoCliente = 1
-
-    const [arrayOpcoes, setArrayOpcoes] = useState([])
-    const icones = {
-        'FiHome': FiHome,
-        'FiDollarSign': FiDollarSign,
-        'FiCreditCard': FiCreditCard,
-        'FiRefreshCcw': FiRefreshCcw,
-        'FiTool': FiTool,
-        'FiFileText': FiFileText,
-        
-    }
-
-    const [optionsWithIcons, setOptionsWithIcons] = useState({})
-    let optionsTemp = JSON.parse(sessionStorage.getItem('options'))
-
+    const [optionsWithIcons, setOptionsWithIcons] = useState([]);
+    const [optionsTemp, setOptionsTemp] = useState([])
     useEffect(()=>{
-        arrayOpcoes.length = 0
-
-        optionsTemp.map((obj)=>{
-            switch (obj.nome) {
-                case 'Dashboard':
-                    arrayOpcoes.push({rota: '/dashboard', nome: 'Início', id: obj.id, icone: 'FiHome'})
-                    break;
-                case 'Vendas':
-                    arrayOpcoes.push({rota: '/vendas', nome: 'Vendas', id: obj.id, icone: 'FiDollarSign'},)
-                    break;
-                case 'Créditos':
-                    arrayOpcoes.push({rota: '/recebiveis', nome: 'Recebíveis', id: obj.id, icone: 'FiCreditCard'},)
-                    break;
-                /*case 'Serviços':
-                    arrayOpcoes.push({rota: '/servicos', nome: 'Serviços', id: obj.id, icone: 'FiRefreshCcw'},)
-                    break;
-                case 'Antecipações':
-                    arrayOpcoes.push({rota: '/antecipacoes', nome: 'Antecipações', id: obj.id, icone: 'FiTool'},)
-                    break;
-                case 'Relatório de Importação':
-                    arrayOpcoes.push({rota: '/relatorios', nome: 'Relatórios', id: obj.id, icone: 'FiFileText'},)
-                    break; */
-                default:
-                    console.log('Não encontrado ou não implementado...')
-                }
-        })
+        if(sessionStorage.getItem('options')){
+            setOptionsTemp(JSON.parse(sessionStorage.getItem('options')))
+        }
     },[])
 
-    useEffect(()=>{
-        console.log('opcoes disponiveis: ', arrayOpcoes)
-        let temp = arrayOpcoes.map(option => ({
-            ...option,
-            icone: icones[option.icone],
-          }))
-          setOptionsWithIcons(temp)          
-    },[arrayOpcoes])
+    useEffect(() => {
+        const icones = {
+            'FiHome': FiHome,
+            'FiDollarSign': FiDollarSign,
+            'FiCreditCard': FiCreditCard,
+            'FiRefreshCcw': FiRefreshCcw,
+            'FiTool': FiTool,
+            'FiFileText': FiFileText,
+        };
 
-    useEffect(()=>{
-        console.log('opcoes com icones: ', optionsWithIcons)
+        let arrayOpcoes = [];
 
-    },[optionsWithIcons])
+        optionsTemp.forEach((obj) => {
+            switch (obj.nome) {
+                case 'Dashboard':
+                    arrayOpcoes.push({ rota: '/dashboard', nome: 'Início', id: obj.id, icone: icones['FiHome'] });
+                    break;
+                case 'Vendas':
+                    arrayOpcoes.push({ rota: '/vendas', nome: 'Vendas', id: obj.id, icone: icones['FiDollarSign'] });
+                    break;
+                case 'Créditos':
+                    arrayOpcoes.push({ rota: '/recebiveis', nome: 'Recebíveis', id: obj.id, icone: icones['FiCreditCard'] });
+                    break;
+                // Add other cases here if needed
+                default:
+                    console.log('Não encontrado ou não implementado...');
+            }
+        });
+
+        setOptionsWithIcons(arrayOpcoes);
+
+    }, [optionsTemp]);
 
     ////////////////////////////////////////////////////////////////////////////////////
 
@@ -186,21 +168,21 @@ const Header = () =>{
                     </div>
                 </div>
                 <div className='header-content'>
-                    <div className="li-container">
-                        <ul className="navbar-nav">
-                            {optionsWithIcons.length > 0 && optionsWithIcons.map((opcao) => (
-                                <li className="nav-item" key={opcao.id}>
-                                    <Link to={opcao.rota} className="nav-hover nav-text nav-link active text-shadow" aria-current="page">
-                                        <button className={`li-button-content ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                                            <span className="li-btn-text">{opcao.nome}</span>
-                                            {optionsWithIcons[opcao.id]?.icone && React.createElement(optionsWithIcons[opcao.id].icone)}
-                                        </button>
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
+                <div className="li-container">
+                    <ul className="navbar-nav">
+                        {optionsWithIcons.length > 0 && optionsWithIcons.map((opcao) => (
+                            <li className="nav-item" key={opcao.id}>
+                                <Link to={opcao.rota} className="nav-hover nav-text nav-link active text-shadow" aria-current="page">
+                                    <button className={`li-button-content ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                                        <span className="li-btn-text">{opcao.nome} &nbsp;&nbsp;&nbsp;</span>
+                                        {opcao.icone && React.createElement(opcao.icone)}
+                                    </button>
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
                 </div>
+            </div>
             </div>
         </>
     )

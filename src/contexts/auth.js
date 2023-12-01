@@ -20,7 +20,7 @@ function AuthProvider({ children }){
   const [accessToken, setAccessToken] = useState(undefined)
   const [refreshToken, setRefreshToken] = useState(undefined)
 
-////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////
 
   const [dataInicial, setDataInicial] = useState(new Date())
   const [dataFinal, setDataFinal] = useState(new Date())
@@ -63,8 +63,6 @@ function AuthProvider({ children }){
   const [graficoCreditosAux, setGraficoCreditosAux] = useState({data: [], labels: []})
   const [inicializouAux, setInicializouAux] = useState(false)
 
-  const [localUsers, setLocalUsers] = useState([])
-
   const navigate = useNavigate()
 
   useEffect(() =>{
@@ -84,7 +82,7 @@ function AuthProvider({ children }){
       Cookies.set('refreshToken', responseData.refresh_token);
       setAccessToken(responseData.acess_token);
       setRefreshToken(responseData.refresh_token);
-  
+      
       const userId = jwtDecode(responseData.acess_token).id;
       const userLogin = jwtDecode(responseData.acess_token).login;
       console.log('userLogin --->', userLogin);
@@ -225,20 +223,24 @@ function AuthProvider({ children }){
   
   /////Reseta valores globais
   function resetaValores(){
+    
+    const clearAllCookies = () => {
+      const cookies = Cookies.get()
+    
+      for (const cookie in cookies) {
+        if (cookies.hasOwnProperty(cookie)) {
+          Cookies.remove(cookie);
+        }
+      }
+    }
+
+    localStorage.clear()
+    clearAllCookies()
     sessionStorage.clear()
     setIsSignedIn(false)
-    
-    Cookies.remove('token')
-    Cookies.remove('refreshToken')
-    Cookies.remove('cnpj')
 
     setVendas([])
     setRecebimentos([])
-
-    localStorage.setItem('isSignedIn', false)
-    localStorage.removeItem('isChecked')
-    localStorage.removeItem('isDark')
-
     setDataInicial(new Date())
     setDataFinal(new Date())
     setCnpj('')
@@ -278,6 +280,8 @@ function AuthProvider({ children }){
     setGraficoCreditosAux({data: [], labels: []})
     setInicializouAux(false)
 
+    resetaSomatorios()
+
     console.log('<<< * Valores Resetados * >>>')
   }
 
@@ -301,11 +305,7 @@ function AuthProvider({ children }){
 
   function expired(){
     alert('Sessão expirada. Faça o Login novamente')
-    sessionStorage.clear()
-    setIsSignedIn(false)
-    Cookies.remove('token')
-    Cookies.remove('refreshToken')
-    localStorage.setItem('isSignedIn', false)
+    logout()
     navigate('/')
   }
 
@@ -846,12 +846,14 @@ async function returnCreditos(datainicial, datafinal, cnpj){
           return recebimentosData
       } catch (error) {
         console.log(error)
+        alerta(error.message)
         if(error.status === 401){
           alerta('Sessão expirada. Você deve fazer o Login novamente para continuar a utilizar o sistema')
           setLoading(false)
           navigate('/')
         }
         setLoading(false)
+        return 0
       }
     } catch (error) {
       console.log('error')

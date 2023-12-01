@@ -10,7 +10,7 @@ import './Calendar.scss'
 import './vendas.scss'
 import { AuthContext } from '../../contexts/auth'
 import Cookies from 'js-cookie'
-import DetalhesCredito from '../../components/DetalhesCredito'
+import TabelaVendasCreditos from '../../components/Componente_TabelaVendasCreditos'
 
 export const VendasContext = createContext({})
 
@@ -38,24 +38,20 @@ const Vendas = () =>{
   const [totalVoucher, setTotalVoucher] = useState(0.00)
   const [totalLiquido, setTotalLiquido] = useState(0.00)
 
-  let [arrayAdm, setArrayAdm] = useState([])
+  const [arrayAdm, setArrayAdm] = useState([])
   const [arrayRelatorio, setArrayRelatorio] = useState([])
-
-  let [detalhes, setDetalhes] = useState(false)
-  let [showAdmin, setShowAdmin] = useState(false)
-
+  const [detalhes, setDetalhes] = useState(false)
   const [dataBusca, setDataBusca] = useState(new Date())
 
   // possivelmente utilizar estes parametros para realizar busca por período
 
   const [cnpjBusca, setCnpjBusca] = useState(Cookies.get('cnpj'))
-  const [banBusca, setBanBusca] = useState('')
-  const [adqBusca, setAdqBusca] = useState('')
 
   const [vendasTotais, setVendasTotais] = useState([])
 
   useEffect(()=>{
     async function inicializar(){
+      Cookies.set('context', 'vendas')
       if(bandeiras.length === 0){
         await loadBandeiras()
       }
@@ -218,8 +214,6 @@ const Vendas = () =>{
     value={{
       detalhes, 
       setDetalhes,
-      showAdmin,
-      setShowAdmin, 
       dataBusca, 
       setDataBusca, 
       totalDebito,
@@ -232,10 +226,6 @@ const Vendas = () =>{
       setTotalLiquido,
       cnpjBusca,
       setCnpjBusca,
-      banBusca,
-      setBanBusca,
-      adqBusca,
-      setAdqBusca,
       }}>
 
       <div className={`appPage app-page-vendas ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
@@ -249,7 +239,7 @@ const Vendas = () =>{
             <hr className="hr-recebimentos"/>
             { detalhes ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
             <div className='component-container-vendas'>
-              { detalhes ?  <DetalhesCredito array={vendas}/> : <MyCalendar className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/> }
+              { detalhes ?  <TabelaVendasCreditos array={vendas}/> : <MyCalendar className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/> }
               { detalhes ? <TabelaGenericaAdm Array={arrayAdm}/> : <></> }
               { detalhes ? <hr className='hr-recebimentos'/> : <></> }
               <BuscarClienteData />

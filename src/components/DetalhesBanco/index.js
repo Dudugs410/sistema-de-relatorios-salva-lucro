@@ -5,7 +5,7 @@ import { bancosStatic } from "../../contexts/static";
 import './detalhesBanco.scss';
 
 const DetalhesBanco = ({ array }) => {
-    const { setVendas, setCnpj, teste } = useContext(AuthContext);
+    const { setVendas, setCnpj, teste, isDarkTheme } = useContext(AuthContext);
     
     useEffect(() => {
         if(array.length > 0){
@@ -24,7 +24,7 @@ const DetalhesBanco = ({ array }) => {
         <>
         {array.length > 0 && (<div className='window-modal-banco'>
                 <div className='dropShadow vendas-view'>
-                    <div className='table-wrapper'>
+                    <div className={`table-wrapper ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                         <table className="table table-striped det-table">
                             <thead>
                                 <tr className='det-tr-top'>

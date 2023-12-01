@@ -1,11 +1,10 @@
 import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "../../contexts/auth"
-import { recebimentosStatic } from "../../contexts/static"
 
 import './detalhesCredito.scss'
 import '../../styles/global.scss'
 
-const DetalhesCredito = ({array}) =>{
+const TabelaVendasCreditos = ({array}) =>{
 
     const { vendas, dateConvert, setVendas, setCnpj, teste, tableData, setTableData, gerarDados, totaisGlobal, setTotaisGlobal, isDarkTheme } = useContext(AuthContext)
 
@@ -322,9 +321,9 @@ const DetalhesCredito = ({array}) =>{
                                 <tr key={index} className={`det-tr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}  >
                                     <td className='det-td-vendas-global'data-label="Adquirente">{venda.adquirente.nomeAdquirente}</td>
                                     <td className='det-td-vendas-global'data-label="Bandeira">{venda.bandeira.descricaoBandeira}</td>
-                                    <td className='det-td-vendas-global'data-label="Valor Bruto">R$<span className={`green-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>{`${venda.valorBruto.toFixed(2)}`.toString().replace('.',',')}</span></td>
-                                    <td className='det-td-vendas-global'data-label="Valor Líquido">R$<span className={`green-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>{`${venda.valorLiquido.toFixed(2)}`.toString().replace('.',',')}</span></td>
-                                    <td className='det-td-vendas-global'data-label="Valor Desconto">R$ <span className='red-global'>{`${venda.valorDesconto.toFixed(2)}`.toString().replace('.',',')}</span></td>
+                                    <td className='det-td-vendas-global'data-label="Valor Bruto">R$<span className={`green-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>{`${venda.valorBruto.toFixed(2)}`.toString()}</span></td>
+                                    <td className='det-td-vendas-global'data-label="Valor Líquido">R$<span className={`green-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>{`${venda.valorLiquido.toFixed(2)}`.toString()}</span></td>
+                                    <td className='det-td-vendas-global'data-label="Valor Desconto">R$ <span className='red-global'>{`${venda.valorDesconto.toFixed(2)}`.toString()}</span></td>
                                     <td className='det-td-vendas-global'data-label="Produto">{venda.produto.descricaoProduto}</td>
                                     <td className='det-td-vendas-global'data-label="Data da Venda">{dateConvert(venda.dataVenda)}</td>
                                     <td className='det-td-vendas-global'data-label="Hora da Venda">{ venda.horaVenda?.replaceAll('-', ':')}</td>
@@ -343,4 +342,4 @@ const DetalhesCredito = ({array}) =>{
     )
 }
 
-export default DetalhesCredito
+export default TabelaVendasCreditos
