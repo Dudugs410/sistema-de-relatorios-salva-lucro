@@ -7,6 +7,7 @@ import { AuthContext } from "../../contexts/auth"
 //////
 import LoadingModal from '../../components/LoadingModal'
 import ModalCliente from '../../components/ModalCliente'
+import TabelaHorizontal from '../../components/Componente_TabelaHorizontal'
 //////
 import PieChart from '../../components/GraficoDashboard'
 
@@ -73,7 +74,9 @@ const Dashboard = () => {
     const [cnpjSelecionado, setCnpjSelecionado] = useState(false)
 
     const [inicializou, setInicializou] = useState(false)
-    const [loadingDash, setLoadingDash] = useState(null)
+    
+    const [loadingVendasDash, setLoadingVendasDash] = useState(null)
+    const [loadingCreditosDash, setLoadingCreditosDash] = useState(null)
 
     useEffect(()=>{
         if(teste){
@@ -107,24 +110,40 @@ const Dashboard = () => {
         setVendas4dias(vendasTemp)
     }
 
-    async function inicializaVetorVendasMes(){   
-        const dataAtual = new Date()
-        const anoAtual = dataAtual.getFullYear()
-        const mesAtual = dataAtual.getMonth() + 1
-        const ultimoDiaDoMes = new Date(anoAtual, mesAtual, 0).getDate()
-
-        let vendasTemp = []
-        let paramDiasBusca = []
+    async function inicializaVetorVendasMes() {
+        const dataAtual = new Date();
+        const anoAtual = dataAtual.getFullYear();
+        const mesAtual = dataAtual.getMonth() + 1;
+        const ultimoDiaDoMes = new Date(anoAtual, mesAtual, 0).getDate();
+      
+        let vendasTemp = [];
+        let paramDiasBusca = [];
         for (let day = 1; day <= ultimoDiaDoMes; day++) {
-          paramDiasBusca.push({dataInicial: `${anoAtual}-${mesAtual}-${day}`, dataFinal: `${anoAtual}-${mesAtual}-${day}`, cnpj: cnpj})
+          paramDiasBusca.push({
+            dataInicial: `${anoAtual}-${mesAtual}-${day}`,
+            dataFinal: `${anoAtual}-${mesAtual}-${day}`,
+            cnpj: cnpj, // Assuming cnpj is defined somewhere in your code
+          });
         }
       
-        const carregaVendasMes = paramDiasBusca.map(dia => returnVendas(dia.dataInicial, dia.dataFinal, dia.cnpj))
-        const vendasPromises = await Promise.all(carregaVendasMes)
-        vendasTemp = vendasPromises.filter(Boolean)
+        try {
+            setLoadingVendasDash(true)
+          const carregaVendasMes = paramDiasBusca.map((dia) =>
+            returnVendas(dia.dataInicial, dia.dataFinal, dia.cnpj)
+          );
       
-        setVetorVendasMes(vendasTemp)
-    }
+          const vendasPromises = await Promise.all(carregaVendasMes);
+      
+          vendasTemp = vendasPromises.filter((vendas) => vendas); // Filter out undefined values
+        } catch (error) {
+          // Handle error if any of the promises fail
+          console.error('Error fetching vendas:', error);
+        } finally {
+          setLoadingVendasDash(false);
+        }
+      
+        setVetorVendasMes(vendasTemp);
+      }
 
     async function inicializaVendas4diasMes(){
         const temp = await returnTotalMes(cnpj)
@@ -142,7 +161,7 @@ const Dashboard = () => {
 
     async function inicializaVetorCreditosMes() {
         console.log('********** inicializaVetorCreditoMes **********');
-      
+        setLoadingCreditosDash(true)
         const dataAtual = new Date();
         const anoAtual = dataAtual.getFullYear();
         const mesAtual = dataAtual.getMonth() + 1;
@@ -151,19 +170,30 @@ const Dashboard = () => {
         let creditosTemp = [];
         let paramDiasBusca = [];
         for (let day = 1; day <= ultimoDiaDoMes; day++) {
-          paramDiasBusca.push({dataInicial: `${anoAtual}-${mesAtual}-${day}`, dataFinal: `${anoAtual}-${mesAtual}-${day}`, cnpj: cnpj});
+          paramDiasBusca.push({
+            dataInicial: `${anoAtual}-${mesAtual}-${day}`,
+            dataFinal: `${anoAtual}-${mesAtual}-${day}`,
+            cnpj: cnpj, // Assuming cnpj is defined somewhere in your code
+          });
         }
       
-        const carregaCreditosMes = paramDiasBusca.map(dia => returnCreditos(dia.dataInicial, dia.dataFinal, dia.cnpj));
-        const creditosPromises = await Promise.all(carregaCreditosMes);
-        creditosTemp = creditosPromises.filter(Boolean);
+        try {
+          const carregaCreditosMes = paramDiasBusca.map((dia) =>
+            returnCreditos(dia.dataInicial, dia.dataFinal, dia.cnpj)
+          );
+      
+          const creditosPromises = await Promise.all(carregaCreditosMes);
+          creditosTemp = creditosPromises.filter((creditos) => creditos); // Filter out undefined values
+        } catch (error) {
+          // Handle error if any of the promises fail
+          console.error('Error fetching creditos:', error);
+        } finally {
+          // Assuming setLoadingDash is the state updater for loadingDash
+          setLoadingCreditosDash(false); // Set loading state to false after API calls finish
+        }
       
         setVetorCreditosMes(creditosTemp);
       }
-
-      useEffect(()=>{
-        console.log('loadingDash: ',loadingDash)
-      },[loadingDash])
 
 ///////////////////////////////////////////////////////////////////////////////
 //// Inicializar Dados de Vendas e Créditos ///////////////////////////////////
@@ -172,7 +202,6 @@ const Dashboard = () => {
     useEffect(()=>{
         console.log('inicializou ao carregar pagina: ', inicializou)
         async function inicializar(){
-            console.log('carregando Dashboard? ', loadingDash)
             if((cnpj !== null && cnpj !== '') && (teste !== true)){
                 console.log('inicializando dados de vendas e créditos...')
                 await inicializaVendas4dias()
@@ -208,9 +237,11 @@ const Dashboard = () => {
         }
 
         if(inicializouAux !== true){
-            setLoadingDash(true)
+            setLoadingCreditosDash(true)
+            setLoadingVendasDash(true)
             inicializar().then(() => {
-                setLoadingDash(false)
+                setLoadingCreditosDash(false)
+                setLoadingVendasDash(false)
             })
         }
     },[cnpj])
@@ -504,59 +535,66 @@ const Dashboard = () => {
         }
     },[])
 
+    function TotaisVendasDashboard(){
+        return(
+            <div className={`data-group-area ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                <div style={{border: 'solid red 1px'}} className={`graph-data ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                    <h1 className={`title-chart ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Vendas:</h1>
+                    { inicializouAux === true ? <PieChart data01 = {graficoVendasAux} arrayAdm={admVendasAux}/> : <PieChart data01 = {graficoVendas} arrayAdm={admVendas}/>}
+                    <div className={`dash-table-container ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
+                        {inicializouAux ? <TabelaHorizontal header='Total Últimos 4 dias' valor={totalVendas4diasAux.toFixed(2)} /> : <TabelaHorizontal header='Total Últimos 4 dias' valor={totalVendas4diasAux.toFixed(2)} />}
+                        {inicializouAux ? <TabelaHorizontal header='Total do Mês' valor={somatorioVendasMesAux.toFixed(2)} /> : <TabelaHorizontal header='Total do Mês' valor={somatorioVendasMesAux.toFixed(2)} />}
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
+    function TotaisCreditosDashboard(){
+        return(
+            <div className={`data-group-area ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                <div style={{border: 'solid red 1px'}} className={`graph-data ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                    <h1 className={`title-chart ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Créditos:</h1>
+                    { inicializouAux === true ? <PieChart data01 = {graficoCreditosAux} arrayAdm={admCreditosAux}/> : <PieChart data01 = {graficoCreditos} arrayAdm={admCreditos}/>}
+                    <div className={`dash-table-container ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
+                        {inicializouAux ? <TabelaHorizontal header='Previsão de Hoje' valor={somatorioCreditosHojeAux.toFixed(2)} /> : <TabelaHorizontal header='Previsão de Hoje' valor={somatorioCreditosHoje.toFixed(2)} />}
+                        {inicializouAux ? <TabelaHorizontal header='Previsão Próx 5 Dias' valor={totalCreditos5diasAux.toFixed(2)} /> : <TabelaHorizontal header='Previsão Próx 5 Dias' valor={totalCreditos5dias.toFixed(2)} />}
+                    </div>
+                </div>
+            </div>            
+        )
+    }
+
   return(
     <>
         <div className={`appPage ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-        { (modalCliente) && (!inicializouAux) && ( <ModalCliente/> ) }
+        { (modalCliente) && (!inicializouAux) && (Cookies.get('carregouModalCliente') === 'true') && ( <ModalCliente/> ) }
         {cnpj && (
             <div className={`content-area dash ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                 <div className={`data-group-area ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                     <div className={`graph-data ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                         <h1 className={`title-chart ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Vendas:</h1>
                         { inicializouAux === true ? <PieChart data01 = {graficoVendasAux} arrayAdm={admVendasAux}/> : <PieChart data01 = {graficoVendas} arrayAdm={admVendas}/>}
-                    </div>
-                    <div className={`table-data table-data-dashboard ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                        { loadingDash && (<LoadingModal/>) }
-                        <table className={`table dash-table det-table dash-body-flex tbody-sticky table-chart-dash${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                            <thead className='dash-thead'>
-                                <tr className={`dash-tr ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                                    <th className='dash-th' scope="col">Total Últimos 4 dias</th>
-                                    <th className='dash-th' scope="col">Total do Mês</th>
-                                </tr>
-                            </thead>
-                            <tbody className={`dash-tbody dash-tbody-bg ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                                <tr className={`dash-tr ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                                { inicializouAux === true ? <td className='cell-text dash-td' data-label="Total Últimos 4 dias">R$ {totalVendas4diasAux.toFixed(2).replace('.',',')}</td> : <td className='cell-text dash-td' data-label="Total Últimos 4 dias">R$ {totalVendas4dias.toFixed(2).replace('.',',')}</td>}
-                                { inicializouAux === true ? <td className='cell-text dash-td' data-label="Total do Mês">R$ {somatorioVendasMesAux.toFixed(2).replace('.',',')}</td> : <td className='cell-text dash-td' data-label="Total do Mês">R$ {somatorioVendasMes.toFixed(2).replace('.',',')}</td>}
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div className={`dash-table-container ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
+                        { loadingVendasDash && (<LoadingModal/>) }
+                            {inicializouAux ? <TabelaHorizontal header='Total Últimos 4 dias' valor={totalVendas4diasAux.toFixed(2)} /> : <TabelaHorizontal header='Total Últimos 4 dias' valor={totalVendas4diasAux.toFixed(2)} />}
+                            {inicializouAux ? <TabelaHorizontal header='Total do Mês' valor={somatorioVendasMesAux.toFixed(2)} /> : <TabelaHorizontal header='Total do Mês' valor={somatorioVendasMesAux.toFixed(2)} />}
+                        </div>
                     </div>
                 </div>
+                
                 <div className={`data-group-area ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                     <div className={`graph-data ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                         <h1 className={`title-chart ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Créditos:</h1>
                         { inicializouAux === true ? <PieChart data01 = {graficoCreditosAux} arrayAdm={admCreditosAux}/> : <PieChart data01 = {graficoCreditos} arrayAdm={admCreditos}/>}
-                    </div>
-                    
-                    <div className={`table-data table-data-dashboard ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                        <table className={`table dash-table det-table dash-body-flex tbody-sticky table-chart-dash${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                                <thead className='dash-thead'>
-                                    <tr className={`dash-tr ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                                        <th className='dash-th' scope="col">Previsão de Hoje</th>
-                                        <th className='dash-th' scope="col">Previsão Próx 5 Dias</th>
-                                    </tr>
-                                </thead>
-                                <tbody className={`dash-tbody dash-tbody-bg ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                                    <tr className={`dash-tr ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                                        { inicializouAux === true ? <td className='cell-text dash-td' data-label="Previsão de Hoje">R$ {somatorioCreditosHojeAux.toFixed(2).replace('.',',')}</td> : <td className='cell-text dash-td' data-label="Previsão de Hoje">R$ {somatorioCreditosHoje.toFixed(2).replace('.',',')}</td>}
-                                        { inicializouAux === true ? <td className='cell-text dash-td' data-label="Previsão Próx 5 Dias">R$ {totalCreditos5diasAux.toFixed(2).replace('.',',')}</td> : <td className='cell-text dash-td' data-label="Previsão Próx 5 Dias">R$ {totalCreditos5dias.toFixed(2).replace('.',',')}</td>}
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div className={`dash-table-container ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
+                        { loadingCreditosDash && (<LoadingModal/>) }
+                            {inicializouAux ? <TabelaHorizontal header='Previsão de Hoje' valor={somatorioCreditosHojeAux.toFixed(2)} /> : <TabelaHorizontal header='Previsão de Hoje' valor={somatorioCreditosHoje.toFixed(2)} />}
+                            {inicializouAux ? <TabelaHorizontal header='Previsão Próx 5 Dias' valor={totalCreditos5diasAux.toFixed(2)} /> : <TabelaHorizontal header='Previsão Próx 5 Dias' valor={totalCreditos5dias.toFixed(2)} />}
                         </div>
-                    </div>            
+                    </div>
                 </div>
+            </div>
             )}
         </div> 
     </>  
@@ -564,4 +602,3 @@ const Dashboard = () => {
 }
 
 export default Dashboard
-

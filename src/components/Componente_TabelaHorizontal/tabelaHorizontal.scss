@@ -1,0 +1,40 @@
+@import '../../styles/styles.scss';
+
+.horizontal-table {
+    display: flex;
+    flex-direction: column;
+  }
+  
+.table-row {
+    display: inline-flex;
+    width: -webkit-fill-available;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 8px;
+
+    &.light-theme{
+        border-bottom: solid $primary-color-light 1px;
+        color: $font-color-light;
+    }
+
+    &.dark-theme{
+        border-bottom: solid $primary-color-dark 1px;
+        color: $font-color-dark;
+    }
+}
+  
+.header {
+    font-weight: bold;
+    margin-right: 10px; /* Adjust space between header and value */
+}
+  
+.value {
+    &.light-theme{
+        color: $font-color-light;
+    }
+
+    &.dark-theme{
+        color: $font-color-dark;
+    }
+}

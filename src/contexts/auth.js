@@ -63,6 +63,8 @@ function AuthProvider({ children }){
   const [graficoCreditosAux, setGraficoCreditosAux] = useState({data: [], labels: []})
   const [inicializouAux, setInicializouAux] = useState(false)
 
+  const [showErrorMessage, setShowErrorMessage] = useState(false)
+
   const navigate = useNavigate()
 
   useEffect(() =>{
@@ -94,7 +96,8 @@ function AuthProvider({ children }){
   
       if (loggedSuccessfully) {
         console.log('>>> entrou <<<');
-  
+        
+        Cookies.set('mostrarModal', true)
         let localUsers = [];
         if (localStorage.getItem('localUsers') !== null) {
           localUsers = JSON.parse(localStorage.getItem('localUsers'));
@@ -226,7 +229,6 @@ function AuthProvider({ children }){
     
     const clearAllCookies = () => {
       const cookies = Cookies.get()
-    
       for (const cookie in cookies) {
         if (cookies.hasOwnProperty(cookie)) {
           Cookies.remove(cookie);
@@ -304,7 +306,9 @@ function AuthProvider({ children }){
   }
 
   function expired(){
-    alert('Sessão expirada. Faça o Login novamente')
+    if(Cookies.get('expired') === true){
+      alert('Sessão expirada. Faça o Login novamente')
+    }
     logout()
     navigate('/')
   }
@@ -695,7 +699,6 @@ async function retornaRecebimentos(cnpj, datainicial, datafinal){
           Cookies.set('refreshToken', refreshToken)        
       }).catch(error => {
           console.log(error)
-          //expired()
       })
     }
 
@@ -807,13 +810,9 @@ async function returnVendas(datainicial, datafinal, cnpj, adquirente, bandeira){
         return vendasData
       } catch (error) {
         console.log(error.response.status)
-        if(error.response.status === 401){
-          alerta('Sessão expirada. Você deve fazer o Login novamente para continuar a utilizar o sistema')
-          setLoading(false)
-          navigate('/')
-          return
-        }
+        setShowErrorMessage(true)
         setLoading(false)
+        logout()
       }
   }else{
     return vendasStatic.VENDAS
@@ -846,14 +845,10 @@ async function returnCreditos(datainicial, datafinal, cnpj){
           return recebimentosData
       } catch (error) {
         console.log(error)
-        alerta(error.message)
-        if(error.status === 401){
-          alerta('Sessão expirada. Você deve fazer o Login novamente para continuar a utilizar o sistema')
-          setLoading(false)
-          navigate('/')
-        }
+        setShowErrorMessage(true)
         setLoading(false)
-        return 0
+        logout()
+        return
       }
     } catch (error) {
       console.log('error')
@@ -1147,6 +1142,8 @@ function gerarDados(array){
         setTotaisGlobal,
         resetaSomatorios,
         getCli,
+        showErrorMessage,
+        setShowErrorMessage,
       }}
     >
       {children}

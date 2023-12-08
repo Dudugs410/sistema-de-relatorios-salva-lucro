@@ -12,8 +12,17 @@ import md5 from "md5"
 ///////////////////////////////////////////////////////////////
 
 const Login = () => {
-    const {submitLogin, loading, isSignedIn, accessToken, setAccessToken, submitFake,
-    setCnpj, setTeste, setRefreshToken, setIsDarkTheme, setIsSignedIn, loadGrupos, grupos, setLoading } = useContext(AuthContext)
+    const {
+        submitLogin,
+        loading,
+        isSignedIn, 
+        accessToken, 
+        setAccessToken, 
+        submitFake,
+        alerta,
+        showErrorMessage,
+        setShowErrorMessage,
+    } = useContext(AuthContext)
     const navigate = useNavigate()
 
     const [login, setLogin] = useState('')
@@ -54,6 +63,13 @@ const Login = () => {
 
     },[accessToken])
 
+    useEffect(()=>{
+        if(showErrorMessage){
+            alerta('Sessão expirada. Você deve fazer o Login novamente para continuar a utilizar o sistema')
+        }
+        setShowErrorMessage(true)
+    },[])
+
     return(
         <div className='appPage'>
             <div className='body-login'> 
@@ -65,8 +81,6 @@ const Login = () => {
                         <input id='senha' className='input-login' type='password' placeholder='senha' value={password} onChange={(e) => setPassword(e.target.value)}/>
                         <hr/>
                         { !loading ? <button type='submit' className='btn btn-primary'>Login</button> : <button type='submit' className='btn btn-primary' disabled>Carregando...</button>}
-                        <Link className='pw'>esqueci minha senha</Link>
-                        <button className='btn btn-secondary' onClick={handleTeste}>Login Teste</button>
                     </div>
                 </form>
             </div>

@@ -8,8 +8,20 @@ import 'react-toastify/dist/ReactToastify.css';
 import './Seletor.scss'
 
 const SeletorCliente = () => {
-    const { gruSelecionado, setGruSelecionado, listaClientes, setListaClientes, setGrupos, resetaSomatorios, alerta, isDarkTheme } = useContext(AuthContext)
-    const { grupos, loadGrupos, cnpj, setCnpj, inicializouAux, setInicializouAux } = useContext(AuthContext)
+    const { 
+        gruSelecionado, 
+        setGruSelecionado, 
+        listaClientes, 
+        setListaClientes, 
+        setGrupos, 
+        resetaSomatorios, 
+        alerta, 
+        isDarkTheme,
+        grupos,
+        cnpj, 
+        setCnpj, 
+        setInicializouAux,
+    } = useContext(AuthContext)
 
     const [cliSelecionado, setCliSelecionado] = useState('')
 

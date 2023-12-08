@@ -1,10 +1,8 @@
 import { Link } from "react-router-dom"
-import { FiPower } from "react-icons/fi"
+import { FiMoon, FiPower, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText } from "react-icons/fi"
 import { AuthContext } from "../../contexts/auth"
 import React, { useContext, useEffect, useState } from "react"
 
-
-import { FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText } from "react-icons/fi"
 
 import salvaLucroLogoBranco from '../../assets/LogoTopo.png'
 import { gruposStatic } from "../../contexts/static"
@@ -154,7 +152,6 @@ const Header = () =>{
                         </div>
                         <div className='navbar-customer'>
                             <span className='client-name'>{`${nome}`}</span>
-                            <span className='client-code'>{`${email}`}</span> 
                         </div>              
                     </div>
                     <div className='btn-container'>
@@ -162,7 +159,7 @@ const Header = () =>{
                         <div className="toggle-container">
                             <label className="switch" >
                                 <input type="checkbox" id="toggleButton" checked={isChecked} onChange={handleCheckboxChange}/>
-                                <span className="slider"></span>
+                                <span className="slider"><FiMoon/><FiSun/></span>
                             </label>
                         </div>
                     </div>
