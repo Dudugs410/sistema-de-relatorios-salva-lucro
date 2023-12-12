@@ -1,10 +1,8 @@
 import { Link } from "react-router-dom"
-import { FiPower } from "react-icons/fi"
+import { FiMoon, FiPower, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText } from "react-icons/fi"
 import { AuthContext } from "../../contexts/auth"
 import React, { useContext, useEffect, useState } from "react"
 
-
-import { FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText } from "react-icons/fi"
 
 import salvaLucroLogoBranco from '../../assets/LogoTopo.png'
 import { gruposStatic } from "../../contexts/static"
@@ -54,14 +52,6 @@ const Header = () =>{
             localStorage.setItem('localUsers', JSON.stringify(localUsersTemp))
         }
     }
-
-    useEffect(() =>{
-        console.log('isChecked: ', isChecked)
-    },[isChecked])
-
-    useEffect(() =>{
-        console.log('isDarkTheme: ', isDarkTheme)
-    },[isDarkTheme])
 
     useEffect(() => {
         const savedState = localStorage.getItem('isChecked')
@@ -126,11 +116,11 @@ const Header = () =>{
                     arrayOpcoes.push({ rota: '/vendas', nome: 'Vendas', id: obj.id, icone: icones['FiDollarSign'] });
                     break;
                 case 'Créditos':
-                    arrayOpcoes.push({ rota: '/recebiveis', nome: 'Recebíveis', id: obj.id, icone: icones['FiCreditCard'] });
+                    arrayOpcoes.push({ rota: '/creditos', nome: 'Créditos', id: obj.id, icone: icones['FiCreditCard'] });
                     break;
                 // Add other cases here if needed
                 default:
-                    console.log('Não encontrado ou não implementado...');
+                    console.log('Opção Não encontrada ou ainda não implementada...');
             }
         });
 
@@ -154,7 +144,6 @@ const Header = () =>{
                         </div>
                         <div className='navbar-customer'>
                             <span className='client-name'>{`${nome}`}</span>
-                            <span className='client-code'>{`${email}`}</span> 
                         </div>              
                     </div>
                     <div className='btn-container'>
@@ -162,7 +151,7 @@ const Header = () =>{
                         <div className="toggle-container">
                             <label className="switch" >
                                 <input type="checkbox" id="toggleButton" checked={isChecked} onChange={handleCheckboxChange}/>
-                                <span className="slider"></span>
+                                <span className="slider"><FiMoon/><FiSun/></span>
                             </label>
                         </div>
                     </div>
