@@ -13,8 +13,15 @@ import PieChart from '../../components/GraficoDashboard'
 
 import { adquirentesStatic, bandeirasStatic, recebimentosStatic, vendasStatic } from '../../contexts/static'
 import Cookies from 'js-cookie'
+import { useLocation } from 'react-router-dom'
 
 const Dashboard = () => {
+
+    const location = useLocation();
+
+    useEffect(() => {
+        sessionStorage.setItem('currentPath', location.pathname);
+    }, [location]);
     
     const {  
         returnVendas,
@@ -91,10 +98,6 @@ const Dashboard = () => {
         }
     },[])
 
-    useEffect(()=>{
-        console.log('inicializou: ', inicializou)
-    },[inicializou])
-
     async function inicializaVendas4dias(){
         let vendaDataInicial = new Date()
         let vendaDataFinal = new Date()
@@ -160,7 +163,6 @@ const Dashboard = () => {
     }
 
     async function inicializaVetorCreditosMes() {
-        console.log('********** inicializaVetorCreditoMes **********');
         setLoadingCreditosDash(true)
         const dataAtual = new Date();
         const anoAtual = dataAtual.getFullYear();
@@ -200,10 +202,8 @@ const Dashboard = () => {
 ///////////////////////////////////////////////////////////////////////////////
 
     useEffect(()=>{
-        console.log('inicializou ao carregar pagina: ', inicializou)
         async function inicializar(){
             if((cnpj !== null && cnpj !== '') && (teste !== true)){
-                console.log('inicializando dados de vendas e créditos...')
                 await inicializaVendas4dias()
                 await inicializaVendas4diasMes()
                 await inicializaVetorVendasMes()
@@ -215,7 +215,6 @@ const Dashboard = () => {
                 setInicializouAux(true)
                 sessionStorage.setItem('inicializou', true)
             } else if(teste === true){
-                console.log('inicializando Dados Teste...')
                 
                 setVendas(vendasStatic)
                 setAdquirentes(adquirentesStatic)
@@ -496,13 +495,11 @@ const Dashboard = () => {
     },[vetorCreditosMes])
 
     useEffect(()=>{
-        console.log(admCreditos)
             if(teste !== true){
                 setGraficoCreditos(carregaGrafico(admCreditos))
                 if(admCreditosAux.length > 0){
                     setGraficoCreditosAux(carregaGrafico(admCreditosAux))
                 }
-
             }
     },[admCreditos])
     
@@ -518,51 +515,6 @@ const Dashboard = () => {
         })
         const obj = {labels: label, data: data}
         return obj    
-    }
-
-    useEffect(()=>{
-        if(inicializouAux){
-            console.log('***** Checando variáveis auxiliares após carregamento de dados *****')
-            console.log('admCreditosAux: ', admCreditosAux,)
-            console.log('somatorioCreditosHojeAux: ', somatorioCreditosHojeAux)
-            console.log('totalCreditos5diasAux: ', totalCreditos5diasAux)
-            console.log('somatorioVendasMesAux: ', somatorioVendasMesAux)
-            console.log('totalVendas4diasAux: ', totalVendas4diasAux)
-            console.log('graficoVendasAux: ', graficoVendasAux)
-            console.log('graficoCreditosAux: ', graficoCreditosAux)
-            console.log('inicializouAux: ', inicializouAux)
-            console.log('************************************************************************')
-        }
-    },[])
-
-    function TotaisVendasDashboard(){
-        return(
-            <div className={`data-group-area ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                <div style={{border: 'solid red 1px'}} className={`graph-data ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                    <h1 className={`title-chart ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Vendas:</h1>
-                    { inicializouAux === true ? <PieChart data01 = {graficoVendasAux} arrayAdm={admVendasAux}/> : <PieChart data01 = {graficoVendas} arrayAdm={admVendas}/>}
-                    <div className={`dash-table-container ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
-                        {inicializouAux ? <TabelaHorizontal header='Total Últimos 4 dias' valor={totalVendas4diasAux.toFixed(2)} /> : <TabelaHorizontal header='Total Últimos 4 dias' valor={totalVendas4diasAux.toFixed(2)} />}
-                        {inicializouAux ? <TabelaHorizontal header='Total do Mês' valor={somatorioVendasMesAux.toFixed(2)} /> : <TabelaHorizontal header='Total do Mês' valor={somatorioVendasMesAux.toFixed(2)} />}
-                    </div>
-                </div>
-            </div>
-        )
-    }
-
-    function TotaisCreditosDashboard(){
-        return(
-            <div className={`data-group-area ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                <div style={{border: 'solid red 1px'}} className={`graph-data ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                    <h1 className={`title-chart ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Créditos:</h1>
-                    { inicializouAux === true ? <PieChart data01 = {graficoCreditosAux} arrayAdm={admCreditosAux}/> : <PieChart data01 = {graficoCreditos} arrayAdm={admCreditos}/>}
-                    <div className={`dash-table-container ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
-                        {inicializouAux ? <TabelaHorizontal header='Previsão de Hoje' valor={somatorioCreditosHojeAux.toFixed(2)} /> : <TabelaHorizontal header='Previsão de Hoje' valor={somatorioCreditosHoje.toFixed(2)} />}
-                        {inicializouAux ? <TabelaHorizontal header='Previsão Próx 5 Dias' valor={totalCreditos5diasAux.toFixed(2)} /> : <TabelaHorizontal header='Previsão Próx 5 Dias' valor={totalCreditos5dias.toFixed(2)} />}
-                    </div>
-                </div>
-            </div>            
-        )
     }
 
   return(
@@ -582,7 +534,6 @@ const Dashboard = () => {
                         </div>
                     </div>
                 </div>
-                
                 <div className={`data-group-area ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                     <div className={`graph-data ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                         <h1 className={`title-chart ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Créditos:</h1>
@@ -596,7 +547,7 @@ const Dashboard = () => {
                 </div>
             </div>
             )}
-        </div> 
+        </div>
     </>  
   )  
 }

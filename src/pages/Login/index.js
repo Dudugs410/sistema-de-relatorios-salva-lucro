@@ -29,12 +29,9 @@ const Login = () => {
     const [password, setPassword] = useState('')
 
     useEffect(()=>{
-        sessionStorage.clear()
-        //localStorage.clear()
-        Cookies.remove('cnpj')
-        Cookies.remove('token')
-        Cookies.remove('refreshToken')
-        Cookies.remove('userID')
+        if(sessionStorage.getItem('currentPath')){
+            navigate(sessionStorage.getItem('currentPath'))
+        }
     },[])
 
     useEffect(()=>{
@@ -52,23 +49,6 @@ const Login = () => {
             })
         }
     }
-
-    async function handleTeste(e){
-        e.preventDefault()
-        submitFake()
-    }
-
-    useEffect(()=>{
-        console.log('accessToken: ', accessToken)
-
-    },[accessToken])
-
-    useEffect(()=>{
-        if(showErrorMessage){
-            alerta('Sessão expirada. Você deve fazer o Login novamente para continuar a utilizar o sistema')
-        }
-        setShowErrorMessage(true)
-    },[])
 
     return(
         <div className='appPage'>

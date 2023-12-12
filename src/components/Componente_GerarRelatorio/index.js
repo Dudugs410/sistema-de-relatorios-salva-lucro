@@ -98,8 +98,12 @@ export default function GerarRelatorio({tableData, dataAtual}){
     return(
         <>
             <div className='container'>
+              <div className='export-column'>
                 <button className="btn btn-exportar btn-exportar-excel" onClick={exportToExcel}>Download Excel <FiFilePlus /></button>
+              </div>
+              <div className='export-column'>
                 <button className='btn btn-exportar btn-exportar-pdf' onClick={generatePdf}>Download PDF <FiFilePlus /></button>
+              </div>
             </div>
         </>
     )

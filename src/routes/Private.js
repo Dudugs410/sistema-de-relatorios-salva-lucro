@@ -15,6 +15,7 @@ export default function Private({children}){
 
   const { isSignedIn, setIsSignedIn, setAccessToken, accessToken, loading, refresh, expired, cnpj, setCnpj, setTeste } = useContext(AuthContext)
 
+
   useEffect(()=>{
     if(sessionStorage.getItem('isSignedIn') !== 'true'){
       setIsSignedIn(false)

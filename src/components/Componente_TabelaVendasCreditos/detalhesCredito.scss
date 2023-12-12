@@ -7,6 +7,16 @@
     background-color: azure;
 }
 
+.date-container{
+    width: 100%;
+    max-width: none;
+    display: flex;
+    margin-left: 0;
+    margin-right: 0;
+    justify-content: center;
+    padding-bottom: 13px;
+}
+
 .span-str {
     &.light-theme{
         color: $primary-color-light;   

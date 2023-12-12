@@ -12,7 +12,7 @@ function Layout({ children }){
                 <Header />
                 <SeletorCliente/>
                 { children }
-                <Footer />
+                
             </div>
         </div>
 
@@ -20,3 +20,5 @@ function Layout({ children }){
 }
 
 export default Layout
+
+//<Footer />

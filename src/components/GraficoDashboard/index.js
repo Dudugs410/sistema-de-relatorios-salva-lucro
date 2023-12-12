@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
-import TabelaVendasCreditos from '../Componente_TabelaVendasCreditos';
 import Modal from '../Modal';
 import './grafico.scss'
+import TabelaVendasAdq from '../Componente_TabelaVendasAdq';
 
 
 
@@ -13,15 +13,6 @@ const PieChart = ({ data01, arrayAdm }) => {
   
   const [selectedAdm, setSelectedAdm] = useState(null)
   const [showAdmModal, setShowAdmModal] = useState(false)
-
-  useEffect(()=>{
-    console.log('data01: ', data01)
-  },[data01])
-
-  useEffect(()=>{
-    console.log('arrayAdm: ', arrayAdm)
-  },[arrayAdm])
-
 
   const handleChartClick = useCallback((event, elements) => {
     if (elements.length > 0) {
@@ -147,9 +138,7 @@ const PieChart = ({ data01, arrayAdm }) => {
 
       {showAdmModal && selectedAdm && (
         <Modal onClose={() => setShowAdmModal(false)}>
-          <div className='modal-adm'>
-            <TabelaVendasCreditos array={selectedAdm.vendas} />
-          </div>
+          <TabelaVendasAdq array={selectedAdm.vendas} />
         </Modal>
       )}
     </div>

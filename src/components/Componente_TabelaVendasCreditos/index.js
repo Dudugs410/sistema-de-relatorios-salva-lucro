@@ -6,7 +6,7 @@ import '../../styles/global.scss'
 
 const TabelaVendasCreditos = ({array}) =>{
 
-    const { vendas, dateConvert, setVendas, setCnpj, teste, tableData, setTableData, gerarDados, totaisGlobal, setTotaisGlobal, isDarkTheme } = useContext(AuthContext)
+    const { vendas, creditos, dateConvert, setVendas, setCnpj, cnpjBusca, setCnpjBusca, teste, tableData, setTableData, gerarDados, totaisGlobal, setTotaisGlobal, isDarkTheme } = useContext(AuthContext)
 
     const [vendasArray, setVendasArray] = useState([])
 
@@ -24,23 +24,24 @@ const TabelaVendasCreditos = ({array}) =>{
 
     useEffect(()=>{
         if(array.length > 0){
-            console.log(array)
+            console.log('array recebido como parâmetro: ', array)
+            console.log('Array vendas: ', vendas)
+            console.log('Array créditos: ', creditos)
             setVendasArray(array)
         }
     },[])
 
     useEffect(()=>{
         async function init(){
-            console.log(vendasArray)
             setVendasTeste(vendasArray)
         }
         init()
     },[vendasArray])
 
     useEffect(()=>{
-        console.log('vendasTeste RECEBIMENTOS: ', vendasTeste)
+        setVendasArray(array)
 
-    },[vendasTeste])
+    },[array])
 
     function carregaTotais(array){
         console.log('array: ', array)

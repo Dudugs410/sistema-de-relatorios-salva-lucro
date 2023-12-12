@@ -17,10 +17,8 @@
 }
 
 .modal-window-content{
-    /* height: 100%; */
     width: 80%;
     border-radius: 20px;
-    /* border: solid green 2px; */
     background-color: $primary-color-light;
     padding: 16px;
     z-index: 9;
@@ -39,7 +37,23 @@
     justify-content: flex-end;
 }
 
-.modal-close{
-    margin-bottom: 10px;
-
+.modal-close {
+    position: relative;
+    top: 41px;
+    right: 3px;
+    /* margin-bottom: 10px; */
 }
+
+@media screen and (max-width: 869px){
+
+    .modal-window-content{
+        height: 100%;
+        width: 100%;
+        border-radius: 20px;
+        /* border: solid green 2px; */
+        background-color: rgba(10, 61, 112, 80%);
+        padding: 16px;
+        z-index: 9;
+    }
+}
+

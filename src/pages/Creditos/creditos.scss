@@ -1,0 +1,148 @@
+@import '../../styles/variables';
+
+.app-page-recebimentos{
+    display: contents;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+
+    &.light-theme{
+        background-color: $background-color-light;
+    }
+    &.dark-theme{
+        background-color: $primary-color-dark;
+    }
+    
+}
+
+.page-recebimentos-background{
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+    align-content: center;
+    flex-direction: column;
+    &.light-theme{
+        background-color: $primary-color-light;
+    }
+    &.dark-theme{
+        background-color: $primary-color-dark;
+    }
+}
+
+.recebimentos-title-container{
+    text-align: center;
+    border-bottom: solid white 1px;
+    width: 100%;
+    border-radius: 20px;
+    padding: 10px;
+    &.light-theme{
+        color: $primary-color-light;
+        background-color: $secondary-color-light;
+    }
+    &.dark-theme{
+        color: $font-color-dark;
+        background-color: $primary-color-dark;
+    }
+}
+
+.recebimentos-title{
+    margin: 0;
+    &.light-theme{
+        color: $font-color-light;
+    }
+    &.dark-theme{
+        color: $font-color-dark;
+    }
+}
+
+.hr-recebimentos{
+    width: 100%;
+    margin: 1rem 0;
+    border: 0;
+    border-top: var(--bs-border-width) solid;
+    opacity: .25;
+    &.light-theme{
+        color: $primary-color-light;
+    }
+    &.dark-theme{
+        color: $secondary-color-dark;
+    }
+}
+
+.btn-div-recebimentos{
+    display: flex;
+}
+
+.btn-banco-container{
+    display: inline-flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: center;
+}
+
+.page-content-recebimentos{
+    width: 80%;
+    padding: 1%;
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    border-radius: 20px;
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 54px;
+
+    &.light-theme{
+        background-color: $background-color-light;
+    }
+    &.dark-theme{
+        background-color: $background-color-dark;
+    }
+}
+
+.component-container-recebimentos{
+    /* height: 100%; */
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+
+}
+
+.btn-banco-recebimentos{
+    width: 26%;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: center;
+    border-radius: 10px;
+    &.light-theme{
+        background-color: $primary-color-light;
+    }
+    &.dark-theme{
+        background-color: $primary-color-dark;
+    }
+
+}
+
+@media screen and (max-width: 869px){
+
+    .page-recebimentos-background{
+        &.light-theme{
+            background-color: $background-color-light;
+        }
+        &.dark-theme{
+            background-color: $background-color-dark;
+        }
+    }
+
+    .page-content-recebimentos {
+        width: 100%;
+        padding: 1%;
+        margin-left: 0%;
+        flex-direction: row;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        border-radius: 0;
+    }
+}

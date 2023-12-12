@@ -1,7 +1,7 @@
 import { useEffect, useContext, createContext, useState } from 'react'
 import Calendar from 'react-calendar'
 
-import BuscarClienteData from '../../components/Componente_BuscarClienteData'
+import BuscarClienteVendas from '../../components/Componente_BuscarClienteVendas'
 import TabelaGenericaAdm from '../../components/Componente_TabelaAdm'
 import TotalModalidadesComp from '../../components/Componente_TotalModalidades'
 
@@ -11,10 +11,16 @@ import './vendas.scss'
 import { AuthContext } from '../../contexts/auth'
 import Cookies from 'js-cookie'
 import TabelaVendasCreditos from '../../components/Componente_TabelaVendasCreditos'
+import { useLocation } from 'react-router-dom'
 
 export const VendasContext = createContext({})
 
 const Vendas = () =>{
+  const location = useLocation();
+
+  useEffect(() => {
+      sessionStorage.setItem('currentPath', location.pathname);
+  }, [location]);
 
   const {
     cnpj,
@@ -26,6 +32,7 @@ const Vendas = () =>{
     adquirentes,
     loadAdquirentes,
     vendas,
+    loadVendas,
     dateConvertSearch,
     gerarDados,
     tableData,
@@ -51,7 +58,6 @@ const Vendas = () =>{
 
   useEffect(()=>{
     async function inicializar(){
-      Cookies.set('context', 'vendas')
       if(bandeiras.length === 0){
         await loadBandeiras()
       }
@@ -75,10 +81,6 @@ const Vendas = () =>{
     setTotalLiquido(0.00)
     setTotaisGlobal({debito: 0, credito: 0, voucher: 0, liquido: 0})
   },[])
-  
-  useEffect(()=>{
-    console.log(vendasTotais)
-  },[vendasTotais])
 
   useEffect(()=>{
     setCnpj(Cookies.get('cnpj'))
@@ -93,7 +95,6 @@ const Vendas = () =>{
         setTotalLiquido(0.00)
       }
       else if(vendas.length > 0){
-        console.log(vendas)
         setArrayRelatorio(gerarDados(vendas))
         setArrayAdm(separaAdm(vendas))
       }
@@ -103,19 +104,23 @@ const Vendas = () =>{
   },[vendas])
 
   useEffect(()=>{
-    console.log('arrayRelatorio: ', arrayRelatorio)
-  },[arrayRelatorio])
-
-  useEffect(()=>{
     setCnpjBusca(cnpj)
   },[cnpj])
+
+  const [vendasTemp, setVendasTemp] = useState([])
+
+  useEffect(()=>{
+    if(detalhes){
+      setVendasTemp(loadVendas(dataBusca, cnpjBusca, '', ''))
+    }
+
+  },[cnpjBusca])
 
   function handleDateChange(date){
     setDataBusca(date)
   }
 
   function separaAdm(array){
-    console.log('array: ', array)
     if(array.length > 0){
       let temp = []
       let totalCreditoTemp = 0
@@ -183,12 +188,7 @@ const Vendas = () =>{
                 }
             })
         })
-        
-        console.log('TEPM: ', temp)
-        
         let totalTemp = {debito: totalDebitoTemp, credito: totalCreditoTemp, voucher: totalVoucherTemp, liquido: totalLiquidoTemp}
-
-        console.log('totalTemp:', totalTemp)
         setTotaisGlobal(totalTemp)
 
         return temp
@@ -226,6 +226,8 @@ const Vendas = () =>{
       setTotalLiquido,
       cnpjBusca,
       setCnpjBusca,
+      setArrayAdm,
+
       }}>
 
       <div className={`appPage app-page-vendas ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
@@ -237,12 +239,12 @@ const Vendas = () =>{
             <hr className="hr-recebimentos"/>
             <TotalModalidadesComp />
             <hr className="hr-recebimentos"/>
-            { detalhes ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
+            { (detalhes) && (vendas.length > 0) ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
             <div className='component-container-vendas'>
-              { detalhes ?  <TabelaVendasCreditos array={vendas}/> : <MyCalendar className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/> }
-              { detalhes ? <TabelaGenericaAdm Array={arrayAdm}/> : <></> }
-              { detalhes ? <hr className='hr-recebimentos'/> : <></> }
-              <BuscarClienteData />
+              { (detalhes) && (vendas.length > 0) ?  <TabelaVendasCreditos array={vendas}/> : <MyCalendar className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/> }
+              { (detalhes) && (vendas.length > 0) ? <TabelaGenericaAdm Array={arrayAdm}/> : <></> }
+              { (detalhes) && (vendas.length > 0) ? <hr className='hr-recebimentos'/> : <></> }
+              <BuscarClienteVendas />
             </div>
           </div>
         </div>

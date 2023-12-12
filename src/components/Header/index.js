@@ -53,14 +53,6 @@ const Header = () =>{
         }
     }
 
-    useEffect(() =>{
-        console.log('isChecked: ', isChecked)
-    },[isChecked])
-
-    useEffect(() =>{
-        console.log('isDarkTheme: ', isDarkTheme)
-    },[isDarkTheme])
-
     useEffect(() => {
         const savedState = localStorage.getItem('isChecked')
         if (savedState !== null) {
@@ -124,11 +116,11 @@ const Header = () =>{
                     arrayOpcoes.push({ rota: '/vendas', nome: 'Vendas', id: obj.id, icone: icones['FiDollarSign'] });
                     break;
                 case 'Créditos':
-                    arrayOpcoes.push({ rota: '/recebiveis', nome: 'Recebíveis', id: obj.id, icone: icones['FiCreditCard'] });
+                    arrayOpcoes.push({ rota: '/creditos', nome: 'Créditos', id: obj.id, icone: icones['FiCreditCard'] });
                     break;
                 // Add other cases here if needed
                 default:
-                    console.log('Não encontrado ou não implementado...');
+                    console.log('Opção Não encontrada ou ainda não implementada...');
             }
         });
 
