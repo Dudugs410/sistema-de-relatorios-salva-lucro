@@ -12,7 +12,7 @@ function Layout({ children }){
                 <Header />
                 <SeletorCliente/>
                 { children }
-                
+                <Footer />
             </div>
         </div>
 

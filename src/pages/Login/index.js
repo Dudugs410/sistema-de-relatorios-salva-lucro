@@ -22,6 +22,8 @@ const Login = () => {
         alerta,
         showErrorMessage,
         setShowErrorMessage,
+        isDarkTheme,
+        setIsDarkTheme,
     } = useContext(AuthContext)
     const navigate = useNavigate()
 
@@ -29,6 +31,7 @@ const Login = () => {
     const [password, setPassword] = useState('')
 
     useEffect(()=>{
+        setIsDarkTheme(false)
         if(sessionStorage.getItem('currentPath')){
             navigate(sessionStorage.getItem('currentPath'))
         }

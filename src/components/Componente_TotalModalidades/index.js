@@ -11,25 +11,25 @@ const { totaisGlobal, isDarkTheme } = useContext(AuthContext)
                 <div className={`total-container-modalidade ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                     <div className='text-container-modalidade'>
                         <h1 className='title-modalidade'>Débito</h1>
-                        <p className='text-modalidade'>TOTAL: R$ <span className='green-modalidade'>{totaisGlobal.debito.toFixed(2)}</span></p>
+                        <p className='text-modalidade'>TOTAL: R$ <span className='green-modalidade'>{Number(totaisGlobal.debito).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></p>
                     </div>
                 </div>
                 <div className={`total-container-modalidade ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                     <div className='text-container-modalidade'>
                         <h1 className='title-modalidade'>Crédito</h1>
-                        <p className='text-modalidade'>TOTAL: R$ <span className='green-modalidade'>{totaisGlobal.credito.toFixed(2)}</span></p>
+                        <p className='text-modalidade'>TOTAL: R$ <span className='green-modalidade'>{Number(totaisGlobal.credito).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></p>
                     </div>
                 </div>
                 <div className={`total-container-modalidade ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}> 
                     <div className='text-container-modalidade'>
                         <h1 className='title-modalidade'>Voucher</h1>
-                        <p className='text-modalidade'>TOTAL: R$ <span className='green-modalidade span-modalidade'>{totaisGlobal.voucher.toFixed(2)}</span></p>
+                        <p className='text-modalidade'>TOTAL: R$ <span className='green-modalidade span-modalidade'>{Number(totaisGlobal.voucher).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></p>
                     </div>
                 </div>
                 <div className={`total-container-modalidade ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}> 
                     <div className='text-container-modalidade'>
                         <h1 className='title-modalidade'>Total Líquido</h1>
-                        <p className='text-modalidade'>TOTAL: R$ <span className='green-modalidade'>{totaisGlobal.liquido.toFixed(2)}</span></p>
+                        <p className='text-modalidade'>TOTAL: R$ <span className='green-modalidade'>{Number(totaisGlobal.liquido).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></p>
                     </div>
                 </div>
             </div>

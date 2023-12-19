@@ -6,12 +6,6 @@
     align-items: center;
     height: 100%;
     transition: all 2s;
-    &.light-theme{
-        background-color: $background-color-light;
-    }
-    &.dark-theme{
-        background-color: $background-color-dark;
-    }
 }
 
 .page-content{
@@ -20,12 +14,6 @@
     display: flex;
     flex-direction: column;
     transition: all 2s;
-    &.light-theme{
-        background-color: $background-color-light;
-    }
-    &.dark-theme{
-        background-color: $background-color-dark;
-    }
 }
 
 .content{
@@ -38,12 +26,6 @@
     display: flex;
     justify-content: center;
     transition: all 2s;
-    &.light-theme{
-        background-color: $primary-color-light;
-    }
-    &.dark-theme{
-        background-color: $primary-color-dark;
-    }
 }
 
 .page-content-vendas{
@@ -124,11 +106,5 @@
         display: flex;
         justify-content: center;
         transition: all 2s;
-        &.light-theme{
-            background-color: $background-color-light;
-        }
-        &.dark-theme{
-            background-color: $background-color-dark;
-        }
     }
 }

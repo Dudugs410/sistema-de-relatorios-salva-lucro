@@ -13,7 +13,7 @@ export default function Private({children}){
 
   const navigate = useNavigate()
 
-  const { isSignedIn, setIsSignedIn, setAccessToken, accessToken, loading, refresh, expired, cnpj, setCnpj, setTeste } = useContext(AuthContext)
+  const { isSignedIn, setIsSignedIn, setAccessToken, accessToken, loading, refresh, expired, cnpj, setCnpj } = useContext(AuthContext)
 
 
   useEffect(()=>{
@@ -25,7 +25,6 @@ export default function Private({children}){
 
   useEffect(()=>{
     setCnpj(Cookies.get('cnpj'))
-    setTeste(JSON.parse(sessionStorage.getItem('teste')))
   },[])
 
   useEffect(()=>{

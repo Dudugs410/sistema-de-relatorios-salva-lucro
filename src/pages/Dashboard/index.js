@@ -14,6 +14,7 @@ import PieChart from '../../components/GraficoDashboard'
 import { adquirentesStatic, bandeirasStatic, recebimentosStatic, vendasStatic } from '../../contexts/static'
 import Cookies from 'js-cookie'
 import { useLocation } from 'react-router-dom'
+import '../../index.scss'
 
 const Dashboard = () => {
 
@@ -30,7 +31,6 @@ const Dashboard = () => {
         cnpj, 
         dateConvertSearch, 
         modalCliente,
-        teste,
         converteData,
         setCnpj,
         setBandeiras,
@@ -55,7 +55,12 @@ const Dashboard = () => {
         inicializouAux,
         setInicializouAux,
         isDarkTheme,
+        setIsDarkTheme,
     } = useContext(AuthContext)
+
+    useEffect(()=>{
+        setIsDarkTheme(JSON.parse(localStorage.getItem('isDark')))
+    },[])
 
     const [vetorVendasMes, setVetorVendasMes] = useState([])
     const [vetorCreditosMes, setVetorCreditosMes] = useState([])
@@ -86,17 +91,14 @@ const Dashboard = () => {
     const [loadingCreditosDash, setLoadingCreditosDash] = useState(null)
 
     useEffect(()=>{
-        if(teste){
-            setCnpj(Cookies.get('cnpj'))
-            setCnpjSelecionado(true)
-        }
-    },[])
-
-    useEffect(()=>{
         if(sessionStorage.getItem('inicializou')){
             setInicializou(sessionStorage.getItem('inicializou'))
         }
     },[])
+
+    async function loadDashboard(){
+        
+    }
 
     async function inicializaVendas4dias(){
         let vendaDataInicial = new Date()
@@ -203,35 +205,16 @@ const Dashboard = () => {
 
     useEffect(()=>{
         async function inicializar(){
-            if((cnpj !== null && cnpj !== '') && (teste !== true)){
+            if(cnpj !== null && cnpj !== ''){
                 await inicializaVendas4dias()
                 await inicializaVendas4diasMes()
                 await inicializaVetorVendasMes()
-
                 await inicializaCreditos5dias()
                 await inicializaVetorCreditosMes()
 
                 setInicializou(true)
                 setInicializouAux(true)
                 sessionStorage.setItem('inicializou', true)
-            } else if(teste === true){
-                
-                setVendas(vendasStatic)
-                setAdquirentes(adquirentesStatic)
-                setBandeiras(bandeirasStatic)
-
-                let label = ['Cielo', 'Alelo', 'Vero', 'GetNet']
-                let data = [12395.66, 8750.43, 15322.56, 19430.22]
-                setTotalVendas4dias(55898.87)
-                setSomatorioVendasMes(78264.85)
-
-                let label2 = ['Cielo', 'Alelo', 'Vero', 'GetNet', 'Ticket']
-                let data2 = [33395.66, 12350.43, 43322.56, 21430.22, 11563.85]
-                setSomatorioCreditosHoje(26344.55)
-                setTotalCreditos5dias(122062.72)
-                
-                setGraficoVendas({ labels: label, data: data })
-                setGraficoCreditos({ labels: label2, data: data2 })
             }
         }
 
@@ -247,7 +230,7 @@ const Dashboard = () => {
 
     useEffect(()=>{
         async function inicializar(){
-            const total = vendasMes.reduce((total, obj) => total + obj.valorliquido, 0)
+            const total = vendasMes.reduce((total, obj) => total + obj.valorvendido, 0)
             setSomatorioVendasMes(total)
             if(total > 0){
                 setSomatorioVendasMesAux(total)
@@ -257,7 +240,12 @@ const Dashboard = () => {
     },[vendasMes])
 
     useEffect(()=>{
-        const totalTemp = vendas4dias.reduce((total, obj) => total + obj.valorLiquido, 0)
+        if(vendas4dias === null){
+            setTotalVendas4dias(0)
+            setTotalVendas4diasAux(0)
+            return
+        }
+        const totalTemp = vendas4dias.reduce((total, obj) => total + obj.valorBruto, 0)
         setTotalVendas4dias(totalTemp)
         if(totalTemp > 0){
             setTotalVendas4diasAux(totalTemp)
@@ -315,7 +303,7 @@ const Dashboard = () => {
                     if(temp.length === 0){
                         let novoObj = {
                             nomeAdquirente: venda.adquirente.nomeAdquirente,
-                            total: venda.valorLiquido,
+                            total: venda.valorBruto,
                             id: 0,
                             vendas: []
                         }
@@ -323,7 +311,7 @@ const Dashboard = () => {
                     }else{
                         let novoObj = {
                             nomeAdquirente: venda.adquirente.nomeAdquirente,
-                            total: venda.valorLiquido,
+                            total: venda.valorBruto,
                             id: 0,
                             vendas: []
                         }
@@ -336,7 +324,7 @@ const Dashboard = () => {
                         else{
                             for(let i = 0; i < temp.length; i++){
                                 if(temp[i].nomeAdquirente === venda.adquirente.nomeAdquirente){
-                                    temp[i].total += venda.valorLiquido
+                                    temp[i].total += venda.valorBruto
                                 }
                             }
                         }
@@ -358,48 +346,17 @@ const Dashboard = () => {
                     }
                 })
             })
-            if(teste === true){
-                temp = [
-                    {
-                        nomeAdquirente: 'Cielo',
-                        total: 27568.00,
-                        id: 0,
-                        vendas: vendasStatic.VENDAS,
-                    },
-                    {
-                        nomeAdquirente: 'Alelo',
-                        total: 5587.00,
-                        id: 1,
-                        vendas: vendasStatic.VENDAS,
-                    },
-                    {
-                        nomeAdquirente: 'Vero',
-                        total: 3220.00,
-                        id: 2,
-                        vendas: vendasStatic.VENDAS,
-                    },
-                    {
-                        nomeAdquirente: 'Ticket',
-                        total: 326.60,
-                        id: 3,
-                        vendas: vendasStatic.VENDAS,
-                    }
-                ]
-            }
-    
-            setAdmVendas(sortArray(temp))
 
+            setAdmVendas(sortArray(temp))
             if(temp.length > 0){
                 setAdmVendasAux(sortArray(temp))
             }
     },[vetorVendasMes])
 
     useEffect(()=>{
-        if(teste !== true){
-            setGraficoVendas(carregaGrafico(admVendas))
-            if(admVendasAux.length > 0){
-                setGraficoVendasAux(carregaGrafico(admVendasAux))
-            }
+        setGraficoVendas(carregaGrafico(admVendas))
+        if(admVendasAux.length > 0){
+            setGraficoVendasAux(carregaGrafico(admVendasAux))
         }
     },[admVendas])
 
@@ -454,40 +411,6 @@ const Dashboard = () => {
                 })
             })
     
-            if(teste === true){
-                temp = [
-                    {
-                        nomeAdquirente: 'Cielo',
-                        total: 27568.00,
-                        id: 0,
-                        vendas: recebimentosStatic,
-                    },
-                    {
-                        nomeAdquirente: 'Alelo',
-                        total: 5587.00,
-                        id: 1,
-                        vendas: recebimentosStatic,
-                    },
-                    {
-                        nomeAdquirente: 'GetNet',
-                        total: 3220.00,
-                        id: 2,
-                        vendas: recebimentosStatic,
-                    },
-                    {
-                        nomeAdquirente: 'Vero',
-                        total: 3220.00,
-                        id: 3,
-                        vendas: recebimentosStatic,
-                    },
-                    {
-                        nomeAdquirente: 'Ticket',
-                        total: 326.60,
-                        id: 4,
-                        vendas: recebimentosStatic,
-                    }
-                ]
-            }
             setAdmCreditos(sortArray(temp))
             if(temp.length > 0){
                 setAdmCreditosAux(sortArray(temp))
@@ -495,12 +418,11 @@ const Dashboard = () => {
     },[vetorCreditosMes])
 
     useEffect(()=>{
-            if(teste !== true){
-                setGraficoCreditos(carregaGrafico(admCreditos))
-                if(admCreditosAux.length > 0){
-                    setGraficoCreditosAux(carregaGrafico(admCreditosAux))
-                }
-            }
+        setGraficoCreditos(carregaGrafico(admCreditos))
+        if(admCreditosAux.length > 0){
+            setGraficoCreditosAux(carregaGrafico(admCreditosAux))
+        }
+
     },[admCreditos])
     
     function carregaGrafico(array){
@@ -514,7 +436,7 @@ const Dashboard = () => {
             label.push(nomeAdq)
         })
         const obj = {labels: label, data: data}
-        return obj    
+        return obj
     }
 
   return(

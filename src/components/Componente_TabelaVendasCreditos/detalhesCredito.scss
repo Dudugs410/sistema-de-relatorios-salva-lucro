@@ -29,6 +29,12 @@
 .table-wrapper{
     height: 500px;
     padding-bottom: 10%;
+    &.light-theme{
+        background-color: $background-color-light;
+    }
+    &.dark-theme{
+        background-color: $background-color-dark;
+    }
 }
 
 .green{
@@ -39,4 +45,31 @@
 .red{
     color:red;
     text-shadow: 1px 1px 1px #000000;
+}
+
+.container-btn-pagina{
+    width: 100%;
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: space-evenly;
+    align-items: baseline;
+}
+
+.btn-skip{
+    width: 10%;
+}
+
+.pagina-atual{
+    font-weight: bold;
+    align-items: center;
+}
+
+@media screen and (max-width: 1090px){
+
+    .btn-navigate{
+        width: 20%;
+    }
+
 }

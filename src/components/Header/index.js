@@ -9,6 +9,7 @@ import { gruposStatic } from "../../contexts/static"
 
 import './header.scss'
 import Cookies from "js-cookie"
+import InstallPWAButton from "../Componente_BotaoPWA"
 
 const Header = () =>{
 
@@ -52,14 +53,6 @@ const Header = () =>{
             localStorage.setItem('localUsers', JSON.stringify(localUsersTemp))
         }
     }
-
-    useEffect(() => {
-        const savedState = localStorage.getItem('isChecked')
-        if (savedState !== null) {
-          setIsChecked(savedState === 'true')
-          setIsDarkTheme(savedState === 'true')
-        }
-      }, [])
     
 
 /////////////////////////////////////////////////////////////////////////////
@@ -148,30 +141,32 @@ const Header = () =>{
                     </div>
                     <div className='btn-container'>
                         <button type='button' className='btn-exit' onClick={logout}><FiPower color="#000000" size={24}/></button>
-                        <div className="toggle-container">
-                            <label className="switch" >
-                                <input type="checkbox" id="toggleButton" checked={isChecked} onChange={handleCheckboxChange}/>
-                                <span className="slider"><FiMoon/><FiSun/></span>
-                            </label>
-                        </div>
                     </div>
                 </div>
                 <div className='header-content'>
-                <div className="li-container">
-                    <ul className="navbar-nav">
-                        {optionsWithIcons.length > 0 && optionsWithIcons.map((opcao) => (
-                            <li className="nav-item" key={opcao.id}>
-                                <Link to={opcao.rota} className="nav-hover nav-text nav-link active text-shadow" aria-current="page">
-                                    <button className={`li-button-content ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                                        <span className="li-btn-text">{opcao.nome} &nbsp;&nbsp;&nbsp;</span>
-                                        {opcao.icone && React.createElement(opcao.icone)}
-                                    </button>
-                                </Link>
-                            </li>
-                        ))}
-                    </ul>
+                    <div className={`barra-header ${isDarkTheme ? 'dark-theme' : 'light-theme' }`}>
+                        <div className="li-container">
+                            <ul className={`navbar-nav ${isDarkTheme ? 'dark-theme' : 'light-theme' }`}>
+                                {optionsWithIcons.length > 0 && optionsWithIcons.map((opcao) => (
+                                    <li className="nav-item" key={opcao.id}>
+                                        <Link to={opcao.rota} className="nav-hover nav-text nav-link active text-shadow" aria-current="page">
+                                            <button className={`li-button-content ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                                                <span className="li-btn-text">{opcao.nome} &nbsp;&nbsp;&nbsp;</span>
+                                                {opcao.icone && React.createElement(opcao.icone)}
+                                            </button>
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                            <div className="toggle-container">
+                                <label className="switch" >
+                                    <input type="checkbox" id="toggleButton" checked={isChecked} onChange={handleCheckboxChange}/>
+                                    <span className="slider"><FiMoon/><FiSun/></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
             </div>
         </>
     )

@@ -4,6 +4,7 @@ import { Pie } from 'react-chartjs-2';
 import Modal from '../Modal';
 import './grafico.scss'
 import TabelaVendasAdq from '../Componente_TabelaVendasAdq';
+import TabelaVendasCreditos from '../Componente_TabelaVendasCreditos';
 
 
 
@@ -138,7 +139,7 @@ const PieChart = ({ data01, arrayAdm }) => {
 
       {showAdmModal && selectedAdm && (
         <Modal onClose={() => setShowAdmModal(false)}>
-          <TabelaVendasAdq array={selectedAdm.vendas} />
+          <TabelaVendasCreditos array={selectedAdm.vendas} />
         </Modal>
       )}
     </div>

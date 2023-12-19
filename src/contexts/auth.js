@@ -229,7 +229,8 @@ function AuthProvider({ children }){
       }
     }
 
-    localStorage.clear()
+    localStorage.removeItem('isDark')
+    localStorage.removeItem('isChecked')
     clearAllCookies()
     sessionStorage.clear()
     setIsSignedIn(false)
@@ -291,6 +292,29 @@ function AuthProvider({ children }){
     setTotalVendas4diasAux(0)
   }
 
+  function resetaDashboard(){
+    setVendas([])
+    setCreditos([])
+    setRecebimentos([])
+    setVendas([])
+    setVendasDash([])
+    setTotaisGlobal({debito: 0, credito: 0, voucher: 0, liquido: 0})
+    setRecebimentos([])
+    setRecebimentosDash([])
+    setVendaAtual([])
+    setVendaDias([])
+    setAdmVendasAux([])
+    setAdmCreditosAux([])
+    setSomatorioCreditosHojeAux(0)
+    setTotalCreditos5diasAux(0)
+    setSomatorioVendasMesAux(0)
+    setTotalVendas4diasAux(0)
+    setGraficoVendasAux({data: [], labels: []})
+    setGraficoCreditosAux({data: [], labels: []})
+    setInicializouAux(false)
+    resetaSomatorios()
+  }
+
   /////desloga usuário
   function logout(){
     setLoading(true)
@@ -315,7 +339,6 @@ function AuthProvider({ children }){
     //Bandeiras
     
     async function loadBandeiras(){
-      if(teste !== true){
         setLoading(true)
         await api.get('/bandeira')
         .then( response => {
@@ -326,16 +349,13 @@ function AuthProvider({ children }){
           console.log(error)
           setLoading(false)
         })
-      }else{
-        setBandeiras(bandeirasStatic)
-      }
     }
 
     //Grupo de Clientes
 
     async function loadGrupos() {
       try {
-        if (!teste && !inicializouGruposAux) {
+        if (!inicializouGruposAux) {
           setLoading(true);
           const response = await api.get('/grupo');
           const gru = response.data;
@@ -346,7 +366,7 @@ function AuthProvider({ children }){
           setLoading(false);
     
           return gru;
-        } else if (!teste && inicializouGruposAux) {
+        } else if (inicializouGruposAux) {
           setGrupos(JSON.parse(sessionStorage.getItem('grupos')));
           return JSON.parse(sessionStorage.getItem('grupos'));
         } else {
@@ -361,7 +381,7 @@ function AuthProvider({ children }){
     }
 
     async function loadAdquirentes(){
-      if(teste !== true){
+      
         setLoading(true)
         await api.get('/adquirente')
         .then( response => {
@@ -371,17 +391,17 @@ function AuthProvider({ children }){
         .catch(error =>{
           setLoading(false)
         })
-      }else{
-        setAdquirentes(adquirentesStatic)
       }
-    }
   
     //loadVendas melhorias
 
     // retorna as vendas da data e cliente específicos.
 
     async function loadVendas(dataInicial, cnpj, adquirente, bandeira){
-      if(teste !== true){
+        if(cnpj === null){
+          alerta('erro ao ler o cnpj do cliente selecionado. Tente atualizar a página e selecionar o cliente desejado novamente.')
+          return
+        }
   
         if((dataInicial === '' || undefined) || (cnpj === '' || undefined)){
           alert('Favor selecionar uma data e cliente válidos')
@@ -449,18 +469,12 @@ function AuthProvider({ children }){
             setLoading(false)
             console.log(error)
             })
-      }else{
-        setVendas(vendasStatic.VENDAS)
-        setLoading(false)
-        setBuscou(false)
-        return vendasStatic.VENDAS
-      }
     }
 
     //Consulta de vendas, com intervalo de datas
 
     async function loadPeriodo(datainicial, datafinal, cnpj, adquirente, bandeira){
-      if(teste !== true){
+      
           setLoading(true);
           let params = {
             dataInicial: dateConvert(datainicial),
@@ -487,9 +501,6 @@ function AuthProvider({ children }){
             console.log(error)
             setLoading(false)
           }
-        }else{
-          setVendasDash(vendasStatic)
-        }
       }
       
 
@@ -497,7 +508,7 @@ function AuthProvider({ children }){
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   async function loadCreditos(cnpj, dataInicial, dataFinal) {
-    if (!teste) {
+   
       setLoading(true);
   
       const sanitizedCnpj = cnpj.replace(/[^a-zA-Z0-9 ]/g, '');
@@ -528,10 +539,6 @@ function AuthProvider({ children }){
         setLoading(false);
         // Handle specific errors here, e.g., display a message to the user
       }
-    } else {
-      setRecebimentosDash(recebimentosStatic);
-      setRecebimentos(recebimentosStatic);
-    }
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -539,7 +546,6 @@ function AuthProvider({ children }){
    //Consulta de vendas, com intervalo de datas
 
    async function retornaVendasPeriodo(datainicial, datafinal, cnpj, adquirente, bandeira){
-    if(teste !== true){
       setLoading(true);
       if((dataInicial === '' || undefined) || (cnpj === '' || undefined)){
         alert('Favor selecionar uma data e cliente válidos')
@@ -606,15 +612,11 @@ function AuthProvider({ children }){
           setLoading(false)
           console.log(error)
           })
-    }else{
-      return vendasStatic
-    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 async function retornaRecebimentos(cnpj, datainicial, datafinal){
-  if(teste !== true){
     setLoading(true);
     let params = {
       cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
@@ -639,9 +641,6 @@ async function retornaRecebimentos(cnpj, datainicial, datafinal){
       console.log(error)
       setLoading(false)
     }
-  }else{
-    return recebimentosStatic
-  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -649,7 +648,6 @@ async function retornaRecebimentos(cnpj, datainicial, datafinal){
     //Ajustes
 
     async function loadAjustes(cnpj, dataInicial, dataFinal){
-      if(teste !== true){
         setLoading(true)
 
       let params = {
@@ -674,10 +672,6 @@ async function retornaRecebimentos(cnpj, datainicial, datafinal){
         console.log(error)
         setLoading(false)
       }
-    } else{
-      setLoading(false)
-      return ajustesStatic;
-    }
   }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -685,9 +679,6 @@ async function retornaRecebimentos(cnpj, datainicial, datafinal){
     //refresh
 
     async function refresh(){
-      if(teste){
-        return
-      }
       await api.post('/token/refresh/' + Cookies.get('refreshToken'), config(accessToken))
       .then((response) => {
           setAccessToken(response.acessToken)
@@ -736,7 +727,6 @@ function converteData(data){
 }
 
 async function returnVendas(datainicial, datafinal, cnpj, adquirente, bandeira) {
-  if (teste !== true) {
     try {
       setLoading(true);
       let params = {
@@ -758,6 +748,11 @@ async function returnVendas(datainicial, datafinal, cnpj, adquirente, bandeira) 
       const response = await api.get('vendas', config);
       setLoading(false);
       setBuscou(false);
+      if(response.data.VENDAS === null){
+        alert(`${response.data.MENSAGEM}`)
+        logout()
+        return
+      }
       return response.data.VENDAS;
     } catch (error) {
       console.error('Error fetching vendas:', error);
@@ -766,9 +761,6 @@ async function returnVendas(datainicial, datafinal, cnpj, adquirente, bandeira) 
       logout();
       return [];
     }
-  } else {
-    return vendasStatic.VENDAS;
-  }
 }
 
 async function returnCreditos(datainicial, datafinal, cnpj) {
@@ -776,8 +768,6 @@ async function returnCreditos(datainicial, datafinal, cnpj) {
     alerta('Erro no cliente selecionado. Selecione um cliente válido ou atualize a página e tente novamente')
     return
   }
-  
-  if (teste !== true) {
     try {
       setLoading(true);
       let params = {
@@ -805,13 +795,9 @@ async function returnCreditos(datainicial, datafinal, cnpj) {
       logout();
       return [];
     }
-  } else {
-    return recebimentosStatic;
-  }
 }
 
 async function returnTotalDia(cnpj, data) {
-  if(teste !== true){
     setLoading(true)
     let params = {
       cnpj: cnpj,
@@ -833,9 +819,6 @@ async function returnTotalDia(cnpj, data) {
     } catch (error) {
       setLoading(false)
     }
-  }else{
-    return(totaisStatic)
-  }
 }
 
 async function returnTotalMes(cnpj) {
@@ -866,7 +849,6 @@ async function returnTotalMes(cnpj) {
 }
 
 async function returnCreditosBanco(cnpj, dataInicial, dataFinal, codigoBanco){
-  if(teste !== true){
     setLoading(true)
     let buscou
     buscou = false
@@ -920,10 +902,6 @@ async function returnCreditosBanco(cnpj, dataInicial, dataFinal, codigoBanco){
         console.log(error)
         setLoading(false)
       }
-  }else{
-    setLoading(false)
-    return bancosStatic
-  }
 }
 
 function alerta(text){
@@ -988,6 +966,21 @@ function gerarDados(array){
       setLoading(false)
       console.log(error)
     }
+  }
+
+  async function loadDashboard(){
+    let params = {
+      usuario: JSON.parse(Cookies.get('cliCodigo')),
+      cnpj: JSON.parse(Cookies.get('cnpj'))
+    }
+    try{
+      const response = await api.get('dashboard', config)
+      return response;
+    } catch (error) {
+      setLoading(false)
+      console.log(error)
+    }
+
   }
   
 
@@ -1058,8 +1051,6 @@ function gerarDados(array){
         setGruSelecionado,
         listaClientes, 
         setListaClientes,
-        teste,
-        setTeste,
         returnVendas,
         returnCreditos,
         converteData,
@@ -1095,6 +1086,7 @@ function gerarDados(array){
         getCli,
         showErrorMessage,
         setShowErrorMessage,
+        resetaDashboard,
       }}
     >
       {children}

@@ -69,18 +69,13 @@
 
 @media screen and (max-width: 869px){
     .container{
+        display: inline-flex;
         width: 100%;
-        display: flex;
-        padding-left: 12px;
-        margin-top: 0;
-        margin-bottom: 0;
+        text-align: center;
         flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: space-around;
-    
     }
     
     .btn-exportar{
-        width: 38%;
+        width: 80%;
     }
 }

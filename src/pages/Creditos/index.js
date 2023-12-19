@@ -231,7 +231,7 @@ const Creditos = () =>{
       setArrayAdm,
       }}>
 
-      <div className={`appPage app-page-vendas ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+      <div className={`appPage ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
         <div className={`page-vendas-background ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
           <div className={`page-content-vendas ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
             <div className={`vendas-title-container ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
@@ -243,6 +243,7 @@ const Creditos = () =>{
             { (detalhes) && (creditos.length > 0) ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
             <div className='component-container-vendas'>
               { (detalhes) && (creditos.length > 0) ?  <TabelaVendasCreditos array={creditos}/> : <MyCalendar className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/> }
+              <hr className="hr-recebimentos"/>
               { (detalhes) && (creditos.length > 0) ? <TabelaGenericaAdm Array={arrayAdm}/> : <></> }
               { (detalhes) && (creditos.length > 0) ? <hr className='hr-recebimentos'/> : <></> }
               <BuscarClienteCreditos />

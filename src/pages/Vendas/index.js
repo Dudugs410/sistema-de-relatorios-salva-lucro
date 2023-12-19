@@ -12,6 +12,7 @@ import { AuthContext } from '../../contexts/auth'
 import Cookies from 'js-cookie'
 import TabelaVendasCreditos from '../../components/Componente_TabelaVendasCreditos'
 import { useLocation } from 'react-router-dom'
+import '../../index.scss'
 
 export const VendasContext = createContext({})
 
@@ -230,7 +231,7 @@ const Vendas = () =>{
 
       }}>
 
-      <div className={`appPage app-page-vendas ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+      <div className={`appPage ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
         <div className={`page-vendas-background ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
           <div className={`page-content-vendas ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
             <div className={`vendas-title-container ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
@@ -242,6 +243,7 @@ const Vendas = () =>{
             { (detalhes) && (vendas.length > 0) ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
             <div className='component-container-vendas'>
               { (detalhes) && (vendas.length > 0) ?  <TabelaVendasCreditos array={vendas}/> : <MyCalendar className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/> }
+              <hr className="hr-recebimentos"/>
               { (detalhes) && (vendas.length > 0) ? <TabelaGenericaAdm Array={arrayAdm}/> : <></> }
               { (detalhes) && (vendas.length > 0) ? <hr className='hr-recebimentos'/> : <></> }
               <BuscarClienteVendas />

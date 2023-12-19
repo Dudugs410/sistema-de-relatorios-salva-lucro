@@ -2,20 +2,22 @@
 
 .search-bar-seletor{
     height: auto;
-    width: 100%;
-    background-color: rgba(0,0,0,0.5);
+    /* width: 100%; */
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    /* justify-content: center; */
+    align-items: stretch;
     
 }
 
 .date-container-seletor{
-    width: 100%;
+    /*width: 100%; */
     display: inline-flex;
-    justify-content: space-evenly;
     padding: 20px;
-    transition: all 2s;
+    /* transition: all 2s; */
+    justify-content: space-around;
+
     &.light-theme{
         border-top: solid $secondary-color-light 1px;
         border-bottom: solid $secondary-color-light 1px;
@@ -30,10 +32,10 @@
 }
 
 .date-column-seletor{
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    width: 100%;
+    /* display: flex; */
+    /* flex-direction: column; */
+    /* height: 100%; */
+    /* width: 100%;*/
 }
 
 .date-text-seletor{
@@ -75,12 +77,13 @@
 }
 
 .select-card-seletor{
-    position: relative;
-    display: inline-flex;
-    width: 100%;
-    flex-direction: column;
-    flex-wrap: wrap;
-    align-content: space-around;
+    /*position: relative; */
+    /* display: inline-flex; */
+    width: 333px;
+    /* flex-direction: column; */
+    /* flex-wrap: wrap; */
+    /* align-content: space-around; */
+    
 }
 
 .date-column-seletor>.select-card-seletor>select{
@@ -270,6 +273,15 @@
         text-align: center;
         font-style: italic;
         color: gray;
+    }
+
+    .select-card-seletor{
+        position: relative;
+        display: inline-flex;
+        width: 100%;
+        flex-direction: initial;
+        flex-wrap: wrap;
+        align-content: space-around;
     }
 
     .date-container>select{

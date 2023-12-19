@@ -6,15 +6,6 @@
   /* margin-left: 10%; */
   display: flex;
   flex-direction: column;
-    &.light-theme{
-      color: $background-color-light;
-      background-color: $background-color-light;
-    }
-
-    &.dark-theme{
-      color: $background-color-light;
-      background-color: $background-color-light;
-    }
 }
 
 .data-group-area{
@@ -26,14 +17,6 @@
   display: flex;
   flex-direction: column;
   transition: all 2s;
-
-  &.light-theme{
-    background-color: $primary-color-light;
-  }
-
-  &.dark-theme{
-    background-color: $primary-color-dark;
-  }
 }
 
 .dash-table-container{
@@ -146,9 +129,4 @@
     display: flex;
     flex-direction: column;
   }
-
-  .data-group-area{
-    padding: 1% 5% 1% 5%;
-  }
-
 }
