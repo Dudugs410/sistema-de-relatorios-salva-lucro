@@ -12,20 +12,29 @@ import md5 from "md5"
 ///////////////////////////////////////////////////////////////
 
 const Login = () => {
-    const {submitLogin, loading, isSignedIn, accessToken, setAccessToken, submitFake,
-    setCnpj, setTeste, setRefreshToken, setIsDarkTheme, setIsSignedIn, loadGrupos, grupos, setLoading } = useContext(AuthContext)
+    const {
+        submitLogin,
+        loading,
+        isSignedIn, 
+        accessToken, 
+        setAccessToken, 
+        submitFake,
+        alerta,
+        showErrorMessage,
+        setShowErrorMessage,
+        isDarkTheme,
+        setIsDarkTheme,
+    } = useContext(AuthContext)
     const navigate = useNavigate()
 
     const [login, setLogin] = useState('')
     const [password, setPassword] = useState('')
 
     useEffect(()=>{
-        sessionStorage.clear()
-        //localStorage.clear()
-        Cookies.remove('cnpj')
-        Cookies.remove('token')
-        Cookies.remove('refreshToken')
-        Cookies.remove('userID')
+        setIsDarkTheme(false)
+        if(sessionStorage.getItem('currentPath')){
+            navigate(sessionStorage.getItem('currentPath'))
+        }
     },[])
 
     useEffect(()=>{
@@ -44,16 +53,6 @@ const Login = () => {
         }
     }
 
-    async function handleTeste(e){
-        e.preventDefault()
-        submitFake()
-    }
-
-    useEffect(()=>{
-        console.log('accessToken: ', accessToken)
-
-    },[accessToken])
-
     return(
         <div className='appPage'>
             <div className='body-login'> 
@@ -65,8 +64,6 @@ const Login = () => {
                         <input id='senha' className='input-login' type='password' placeholder='senha' value={password} onChange={(e) => setPassword(e.target.value)}/>
                         <hr/>
                         { !loading ? <button type='submit' className='btn btn-primary'>Login</button> : <button type='submit' className='btn btn-primary' disabled>Carregando...</button>}
-                        <Link className='pw'>esqueci minha senha</Link>
-                        <button className='btn btn-secondary' onClick={handleTeste}>Login Teste</button>
                     </div>
                 </form>
             </div>

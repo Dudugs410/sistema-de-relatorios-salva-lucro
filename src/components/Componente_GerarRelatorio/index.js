@@ -7,13 +7,9 @@ import ExcelJS from 'exceljs'
 import { FiFilePlus } from 'react-icons/fi'
 
 import './GerarRelatorio.scss'
-import { useContext, useEffect } from 'react'
-import { AuthContext } from '../../contexts/auth'
 import { imgExport } from '../../contexts/images'
 
 export default function GerarRelatorio({tableData, dataAtual}){
-
-  const { dateConvert } = useContext(AuthContext)
 
     // EXCEL ////////////////////////////////////////////////////////////
     const exportToExcel = () => {
@@ -102,8 +98,12 @@ export default function GerarRelatorio({tableData, dataAtual}){
     return(
         <>
             <div className='container'>
+              <div className='export-column'>
                 <button className="btn btn-exportar btn-exportar-excel" onClick={exportToExcel}>Download Excel <FiFilePlus /></button>
+              </div>
+              <div className='export-column'>
                 <button className='btn btn-exportar btn-exportar-pdf' onClick={generatePdf}>Download PDF <FiFilePlus /></button>
+              </div>
             </div>
         </>
     )

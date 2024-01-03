@@ -36,7 +36,7 @@ const ModalCliente = () => {
 
     useEffect(()=>{
         const grupoObj = grupos.find(item => item.CODIGOGRUPO === Number(gruSelecionado))
-        let cli = grupoObj ? grupoObj.CLIENTES : [];
+        let cli = grupoObj ? grupoObj.CLIENTES : []
         setListaClientes(cli)
         sessionStorage.setItem('codigoGrupo', gruSelecionado)
       },[gruSelecionado])
@@ -49,6 +49,7 @@ const ModalCliente = () => {
         } else {
             setCnpj(cliente)
             setModalCliente(false)
+            Cookies.set('carregouModalCliente', true)
         }
     }
     

@@ -8,8 +8,21 @@ import 'react-toastify/dist/ReactToastify.css';
 import './Seletor.scss'
 
 const SeletorCliente = () => {
-    const { gruSelecionado, setGruSelecionado, listaClientes, setListaClientes, setGrupos, resetaSomatorios, alerta, isDarkTheme } = useContext(AuthContext)
-    const { grupos, loadGrupos, cnpj, setCnpj, inicializouAux, setInicializouAux } = useContext(AuthContext)
+    const { 
+        gruSelecionado, 
+        setGruSelecionado, 
+        listaClientes, 
+        setListaClientes, 
+        setGrupos, 
+        resetaSomatorios, 
+        alerta, 
+        isDarkTheme,
+        grupos,
+        cnpj, 
+        setCnpj, 
+        setInicializouAux,
+        resetaDashboard,
+    } = useContext(AuthContext)
 
     const [cliSelecionado, setCliSelecionado] = useState('')
 
@@ -31,6 +44,7 @@ const SeletorCliente = () => {
 
     function handleCnpj(e){
         e.preventDefault()
+        resetaDashboard()
         console.log(cliSelecionado)
         console.log('CNPJ antes: ', cnpj)
         if((cliSelecionado !== cnpj) && (cliSelecionado !== '') && (cliSelecionado !== 'selecione')){
@@ -66,7 +80,7 @@ const SeletorCliente = () => {
                 <form className={`date-container-seletor ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                     <div className='date-column-seletor'>
                         <div className='select-card-seletor'>
-                            <span>Grupo de Clientes</span>
+                            <span>Grupo</span>
                             <select className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} id='grupo' value={gruSelecionado} onChange={(e) => {setGruSelecionado(e.target.value)}}>
                                 { !gruSelecionado ? <option defaultValue=''>selecione</option> : <option defaultValue='gruSelecionado'>{gruSelecionado.nome}</option>}
                                 {grupos.map((GRU)=>(
@@ -93,7 +107,7 @@ const SeletorCliente = () => {
                     </div>
 
                     <div className="select-btn-seletor">
-                        <button className={`btn btn-primary btn-seletor ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleCnpj}>Selecionar</button>
+                        <button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleCnpj} disabled={cliSelecionado === cnpj}>Selecionar</button>
                     </div>
                 </form>
             </div>

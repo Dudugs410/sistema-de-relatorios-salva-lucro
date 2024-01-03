@@ -9,7 +9,7 @@
     display: flex;
     height: 2.2em;
     text-align: center;
-    width: 300px;
+    max-width: 300px;
     justify-content: center;
     border-radius: 10px;
     font-weight: 200;
@@ -71,6 +71,45 @@
 
 ///tabela
 
+.table {
+    --bs-table-color-type: initial;
+    --bs-table-bg-type: initial;
+    --bs-table-color-state: initial;
+    --bs-table-bg-state: initial;
+    --bs-table-color: var(--bs-emphasis-color);
+    --bs-table-bg: var(--bs-body-bg);
+    --bs-table-border-color: var(--bs-border-color);
+    --bs-table-accent-bg: transparent;
+    --bs-table-striped-color: var(--bs-emphasis-color);
+    --bs-table-striped-bg: rgba(var(--bs-emphasis-color-rgb), 0.05);
+    --bs-table-active-color: var(--bs-emphasis-color);
+    --bs-table-active-bg: rgba(var(--bs-emphasis-color-rgb), 0.1);
+    --bs-table-hover-color: var(--bs-emphasis-color);
+    --bs-table-hover-bg: rgba(var(--bs-emphasis-color-rgb), 0.075);
+    
+    width: 100%;
+    margin-bottom: 1rem;
+    vertical-align: top;
+
+    &.light-theme{
+        --bs-table-color: $font-color-light;
+        --bs-table-bg: $background-color-light;
+
+        --bs-table-striped-color: $font-color-light;
+        --bs-table-striped-bg: rgb(196, 200, 201);
+
+    }
+    &.dark-theme{
+        --bs-table-color: $font-color-dark;
+        --bs-table-bg: $primary-color-dark;
+
+        --bs-table-striped-color: $font-color-dark;
+        --bs-table-striped-bg: rgba(primary-color-dark, 0.05);
+
+    }
+}
+
+
 .thead-global{
     &.light-theme{
         background-color: $primary-color-light;
@@ -114,13 +153,28 @@
     width: 100%;
     border-radius: 20px;
     padding: 10px;
-    color: white;
-    &.light-theme{
-        background-color: $primary-color-light;
+
+    --bs-table-color: white;
+  
+    &.light-theme {
+        background-color: rgb(10,61,112);
+      --bs-table-bg: rgb(10,61,112);
     }
-    &.dark-theme{
-        background-color: $background-color-dark;
+  
+    &.dark-theme {
+        background-color: black;
+      --bs-table-bg: $primary-color-dark;
     }
+}
+
+.det-tr-global{
+    &.light-theme {
+        --bs-table-bg: $background-color-light;
+      }
+    
+      &.dark-theme {
+        --bs-table-bg: $background-color-dark;
+      }
 }
 
 .det-th-global, .det-td-global{

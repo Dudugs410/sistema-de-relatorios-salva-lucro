@@ -2,8 +2,8 @@
   "name": "sistema-de-relatorios",
   "version": "0.1.0",
   "private": true,
-  "homepage": "/salvalucro3",
-  "proxy": "https://app.salvalucro.com.br/",
+  "homepage": "https://app.salvalucro.com.br/salvalucro3",
+  "proxy": "http://localhost:3000",
   "dependencies": {
     "@iconscout/react-unicons": "^2.0.2",
     "@testing-library/jest-dom": "^5.16.5",
@@ -37,7 +37,19 @@
     "sass": "^1.69.3",
     "victory": "^36.6.11",
     "web-vitals": "^2.1.4",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "workbox-background-sync": "^6.6.0",
+    "workbox-broadcast-update": "^6.6.0",
+    "workbox-cacheable-response": "^6.6.0",
+    "workbox-core": "^6.6.0",
+    "workbox-expiration": "^6.6.0",
+    "workbox-google-analytics": "^6.6.0",
+    "workbox-navigation-preload": "^6.6.0",
+    "workbox-precaching": "^6.6.0",
+    "workbox-range-requests": "^6.6.0",
+    "workbox-routing": "^6.6.0",
+    "workbox-strategies": "^6.6.0",
+    "workbox-streams": "^6.6.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -62,8 +74,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "webpack": "^5.88.2"
   }
 }

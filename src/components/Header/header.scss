@@ -20,25 +20,42 @@
     background-color: rgba(0, 0, 0, 0.5);
 }
 
+.barra-header{
+    display: inline-flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+
+    &.light-theme{
+        background-color: $primary-color-light;
+    }
+    &.dark-theme{
+        background-color: $primary-color-dark;
+    }
+}
+
+.li-container{
+    height: 40px;
+    display: inline-flex;
+    width: 100%;
+    /* padding: 10px;*/
+}
+
 .navbar-title{
     display: flex;
     flex-direction: column;
     align-self: start;
     padding-left: 20px;
-    padding-top: 5px;
+    padding-top: 15px;
     font-size: x-large;
     z-index: 1;
 }
 
 .navbar-title>img{
-    width: 200px;
+    width: 260px;
     
-}
-
-.img-header{
-    padding-bottom: 5px;
-    padding-right: 3%;
-    padding-top: 13px;
 }
 
 .nav-text{
@@ -50,8 +67,7 @@
     flex-direction: row;
     width: 100%;
     font-size: 0.8em;
-    justify-content: flex-end;
-    margin-right: 10%;
+    justify-content: space-around;
     z-index: 1;
     
 }
@@ -62,10 +78,6 @@
     justify-content: space-evenly;
     text-align: start;
     
-}
-
-.navbar-customer:not(:first-child){
-    margin-left: 20%;
 }
 
 .teste{
@@ -88,23 +100,14 @@ a.nav-text{
     border: solid white 2px;
     margin-top: 2px;
     margin-right: 2px;
-    z-index: 1;
-}
-
-svg{
-    color: white;
-}
-
-polyline, line, path{
-    color: white;
+    z-index: 9;
 }
 
 .nav-item{
-    width: 100%;
-    color: white;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
+    width: fit-content;
+    height: 100%;
+    display: inline;
+    flex-direction: column;
     justify-content: center;
 }
 
@@ -117,9 +120,14 @@ polyline, line, path{
     flex-direction: row;
     width: 100%;
     align-items: center;
-    justify-content: space-around;
+    justify-content: flex-start;
     flex-wrap: nowrap;
-    background-color: rgba(0, 0, 0, 0.5);
+    &.light-theme{
+        background-color: $primary-color-light;
+    }
+    &.dark-theme{
+        background-color: $primary-color-dark;
+    }
 }
 
 .btn-container{
@@ -131,6 +139,8 @@ polyline, line, path{
 }
 
 .li-button-content{
+    /* padding: 5px; */
+    height:100%;
     width: 100%;
     color: white;
     display: inline-flex;
@@ -138,37 +148,41 @@ polyline, line, path{
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    border-left: none;
-    border-right: none;
+    border: none;
 
     &.light-theme{
         background-color: $primary-color-light;
-        border: solid $secondary-color-light 1px;
+       
     }
 
     &.dark-theme{
         background-color: $primary-color-dark;
-        border: solid $secondary-color-dark 1px;
+
     }
 }
 
 .li-button-content:hover{
     &.light-theme{
+        color: $primary-color-light;
         background-color: $secondary-color-light;
-        border: solid $background-color-light 1px;
     }
 
     &.dark-theme{
-        background-color: $primary-color-dark;
-        border: solid $background-color-dark 1px;
-        color: #ffffffa6;
+        color: $primary-color-dark;
+        background-color: white;
     }
+    
     transition: all, 0.4s;
+}
+
+.nav-item>a{
+    height: 100%;
 }
 
 .toggle-container {
     display: flex;
     align-items: center;
+    padding: 0 5px 0 5px;
   }
   
   .switch {
@@ -192,6 +206,11 @@ polyline, line, path{
     background-color: #ccc;
     transition: 0.4s;
     border-radius: 34px;
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    justify-content: space-around;
+    align-items: center;
   }
   
   .slider:before {
@@ -214,6 +233,9 @@ polyline, line, path{
     transform: translateX(26px);
   }
 
+  .nav-link{
+    padding: 0px !important;
+  }
 
 
 @media screen and (max-width: 869px){
@@ -236,15 +258,15 @@ polyline, line, path{
     
     .navbar-title{
         display: flex;
-        width: 100%;
         flex-direction: column;
-        text-align: center;
+        align-self: start;
         padding-left: 0px;
-        padding-top: 5px;
+        padding-top: 15px;
         font-size: x-large;
+        width: 100%;
         z-index: 1;
-        flex-wrap: wrap;
         align-content: center;
+        align-items: center;
     }
 
     .navbar-title>img{
@@ -270,12 +292,7 @@ polyline, line, path{
         justify-content: space-evenly;
         text-align: start;
         margin: 0;
-        margin-left: 40px;
         
-    }
-
-    .navbar-customer:not(:first-child){
-        margin-left: 10px;
     }
     
     li>a{
@@ -294,64 +311,65 @@ polyline, line, path{
         z-index: 99;
     }
 
-    .navbar-nav{
-        width: 50px;
-        display: flex;
-        flex-direction: column;
-        flex-wrap: wrap;
-        position: fixed;
-        left: -269px;
-        top: 15px;
-        z-index: 2;
-    }
-
     .nav-item{
-        width: 100px;
-        display: inline-flex;
-        z-index: 2;
-        justify-content: flex-start;
-        flex-direction: column;
-        flex-wrap: wrap;
-    }
-
-    .li-button-content{
-        width: 300px;
-        height: 35px;
-        display: inline-flex;
-        border-top-right-radius: 5px;
-        border-bottom-right-radius: 5px;
-        flex-direction: column;
-        flex-wrap: wrap;
-        align-content: flex-end;
-
-        &.light-theme{
-            border-right: solid $secondary-color-light 1px;
-        }
-    
-        &.dark-theme{
-            border-right: solid $secondary-color-dark 1px;
-        }
-    }
-
-    .li-button-content:hover{
-        transition: all, 0.5s;
-        width: 420px;
-
-        &.light-theme{
-            border-right: solid $background-color-light 2px;
-            border-top: solid $background-color-light 2px;
-            border-bottom: solid $background-color-light 2px;
-        }
-    
-        &.dark-theme{
-            border-right: solid $background-color-dark 2px;
-            border-top: solid $background-color-dark 2px;
-            border-bottom: solid $background-color-dark 2px;
-        }
-    }
-    
-    .li-button-content:hover,.li-btn-text{
-        display: inline-flex;
+        width: 100%;
         color: white;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .nav-item:not(:first-child){
+        margin-left: 0;
+    }
+    
+    .navbar-nav{
+        display: inline-flex;
+        flex-direction: row;
+        width: 100%;
+        align-items: center;
+        background-color: rgba(0, 0, 0, 0.5);
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+    }
+    
+    .btn-container{
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: stretch;
+    }
+    
+    .li-button-content{
+        width: 100%;
+        color: white;
+        display: inline-flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        border: none;
+    
+        &.light-theme{
+            background-color: $primary-color-light;
+        }
+    
+        &.dark-theme{
+            background-color: $primary-color-dark;
+        }
+    }
+    
+    .li-button-content:hover{
+        &.light-theme{
+            color: $primary-color-light;
+            background-color: $secondary-color-light;
+        }
+    
+        &.dark-theme{
+            color: $primary-color-dark;
+            background-color: white;
+        }
+        transition: all, 0.4s;
     }
 }

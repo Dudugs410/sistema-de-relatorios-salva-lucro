@@ -9,7 +9,7 @@
     height: 100%; /* Full height */
     overflow: auto; /* Enable scroll if needed */
     background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-    z-index: 999999;
+    z-index: 8;
   }
   
   /* Modal Content/Box */
@@ -46,7 +46,7 @@
     position: fixed;
     left: 0;
     top: 0;
-    z-index: 100;
+    z-index: 7;
     height: 100%;
     width: 100%;
     background-color: rgba(0,0,0,0.4);

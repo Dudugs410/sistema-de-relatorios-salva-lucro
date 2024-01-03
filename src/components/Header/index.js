@@ -1,16 +1,16 @@
 import { Link } from "react-router-dom"
-import { FiPower } from "react-icons/fi"
+import { FiMoon, FiPower, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText } from "react-icons/fi"
 import { AuthContext } from "../../contexts/auth"
 import React, { useContext, useEffect, useState } from "react"
 
-
-import { FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText } from "react-icons/fi"
 
 import salvaLucroLogoBranco from '../../assets/LogoTopo.png'
 import { gruposStatic } from "../../contexts/static"
 
 import './header.scss'
+import '../../index.scss'
 import Cookies from "js-cookie"
+import InstallPWAButton from "../Componente_BotaoPWA"
 
 const Header = () =>{
 
@@ -54,22 +54,6 @@ const Header = () =>{
             localStorage.setItem('localUsers', JSON.stringify(localUsersTemp))
         }
     }
-
-    useEffect(() =>{
-        console.log('isChecked: ', isChecked)
-    },[isChecked])
-
-    useEffect(() =>{
-        console.log('isDarkTheme: ', isDarkTheme)
-    },[isDarkTheme])
-
-    useEffect(() => {
-        const savedState = localStorage.getItem('isChecked')
-        if (savedState !== null) {
-          setIsChecked(savedState === 'true')
-          setIsDarkTheme(savedState === 'true')
-        }
-      }, [])
     
 
 /////////////////////////////////////////////////////////////////////////////
@@ -97,64 +81,46 @@ const Header = () =>{
 
     ////////////////////////////////////////////////////////////////////////////////////
 
-    let tipoCliente = 1
-
-    const [arrayOpcoes, setArrayOpcoes] = useState([])
-    const icones = {
-        'FiHome': FiHome,
-        'FiDollarSign': FiDollarSign,
-        'FiCreditCard': FiCreditCard,
-        'FiRefreshCcw': FiRefreshCcw,
-        'FiTool': FiTool,
-        'FiFileText': FiFileText,
-        
-    }
-
-    const [optionsWithIcons, setOptionsWithIcons] = useState({})
-    let optionsTemp = JSON.parse(sessionStorage.getItem('options'))
-
+    const [optionsWithIcons, setOptionsWithIcons] = useState([]);
+    const [optionsTemp, setOptionsTemp] = useState([])
     useEffect(()=>{
-        arrayOpcoes.length = 0
-
-        optionsTemp.map((obj)=>{
-            switch (obj.nome) {
-                case 'Dashboard':
-                    arrayOpcoes.push({rota: '/dashboard', nome: 'Início', id: obj.id, icone: 'FiHome'})
-                    break;
-                case 'Vendas':
-                    arrayOpcoes.push({rota: '/vendas', nome: 'Vendas', id: obj.id, icone: 'FiDollarSign'},)
-                    break;
-                case 'Créditos':
-                    arrayOpcoes.push({rota: '/recebiveis', nome: 'Recebíveis', id: obj.id, icone: 'FiCreditCard'},)
-                    break;
-                /*case 'Serviços':
-                    arrayOpcoes.push({rota: '/servicos', nome: 'Serviços', id: obj.id, icone: 'FiRefreshCcw'},)
-                    break;
-                case 'Antecipações':
-                    arrayOpcoes.push({rota: '/antecipacoes', nome: 'Antecipações', id: obj.id, icone: 'FiTool'},)
-                    break;
-                case 'Relatório de Importação':
-                    arrayOpcoes.push({rota: '/relatorios', nome: 'Relatórios', id: obj.id, icone: 'FiFileText'},)
-                    break; */
-                default:
-                    console.log('Não encontrado ou não implementado...')
-                }
-        })
+        if(sessionStorage.getItem('options')){
+            setOptionsTemp(JSON.parse(sessionStorage.getItem('options')))
+        }
     },[])
 
-    useEffect(()=>{
-        console.log('opcoes disponiveis: ', arrayOpcoes)
-        let temp = arrayOpcoes.map(option => ({
-            ...option,
-            icone: icones[option.icone],
-          }))
-          setOptionsWithIcons(temp)          
-    },[arrayOpcoes])
+    useEffect(() => {
+        const icones = {
+            'FiHome': FiHome,
+            'FiDollarSign': FiDollarSign,
+            'FiCreditCard': FiCreditCard,
+            'FiRefreshCcw': FiRefreshCcw,
+            'FiTool': FiTool,
+            'FiFileText': FiFileText,
+        };
 
-    useEffect(()=>{
-        console.log('opcoes com icones: ', optionsWithIcons)
+        let arrayOpcoes = [];
 
-    },[optionsWithIcons])
+        optionsTemp.forEach((obj) => {
+            switch (obj.nome) {
+                case 'Dashboard':
+                    arrayOpcoes.push({ rota: '/dashboard', nome: 'Início', id: obj.id, icone: icones['FiHome'] });
+                    break;
+                case 'Vendas':
+                    arrayOpcoes.push({ rota: '/vendas', nome: 'Vendas', id: obj.id, icone: icones['FiDollarSign'] });
+                    break;
+                case 'Créditos':
+                    arrayOpcoes.push({ rota: '/creditos', nome: 'Créditos', id: obj.id, icone: icones['FiCreditCard'] });
+                    break;
+                // Add other cases here if needed
+                default:
+                    console.log('Opção Não encontrada ou ainda não implementada...');
+            }
+        });
+
+        setOptionsWithIcons(arrayOpcoes);
+
+    }, [optionsTemp]);
 
     ////////////////////////////////////////////////////////////////////////////////////
 
@@ -172,33 +138,34 @@ const Header = () =>{
                         </div>
                         <div className='navbar-customer'>
                             <span className='client-name'>{`${nome}`}</span>
-                            <span className='client-code'>{`${email}`}</span> 
                         </div>              
                     </div>
                     <div className='btn-container'>
                         <button type='button' className='btn-exit' onClick={logout}><FiPower color="#000000" size={24}/></button>
-                        <div className="toggle-container">
-                            <label className="switch" >
-                                <input type="checkbox" id="toggleButton" checked={isChecked} onChange={handleCheckboxChange}/>
-                                <span className="slider"></span>
-                            </label>
-                        </div>
                     </div>
                 </div>
                 <div className='header-content'>
-                    <div className="li-container">
-                        <ul className="navbar-nav">
-                            {optionsWithIcons.length > 0 && optionsWithIcons.map((opcao) => (
-                                <li className="nav-item" key={opcao.id}>
-                                    <Link to={opcao.rota} className="nav-hover nav-text nav-link active text-shadow" aria-current="page">
-                                        <button className={`li-button-content ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                                            <span className="li-btn-text">{opcao.nome}</span>
-                                            {optionsWithIcons[opcao.id]?.icone && React.createElement(optionsWithIcons[opcao.id].icone)}
-                                        </button>
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
+                    <div className={`barra-header ${isDarkTheme ? 'dark-theme' : 'light-theme' }`}>
+                        <div className="li-container">
+                            <ul className={`navbar-nav ${isDarkTheme ? 'dark-theme' : 'light-theme' }`}>
+                                {optionsWithIcons.length > 0 && optionsWithIcons.map((opcao) => (
+                                    <li className="nav-item" key={opcao.id}>
+                                        <Link to={opcao.rota} className="nav-hover nav-text nav-link active text-shadow" aria-current="page">
+                                            <button className={`li-button-content ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                                                <span className="li-btn-text">{opcao.nome} &nbsp;&nbsp;&nbsp;</span>
+                                                {opcao.icone && React.createElement(opcao.icone)}
+                                            </button>
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                            <div className="toggle-container">
+                                <label className="switch" >
+                                    <input type="checkbox" id="toggleButton" checked={isChecked} onChange={handleCheckboxChange}/>
+                                    <span className="slider"><FiMoon/><FiSun/></span>
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

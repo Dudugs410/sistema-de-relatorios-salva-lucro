@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
-import DetalhesCredito from '../DetalhesCredito';
 import Modal from '../Modal';
 import './grafico.scss'
+import TabelaVendasAdq from '../Componente_TabelaVendasAdq';
+import TabelaVendasCreditos from '../Componente_TabelaVendasCreditos';
 
 
 
@@ -11,45 +12,18 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 const PieChart = ({ data01, arrayAdm }) => {
   
-  const [showAdm, setShowAdm] = useState(false)
   const [selectedAdm, setSelectedAdm] = useState(null)
   const [showAdmModal, setShowAdmModal] = useState(false)
 
-  useEffect(()=>{
-    console.log('data01: ', data01)
-  },[data01])
-
-  useEffect(()=>{
-    console.log('arrayAdm: ', arrayAdm)
-  },[arrayAdm])
-  
-  if (!data01 || data01.length === 0) {
-    return <div>Loading...</div>; // Display a loading state or alternative content
-  }
-
-  const handleChartClick = (event, elements) => {
+  const handleChartClick = useCallback((event, elements) => {
     if (elements.length > 0) {
       const clickedElementIndex = elements[0].index;
       const selectedAdmData = arrayAdm[clickedElementIndex];
-
+  
       setSelectedAdm(selectedAdmData);
       setShowAdmModal(true);
     }
-  }
-
-  function modalAdm(adm){
-    console.log('modalAdm')
-    setShowAdm(true)
-    if(showAdm){
-      return(
-        <div className='modal-adm'>
-          <span>nome: {adm.nomeAdquirente}</span>
-          <span>total: {adm.total}</span>
-          <DetalhesCredito array={adm.vendas}/>
-        </div>
-      )
-    }
-  }
+  }, [arrayAdm]);
 
   // setando as cores do gráfico por administradora.
   // Caso não especificada, a cor será cinza.
@@ -130,22 +104,33 @@ const PieChart = ({ data01, arrayAdm }) => {
     return labels.map(label => labelColors[label] || 'grey');
   }
 
-
-  const chartData = {
-    labels: data01.labels.slice().sort(),
-    datasets: [
-      {
-        label: 'Total de Vendas: R$',
-        data: data01.data,
-        backgroundColor: generateColors(data01.labels.slice().sort()),
-        borderWidth: 0.2,
-      },
-    ],
-  };
+  const chartData = useMemo(() => {
+    return {
+      labels: data01.labels.slice().sort(),
+      datasets: [
+        {
+          label: 'Total de Vendas: R$',
+          data: data01.data,
+          backgroundColor: generateColors(data01.labels.slice().sort()),
+          borderWidth: 0.2,
+        },
+      ],
+    };
+  }, [data01]);
 
   const chartOptions = {
     maintainAspectRatio: false,
-    onClick: (event, elements) => handleChartClick(event, elements),
+    onClick: handleChartClick,
+    responsive: true,
+    plugins: {
+      legend: {
+        display: true,
+        position: "top"
+      },
+    },
+    layout:{
+      padding: 10
+    }
   };
 
   return (
@@ -154,9 +139,7 @@ const PieChart = ({ data01, arrayAdm }) => {
 
       {showAdmModal && selectedAdm && (
         <Modal onClose={() => setShowAdmModal(false)}>
-          <div className='modal-adm'>
-            <DetalhesCredito array={selectedAdm.vendas} />
-          </div>
+          <TabelaVendasCreditos array={selectedAdm.vendas} />
         </Modal>
       )}
     </div>

@@ -4,12 +4,13 @@ import 'react-icons'
 import AuthProvider from './contexts/auth'
 import { BrowserRouter } from 'react-router-dom'
 import RoutesApp from './routes'
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import './index.scss'
 import { ToastContainer } from 'react-toastify'
 
 function App() {
+
   return (
     <BrowserRouter basename='/salvalucro3'>
       <AuthProvider>

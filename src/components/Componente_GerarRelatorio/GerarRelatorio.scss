@@ -10,9 +10,22 @@
     padding-bottom: 13px;
 }
 
+.export-column{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: center;
+    width: 100%;
+}
+
 .btn-exportar{
-    width: 40%;
+    width: 80%;
     margin-top: 12px;
+    /* display: flex; */
+    height: 2.2em;
+    border-radius: 10px;
+    text-align: center;
+    width: 80%;
     background-color: white;
 }
 
@@ -56,18 +69,13 @@
 
 @media screen and (max-width: 869px){
     .container{
+        display: inline-flex;
         width: 100%;
-        display: flex;
-        padding-left: 12px;
-        margin-top: 0;
-        margin-bottom: 0;
+        text-align: center;
         flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: space-around;
-    
     }
     
     .btn-exportar{
-        width: 38%;
+        width: 80%;
     }
 }

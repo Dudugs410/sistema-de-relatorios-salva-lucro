@@ -1,0 +1,84 @@
+@import '../../styles/variables';
+
+.vendas-view{
+    width: 100%;
+    min-height: 500px;
+    overflow: scroll;
+    background-color: azure;
+}
+
+.date-container{
+    width: 100%;
+    max-width: none;
+    display: flex;
+    margin-left: 0;
+    margin-right: 0;
+    justify-content: center;
+    padding-bottom: 13px;
+}
+
+.span-str {
+    &.light-theme{
+        color: $primary-color-light;   
+    }
+    &.dark-theme{
+        color: $primary-color-dark;
+    }
+}
+
+.texto-paginacao{
+    &.light-theme{
+        color: $font-color-light;   
+    }
+    &.dark-theme{
+        color: $font-color-dark;
+    }
+}
+
+.table-wrapper{
+    height: 500px;
+    padding-bottom: 10%;
+    &.light-theme{
+        background-color: $background-color-light;
+    }
+    &.dark-theme{
+        background-color: $background-color-dark;
+    }
+}
+
+.green{
+    color: rgb(0, 255, 0);
+    text-shadow: 1px 1px 1px #000000;
+}
+
+.red{
+    color:red;
+    text-shadow: 1px 1px 1px #000000;
+}
+
+.container-btn-pagina{
+    width: 100%;
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: space-evenly;
+    align-items: baseline;
+}
+
+.btn-skip{
+    width: 10%;
+}
+
+.pagina-atual{
+    font-weight: bold;
+    align-items: center;
+}
+
+@media screen and (max-width: 1090px){
+
+    .btn-navigate{
+        width: 20%;
+    }
+
+}

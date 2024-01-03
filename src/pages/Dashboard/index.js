@@ -2,25 +2,26 @@
 
 import './dashboard.scss'
 
-//////
-
-//////
 import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "../../contexts/auth"
 //////
 import LoadingModal from '../../components/LoadingModal'
 import ModalCliente from '../../components/ModalCliente'
+import TabelaHorizontal from '../../components/Componente_TabelaHorizontal'
 //////
 import PieChart from '../../components/GraficoDashboard'
 
-import { adquirentesStatic, bandeirasStatic, recebimentosStatic, vendasStatic } from '../../contexts/static'
 import Cookies from 'js-cookie'
-import jwtDecode from 'jwt-decode'
-
-
-
+import { useLocation } from 'react-router-dom'
+import '../../index.scss'
 
 const Dashboard = () => {
+
+    const location = useLocation();
+
+    useEffect(() => {
+        sessionStorage.setItem('currentPath', location.pathname);
+    }, [location]);
     
     const {  
         returnVendas,
@@ -29,14 +30,7 @@ const Dashboard = () => {
         cnpj, 
         dateConvertSearch, 
         modalCliente,
-        teste,
-        setTeste,
         converteData,
-        setCnpj,
-        setBandeiras,
-        setVendas,
-        setAdquirentes,
-        refresh,
         admVendasAux,
         setAdmVendasAux,
         admCreditosAux,
@@ -56,10 +50,13 @@ const Dashboard = () => {
         inicializouAux,
         setInicializouAux,
         isDarkTheme,
-        getCli,
-
-
+        setIsDarkTheme,
+        loadAjustes,
     } = useContext(AuthContext)
+
+    useEffect(()=>{
+        setIsDarkTheme(JSON.parse(localStorage.getItem('isDark')))
+    },[])
 
     const [vetorVendasMes, setVetorVendasMes] = useState([])
     const [vetorCreditosMes, setVetorCreditosMes] = useState([])
@@ -78,6 +75,7 @@ const Dashboard = () => {
 
     const [admVendas, setAdmVendas] = useState([])
     const [admCreditos, setAdmCreditos] = useState([])
+    const [admServicos, setAdmServicos] = useState([])
 
     const [graficoVendas, setGraficoVendas] = useState({ labels: [], data: [] })
     const [graficoCreditos, setGraficoCreditos] = useState({ labels: [], data: [] })
@@ -85,14 +83,15 @@ const Dashboard = () => {
     const [cnpjSelecionado, setCnpjSelecionado] = useState(false)
 
     const [inicializou, setInicializou] = useState(false)
-    const [loadingDash, setLoadingDash] = useState(null)
+    
+    const [loadingVendasDash, setLoadingVendasDash] = useState(null)
+    const [loadingCreditosDash, setLoadingCreditosDash] = useState(null)
 
-    useEffect(()=>{
-        if(teste){
-            setCnpj(Cookies.get('cnpj'))
-            setCnpjSelecionado(true)
-        }
-    },[])
+    // ajustes/serviços
+
+    const [servicos, setServicos] = useState([])
+
+    //
 
     useEffect(()=>{
         if(sessionStorage.getItem('inicializou')){
@@ -100,9 +99,9 @@ const Dashboard = () => {
         }
     },[])
 
-    useEffect(()=>{
-        console.log('inicializou: ', inicializou)
-    },[inicializou])
+    async function loadDashboard(){
+        
+    }
 
     async function inicializaVendas4dias(){
         let vendaDataInicial = new Date()
@@ -119,24 +118,39 @@ const Dashboard = () => {
         setVendas4dias(vendasTemp)
     }
 
-    async function inicializaVetorVendasMes(){   
+    async function inicializaVetorVendasMes() {
         const dataAtual = new Date();
         const anoAtual = dataAtual.getFullYear();
         const mesAtual = dataAtual.getMonth() + 1;
         const ultimoDiaDoMes = new Date(anoAtual, mesAtual, 0).getDate();
-
+      
         let vendasTemp = [];
         let paramDiasBusca = [];
         for (let day = 1; day <= ultimoDiaDoMes; day++) {
-          paramDiasBusca.push({dataInicial: `${anoAtual}-${mesAtual}-${day}`, dataFinal: `${anoAtual}-${mesAtual}-${day}`, cnpj: cnpj});
+          paramDiasBusca.push({
+            dataInicial: `${anoAtual}-${mesAtual}-${day}`,
+            dataFinal: `${anoAtual}-${mesAtual}-${day}`,
+            cnpj: cnpj, // Assuming cnpj is defined somewhere in your code
+          });
         }
       
-        const carregaVendasMes = paramDiasBusca.map(dia => returnVendas(dia.dataInicial, dia.dataFinal, dia.cnpj));
-        const vendasPromises = await Promise.all(carregaVendasMes);
-        vendasTemp = vendasPromises.filter(Boolean);
+        try {
+            setLoadingVendasDash(true)
+          const carregaVendasMes = paramDiasBusca.map((dia) =>
+            returnVendas(dia.dataInicial, dia.dataFinal, dia.cnpj)
+          );
+      
+          const vendasPromises = await Promise.all(carregaVendasMes);
+      
+          vendasTemp = vendasPromises.filter((vendas) => vendas); // Filter out undefined values
+        } catch (error) {
+          console.error('Error fetching vendas:', error);
+        } finally {
+          setLoadingVendasDash(false);
+        }
       
         setVetorVendasMes(vendasTemp);
-    }
+      }
 
     async function inicializaVendas4diasMes(){
         const temp = await returnTotalMes(cnpj)
@@ -153,8 +167,7 @@ const Dashboard = () => {
     }
 
     async function inicializaVetorCreditosMes() {
-        console.log('********** inicializaVetorCreditoMes **********');
-      
+        setLoadingCreditosDash(true)
         const dataAtual = new Date();
         const anoAtual = dataAtual.getFullYear();
         const mesAtual = dataAtual.getMonth() + 1;
@@ -163,73 +176,253 @@ const Dashboard = () => {
         let creditosTemp = [];
         let paramDiasBusca = [];
         for (let day = 1; day <= ultimoDiaDoMes; day++) {
-          paramDiasBusca.push({dataInicial: `${anoAtual}-${mesAtual}-${day}`, dataFinal: `${anoAtual}-${mesAtual}-${day}`, cnpj: cnpj});
+          paramDiasBusca.push({
+            dataInicial: `${anoAtual}-${mesAtual}-${day}`,
+            dataFinal: `${anoAtual}-${mesAtual}-${day}`,
+            cnpj: cnpj, // Assuming cnpj is defined somewhere in your code
+          });
         }
       
-        const carregaCreditosMes = paramDiasBusca.map(dia => returnCreditos(dia.dataInicial, dia.dataFinal, dia.cnpj));
-        const creditosPromises = await Promise.all(carregaCreditosMes);
-        creditosTemp = creditosPromises.filter(Boolean);
+        try {
+          const carregaCreditosMes = paramDiasBusca.map((dia) =>
+            returnCreditos(dia.dataInicial, dia.dataFinal, dia.cnpj)
+          );
+      
+          const creditosPromises = await Promise.all(carregaCreditosMes);
+          creditosTemp = creditosPromises.filter((creditos) => creditos); // Filter out undefined values
+        } catch (error) {
+          // Handle error if any of the promises fail
+          console.error('Error fetching creditos:', error);
+        } finally {
+          // Assuming setLoadingDash is the state updater for loadingDash
+          setLoadingCreditosDash(false); // Set loading state to false after API calls finish
+        }
       
         setVetorCreditosMes(creditosTemp);
       }
 
-      useEffect(()=>{
-        console.log('loadingDash: ',loadingDash)
-      },[loadingDash])
+      async function inicializaServicos(){
+
+        function firstDay() {
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+            
+            return firstDay
+        }
+
+        function lastDay() {
+            const today = new Date();
+            const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            
+            return lastDay
+        }
+
+        let teste = [
+            {
+                "cnpj": "10.963.525/0002-67",
+                "razao_social": "BOM DIA SUPERMERCADO FILIAL",
+                "codigo_estabelecimento": "44453520",
+                "data": "2022-06-01",
+                "codigo_adquirente": "13",
+                "nome_adquirente": "Bin",
+                "descricao": "Taxa Pinpad",
+                "valor": -20.30
+            },
+            {
+                "cnpj": "10.963.525/0002-67",
+                "razao_social": "BOM DIA SUPERMERCADO FILIAL",
+                "codigo_estabelecimento": "44453520",
+                "data": "2022-06-01",
+                "codigo_adquirente": "13",
+                "nome_adquirente": "Bin",
+                "descricao": "Taxa dePOS Wifi",
+                "valor": -24.90
+            },
+            {
+                "cnpj": "10.963.525/0002-67",
+                "razao_social": "BOM DIA SUPERMERCADO FILIAL",
+                "codigo_estabelecimento": "109635250",
+                "data": "2022-06-06",
+                "codigo_adquirente": "7",
+                "nome_adquirente": "VR",
+                "descricao": "Tarifa Bancaria",
+                "valor": -6.76
+            },
+            {
+                "cnpj": "10.963.525/0002-67",
+                "razao_social": "BOM DIA SUPERMERCADO FILIAL",
+                "codigo_estabelecimento": "109635250",
+                "data": "2022-06-07",
+                "codigo_adquirente": "7",
+                "nome_adquirente": "VR",
+                "descricao": "Valor Anuidade",
+                "valor": -161.00
+            },
+            {
+                "cnpj": "10.963.525/0002-67",
+                "razao_social": "BOM DIA SUPERMERCADO FILIAL",
+                "codigo_estabelecimento": "109635250",
+                "data": "2022-06-07",
+                "codigo_adquirente": "7",
+                "nome_adquirente": "VR",
+                "descricao": "Tarifa Bancaria",
+                "valor": -6.76
+            },
+            {
+                "cnpj": "10.963.525/0002-67",
+                "razao_social": "BOM DIA SUPERMERCADO FILIAL",
+                "codigo_estabelecimento": "10963525000267",
+                "data": "2022-06-07",
+                "codigo_adquirente": "23",
+                "nome_adquirente": "Vero",
+                "descricao": "Conectividade Vero",
+                "valor": -25.00
+            },
+            {
+                "cnpj": "10.963.525/0002-67",
+                "razao_social": "BOM DIA SUPERMERCADO FILIAL",
+                "codigo_estabelecimento": "10963525000267",
+                "data": "2022-06-08",
+                "codigo_adquirente": "23",
+                "nome_adquirente": "Vero",
+                "descricao": "Aluguel Pos Comodato",
+                "valor": -96.90
+            },
+            {
+                "cnpj": "10.963.525/0002-67",
+                "razao_social": "BOM DIA SUPERMERCADO FILIAL",
+                "codigo_estabelecimento": "109635250",
+                "data": "2022-06-13",
+                "codigo_adquirente": "7",
+                "nome_adquirente": "VR",
+                "descricao": "Tarifa Bancaria",
+                "valor": -6.76
+            },
+            {
+                "cnpj": "10.963.525/0002-67",
+                "razao_social": "BOM DIA SUPERMERCADO FILIAL",
+                "codigo_estabelecimento": "109635250",
+                "data": "2022-06-14",
+                "codigo_adquirente": "7",
+                "nome_adquirente": "VR",
+                "descricao": "Tarifa Bancaria",
+                "valor": -6.76
+            },
+            {
+                "cnpj": "10.963.525/0002-67",
+                "razao_social": "BOM DIA SUPERMERCADO FILIAL",
+                "codigo_estabelecimento": "109635250",
+                "data": "2022-06-20",
+                "codigo_adquirente": "7",
+                "nome_adquirente": "VR",
+                "descricao": "Tarifa Bancaria",
+                "valor": -6.76
+            },
+            {
+                "cnpj": "10.963.525/0002-67",
+                "razao_social": "BOM DIA SUPERMERCADO FILIAL",
+                "codigo_estabelecimento": "109635250",
+                "data": "2022-06-21",
+                "codigo_adquirente": "7",
+                "nome_adquirente": "VR",
+                "descricao": "Tarifa Bancaria",
+                "valor": -6.76
+            },
+            {
+                "cnpj": "10.963.525/0002-67",
+                "razao_social": "BOM DIA SUPERMERCADO FILIAL",
+                "codigo_estabelecimento": "109635250",
+                "data": "2022-06-27",
+                "codigo_adquirente": "7",
+                "nome_adquirente": "VR",
+                "descricao": "Tarifa Bancaria",
+                "valor": -6.76
+            },
+            {
+                "cnpj": "10.963.525/0002-67",
+                "razao_social": "BOM DIA SUPERMERCADO FILIAL",
+                "codigo_estabelecimento": "109635250",
+                "data": "2022-06-28",
+                "codigo_adquirente": "7",
+                "nome_adquirente": "VR",
+                "descricao": "Tarifa Bancaria",
+                "valor": -6.76
+            }
+        ]
+
+        console.log(teste)
+
+        const servicosTemp = teste /*await loadAjustes(cnpj, firstDay(), lastDay())*/
+        setServicos(servicosTemp)
+      }
+
+      useEffect(() => {
+        console.log(servicos)
+        if(servicos.length > 0){
+            console.log('tem dados')
+            let temp = []
+            let objAdq = {}
+            servicos.map((servico) => {
+                if(temp.length === 0){
+                    objAdq = {
+                        nome: servico.nome_adquirente,
+                        total: servico.valor,
+                        id: 0
+                    }
+                    temp.push(objAdq)
+
+                } else {
+                    const existingObject = temp.find(obj => obj.nome === servico.nome_adquirente);
+                    if (existingObject) {
+                        existingObject.total += servico.valor;
+                    } else {
+                    temp.push({
+                        nome: servico.nome_adquirente,
+                        total: servico.valor,
+                        id: temp.length
+                    })
+                    }
+            }})
+            console.log('arrayAdqTemp:', temp)
+        } else {
+            console.log('não tem dados')
+        }
+        
+      }, [servicos]);
 
 ///////////////////////////////////////////////////////////////////////////////
 //// Inicializar Dados de Vendas e Créditos ///////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
     useEffect(()=>{
-        console.log('inicializou ao carregar pagina: ', inicializou)
         async function inicializar(){
-            console.log('carregando Dashboard? ', loadingDash)
-            if((cnpj !== null && cnpj !== '') && (teste !== true)){
-                console.log('inicializando dados de vendas e créditos...')
+            if(cnpj !== null && cnpj !== ''){
                 await inicializaVendas4dias()
                 await inicializaVendas4diasMes()
                 await inicializaVetorVendasMes()
-
                 await inicializaCreditos5dias()
                 await inicializaVetorCreditosMes()
+                await inicializaServicos()
 
                 setInicializou(true)
                 setInicializouAux(true)
                 sessionStorage.setItem('inicializou', true)
-            } else if(teste === true){
-                console.log('inicializando Dados Teste...')
-                
-                setVendas(vendasStatic)
-                setAdquirentes(adquirentesStatic)
-                setBandeiras(bandeirasStatic)
-
-                let label = ['Cielo', 'Alelo', 'Vero', 'GetNet']
-                let data = [12395.66, 8750.43, 15322.56, 19430.22]
-                setTotalVendas4dias(55898.87)
-                setSomatorioVendasMes(78264.85)
-
-                let label2 = ['Cielo', 'Alelo', 'Vero', 'GetNet', 'Ticket']
-                let data2 = [33395.66, 12350.43, 43322.56, 21430.22, 11563.85]
-                setSomatorioCreditosHoje(26344.55)
-                setTotalCreditos5dias(122062.72)
-                
-                setGraficoVendas({ labels: label, data: data })
-                setGraficoCreditos({ labels: label2, data: data2 })
             }
         }
 
         if(inicializouAux !== true){
-            setLoadingDash(true)
+            setLoadingCreditosDash(true)
+            setLoadingVendasDash(true)
             inicializar().then(() => {
-                setLoadingDash(false)
+                setLoadingCreditosDash(false)
+                setLoadingVendasDash(false)
             })
         }
     },[cnpj])
 
     useEffect(()=>{
         async function inicializar(){
-            const total = vendasMes.reduce((total, obj) => total + obj.valorliquido, 0)
+            const total = vendasMes.reduce((total, obj) => total + obj.valorvendido, 0)
             setSomatorioVendasMes(total)
             if(total > 0){
                 setSomatorioVendasMesAux(total)
@@ -239,7 +432,12 @@ const Dashboard = () => {
     },[vendasMes])
 
     useEffect(()=>{
-        const totalTemp = vendas4dias.reduce((total, obj) => total + obj.valorLiquido, 0)
+        if(vendas4dias === null){
+            setTotalVendas4dias(0)
+            setTotalVendas4diasAux(0)
+            return
+        }
+        const totalTemp = vendas4dias.reduce((total, obj) => total + obj.valorBruto, 0)
         setTotalVendas4dias(totalTemp)
         if(totalTemp > 0){
             setTotalVendas4diasAux(totalTemp)
@@ -297,7 +495,7 @@ const Dashboard = () => {
                     if(temp.length === 0){
                         let novoObj = {
                             nomeAdquirente: venda.adquirente.nomeAdquirente,
-                            total: venda.valorLiquido,
+                            total: venda.valorBruto,
                             id: 0,
                             vendas: []
                         }
@@ -305,7 +503,7 @@ const Dashboard = () => {
                     }else{
                         let novoObj = {
                             nomeAdquirente: venda.adquirente.nomeAdquirente,
-                            total: venda.valorLiquido,
+                            total: venda.valorBruto,
                             id: 0,
                             vendas: []
                         }
@@ -318,7 +516,7 @@ const Dashboard = () => {
                         else{
                             for(let i = 0; i < temp.length; i++){
                                 if(temp[i].nomeAdquirente === venda.adquirente.nomeAdquirente){
-                                    temp[i].total += venda.valorLiquido
+                                    temp[i].total += venda.valorBruto
                                 }
                             }
                         }
@@ -340,48 +538,17 @@ const Dashboard = () => {
                     }
                 })
             })
-            if(teste === true){
-                temp = [
-                    {
-                        nomeAdquirente: 'Cielo',
-                        total: 27568.00,
-                        id: 0,
-                        vendas: vendasStatic.VENDAS,
-                    },
-                    {
-                        nomeAdquirente: 'Alelo',
-                        total: 5587.00,
-                        id: 1,
-                        vendas: vendasStatic.VENDAS,
-                    },
-                    {
-                        nomeAdquirente: 'Vero',
-                        total: 3220.00,
-                        id: 2,
-                        vendas: vendasStatic.VENDAS,
-                    },
-                    {
-                        nomeAdquirente: 'Ticket',
-                        total: 326.60,
-                        id: 3,
-                        vendas: vendasStatic.VENDAS,
-                    }
-                ]
-            }
-    
-            setAdmVendas(sortArray(temp))
 
+            setAdmVendas(sortArray(temp))
             if(temp.length > 0){
                 setAdmVendasAux(sortArray(temp))
             }
     },[vetorVendasMes])
 
     useEffect(()=>{
-        if(teste !== true){
-            setGraficoVendas(carregaGrafico(admVendas))
-            if(admVendasAux.length > 0){
-                setGraficoVendasAux(carregaGrafico(admVendasAux))
-            }
+        setGraficoVendas(carregaGrafico(admVendas))
+        if(admVendasAux.length > 0){
+            setGraficoVendasAux(carregaGrafico(admVendasAux))
         }
     },[admVendas])
 
@@ -436,40 +603,6 @@ const Dashboard = () => {
                 })
             })
     
-            if(teste === true){
-                temp = [
-                    {
-                        nomeAdquirente: 'Cielo',
-                        total: 27568.00,
-                        id: 0,
-                        vendas: recebimentosStatic,
-                    },
-                    {
-                        nomeAdquirente: 'Alelo',
-                        total: 5587.00,
-                        id: 1,
-                        vendas: recebimentosStatic,
-                    },
-                    {
-                        nomeAdquirente: 'GetNet',
-                        total: 3220.00,
-                        id: 2,
-                        vendas: recebimentosStatic,
-                    },
-                    {
-                        nomeAdquirente: 'Vero',
-                        total: 3220.00,
-                        id: 3,
-                        vendas: recebimentosStatic,
-                    },
-                    {
-                        nomeAdquirente: 'Ticket',
-                        total: 326.60,
-                        id: 4,
-                        vendas: recebimentosStatic,
-                    }
-                ]
-            }
             setAdmCreditos(sortArray(temp))
             if(temp.length > 0){
                 setAdmCreditosAux(sortArray(temp))
@@ -477,14 +610,11 @@ const Dashboard = () => {
     },[vetorCreditosMes])
 
     useEffect(()=>{
-        console.log(admCreditos)
-            if(teste !== true){
-                setGraficoCreditos(carregaGrafico(admCreditos))
-                if(admCreditosAux.length > 0){
-                    setGraficoCreditosAux(carregaGrafico(admCreditosAux))
-                }
+        setGraficoCreditos(carregaGrafico(admCreditos))
+        if(admCreditosAux.length > 0){
+            setGraficoCreditosAux(carregaGrafico(admCreditosAux))
+        }
 
-            }
     },[admCreditos])
     
     function carregaGrafico(array){
@@ -498,82 +628,53 @@ const Dashboard = () => {
             label.push(nomeAdq)
         })
         const obj = {labels: label, data: data}
-        return obj    
+        return obj
     }
-
-    useEffect(()=>{
-        if(inicializouAux){
-            console.log('***** Checando variáveis auxiliares após carregamento de dados *****')
-            console.log('admCreditosAux: ', admCreditosAux,)
-            console.log('somatorioCreditosHojeAux: ', somatorioCreditosHojeAux)
-            console.log('totalCreditos5diasAux: ', totalCreditos5diasAux)
-            console.log('somatorioVendasMesAux: ', somatorioVendasMesAux)
-            console.log('totalVendas4diasAux: ', totalVendas4diasAux)
-            console.log('graficoVendasAux: ', graficoVendasAux)
-            console.log('graficoCreditosAux: ', graficoCreditosAux)
-            console.log('inicializouAux: ', inicializouAux)
-            console.log('************************************************************************')
-        }
-    },[])
 
   return(
     <>
         <div className={`appPage ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-        { (modalCliente) && (!inicializouAux) && ( <ModalCliente/> ) }
+        { (modalCliente) && (!inicializouAux) && (Cookies.get('carregouModalCliente') === 'true') && ( <ModalCliente/> ) }
         {cnpj && (
             <div className={`content-area dash ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                 <div className={`data-group-area ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                     <div className={`graph-data ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                         <h1 className={`title-chart ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Vendas:</h1>
                         { inicializouAux === true ? <PieChart data01 = {graficoVendasAux} arrayAdm={admVendasAux}/> : <PieChart data01 = {graficoVendas} arrayAdm={admVendas}/>}
-                    </div>
-                    <div className={`table-data table-data-dashboard ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                        { loadingDash && (<LoadingModal/>) }
-                        <table className={`table dash-table det-table dash-body-flex tbody-sticky table-chart-dash${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                            <thead className='dash-thead'>
-                                <tr className={`dash-tr ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                                    <th className='dash-th' scope="col">Total Últimos 4 dias</th>
-                                    <th className='dash-th' scope="col">Total do Mês</th>
-                                </tr>
-                            </thead>
-                            <tbody className={`dash-tbody dash-tbody-bg ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                                <tr className={`dash-tr ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                                { inicializouAux === true ? <td className='cell-text dash-td' data-label="Total Últimos 4 dias">R$ {totalVendas4diasAux.toFixed(2).replace('.',',')}</td> : <td className='cell-text dash-td' data-label="Total Últimos 4 dias">R$ {totalVendas4dias.toFixed(2).replace('.',',')}</td>}
-                                { inicializouAux === true ? <td className='cell-text dash-td' data-label="Total do Mês">R$ {somatorioVendasMesAux.toFixed(2).replace('.',',')}</td> : <td className='cell-text dash-td' data-label="Total do Mês">R$ {somatorioVendasMes.toFixed(2).replace('.',',')}</td>}
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div className={`dash-table-container ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
+                        { loadingVendasDash && (<LoadingModal/>) }
+                            {inicializouAux ? <TabelaHorizontal header='Total Últimos 4 dias' valor={totalVendas4diasAux.toFixed(2)} /> : <TabelaHorizontal header='Total Últimos 4 dias' valor={totalVendas4diasAux.toFixed(2)} />}
+                            {inicializouAux ? <TabelaHorizontal header='Total do Mês' valor={somatorioVendasMesAux.toFixed(2)} /> : <TabelaHorizontal header='Total do Mês' valor={somatorioVendasMesAux.toFixed(2)} />}
+                        </div>
                     </div>
                 </div>
                 <div className={`data-group-area ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                     <div className={`graph-data ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                         <h1 className={`title-chart ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Créditos:</h1>
                         { inicializouAux === true ? <PieChart data01 = {graficoCreditosAux} arrayAdm={admCreditosAux}/> : <PieChart data01 = {graficoCreditos} arrayAdm={admCreditos}/>}
-                    </div>
-                    
-                    <div className={`table-data table-data-dashboard ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                        <table className={`table dash-table det-table dash-body-flex tbody-sticky table-chart-dash${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                                <thead className='dash-thead'>
-                                    <tr className={`dash-tr ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                                        <th className='dash-th' scope="col">Previsão de Hoje</th>
-                                        <th className='dash-th' scope="col">Previsão Próx 5 Dias</th>
-                                    </tr>
-                                </thead>
-                                <tbody className={`dash-tbody dash-tbody-bg ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                                    <tr className={`dash-tr ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                                        { inicializouAux === true ? <td className='cell-text dash-td' data-label="Previsão de Hoje">R$ {somatorioCreditosHojeAux.toFixed(2).replace('.',',')}</td> : <td className='cell-text dash-td' data-label="Previsão de Hoje">R$ {somatorioCreditosHoje.toFixed(2).replace('.',',')}</td>}
-                                        { inicializouAux === true ? <td className='cell-text dash-td' data-label="Previsão Próx 5 Dias">R$ {totalCreditos5diasAux.toFixed(2).replace('.',',')}</td> : <td className='cell-text dash-td' data-label="Previsão Próx 5 Dias">R$ {totalCreditos5dias.toFixed(2).replace('.',',')}</td>}
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div className={`dash-table-container ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
+                        { loadingCreditosDash && (<LoadingModal/>) }
+                            {inicializouAux ? <TabelaHorizontal header='Previsão de Hoje' valor={somatorioCreditosHojeAux.toFixed(2)} /> : <TabelaHorizontal header='Previsão de Hoje' valor={somatorioCreditosHoje.toFixed(2)} />}
+                            {inicializouAux ? <TabelaHorizontal header='Previsão Próx 5 Dias' valor={totalCreditos5diasAux.toFixed(2)} /> : <TabelaHorizontal header='Previsão Próx 5 Dias' valor={totalCreditos5dias.toFixed(2)} />}
                         </div>
-                    </div>            
+                    </div>
                 </div>
+                <div className={`data-group-area ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                    <div className={`graph-data ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                        <h1 className={`title-chart ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Serviços:</h1>
+                        { inicializouAux === true ? <PieChart data01 = {graficoCreditosAux} arrayAdm={admCreditosAux}/> : <PieChart data01 = {graficoCreditos} arrayAdm={admCreditos}/>}
+                        <div className={`dash-table-container ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
+                        { loadingCreditosDash && (<LoadingModal/>) }
+                            {inicializouAux ? <TabelaHorizontal header='Total de Hoje' valor={somatorioCreditosHojeAux.toFixed(2)} /> : <TabelaHorizontal header='Total de Hoje' valor={somatorioCreditosHoje.toFixed(2)} />}
+                            {inicializouAux ? <TabelaHorizontal header='Total do Mês' valor={totalCreditos5diasAux.toFixed(2)} /> : <TabelaHorizontal header='Total do Mês' valor={totalCreditos5dias.toFixed(2)} />}
+                        </div>
+                    </div>
+                </div>
+            </div>
             )}
-        </div> 
+        </div>
     </>  
   )  
 }
 
 export default Dashboard
-

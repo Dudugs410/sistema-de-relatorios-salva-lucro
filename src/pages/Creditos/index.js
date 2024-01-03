@@ -1,22 +1,19 @@
-import { useEffect, useContext, createContext, useState } from 'react'
-import Calendar from 'react-calendar'
-
-import BuscarClienteVendas from '../../components/Componente_BuscarClienteVendas'
-import TabelaGenericaAdm from '../../components/Componente_TabelaAdm'
-import TotalModalidadesComp from '../../components/Componente_TotalModalidades'
-
+import Calendar from "react-calendar"
+import './creditos.scss'
+import { useContext, useEffect, useState } from "react"
+import TabelaVendasCreditos from "../../components/Componente_TabelaVendasCreditos"
+import { AuthContext } from "../../contexts/auth"
+import TotalModalidadesComp from "../../components/Componente_TotalModalidades"
+import TabelaGenericaAdm from "../../components/Componente_TabelaAdm"
 import GerarRelatorio from "../../components/Componente_GerarRelatorio"
-import './Calendar.scss'
-import './vendas.scss'
-import { AuthContext } from '../../contexts/auth'
-import Cookies from 'js-cookie'
-import TabelaVendasCreditos from '../../components/Componente_TabelaVendasCreditos'
-import { useLocation } from 'react-router-dom'
-import '../../index.scss'
+import Cookies from "js-cookie"
+import { createContext } from "react"
+import { useLocation } from "react-router-dom"
+import BuscarClienteCreditos from "../../components/Componente_BuscarClienteCreditos"
 
-export const VendasContext = createContext({})
+export const CreditosContext = createContext({})
 
-const Vendas = () =>{
+const Creditos = () =>{
   const location = useLocation();
 
   useEffect(() => {
@@ -32,8 +29,9 @@ const Vendas = () =>{
     setGrupos,
     adquirentes,
     loadAdquirentes,
-    vendas,
-    loadVendas,
+    creditos,
+    setCreditos,
+    loadCreditos,
     dateConvertSearch,
     gerarDados,
     tableData,
@@ -41,6 +39,10 @@ const Vendas = () =>{
     isDarkTheme,
     setIsDarkTheme,
   } = useContext(AuthContext)
+
+  useEffect(()=>{
+    setCreditos([])
+  },[])
 
   const [totalCredito, setTotalCredito] = useState(0.00)
   const [totalDebito, setTotalDebito] = useState(0.00)
@@ -54,13 +56,12 @@ const Vendas = () =>{
 
   // possivelmente utilizar estes parametros para realizar busca por período
 
-  const [cnpjBusca, setCnpjBusca] = useState(Cookies.get('cnpj'))
-
+  const [cnpjBusca, setCnpjBusca] = useState('')
   const [vendasTotais, setVendasTotais] = useState([])
 
   useEffect(()=>{
     setIsDarkTheme(JSON.parse(localStorage.getItem('isDark')))
-},[])
+  },[])
 
   useEffect(()=>{
     async function inicializar(){
@@ -80,7 +81,7 @@ const Vendas = () =>{
   },[])
 
   useEffect(()=>{
-    vendas.length = 0
+    creditos.length = 0
     setTotalCredito(0.00)
     setTotalDebito(0.00)
     setTotalVoucher(0.00)
@@ -94,20 +95,20 @@ const Vendas = () =>{
 
   useEffect(()=>{
     try {
-      if(vendas.length === 0){
+      if(creditos.length === 0){
         setTotalCredito(0.00)
         setTotalDebito(0.00)
         setTotalVoucher(0.00)
         setTotalLiquido(0.00)
       }
-      else if(vendas.length > 0){
-        setArrayRelatorio(gerarDados(vendas))
-        setArrayAdm(separaAdm(vendas))
+      else if(creditos.length > 0){
+        setArrayRelatorio(gerarDados(creditos))
+        setArrayAdm(separaAdm(creditos))
       }
     } catch (error) {
       console.log(error)
     }
-  },[vendas])
+  },[creditos])
 
   useEffect(()=>{
     setCnpjBusca(cnpj)
@@ -117,7 +118,7 @@ const Vendas = () =>{
 
   useEffect(()=>{
     if(detalhes){
-      setVendasTemp(loadVendas(dataBusca, cnpjBusca, '', ''))
+      setVendasTemp(loadCreditos(cnpjBusca, dataBusca, dataBusca))
     }
 
   },[cnpjBusca])
@@ -216,7 +217,7 @@ const Vendas = () =>{
   }
 
   return(
-    <VendasContext.Provider 
+    <CreditosContext.Provider 
     value={{
       detalhes, 
       setDetalhes,
@@ -233,31 +234,30 @@ const Vendas = () =>{
       cnpjBusca,
       setCnpjBusca,
       setArrayAdm,
-
       }}>
 
       <div className={`appPage ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
         <div className={`page-vendas-background ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
           <div className={`page-content-vendas ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
             <div className={`vendas-title-container ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-              <h1 className={`vendas-title ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Calendário de Vendas</h1>
+              <h1 className={`vendas-title ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Calendário de Créditos</h1>
             </div>
             <hr className="hr-recebimentos"/>
             <TotalModalidadesComp />
             <hr className="hr-recebimentos"/>
-            { (detalhes) && (vendas.length > 0) ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
+            { (detalhes) && (creditos.length > 0) ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
             <div className='component-container-vendas'>
-              { (detalhes) && (vendas.length > 0) ?  <TabelaVendasCreditos array={vendas}/> : <MyCalendar className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/> }
+              { (detalhes) && (creditos.length > 0) ?  <TabelaVendasCreditos array={creditos}/> : <MyCalendar className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/> }
               <hr className="hr-recebimentos"/>
-              { (detalhes) && (vendas.length > 0) ? <TabelaGenericaAdm Array={arrayAdm}/> : <></> }
-              { (detalhes) && (vendas.length > 0) ? <hr className='hr-recebimentos'/> : <></> }
-              <BuscarClienteVendas />
+              { (detalhes) && (creditos.length > 0) ? <TabelaGenericaAdm Array={arrayAdm}/> : <></> }
+              { (detalhes) && (creditos.length > 0) ? <hr className='hr-recebimentos'/> : <></> }
+              <BuscarClienteCreditos />
             </div>
           </div>
         </div>
       </div>
-    </VendasContext.Provider>
+    </CreditosContext.Provider>
   )
 }
 
-export default Vendas
+export default Creditos
