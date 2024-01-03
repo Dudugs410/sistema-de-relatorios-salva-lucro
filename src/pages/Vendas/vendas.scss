@@ -26,6 +26,12 @@
     display: flex;
     justify-content: center;
     transition: all 2s;
+    &.light-theme{
+        background-color: $background-color-light;
+    }
+    &.dark-theme{
+        background-color: $background-color-dark;
+    }
 }
 
 .page-content-vendas{

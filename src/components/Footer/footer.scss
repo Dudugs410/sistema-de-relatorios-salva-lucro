@@ -10,26 +10,23 @@
     text-align: center;
     z-index: 999999999999999999999999;
 
-    &.light-theme{
-        background-color: $primary-color-light;
-        border-top: solid $secondary-color-light 1px;
-    }
-    &.dark-theme{
-        background-color: $background-color-dark;
-        border-top: solid $secondary-color-dark 1px;
-    }
 
 }
 
 .footer-container{
+    position: absolute;
     display: flex;
     flex-direction: column-reverse;
     justify-content: center;
     height: 2.2em;
     width: 100%;
     bottom: 100%;
-    
-
+    &.light-theme{
+        background-color: $primary-color-light;
+    }
+    &.dark-theme{
+        background-color: $primary-color-dark;
+    }
 }
 
 .footer-content{
@@ -44,10 +41,8 @@
     bottom: 0;
     &.light-theme{
         background-color: $primary-color-light;
-        border-top: solid $secondary-color-light 1px;
     }
     &.dark-theme{
-        background-color: $background-color-dark;
-        border-top: solid $secondary-color-dark 1px;
+        background-color: $primary-color-dark;
     }
 }

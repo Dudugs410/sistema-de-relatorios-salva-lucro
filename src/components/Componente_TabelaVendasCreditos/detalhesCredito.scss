@@ -26,6 +26,15 @@
     }
 }
 
+.texto-paginacao{
+    &.light-theme{
+        color: $font-color-light;   
+    }
+    &.dark-theme{
+        color: $font-color-dark;
+    }
+}
+
 .table-wrapper{
     height: 500px;
     padding-bottom: 10%;

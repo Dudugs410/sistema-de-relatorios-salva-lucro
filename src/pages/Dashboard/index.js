@@ -11,7 +11,6 @@ import TabelaHorizontal from '../../components/Componente_TabelaHorizontal'
 //////
 import PieChart from '../../components/GraficoDashboard'
 
-import { adquirentesStatic, bandeirasStatic, recebimentosStatic, vendasStatic } from '../../contexts/static'
 import Cookies from 'js-cookie'
 import { useLocation } from 'react-router-dom'
 import '../../index.scss'
@@ -32,10 +31,6 @@ const Dashboard = () => {
         dateConvertSearch, 
         modalCliente,
         converteData,
-        setCnpj,
-        setBandeiras,
-        setVendas,
-        setAdquirentes,
         admVendasAux,
         setAdmVendasAux,
         admCreditosAux,
@@ -56,6 +51,7 @@ const Dashboard = () => {
         setInicializouAux,
         isDarkTheme,
         setIsDarkTheme,
+        loadAjustes,
     } = useContext(AuthContext)
 
     useEffect(()=>{
@@ -79,6 +75,7 @@ const Dashboard = () => {
 
     const [admVendas, setAdmVendas] = useState([])
     const [admCreditos, setAdmCreditos] = useState([])
+    const [admServicos, setAdmServicos] = useState([])
 
     const [graficoVendas, setGraficoVendas] = useState({ labels: [], data: [] })
     const [graficoCreditos, setGraficoCreditos] = useState({ labels: [], data: [] })
@@ -89,6 +86,12 @@ const Dashboard = () => {
     
     const [loadingVendasDash, setLoadingVendasDash] = useState(null)
     const [loadingCreditosDash, setLoadingCreditosDash] = useState(null)
+
+    // ajustes/serviços
+
+    const [servicos, setServicos] = useState([])
+
+    //
 
     useEffect(()=>{
         if(sessionStorage.getItem('inicializou')){
@@ -141,7 +144,6 @@ const Dashboard = () => {
       
           vendasTemp = vendasPromises.filter((vendas) => vendas); // Filter out undefined values
         } catch (error) {
-          // Handle error if any of the promises fail
           console.error('Error fetching vendas:', error);
         } finally {
           setLoadingVendasDash(false);
@@ -199,6 +201,195 @@ const Dashboard = () => {
         setVetorCreditosMes(creditosTemp);
       }
 
+      async function inicializaServicos(){
+
+        function firstDay() {
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+            
+            return firstDay
+        }
+
+        function lastDay() {
+            const today = new Date();
+            const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            
+            return lastDay
+        }
+
+        let teste = [
+            {
+                "cnpj": "10.963.525/0002-67",
+                "razao_social": "BOM DIA SUPERMERCADO FILIAL",
+                "codigo_estabelecimento": "44453520",
+                "data": "2022-06-01",
+                "codigo_adquirente": "13",
+                "nome_adquirente": "Bin",
+                "descricao": "Taxa Pinpad",
+                "valor": -20.30
+            },
+            {
+                "cnpj": "10.963.525/0002-67",
+                "razao_social": "BOM DIA SUPERMERCADO FILIAL",
+                "codigo_estabelecimento": "44453520",
+                "data": "2022-06-01",
+                "codigo_adquirente": "13",
+                "nome_adquirente": "Bin",
+                "descricao": "Taxa dePOS Wifi",
+                "valor": -24.90
+            },
+            {
+                "cnpj": "10.963.525/0002-67",
+                "razao_social": "BOM DIA SUPERMERCADO FILIAL",
+                "codigo_estabelecimento": "109635250",
+                "data": "2022-06-06",
+                "codigo_adquirente": "7",
+                "nome_adquirente": "VR",
+                "descricao": "Tarifa Bancaria",
+                "valor": -6.76
+            },
+            {
+                "cnpj": "10.963.525/0002-67",
+                "razao_social": "BOM DIA SUPERMERCADO FILIAL",
+                "codigo_estabelecimento": "109635250",
+                "data": "2022-06-07",
+                "codigo_adquirente": "7",
+                "nome_adquirente": "VR",
+                "descricao": "Valor Anuidade",
+                "valor": -161.00
+            },
+            {
+                "cnpj": "10.963.525/0002-67",
+                "razao_social": "BOM DIA SUPERMERCADO FILIAL",
+                "codigo_estabelecimento": "109635250",
+                "data": "2022-06-07",
+                "codigo_adquirente": "7",
+                "nome_adquirente": "VR",
+                "descricao": "Tarifa Bancaria",
+                "valor": -6.76
+            },
+            {
+                "cnpj": "10.963.525/0002-67",
+                "razao_social": "BOM DIA SUPERMERCADO FILIAL",
+                "codigo_estabelecimento": "10963525000267",
+                "data": "2022-06-07",
+                "codigo_adquirente": "23",
+                "nome_adquirente": "Vero",
+                "descricao": "Conectividade Vero",
+                "valor": -25.00
+            },
+            {
+                "cnpj": "10.963.525/0002-67",
+                "razao_social": "BOM DIA SUPERMERCADO FILIAL",
+                "codigo_estabelecimento": "10963525000267",
+                "data": "2022-06-08",
+                "codigo_adquirente": "23",
+                "nome_adquirente": "Vero",
+                "descricao": "Aluguel Pos Comodato",
+                "valor": -96.90
+            },
+            {
+                "cnpj": "10.963.525/0002-67",
+                "razao_social": "BOM DIA SUPERMERCADO FILIAL",
+                "codigo_estabelecimento": "109635250",
+                "data": "2022-06-13",
+                "codigo_adquirente": "7",
+                "nome_adquirente": "VR",
+                "descricao": "Tarifa Bancaria",
+                "valor": -6.76
+            },
+            {
+                "cnpj": "10.963.525/0002-67",
+                "razao_social": "BOM DIA SUPERMERCADO FILIAL",
+                "codigo_estabelecimento": "109635250",
+                "data": "2022-06-14",
+                "codigo_adquirente": "7",
+                "nome_adquirente": "VR",
+                "descricao": "Tarifa Bancaria",
+                "valor": -6.76
+            },
+            {
+                "cnpj": "10.963.525/0002-67",
+                "razao_social": "BOM DIA SUPERMERCADO FILIAL",
+                "codigo_estabelecimento": "109635250",
+                "data": "2022-06-20",
+                "codigo_adquirente": "7",
+                "nome_adquirente": "VR",
+                "descricao": "Tarifa Bancaria",
+                "valor": -6.76
+            },
+            {
+                "cnpj": "10.963.525/0002-67",
+                "razao_social": "BOM DIA SUPERMERCADO FILIAL",
+                "codigo_estabelecimento": "109635250",
+                "data": "2022-06-21",
+                "codigo_adquirente": "7",
+                "nome_adquirente": "VR",
+                "descricao": "Tarifa Bancaria",
+                "valor": -6.76
+            },
+            {
+                "cnpj": "10.963.525/0002-67",
+                "razao_social": "BOM DIA SUPERMERCADO FILIAL",
+                "codigo_estabelecimento": "109635250",
+                "data": "2022-06-27",
+                "codigo_adquirente": "7",
+                "nome_adquirente": "VR",
+                "descricao": "Tarifa Bancaria",
+                "valor": -6.76
+            },
+            {
+                "cnpj": "10.963.525/0002-67",
+                "razao_social": "BOM DIA SUPERMERCADO FILIAL",
+                "codigo_estabelecimento": "109635250",
+                "data": "2022-06-28",
+                "codigo_adquirente": "7",
+                "nome_adquirente": "VR",
+                "descricao": "Tarifa Bancaria",
+                "valor": -6.76
+            }
+        ]
+
+        console.log(teste)
+
+        const servicosTemp = teste /*await loadAjustes(cnpj, firstDay(), lastDay())*/
+        setServicos(servicosTemp)
+      }
+
+      useEffect(() => {
+        console.log(servicos)
+        if(servicos.length > 0){
+            console.log('tem dados')
+            let temp = []
+            let objAdq = {}
+            servicos.map((servico) => {
+                if(temp.length === 0){
+                    objAdq = {
+                        nome: servico.nome_adquirente,
+                        total: servico.valor,
+                        id: 0
+                    }
+                    temp.push(objAdq)
+
+                } else {
+                    const existingObject = temp.find(obj => obj.nome === servico.nome_adquirente);
+                    if (existingObject) {
+                        existingObject.total += servico.valor;
+                    } else {
+                    temp.push({
+                        nome: servico.nome_adquirente,
+                        total: servico.valor,
+                        id: temp.length
+                    })
+                    }
+            }})
+            console.log('arrayAdqTemp:', temp)
+        } else {
+            console.log('não tem dados')
+        }
+        
+      }, [servicos]);
+
 ///////////////////////////////////////////////////////////////////////////////
 //// Inicializar Dados de Vendas e Créditos ///////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -211,6 +402,7 @@ const Dashboard = () => {
                 await inicializaVetorVendasMes()
                 await inicializaCreditos5dias()
                 await inicializaVetorCreditosMes()
+                await inicializaServicos()
 
                 setInicializou(true)
                 setInicializouAux(true)
@@ -464,6 +656,17 @@ const Dashboard = () => {
                         { loadingCreditosDash && (<LoadingModal/>) }
                             {inicializouAux ? <TabelaHorizontal header='Previsão de Hoje' valor={somatorioCreditosHojeAux.toFixed(2)} /> : <TabelaHorizontal header='Previsão de Hoje' valor={somatorioCreditosHoje.toFixed(2)} />}
                             {inicializouAux ? <TabelaHorizontal header='Previsão Próx 5 Dias' valor={totalCreditos5diasAux.toFixed(2)} /> : <TabelaHorizontal header='Previsão Próx 5 Dias' valor={totalCreditos5dias.toFixed(2)} />}
+                        </div>
+                    </div>
+                </div>
+                <div className={`data-group-area ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                    <div className={`graph-data ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                        <h1 className={`title-chart ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Serviços:</h1>
+                        { inicializouAux === true ? <PieChart data01 = {graficoCreditosAux} arrayAdm={admCreditosAux}/> : <PieChart data01 = {graficoCreditos} arrayAdm={admCreditos}/>}
+                        <div className={`dash-table-container ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
+                        { loadingCreditosDash && (<LoadingModal/>) }
+                            {inicializouAux ? <TabelaHorizontal header='Total de Hoje' valor={somatorioCreditosHojeAux.toFixed(2)} /> : <TabelaHorizontal header='Total de Hoje' valor={somatorioCreditosHoje.toFixed(2)} />}
+                            {inicializouAux ? <TabelaHorizontal header='Total do Mês' valor={totalCreditos5diasAux.toFixed(2)} /> : <TabelaHorizontal header='Total do Mês' valor={totalCreditos5dias.toFixed(2)} />}
                         </div>
                     </div>
                 </div>

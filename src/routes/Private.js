@@ -13,7 +13,7 @@ export default function Private({children}){
 
   const navigate = useNavigate()
 
-  const { isSignedIn, setIsSignedIn, setAccessToken, accessToken, loading, refresh, expired, cnpj, setCnpj } = useContext(AuthContext)
+  const { setIsDarkTheme, isSignedIn, setIsSignedIn, setAccessToken, accessToken, loading, refresh, expired, cnpj, setCnpj } = useContext(AuthContext)
 
 
   useEffect(()=>{

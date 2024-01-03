@@ -103,14 +103,6 @@ a.nav-text{
     z-index: 9;
 }
 
-svg{
-    color: white;
-}
-
-polyline, line, path{
-    color: white;
-}
-
 .nav-item{
     width: fit-content;
     height: 100%;
@@ -171,15 +163,15 @@ polyline, line, path{
 
 .li-button-content:hover{
     &.light-theme{
+        color: $primary-color-light;
         background-color: $secondary-color-light;
-
     }
 
     &.dark-theme{
-        background-color: $primary-color-dark;
-
-        color: #ffffffa6;
+        color: $primary-color-dark;
+        background-color: white;
     }
+    
     transition: all, 0.4s;
 }
 
@@ -375,8 +367,8 @@ polyline, line, path{
         }
     
         &.dark-theme{
-            background-color: $primary-color-dark;
-            color: #ffffffa6;
+            color: $primary-color-dark;
+            background-color: white;
         }
         transition: all, 0.4s;
     }

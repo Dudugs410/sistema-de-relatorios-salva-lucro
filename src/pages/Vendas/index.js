@@ -39,6 +39,7 @@ const Vendas = () =>{
     tableData,
     setTotaisGlobal,
     isDarkTheme,
+    setIsDarkTheme,
   } = useContext(AuthContext)
 
   const [totalCredito, setTotalCredito] = useState(0.00)
@@ -56,6 +57,10 @@ const Vendas = () =>{
   const [cnpjBusca, setCnpjBusca] = useState(Cookies.get('cnpj'))
 
   const [vendasTotais, setVendasTotais] = useState([])
+
+  useEffect(()=>{
+    setIsDarkTheme(JSON.parse(localStorage.getItem('isDark')))
+},[])
 
   useEffect(()=>{
     async function inicializar(){

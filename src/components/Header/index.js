@@ -8,6 +8,7 @@ import salvaLucroLogoBranco from '../../assets/LogoTopo.png'
 import { gruposStatic } from "../../contexts/static"
 
 import './header.scss'
+import '../../index.scss'
 import Cookies from "js-cookie"
 import InstallPWAButton from "../Componente_BotaoPWA"
 

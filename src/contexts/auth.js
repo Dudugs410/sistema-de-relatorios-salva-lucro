@@ -56,13 +56,20 @@ function AuthProvider({ children }){
   const [teste, setTeste] = useState(false)
 
   const [admVendasAux, setAdmVendasAux] = useState([])
-  const [admCreditosAux, setAdmCreditosAux] = useState([])
-  const [somatorioCreditosHojeAux, setSomatorioCreditosHojeAux] = useState(0)
-  const [totalCreditos5diasAux, setTotalCreditos5diasAux] = useState(0)
   const [somatorioVendasMesAux, setSomatorioVendasMesAux] = useState(0)
   const [totalVendas4diasAux, setTotalVendas4diasAux] = useState(0)
   const [graficoVendasAux, setGraficoVendasAux] = useState({data: [], labels: []})
+
+  const [admCreditosAux, setAdmCreditosAux] = useState([])
+  const [somatorioCreditosHojeAux, setSomatorioCreditosHojeAux] = useState(0)
+  const [totalCreditos5diasAux, setTotalCreditos5diasAux] = useState(0)
   const [graficoCreditosAux, setGraficoCreditosAux] = useState({data: [], labels: []})
+
+  const [admServicosAux, setAdmServicosAux] = useState([])
+  const [totalServicosHojeAux, setTotalServicosHojeAux] = useState(0)
+  const [totalServicosMesAux, setTotalServicosMesAux] = useState(0)
+  const [graficoServicosAux, setGraficoServicosAux] = useState({data: [], labels: []})
+
   const [inicializouAux, setInicializouAux] = useState(false)
 
   const [showErrorMessage, setShowErrorMessage] = useState(false)
@@ -269,12 +276,16 @@ function AuthProvider({ children }){
   
     setAdmVendasAux([])
     setAdmCreditosAux([])
+    setAdmServicosAux([])
     setSomatorioCreditosHojeAux(0)
     setTotalCreditos5diasAux(0)
     setSomatorioVendasMesAux(0)
     setTotalVendas4diasAux(0)
+    setTotalServicosHojeAux(0)
+    setTotalServicosMesAux(0)
     setGraficoVendasAux({data: [], labels: []})
     setGraficoCreditosAux({data: [], labels: []})
+    setGraficoServicosAux({data: [], labels: []})
     setInicializouAux(false)
 
     resetaSomatorios()
@@ -650,9 +661,12 @@ async function retornaRecebimentos(cnpj, datainicial, datafinal){
     async function loadAjustes(cnpj, dataInicial, dataFinal){
         setLoading(true)
 
+        console.log(cnpj, dateConvertSearch(dataInicial))
+
       let params = {
-        cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-        data: dateConvertSearch(dataInicial),
+        cnpj: cnpj,
+        dataInicial: dateConvertSearch(dataInicial),
+        dataFinal: dateConvertSearch(dataFinal)
       }
 
       let config = {
@@ -743,23 +757,23 @@ async function returnVendas(datainicial, datafinal, cnpj, adquirente, bandeira) 
           'Authorization': `Bearer ${Cookies.get('token')}`
         },
         params: params
-      };
+      }
 
-      const response = await api.get('vendas', config);
-      setLoading(false);
-      setBuscou(false);
+      const response = await api.get('vendas', config)
+      setLoading(false)
+      setBuscou(false)
       if(response.data.VENDAS === null){
         alert(`${response.data.MENSAGEM}`)
         logout()
         return
       }
-      return response.data.VENDAS;
+      return response.data.VENDAS
     } catch (error) {
-      console.error('Error fetching vendas:', error);
-      setShowErrorMessage(true);
-      setLoading(false);
-      logout();
-      return [];
+      console.error('Error fetching vendas:', error)
+      setShowErrorMessage(true)
+      setLoading(false)
+      logout()
+      return []
     }
 }
 
@@ -1087,6 +1101,14 @@ function gerarDados(array){
         showErrorMessage,
         setShowErrorMessage,
         resetaDashboard,
+        admServicosAux,
+        setAdmServicosAux,
+        totalServicosHojeAux,
+        setTotalServicosHojeAux,
+        totalServicosMesAux,
+        setTotalServicosMesAux,
+        graficoServicosAux,
+        setGraficoServicosAux,
       }}
     >
       {children}

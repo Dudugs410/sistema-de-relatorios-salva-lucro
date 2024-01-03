@@ -361,6 +361,7 @@ const TabelaVendasCreditos = ({array}) =>{
                                     <th className='det-th-global'scope="col">Bandeira</th>
                                     <th className='det-th-global'scope="col">Valor Bruto</th>
                                     <th className='det-th-global'scope="col">Valor Líquido</th>
+                                    <th className='det-th-global'scope="col">Taxa</th>
                                     <th className='det-th-global'scope="col">Valor Desconto</th>
                                     <th className='det-th-global'scope="col">Produto</th>
                                     <th className='det-th-global'scope="col">Data da Venda</th>
@@ -379,6 +380,7 @@ const TabelaVendasCreditos = ({array}) =>{
                                     <td className='det-td-vendas-global'data-label="Bandeira">{venda.bandeira.descricaoBandeira}</td>
                                     <td className='det-td-vendas-global'data-label="Valor Bruto"><span className={`green-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>{Number(venda.valorBruto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
                                     <td className='det-td-vendas-global'data-label="Valor Líquido"><span className={`green-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>{Number(venda.valorLiquido).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
+                                    <td className='det-td-vendas-global'data-label="Taxa"><span className='red-global'>{Number(venda.taxa)}%</span></td>
                                     <td className='det-td-vendas-global'data-label="Valor Desconto"><span className='red-global'>{Number(venda.valorDesconto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
                                     <td className='det-td-vendas-global'data-label="Produto">{venda.produto.descricaoProduto}</td>
                                     <td className='det-td-vendas-global'data-label="Data da Venda">{dateConvert(venda.dataVenda)}</td>
@@ -411,8 +413,8 @@ const TabelaVendasCreditos = ({array}) =>{
                        <FiChevronLeft/> {/* Left arrow */}
                     </button>
                     <div className={`pagina-atual ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
-                        <span>Página </span>
-                        <span>{currentPage}</span>
+                        <span className={`texto-paginacao ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>Página </span>
+                        <span className={`texto-paginacao ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>{currentPage}</span>
                     </div>
                     <button
                         className={`btn btn-primary btn-global btn-navigate ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}

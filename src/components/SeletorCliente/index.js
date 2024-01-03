@@ -107,7 +107,7 @@ const SeletorCliente = () => {
                     </div>
 
                     <div className="select-btn-seletor">
-                        <button className={`btn btn-primary btn-seletor ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleCnpj} disabled={cliSelecionado === cnpj}>Selecionar</button>
+                        <button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleCnpj} disabled={cliSelecionado === cnpj}>Selecionar</button>
                     </div>
                 </form>
             </div>
