@@ -5,13 +5,17 @@ import Modal from '../Modal';
 import './grafico.scss'
 import TabelaVendasAdq from '../Componente_TabelaVendasAdq';
 import TabelaVendasCreditos from '../Componente_TabelaVendasCreditos';
+import TabelaGenerica from '../Componente_TabelaGenerica';
 
 
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const PieChart = ({ data01, arrayAdm }) => {
+const PieChart = ({ data01, arrayAdm, tipo } ) => {
   
+  console.log('GRAFICO: ', arrayAdm)
+  console.log('data01: ',data01)
+
   const [selectedAdm, setSelectedAdm] = useState(null)
   const [showAdmModal, setShowAdmModal] = useState(false)
 
@@ -20,7 +24,13 @@ const PieChart = ({ data01, arrayAdm }) => {
       const clickedElementIndex = elements[0].index;
       const selectedAdmData = arrayAdm[clickedElementIndex];
   
+      console.log('CLICADO: ', arrayAdm[clickedElementIndex])
+
+      console.log('Clicked Index: ', clickedElementIndex);
+      console.log('Clicked Data: ', arrayAdm[clickedElementIndex]);
+
       setSelectedAdm(selectedAdmData);
+      console.log('selectedAdmData: ',selectedAdmData)
       setShowAdmModal(true);
     }
   }, [arrayAdm]);
@@ -106,12 +116,12 @@ const PieChart = ({ data01, arrayAdm }) => {
 
   const chartData = useMemo(() => {
     return {
-      labels: data01.labels.slice().sort(),
+      labels: data01.labels.slice(),
       datasets: [
         {
           label: 'Total de Vendas: R$',
           data: data01.data,
-          backgroundColor: generateColors(data01.labels.slice().sort()),
+          backgroundColor: generateColors(data01.labels.slice()),
           borderWidth: 0.2,
         },
       ],
@@ -136,10 +146,9 @@ const PieChart = ({ data01, arrayAdm }) => {
   return (
     <div style={{ height: '250px', position: 'relative', maintainAspectRatio: false }}>
       <Pie data={chartData} options={chartOptions} />
-
       {showAdmModal && selectedAdm && (
         <Modal onClose={() => setShowAdmModal(false)}>
-          <TabelaVendasCreditos array={selectedAdm.vendas} />
+          { tipo === '0' ? <TabelaVendasCreditos array={selectedAdm.vendas} /> : <TabelaGenerica array = {selectedAdm.vendas}/>}
         </Modal>
       )}
     </div>
