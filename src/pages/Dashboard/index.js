@@ -234,9 +234,7 @@ const Dashboard = () => {
       }
 
       useEffect(() => {
-        console.log(servicos)
         if(servicos.length > 0){
-            console.log('tem dados')
             let temp = []
             let objAdq = {}
             servicos.map((servico) => {
@@ -263,14 +261,12 @@ const Dashboard = () => {
                     })
                     }
             }})
-            console.log('arrayAdqTemp:', temp)
             setAdmServicos(sortArray(temp))        
             if(temp.length > 0){
                 setAdmServicosAux(sortArray(temp))
             }
 
               const totalMesTemp = servicos.reduce((total, obj) => total + obj.valor, 0)
-              console.log('ONDE MORA O PROBLEMA totalMesTemp:', totalMesTemp)
               setTotalServicosMes(totalMesTemp)
               setTotalServicosMesAux(totalMesTemp)
 
@@ -279,7 +275,6 @@ const Dashboard = () => {
               dataHoje = converteData(dataHoje)
               let totalHoje = 0
               servicos.forEach((servico) => {
-                console.log('comparando dia: ', dataHoje, servico.data)
                   if(servico.data === dataHoje){
                       totalHoje += servico.valor
                   }
@@ -288,16 +283,9 @@ const Dashboard = () => {
               if(totalHoje > 0){
                   setTotalServicosHojeAux(totalHoje)
               }
-
         } else {
             console.log('não tem dados')
         }
-
-        console.log('servicosHoje: ', totalServicosHoje)
-        console.log('servicosHojeAux: ', totalServicosHojeAux)
-
-        console.log('servicosMes: ', totalServicosMes)
-        console.log('servicosMesAux: ', totalServicosMesAux)
       }, [servicos])
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -395,7 +383,6 @@ const Dashboard = () => {
           }
           return 0;
         });
-        console.log('sortedArray: ', sortedArray)
         return sortedArray;
       };
 
@@ -461,8 +448,6 @@ const Dashboard = () => {
         if(admVendasAux.length > 0){
             setGraficoVendasAux(carregaGrafico(admVendasAux))
         }
-        console.log('adm VENDAS: ', admVendas)
-        console.log('adm VENDASAUX: ', admVendasAux)
     },[admVendas])
 
     useEffect(()=>{
@@ -537,11 +522,6 @@ const Dashboard = () => {
         }
     },[admServicos])
 
-    useEffect(()=>{
-        console.log('graficoServicos: ', graficoServicos)
-    },[graficoServicos])
-
-    
     function carregaGrafico(array){
         let label = []
         let data = []

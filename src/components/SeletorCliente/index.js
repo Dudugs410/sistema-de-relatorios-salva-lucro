@@ -1,4 +1,5 @@
 import { useState, useEffect, useContext } from "react"
+import Select from 'react-select';
 
 import { AuthContext } from "../../contexts/auth"
 import { ToastContainer } from 'react-toastify'
@@ -32,9 +33,9 @@ const SeletorCliente = () => {
     },[])
 
     useEffect(()=>{
-    const grupoObj = grupos.find(item => item.CODIGOGRUPO === Number(gruSelecionado));
-    let cli = grupoObj ? grupoObj.CLIENTES : []
-    setListaClientes(cli)
+        const grupoObj = grupos.find(item => item.CODIGOGRUPO === Number(gruSelecionado.value));
+        let cli = grupoObj ? grupoObj.CLIENTES : []
+        setListaClientes(cli)
     },[gruSelecionado])
 
     /*useEffect(()=>{
@@ -45,8 +46,6 @@ const SeletorCliente = () => {
     function handleCnpj(e){
         e.preventDefault()
         resetaDashboard()
-        console.log(cliSelecionado)
-        console.log('CNPJ antes: ', cnpj)
         if((cliSelecionado !== cnpj) && (cliSelecionado !== '') && (cliSelecionado !== 'selecione')){
             resetaSomatorios()
             setCnpj(cliSelecionado)
@@ -59,6 +58,36 @@ const SeletorCliente = () => {
             alerta('Selecione um cliente válido')
         }  
     }
+
+    /// React Select
+
+    // grupos
+
+    const listaGrupos = grupos.map((GRU) => ({
+        value: GRU.CODIGOGRUPO,
+        label: GRU.NOMEGRUPO,
+    }));
+    
+    const handleSelectChangeGrupo = (selected) => {
+        setGruSelecionado(selected);
+    };
+
+    const handleSelectChangeCLI = (selected) => {
+        setCliSelecionado(selected ? selected.value : null); // Set cliSelecionado to selected value (CNPJ)
+      };
+
+    // clientes
+
+    const [listaCli, setListaCli] = useState([])
+
+    useEffect(()=>{
+        if((listaClientes.length > 0) && (listaClientes !== undefined)){
+            setListaCli(listaClientes.map((CLI) => ({
+                value: CLI.CNPJ,
+                label: CLI.NOMECLIENTE,
+            })))
+        }
+    },[listaClientes])
 
     return(
         <>
@@ -78,34 +107,41 @@ const SeletorCliente = () => {
             />
             <div className='search-bar-seletor'>
                 <form className={`date-container-seletor ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                    <div className='date-column-seletor'>
-                        <div className='select-card-seletor'>
+                    <div className='cli-container'>
+                        <div className='date-column-seletor'>
+                            <div className='select-card-seletor'>
                             <span>Grupo</span>
-                            <select className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} id='grupo' value={gruSelecionado} onChange={(e) => {setGruSelecionado(e.target.value)}}>
-                                { !gruSelecionado ? <option defaultValue=''>selecione</option> : <option defaultValue='gruSelecionado'>{gruSelecionado.nome}</option>}
-                                {grupos.map((GRU)=>(
-                                    <option key={GRU.CODIGOGRUPO} value={GRU.CODIGOGRUPO} >{GRU.NOMEGRUPO}</option>
-                                ))}
-                            </select>
+                            <Select
+                                options={listaGrupos}
+                                onChange={handleSelectChangeGrupo}
+                                value={listaGrupos.GRUCODIGO}
+                                placeholder="Selecione ou digite para filtrar"
+                            />
+                            </div>
                         </div>
-                    </div>
 
-                    <div  className='date-column-seletor'>
-                        <div className='select-card-seletor'>
+                        <div className='date-column-seletor'>
+                            <div className='select-card-seletor'>
                             <span>Cliente</span>
-                            { listaClientes.length > 0 ?
-                            <select className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} id='cliente' value={cliSelecionado} onChange={(e) => {setCliSelecionado(e.target.value)}}>
-                                <option defaultValue=''>selecione</option>
-                                { listaClientes.map((CLI)=>(
-                                        <option key={CLI.CODIGOCLIENTE} value={CLI.CNPJ}>{CLI.NOMECLIENTE}</option>
-                                    ))}
-                            </select> : 
-                            <select className={`${isDarkTheme === true ? 'dark-theme-disabled' : 'light-theme-disabled'} select-disabled`} disabled>
-                                <option defaultValue=''>Selecione o Cliente / Filial</option>
-                            </select>}
+                            {listaClientes.length > 0 ? (
+                                <Select
+                                className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
+                                options={listaCli}
+                                onChange={handleSelectChangeCLI}
+                                value={listaCli.CNPJ}
+                                placeholder="Selecione o Cliente"
+                                />
+                            ) : (
+                                <Select
+                                className={`${isDarkTheme === true ? 'dark-theme-disabled' : 'light-theme-disabled'} select-disabled`}
+                                options={[]}
+                                isDisabled
+                                placeholder="Selecione o Cliente / Filial"
+                                />
+                            )}
+                            </div>
                         </div>
                     </div>
-
                     <div className="select-btn-seletor">
                         <button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleCnpj} disabled={cliSelecionado === cnpj}>Selecionar</button>
                     </div>
