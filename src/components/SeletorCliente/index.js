@@ -26,6 +26,7 @@ const SeletorCliente = () => {
     } = useContext(AuthContext)
 
     const [cliSelecionado, setCliSelecionado] = useState('')
+    const [selectedCliLabel, setSelectedCliLabel] = useState('Selecione');
 
     useEffect(()=>{
         setCnpj(sessionStorage.getItem('cnpj'))
@@ -36,6 +37,8 @@ const SeletorCliente = () => {
         const grupoObj = grupos.find(item => item.CODIGOGRUPO === Number(gruSelecionado.value));
         let cli = grupoObj ? grupoObj.CLIENTES : []
         setListaClientes(cli)
+        setListaCli([])
+        setSelectedCliLabel('Selecione');
     },[gruSelecionado])
 
     /*useEffect(()=>{
@@ -67,6 +70,22 @@ const SeletorCliente = () => {
         value: GRU.CODIGOGRUPO,
         label: GRU.NOMEGRUPO,
     }));
+
+    const [gruposFiltrado, setGruposFiltrado] = useState([]);
+
+    useEffect(() => {
+        if (grupos && grupos.length > 0) {
+            const sortedOptions = grupos
+                .map((GRU) => ({
+                    value: GRU.CODIGOGRUPO,
+                    label: GRU.NOMEGRUPO,
+                }))
+                .sort((a, b) => a.label.localeCompare(b.label)); // Sort options alphabetically by label
+            setGruposFiltrado(sortedOptions);
+        } else {
+            setGruposFiltrado([]);
+        }
+    }, [grupos]);
     
     const handleSelectChangeGrupo = (selected) => {
         setGruSelecionado(selected);
@@ -78,16 +97,21 @@ const SeletorCliente = () => {
 
     // clientes
 
-    const [listaCli, setListaCli] = useState([])
+    const [listaCli, setListaCli] = useState([]);
 
-    useEffect(()=>{
-        if((listaClientes.length > 0) && (listaClientes !== undefined)){
-            setListaCli(listaClientes.map((CLI) => ({
-                value: CLI.CNPJ,
-                label: CLI.NOMECLIENTE,
-            })))
+    useEffect(() => {
+        if (listaClientes && listaClientes.length > 0) {
+            const sortedOptions = listaClientes
+                .map((CLI) => ({
+                    value: CLI.CNPJ,
+                    label: CLI.NOMECLIENTE,
+                }))
+                .sort((a, b) => a.label.localeCompare(b.label)); // Sort options alphabetically by label
+            setListaCli(sortedOptions);
+        } else {
+            setListaCli([]);
         }
-    },[listaClientes])
+    }, [listaClientes]);
 
     return(
         <>
@@ -112,9 +136,9 @@ const SeletorCliente = () => {
                             <div className='select-card-seletor'>
                             <span>Grupo</span>
                             <Select
-                                options={listaGrupos}
+                                options={gruposFiltrado}
                                 onChange={handleSelectChangeGrupo}
-                                value={listaGrupos.GRUCODIGO}
+                                value={gruposFiltrado.value}
                                 placeholder="Selecione ou digite para filtrar"
                             />
                             </div>
@@ -130,6 +154,8 @@ const SeletorCliente = () => {
                                 onChange={handleSelectChangeCLI}
                                 value={listaCli.CNPJ}
                                 placeholder="Selecione o Cliente"
+                                defaultValue={selectedCliLabel}
+                                key={gruSelecionado ? gruSelecionado.value : 'default'}
                                 />
                             ) : (
                                 <Select
@@ -137,6 +163,7 @@ const SeletorCliente = () => {
                                 options={[]}
                                 isDisabled
                                 placeholder="Selecione o Cliente / Filial"
+                                key={gruSelecionado ? gruSelecionado.value : 'default'}
                                 />
                             )}
                             </div>
