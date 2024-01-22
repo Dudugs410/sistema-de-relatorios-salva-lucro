@@ -983,18 +983,26 @@ function gerarDados(array){
   }
 
   async function loadDashboard(){
+    console.log(Cookies.get('cnpj'))
     let params = {
-      usuario: JSON.parse(Cookies.get('cliCodigo')),
-      cnpj: JSON.parse(Cookies.get('cnpj'))
+      cnpj: cnpj
+    }
+    let config = {
+      headers: {
+        'Content-Type': 'application/json', 
+        'Authorization': `Bearer ${Cookies.get('token')}`
+      },
+      params: params
     }
     try{
       const response = await api.get('dashboard', config)
-      return response;
+      console.log('- loadDashboard RESPONSE.DATA -')
+      console.log(response.data)
+      return response.data;
     } catch (error) {
       setLoading(false)
       console.log(error)
     }
-
   }
   
 
@@ -1109,6 +1117,7 @@ function gerarDados(array){
         setTotalServicosMesAux,
         graficoServicosAux,
         setGraficoServicosAux,
+        loadDashboard,
       }}
     >
       {children}
