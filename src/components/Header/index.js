@@ -158,11 +158,6 @@ const Header = () =>{
                                         </Link>
                                     </li>
                                 ))}
-                                <Link to={'/antecipacoes'}>
-                                    <button className={`li-button-content ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                                        <span className="li-btn-text">ANTECIPAÇÕES &nbsp;&nbsp;&nbsp;</span>
-                                    </button>
-                                </Link>
                             </ul>
                             <div className="toggle-container">
                                 <label className="switch" >
