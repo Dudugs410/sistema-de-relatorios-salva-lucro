@@ -16,13 +16,7 @@ const Login = () => {
         submitLogin,
         loading,
         isSignedIn, 
-        accessToken, 
         setAccessToken, 
-        submitFake,
-        alerta,
-        showErrorMessage,
-        setShowErrorMessage,
-        isDarkTheme,
         setIsDarkTheme,
     } = useContext(AuthContext)
     const navigate = useNavigate()

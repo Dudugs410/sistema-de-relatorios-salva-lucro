@@ -60,6 +60,7 @@ const Dashboard = () => {
         setTotalServicosHojeAux,
         totalServicosMesAux,
         setTotalServicosMesAux,
+        loadDashboard,
     } = useContext(AuthContext)
 
     useEffect(()=>{
@@ -111,10 +112,6 @@ const Dashboard = () => {
         }
     },[])
 
-    async function loadDashboard(){
-        
-    }
-
     async function inicializaVendas4dias(){
         let vendaDataInicial = new Date()
         let vendaDataFinal = new Date()
@@ -142,7 +139,7 @@ const Dashboard = () => {
           paramDiasBusca.push({
             dataInicial: `${anoAtual}-${mesAtual}-${day}`,
             dataFinal: `${anoAtual}-${mesAtual}-${day}`,
-            cnpj: cnpj, // Assuming cnpj is defined somewhere in your code
+            cnpj: cnpj,
           });
         }
       
@@ -154,7 +151,7 @@ const Dashboard = () => {
       
           const vendasPromises = await Promise.all(carregaVendasMes);
       
-          vendasTemp = vendasPromises.filter((vendas) => vendas); // Filter out undefined values
+          vendasTemp = vendasPromises.filter((vendas) => vendas);
         } catch (error) {
           console.error('Error fetching vendas:', error);
         } finally {
@@ -191,7 +188,7 @@ const Dashboard = () => {
           paramDiasBusca.push({
             dataInicial: `${anoAtual}-${mesAtual}-${day}`,
             dataFinal: `${anoAtual}-${mesAtual}-${day}`,
-            cnpj: cnpj, // Assuming cnpj is defined somewhere in your code
+            cnpj: cnpj,
           });
         }
       
@@ -201,13 +198,11 @@ const Dashboard = () => {
           );
       
           const creditosPromises = await Promise.all(carregaCreditosMes);
-          creditosTemp = creditosPromises.filter((creditos) => creditos); // Filter out undefined values
+          creditosTemp = creditosPromises.filter((creditos) => creditos); 
         } catch (error) {
-          // Handle error if any of the promises fail
           console.error('Error fetching creditos:', error);
         } finally {
-          // Assuming setLoadingDash is the state updater for loadingDash
-          setLoadingCreditosDash(false); // Set loading state to false after API calls finish
+          setLoadingCreditosDash(false);
         }
       
         setVetorCreditosMes(creditosTemp);
@@ -526,11 +521,15 @@ const Dashboard = () => {
         let label = []
         let data = []
 
+        console.log('carregaGrafico array: ', array)
+
         array.forEach((posicao) => {
             const valorTotal = posicao.total
             const nomeAdq = posicao.nomeAdquirente
+            let temp = valorTotal.toFixed(2)
             label.push(nomeAdq)
-            data.push(Number(valorTotal.toFixed(2)))
+            console.log(valorTotal)
+            data.push(Number(temp))
         })
         const obj = {labels: label, data: data}
         return obj

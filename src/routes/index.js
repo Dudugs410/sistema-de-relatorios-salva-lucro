@@ -10,9 +10,9 @@ import Recebiveis from "../pages/Creditos";
 import Antecipacoes from "../pages/Antecipacoes";
 import Servicos from "../pages/Servicos";
 import Relatorios from "../pages/Relatorios";
+import DashboardTeste from "../pages/DashboardTeste";
 
 function RoutesApp(){
-
     return(
     <Routes>
         <Route path='/' element = {<Login/>}/>

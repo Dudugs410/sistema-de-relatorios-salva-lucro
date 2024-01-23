@@ -26,6 +26,7 @@ const SeletorCliente = () => {
     } = useContext(AuthContext)
 
     const [cliSelecionado, setCliSelecionado] = useState('')
+    const [selectedCliLabel, setSelectedCliLabel] = useState('Selecione');
 
     useEffect(()=>{
         setCnpj(sessionStorage.getItem('cnpj'))
@@ -36,6 +37,8 @@ const SeletorCliente = () => {
         const grupoObj = grupos.find(item => item.CODIGOGRUPO === Number(gruSelecionado.value));
         let cli = grupoObj ? grupoObj.CLIENTES : []
         setListaClientes(cli)
+        setListaCli([])
+        setSelectedCliLabel('Selecione');
     },[gruSelecionado])
 
     /*useEffect(()=>{
@@ -67,6 +70,22 @@ const SeletorCliente = () => {
         value: GRU.CODIGOGRUPO,
         label: GRU.NOMEGRUPO,
     }));
+
+    const [gruposFiltrado, setGruposFiltrado] = useState([]);
+
+    useEffect(() => {
+        if (grupos && grupos.length > 0) {
+            const sortedOptions = grupos
+                .map((GRU) => ({
+                    value: GRU.CODIGOGRUPO,
+                    label: GRU.NOMEGRUPO,
+                }))
+                .sort((a, b) => a.label.localeCompare(b.label)); // Sort options alphabetically by label
+            setGruposFiltrado(sortedOptions);
+        } else {
+            setGruposFiltrado([]);
+        }
+    }, [grupos]);
     
     const handleSelectChangeGrupo = (selected) => {
         setGruSelecionado(selected);
@@ -78,77 +97,84 @@ const SeletorCliente = () => {
 
     // clientes
 
-    const [listaCli, setListaCli] = useState([])
+    const [listaCli, setListaCli] = useState([]);
 
-    useEffect(()=>{
-        if((listaClientes.length > 0) && (listaClientes !== undefined)){
-            setListaCli(listaClientes.map((CLI) => ({
-                value: CLI.CNPJ,
-                label: CLI.NOMECLIENTE,
-            })))
+    useEffect(() => {
+        if (listaClientes && listaClientes.length > 0) {
+            const sortedOptions = listaClientes
+                .map((CLI) => ({
+                    value: CLI.CNPJ,
+                    label: CLI.NOMECLIENTE,
+                }))
+                .sort((a, b) => a.label.localeCompare(b.label)); // Sort options alphabetically by label
+            setListaCli(sortedOptions);
+        } else {
+            setListaCli([]);
         }
-    },[listaClientes])
+    }, [listaClientes]);
 
     return(
         <>
-        { grupos === null ? <></> : 
-        <>
-            <ToastContainer
-                position="top-center"
-                autoClose={5000}
-                hideProgressBar
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="light"
-            />
-            <div className='search-bar-seletor'>
-                <form className={`date-container-seletor ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                    <div className='cli-container'>
-                        <div className='date-column-seletor'>
-                            <div className='select-card-seletor'>
-                            <span>Grupo</span>
-                            <Select
-                                options={listaGrupos}
-                                onChange={handleSelectChangeGrupo}
-                                value={listaGrupos.GRUCODIGO}
-                                placeholder="Selecione ou digite para filtrar"
-                            />
+            { grupos === null ? <></> : 
+                <>
+                    <ToastContainer
+                        position="top-center"
+                        autoClose={5000}
+                        hideProgressBar
+                        newestOnTop={false}
+                        closeOnClick
+                        rtl={false}
+                        pauseOnFocusLoss
+                        draggable
+                        pauseOnHover
+                        theme="light"
+                    />
+                    <div className='search-bar-seletor'>
+                        <form className={`date-container-seletor ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                            <div className='cli-container'>
+                                <div className='date-column-seletor'>
+                                    <div className='select-card-seletor'>
+                                    <span>Grupo</span>
+                                    <Select
+                                        options={gruposFiltrado}
+                                        onChange={handleSelectChangeGrupo}
+                                        value={gruposFiltrado.value}
+                                        placeholder="Selecione ou digite para filtrar"
+                                    />
+                                    </div>
+                                </div>
+                                <div className='date-column-seletor'>
+                                    <div className='select-card-seletor'>
+                                    <span>Cliente</span>
+                                    {listaClientes.length > 0 ? (
+                                        <Select
+                                        className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
+                                        options={listaCli}
+                                        onChange={handleSelectChangeCLI}
+                                        value={listaCli.CNPJ}
+                                        placeholder="Selecione o Cliente"
+                                        defaultValue={selectedCliLabel}
+                                        key={gruSelecionado ? gruSelecionado.value : 'default'}
+                                        />
+                                    ) : (
+                                        <Select
+                                        className={`${isDarkTheme === true ? 'dark-theme-disabled' : 'light-theme-disabled'} select-disabled`}
+                                        options={[]}
+                                        isDisabled
+                                        placeholder="Selecione o Cliente / Filial"
+                                        key={gruSelecionado ? gruSelecionado.value : 'default'}
+                                        />
+                                    )}
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-
-                        <div className='date-column-seletor'>
-                            <div className='select-card-seletor'>
-                            <span>Cliente</span>
-                            {listaClientes.length > 0 ? (
-                                <Select
-                                className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
-                                options={listaCli}
-                                onChange={handleSelectChangeCLI}
-                                value={listaCli.CNPJ}
-                                placeholder="Selecione o Cliente"
-                                />
-                            ) : (
-                                <Select
-                                className={`${isDarkTheme === true ? 'dark-theme-disabled' : 'light-theme-disabled'} select-disabled`}
-                                options={[]}
-                                isDisabled
-                                placeholder="Selecione o Cliente / Filial"
-                                />
-                            )}
+                            <div className="select-btn-seletor">
+                                <button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleCnpj} disabled={cliSelecionado === cnpj}>Selecionar</button>
                             </div>
-                        </div>
+                        </form>
                     </div>
-                    <div className="select-btn-seletor">
-                        <button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleCnpj} disabled={cliSelecionado === cnpj}>Selecionar</button>
-                    </div>
-                </form>
-            </div>
-        </>
-        }
+                </>
+            }
         </>
     )
 }
