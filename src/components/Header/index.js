@@ -140,30 +140,31 @@ const Header = () =>{
                             <span className='client-name'>{`${nome}`}</span>
                         </div>              
                     </div>
-                    <div className='btn-container'>
-                        <button type='button' className='btn-exit' onClick={logout}><FiPower color="#000000" size={24}/></button>
-                    </div>
+                    <div className="toggle-container px-3">
+                                <label className="switch" >
+                                    <input type="checkbox" id="toggleButton" checked={isChecked} onChange={handleCheckboxChange}/>
+                                    <span className="slider"><FiMoon/><FiSun/></span>
+                                </label>
+                            </div>
+                    
                 </div>
                 <div className='header-content'>
                     <div className={`barra-header ${isDarkTheme ? 'dark-theme' : 'light-theme' }`}>
-                        <div className="li-container">
+                        <div className="li-container px-3">
                             <ul className={`navbar-nav ${isDarkTheme ? 'dark-theme' : 'light-theme' }`}>
                                 {optionsWithIcons.length > 0 && optionsWithIcons.map((opcao) => (
                                     <li className="nav-item" key={opcao.id}>
                                         <Link to={opcao.rota} className="nav-hover nav-text nav-link active text-shadow" aria-current="page">
                                             <button className={`li-button-content ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                                                <span className="li-btn-text">{opcao.nome} &nbsp;&nbsp;&nbsp;</span>
                                                 {opcao.icone && React.createElement(opcao.icone)}
+                                                <span className="ms-1 me-3 li-btn-text ">{opcao.nome}</span>
                                             </button>
                                         </Link>
                                     </li>
                                 ))}
                             </ul>
-                            <div className="toggle-container">
-                                <label className="switch" >
-                                    <input type="checkbox" id="toggleButton" checked={isChecked} onChange={handleCheckboxChange}/>
-                                    <span className="slider"><FiMoon/><FiSun/></span>
-                                </label>
+                            <div className='btn-container '>
+                                <button type='button' className='btn-exit' onClick={logout}><FiPower color="#FFFFFF"/></button>
                             </div>
                         </div>
                     </div>

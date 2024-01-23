@@ -95,12 +95,12 @@ a.nav-text{
 .btn-exit{
     text-align: center;
     align-self: start;
-    background-color: red;
-    border-radius: 6px;
-    border: solid white 2px;
-    margin-top: 2px;
-    margin-right: 2px;
-    z-index: 9;
+    // background-color: red;
+    // border-radius: 6px;
+    // border: solid white 2px;
+    // margin-top: 2px;
+    // margin-right: 2px;
+    // z-index: 9;
 }
 
 .nav-item{
@@ -189,7 +189,7 @@ a.nav-text{
     position: relative;
     display: inline-block;
     width: 60px;
-    height: 34px;
+    height: 24px;
   }
   
   .switch input {
@@ -205,7 +205,7 @@ a.nav-text{
     bottom: 0;
     background-color: #ccc;
     transition: 0.4s;
-    border-radius: 34px;
+    border-radius: 24px;
     display: flex;
     flex-direction: row;
     align-content: center;
@@ -216,9 +216,9 @@ a.nav-text{
   .slider:before {
     position: absolute;
     content: "";
-    height: 26px;
-    width: 26px;
-    left: 4px;
+    height: 16px;
+    width: 16px;
+    left: 6px;
     bottom: 4px;
     background-color: white;
     transition: 0.4s;
@@ -226,11 +226,11 @@ a.nav-text{
   }
   
   input:checked + .slider {
-    background-color: #2196F3;
+    background-color: #35495a;
   }
   
   input:checked + .slider:before {
-    transform: translateX(26px);
+    transform: translateX(31px);
   }
 
   .nav-link{
