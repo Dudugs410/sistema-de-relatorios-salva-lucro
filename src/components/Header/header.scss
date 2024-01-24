@@ -3,10 +3,10 @@
 .header-bg-image{
     display: inline-table;
     width: 100%;
-    height: 74.77px;
+    height: 74.77px; 
     background-image: url("../../assets/financ.jpg");
-    background-size: cover;
     background-repeat: no-repeat;
+    background-size: cover;
 }
 
 .header-bg{
@@ -14,10 +14,17 @@
     color:white;
     font-weight: bold;
     display: flex;
-    height: 74.77px;
-    background-size: cover;
+    // height: 74.77px; subs por proporcional
+    height: 5em;
+    // background-size: cover; sem efeito
     background-repeat: no-repeat;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-blend-mode: multiply;
+    &.light-theme{
+        background-color: #0a3d70e7;
+    }
+    &.dark-theme{
+        background-color: #231f20f1;
+    }
 }
 
 .barra-header{
@@ -58,9 +65,9 @@
     
 }
 
-.nav-text{
-    margin-left: 20px;
-}
+// .nav-text{ 
+//     margin-left: 20px; sem efeito
+// }
 
 .navbar-customer-wrapper{
     display: flex;
@@ -88,20 +95,20 @@
     justify-content: space-around;
 }
 
-a.nav-text{
-    margin: 0;
-}
+// a.nav-text{
+//     margin: 0; sem efeito
+// }
 
-.btn-exit{
-    text-align: center;
-    align-self: start;
-    // background-color: red;
-    // border-radius: 6px;
-    // border: solid white 2px;
-    // margin-top: 2px;
-    // margin-right: 2px;
-    // z-index: 9;
-}
+// .btn-exit{
+//     text-align: center;
+//     align-self: start;
+//     background-color: red;
+//     border-radius: 6px;
+//     border: solid white 2px;
+//     margin-top: 2px;
+//     margin-right: 2px;
+//     z-index: 9;
+// }
 
 .nav-item{
     width: fit-content;
@@ -111,9 +118,9 @@ a.nav-text{
     justify-content: center;
 }
 
-.nav-item:not(:first-child){
-    margin-left: 0;
-}
+// .nav-item:not(:first-child){
+//     margin-left: 0; sem efeito
+// }
 
 .navbar-nav{
     display: inline-flex;
@@ -130,7 +137,7 @@ a.nav-text{
     }
 }
 
-.btn-container{
+.btn-container{ // ??
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -162,6 +169,7 @@ a.nav-text{
 }
 
 .li-button-content:hover{
+    border-radius: 8px 0;
     &.light-theme{
         color: $primary-color-light;
         background-color: $secondary-color-light;
@@ -175,9 +183,9 @@ a.nav-text{
     transition: all, 0.4s;
 }
 
-.nav-item>a{
-    height: 100%;
-}
+// .nav-item>a{
+//     height: 100%;
+// }
 
 .toggle-container {
     display: flex;
@@ -233,9 +241,9 @@ a.nav-text{
     transform: translateX(31px);
   }
 
-  .nav-link{
-    padding: 0px !important;
-  }
+//   .nav-link{
+//     padding: 0px !important;
+//   }
 
 
 @media screen and (max-width: 869px){

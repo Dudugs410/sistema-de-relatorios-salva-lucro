@@ -127,44 +127,52 @@ const Header = () =>{
     return(
         <>
             <div className="header-bg-image">
-                <div className='header-bg'>
+                <div className={`header-bg ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                     <div className='navbar-title'>
                         <img className='img-header' src={salvaLucroLogoBranco} alt='logo salva lucro'/>
                     </div>
                     <div className='navbar-customer-wrapper'>
-                        <div className='navbar-customer'>
-                            <span>{`${nomeCliente}`}</span>
+                        <div className='navbar-customer w-50'>
+                            <span className="d-inline-block text-truncate">{`${nomeCliente}`}</span>
                             <span>{`${headerCnpj}`}</span>
                         </div>
                         <div className='navbar-customer'>
                             <span className='client-name'>{`${nome}`}</span>
                         </div>              
                     </div>
-                    <div className="toggle-container px-3">
-                                <label className="switch" >
-                                    <input type="checkbox" id="toggleButton" checked={isChecked} onChange={handleCheckboxChange}/>
-                                    <span className="slider"><FiMoon/><FiSun/></span>
-                                </label>
-                            </div>
+                    <div className='btn-container'>
+                        <button type='button' className='btn btn-outline-danger' onClick={logout}><FiPower color="#dc3545" size={24}/></button>
+                    </div>
+            {/* 
+                TODO 
+                - posição do botao de sair 
+                - posição do botao de sair no mobile
+                - icone de sair vermelho? dá muita atenção pro botao de sair, talvez alterar pra um hover 
+                - 
+            */}
                     
+
                 </div>
                 <div className='header-content'>
                     <div className={`barra-header ${isDarkTheme ? 'dark-theme' : 'light-theme' }`}>
                         <div className="li-container px-3">
-                            <ul className={`navbar-nav ${isDarkTheme ? 'dark-theme' : 'light-theme' }`}>
+                            <ul className={`navbar-nav ml-auto ${isDarkTheme ? 'dark-theme' : 'light-theme' }`}>
                                 {optionsWithIcons.length > 0 && optionsWithIcons.map((opcao) => (
                                     <li className="nav-item" key={opcao.id}>
-                                        <Link to={opcao.rota} className="nav-hover nav-text nav-link active text-shadow" aria-current="page">
-                                            <button className={`li-button-content ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                                        <Link to={opcao.rota} className="nav-hover active text-shadow" aria-current="page"> {/* nav-text */}
+                                            <button className={`px-2 me-1 li-button-content ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                                                 {opcao.icone && React.createElement(opcao.icone)}
-                                                <span className="ms-1 me-3 li-btn-text ">{opcao.nome}</span>
+                                                <span className="ms-1 mt-2 mb-auto li-btn-text">{opcao.nome}</span>
                                             </button>
                                         </Link>
                                     </li>
                                 ))}
                             </ul>
-                            <div className='btn-container '>
-                                <button type='button' className='btn-exit' onClick={logout}><FiPower color="#FFFFFF"/></button>
+                            <div className="toggle-container me-1">
+                                <label className="switch" >
+                                    <input type="checkbox" id="toggleButton" checked={isChecked} onChange={handleCheckboxChange}/>
+                                    <span className="slider"><FiMoon/><FiSun/></span>
+                                </label>
                             </div>
                         </div>
                     </div>
