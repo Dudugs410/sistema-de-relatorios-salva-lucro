@@ -54,13 +54,15 @@ const SeletorCliente = () => {
         e.preventDefault()
         console.log('handleCnpj SeletorCliente')
         console.log('cliSelecionado: ', ' -> ', cliSelecionado, '||', 'cnpj: ', ' -> ', cnpj, )
+        if((cliSelecionado === '') || (cliSelecionado ==='selecione')){
+            alerta('Selecione um cliente válido')
+            Cookies.set('cnpj', '')
+            setCnpj('')
+            return
+        }
         resetaDashboard()
         if(podeBuscar){
             console.log('HANDLECNPJ -> entrou no IF')
-            if((cliSelecionado === '') || (cliSelecionado ==='selecione')){
-                alerta('Selecione um cliente válido')
-                return
-            }
             resetaSomatorios()
             setCnpj(cliSelecionado)
             setInicializouAux(false)
@@ -98,11 +100,20 @@ const SeletorCliente = () => {
     }, [grupos]);
     
     const handleSelectChangeGrupo = (selected) => {
-        console.log(selected)
-        setGruSelecionado(selected)
-        setCliSelecionado('')
-        sessionStorage.setItem('codigoGrupo',Cookies.set('codigoGrupo', selected.value))
-        Cookies.set('codigoGrupo', selected.value)
+        console.log(selected);
+
+        // Set value in sessionStorage
+        sessionStorage.setItem('codigoGrupo', selected.value);
+    
+        // Set value in Cookies
+        Cookies.set('codigoGrupo', selected.value);
+    
+        // Update state with selected value
+        setGruSelecionado(selected);
+        
+        // Additional code if needed
+        setCliSelecionado('');
+        Cookies.set('cnpj', '');
     };
 
     const handleSelectChangeCLI = (selected) => {
