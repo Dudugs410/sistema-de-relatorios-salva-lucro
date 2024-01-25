@@ -74,8 +74,8 @@
     flex-direction: row;
     width: 100%;
     font-size: 0.8em;
-    justify-content: space-around;
-    z-index: 1;
+    justify-content: space-between;
+    // z-index: 1;
     
 }
 
@@ -138,11 +138,14 @@
 }
 
 .btn-container{ // ??
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    align-content: space-between;
+    align-items: center;
+    justify-content: center;
+    margin: auto 0;
+    // display: flex; - sem efeito
+    // flex-direction: row;
+    // flex-wrap: wrap;
+    // justify-content: flex-start;
+    // align-content: space-between;
 }
 
 .li-button-content{
@@ -287,19 +290,22 @@
     
     .navbar-customer-wrapper{
         display: flex;
-        flex-direction: row;
-        width: 100%;
+        flex-wrap: wrap;
+        flex-direction: column; // pro nome cair pra baixo do cnpj
+        width: fit-content;
         font-size: 0.8em;
-        justify-content: space-around;
-        margin-right: 10%;
+        // justify-content: space-around;
+        // margin-right: 10%;
     }
     
     .navbar-customer{
-        display: flex;
-        flex-direction: column;
-        justify-content: space-evenly;
-        text-align: start;
-        margin: 0;
+        flex: 1;
+        flex-basis: 100%;
+        // display: flex;
+        // flex-direction: column;
+        // justify-content: space-evenly;
+        // text-align: start;
+        // margin: 0;
         
     }
     

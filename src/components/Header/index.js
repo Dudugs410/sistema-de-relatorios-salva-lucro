@@ -131,7 +131,7 @@ const Header = () =>{
                     <div className='navbar-title'>
                         <img className='img-header' src={salvaLucroLogoBranco} alt='logo salva lucro'/>
                     </div>
-                    <div className='navbar-customer-wrapper'>
+                    <div className='navbar-customer-wrapper mx-4'>
                         <div className='navbar-customer w-50'>
                             <span className="d-inline-block text-truncate">{`${nomeCliente}`}</span>
                             <span>{`${headerCnpj}`}</span>
@@ -139,10 +139,11 @@ const Header = () =>{
                         <div className='navbar-customer'>
                             <span className='client-name'>{`${nome}`}</span>
                         </div>              
+                    <div className='navbar-customer btn-container'>
+                        <button type='button' className='btn btn-outline-danger px-2 py-1' onClick={logout}>Sair</button> {/* <FiPower color="#dc3545" size={24}/> */}
                     </div>
-                    <div className='btn-container'>
-                        <button type='button' className='btn btn-outline-danger' onClick={logout}><FiPower color="#dc3545" size={24}/></button>
                     </div>
+                </div>
             {/* 
                 TODO 
                 - posição do botao de sair 
@@ -152,11 +153,10 @@ const Header = () =>{
             */}
                     
 
-                </div>
                 <div className='header-content'>
                     <div className={`barra-header ${isDarkTheme ? 'dark-theme' : 'light-theme' }`}>
                         <div className="li-container px-3">
-                            <ul className={`navbar-nav ml-auto ${isDarkTheme ? 'dark-theme' : 'light-theme' }`}>
+                            <ul className={`navbar-nav me-2 ${isDarkTheme ? 'dark-theme' : 'light-theme' }`}>
                                 {optionsWithIcons.length > 0 && optionsWithIcons.map((opcao) => (
                                     <li className="nav-item" key={opcao.id}>
                                         <Link to={opcao.rota} className="nav-hover active text-shadow" aria-current="page"> {/* nav-text */}
