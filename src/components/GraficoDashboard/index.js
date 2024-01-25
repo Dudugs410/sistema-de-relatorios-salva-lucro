@@ -12,9 +12,6 @@ import TabelaGenerica from '../Componente_TabelaGenerica';
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const PieChart = ({ data01, arrayAdm, tipo } ) => {
-  
-  // console.log('GRAFICO: ', arrayAdm)
-  // console.log('data01: ',data01)
 
   const [selectedAdm, setSelectedAdm] = useState(null)
   const [showAdmModal, setShowAdmModal] = useState(false)
@@ -23,14 +20,8 @@ const PieChart = ({ data01, arrayAdm, tipo } ) => {
     if (elements.length > 0) {
       const clickedElementIndex = elements[0].index;
       const selectedAdmData = arrayAdm[clickedElementIndex];
-  
-      console.log('CLICADO: ', arrayAdm[clickedElementIndex])
-
-      console.log('Clicked Index: ', clickedElementIndex);
-      console.log('Clicked Data: ', arrayAdm[clickedElementIndex]);
 
       setSelectedAdm(selectedAdmData);
-      console.log('selectedAdmData: ',selectedAdmData)
       setShowAdmModal(true);
     }
   }, [arrayAdm]);
@@ -115,7 +106,6 @@ const PieChart = ({ data01, arrayAdm, tipo } ) => {
   }
 
   const chartData = useMemo(() => {
-    console.log(data01.data);
     return {
       labels: data01.labels.slice(),
       datasets: [

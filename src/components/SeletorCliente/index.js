@@ -23,10 +23,14 @@ const SeletorCliente = () => {
         setCnpj, 
         setInicializouAux,
         resetaDashboard,
+        buscou,
+        setBuscou,
     } = useContext(AuthContext)
 
     const [cliSelecionado, setCliSelecionado] = useState('')
     const [selectedCliLabel, setSelectedCliLabel] = useState('Selecione');
+    const [codigoGrupo, setCodigoGrupo] = useState('')
+    const [podeBuscar, setPodeBuscar] = useState(true)
 
     useEffect(()=>{
         setCnpj(sessionStorage.getItem('cnpj'))
@@ -48,18 +52,24 @@ const SeletorCliente = () => {
 
     function handleCnpj(e){
         e.preventDefault()
+        console.log('handleCnpj SeletorCliente')
+        console.log('cliSelecionado: ', ' -> ', cliSelecionado, '||', 'cnpj: ', ' -> ', cnpj, )
         resetaDashboard()
-        if((cliSelecionado !== cnpj) && (cliSelecionado !== '') && (cliSelecionado !== 'selecione')){
+        if(podeBuscar){
+            console.log('HANDLECNPJ -> entrou no IF')
+            if((cliSelecionado === '') || (cliSelecionado ==='selecione')){
+                alerta('Selecione um cliente válido')
+                return
+            }
             resetaSomatorios()
             setCnpj(cliSelecionado)
             setInicializouAux(false)
             sessionStorage.setItem('inicializou', false)
             sessionStorage.setItem('codigoGrupo', gruSelecionado)
             Cookies.set('cnpj', cliSelecionado)
-        } 
-        else if((cliSelecionado === '') || (cliSelecionado ==='selecione')){
-            alerta('Selecione um cliente válido')
-        }  
+            setCodigoGrupo(gruSelecionado.value)
+            setBuscou(true)
+        }   
     }
 
     /// React Select
@@ -88,7 +98,11 @@ const SeletorCliente = () => {
     }, [grupos]);
     
     const handleSelectChangeGrupo = (selected) => {
-        setGruSelecionado(selected);
+        console.log(selected)
+        setGruSelecionado(selected)
+        setCliSelecionado('')
+        sessionStorage.setItem('codigoGrupo',Cookies.set('codigoGrupo', selected.value))
+        Cookies.set('codigoGrupo', selected.value)
     };
 
     const handleSelectChangeCLI = (selected) => {
@@ -107,11 +121,31 @@ const SeletorCliente = () => {
                     label: CLI.NOMECLIENTE,
                 }))
                 .sort((a, b) => a.label.localeCompare(b.label)); // Sort options alphabetically by label
+                let todos = {value: 'todos', label: 'TODOS'}
+                sortedOptions.unshift(todos)
             setListaCli(sortedOptions);
         } else {
             setListaCli([]);
         }
     }, [listaClientes]);
+
+    useEffect(()=>{
+        console.log('cliSelecionado: ', cliSelecionado, 'CNPJ: ', cnpj)
+        console.log('gruSelecionado: ', gruSelecionado.value, 'CODIGOGRUPO: ', codigoGrupo)
+        if((cliSelecionado === cnpj) && (gruSelecionado.value === codigoGrupo)){
+            console.log('tudo igual')
+            setPodeBuscar(false)
+            setBuscou(true)
+        } else {
+            console.log('diferentões')
+            setPodeBuscar(true)
+            setBuscou(false)
+        }
+    },[cliSelecionado, cnpj, codigoGrupo, gruSelecionado])
+
+    useEffect(()=>{
+        console.log('PODEBUSCAR?? ', podeBuscar)
+    },[podeBuscar])
 
     return(
         <>
@@ -169,7 +203,7 @@ const SeletorCliente = () => {
                                 </div>
                             </div>
                             <div className="select-btn-seletor">
-                                <button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleCnpj} disabled={cliSelecionado === cnpj}>Selecionar</button>
+                                <button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleCnpj} disabled={!podeBuscar}>Selecionar</button>
                             </div>
                         </form>
                     </div>

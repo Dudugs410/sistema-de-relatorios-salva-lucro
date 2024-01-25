@@ -25,6 +25,8 @@ function AuthProvider({ children }){
   const [dataInicial, setDataInicial] = useState(new Date())
   const [dataFinal, setDataFinal] = useState(new Date())
   const [cnpj, setCnpj] = useState('')
+
+  const [podeBuscar, setPodeBuscar] = useState(true)
   
   const [vendas, setVendas] = useState([])
   const [creditos, setCreditos] = useState([])
@@ -408,78 +410,60 @@ function AuthProvider({ children }){
 
     // retorna as vendas da data e cliente específicos.
 
-    async function loadVendas(dataInicial, cnpj, adquirente, bandeira){
-        if(cnpj === null){
-          alerta('erro ao ler o cnpj do cliente selecionado. Tente atualizar a página e selecionar o cliente desejado novamente.')
-          return
-        }
-  
+    async function loadVendas(dataInicial, cnpj){
         if((dataInicial === '' || undefined) || (cnpj === '' || undefined)){
           alert('Favor selecionar uma data e cliente válidos')
           return 0
         }
-  
         setLoading(true)
-        let params = {}
+        try {
+          if(cnpj === 'todos'){
+            let params = {
+            data: dataInicial,
+            codigoGrupo: Cookies.get('codigoGrupo')
+            }
+          
+            let config = {
+              headers: { 
+                'Content-Type': 'application/json', 
+                'Authorization': `Bearer ${Cookies.get('token')}`
+              },
+              params: params
+            }
   
-        if(((adquirente !== '') && (bandeira !== '')) && (buscou === false)){
-            params = {
-            dataInicial: dataInicial,
-            datafinal: dataInicial,
-            cnpj: Cookies.get('cnpj').replace(/[^a-zA-Z0-9 ]/g, ''),
-            adquirente: adquirente,
-            bandeira: bandeira,
-          }
-          setBuscou(true)
-        }
-  
-        else if(((adquirente !== '') && (bandeira === '')) && (buscou === false)){
-              params = {
-              datainicial: dataInicial,
-              datafinal: dataInicial,
-              cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-              adquirente: adquirente,
-          }
-          setBuscou(true)
-        }
-  
-        else if(((bandeira !== '') && (adquirente === '')) && (buscou === false)){
-          params = {
-          datainicial: dataInicial,
-          datafinal: dataInicial,
-          cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-          bandeira: bandeira,
-          }
-          setBuscou(true)
-        }
-  
-        else{
-          params = {
-          datainicial: dataInicial,
-          datafinal: dataInicial,
-          cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-          }
-        }
-        
-          let config = {
-            headers: { 
-              'Content-Type': 'application/json', 
-              'Authorization': `Bearer ${Cookies.get('token')}`
-            },
-            params: params
-          }
-  
-        await api.get('vendas', config)
+            await api.get('vendas', config)
             .then((response) => {
               setVendas(response.data.VENDAS)
               setLoading(false)
               setBuscou(false)
               return response.data.VENDAS
             })
-            .catch((error) => {
-            setLoading(false)
-            console.log(error)
+          } else { 
+            let params = {
+            data: dataInicial,
+            cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+            }
+          
+            let config = {
+              headers: { 
+                'Content-Type': 'application/json', 
+                'Authorization': `Bearer ${Cookies.get('token')}`
+              },
+              params: params
+            }
+
+            await api.get('vendas', config)
+            .then((response) => {
+              setVendas(response.data.VENDAS)
+              setLoading(false)
+              setBuscou(false)
+              return response.data.VENDAS
             })
+          }
+        } catch (error) {
+          setLoading(false)
+          console.log(error)
+        }
     }
 
     //Consulta de vendas, com intervalo de datas
@@ -519,32 +503,55 @@ function AuthProvider({ children }){
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   async function loadCreditos(cnpj, dataInicial, dataFinal) {
-   
       setLoading(true);
-  
-      const sanitizedCnpj = cnpj.replace(/[^a-zA-Z0-9 ]/g, '');
-  
-      const params = {
-        cnpj: sanitizedCnpj,
-        dataInicial: dataInicial,
-        dataFinal: dataFinal,
-      };
-  
-      const config = {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${Cookies.get('token')}`,
-        },
-        params,
-      };
-  
+
       try {
-        const response = await api.get('recebimentos', config);
-        const recebimentosData = response.data;
-  
-        setCreditos(recebimentosData);
-        setRecebimentosDash(recebimentosData);
-        setLoading(false);
+        if(cnpj === 'todos'){
+          const params = {
+            dataInicial: dataInicial,
+            dataFinal: dataFinal,
+            codigoGrupo: Cookies.get('codigoGrupo')
+          };
+      
+          const config = {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${Cookies.get('token')}`,
+            },
+            params,
+          };
+
+          const response = await api.get('recebimentos', config);
+          const recebimentosData = response.data;
+
+          setCreditos(recebimentosData);
+          setRecebimentosDash(recebimentosData);
+          setLoading(false);
+          return
+
+        } else {
+          const params = {
+            cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+            dataInicial: dataInicial,
+            dataFinal: dataFinal,
+          };
+      
+          const config = {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${Cookies.get('token')}`,
+            },
+            params,
+          };
+
+          const response = await api.get('recebimentos', config);
+          const recebimentosData = response.data;
+    
+          setCreditos(recebimentosData);
+          setRecebimentosDash(recebimentosData);
+          setLoading(false);
+          return
+        }
       } catch (error) {
         console.error('Error loading creditos:', error);
         setLoading(false);
@@ -659,29 +666,47 @@ async function retornaRecebimentos(cnpj, datainicial, datafinal){
     //Ajustes
 
     async function loadAjustes(cnpj, dataInicial, dataFinal){
-        setLoading(true)
-
-        console.log(cnpj, dateConvertSearch(dataInicial))
-
-      let params = {
-        cnpj: cnpj,
-        dataInicial: dateConvertSearch(dataInicial),
-        dataFinal: dateConvertSearch(dataFinal)
-      }
-
-      let config = {
-        headers: { 
-          'Content-Type': 'application/json', 
-          'Authorization': `Bearer ${Cookies.get('token')}`
-        },
-        params: params
-      }
-
+      setLoading(true)
       try {
-        const response = await api.get('/ajustes', config)
-        const recebimentosData = response.data
-        setLoading(false)
-          return recebimentosData
+        if(cnpj === 'todos'){
+          let params = {
+            dataInicial: dateConvertSearch(dataInicial),
+            dataFinal: dateConvertSearch(dataFinal),
+            codigoGrupo: Cookies.get('codigoGrupo')
+          }
+    
+          let config = {
+            headers: { 
+              'Content-Type': 'application/json', 
+              'Authorization': `Bearer ${Cookies.get('token')}`
+            },
+            params: params
+          }
+
+          const response = await api.get('/ajustes', config)
+          const recebimentosData = response.data
+          setLoading(false)
+            return recebimentosData
+
+        } else {
+          let params = {
+            cnpj: cnpj,
+            dataInicial: dateConvertSearch(dataInicial),
+            dataFinal: dateConvertSearch(dataFinal)
+          }
+    
+          let config = {
+            headers: { 
+              'Content-Type': 'application/json', 
+              'Authorization': `Bearer ${Cookies.get('token')}`
+            },
+            params: params
+          }
+          const response = await api.get('/ajustes', config)
+          const recebimentosData = response.data
+          setLoading(false)
+            return recebimentosData
+        }
       } catch (error) {
         console.log(error)
         setLoading(false)
@@ -740,15 +765,75 @@ function converteData(data){
   return `${ano}-${mes}-${dia}`
 }
 
-async function returnVendas(datainicial, datafinal, cnpj, adquirente, bandeira) {
+async function returnVendas(datainicial, cnpj) {
     try {
       setLoading(true);
+
+      if(cnpj === 'todos'){
+        let params = {
+          data: datainicial,
+          codigoGrupo: Cookies.get('codigoGrupo')
+        };
+  
+        let config = {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${Cookies.get('token')}`
+          },
+          params: params
+        }
+
+        const response = await api.get('vendas', config)
+        setLoading(false)
+        setBuscou(false)
+        if(response.data.VENDAS === null){
+          alert(`${response.data.MENSAGEM}`)
+          logout()
+          return
+        }
+        return response.data.VENDAS
+
+      } else {
+        let params = {
+          data: datainicial,
+          cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+        };
+  
+        let config = {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${Cookies.get('token')}`
+          },
+          params: params
+        }
+        const response = await api.get('vendas', config)
+        setLoading(false)
+        setBuscou(false)
+        if(response.data.VENDAS === null){
+          alert(`${response.data.MENSAGEM}`)
+          logout()
+          return
+        }
+        return response.data.VENDAS
+      }
+    } catch (error) {
+      console.error('Error fetching vendas:', error)
+      setShowErrorMessage(true)
+      setLoading(false)
+      logout()
+      return []
+    }
+}
+
+async function returnVendasPorPeriodo(datainicial, dataFinal, cnpj) {
+  try {
+    setLoading(true);
+
+    if(cnpj === 'todos'){
       let params = {
         datainicial: datainicial,
-        datafinal: datafinal,
-        cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-        adquirente: adquirente || undefined,
-        bandeira: bandeira || undefined,
+        datafinal: dataFinal,
+        codigoGrupo: Cookies.get('codigoGrupo')
       };
 
       let config = {
@@ -768,13 +853,38 @@ async function returnVendas(datainicial, datafinal, cnpj, adquirente, bandeira) 
         return
       }
       return response.data.VENDAS
-    } catch (error) {
-      console.error('Error fetching vendas:', error)
-      setShowErrorMessage(true)
+      
+    } else {
+      let params = {
+        datainicial: datainicial,
+        datafinal: dataFinal,
+        cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+      };
+
+      let config = {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${Cookies.get('token')}`
+        },
+        params: params
+      }
+      const response = await api.get('vendas', config)
       setLoading(false)
-      logout()
-      return []
+      setBuscou(false)
+      if(response.data.VENDAS === null){
+        alert(`${response.data.MENSAGEM}`)
+        logout()
+        return
+      }
+      return response.data.VENDAS
     }
+  } catch (error) {
+    console.error('Error fetching vendas:', error)
+    setShowErrorMessage(true)
+    setLoading(false)
+    logout()
+    return []
+  }
 }
 
 async function returnCreditos(datainicial, datafinal, cnpj) {
@@ -784,24 +894,47 @@ async function returnCreditos(datainicial, datafinal, cnpj) {
   }
     try {
       setLoading(true);
-      let params = {
-        cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-        dataInicial: dateConvert(datainicial),
-        dataFinal: dateConvert(datafinal),
-      };
 
-      let config = {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${Cookies.get('token')}`
-        },
-        params: params
-      };
+      if(cnpj === 'todos'){
+        let params = {
+          dataInicial: dateConvert(datainicial),
+          dataFinal: dateConvert(datafinal),
+          codigoGrupo: Cookies.get('codigoGrupo')
+        };
+  
+        let config = {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${Cookies.get('token')}`
+          },
+          params: params
+        };
+  
+        const response = await api.get('recebimentos', config);
+        setLoading(false);
+        setRecebimentos(response.data);
+        return response.data;
 
-      const response = await api.get('recebimentos', config);
-      setLoading(false);
-      setRecebimentos(response.data);
-      return response.data;
+      } else {
+        let params = {
+          cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+          dataInicial: dateConvert(datainicial),
+          dataFinal: dateConvert(datafinal),
+        };
+  
+        let config = {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${Cookies.get('token')}`
+          },
+          params: params
+        };
+  
+        const response = await api.get('recebimentos', config);
+        setLoading(false);
+        setRecebimentos(response.data);
+        return response.data;
+      }
     } catch (error) {
       console.error('Error fetching creditos:', error);
       setShowErrorMessage(true);
@@ -813,23 +946,46 @@ async function returnCreditos(datainicial, datafinal, cnpj) {
 
 async function returnTotalDia(cnpj, data) {
     setLoading(true)
-    let params = {
-      cnpj: cnpj,
-      data: data,
-    };
-
-    let config = {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${Cookies.get('token')}`,
-      },
-      params: params,
-    };
-
     try {
-      const response = await api.get('vendastotais', config);
-      setLoading(false)
-      return response.data
+      if(cnpj === 'todos'){
+        console.log('Todos CNPJs')
+
+        let params = {
+          codigoGrupo: Cookies.get('codigoGrupo'),
+          data: data,
+        };
+    
+        let config = {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${Cookies.get('token')}`,
+          },
+          params: params,
+        };
+
+        const response = await api.get('vendastotais', config);
+        setLoading(false)
+        return response.data
+
+      } else {
+        console.log('cnpj específico')
+        let params = {
+          cnpj: cnpj,
+          data: data,
+        };
+    
+        let config = {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${Cookies.get('token')}`,
+          },
+          params: params,
+        };
+
+        const response = await api.get('vendastotais', config);
+        setLoading(false)
+        return response.data
+      }
     } catch (error) {
       setLoading(false)
     }
@@ -983,7 +1139,6 @@ function gerarDados(array){
   }
 
   async function loadDashboard(){
-    console.log(Cookies.get('cnpj'))
     let params = {
       cnpj: cnpj
     }
@@ -996,8 +1151,6 @@ function gerarDados(array){
     }
     try{
       const response = await api.get('dashboard', config)
-      console.log('- loadDashboard RESPONSE.DATA -')
-      console.log(response.data)
       return response.data;
     } catch (error) {
       setLoading(false)
@@ -1032,6 +1185,8 @@ function gerarDados(array){
         setDataFinal,
         cnpj,
         setCnpj,
+        podeBuscar,
+        setPodeBuscar,
         vendas,
         setVendas,
         creditos,
@@ -1118,6 +1273,7 @@ function gerarDados(array){
         graficoServicosAux,
         setGraficoServicosAux,
         loadDashboard,
+        returnVendasPorPeriodo,
       }}
     >
       {children}

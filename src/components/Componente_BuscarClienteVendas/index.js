@@ -81,7 +81,8 @@ const BuscarClienteVendas = () => {
 
     async function buscar() {
         console.log('buscar()')
-        await loadVendas(dataBusca, cnpjBusca, adqBusca, banBusca)
+        console.log(dataBusca, cnpjBusca)
+        await loadVendas(dataBusca, cnpjBusca)
         .then(() =>{
             if(dataBusca === '' || cnpjBusca === ''){
                 return 0
