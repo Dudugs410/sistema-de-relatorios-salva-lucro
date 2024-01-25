@@ -68,7 +68,11 @@
 // .nav-text{ 
 //     margin-left: 20px; sem efeito
 // }
-
+.header-info-wrapper{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
 .navbar-customer-wrapper{
     display: flex;
     flex-direction: row;
@@ -81,6 +85,7 @@
 
 .navbar-customer{
     display: flex;
+    
     flex-direction: column;
     justify-content: space-evenly;
     text-align: start;
@@ -287,21 +292,26 @@
     .nav-text{
         margin-left: 0px;
     }
-    
+
+    .header-info-wrapper{
+        // display: flex;
+        // flex-direction: row;
+        width: 100%;
+
+    }
+
     .navbar-customer-wrapper{
         display: flex;
         flex-wrap: wrap;
         flex-direction: column; // pro nome cair pra baixo do cnpj
-        width: fit-content;
         font-size: 0.8em;
+        min-width: 0;
+
         // justify-content: space-around;
         // margin-right: 10%;
     }
     
     .navbar-customer{
-        flex: 1;
-        flex-basis: 100%;
-        // display: flex;
         // flex-direction: column;
         // justify-content: space-evenly;
         // text-align: start;

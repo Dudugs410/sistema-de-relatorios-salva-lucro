@@ -131,17 +131,22 @@ const Header = () =>{
                     <div className='navbar-title'>
                         <img className='img-header' src={salvaLucroLogoBranco} alt='logo salva lucro'/>
                     </div>
-                    <div className='navbar-customer-wrapper mx-4'>
-                        <div className='navbar-customer w-50'>
-                            <span className="d-inline-block text-truncate">{`${nomeCliente}`}</span>
-                            <span>{`${headerCnpj}`}</span>
+                    <div className="header-info-wrapper px-4 py-3" >
+
+                        <div className='navbar-customer-wrapper me-4 text-truncate'>
+                            <div className='navbar-customer '>
+                                <span className="d-inline-block">{`${nomeCliente}`}</span>
+                                <span>{`${headerCnpj}`}</span>
+                            </div>
+                            <div className='navbar-customer'>
+                                <span className='client-name'>{`${nome}`}</span>
+                            </div>              
                         </div>
-                        <div className='navbar-customer'>
-                            <span className='client-name'>{`${nome}`}</span>
-                        </div>              
-                    <div className='navbar-customer btn-container'>
-                        <button type='button' className='btn btn-outline-danger px-2 py-1' onClick={logout}>Sair</button> {/* <FiPower color="#dc3545" size={24}/> */}
-                    </div>
+
+                        <div className='btn-container'>
+                            <button type='button' className='btn btn-outline-danger px-2 py-1' onClick={logout}>Sair</button> {/* <FiPower color="#dc3545" size={24}/> */}
+                        </div>
+
                     </div>
                 </div>
             {/* 
