@@ -34,6 +34,7 @@ const Vendas = () =>{
     loadAdquirentes,
     vendas,
     loadVendas,
+    returnVendas,
     dateConvertSearch,
     gerarDados,
     tableData,
@@ -117,7 +118,7 @@ const Vendas = () =>{
 
   useEffect(()=>{
     if(detalhes){
-      setVendasTemp(loadVendas(dataBusca, cnpjBusca, '', ''))
+      setVendasTemp(loadVendas(dataBusca, cnpjBusca))
     }
 
   },[cnpjBusca])

@@ -60,7 +60,8 @@ const Dashboard = () => {
         setTotalServicosHojeAux,
         totalServicosMesAux,
         setTotalServicosMesAux,
-        loadDashboard,
+        returnVendasPorPeriodo,
+        buscou,
     } = useContext(AuthContext)
 
     useEffect(()=>{
@@ -122,7 +123,7 @@ const Dashboard = () => {
         vendaDataFinal.setDate(vendaDataFinal.getDate() -1)
         vendaDataFinal = converteData(vendaDataFinal)
 
-        const vendasTemp = await returnVendas(vendaDataInicial, vendaDataFinal, cnpj)
+        const vendasTemp = await returnVendas(vendaDataInicial, cnpj)
         
         setVendas4dias(vendasTemp)
     }
@@ -146,7 +147,7 @@ const Dashboard = () => {
         try {
             setLoadingVendasDash(true)
           const carregaVendasMes = paramDiasBusca.map((dia) =>
-            returnVendas(dia.dataInicial, dia.dataFinal, dia.cnpj)
+            returnVendasPorPeriodo(dia.dataInicial, dia.dataFinal, dia.cnpj)
           );
       
           const vendasPromises = await Promise.all(carregaVendasMes);
@@ -303,15 +304,17 @@ const Dashboard = () => {
             }
         }
 
-        if(inicializouAux !== true){
-            setLoadingCreditosDash(true)
-            setLoadingVendasDash(true)
-            inicializar().then(() => {
-                setLoadingCreditosDash(false)
-                setLoadingVendasDash(false)
-            })
+        if(buscou){
+            if(inicializouAux !== true){
+                setLoadingCreditosDash(true)
+                setLoadingVendasDash(true)
+                inicializar().then(() => {
+                    setLoadingCreditosDash(false)
+                    setLoadingVendasDash(false)
+                })
+            }
         }
-    },[cnpj])
+    },[buscou])
 
     useEffect(()=>{
         async function inicializar(){
@@ -521,14 +524,12 @@ const Dashboard = () => {
         let label = []
         let data = []
 
-        console.log('carregaGrafico array: ', array)
 
         array.forEach((posicao) => {
             const valorTotal = posicao.total
             const nomeAdq = posicao.nomeAdquirente
             let temp = valorTotal.toFixed(2)
             label.push(nomeAdq)
-            console.log(valorTotal)
             data.push(Number(temp))
         })
         const obj = {labels: label, data: data}
