@@ -85,11 +85,9 @@
 
 .navbar-customer{
     display: flex;
-    
     flex-direction: column;
     justify-content: space-evenly;
     text-align: start;
-    
 }
 
 .teste{
@@ -293,35 +291,32 @@
         margin-left: 0px;
     }
 
-    .header-info-wrapper{
-        // display: flex;
-        // flex-direction: row;
-        width: 100%;
-
-    }
 
     .navbar-customer-wrapper{
         display: flex;
-        flex-wrap: wrap;
         flex-direction: column; // pro nome cair pra baixo do cnpj
         font-size: 0.8em;
-        min-width: 0;
-
         // justify-content: space-around;
         // margin-right: 10%;
     }
     
-    .navbar-customer{
+    // .navbar-customer{
+
         // flex-direction: column;
         // justify-content: space-evenly;
         // text-align: start;
-        // margin: 0;
         
+    // }
+
+    .navbar-customer span {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     
-    li>a{
-        color: #181c2e;
-    }
+    // li>a{
+    //     color: #181c2e;
+    // }
 
     li{
         transition: all 0.4s;
@@ -338,20 +333,20 @@
     .nav-item{
         width: 100%;
         color: white;
-        flex-direction: row;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: center;
+        // flex-direction: row;
+        // flex-wrap: wrap;
+        // align-items: center;
+        // justify-content: center;
     }
     
-    .nav-item:not(:first-child){
-        margin-left: 0;
-    }
+    // .nav-item:not(:first-child){
+    //     // margin-left: 0;
+    // }
     
     .navbar-nav{
-        display: inline-flex;
-        flex-direction: row;
-        width: 100%;
+        // display: inline-flex;
+        // flex-direction: row;
+        // width: 100%;
         align-items: center;
         background-color: rgba(0, 0, 0, 0.5);
         flex-wrap: nowrap;
@@ -397,3 +392,10 @@
         transition: all, 0.4s;
     }
 }
+
+@media only screen and (max-width: 410px) {
+    /* esconde texto do navbar em telas pequenas*/
+    .li-btn-text{
+        display: none;
+    }
+  }

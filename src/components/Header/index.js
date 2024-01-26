@@ -133,13 +133,13 @@ const Header = () =>{
                     </div>
                     <div className="header-info-wrapper px-4 py-3" >
 
-                        <div className='navbar-customer-wrapper me-4 text-truncate'>
+                        <div className='navbar-customer-wrapper me-2 text-truncate'>
                             <div className='navbar-customer '>
                                 <span className="d-inline-block">{`${nomeCliente}`}</span>
                                 <span>{`${headerCnpj}`}</span>
                             </div>
                             <div className='navbar-customer'>
-                                <span className='client-name'>{`${nome}`}</span>
+                                <span className='client-name pe-2'>{`${nome}`}</span>
                             </div>              
                         </div>
 
@@ -149,21 +149,13 @@ const Header = () =>{
 
                     </div>
                 </div>
-            {/* 
-                TODO 
-                - posição do botao de sair 
-                - posição do botao de sair no mobile
-                - icone de sair vermelho? dá muita atenção pro botao de sair, talvez alterar pra um hover 
-                - 
-            */}
-                    
 
                 <div className='header-content'>
                     <div className={`barra-header ${isDarkTheme ? 'dark-theme' : 'light-theme' }`}>
                         <div className="li-container px-3">
-                            <ul className={`navbar-nav me-2 ${isDarkTheme ? 'dark-theme' : 'light-theme' }`}>
+                            <ul className={`navbar-nav pe-2 ${isDarkTheme ? 'dark-theme' : 'light-theme' }`}>
                                 {optionsWithIcons.length > 0 && optionsWithIcons.map((opcao) => (
-                                    <li className="nav-item" key={opcao.id}>
+                                    <li className="nav-item " key={opcao.id}>
                                         <Link to={opcao.rota} className="nav-hover active text-shadow" aria-current="page"> {/* nav-text */}
                                             <button className={`px-2 me-1 li-button-content ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                                                 {opcao.icone && React.createElement(opcao.icone)}
