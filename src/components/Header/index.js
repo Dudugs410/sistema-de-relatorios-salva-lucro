@@ -13,10 +13,7 @@ import Cookies from "js-cookie"
 import InstallPWAButton from "../Componente_BotaoPWA"
 
 const Header = () =>{
-
-    const {refresh} = useContext(AuthContext) 
-
-    const { cnpj, logout } = useContext(AuthContext)
+    const { cnpj, logout, grupoSelecionado, clienteSelecionado, trocarHeader, setTrocarHeader } = useContext(AuthContext)
     const [nome, setNome] = useState('')
     const [email, setEmail] = useState('')
 
@@ -65,19 +62,17 @@ const Header = () =>{
     },[])
 
     useEffect(()=>{
-        setHeaderCnpj(Cookies.get('cnpj'))
-        if(sessionStorage.getItem('cnpj') === null || ''){
-            setHeaderCnpj(cnpj)
+        console.log('GRUPOSELECIONADO: ', grupoSelecionado)
+        console.log('CLIENTESELECIONADO: ', clienteSelecionado)
+
+        if(cnpj === 'todos'){
+            setNomeCliente(grupoSelecionado.label)
+            setHeaderCnpj('Todas as Filiais')
+        } else {
+            setNomeCliente(clienteSelecionado.label)
+            setHeaderCnpj(clienteSelecionado.value)
         }
-        gruposStatic.map((element) => {
-            element.CLIENTES.map((cli)=>{
-                if(cli.CNPJ === cnpj){
-                    setNomeCliente(cli.RAZAOSOCIAL)
-                    setHeaderCnpj(cli.CNPJ)
-                }
-            })
-        })
-    },[cnpj])
+    },[trocarHeader])
 
     ////////////////////////////////////////////////////////////////////////////////////
 

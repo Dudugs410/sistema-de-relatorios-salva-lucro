@@ -60,6 +60,9 @@ const Dashboard = () => {
         setTotalServicosHojeAux,
         totalServicosMesAux,
         setTotalServicosMesAux,
+        returnVendasPorPeriodo,
+        buscou,
+        setBuscou,
     } = useContext(AuthContext)
 
     useEffect(()=>{
@@ -111,10 +114,6 @@ const Dashboard = () => {
         }
     },[])
 
-    async function loadDashboard(){
-        
-    }
-
     async function inicializaVendas4dias(){
         let vendaDataInicial = new Date()
         let vendaDataFinal = new Date()
@@ -125,7 +124,7 @@ const Dashboard = () => {
         vendaDataFinal.setDate(vendaDataFinal.getDate() -1)
         vendaDataFinal = converteData(vendaDataFinal)
 
-        const vendasTemp = await returnVendas(vendaDataInicial, vendaDataFinal, cnpj)
+        const vendasTemp = await returnVendas(vendaDataInicial, cnpj)
         
         setVendas4dias(vendasTemp)
     }
@@ -142,19 +141,19 @@ const Dashboard = () => {
           paramDiasBusca.push({
             dataInicial: `${anoAtual}-${mesAtual}-${day}`,
             dataFinal: `${anoAtual}-${mesAtual}-${day}`,
-            cnpj: cnpj, // Assuming cnpj is defined somewhere in your code
+            cnpj: cnpj,
           });
         }
       
         try {
             setLoadingVendasDash(true)
           const carregaVendasMes = paramDiasBusca.map((dia) =>
-            returnVendas(dia.dataInicial, dia.dataFinal, dia.cnpj)
+            returnVendasPorPeriodo(dia.dataInicial, dia.dataFinal, dia.cnpj)
           );
       
           const vendasPromises = await Promise.all(carregaVendasMes);
       
-          vendasTemp = vendasPromises.filter((vendas) => vendas); // Filter out undefined values
+          vendasTemp = vendasPromises.filter((vendas) => vendas);
         } catch (error) {
           console.error('Error fetching vendas:', error);
         } finally {
@@ -191,7 +190,7 @@ const Dashboard = () => {
           paramDiasBusca.push({
             dataInicial: `${anoAtual}-${mesAtual}-${day}`,
             dataFinal: `${anoAtual}-${mesAtual}-${day}`,
-            cnpj: cnpj, // Assuming cnpj is defined somewhere in your code
+            cnpj: cnpj,
           });
         }
       
@@ -201,13 +200,11 @@ const Dashboard = () => {
           );
       
           const creditosPromises = await Promise.all(carregaCreditosMes);
-          creditosTemp = creditosPromises.filter((creditos) => creditos); // Filter out undefined values
+          creditosTemp = creditosPromises.filter((creditos) => creditos); 
         } catch (error) {
-          // Handle error if any of the promises fail
           console.error('Error fetching creditos:', error);
         } finally {
-          // Assuming setLoadingDash is the state updater for loadingDash
-          setLoadingCreditosDash(false); // Set loading state to false after API calls finish
+          setLoadingCreditosDash(false);
         }
       
         setVetorCreditosMes(creditosTemp);
@@ -293,8 +290,12 @@ const Dashboard = () => {
 ///////////////////////////////////////////////////////////////////////////////
 
     useEffect(()=>{
+        setBuscou(JSON.parse(Cookies.get('buscou')))
+    },[])
+
+    useEffect(()=>{
         async function inicializar(){
-            if(cnpj !== null && cnpj !== ''){
+            if(cnpj !== Cookies.get('ultimoCnpj')){
                 await inicializaVendas4dias()
                 await inicializaVendas4diasMes()
                 await inicializaVetorVendasMes()
@@ -308,15 +309,19 @@ const Dashboard = () => {
             }
         }
 
-        if(inicializouAux !== true){
-            setLoadingCreditosDash(true)
-            setLoadingVendasDash(true)
-            inicializar().then(() => {
-                setLoadingCreditosDash(false)
-                setLoadingVendasDash(false)
-            })
+        if(buscou){
+            console.log('BUSCOU')
+            if(inicializouAux !== true){
+                console.log('inicializouAux: ', inicializouAux)
+                setLoadingCreditosDash(true)
+                setLoadingVendasDash(true)
+                inicializar().then(() => {
+                    setLoadingCreditosDash(false)
+                    setLoadingVendasDash(false)
+                })
+            }
         }
-    },[cnpj])
+    },[buscou])
 
     useEffect(()=>{
         async function inicializar(){
@@ -526,11 +531,13 @@ const Dashboard = () => {
         let label = []
         let data = []
 
+
         array.forEach((posicao) => {
             const valorTotal = posicao.total
             const nomeAdq = posicao.nomeAdquirente
+            let temp = valorTotal.toFixed(2)
             label.push(nomeAdq)
-            data.push(Number(valorTotal.toFixed(2)))
+            data.push(Number(temp))
         })
         const obj = {labels: label, data: data}
         return obj

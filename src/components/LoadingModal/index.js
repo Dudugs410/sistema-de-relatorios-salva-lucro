@@ -7,7 +7,7 @@ const LoadingModal = () => {
         <>
             <div className="loadingModal">
                 <div className='spinner-container'>
-                    <span className='modal-text'>Loading...</span>
+                    <span className='modal-text'>Carregando...</span>
                     <div className='spinner'></div>
                 </div>
             </div>

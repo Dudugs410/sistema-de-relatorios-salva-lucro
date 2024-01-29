@@ -21,17 +21,10 @@ const BuscarClienteVendas = () => {
         setCnpj,  
         setLoading,
         loadVendas,
-        loadRecebimentos, 
-        returnVendas,
-        returnCreditos,
-        setVendas,
-        setRecebimentos,
         dateConvertSearch,
         setTotaisGlobal,
         isDarkTheme,
         vendas,
-        banBusca,
-        adqBusca,
         gerarDados,
     } = useContext(AuthContext)
 
@@ -72,8 +65,12 @@ const BuscarClienteVendas = () => {
       }, [])
 
       async function handleBusca(e){
-        console.log('handleBusca()')
         e.preventDefault()
+        if(cnpjBusca === '' || cnpjBusca === 'Selecione' || cnpjBusca === undefined){
+            alerta('selecione um cliente válido')
+            return
+        }
+        console.log('handleBusca()')
         await buscar()
         console.log('vendas gerar dados',vendas)
         await gerarDados(vendas)
@@ -81,7 +78,11 @@ const BuscarClienteVendas = () => {
 
     async function buscar() {
         console.log('buscar()')
-        await loadVendas(dataBusca, cnpjBusca, adqBusca, banBusca)
+        console.log(dataBusca, cnpjBusca)
+        if(cnpjBusca === '' || cnpjBusca === 'Selecione' || cnpjBusca === undefined){
+            return
+        }
+        await loadVendas(dataBusca, cnpjBusca)
         .then(() =>{
             if(dataBusca === '' || cnpjBusca === ''){
                 return 0
@@ -99,6 +100,10 @@ const BuscarClienteVendas = () => {
 
     useEffect(()=>{
     console.log('buscou: ', buscou)
+    if((cnpjBusca === '' || cnpjBusca === 'Selecione' || cnpjBusca === undefined) && (Cookies.get('cnpj') !== '')){
+        alerta('selecione um cliente válido')
+        return
+    }
     if(buscou === true){
             if((vendas === null) || (vendas.length === 0)){
                 alerta('não existem vendas para a data selecionada')

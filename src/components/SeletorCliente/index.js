@@ -5,7 +5,6 @@ import { AuthContext } from "../../contexts/auth"
 import { ToastContainer } from 'react-toastify'
 import Cookies from "js-cookie";
 
-import {  } from "react-icons/fi"
 import 'react-toastify/dist/ReactToastify.css';
 import './Seletor.scss'
 
@@ -24,10 +23,20 @@ const SeletorCliente = () => {
         setCnpj, 
         setInicializouAux,
         resetaDashboard,
+        buscou,
+        setBuscou,
+        grupoSelecionado,
+        setGrupoSelecionado,
+        clienteSelecionado,
+        setClienteSelecionado,
+        trocarHeader,
+        setTrocarHeader,
     } = useContext(AuthContext)
 
     const [cliSelecionado, setCliSelecionado] = useState('')
     const [selectedCliLabel, setSelectedCliLabel] = useState('Selecione');
+    const [codigoGrupo, setCodigoGrupo] = useState('')
+    const [podeBuscar, setPodeBuscar] = useState(true)
 
     useEffect(()=>{
         setCnpj(sessionStorage.getItem('cnpj'))
@@ -49,19 +58,37 @@ const SeletorCliente = () => {
 
     function handleCnpj(e){
         e.preventDefault()
+        console.log('handleCnpj SeletorCliente')
+        console.log('cliSelecionado: ', ' -> ', cliSelecionado, '||', 'cnpj: ', ' -> ', cnpj, )
+        if((cliSelecionado === '') || (cliSelecionado ==='selecione') || (cliSelecionado.value === '')){
+            alerta('Selecione um cliente válido')
+            Cookies.set('cnpj', '')
+            setCnpj('')
+            return
+        }
         resetaDashboard()
-        if((cliSelecionado !== cnpj) && (cliSelecionado !== '') && (cliSelecionado !== 'selecione')){
+        if(podeBuscar){
+            console.log('HANDLECNPJ -> entrou no IF')
             resetaSomatorios()
-            setCnpj(cliSelecionado)
+            setCnpj(cliSelecionado.value)
             setInicializouAux(false)
             sessionStorage.setItem('inicializou', false)
             sessionStorage.setItem('codigoGrupo', gruSelecionado)
             Cookies.set('cnpj', cliSelecionado)
-        } 
-        else if((cliSelecionado === '') || (cliSelecionado ==='selecione')){
-            alerta('Selecione um cliente válido')
-        }  
+            setCodigoGrupo(gruSelecionado.value)
+            setBuscou(true)
+            setTrocarHeader(!trocarHeader)
+        }   
     }
+
+    useEffect(()=>{
+        if(podeBuscar){
+            Cookies.set('buscou', false)
+        } else {
+            Cookies.set('buscou', true)
+        }
+        console.log(Cookies.get('buscou'))
+    },[buscou])
 
     /// React Select
 
@@ -89,11 +116,24 @@ const SeletorCliente = () => {
     }, [grupos]);
     
     const handleSelectChangeGrupo = (selected) => {
+        console.log(selected);
+
+        // Set value in sessionStorage
+        sessionStorage.setItem('codigoGrupo', selected.value);
+    
+        // Set value in Cookies
+        Cookies.set('codigoGrupo', selected.value);
+    
+        // Update state with selected value
         setGruSelecionado(selected);
+        
+        // Additional code if needed
+        setCliSelecionado('');
+        Cookies.set('cnpj', '');
     };
 
     const handleSelectChangeCLI = (selected) => {
-        setCliSelecionado(selected ? selected.value : null); // Set cliSelecionado to selected value (CNPJ)
+        setCliSelecionado(selected) // Set cliSelecionado to selected value (CNPJ)
       };
 
     // clientes
@@ -108,11 +148,33 @@ const SeletorCliente = () => {
                     label: CLI.NOMECLIENTE,
                 }))
                 .sort((a, b) => a.label.localeCompare(b.label)); // Sort options alphabetically by label
+                let todos = {value: 'todos', label: 'TODOS'}
+                sortedOptions.unshift(todos)
             setListaCli(sortedOptions);
         } else {
             setListaCli([]);
         }
     }, [listaClientes]);
+
+    useEffect(()=>{
+        console.log('cliSelecionado: ', cliSelecionado.value, 'CNPJ: ', cnpj)
+        console.log('gruSelecionado: ', gruSelecionado.value, 'CODIGOGRUPO: ', codigoGrupo)
+        if((cliSelecionado.value === cnpj) && (gruSelecionado.value === codigoGrupo)){
+            console.log('tudo igual')
+            setPodeBuscar(false)
+            setBuscou(true)
+        } else {
+            console.log('diferentões')
+            setPodeBuscar(true)
+            setBuscou(false)
+        }
+        setGrupoSelecionado(gruSelecionado)
+        setClienteSelecionado(cliSelecionado)
+    },[cliSelecionado, cnpj, codigoGrupo, gruSelecionado])
+
+    useEffect(()=>{
+        console.log('PODEBUSCAR?? ', podeBuscar)
+    },[podeBuscar])
 
     return(
         <>
@@ -169,15 +231,10 @@ const SeletorCliente = () => {
                                 />
                             )}
                             </div>
-                        </div>
+                        </form>
                     </div>
-                    <div className="select-btn-seletor">
-                        <button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleCnpj} disabled={cliSelecionado === cnpj}>Selecionar</button>
-                    </div>
-                </form>
-            </div>
-        </>
-        }
+                </>
+            }
         </>
     )
 }

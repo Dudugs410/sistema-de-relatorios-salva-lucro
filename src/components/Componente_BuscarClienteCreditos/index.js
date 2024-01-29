@@ -71,6 +71,10 @@ const BuscarClienteCreditos = () => {
       async function handleBusca(e){
         console.log('handleBusca()')
         e.preventDefault()
+        if(cnpjBusca === '' || cnpjBusca === 'Selecione' || cnpjBusca === undefined){
+            alerta('selecione um cliente válido')
+            return
+        }
         await buscar()
         console.log('creditos gerar dados',creditos)
         await gerarDados(creditos)

@@ -12,9 +12,6 @@ import TabelaGenerica from '../Componente_TabelaGenerica';
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const PieChart = ({ data01, arrayAdm, tipo } ) => {
-  
-  console.log('GRAFICO: ', arrayAdm)
-  console.log('data01: ',data01)
 
   const [selectedAdm, setSelectedAdm] = useState(null)
   const [showAdmModal, setShowAdmModal] = useState(false)
@@ -23,14 +20,8 @@ const PieChart = ({ data01, arrayAdm, tipo } ) => {
     if (elements.length > 0) {
       const clickedElementIndex = elements[0].index;
       const selectedAdmData = arrayAdm[clickedElementIndex];
-  
-      console.log('CLICADO: ', arrayAdm[clickedElementIndex])
-
-      console.log('Clicked Index: ', clickedElementIndex);
-      console.log('Clicked Data: ', arrayAdm[clickedElementIndex]);
 
       setSelectedAdm(selectedAdmData);
-      console.log('selectedAdmData: ',selectedAdmData)
       setShowAdmModal(true);
     }
   }, [arrayAdm]);
@@ -127,7 +118,7 @@ const PieChart = ({ data01, arrayAdm, tipo } ) => {
       ],
     };
   }, [data01]);
-
+  
   const chartOptions = {
     maintainAspectRatio: false,
     onClick: handleChartClick,
@@ -137,14 +128,28 @@ const PieChart = ({ data01, arrayAdm, tipo } ) => {
         display: true,
         position: "top"
       },
-    },
+      tooltip: {
+        callbacks: {
+          label: (context) => {
+            const value = context.dataset.data[context.dataIndex];
+            const formattedValue = value.toLocaleString('pt-BR', {
+              style: 'currency',
+              currency: 'BRL',
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            });
+            return `Total de Vendas: ${formattedValue}`;
+          },
+        },
+      },
+    },  
     layout:{
       padding: 10
     }
   };
 
   return (
-    <div style={{ height: '250px', position: 'relative', maintainAspectRatio: false }}>
+    <div className='chart-container' style={{ height: '250px', position: 'relative', maintainAspectRatio: false }}>
       <Pie data={chartData} options={chartOptions} />
       {showAdmModal && selectedAdm && (
         <Modal onClose={() => setShowAdmModal(false)}>
