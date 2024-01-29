@@ -25,6 +25,12 @@ const SeletorCliente = () => {
         resetaDashboard,
         buscou,
         setBuscou,
+        grupoSelecionado,
+        setGrupoSelecionado,
+        clienteSelecionado,
+        setClienteSelecionado,
+        trocarHeader,
+        setTrocarHeader,
     } = useContext(AuthContext)
 
     const [cliSelecionado, setCliSelecionado] = useState('')
@@ -54,7 +60,7 @@ const SeletorCliente = () => {
         e.preventDefault()
         console.log('handleCnpj SeletorCliente')
         console.log('cliSelecionado: ', ' -> ', cliSelecionado, '||', 'cnpj: ', ' -> ', cnpj, )
-        if((cliSelecionado === '') || (cliSelecionado ==='selecione')){
+        if((cliSelecionado === '') || (cliSelecionado ==='selecione') || (cliSelecionado.value === '')){
             alerta('Selecione um cliente válido')
             Cookies.set('cnpj', '')
             setCnpj('')
@@ -64,13 +70,14 @@ const SeletorCliente = () => {
         if(podeBuscar){
             console.log('HANDLECNPJ -> entrou no IF')
             resetaSomatorios()
-            setCnpj(cliSelecionado)
+            setCnpj(cliSelecionado.value)
             setInicializouAux(false)
             sessionStorage.setItem('inicializou', false)
             sessionStorage.setItem('codigoGrupo', gruSelecionado)
             Cookies.set('cnpj', cliSelecionado)
             setCodigoGrupo(gruSelecionado.value)
             setBuscou(true)
+            setTrocarHeader(!trocarHeader)
         }   
     }
 
@@ -126,7 +133,7 @@ const SeletorCliente = () => {
     };
 
     const handleSelectChangeCLI = (selected) => {
-        setCliSelecionado(selected ? selected.value : null); // Set cliSelecionado to selected value (CNPJ)
+        setCliSelecionado(selected) // Set cliSelecionado to selected value (CNPJ)
       };
 
     // clientes
@@ -150,9 +157,9 @@ const SeletorCliente = () => {
     }, [listaClientes]);
 
     useEffect(()=>{
-        console.log('cliSelecionado: ', cliSelecionado, 'CNPJ: ', cnpj)
+        console.log('cliSelecionado: ', cliSelecionado.value, 'CNPJ: ', cnpj)
         console.log('gruSelecionado: ', gruSelecionado.value, 'CODIGOGRUPO: ', codigoGrupo)
-        if((cliSelecionado === cnpj) && (gruSelecionado.value === codigoGrupo)){
+        if((cliSelecionado.value === cnpj) && (gruSelecionado.value === codigoGrupo)){
             console.log('tudo igual')
             setPodeBuscar(false)
             setBuscou(true)
@@ -161,6 +168,8 @@ const SeletorCliente = () => {
             setPodeBuscar(true)
             setBuscou(false)
         }
+        setGrupoSelecionado(gruSelecionado)
+        setClienteSelecionado(cliSelecionado)
     },[cliSelecionado, cnpj, codigoGrupo, gruSelecionado])
 
     useEffect(()=>{
