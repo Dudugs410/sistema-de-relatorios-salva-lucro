@@ -26,7 +26,7 @@ export default function TabelaGenericaAdm({Array}) {
                                     return (
                                         <tr key={elemento.id}>
                                             <td className='det-td-global det-adm-global' data-label="Adquirente">{elemento.nomeAdquirente}</td>
-                                            <td className='det-td-global det-adm-global' data-label="Total">R$ <span className={`green-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>{Number(elemento.total).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
+                                            <td className='det-td-global det-adm-global' data-label="Total"><span className={`green-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>{Number(elemento.total).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
                                         </tr>
                                     )
                                 })}
