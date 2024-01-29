@@ -93,6 +93,7 @@ function AuthProvider({ children }){
   
       Cookies.set('token', responseData.acess_token);
       Cookies.set('refreshToken', responseData.refresh_token);
+      Cookies.set('buscou', false)
       setAccessToken(responseData.acess_token);
       setRefreshToken(responseData.refresh_token);
       
