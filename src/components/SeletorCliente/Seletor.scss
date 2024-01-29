@@ -12,19 +12,19 @@
 }
 
 .cli-container{
+    // flex-wrap: wrap;
     display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    width: 100%;
+    // flex-direction: row;
+    // width: 100%;
+    // justify-content: space-between;
 }
 
 .date-container-seletor{
-    /*width: 100%; */
-    display: inline-flex;
-    padding: 20px;
-    /* transition: all 2s; */
-    justify-content: space-around;
+    flex-wrap: wrap;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
 
     &.light-theme{
         border-top: solid $secondary-color-light 1px;
@@ -78,9 +78,9 @@
 }
 
 .select-card-seletor{
+    width: 333px;
     /*position: relative; */
     /* display: inline-flex; */
-    width: 333px;
     /* flex-direction: column; */
     /* flex-wrap: wrap; */
     /* align-content: space-around; */
@@ -88,7 +88,8 @@
 }
 
 .date-column-seletor:last-child {
-    margin-left: 10%;
+    padding-left: 1.5rem;
+    // margin-left: 10%;
 }
 
 .date-column-seletor>.select-card-seletor>select{
@@ -170,20 +171,22 @@
 }
 
 .select-btn-seletor{
-    width: 40%;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-content: flex-end;
+    // // width: 40%;
+    // display: flex;
+    // flex-direction: row;
+    // flex-wrap: wrap;
+    // align-content: flex-end;
 }
-
+.btn-global{
+    max-width: none !important;
+}
 .btn-seletor{
-    margin-top: 22px;
+    // margin-top: 22px;
+    // font-weight: 200;
+    // height: 2.2em;
     display: flex;
-    height: 2.2em;
     text-align: center;
     justify-content: center;
-    font-weight: 200;
     transition: all 2s;
     &.light-theme{
         border: solid $secondary-color-light 1px;
@@ -212,48 +215,53 @@
     }
 }
 
-@media screen and (max-width: 869px){
+
+@media only screen and (max-width: 750px){
 
     .search-bar{
-        height: auto;
-        width: 100%;
-        background-color: rgba(0,0,0,0.5);
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
+        // height: auto;
+        // width: 100%;
+        // background-color: rgba(0,0,0,0.5);
+        // display: flex;
+        // flex-direction: column;
+        // justify-content: center;
         
     }
     
     .date-container-seletor{
-        width: 100%;
-        display: flex;
-        padding: 20px;
-        padding-left: 40px;
-        align-items: flex-end;
+        // width: 100%;
+        // display: flex;
+        // padding: 20px;
+        // align-items: flex-end;
         
     }
 
+    // quebrar linha quando diminui a tela
+    .cli-container{
+        flex-direction: column;
+    }
+
     .date-column{
-        text-align: center;
-        display: inline-flex;
-        align-items: center;
+        // text-align: center;
+        // display: inline-flex;
+        // align-items: center;
     }
     
     .select-card{
-        width: 100%;
+        // width: 100%;
     }
 
     .select-card>select{
-        display: flex;
-        margin-left: 10%;
+        // display: flex;
+        // margin-left: 10%;
     }
 
     .select-card>.date-picker{
-        display: flex;
-        border-radius: 10px;
-        height:2.2em;
-        width: 80%;
-        margin-left: 10%;
+        // display: flex;
+        // border-radius: 10px;
+        // height:2.2em;
+        // width: 80%;
+        // margin-left: 10%;
     }
 
     .date-text{
@@ -261,12 +269,12 @@
     }
     
     .date-picker{
-        height: 2em;
+        // height: 2em;
     }
     
     .date-container>input{
-        height: auto;
-        border-radius: 10px;
+        // height: auto;
+        // border-radius: 10px;
     }
     
     .date-column-seletor>.select-card-seletor>select{
@@ -280,34 +288,34 @@
     }
 
     .select-card-seletor{
-        position: relative;
-        display: inline-flex;
         width: 100%;
-        flex-direction: initial;
-        flex-wrap: wrap;
-        align-content: space-around;
+        // position: relative;
+        // display: inline-flex;
+        // flex-direction: initial;
+        // flex-wrap: wrap;
+        // align-content: space-around;
     }
 
     .date-container>select{
-        height: auto;
-        border-radius: 10px;
+        // height: auto;
+        // border-radius: 10px;
     }
     
     .date-container>span{
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        font-weight: bold;
+        // display: flex;
+        // flex-direction: column;
+        // justify-content: center;
+        // font-weight: bold;
     }
     
     .date-container>select{
-        display: flex;
-        text-align: center;
+        // display: flex;
+        // text-align: center;
     }
 
     .date-column:not(:nth-child(3)){
-        display: flex;
-        flex-direction: row;
+        // display: flex;
+        // flex-direction: row;
 
     }
 
@@ -316,21 +324,32 @@
     }
 
     .select-card:not(:first-child){
-        margin-top: 0;
+        // margin-top: 0;
     }
     
     .date-column:nth-child(4){
-        margin-left: 0;
+        // margin-left: 0;
     }
 
     table{
-        height: 500px;
+        // height: 500px;
     }
 
     .submit-container{
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+        // width: 100%;
+        // display: flex;
+        // flex-direction: column;
+        // align-items: center;
     }
+
+    /* reseta o padding do segundo seletor em telas pequenas*/
+    .date-column-seletor:last-child {
+        padding-left: 0;
+    }
+    .date-container-seletor{
+        display: inline-block;
+    }
+}
+
+@media only screen and (max-width: 410px) {
 }

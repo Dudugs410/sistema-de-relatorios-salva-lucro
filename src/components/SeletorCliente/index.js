@@ -5,6 +5,7 @@ import { AuthContext } from "../../contexts/auth"
 import { ToastContainer } from 'react-toastify'
 import Cookies from "js-cookie";
 
+import {  } from "react-icons/fi"
 import 'react-toastify/dist/ReactToastify.css';
 import './Seletor.scss'
 
@@ -130,12 +131,13 @@ const SeletorCliente = () => {
                 theme="light"
             />
             <div className='search-bar-seletor'>
-                <form className={`date-container-seletor ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                <form className={`date-container-seletor p-4 ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                     <div className='cli-container'>
                         <div className='date-column-seletor'>
                             <div className='select-card-seletor'>
                             <span>Grupo</span>
                             <Select
+                                className=""
                                 options={gruposFiltrado}
                                 onChange={handleSelectChangeGrupo}
                                 value={gruposFiltrado.value}
@@ -144,7 +146,7 @@ const SeletorCliente = () => {
                             </div>
                         </div>
 
-                        <div className='date-column-seletor'>
+                        <div className='date-column-seletor '>
                             <div className='select-card-seletor'>
                             <span>Cliente</span>
                             {listaClientes.length > 0 ? (

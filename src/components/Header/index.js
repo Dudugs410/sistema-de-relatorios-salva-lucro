@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import { FiMoon, FiPower, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText } from "react-icons/fi"
+import { FiMoon, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText } from "react-icons/fi"
 import { AuthContext } from "../../contexts/auth"
 import React, { useContext, useEffect, useState } from "react"
 
@@ -136,7 +136,7 @@ const Header = () =>{
                         <div className='navbar-customer-wrapper me-2 text-truncate'>
                             <div className='navbar-customer '>
                                 <span className="d-inline-block">{`${nomeCliente}`}</span>
-                                <span>{`${headerCnpj}`}</span>
+                                <span>{headerCnpj? `${headerCnpj}` : '-'}</span>
                             </div>
                             <div className='navbar-customer'>
                                 <span className='client-name pe-2'>{`${nome}`}</span>
