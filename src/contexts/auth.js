@@ -43,9 +43,11 @@ function AuthProvider({ children }){
   const [vendaDias, setVendaDias] = useState([])
 
   const [bandeiras, setBandeiras] = useState([])
-  const [grupos, setGrupos] = useState([]) 
-  const [clientes, setClientes] = useState([])
   const [adquirentes, setAdquirentes] = useState([])
+  const [grupos, setGrupos] = useState([])
+  const [grupoSelecionado, setGrupoSelecionado] = useState('')
+  const [clientes, setClientes] = useState([])
+  const [clienteSelecionado, setClienteSelecionado] = useState('')
 
   const [gruSelecionado, setGruSelecionado] = useState('')
   const [listaClientes, setListaClientes] = useState('')
@@ -75,6 +77,7 @@ function AuthProvider({ children }){
   const [inicializouAux, setInicializouAux] = useState(false)
 
   const [showErrorMessage, setShowErrorMessage] = useState(false)
+  const [trocarHeader, setTrocarHeader] = useState(false)
 
   const navigate = useNavigate()
 
@@ -251,6 +254,8 @@ function AuthProvider({ children }){
     setDataInicial(new Date())
     setDataFinal(new Date())
     setCnpj('')
+    setGrupoSelecionado({value: '-', label: '-'})
+    setClienteSelecionado({value: '-', label: '-'})
     setVendas([])
     setVendasDash([])
     setTableData([])
@@ -1275,6 +1280,12 @@ function gerarDados(array){
         setGraficoServicosAux,
         loadDashboard,
         returnVendasPorPeriodo,
+        grupoSelecionado,
+        setGrupoSelecionado,
+        clienteSelecionado,
+        setClienteSelecionado,
+        trocarHeader,
+        setTrocarHeader,
       }}
     >
       {children}
