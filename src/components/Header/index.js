@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import { FiMoon, FiPower, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText } from "react-icons/fi"
+import { FiMoon, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText } from "react-icons/fi"
 import { AuthContext } from "../../contexts/auth"
 import React, { useContext, useEffect, useState } from "react"
 
@@ -122,39 +122,45 @@ const Header = () =>{
     return(
         <>
             <div className="header-bg-image">
-                <div className='header-bg'>
+                <div className={`header-bg ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                     <div className='navbar-title'>
                         <img className='img-header' src={salvaLucroLogoBranco} alt='logo salva lucro'/>
                     </div>
-                    <div className='navbar-customer-wrapper'>
-                        <div className='navbar-customer'>
-                            <span>{`${nomeCliente}`}</span>
-                            <span>{`${headerCnpj}`}</span>
+                    <div className="header-info-wrapper px-4 py-3" >
+
+                        <div className='navbar-customer-wrapper me-2 text-truncate'>
+                            <div className='navbar-customer '>
+                                <span className="d-inline-block">{`${nomeCliente}`}</span>
+                                <span>{headerCnpj? `${headerCnpj}` : '-'}</span>
+                            </div>
+                            <div className='navbar-customer'>
+                                <span className='client-name pe-2'>{`${nome}`}</span>
+                            </div>              
                         </div>
-                        <div className='navbar-customer'>
-                            <span className='client-name'>{`${nome}`}</span>
-                        </div>              
-                    </div>
-                    <div className='btn-container'>
-                        <button type='button' className='btn-exit' onClick={logout}><FiPower color="#000000" size={24}/></button>
+
+                        <div className='btn-container'>
+                            <button type='button' className='btn btn-outline-danger px-2 py-1' onClick={logout}>Sair</button> {/* <FiPower color="#dc3545" size={24}/> */}
+                        </div>
+
                     </div>
                 </div>
+
                 <div className='header-content'>
                     <div className={`barra-header ${isDarkTheme ? 'dark-theme' : 'light-theme' }`}>
-                        <div className="li-container">
-                            <ul className={`navbar-nav ${isDarkTheme ? 'dark-theme' : 'light-theme' }`}>
+                        <div className="li-container px-3">
+                            <ul className={`navbar-nav pe-2 ${isDarkTheme ? 'dark-theme' : 'light-theme' }`}>
                                 {optionsWithIcons.length > 0 && optionsWithIcons.map((opcao) => (
-                                    <li className="nav-item" key={opcao.id}>
-                                        <Link to={opcao.rota} className="nav-hover nav-text nav-link active text-shadow" aria-current="page">
-                                            <button className={`li-button-content ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                                                <span className="li-btn-text">{opcao.nome} &nbsp;&nbsp;&nbsp;</span>
+                                    <li className="nav-item " key={opcao.id}>
+                                        <Link to={opcao.rota} className="nav-hover active text-shadow" aria-current="page"> {/* nav-text */}
+                                            <button className={`px-2 me-1 li-button-content ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                                                 {opcao.icone && React.createElement(opcao.icone)}
+                                                <span className="ms-1 mt-2 mb-auto li-btn-text">{opcao.nome}</span>
                                             </button>
                                         </Link>
                                     </li>
                                 ))}
                             </ul>
-                            <div className="toggle-container">
+                            <div className="toggle-container me-1">
                                 <label className="switch" >
                                     <input type="checkbox" id="toggleButton" checked={isChecked} onChange={handleCheckboxChange}/>
                                     <span className="slider"><FiMoon/><FiSun/></span>
