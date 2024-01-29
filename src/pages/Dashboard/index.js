@@ -62,6 +62,7 @@ const Dashboard = () => {
         setTotalServicosMesAux,
         returnVendasPorPeriodo,
         buscou,
+        setBuscou,
     } = useContext(AuthContext)
 
     useEffect(()=>{
@@ -289,8 +290,12 @@ const Dashboard = () => {
 ///////////////////////////////////////////////////////////////////////////////
 
     useEffect(()=>{
+        setBuscou(JSON.parse(Cookies.get('buscou')))
+    },[])
+
+    useEffect(()=>{
         async function inicializar(){
-            if(cnpj !== null && cnpj !== ''){
+            if(cnpj !== Cookies.get('ultimoCnpj')){
                 await inicializaVendas4dias()
                 await inicializaVendas4diasMes()
                 await inicializaVetorVendasMes()
@@ -305,7 +310,9 @@ const Dashboard = () => {
         }
 
         if(buscou){
+            console.log('BUSCOU')
             if(inicializouAux !== true){
+                console.log('inicializouAux: ', inicializouAux)
                 setLoadingCreditosDash(true)
                 setLoadingVendasDash(true)
                 inicializar().then(() => {

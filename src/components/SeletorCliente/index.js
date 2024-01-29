@@ -74,6 +74,15 @@ const SeletorCliente = () => {
         }   
     }
 
+    useEffect(()=>{
+        if(podeBuscar){
+            Cookies.set('buscou', false)
+        } else {
+            Cookies.set('buscou', true)
+        }
+        console.log(Cookies.get('buscou'))
+    },[buscou])
+
     /// React Select
 
     // grupos
