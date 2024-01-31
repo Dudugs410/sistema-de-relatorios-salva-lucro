@@ -38,7 +38,7 @@ const Vendas = () =>{
     dateConvertSearch,
     gerarDados,
     tableData,
-    setTotaisGlobal,
+    setTotaisGlobalVendas,
     isDarkTheme,
     setIsDarkTheme,
   } = useContext(AuthContext)
@@ -56,8 +56,6 @@ const Vendas = () =>{
   // possivelmente utilizar estes parametros para realizar busca por período
 
   const [cnpjBusca, setCnpjBusca] = useState(Cookies.get('cnpj'))
-
-  const [vendasTotais, setVendasTotais] = useState([])
 
   useEffect(()=>{
     setIsDarkTheme(JSON.parse(localStorage.getItem('isDark')))
@@ -86,7 +84,7 @@ const Vendas = () =>{
     setTotalDebito(0.00)
     setTotalVoucher(0.00)
     setTotalLiquido(0.00)
-    setTotaisGlobal({debito: 0, credito: 0, voucher: 0, liquido: 0})
+    setTotaisGlobalVendas({debito: 0, credito: 0, voucher: 0, liquido: 0})
   },[])
 
   useEffect(()=>{
@@ -139,7 +137,7 @@ const Vendas = () =>{
         if(temp.length === 0){
           let novoObj = {
               nomeAdquirente: venda.adquirente.nomeAdquirente,
-              total: venda.valorLiquido,
+              total: venda.valorBruto,
               id: 0,
               vendas: []
           }
@@ -147,7 +145,7 @@ const Vendas = () =>{
         }else{
           let novoObj = {
               nomeAdquirente: venda.adquirente.nomeAdquirente,
-              total: venda.valorLiquido,
+              total: venda.valorBruto,
               id: 0,
               vendas: []
           }
@@ -160,7 +158,7 @@ const Vendas = () =>{
           else{
               for(let i = 0; i < temp.length; i++){
                   if(temp[i].nomeAdquirente === venda.adquirente.nomeAdquirente){
-                      temp[i].total += venda.valorLiquido
+                      temp[i].total += venda.valorBruto
                   }
               }
           }
@@ -168,18 +166,18 @@ const Vendas = () =>{
         // eslint-disable-next-line default-case
         switch(venda.produto.descricaoProduto){
           case 'Crédito':
-            totalCreditoTemp += venda.valorLiquido
+            totalCreditoTemp += venda.valorBruto
             break;
 
           case 'Débito':
-            totalDebitoTemp += venda.valorLiquido
+            totalDebitoTemp += venda.valorBruto
             break;
 
           case 'Voucher':
-            totalVoucherTemp += venda.valorLiquido
+            totalVoucherTemp += venda.valorBruto
             break;
         }
-        totalLiquidoTemp += venda.valorLiquido
+        totalLiquidoTemp += venda.valorBruto
       })
         temp.forEach((adq) => {
             let vendasTemp = []
@@ -196,7 +194,8 @@ const Vendas = () =>{
             })
         })
         let totalTemp = {debito: totalDebitoTemp, credito: totalCreditoTemp, voucher: totalVoucherTemp, liquido: totalLiquidoTemp}
-        setTotaisGlobal(totalTemp)
+        
+        setTotaisGlobalVendas(totalTemp)
 
         return temp
     }
@@ -244,11 +243,11 @@ const Vendas = () =>{
               <h1 className={`vendas-title ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Calendário de Vendas</h1>
             </div>
             <hr className="hr-recebimentos"/>
-            <TotalModalidadesComp />
+            <TotalModalidadesComp tipo = 'vendas'/>
             <hr className="hr-recebimentos"/>
-            { (detalhes) && (vendas.length > 0) ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
+            { (detalhes) && (vendas.length > 0) ? <GerarRelatorio className='export' tableData={tableData} detalhes={detalhes} tipo='vendas' /> : <></> }
             <div className='component-container-vendas'>
-              { (detalhes) && (vendas.length > 0) ?  <TabelaVendasCreditos array={vendas}/> : <MyCalendar className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/> }
+              { (detalhes) && (vendas.length > 0) ?  <TabelaVendasCreditos array={vendas} tipo = 'vendas'/> : <MyCalendar className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/> }
               <hr className="hr-recebimentos"/>
               { (detalhes) && (vendas.length > 0) ? <TabelaGenericaAdm Array={arrayAdm}/> : <></> }
               { (detalhes) && (vendas.length > 0) ? <hr className='hr-recebimentos'/> : <></> }

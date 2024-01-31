@@ -1,11 +1,35 @@
 /* eslint-disable react/react-in-jsx-scope */
 
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import './totalModalidade.scss'
 import { AuthContext } from '../../contexts/auth'
 
-const TotalModalidadesComp = () =>{
-	const { totaisGlobal, isDarkTheme } = useContext(AuthContext)    
+const TotalModalidadesComp = ({tipo}) =>{
+	const { totaisGlobal, setTotaisGlobal, totaisGlobalVendas, totaisGlobalCreditos, isDarkTheme } = useContext(AuthContext)
+
+	useEffect(()=>{
+		switch (tipo) {
+			case 'vendas':
+				setTotaisGlobal(totaisGlobalVendas)
+				break;
+			case 'creditos':
+				setTotaisGlobal(totaisGlobalCreditos)
+				break;
+		
+			default:
+				setTotaisGlobal({ debito: 0, credito: 0, voucher: 0, liquido: 0 })
+				break;
+		}
+	},[])
+
+	useEffect(()=>{
+		if(tipo === 'vendas'){
+			setTotaisGlobal(totaisGlobalVendas)
+		} else if(tipo === 'creditos'){
+			setTotaisGlobal(totaisGlobalCreditos)
+		}
+	},[totaisGlobalCreditos, totaisGlobalVendas])
+
 	return(
 		<>
 			<div className='content-container-modalidade'>
@@ -29,7 +53,7 @@ const TotalModalidadesComp = () =>{
 				</div>
 				<div className={`total-container-modalidade ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}> 
 					<div className='text-container-modalidade'>
-						<h1 className='title-modalidade'>Total Líquido</h1>
+						<h1 className='title-modalidade'>{tipo === 'vendas' ? 'Total Bruto' : 'Total Líquido'}</h1>
 						<p className='text-modalidade'>TOTAL: R$ <span className='green-modalidade'>{Number(totaisGlobal.liquido).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></p>
 					</div>
 				</div>

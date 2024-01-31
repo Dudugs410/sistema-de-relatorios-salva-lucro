@@ -11,14 +11,12 @@ const Servicos = () =>{
     const { 
         loadAjustes,
         setGrupos,
-        grupos, 
-        cnpj, 
-        alerta, 
-        dataInicial, 
-        setDataInicial, 
-        dataFinal, 
-        setDataFinal, 
-        dateConvert 
+        grupos,
+        dataInicial,
+        setDataInicial,
+        dataFinal,
+        setDataFinal,
+        dateConvert
     } = useContext(AuthContext)
 
     const [arrayTeste, setArrayTeste] = useState([])

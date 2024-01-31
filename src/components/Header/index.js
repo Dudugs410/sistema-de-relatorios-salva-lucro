@@ -74,6 +74,12 @@ const Header = () =>{
         }
     },[trocarHeader])
 
+    useEffect(()=>{
+        const encodedNomeCliente = encodeURIComponent(nomeCliente)
+        Cookies.set('Selecionado', encodedNomeCliente)
+
+    },[nomeCliente])
+
     ////////////////////////////////////////////////////////////////////////////////////
 
     const [optionsWithIcons, setOptionsWithIcons] = useState([]);
