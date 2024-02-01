@@ -1117,8 +1117,14 @@ function AuthProvider({ children }){
 						taxa: venda.taxa,
 						valorDesconto: venda.valorDesconto,
 						nsu: venda.nsu,
+						//numeroCartao: ,
 						codigoAutorizacao: venda.codigoAutorizacao,
 						parcela: venda.parcela,
+						//quantidadeParcelas: ,
+						banco: venda.banco,
+						agencia: venda.agencia,
+						conta: venda.conta,
+						//tid:
 
 					})
 				})

@@ -466,9 +466,13 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 								<th className='det-th-global'scope="col">Taxa</th>
 								<th className='det-th-global'scope="col">Valor Desconto</th>
 								<th className='det-th-global'scope="col">NSU</th>
+								<th className='det-th-global'scope="col">Nro Cartão</th>
 								<th className='det-th-global'scope="col">Autorização</th>
 								<th className='det-th-global'scope="col">Parcela</th>
 								<th className='det-th-global'scope="col">QTD Parcelas</th>
+								<th className='det-th-global'scope="col">Banco</th>
+								<th className='det-th-global'scope="col">Agência</th>
+								<th className='det-th-global'scope="col">Conta</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -486,10 +490,14 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 										<td className='det-td-vendas-global'data-label="Valor Líquido"><span className={`green-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>{Number(venda.valorLiquido).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
 										<td className='det-td-vendas-global'data-label="Taxa"><span className='red-global'>{Number(venda.taxa).toFixed(2)}%</span></td>
 										<td className='det-td-vendas-global'data-label="Valor Desconto"><span className='red-global'>{Number(venda.valorDesconto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
-										<td className='det-td-vendas-global'data-label="NSU">{venda.nsu}</td>										
+										<td className='det-td-vendas-global'data-label="NSU">{venda.nsu}</td>
+										<td className='det-td-vendas-global'data-label="Nro Cartão">{venda.numeroCartao}</td>
 										<td className='det-td-vendas-global'data-label="Autorização">{venda.codigoAutorizacao}</td>
 										<td className='det-td-vendas-global'data-label="Parcela">{venda.parcela}</td>
 										<td className='det-td-vendas-global'data-label="QTD Parcelas">{venda.quantidadeParcelas}</td>
+										<td className='det-td-vendas-global'data-label="Banco">{venda.banco}</td>
+										<td className='det-td-vendas-global'data-label="Agência">{venda.agencia}</td>
+										<td className='det-td-vendas-global'data-label="Conta">{venda.conta}</td>
 									</tr>
 								)
 							})}

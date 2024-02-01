@@ -162,7 +162,7 @@ export default function GerarRelatorio({tableData, tipo}){
 		} else{
 			if(tipo === 'vendas'){
 				const columns = ['Adquirente', 'Bandeira', 'Produto', 'Subproduto', 'CNPJ', 'Valor Bruto', 'Valor Líquido', 'Taxa', 'Valor Desconto', 'NSU', 'Data Venda', 'Hora Venda', 'Data Crédito', 'Código Autorização', 'QTD PARC']
-				const rows = tableData.map(rowData => [rowData.adquirente, rowData.bandeira, rowData.produto, rowData.subproduto, rowData.cnpj, `R$ ${rowData.valorBruto}`, `R$ ${rowData.valorLiquido}`, `${rowData.taxa.toFixed(2)}%`, `R$ ${rowData.valorDesconto}`, rowData.nsu, rowData.dataVenda, rowData.horaVenda, rowData.dataCredito, rowData.codigoAutorizacao, rowData.quantidadeParcelas ])
+				const rows = tableData.map(rowData => [rowData.adquirente, rowData.bandeira, rowData.produto, rowData.subproduto, rowData.cnpj, `R$ ${rowData.valorBruto.toFixed(2)}`, `R$ ${rowData.valorLiquido.toFixed(2)}`, `${rowData.taxa.toFixed(2)}%`, `R$ ${rowData.valorDesconto.toFixed(2)}`, rowData.nsu, rowData.dataVenda, rowData.horaVenda, rowData.dataCredito, rowData.codigoAutorizacao, rowData.quantidadeParcelas ])
 		
 				const columnStyles = {};
 		
@@ -217,7 +217,7 @@ export default function GerarRelatorio({tableData, tipo}){
 				doc.save(`${tipoRelatorio} - ${nomeCliente} - ${currentDateTime}.pdf`)
 			} else if(tipo === 'creditos'){
 				const columns = ['Adquirente', 'Bandeira', 'Produto', 'Subproduto', 'CNPJ', 'Data do Crédito', 'Data da Venda', 'ValorBruto', 'Valor Líquido', 'Taxa', 'Valor Desconto', 'NSU', 'Código Autorização', 'Parcela']
-				const rows = tableData.map(rowData => [rowData.adquirente, rowData.bandeira, rowData.produto, rowData.subproduto, rowData.cnpj, rowData.dataCredito, rowData.dataVenda, `R$ ${rowData.valorBruto}`, `R$ ${rowData.valorLiquido}`, `${rowData.taxa.toFixed(2)}%`, `R$ ${rowData.valorDesconto}`, rowData.nsu, rowData.codigoAutorizacao, rowData.parcela ])
+				const rows = tableData.map(rowData => [rowData.adquirente, rowData.bandeira, rowData.produto, rowData.subproduto, rowData.cnpj, rowData.dataCredito, rowData.dataVenda, `R$ ${rowData.valorBruto.toFixed(2)}`, `R$ ${rowData.valorLiquido.toFixed(2)}`, `${rowData.taxa.toFixed(2)}%`, `R$ ${rowData.valorDesconto.toFixed(2)}`, rowData.nsu, rowData.codigoAutorizacao, rowData.parcela ])
 		
 				const columnStyles = {};
 		
