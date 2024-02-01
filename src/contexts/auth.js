@@ -36,6 +36,8 @@ function AuthProvider({ children }){
 	const [tableData, setTableData] = useState([])
 
 	const [totaisGlobal, setTotaisGlobal] = useState({debito: 0, credito: 0, voucher: 0, liquido: 0})
+	const [totaisGlobalVendas, setTotaisGlobalVendas] = useState({debito: 0, credito: 0, voucher: 0, liquido: 0})
+	const [totaisGlobalCreditos, setTotaisGlobalCreditos] = useState({debito: 0, credito: 0, voucher: 0, liquido: 0})
 
 	const [recebimentos, setRecebimentos] = useState([])
 	const [recebimentosDash, setRecebimentosDash] = useState([])
@@ -225,6 +227,8 @@ function AuthProvider({ children }){
 		setVendasDash([])
 		setTableData([])
 		setTotaisGlobal({debito: 0, credito: 0, voucher: 0, liquido: 0})
+		setTotaisGlobalVendas({debito: 0, credito: 0, voucher: 0, liquido: 0})
+		setTotaisGlobalCreditos({debito: 0, credito: 0, voucher: 0, liquido: 0})
   
 		setRecebimentos([])
 		setRecebimentosDash([])
@@ -269,6 +273,8 @@ function AuthProvider({ children }){
 
 	function resetaSomatorios(){
 		setTotaisGlobal({debito: 0, credito: 0, voucher: 0, liquido: 0})
+		setTotaisGlobalVendas({debito: 0, credito: 0, voucher: 0, liquido: 0})
+		setTotaisGlobalCreditos({debito: 0, credito: 0, voucher: 0, liquido: 0})
 		setSomatorioCreditosHojeAux(0)
 		setTotalCreditos5diasAux(0)
 		setSomatorioVendasMesAux(0)
@@ -282,6 +288,8 @@ function AuthProvider({ children }){
 		setVendas([])
 		setVendasDash([])
 		setTotaisGlobal({debito: 0, credito: 0, voucher: 0, liquido: 0})
+		setTotaisGlobalVendas({debito: 0, credito: 0, voucher: 0, liquido: 0})
+		setTotaisGlobalCreditos({debito: 0, credito: 0, voucher: 0, liquido: 0})
 		setRecebimentos([])
 		setRecebimentosDash([])
 		setVendaAtual([])
@@ -709,6 +717,18 @@ function AuthProvider({ children }){
 		return convertedDate
 	}
 
+	function timeConvert(time){
+		if(time){
+			let parts = time.split('-')
+			let hours = parts[0]
+			let minutes = parts[1]
+			let seconds = parts[2]
+	  
+			let convertedTime = hours + ':' + minutes + ':' + seconds
+			return convertedTime
+		}
+	}
+
 	function dateConvertSearch(date) {
 		let newDate = dateConvertYYYYMMDD(date)
 
@@ -1056,27 +1076,53 @@ function AuthProvider({ children }){
 
 
 	function gerarDados(array){
+		const tipoTemp = Cookies.get('tipo')
 		tableData.length = 0
 		if (array.length > 0) {
-			array.map((venda) => {
-				tableData.push({
-					adquirente: venda.adquirente.nomeAdquirente,
-					bandeira: venda.bandeira.descricaoBandeira,
-					produto: venda.produto.descricaoProduto,
-					nsu: venda.nsu,
-					cnpj: venda.cnpj,
-					codigoVenda: venda.codigoVenda,
-					codigoAutorizacao: venda.codigoAutorizacao,
-					numeroPV: venda.numeroPV,
-					valorBruto: 'R$' + venda.valorBruto.toFixed(2).replaceAll('.', ','),
-					valorLiquido: 'R$' + venda.valorLiquido.toFixed(2).replaceAll('.', ','),
-					taxa: venda.taxa.toFixed(2).replaceAll('.', ',') + '%',
-					dataVenda: dateConvert(venda.dataVenda),
-					horaVenda: venda.horaVenda,
-					dataCredito: dateConvert(venda.dataCredito),
-					parcelas: venda.quantidadeParcelas,
+			if(tipoTemp === 'vendas'){
+				array.map((venda) => {
+					tableData.push({
+						adquirente: venda.adquirente.nomeAdquirente,
+						bandeira: venda.bandeira.descricaoBandeira,
+						produto: venda.produto.descricaoProduto,
+						subproduto: venda.modalidade.descricaoModalidade,
+						cnpj: venda.cnpj,
+						valorBruto: venda.valorBruto,
+						valorLiquido: venda.valorLiquido,
+						taxa: venda.taxa,
+						valorDesconto: venda.valorDesconto,
+						nsu: venda.nsu,
+						dataVenda: dateConvert(venda.dataVenda),
+						horaVenda: timeConvert(venda.horaVenda),
+						dataCredito: dateConvert(venda.dataCredito),
+						numeroPV: venda.numeroPV,
+						cartao: venda.cartao,
+						codigoAutorizacao: venda.codigoAutorizacao,
+						quantidadeParcelas: venda.quantidadeParcelas,
+						tid: venda.tid,
+					})
 				})
-			})
+			} else if(tipoTemp === 'creditos'){
+				array.map((venda) => {
+					tableData.push({
+						adquirente: venda.adquirente.nomeAdquirente,
+						bandeira: venda.bandeira.descricaoBandeira,
+						produto: venda.produto.descricaoProduto,
+						subproduto: venda.modalidade.descricaoModalidade,
+						cnpj: venda.cnpj,
+						dataCredito: dateConvert(venda.dataCredito),
+						dataVenda: dateConvert(venda.dataVenda),
+						valorBruto: venda.valorBruto,
+						valorLiquido: venda.valorLiquido,
+						taxa: venda.taxa,
+						valorDesconto: venda.valorDesconto,
+						nsu: venda.nsu,
+						codigoAutorizacao: venda.codigoAutorizacao,
+						parcela: venda.parcela,
+
+					})
+				})
+			}
 		} 
 		return tableData
 	}
@@ -1225,6 +1271,10 @@ function AuthProvider({ children }){
 				gerarDados,
 				totaisGlobal,
 				setTotaisGlobal,
+				totaisGlobalVendas,
+				setTotaisGlobalVendas,
+				totaisGlobalCreditos,
+				setTotaisGlobalCreditos,
 				resetaSomatorios,
 				getCli,
 				showErrorMessage,

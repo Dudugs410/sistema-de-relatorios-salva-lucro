@@ -3,7 +3,6 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
 import Modal from '../Modal';
 import './grafico.scss'
-import TabelaVendasAdq from '../Componente_TabelaVendasAdq';
 import TabelaVendasCreditos from '../Componente_TabelaVendasCreditos';
 import TabelaGenerica from '../Componente_TabelaGenerica';
 
@@ -11,10 +10,32 @@ import TabelaGenerica from '../Componente_TabelaGenerica';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const PieChart = ({ data01, arrayAdm, tipo } ) => {
+const PieChart = ({ data01, arrayAdm, tipo, dados } ) => {
 
   const [selectedAdm, setSelectedAdm] = useState(null)
   const [showAdmModal, setShowAdmModal] = useState(false)
+  const [dado, setDado] = useState('')
+
+  useEffect(()=>{
+    switch (dados) {
+      case 'vendas':
+          setDado('Vendas')
+        break;
+      case 'creditos':
+          setDado('Créditos')
+        break;
+      case 'servicos':
+          setDado('Serviços')
+        break;
+      default:
+          setDado('')
+        break;
+    }
+  },[])
+
+  useEffect(()=>{
+    console.log(dado)
+  },[dado])
 
   const handleChartClick = useCallback((event, elements) => {
     if (elements.length > 0) {
@@ -110,7 +131,7 @@ const PieChart = ({ data01, arrayAdm, tipo } ) => {
       labels: data01.labels.slice(),
       datasets: [
         {
-          label: 'Total de Vendas: R$',
+          label: `Total de ${dado}: R$`,
           data: data01.data,
           backgroundColor: generateColors(data01.labels.slice()),
           borderWidth: 0.2,
@@ -138,7 +159,7 @@ const PieChart = ({ data01, arrayAdm, tipo } ) => {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             });
-            return `Total de Vendas: ${formattedValue}`;
+            return `Total de ${dado}: ${formattedValue}`;
           },
         },
       },

@@ -8,7 +8,7 @@ import '../../styles/global.scss'
 
 const TabelaVendasAdq = ({array}) =>{
 
-	const { dateConvert, tableData, gerarDados, totaisGlobal, setTotaisGlobal, isDarkTheme } = useContext(AuthContext)
+	const { dateConvert, tableData, gerarDados, totaisGlobal, setTotaisGlobal, TotaisGlobalVendas, setTotaisGlobalVendas, TotaisGlobalCreditos, setTotaisGlobalCreditos, isDarkTheme } = useContext(AuthContext)
 
 	const [vendasArray, setVendasArray] = useState([])
 
@@ -46,6 +46,9 @@ const TabelaVendasAdq = ({array}) =>{
 
 	function carregaTotais(array){
 		console.log('array: ', array)
+
+		//totais líquido:
+
 		if(array.length > 0){
 			let temp = []
 			let totalCreditoTemp = 0
@@ -120,6 +123,86 @@ const TabelaVendasAdq = ({array}) =>{
     
 			console.log('totalTemp:', totalTemp)
 			setTotaisGlobal(totalTemp)
+			setTotaisGlobalCreditos(totalTemp)
+		}
+
+		//totais Bruto:
+
+		if(array.length > 0){
+			let temp = []
+			let totalCreditoTemp = 0
+			let totalDebitoTemp = 0
+			let totalVoucherTemp = 0
+			let totalLiquidoTemp = 0
+    
+			array.forEach((venda)=>{
+				if(temp.length === 0){
+					let novoObj = {
+						nomeAdquirente: venda.adquirente.nomeAdquirente,
+						total: venda.valorBruto,
+						id: 0,
+						vendas: []
+					}
+					temp.push(novoObj)
+				}else{
+					let novoObj = {
+						nomeAdquirente: venda.adquirente.nomeAdquirente,
+						total: venda.valorBruto,
+						id: 0,
+						vendas: []
+					}
+    
+					if(!(temp.find((objeto) => objeto.nomeAdquirente === venda.adquirente.nomeAdquirente && objeto !== ( undefined || [] )))){
+						novoObj.id = (temp.length)
+						temp.push(novoObj)
+					}
+    
+					else{
+						for(let i = 0; i < temp.length; i++){
+							if(temp[i].nomeAdquirente === venda.adquirente.nomeAdquirente){
+								temp[i].total += venda.valorBruto
+							}
+						}
+					}
+				}
+				// eslint-disable-next-line default-case
+				switch(venda.produto.descricaoProduto){
+				case 'Crédito':
+					totalCreditoTemp += venda.valorBruto
+					break
+    
+				case 'Débito':
+					totalDebitoTemp += venda.valorBruto
+					break
+    
+				case 'Voucher':
+					totalVoucherTemp += venda.valorBruto
+					break
+				}
+				totalLiquidoTemp += venda.valorBruto
+			})
+			temp.forEach((adq) => {
+				let vendasTemp = []
+				vendasTemp.length = 0
+				array.forEach((vendasDia) => {
+					if(vendasDia.length > 0){
+						vendasDia.forEach((venda) => {
+							if(venda.adquirente.nomeAdquirente === adq.nomeAdquirente){
+								vendasTemp.push(venda)
+							}
+							adq.vendas = vendasTemp
+						})
+					}
+				})
+			})
+            
+			console.log('TEPM: ', temp)
+            
+			let totalTemp = {debito: totalDebitoTemp, credito: totalCreditoTemp, voucher: totalVoucherTemp, liquido: totalLiquidoTemp}
+    
+			console.log('totalTemp:', totalTemp)
+			setTotaisGlobal(totalTemp)
+			setTotaisGlobalVendas(totalTemp)
 		}
 	}
 
@@ -133,6 +216,8 @@ const TabelaVendasAdq = ({array}) =>{
 
 	useEffect(()=>{
 		console.log('totaisGlobal: ', totaisGlobal)
+		console.log('totaisGlobalVendas:', totaisGlobalVenda)
+		console.log('totaisGlobalCreditos:', totaisGlobalCreditos)
 
 	},[totaisGlobal])
 
@@ -301,15 +386,16 @@ const TabelaVendasAdq = ({array}) =>{
 							<tr className={`det-tr-top-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
 								<th className='det-th-global'scope="col">Adquirente</th>
 								<th className='det-th-global'scope="col">Bandeira</th>
+								<th className='det-th-global'scope="col">Produto</th>
+								<th className='det-th-global'scope="col">Subproduto</th>
 								<th className='det-th-global'scope="col">Valor Bruto</th>
 								<th className='det-th-global'scope="col">Valor Líquido</th>
 								<th className='det-th-global'scope="col">Valor Desconto</th>
-								<th className='det-th-global'scope="col">Produto</th>
 								<th className='det-th-global'scope="col">Data da Venda</th>
 								<th className='det-th-global'scope="col">Hora da Venda</th>
 								<th className='det-th-global'scope="col">Data do Crédito</th>
 								<th className='det-th-global'scope="col">NSU</th>
-								<th className='det-th-global'scope="col">Código da Autorização</th>
+								<th className='det-th-global'scope="col">Autorização</th>
 								<th className='det-th-global'scope="col">Número PV</th>
 							</tr>
 						</thead>
@@ -319,6 +405,7 @@ const TabelaVendasAdq = ({array}) =>{
 									<tr key={index} className={`det-tr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}  >
 										<td className='det-td-vendas-global'data-label="Adquirente">{venda.adquirente.nomeAdquirente}</td>
 										<td className='det-td-vendas-global'data-label="Bandeira">{venda.bandeira.descricaoBandeira}</td>
+										<td className='det-td-vendas-global'data-label="Subproduto">{venda.modalidade.descricaoModalidade}</td>
 										<td className='det-td-vendas-global'data-label="Valor Bruto"><span className={`green-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>{Number(venda.valorBruto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
 										<td className='det-td-vendas-global'data-label="Valor Líquido"><span className={`green-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>{Number(venda.valorLiquido).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
 										<td className='det-td-vendas-global'data-label="Valor Desconto"><span className='red-global'>{Number(venda.valorDesconto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
@@ -327,8 +414,7 @@ const TabelaVendasAdq = ({array}) =>{
 										<td className='det-td-vendas-global'data-label="Hora da Venda">{ venda.horaVenda?.replaceAll('-', ':')}</td>
 										<td className='det-td-vendas-global'data-label="Data do Crédito">{dateConvert(venda.dataCredito)}</td>
 										<td className='det-td-vendas-global'data-label="NSU">{venda.nsu}</td>
-										<td className='det-td-vendas-global'data-label="Código da Autorização">{venda.codigoAutorizacao}</td>
-										<td className='det-td-vendas-global'data-label="Numero PV">{venda.numeroPV}</td>
+										<td className='det-td-vendas-global'data-label="Autorização">{venda.codigoAutorizacao}</td>
 									</tr>
 								)
 							})}
