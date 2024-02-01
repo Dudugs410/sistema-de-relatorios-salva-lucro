@@ -6,6 +6,13 @@ import { AuthContext } from '../../contexts/auth'
 import DateRangePicker from '../../components/Componente_DateRangePicker'
 import Cookies from 'js-cookie'
 
+
+/*
+TODO:
+    - calendario -> marcar data inicial e data final
+    - tabela p vizualizar as infos (igual outras tabelas)
+
+*/
 const Servicos = () =>{
 
     const { 
@@ -133,9 +140,9 @@ const Servicos = () =>{
                     <div className='vendas-title-container'>
                         <h1 className='vendas-title'>Serviços</h1>
                     </div>
-                    <div className='hr-container'>
+                    {/* <div className='hr-container'>
                         <hr className='hr-ajustes'/>
-                    </div>
+                    </div> */}
                     <div className='date-picker-ajustes'>
                         <div className='label-picker-servicos'>
                             <DateRangePicker/>
@@ -144,22 +151,22 @@ const Servicos = () =>{
                             <button className='btn btn-primary btn-busca-servicos' onClick={handleBuscar}>Pesquisar</button>
                         </div>
                     </div>
-                    <div className='hr-container'>
+                            { totalAjustes !== undefined && (totalAjustes.map((elemento) => {
+                                return(
+                                    <div className='card-resumo-total-ajustes'>
+                                        <div className='card-resumo-content-container'>
+                                            <h1 className='h1-total-ajustes'>Resumo Total</h1>
+                                            <div className='card-ajuste-container'>
+                                                {CardServicosTotais(elemento)}                                            
+                                            </div>
+                                        </div>
+                                    </div>
+                                )
+                            }))}
+                    {/* <div className='hr-container'>
                         <hr className='hr-ajustes'/>
-                    </div>
+                    </div> */}
                     <div className='container-ajustes'>
-                        <div className='card-resumo-total-ajustes'>
-                            <div className='card-resumo-content-container'>
-                                <h1 className='h1-total-ajustes'>Resumo Total</h1>
-                                <div className='card-ajuste-container'>
-                                { totalAjustes !== undefined && (totalAjustes.map((elemento) => {
-                                    return(
-                                        CardServicosTotais(elemento)
-                                    )
-                                }))}
-                                </div>
-                            </div>
-                        </div>
 
                         <div className='filial-container'>
                             { ajustesTemp !== undefined && (ajustesTemp.map((elemento) => {

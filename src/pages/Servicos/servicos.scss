@@ -1,5 +1,14 @@
 @import '../../styles/_variables.scss';
 
+.page-servicos-background{
+    display: flex;
+    background-color: white;
+    min-height: 100vh;
+    /* width: 100%; */
+    align-content: center;
+    flex-direction: column;
+    flex-wrap: wrap;
+}
 .app-page-servicos{
     display: contents;
     flex-direction: column;
@@ -19,15 +28,6 @@
     color: $primary-color-light;
 }
 
-.page-servicos-background{
-    display: flex;
-    background-color: $primary-color-light;
-    min-height: 100vh;
-    /* width: 100%; */
-    align-content: center;
-    flex-direction: column;
-    flex-wrap: wrap;
-}
 
 .page-content-servicos{
     /*height: 100vh; */
