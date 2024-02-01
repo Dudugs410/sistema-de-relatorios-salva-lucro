@@ -53,6 +53,13 @@ const Vendas = () =>{
   const [detalhes, setDetalhes] = useState(false)
   const [dataBusca, setDataBusca] = useState(new Date())
 
+  const [tipo, setTipo] = useState('vendas')
+
+  useEffect(()=>{
+    setTipo('vendas')
+    Cookies.set('tipo', 'vendas')
+  },[])
+
   // possivelmente utilizar estes parametros para realizar busca por período
 
   const [cnpjBusca, setCnpjBusca] = useState(Cookies.get('cnpj'))

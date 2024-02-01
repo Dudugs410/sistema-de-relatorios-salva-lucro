@@ -45,6 +45,13 @@ const Creditos = () =>{
 		setCreditos([])
 	},[])
 
+	const [tipo, setTipo] = useState('vendas')
+
+	useEffect(()=>{
+	  setTipo('creditos')
+	  Cookies.set('tipo', 'creditos')
+	},[])
+
 	const [totalCredito, setTotalCredito] = useState(0.00)
 	const [totalDebito, setTotalDebito] = useState(0.00)
 	const [totalVoucher, setTotalVoucher] = useState(0.00)
@@ -247,7 +254,7 @@ const Creditos = () =>{
 						<hr className="hr-recebimentos"/>
 						<TotalModalidadesComp tipo = 'creditos'/>
 						<hr className="hr-recebimentos"/>
-						{ (detalhes) && (creditos.length > 0) ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
+						{ (detalhes) && (creditos.length > 0) ? <GerarRelatorio className='export' tableData={tableData} detalhes={detalhes} tipo='creditos'/> : <></> }
 						<div className='component-container-vendas'>
 							{ (detalhes) && (creditos.length > 0) ?  <TabelaVendasCreditos array={creditos} tipo = 'creditos'/> : <MyCalendar className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/> }
 							<hr className="hr-recebimentos"/>

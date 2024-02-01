@@ -14,8 +14,6 @@ import Cookies from 'js-cookie'
 
 export default function GerarRelatorio({tableData, tipo}){
 
-	console.log('GERAR RELATÓRIO: ')
-
 	const [tipoRelatorio, setTipoRelatorio] = useState('')
 
 	const storedNomeCliente = Cookies.get('Selecionado');
@@ -86,20 +84,63 @@ export default function GerarRelatorio({tableData, tipo}){
 		const headers = Object.keys(tableData[0])
 		worksheet.addRow(headers)
     
-		// Add data rows
-		tableData.forEach((rowData) => {
-			const values = Object.values(rowData)
-			worksheet.addRow(values)
-		})
-    
-		// Generate Excel file
-		workbook.xlsx.writeBuffer()
+		if(tipo === 'vendas'){
+			// Add data rows
+			tableData.forEach((rowData) => {
+				const values = Object.keys(rowData).map((key) => {
+					// Check if the key is a numeric field that should have "R$" added
+					if (key === 'valorBruto' || key === 'valorLiquido' || key === 'valorDesconto') {
+						// Keep the numeric value unchanged, format with 2 decimal places
+						return Number(rowData[key].toFixed(2));
+					} else if (key === 'taxa') {
+						// Keep the numeric value unchanged, format with 2 decimal places
+						return Number(rowData[key].toFixed(2));
+					} else {
+						return rowData[key];
+					}
+				});
+			
+				worksheet.addRow(values);
+			});
+		
+			// Generate Excel file
+			workbook.xlsx.writeBuffer()
+				.then((buffer) => {
+					saveExcelFile(buffer, `${tipoRelatorio} - ${nomeCliente} - ${currentDateTime}.xlsx`)
+				})
+				.catch((error) => {
+					console.error('Error generating Excel file:', error)
+				})
+		} else if(tipo === 'creditos'){
+			// Add data rows
+			tableData.forEach((rowData) => {
+				const values = Object.keys(rowData).map((key) => {
+					// Check if the key is a numeric field that should have "R$" added
+					if (key === 'valorBruto' || key === 'valorLiquido' || key === 'valorDesconto') {
+						// Keep the numeric value unchanged, format with 2 decimal places
+						return Number(rowData[key].toFixed(2));
+					} else if (key === 'taxa') {
+						// Keep the numeric value unchanged, format with 2 decimal places
+						return Number(rowData[key].toFixed(2));
+					} else {
+						return rowData[key];
+					}
+				});
+			
+				worksheet.addRow(values);
+			});
+		
+			// Generate Excel file
+			workbook.xlsx.writeBuffer()
 			.then((buffer) => {
-				saveExcelFile(buffer, `${tipoRelatorio} ${nomeCliente} ${currentDateTime}.xlsx`)
+				saveExcelFile(buffer, `${tipoRelatorio} - ${nomeCliente} - ${currentDateTime}.xlsx`)
 			})
 			.catch((error) => {
 				console.error('Error generating Excel file:', error)
 			})
+		}
+
+		
 	}
     
 	const saveExcelFile = (buffer, fileName) => {
@@ -115,64 +156,122 @@ export default function GerarRelatorio({tableData, tipo}){
 
 	const generatePdf = () => {
 		if (!tableData || tableData.length === 0) {
+			console.log('tableData: ', tableData)
 			alert('Sem dados para exportar')
 			return
-		}
+		} else{
+			if(tipo === 'vendas'){
+				const columns = ['Adquirente', 'Bandeira', 'Produto', 'Subproduto', 'CNPJ', 'Valor Bruto', 'Valor Líquido', 'Taxa', 'Valor Desconto', 'NSU', 'Data Venda', 'Hora Venda', 'Data Crédito', 'Código Autorização', 'QTD PARC']
+				const rows = tableData.map(rowData => [rowData.adquirente, rowData.bandeira, rowData.produto, rowData.subproduto, rowData.cnpj, `R$ ${rowData.valorBruto}`, `R$ ${rowData.valorLiquido}`, `${rowData.taxa.toFixed(2)}%`, `R$ ${rowData.valorDesconto}`, rowData.nsu, rowData.dataVenda, rowData.horaVenda, rowData.dataCredito, rowData.codigoAutorizacao, rowData.quantidadeParcelas ])
 		
-		const columns = ['Adquirente', 'Bandeira', 'Produto', 'Subproduto', 'CNPJ', 'Valor Bruto', 'Valor Líquido', 'Taxa', 'Valor Desconto', 'NSU', 'Data Venda', 'Hora Venda', 'Data Crédito', 'Código Autorização', 'QTD PARC']
-		const rows = tableData.map(rowData => [rowData.adquirente, rowData.bandeira, rowData.produto, rowData.subproduto, rowData.cnpj, `R$ ${rowData.valorBruto}`, `R$ ${rowData.valorLiquido}`, `${rowData.taxa.toFixed(2)}%`, `R$ ${rowData.valorDesconto}`, rowData.nsu, rowData.dataVenda, rowData.horaVenda, rowData.dataCredito, rowData.codigoAutorizacao, rowData.quantidadeParcelas ])
-
-		const columnStyles = {};
-
-		for (let i = 0; i < columns.length; i++) {
-			columnStyles[i] = { 
-			align: 'center',
-			valign: 'middle',
-			halign : 'center', };
-		}
-
-		const doc = new jsPDF({
-			orientation: 'landscape',
-			unit: 'mm',
-			format: 'a3',
-		})
-
-		const styles = {
-			cellPadding: 2, // Adjust the padding as needed
-			align: 'center', // Set the text alignment to center
-		  };
-
-		var myImg = imgExport
-
-		doc.autoTable({
-			head: [columns],
-			body: rows,
-			margin: {top: 30},
-			headStyles : {
-				fillColor : [10, 61, 112],
-				valign: 'middle',
-				halign : 'center',
-			},
-			styles: styles,
-			columnStyles: columnStyles,
-			didDrawPage: function (data) {
-				// Add an image to each page in the top right corner
-				const imageWidth = 80 // Adjust width as needed
-				const imageHeight = 13 // Adjust height as needed
-				const positionX = 310
-				const positionY = 8
-
-				const text = `${tipoRelatorio} ${nomeCliente}`;
-				const textX = 14; // Adjust the X-coordinate as needed
-				const textY = 18; // Adjust the Y-coordinate as needed
-
-				doc.text(text, textX, textY);
-
-				doc.addImage(myImg, 'PNG', positionX, positionY, imageWidth, imageHeight)
+				const columnStyles = {};
+		
+				for (let i = 0; i < columns.length; i++) {
+					columnStyles[i] = { 
+					align: 'center',
+					valign: 'middle',
+					halign : 'center', };
+				}
+		
+				const doc = new jsPDF({
+					orientation: 'landscape',
+					unit: 'mm',
+					format: 'a3',
+				})
+		
+				const styles = {
+					cellPadding: 2, // Adjust the padding as needed
+					align: 'center', // Set the text alignment to center
+				  };
+		
+				var myImg = imgExport
+		
+				doc.autoTable({
+					head: [columns],
+					body: rows,
+					margin: {top: 30},
+					headStyles : {
+						fillColor : [10, 61, 112],
+						valign: 'middle',
+						halign : 'center',
+					},
+					styles: styles,
+					columnStyles: columnStyles,
+					didDrawPage: function (data) {
+						// Add an image to each page in the top right corner
+						const imageWidth = 80 // Adjust width as needed
+						const imageHeight = 13 // Adjust height as needed
+						const positionX = 310
+						const positionY = 8
+		
+						const text = `${tipoRelatorio} ${nomeCliente}`;
+						const textX = 14; // Adjust the X-coordinate as needed
+						const textY = 18; // Adjust the Y-coordinate as needed
+		
+						doc.text(text, textX, textY);
+		
+						doc.addImage(myImg, 'PNG', positionX, positionY, imageWidth, imageHeight)
+					}
+				})
+			
+				doc.save(`${tipoRelatorio} - ${nomeCliente} - ${currentDateTime}.pdf`)
+			} else if(tipo === 'creditos'){
+				const columns = ['Adquirente', 'Bandeira', 'Produto', 'Subproduto', 'CNPJ', 'Data do Crédito', 'Data da Venda', 'ValorBruto', 'Valor Líquido', 'Taxa', 'Valor Desconto', 'NSU', 'Código Autorização', 'Parcela']
+				const rows = tableData.map(rowData => [rowData.adquirente, rowData.bandeira, rowData.produto, rowData.subproduto, rowData.cnpj, rowData.dataCredito, rowData.dataVenda, `R$ ${rowData.valorBruto}`, `R$ ${rowData.valorLiquido}`, `${rowData.taxa.toFixed(2)}%`, `R$ ${rowData.valorDesconto}`, rowData.nsu, rowData.codigoAutorizacao, rowData.parcela ])
+		
+				const columnStyles = {};
+		
+				for (let i = 0; i < columns.length; i++) {
+					columnStyles[i] = { 
+					align: 'center',
+					valign: 'middle',
+					halign : 'center', };
+				}
+		
+				const doc = new jsPDF({
+					orientation: 'landscape',
+					unit: 'mm',
+					format: 'a3',
+				})
+		
+				const styles = {
+					cellPadding: 2, // Adjust the padding as needed
+					align: 'center', // Set the text alignment to center
+				  };
+		
+				var myImg = imgExport
+		
+				doc.autoTable({
+					head: [columns],
+					body: rows,
+					margin: {top: 30},
+					headStyles : {
+						fillColor : [10, 61, 112],
+						valign: 'middle',
+						halign : 'center',
+					},
+					styles: styles,
+					columnStyles: columnStyles,
+					didDrawPage: function (data) {
+						// Add an image to each page in the top right corner
+						const imageWidth = 80 // Adjust width as needed
+						const imageHeight = 13 // Adjust height as needed
+						const positionX = 310
+						const positionY = 8
+		
+						const text = `${tipoRelatorio} ${nomeCliente}`;
+						const textX = 14; // Adjust the X-coordinate as needed
+						const textY = 18; // Adjust the Y-coordinate as needed
+		
+						doc.text(text, textX, textY);
+		
+						doc.addImage(myImg, 'PNG', positionX, positionY, imageWidth, imageHeight)
+					}
+				})
+			
+				doc.save(`${tipoRelatorio} - ${nomeCliente} - ${currentDateTime}.pdf`)
 			}
-		})
-    
-		doc.save(`${tipoRelatorio} - ${nomeCliente} - ${currentDateTime}.pdf`)
+		}
 	}
     
 

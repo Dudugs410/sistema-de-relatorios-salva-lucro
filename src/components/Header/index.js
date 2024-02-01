@@ -113,6 +113,9 @@ const Header = () =>{
                 case 'Créditos':
                     arrayOpcoes.push({ rota: '/creditos', nome: 'Créditos', id: obj.id, icone: icones['FiCreditCard'] });
                     break;
+                case 'Serviços':
+                    arrayOpcoes.push({ rota: '/servicos', nome: 'Serviços', id: obj.id, icone: icones['FiTool'] });
+                    break;
                 // Add other cases here if needed
                 default:
                     console.log('Opção Não encontrada ou ainda não implementada...');

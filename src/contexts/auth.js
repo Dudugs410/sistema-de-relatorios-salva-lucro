@@ -1076,30 +1076,53 @@ function AuthProvider({ children }){
 
 
 	function gerarDados(array){
+		const tipoTemp = Cookies.get('tipo')
 		tableData.length = 0
 		if (array.length > 0) {
-			array.map((venda) => {
-				tableData.push({
-					adquirente: venda.adquirente.nomeAdquirente,
-					bandeira: venda.bandeira.descricaoBandeira,
-					produto: venda.produto.descricaoProduto,
-					subproduto: venda.modalidade.descricaoModalidade,
-					cnpj: venda.cnpj,
-					valorBruto: venda.valorBruto,
-					valorLiquido: venda.valorLiquido,
-					taxa: venda.taxa,
-					valorDesconto: venda.valorDesconto,
-					nsu: venda.nsu,
-					dataVenda: dateConvert(venda.dataVenda),
-					horaVenda: timeConvert(venda.horaVenda),
-					dataCredito: dateConvert(venda.dataCredito),
-					numeroPV: venda.numeroPV,
-					cartao: venda.cartao,
-					codigoAutorizacao: venda.codigoAutorizacao,
-					quantidadeParcelas: venda.quantidadeParcelas,
-					tid: venda.tid,
+			if(tipoTemp === 'vendas'){
+				array.map((venda) => {
+					tableData.push({
+						adquirente: venda.adquirente.nomeAdquirente,
+						bandeira: venda.bandeira.descricaoBandeira,
+						produto: venda.produto.descricaoProduto,
+						subproduto: venda.modalidade.descricaoModalidade,
+						cnpj: venda.cnpj,
+						valorBruto: venda.valorBruto,
+						valorLiquido: venda.valorLiquido,
+						taxa: venda.taxa,
+						valorDesconto: venda.valorDesconto,
+						nsu: venda.nsu,
+						dataVenda: dateConvert(venda.dataVenda),
+						horaVenda: timeConvert(venda.horaVenda),
+						dataCredito: dateConvert(venda.dataCredito),
+						numeroPV: venda.numeroPV,
+						cartao: venda.cartao,
+						codigoAutorizacao: venda.codigoAutorizacao,
+						quantidadeParcelas: venda.quantidadeParcelas,
+						tid: venda.tid,
+					})
 				})
-			})
+			} else if(tipoTemp === 'creditos'){
+				array.map((venda) => {
+					tableData.push({
+						adquirente: venda.adquirente.nomeAdquirente,
+						bandeira: venda.bandeira.descricaoBandeira,
+						produto: venda.produto.descricaoProduto,
+						subproduto: venda.modalidade.descricaoModalidade,
+						cnpj: venda.cnpj,
+						dataCredito: dateConvert(venda.dataCredito),
+						dataVenda: dateConvert(venda.dataVenda),
+						valorBruto: venda.valorBruto,
+						valorLiquido: venda.valorLiquido,
+						taxa: venda.taxa,
+						valorDesconto: venda.valorDesconto,
+						nsu: venda.nsu,
+						codigoAutorizacao: venda.codigoAutorizacao,
+						parcela: venda.parcela,
+
+					})
+				})
+			}
 		} 
 		return tableData
 	}
