@@ -5,12 +5,12 @@ import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../../contexts/auth'
 import { FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward } from 'react-icons/fi'
 
-import './detalhesCredito.scss'
 import '../../styles/global.scss'
+import './detalhesCredito.scss'
 
-const TabelaVendasCreditos = ({array}) =>{
+const TabelaVendasCreditos = ({array, tipo}) =>{
 
-	const { vendas, creditos, dateConvert, tableData, gerarDados, totaisGlobal, setTotaisGlobal, isDarkTheme } = useContext(AuthContext)
+	const { vendas, creditos, dateConvert, tableData, gerarDados, totaisGlobal, setTotaisGlobal, totaisGlobalVendas, setTotaisGlobalVendas, totaisGlobalCreditos, setTotaisGlobalCreditos, isDarkTheme } = useContext(AuthContext)
 
 	const [vendasArray, setVendasArray] = useState([])
 
@@ -68,9 +68,6 @@ const TabelaVendasCreditos = ({array}) =>{
 
 	useEffect(()=>{
 		if(array.length > 0){
-			console.log('array recebido como parâmetro: ', array)
-			console.log('Array vendas: ', vendas)
-			console.log('Array créditos: ', creditos)
 			setVendasArray(array)
 		}
 	},[])
@@ -88,7 +85,8 @@ const TabelaVendasCreditos = ({array}) =>{
 	},[array])
 
 	function carregaTotais(array){
-		console.log('array: ', array)
+		//totais líquido:
+
 		if(array.length > 0){
 			let temp = []
 			let totalCreditoTemp = 0
@@ -157,12 +155,82 @@ const TabelaVendasCreditos = ({array}) =>{
 				})
 			})
             
-			console.log('TEPM: ', temp)
+			let totalTemp = {debito: totalDebitoTemp, credito: totalCreditoTemp, voucher: totalVoucherTemp, liquido: totalLiquidoTemp}
+			setTotaisGlobalCreditos(totalTemp)
+		}
+
+		//totais Bruto:
+
+		if(array.length > 0){
+			let temp = []
+			let totalCreditoTemp = 0
+			let totalDebitoTemp = 0
+			let totalVoucherTemp = 0
+			let totalLiquidoTemp = 0
+    
+			array.forEach((venda)=>{
+				if(temp.length === 0){
+					let novoObj = {
+						nomeAdquirente: venda.adquirente.nomeAdquirente,
+						total: venda.valorBruto,
+						id: 0,
+						vendas: []
+					}
+					temp.push(novoObj)
+				}else{
+					let novoObj = {
+						nomeAdquirente: venda.adquirente.nomeAdquirente,
+						total: venda.valorBruto,
+						id: 0,
+						vendas: []
+					}
+    
+					if(!(temp.find((objeto) => objeto.nomeAdquirente === venda.adquirente.nomeAdquirente && objeto !== ( undefined || [] )))){
+						novoObj.id = (temp.length)
+						temp.push(novoObj)
+					}
+    
+					else{
+						for(let i = 0; i < temp.length; i++){
+							if(temp[i].nomeAdquirente === venda.adquirente.nomeAdquirente){
+								temp[i].total += venda.valorBruto
+							}
+						}
+					}
+				}
+				// eslint-disable-next-line default-case
+				switch(venda.produto.descricaoProduto){
+				case 'Crédito':
+					totalCreditoTemp += venda.valorBruto
+					break
+    
+				case 'Débito':
+					totalDebitoTemp += venda.valorBruto
+					break
+    
+				case 'Voucher':
+					totalVoucherTemp += venda.valorBruto
+					break
+				}
+				totalLiquidoTemp += venda.valorBruto
+			})
+			temp.forEach((adq) => {
+				let vendasTemp = []
+				vendasTemp.length = 0
+				array.forEach((vendasDia) => {
+					if(vendasDia.length > 0){
+						vendasDia.forEach((venda) => {
+							if(venda.adquirente.nomeAdquirente === adq.nomeAdquirente){
+								vendasTemp.push(venda)
+							}
+							adq.vendas = vendasTemp
+						})
+					}
+				})
+			})
             
 			let totalTemp = {debito: totalDebitoTemp, credito: totalCreditoTemp, voucher: totalVoucherTemp, liquido: totalLiquidoTemp}
-    
-			console.log('totalTemp:', totalTemp)
-			setTotaisGlobal(totalTemp)
+			setTotaisGlobalVendas(totalTemp)
 		}
 	}
 
@@ -176,17 +244,10 @@ const TabelaVendasCreditos = ({array}) =>{
 	},[vendasExibicao])
 
 	useEffect(()=>{
-		console.log('totaisGlobal: ', totaisGlobal)
-
-	},[totaisGlobal])
-
-	useEffect(()=>{
 		console.log('dados a serem exportados: ', tableData)
-
 	},[tableData])
 
 	useEffect(()=>{
-		console.log('vendasTeste: ', vendasTeste)
 
 		setVendasExibicao(vendasTeste)
 
@@ -209,8 +270,6 @@ const TabelaVendasCreditos = ({array}) =>{
 				adquirentesTemp.push(item.adquirente.nomeAdquirente)
 			}
 		})
-		console.log('bandeirasTemp: ', bandeirasTemp)
-		console.log('adquirentesTemp: ',adquirentesTemp)
 
 		setBandeirasExistentes(bandeirasTemp)
 		setTodasBandeiras(bandeirasTemp)
@@ -256,9 +315,7 @@ const TabelaVendasCreditos = ({array}) =>{
 	}
 
 	useEffect(()=>{
-		console.log('mudou a bandeira selecionada')
 		if(adquirentesExistentes.length > 0 && bandeirasExistentes.length > 0){
-			console.log('**** adquirentes e bandeiras > 0 ****')
 			atualizaADQ()
 		}
 
@@ -284,7 +341,6 @@ const TabelaVendasCreditos = ({array}) =>{
 	},[banSelecionada])
 
 	useEffect(()=>{
-		console.log('mudou a adquirente selecionada')
 		if(adquirentesExistentes.length > 0 && bandeirasExistentes.length > 0){
 			atualizaBAN()
 		}
@@ -307,14 +363,6 @@ const TabelaVendasCreditos = ({array}) =>{
 		}
 
 	},[adqSelecionada])
-
-	useEffect(()=>{
-		console.log('bandeiras existentes na consulta: ', bandeirasExistentes)
-	},[bandeirasExistentes])
-
-	useEffect(()=>{
-		console.log('adquirentes existentes na consulta: ', adquirentesExistentes)
-	},[adquirentesExistentes])
 
 	const [style, setStyle] = useState({})
 
@@ -357,22 +405,25 @@ const TabelaVendasCreditos = ({array}) =>{
 			</div>
 			<div className='dropShadow vendas-view'>
 				<div className={`table-wrapper ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
+				{ tipo === 'vendas' ?
 					<table className={`table table-striped det-table-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
 						<thead>
 							<tr className={`det-tr-top-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
 								<th className='det-th-global'scope="col">Adquirente</th>
 								<th className='det-th-global'scope="col">Bandeira</th>
+								<th className='det-th-global'scope="col">Produto</th>
+								<th className='det-th-global'scope="col">Subproduto</th>
+								<th className='det-th-global'scope="col">CNPJ</th>
 								<th className='det-th-global'scope="col">Valor Bruto</th>
 								<th className='det-th-global'scope="col">Valor Líquido</th>
 								<th className='det-th-global'scope="col">Taxa</th>
 								<th className='det-th-global'scope="col">Valor Desconto</th>
-								<th className='det-th-global'scope="col">Produto</th>
+								<th className='det-th-global'scope="col">NSU</th>
 								<th className='det-th-global'scope="col">Data da Venda</th>
 								<th className='det-th-global'scope="col">Hora da Venda</th>
 								<th className='det-th-global'scope="col">Data do Crédito</th>
-								<th className='det-th-global'scope="col">NSU</th>
-								<th className='det-th-global'scope="col">Código da Autorização</th>
-								<th className='det-th-global'scope="col">Número PV</th>
+								<th className='det-th-global'scope="col">Autorização</th>
+								<th className='det-th-global'scope="col">QTD Parcelas</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -381,22 +432,70 @@ const TabelaVendasCreditos = ({array}) =>{
 									<tr key={index} className={`det-tr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}  >
 										<td className='det-td-vendas-global'data-label="Adquirente">{venda.adquirente.nomeAdquirente}</td>
 										<td className='det-td-vendas-global'data-label="Bandeira">{venda.bandeira.descricaoBandeira}</td>
+										<td className='det-td-vendas-global'data-label="Produto">{venda.produto.descricaoProduto}</td>
+										<td className='det-td-vendas-global'data-label="Subproduto">{venda.modalidade.descricaoModalidade}</td>
+										<td className='det-td-vendas-global'data-label="CNPJ">{venda.cnpj}</td>
 										<td className='det-td-vendas-global'data-label="Valor Bruto"><span className={`green-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>{Number(venda.valorBruto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
 										<td className='det-td-vendas-global'data-label="Valor Líquido"><span className={`green-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>{Number(venda.valorLiquido).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
-										<td className='det-td-vendas-global'data-label="Taxa"><span className='red-global'>{Number(venda.taxa)}%</span></td>
+										<td className='det-td-vendas-global'data-label="Taxa"><span className='red-global'>{Number(venda.taxa).toFixed(2)}%</span></td>
 										<td className='det-td-vendas-global'data-label="Valor Desconto"><span className='red-global'>{Number(venda.valorDesconto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
-										<td className='det-td-vendas-global'data-label="Produto">{venda.produto.descricaoProduto}</td>
+										<td className='det-td-vendas-global'data-label="NSU">{venda.nsu}</td>
 										<td className='det-td-vendas-global'data-label="Data da Venda">{dateConvert(venda.dataVenda)}</td>
 										<td className='det-td-vendas-global'data-label="Hora da Venda">{ venda.horaVenda?.replaceAll('-', ':')}</td>
 										<td className='det-td-vendas-global'data-label="Data do Crédito">{dateConvert(venda.dataCredito)}</td>
-										<td className='det-td-vendas-global'data-label="NSU">{venda.nsu}</td>
-										<td className='det-td-vendas-global'data-label="Código da Autorização">{venda.codigoAutorizacao}</td>
-										<td className='det-td-vendas-global'data-label="Numero PV">{venda.numeroPV}</td>
+										<td className='det-td-vendas-global'data-label="Autorização">{venda.codigoAutorizacao}</td>
+										<td className='det-td-vendas-global'data-label="QTD Parcelas">{venda.quantidadeParcelas}</td>
+									</tr>
+								)
+							})}
+						</tbody>
+					</table> 
+					: 
+					<table className={`table table-striped det-table-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+						<thead>
+							<tr className={`det-tr-top-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+								<th className='det-th-global'scope="col">Adquirente</th>
+								<th className='det-th-global'scope="col">Bandeira</th>
+								<th className='det-th-global'scope="col">Produto</th>
+								<th className='det-th-global'scope="col">Subproduto</th>
+								<th className='det-th-global'scope="col">CNPJ</th>
+								<th className='det-th-global'scope="col">Data do Crédito</th>
+								<th className='det-th-global'scope="col">Data da Venda</th>
+								<th className='det-th-global'scope="col">Valor Bruto</th>
+								<th className='det-th-global'scope="col">Valor Líquido</th>
+								<th className='det-th-global'scope="col">Taxa</th>
+								<th className='det-th-global'scope="col">Valor Desconto</th>
+								<th className='det-th-global'scope="col">NSU</th>
+								<th className='det-th-global'scope="col">Autorização</th>
+								<th className='det-th-global'scope="col">Parcela</th>
+								<th className='det-th-global'scope="col">QTD Parcelas</th>
+							</tr>
+						</thead>
+						<tbody>
+							{vendasExibicao.length > 0 && currentItems.map((venda, index)=>{
+								return(
+									<tr key={index} className={`det-tr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}  >
+										<td className='det-td-vendas-global'data-label="Adquirente">{venda.adquirente.nomeAdquirente}</td>
+										<td className='det-td-vendas-global'data-label="Bandeira">{venda.bandeira.descricaoBandeira}</td>
+										<td className='det-td-vendas-global'data-label="Produto">{venda.produto.descricaoProduto}</td>
+										<td className='det-td-vendas-global'data-label="Subproduto">{venda.modalidade.descricaoModalidade}</td>
+										<td className='det-td-vendas-global'data-label="CNPJ">{venda.cnpj}</td>
+										<td className='det-td-vendas-global'data-label="Data do Crédito">{dateConvert(venda.dataCredito)}</td>
+										<td className='det-td-vendas-global'data-label="Data da Venda">{dateConvert(venda.dataVenda)}</td>
+										<td className='det-td-vendas-global'data-label="Valor Bruto"><span className={`green-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>{Number(venda.valorBruto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
+										<td className='det-td-vendas-global'data-label="Valor Líquido"><span className={`green-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>{Number(venda.valorLiquido).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
+										<td className='det-td-vendas-global'data-label="Taxa"><span className='red-global'>{Number(venda.taxa).toFixed(2)}%</span></td>
+										<td className='det-td-vendas-global'data-label="Valor Desconto"><span className='red-global'>{Number(venda.valorDesconto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
+										<td className='det-td-vendas-global'data-label="NSU">{venda.nsu}</td>										
+										<td className='det-td-vendas-global'data-label="Autorização">{venda.codigoAutorizacao}</td>
+										<td className='det-td-vendas-global'data-label="Parcela">{venda.parcela}</td>
+										<td className='det-td-vendas-global'data-label="QTD Parcelas">{venda.quantidadeParcelas}</td>
 									</tr>
 								)
 							})}
 						</tbody>
 					</table>
+					 }
 				</div>
 			</div>
 			{vendasExibicao.length > itemsPerPage && (
