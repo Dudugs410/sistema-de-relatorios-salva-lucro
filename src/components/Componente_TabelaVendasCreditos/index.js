@@ -318,7 +318,6 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 		if(adquirentesExistentes.length > 0 && bandeirasExistentes.length > 0){
 			atualizaADQ()
 		}
-
 		if(banSelecionada === '' && adqSelecionada === ''){
 			setVendasExibicao(vendasTeste)
 		} 
@@ -337,7 +336,6 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 			let arrayFiltrado = vendasTeste.filter(venda => venda.adquirente.nomeAdquirente === adqSelecionada)
 			setVendasExibicao(arrayFiltrado)
 		}
-
 	},[banSelecionada])
 
 	useEffect(()=>{
@@ -409,11 +407,11 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 					<table className={`table table-striped det-table-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
 						<thead>
 							<tr className={`det-tr-top-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+								<th className='det-th-global'scope="col">CNPJ</th>
 								<th className='det-th-global'scope="col">Adquirente</th>
 								<th className='det-th-global'scope="col">Bandeira</th>
 								<th className='det-th-global'scope="col">Produto</th>
 								<th className='det-th-global'scope="col">Subproduto</th>
-								<th className='det-th-global'scope="col">CNPJ</th>
 								<th className='det-th-global'scope="col">Valor Bruto</th>
 								<th className='det-th-global'scope="col">Valor Líquido</th>
 								<th className='det-th-global'scope="col">Taxa</th>
@@ -430,11 +428,11 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 							{vendasExibicao.length > 0 && currentItems.map((venda, index)=>{
 								return(
 									<tr key={index} className={`det-tr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}  >
+										<td className='det-td-vendas-global'data-label="CNPJ">{venda.cnpj}</td>
 										<td className='det-td-vendas-global'data-label="Adquirente">{venda.adquirente.nomeAdquirente}</td>
 										<td className='det-td-vendas-global'data-label="Bandeira">{venda.bandeira.descricaoBandeira}</td>
 										<td className='det-td-vendas-global'data-label="Produto">{venda.produto.descricaoProduto}</td>
 										<td className='det-td-vendas-global'data-label="Subproduto">{venda.modalidade.descricaoModalidade}</td>
-										<td className='det-td-vendas-global'data-label="CNPJ">{venda.cnpj}</td>
 										<td className='det-td-vendas-global'data-label="Valor Bruto"><span className={`green-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>{Number(venda.valorBruto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
 										<td className='det-td-vendas-global'data-label="Valor Líquido"><span className={`green-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>{Number(venda.valorLiquido).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
 										<td className='det-td-vendas-global'data-label="Taxa"><span className='red-global'>{Number(venda.taxa).toFixed(2)}%</span></td>
@@ -454,11 +452,11 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 					<table className={`table table-striped det-table-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
 						<thead>
 							<tr className={`det-tr-top-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+								<th className='det-th-global'scope="col">CNPJ</th>
 								<th className='det-th-global'scope="col">Adquirente</th>
 								<th className='det-th-global'scope="col">Bandeira</th>
 								<th className='det-th-global'scope="col">Produto</th>
 								<th className='det-th-global'scope="col">Subproduto</th>
-								<th className='det-th-global'scope="col">CNPJ</th>
 								<th className='det-th-global'scope="col">Data do Crédito</th>
 								<th className='det-th-global'scope="col">Data da Venda</th>
 								<th className='det-th-global'scope="col">Valor Bruto</th>
@@ -469,27 +467,33 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 								<th className='det-th-global'scope="col">Autorização</th>
 								<th className='det-th-global'scope="col">Parcela</th>
 								<th className='det-th-global'scope="col">QTD Parcelas</th>
+								<th className='det-th-global'scope="col">Banco</th>
+								<th className='det-th-global'scope="col">Agência</th>
+								<th className='det-th-global'scope="col">Conta</th>
 							</tr>
 						</thead>
 						<tbody>
 							{vendasExibicao.length > 0 && currentItems.map((venda, index)=>{
 								return(
 									<tr key={index} className={`det-tr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}  >
+										<td className='det-td-vendas-global'data-label="CNPJ">{venda.cnpj}</td>
 										<td className='det-td-vendas-global'data-label="Adquirente">{venda.adquirente.nomeAdquirente}</td>
 										<td className='det-td-vendas-global'data-label="Bandeira">{venda.bandeira.descricaoBandeira}</td>
 										<td className='det-td-vendas-global'data-label="Produto">{venda.produto.descricaoProduto}</td>
 										<td className='det-td-vendas-global'data-label="Subproduto">{venda.modalidade.descricaoModalidade}</td>
-										<td className='det-td-vendas-global'data-label="CNPJ">{venda.cnpj}</td>
 										<td className='det-td-vendas-global'data-label="Data do Crédito">{dateConvert(venda.dataCredito)}</td>
 										<td className='det-td-vendas-global'data-label="Data da Venda">{dateConvert(venda.dataVenda)}</td>
 										<td className='det-td-vendas-global'data-label="Valor Bruto"><span className={`green-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>{Number(venda.valorBruto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
 										<td className='det-td-vendas-global'data-label="Valor Líquido"><span className={`green-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>{Number(venda.valorLiquido).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
 										<td className='det-td-vendas-global'data-label="Taxa"><span className='red-global'>{Number(venda.taxa).toFixed(2)}%</span></td>
 										<td className='det-td-vendas-global'data-label="Valor Desconto"><span className='red-global'>{Number(venda.valorDesconto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
-										<td className='det-td-vendas-global'data-label="NSU">{venda.nsu}</td>										
+										<td className='det-td-vendas-global'data-label="NSU">{venda.nsu}</td>
 										<td className='det-td-vendas-global'data-label="Autorização">{venda.codigoAutorizacao}</td>
 										<td className='det-td-vendas-global'data-label="Parcela">{venda.parcela}</td>
 										<td className='det-td-vendas-global'data-label="QTD Parcelas">{venda.quantidadeParcelas}</td>
+										<td className='det-td-vendas-global'data-label="Banco">{venda.banco}</td>
+										<td className='det-td-vendas-global'data-label="Agência">{venda.agencia}</td>
+										<td className='det-td-vendas-global'data-label="Conta">{venda.conta}</td>
 									</tr>
 								)
 							})}
