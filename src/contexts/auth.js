@@ -1082,11 +1082,11 @@ function AuthProvider({ children }){
 			if(tipoTemp === 'vendas'){
 				array.map((venda) => {
 					tableData.push({
+						cnpj: venda.cnpj,
 						adquirente: venda.adquirente.nomeAdquirente,
 						bandeira: venda.bandeira.descricaoBandeira,
 						produto: venda.produto.descricaoProduto,
 						subproduto: venda.modalidade.descricaoModalidade,
-						cnpj: venda.cnpj,
 						valorBruto: venda.valorBruto,
 						valorLiquido: venda.valorLiquido,
 						taxa: venda.taxa,
@@ -1105,11 +1105,11 @@ function AuthProvider({ children }){
 			} else if(tipoTemp === 'creditos'){
 				array.map((venda) => {
 					tableData.push({
+						cnpj: venda.cnpj,
 						adquirente: venda.adquirente.nomeAdquirente,
 						bandeira: venda.bandeira.descricaoBandeira,
 						produto: venda.produto.descricaoProduto,
 						subproduto: venda.modalidade.descricaoModalidade,
-						cnpj: venda.cnpj,
 						dataCredito: dateConvert(venda.dataCredito),
 						dataVenda: dateConvert(venda.dataVenda),
 						valorBruto: venda.valorBruto,
