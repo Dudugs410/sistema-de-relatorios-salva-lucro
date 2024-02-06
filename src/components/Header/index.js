@@ -13,7 +13,7 @@ import Cookies from "js-cookie"
 import InstallPWAButton from "../Componente_BotaoPWA"
 
 const Header = () =>{
-    const { cnpj, logout, grupoSelecionado, clienteSelecionado, trocarHeader, setTrocarHeader } = useContext(AuthContext)
+    const { cnpj, setCnpj, setGrupoSelecionado, logout, grupoSelecionado, clienteSelecionado, trocarHeader, setTrocarHeader, nomeHeader, cnpjHeader } = useContext(AuthContext)
     const [nome, setNome] = useState('')
     const [email, setEmail] = useState('')
 
@@ -21,7 +21,7 @@ const Header = () =>{
     const [codCliente, setCodCliente] = useState('-')
     const [headerCnpj, setHeaderCnpj] = useState('-')
 
-    const [isChecked, setIsChecked] = useState(localStorage.getItem('isChecked') === 'true');
+    const [isChecked, setIsChecked] = useState(localStorage.getItem('isChecked') === 'true')
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -34,7 +34,7 @@ const Header = () =>{
         setIsDarkTheme(updatedChecked)
         localStorage.setItem('isChecked', updatedChecked)
         localStorage.setItem('isDark', updatedChecked)
-        
+
         if(localStorage.getItem('localUsers') !== null){
             let localUsersTemp = JSON.parse(localStorage.getItem('localUsers'))
             localUsersTemp.map(user => {
@@ -51,10 +51,9 @@ const Header = () =>{
             localStorage.setItem('localUsers', JSON.stringify(localUsersTemp))
         }
     }
-    
 
 /////////////////////////////////////////////////////////////////////////////
-    
+
     useEffect(()=>{
         setNome(JSON.parse(sessionStorage.getItem('userData')).NOME)
         setEmail(JSON.parse(sessionStorage.getItem('userData')).EMAIL)
@@ -77,13 +76,34 @@ const Header = () =>{
     useEffect(()=>{
         const encodedNomeCliente = encodeURIComponent(nomeCliente)
         Cookies.set('Selecionado', encodedNomeCliente)
-
     },[nomeCliente])
 
-    ////////////////////////////////////////////////////////////////////////////////////
+    /*
 
-    const [optionsWithIcons, setOptionsWithIcons] = useState([]);
+    useEffect(()=>{
+        if(cnpjHeader.label !== 'TODOS'){
+            setNomeCliente(cnpjHeader.label)
+            setHeaderCnpj(cnpjHeader.value)
+
+            //setCnpj(cnpjHeader.value)
+            //setGrupoSelecionado(nomeHeader.value)
+
+        } else {
+            setNomeCliente(nomeHeader.label)
+            setHeaderCnpj(cnpjHeader.value)
+
+            //setCnpj(cnpjHeader.value)
+            //setGrupoSelecionado(nomeHeader.value)
+        }
+    },[nomeHeader, cnpjHeader])
+
+    */
+
+    ////////////////////////////////////////////////////////////////////////////////////
+    
+    const [optionsWithIcons, setOptionsWithIcons] = useState([])
     const [optionsTemp, setOptionsTemp] = useState([])
+
     useEffect(()=>{
         if(sessionStorage.getItem('options')){
             setOptionsTemp(JSON.parse(sessionStorage.getItem('options')))
@@ -98,33 +118,31 @@ const Header = () =>{
             'FiRefreshCcw': FiRefreshCcw,
             'FiTool': FiTool,
             'FiFileText': FiFileText,
-        };
+        }
 
-        let arrayOpcoes = [];
+        let arrayOpcoes = []
 
         optionsTemp.forEach((obj) => {
             switch (obj.nome) {
                 case 'Dashboard':
-                    arrayOpcoes.push({ rota: '/dashboard', nome: 'Início', id: obj.id, icone: icones['FiHome'] });
-                    break;
+                    arrayOpcoes.push({ rota: '/dashboard', nome: 'Início', id: obj.id, icone: icones['FiHome'] })
+                    break
                 case 'Vendas':
-                    arrayOpcoes.push({ rota: '/vendas', nome: 'Vendas', id: obj.id, icone: icones['FiDollarSign'] });
-                    break;
+                    arrayOpcoes.push({ rota: '/vendas', nome: 'Vendas', id: obj.id, icone: icones['FiDollarSign'] })
+                    break
                 case 'Créditos':
-                    arrayOpcoes.push({ rota: '/creditos', nome: 'Créditos', id: obj.id, icone: icones['FiCreditCard'] });
-                    break;
+                    arrayOpcoes.push({ rota: '/creditos', nome: 'Créditos', id: obj.id, icone: icones['FiCreditCard'] })
+                    break
                 case 'Serviços':
-                    arrayOpcoes.push({ rota: '/servicos', nome: 'Serviços', id: obj.id, icone: icones['FiTool'] });
-                    break;
+                    arrayOpcoes.push({ rota: '/servicos', nome: 'Serviços', id: obj.id, icone: icones['FiTool'] })
+                    break
                 // Add other cases here if needed
                 default:
-                    console.log('Opção Não encontrada ou ainda não implementada...');
+                    console.log('Opção Não encontrada ou ainda não implementada...')
             }
-        });
-
-        setOptionsWithIcons(arrayOpcoes);
-
-    }, [optionsTemp]);
+        })
+        setOptionsWithIcons(arrayOpcoes)
+    }, [optionsTemp])
 
     ////////////////////////////////////////////////////////////////////////////////////
 
@@ -184,4 +202,4 @@ const Header = () =>{
     ////////////////////////////////////////////////////////////////////////////////////
 }
 
-export default Header;
+export default Header
