@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 
 import { jsPDF } from 'jspdf'
 import 'jspdf-autotable'
@@ -11,8 +11,11 @@ import { FiFilePlus } from 'react-icons/fi'
 import './GerarRelatorio.scss'
 import { imgExport } from '../../contexts/images'
 import Cookies from 'js-cookie'
+import { AuthContext } from '../../contexts/auth'
 
 export default function GerarRelatorio({tableData, tipo}){
+
+	const { dateConvert } = useContext(AuthContext)
 
 	const [tipoRelatorio, setTipoRelatorio] = useState('')
 
@@ -36,7 +39,7 @@ export default function GerarRelatorio({tableData, tipo}){
 		  const hour = ('0' + now.getHours()).slice(-2);
 		  const minute = ('0' + now.getMinutes()).slice(-2);
 		  const second = ('0' + now.getSeconds()).slice(-2);
-		  const formattedTime = `${hour}-${minute}-${second}`;
+		  const formattedTime = `${hour}.${minute}.${second}`;
 		  const formattedDateTime = `${formattedDate} ${formattedTime}`;
 
 		  setCurrentDateTime(formattedDateTime);
@@ -86,23 +89,47 @@ export default function GerarRelatorio({tableData, tipo}){
     
 		if(tipo === 'vendas'){
 			// Add data rows
-			tableData.forEach((rowData) => {
+			tableData.forEach((rowData, index) => {
 				const values = Object.keys(rowData).map((key) => {
 					// Check if the key is a numeric field that should have "R$" added
 					if (key === 'valorBruto' || key === 'valorLiquido' || key === 'valorDesconto') {
 						// Keep the numeric value unchanged, format with 2 decimal places
-						return Number(rowData[key].toFixed(2));
+						const valor = Number(rowData[key])
+						return Number(valor.toFixed(2));
 					} else if (key === 'taxa') {
 						// Keep the numeric value unchanged, format with 2 decimal places
-						return Number(rowData[key].toFixed(2));
+						const valor = Number(rowData[key])
+						return Number(valor.toFixed(2));
 					} else if (key === 'dataVenda' || key === 'dataCredito') {
+						return new Date(rowData[key]);
+						} else {
 						return rowData[key];
-					  } else {
-						return rowData[key];
-					  }
+						}
 				});
 			
-				worksheet.addRow(values);
+				const row = worksheet.addRow(values);
+
+				// Apply styles only to the very first row (header row)
+				if (index === 0) {
+				  const headerRow = worksheet.getRow(1); // Assuming the header row is the first row
+				  headerRow.eachCell((cell) => {
+					cell.alignment = { horizontal: 'center' };
+					cell.font = { bold: true };
+				  });
+				}
+			});
+
+			const columnWidth = 15; // Set the width to 15 (adjust as needed)
+
+			worksheet.columns.forEach((column, colNumber) => {
+				column.width = columnWidth;
+			  
+				// Check if the current column's key is an exception
+				const excludedColumns = ['dataVenda', 'dataCredito', 'taxa', 'valorBruto', 'valorLiquido', 'valorDesconto'];
+				if (!excludedColumns.includes(column.key)) {
+					column.alignment = { horizontal: 'center' };
+				}
+				
 			});
 		
 			// Generate Excel file
@@ -113,7 +140,7 @@ export default function GerarRelatorio({tableData, tipo}){
 				.catch((error) => {
 					console.error('Error generating Excel file:', error)
 				})
-		} else if(tipo === 'creditos'){
+		} else if (tipo === 'creditos'){
 			// Add data rows
 			tableData.forEach((rowData) => {
 				const values = Object.keys(rowData).map((key) => {
@@ -125,9 +152,7 @@ export default function GerarRelatorio({tableData, tipo}){
 						// Keep the numeric value unchanged, format with 2 decimal places
 						return Number(rowData[key].toFixed(2));
 					} else if(key === 'dataVenda' || key === 'dataCredito'){
-						const dateValue = convertDateStringToExcelDate(rowData[key]);
-
-						return dateValue;
+						return new Date(rowData[key]);
 					} else {
 						return rowData[key];
 					}
@@ -136,6 +161,12 @@ export default function GerarRelatorio({tableData, tipo}){
 				worksheet.addRow(values);
 			});
 		
+			const columnWidth = 15; // Set the width to 15 (adjust as needed)
+
+			worksheet.columns.forEach((column) => {
+				column.width = columnWidth;
+			  });
+
 			// Generate Excel file
 			workbook.xlsx.writeBuffer()
 			.then((buffer) => {
@@ -145,8 +176,6 @@ export default function GerarRelatorio({tableData, tipo}){
 				console.error('Error generating Excel file:', error)
 			})
 		}
-
-		
 	}
     
 	const saveExcelFile = (buffer, fileName) => {
@@ -168,7 +197,7 @@ export default function GerarRelatorio({tableData, tipo}){
 		} else{
 			if(tipo === 'vendas'){
 				const columns = ['CNPJ', 'Adquirente', 'Bandeira', 'Produto', 'Subproduto', 'Valor Bruto', 'Valor Líquido', 'Taxa', 'Valor Desconto', 'NSU', 'Data Venda', 'Hora Venda', 'Data Crédito', 'Código Autorização', 'QTD PARC']
-				const rows = tableData.map(rowData => [rowData.cnpj, rowData.adquirente, rowData.bandeira, rowData.produto, rowData.subproduto, `R$ ${rowData.valorBruto.toFixed(2)}`, `R$ ${rowData.valorLiquido.toFixed(2)}`, `${rowData.taxa.toFixed(2)}%`, `R$ ${rowData.valorDesconto.toFixed(2)}`, rowData.nsu, rowData.dataVenda, rowData.horaVenda, rowData.dataCredito, rowData.codigoAutorizacao, rowData.quantidadeParcelas ])
+				const rows = tableData.map(rowData => [rowData.cnpj, rowData.adquirente, rowData.bandeira, rowData.produto, rowData.subproduto, `R$ ${rowData.valorBruto}`, `R$ ${rowData.valorLiquido}`, `${rowData.taxa}%`, `R$ ${rowData.valorDesconto}`, rowData.nsu, dateConvert(rowData.dataVenda), rowData.horaVenda, dateConvert(rowData.dataCredito), rowData.codigoAutorizacao, rowData.quantidadeParcelas ])
 		
 				const columnStyles = {};
 		
@@ -222,8 +251,8 @@ export default function GerarRelatorio({tableData, tipo}){
 			
 				doc.save(`${tipoRelatorio} - ${nomeCliente} - ${currentDateTime}.pdf`)
 			} else if(tipo === 'creditos'){
-				const columns = [ 'CNPJ', 'Adquirente', 'Bandeira', 'Produto', 'Subproduto', 'Data do Crédito', 'Data da Venda', 'ValorBruto', 'Valor Líquido', 'Taxa', 'Valor Desconto', 'NSU', 'Código Autorização', 'Parcela']
-				const rows = tableData.map(rowData => [rowData.cnpj, rowData.adquirente, rowData.bandeira, rowData.produto, rowData.subproduto, rowData.dataCredito, rowData.dataVenda, `R$ ${rowData.valorBruto.toFixed(2)}`, `R$ ${rowData.valorLiquido.toFixed(2)}`, `${rowData.taxa.toFixed(2)}%`, `R$ ${rowData.valorDesconto.toFixed(2)}`, rowData.nsu, rowData.codigoAutorizacao, rowData.parcela ])
+				const columns = [ 'CNPJ', 'Adquirente', 'Bandeira', 'Produto', 'Subproduto', 'Data do Crédito', 'Data da Venda', 'ValorBruto', 'Valor Líquido', 'Taxa', 'Valor Desconto', 'NSU', 'Código Autorização', 'Parcela', 'QTD Parc']
+				const rows = tableData.map(rowData => [rowData.cnpj, rowData.adquirente, rowData.bandeira, rowData.produto, rowData.subproduto, dateConvert(rowData.dataCredito), dateConvert(rowData.dataVenda), `R$ ${rowData.valorBruto.toFixed(2)}`, `R$ ${rowData.valorLiquido.toFixed(2)}`, `${rowData.taxa.toFixed(2)}%`, `R$ ${rowData.valorDesconto.toFixed(2)}`, rowData.nsu, rowData.codigoAutorizacao, rowData.parcela, rowData.totalParcelas ])
 		
 				const columnStyles = {};
 		

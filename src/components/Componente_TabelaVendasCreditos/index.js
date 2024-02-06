@@ -236,6 +236,7 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 
 	useEffect(()=>{
 		if(vendasExibicao.length > 0){
+			console.log('gerarDados: ', vendasExibicao)
 			gerarDados(vendasExibicao)
 			carregaTotais(vendasExibicao)
 			setCurrentPage(1)
@@ -470,6 +471,7 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 								<th className='det-th-global'scope="col">Banco</th>
 								<th className='det-th-global'scope="col">Agência</th>
 								<th className='det-th-global'scope="col">Conta</th>
+								<th className='det-th-global'scope="col">TID</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -490,10 +492,11 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 										<td className='det-td-vendas-global'data-label="NSU">{venda.nsu}</td>
 										<td className='det-td-vendas-global'data-label="Autorização">{venda.codigoAutorizacao}</td>
 										<td className='det-td-vendas-global'data-label="Parcela">{venda.parcela}</td>
-										<td className='det-td-vendas-global'data-label="QTD Parcelas">{venda.quantidadeParcelas}</td>
+										<td className='det-td-vendas-global'data-label="QTD Parcelas">{venda.totalParcelas}</td>
 										<td className='det-td-vendas-global'data-label="Banco">{venda.banco}</td>
 										<td className='det-td-vendas-global'data-label="Agência">{venda.agencia}</td>
 										<td className='det-td-vendas-global'data-label="Conta">{venda.conta}</td>
+										<td className='det-td-vendas-global'data-label="TID">{venda.tid}</td>
 									</tr>
 								)
 							})}
