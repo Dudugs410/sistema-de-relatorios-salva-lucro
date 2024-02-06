@@ -33,6 +33,8 @@ const SeletorCliente = () => {
 		setClienteSelecionado,
 		trocarHeader,
 		setTrocarHeader,
+		nomeHeader, setNomeHeader,
+		cnpjHeader, setCnpjHeader,
 	} = useContext(AuthContext)
 
 	const [cliSelecionado, setCliSelecionado] = useState('')
@@ -43,6 +45,7 @@ const SeletorCliente = () => {
 	useEffect(()=>{
 		setCnpj(sessionStorage.getItem('cnpj'))
 		setGrupos(JSON.parse(sessionStorage.getItem('grupos')))
+		setPodeBuscar(Cookies.get('podeBuscar'))
 	},[])
 
 	useEffect(()=>{
@@ -136,6 +139,7 @@ const SeletorCliente = () => {
 
 	const handleSelectChangeCLI = (selected) => {
 		setCliSelecionado(selected) // Set cliSelecionado to selected value (CNPJ)
+		setCnpjHeader(selected)
 	}
 
 	// clientes
@@ -176,7 +180,12 @@ const SeletorCliente = () => {
 
 	useEffect(()=>{
 		console.log('PODEBUSCAR?? ', podeBuscar)
+		Cookies.set('podeBuscar', podeBuscar)
 	},[podeBuscar])
+
+	useEffect(()=>{
+		setNomeHeader(gruSelecionado.label)
+	},[])
 
 	return(
 		<>
@@ -236,7 +245,7 @@ const SeletorCliente = () => {
 								</div>
 							</div>
 							<div className="select-btn-seletor">
-								<button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleCnpj} disabled={cliSelecionado === cnpj}>Selecionar</button>
+								<button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleCnpj} disabled={podeBuscar === false}>Selecionar</button>
 							</div>
 						</form>
 					</div>
