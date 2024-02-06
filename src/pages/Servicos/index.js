@@ -5,7 +5,7 @@ import { AuthContext } from '../../contexts/auth'
 import DateRangePicker from '../../components/Componente_TabelaServicos'
 import Cookies from 'js-cookie'
 import TabelaServicos from '../../components/Componente_TabelaServicos'
-
+import TabelaGenericaAdm from '../../components/Componente_TabelaAdm'
 
 /*
 TODO:
@@ -58,19 +58,31 @@ const Servicos = () =>{
     } 
         
     async function buscarAjustes(){
-        const response = await loadAjustes(Cookies.get('cnpj'), dataInicial, dataFinal)
-        setAjustesTemp(response)
-        console.log('ajuste: ', response)
+        try {
+            const response = await loadAjustes(Cookies.get('cnpj'), dataInicial, dataFinal)
+            if ((response)){
+                setAjustesTemp(response)
+            } else {
+                console.log('loadAjustes undefined? ', response)
+            } 
+        } catch (error) {
+            console.log('erro ao buscarAjustes, ', error)
+        }
     }
 
     function handleDateChange(date){
         setDataBusca(date)
+        console.log(dataBusca)
     }
     
     useEffect(() => {
-        setDataInicial(dataBusca[0])
-        setDataFinal(dataBusca[1])
-        console.log(dataBusca)
+        if(dataBusca.length === 2 ){
+            setDataInicial(dataBusca[0])
+            setDataFinal(dataBusca[1])
+        } else {
+            setDataInicial(dataBusca)
+            setDataFinal(dataBusca)
+        }
     }, [dataBusca])
 
 
@@ -84,19 +96,26 @@ const Servicos = () =>{
         const adq_name = ajuste.nome_adquirente;
         adq_total_value += ajuste['valor']
 
-        // Check if a group already exists for the current fruit
+        // Check if a group already exist
         if (!groupedData[adq_name]) {
-            // If not, create a new group with the current person
+            // If not, create a new group 
             groupedData[adq_name] = [ajuste];
             groupedData[adq_name]['valor_total'] = ajuste['valor']
         } else {
-            // If a group already exists, add the current person to the existing group
+            // If a group already exists, add to the existing group
             groupedData[adq_name].push(ajuste);
             groupedData[adq_name]['valor_total'] += ajuste['valor']
         }
         });
+
+        // converte para obj aceito pela tabelaAdm generica
+        let admArray = [];
+        Object.keys(groupedData).forEach( (groupName, i) => {
+            admArray.push({'id': i, 'nomeAdquirente': groupName, 'total': groupedData[groupName].valor_total})
+        })
+        admArray.push({'id': 't', 'nomeAdquirente': 'Total de ajustes', 'total': adq_total_value})
         
-        const ajustes_agrupados = {'grupos': groupedData, 'total_ajustes': adq_total_value, 'ajustes': ajustesTemp}
+        const ajustes_agrupados = {'grupos': groupedData, 'admArray': admArray, 'total_ajustes': adq_total_value, 'ajustes': ajustesTemp}
         console.log('total ajustes:', ajustes_agrupados);
         setAjustesAgrupados(ajustes_agrupados)
         setDetalhes(true);
@@ -128,13 +147,22 @@ const Servicos = () =>{
 
                     <div className='date-picker-ajustes'>
                         <div className='label-picker-servicos'>
-                        <MyCalendar/>
-                        <TabelaServicos array={ajustesTemp}/>
-                            {/* {!(ajustesTemp) && (ajustesTemp.length > 0)? <TabelaServicos array={ajustesTemp}/> : <MyCalendar/>} */}
+                            {/* <MyCalendar/>
+                            <TabelaServicos array={ajustesTemp}/> */}
+                            {(detalhes) && (ajustesTemp.length > 0)? <TabelaServicos array={ajustesAgrupados.ajustes}/> : <MyCalendar/> } 
                         </div>
-                        <div className='btn-container-servicos'>
-                            <button className='btn btn-primary btn-busca-servicos' onClick={handleBuscar}>Pesquisar</button>
+                    
+                        <div className='container-ajustes'>
+                            {(detalhes) && (ajustesTemp.length > 0)? <TabelaGenericaAdm Array={ajustesAgrupados.admArray} textColor={'red-global'}/> : <></> }
                         </div>
+                        {(detalhes) && (ajustesTemp.length > 0)?
+                            <></>
+                            :
+                            <div className='btn-container-servicos'>
+                                <button className='btn btn-primary btn-busca-servicos' onClick={handleBuscar}>Pesquisar</button>
+                            </div> 
+                        }
+                
                     </div>
                             {/* { ajustesAgrupados !== undefined && (ajustesAgrupados.map((elemento) => {
                                 return(
@@ -149,16 +177,6 @@ const Servicos = () =>{
                                 )
                             }))} */}
 
-                    <div className='container-ajustes'>
-
-                        <div className='filial-container'>
-                            {/* { ajustesTemp !== undefined && (ajustesTemp.map((elemento) => {
-                                return(
-                                    CardServicos(elemento)
-                                )
-                            }))} */}
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

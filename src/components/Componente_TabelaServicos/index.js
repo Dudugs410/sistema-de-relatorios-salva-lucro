@@ -8,7 +8,7 @@ import '../Componente_TabelaVendasCreditos/detalhesCredito.scss'
 import '../../styles/global.scss'
 
 const TabelaServicos = ({ array }) => {  
-
+	
 	const {isDarkTheme, dateConvert} = useContext(AuthContext)
 
 	return(
