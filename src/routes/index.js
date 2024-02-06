@@ -19,9 +19,9 @@ function RoutesApp(){
         <Route path='/dashboard' element = { <Private><Dashboard/></Private>}/>
         <Route path='/vendas' element = { <Private><Vendas/></Private> } />
         <Route path='/creditos' element = { <Private><Recebiveis/></Private> } />
-        <Route path='/antecipacoes' element = { <Private><Antecipacoes/></Private> } />
         <Route path='/servicos' element = { <Private><Servicos/></Private> } />
         <Route path='/relatorios' element = { <Private><Relatorios/></Private> } />
+        {/* <Route path='/antecipacoes' element = { <Private><Antecipacoes/></Private> } /> */}
     </Routes>
     )  
 }
