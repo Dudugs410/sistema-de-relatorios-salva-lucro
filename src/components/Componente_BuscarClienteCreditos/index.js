@@ -18,25 +18,23 @@ import { useCallback } from 'react'
 const BuscarClienteCreditos = () => {
 	const [buscou, setBuscou] = useState(false)
 	const [arrayDados, setArrayDados] = useState([])
+	const [clicouPesquisar, setClicouPesquisar] = useState(false)
 
 	const { 
 		setCnpj,  
 		setLoading,
 		loadCreditos, 
-		returnCreditos,
 		setCreditos,
-		dateConvertSearch,
 		setTotaisGlobal,
 		isDarkTheme,
 		creditos,
-		banBusca,
-		adqBusca,
 		gerarDados,
+		detalhes,
+		setDetalhes,
+		setTotaisGlobalCreditos,
 	} = useContext(AuthContext)
 
 	const {
-		detalhes,
-		setDetalhes,
 		dataBusca,
 		cnpjBusca,
 		setCnpjBusca,
@@ -70,39 +68,47 @@ const BuscarClienteCreditos = () => {
 	}, [])
 
 	async function handleBusca(e){
-		console.log('handleBusca()')
 		e.preventDefault()
-		if(cnpjBusca === '' || cnpjBusca === 'Selecione' || cnpjBusca === undefined){
-			alerta('selecione um cliente válido')
-			return
-		}
+		setClicouPesquisar(true)
 		await buscar()
-		console.log('creditos gerar dados',creditos)
 		await gerarDados(creditos)
+		setDetalhes(true)
 	}
 
 	async function buscar() {
 		console.log('buscar()')
-		await loadCreditos(cnpjBusca, dataBusca, dataBusca)
+		await loadCreditos(cnpjBusca, dataBusca[0], dataBusca[1])
 			.then(() =>{
 				if(dataBusca === '' || cnpjBusca === ''){
 					return 0
-				}
-				else{
-					alerta(`executou a busca do dia ${dateConvertSearch(dataBusca)}`)
-					setBuscou(true)
+				} else {
+					
+					//adiciono .toLocaleDateString('pt-BR') às datas para que possamos comparar apenas o dia, mes e ano, sem levar em consideração a hora, minuto e segundos
+					
+					if((dataBusca[0].toLocaleDateString('pt-BR') === dataBusca[1].toLocaleDateString('pt-BR')) && (clicouPesquisar === true)){
+						alerta(`executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')}`)
+						setBuscou(true)
+					} else if ((dataBusca[0].toLocaleDateString('pt-BR') !== dataBusca[1].toLocaleDateString('pt-BR')) && clicouPesquisar === true){
+						alerta(`executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')} ao dia ${dataBusca[1].toLocaleDateString('pt-BR')}`)
+						setBuscou(true)
+					}
+
 					if(creditos.length === 0){
 						setDetalhes(false)
+						setClicouPesquisar(false)
 					}
-				}    
+				}
 			})
 		setLoading(false)
 	}
 
 	useEffect(()=>{
-		console.log('buscou: ', buscou)
+		if(((cnpjBusca === '' || cnpjBusca === 'Selecione' || cnpjBusca === undefined) && (Cookies.get('cnpj') !== '')) && (clicouPesquisar)){
+			alerta('selecione um cliente válido')
+			return
+		}
 		if(buscou === true){
-			if((creditos === null) || (creditos.length === 0)){
+			if((vendas === null) || (vendas.length === 0)){
 				alerta('não existem vendas para a data selecionada')
 				setBuscou(false)
 				setDetalhes(false)
@@ -110,6 +116,7 @@ const BuscarClienteCreditos = () => {
 			else{
 				setDetalhes(true)
 				setBuscou(false)
+				setClicouPesquisar(false)
 			}
 		}
 	},[buscou])
@@ -147,8 +154,10 @@ const BuscarClienteCreditos = () => {
 		setTotalCredito(0.00)
 		setTotalDebito(0.00)
 		setTotalVoucher(0.00)
-		setTotaisGlobal({debito: 0, credito: 0, voucher: 0, liquido: 0})
 		setArrayAdm()
+		setClicouPesquisar(false)
+		setTotaisGlobal({ debito: 0, credito: 0, voucher: 0, liquido: 0 })
+		setTotaisGlobalCreditos({ debito: 0, credito: 0, voucher: 0, liquido: 0 })
 	}
 
 	return(

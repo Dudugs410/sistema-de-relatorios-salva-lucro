@@ -32,20 +32,20 @@ const Creditos = () =>{
 		creditos,
 		setCreditos,
 		loadCreditos,
-		dateConvertSearch,
 		gerarDados,
 		tableData,
-		setTotaisGlobal,
 		isDarkTheme,
 		setIsDarkTheme,
-		setTotaisGlobalCreditos,
+		setTotaisGlobal,setTotaisGlobalCreditos,
+		detalhes,
 	} = useContext(AuthContext)
 
 	useEffect(()=>{
 		setCreditos([])
+		setCnpj(Cookies.get('cnpj'))
 	},[])
 
-	const [tipo, setTipo] = useState('vendas')
+	const [tipo, setTipo] = useState('creditos')
 
 	useEffect(()=>{
 	  setTipo('creditos')
@@ -59,10 +59,7 @@ const Creditos = () =>{
 
 	const [arrayAdm, setArrayAdm] = useState([])
 	const [arrayRelatorio, setArrayRelatorio] = useState([])
-	const [detalhes, setDetalhes] = useState(false)
-	const [dataBusca, setDataBusca] = useState(new Date())
-
-	// possivelmente utilizar estes parametros para realizar busca por período
+	const [dataBusca, setDataBusca] = useState([new Date(), new Date])
 
 	const [cnpjBusca, setCnpjBusca] = useState('')
 	const [vendasTotais, setVendasTotais] = useState([])
@@ -95,6 +92,7 @@ const Creditos = () =>{
 		setTotalVoucher(0.00)
 		setTotalLiquido(0.00)
 		setTotaisGlobal({debito: 0, credito: 0, voucher: 0, liquido: 0})
+		setTotaisGlobalCreditos({debito: 0, credito: 0, voucher: 0, liquido: 0})
 	},[])
 
 	/*
@@ -125,6 +123,9 @@ const Creditos = () =>{
 
 	const [vendasTemp, setVendasTemp] = useState([])
 
+	const [dataBuscaInicial, setDataBuscaInicial] = useState(new Date)
+	const [dataBuscaFinal, setDataBuscaFinal] = useState(new Date)
+
 	useEffect(()=>{
 		if(detalhes){
 			setVendasTemp(loadCreditos(cnpjBusca, dataBusca, dataBusca))
@@ -134,7 +135,20 @@ const Creditos = () =>{
 
 	function handleDateChange(date){
 		setDataBusca(date)
-	}
+	  }
+	
+	  const [dataInicialExibicao, setDataInicialExibicao] = useState(new Date().toLocaleDateString('pt-BR'))
+	  const [dataFinalExibicao, setDataFinalExibicao] = useState(new Date().toLocaleDateString('pt-BR'))
+	
+	  useEffect(()=>{
+		console.log(dataBusca)
+		if((dataBusca[0] !== undefined) && (dataBusca[1] !== undefined)){
+		  setDataBuscaInicial(dataBusca[0])
+		  setDataBuscaInicial(dataBusca[1])
+		  setDataInicialExibicao(dataBusca[0].toLocaleDateString('pt-BR'))
+		  setDataFinalExibicao(dataBusca[1].toLocaleDateString('pt-BR'))
+		}
+	  },[dataBusca])
 
 	function separaAdm(array){
 		if(array.length > 0){
@@ -213,23 +227,32 @@ const Creditos = () =>{
 
 	function MyCalendar() {
 		return (
-			<div>
-				<Calendar
-					style={{ color:'white' }}
-					className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
-					onChange={ handleDateChange }
-					value={ dataBusca }
-					tileClassName={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
-				/>
+		  <div>
+			<Calendar
+			  style={{ color:'white' }}
+			  className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
+			  onChange={ handleDateChange }
+			  selectRange={true}
+			  value={ dataBusca }
+			  tileClassName={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
+			/>
+			<hr/>
+			<div className='container-busca'>
+			  <span className={`span-busca ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+				{dataInicialExibicao !== dataFinalExibicao ? 
+				  <span dangerouslySetInnerHTML={{__html: `Executar busca do dia <strong>${dataInicialExibicao}</strong> ao dia <strong>${dataFinalExibicao}</strong>`}} /> : 
+				  <span dangerouslySetInnerHTML={{__html: `Executar busca do dia <strong>${dataInicialExibicao}</strong>`}} />
+				}
+			  </span>
+			  <BuscarClienteCreditos />
 			</div>
+		  </div>
 		)
-	}
+	  }
 
 	return(
 		<CreditosContext.Provider 
 			value={{
-				detalhes, 
-				setDetalhes,
 				dataBusca, 
 				setDataBusca, 
 				totalDebito,
@@ -260,7 +283,6 @@ const Creditos = () =>{
 							<hr className="hr-recebimentos"/>
 							{ (detalhes) && (creditos.length > 0) ? <TabelaGenericaAdm Array={arrayAdm}/> : <></> }
 							{ (detalhes) && (creditos.length > 0) ? <hr className='hr-recebimentos'/> : <></> }
-							<BuscarClienteCreditos />
 						</div>
 					</div>
 				</div>

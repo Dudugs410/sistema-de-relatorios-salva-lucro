@@ -79,6 +79,16 @@
     align-items: center;
 }
 
+.voltar-container{
+    display: flex;
+    padding-top: 10px;
+    justify-content: center;
+}
+
+.btn-voltar{
+    width: 30%;
+}
+
 @media screen and (max-width: 1090px){
 
     .btn-navigate{

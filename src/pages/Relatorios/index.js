@@ -1,160 +1,116 @@
-import { useContext, useEffect, useState } from 'react'
-import { AuthContext } from '../../contexts/auth'
-import DateRangePicker from '../../components/Componente_DateRangePicker'
+import { useEffect, useContext, createContext, useState } from 'react'
+import Calendar from 'react-calendar'
 
+import BuscarClienteVendas from '../../components/Componente_BuscarClienteVendas'
+import TabelaGenericaAdm from '../../components/Componente_TabelaAdm'
+import TotalModalidadesComp from '../../components/Componente_TotalModalidades'
+
+import GerarRelatorio from "../../components/Componente_GerarRelatorio"
 import './relatorios.scss'
+import { AuthContext } from '../../contexts/auth'
 import Cookies from 'js-cookie'
+import TabelaVendasCreditos from '../../components/Componente_TabelaVendasCreditos'
+import { useLocation } from 'react-router-dom'
+import '../../index.scss'
+
+export const VendasContext = createContext({})
 
 const Relatorios = () =>{
-    const { 
-        dateConvertSearch,
-        setCnpj,
-        grupos,
-        loadAdquirentes, 
-        loadBandeiras,
-        setGrupos,
-        adquirentes,
-        bandeiras,
-        dataInicial,
-        dataFinal,
-     } = useContext(AuthContext)
+  const location = useLocation();
 
-    const [adqSelecionada, setAdqSelecionada] = useState('')
-    const [banSelecionada, setBanSelecionada] = useState('')
+  useEffect(() => {
+      sessionStorage.setItem('currentPath', location.pathname);
+  }, [location]);
 
-    const [detalhado, setDetalhado] = useState(false)
+  const {
+    cnpj,
+    setCnpj,
+    vendas,
+    gerarDados,
+    tableData,
+    isDarkTheme,
+    setIsDarkTheme,
+    bandeiras,
+    grupos,
+    adquirentes,
+    loadBandeiras,
+    setGrupos,
+    loadAdquirentes,
+  } = useContext(AuthContext)
 
-    const [buscou, setBuscou] = useState(false)
+  const [tipo, setTipo] = useState('')
+  const [cnpjBusca, setCnpjBusca] = useState(Cookies.get('cnpj'))
+  const [dataBusca, setDataBusca] = useState({inicial: new Date, final: new Date})
 
-    useEffect(()=>{
-      async function inicializar(){
-        setCnpj(Cookies.get('cnpj'))
-        if(bandeiras.length === 0){
-          await loadBandeiras()
-        }
-        
-        if(adquirentes.length === 0){
-          await loadAdquirentes()
-        }
-        
-        if(grupos.length === 0){
-          setGrupos(JSON.parse(sessionStorage.getItem('grupos')))       
-        }
+  useEffect(()=>{
+    setIsDarkTheme(JSON.parse(localStorage.getItem('isDark')))
+},[])
+
+  useEffect(()=>{
+    async function inicializar(){
+      if(bandeiras.length === 0){
+        await loadBandeiras()
       }
-      inicializar()
-    },[])
-    
-    async function handleSubmit(e){
-        e.preventDefault()
-        console.log('handleSubmit()')
-        setBuscou(true)
+      
+      if(grupos.length === 0){
+        setGrupos(JSON.parse(sessionStorage.getItem('grupos')))     
+      }
+      
+      if(adquirentes.length === 0){
+        await loadAdquirentes()
+      }
     }
+    inicializar()
+  },[])
 
-    useEffect(()=>{
-        console.log('dataInicial: ', dateConvertSearch(dataInicial))
+  useEffect(()=>{
+    vendas.length = 0
+  },[])
 
-    },[dataInicial])
+  useEffect(()=>{
+    setCnpjBusca(Cookies.get('cnpj'))
+  },[])
 
-    useEffect(()=>{
-        console.log('dataFinal: ', dateConvertSearch(dataFinal))
+  function handleDateChange(){
+    setDataBusca(dataBusca)
+  }
 
-    },[dataFinal])
-////////////////////////////////////////////////////////////////////////////////////////
+  useEffect(()=>{
+    console.log(dataBusca)
+  },[dataBusca])
 
-  function SelectPicker() {
-  
+  let data = new Date
+
+  function MyCalendar() {
     return (
-      <div className='dados-busca-select-relatorios'>
-        <div className='picker-container'>
-          <label className='label-picker'>Adquirente</label>
-          <div className='react-datepicker-wrapper'>
-            <select className='date-picker-css' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}}>
-              <option value=''>Todas</option>
-              {adquirentes.map((ADQ)=>(
-                  <option key={ADQ.codigoAdquirente} value = {ADQ.codigoAdquirente}>{ADQ.nomeAdquirente}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <div className='picker-container'>
-          <label className='label-picker'>Bandeira</label>
-          <div className='react-datepicker-wrapper'>
-            <select className='date-picker-css'value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}}>
-                <option value=''>Todas</option>
-                {bandeiras.map((BAN)=>(
-                    <option key={BAN.codigoBandeira} value = {BAN.codigoBandeira}>{BAN.descricaoBandeira}</option>
-                ))}
-            </select>
-          </div>
-        </div>
+      <div>
+        <Calendar
+          selectRange={true}
+          style={{ color:'white' }}
+          className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
+          onChange={ handleDateChange }
+          value={ data }
+          tileClassName={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
+        />
       </div>
     )
   }
 
-  function RadioSelect(){
-    return (
-      <>
-        <div className='radio-container'>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" value='false' onChange={()=>{setDetalhado(false)}} />
-            <label class="form-check-label radio-text" for="flexRadioDefault1">
-              Simples
-            </label>
+  return(
+    <div className={`appPage ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+      <div className={`page-vendas-background ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+        <div className={`page-content-vendas ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+          <div className={`vendas-title-container ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+            <h1 className={`vendas-title ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Calendário de Vendas</h1>
           </div>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value='false' onChange={()=>{setDetalhado(true)}} />
-            <label class="form-check-label radio-text" for="flexRadioDefault2">
-              Detalhado
-            </label>
+          <hr className="hr-recebimentos"/>
+          <TotalModalidadesComp tipo = 'vendas'/>
+          <hr className="hr-recebimentos"/>
+            <MyCalendar className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
           </div>
         </div>
-      </>
-    )
-
-  }
-
-  useEffect(()=>{
-    console.log('detalhado: ', detalhado)
-
-  },[detalhado])
-
-  function handleVoltar(){
-    setBuscou(false)
-  }
-
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    return(
-        <div className='appPage app-page-relatorios'>
-          <div className='page-relatorios-background'>
-            <div className='relatorios-page-container'>
-                <h1 className='h1-relatorios'>Relatórios</h1>
-                <div className='hr-container'>
-                  <hr/>
-                </div>
-                <div className='dados-busca-relatorios-container'>
-                  <div className='dropdown-container-relatorios'>
-                    <div className='label-relatorios'>
-                      <DateRangePicker />
-                      <SelectPicker />
-                    </div>
-                  </div>
-                  <RadioSelect />
-                </div>
-                <div className='hr-container'>
-                  <hr/>
-                </div>
-                <div className='btn-relatorios-container'>
-                  { buscou ? <button onClick={handleVoltar} className='btn btn-secondary btn-submit btn-page-relatorios'>Voltar</button> : <button onClick={handleSubmit} className='btn btn-primary btn-page-relatorios'>Pesquisar</button>}
-                </div>
-                <div className='hr-container'>
-                  <hr/>
-                </div>
-            </div>
-          </div>  
-        </div>
-    )
+      </div>
+  )
 }
 
 export default Relatorios

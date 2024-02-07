@@ -5,7 +5,11 @@ import './totalModalidade.scss'
 import { AuthContext } from '../../contexts/auth'
 
 const TotalModalidadesComp = ({tipo}) =>{
-	const { totaisGlobal, setTotaisGlobal, totaisGlobalVendas, totaisGlobalCreditos, isDarkTheme } = useContext(AuthContext)
+	const { totaisGlobal, setTotaisGlobal, totaisGlobalVendas, totaisGlobalCreditos, isDarkTheme, detalhes } = useContext(AuthContext)
+
+
+	// Verifica o tipo passado como parâmetro, para definir quais totais serão mostrados, e também para definir se o texto mostrado
+	// no último bloco será 'Total Bruto'(vendas) ou 'Total Líquido'(créditos)
 
 	useEffect(()=>{
 		switch (tipo) {
@@ -21,6 +25,16 @@ const TotalModalidadesComp = ({tipo}) =>{
 				break;
 		}
 	},[])
+
+
+	// Utilizo a const detalhes como condição para zerar os valores totais apresentados na parte superior da página.
+	// Se o valor for verdadeiro são renderizados os gráficos com as informações referentes ao período selecionado.
+	// Se o valor for falso, os totais são zerados e são renderizados o Gráfico e botão 'Pesquisar'
+	useEffect(()=>{
+		if(detalhes === false){
+			setTotaisGlobal({ debito: 0, credito: 0, voucher: 0, liquido: 0 })
+		}
+	},[detalhes])
 
 	useEffect(()=>{
 		if(tipo === 'vendas'){

@@ -41,6 +41,7 @@ const Vendas = () =>{
     setTotaisGlobalVendas,
     isDarkTheme,
     setIsDarkTheme,
+    detalhes, setDetalhes,
   } = useContext(AuthContext)
 
   const [totalCredito, setTotalCredito] = useState(0.00)
@@ -50,8 +51,7 @@ const Vendas = () =>{
 
   const [arrayAdm, setArrayAdm] = useState([])
   const [arrayRelatorio, setArrayRelatorio] = useState([])
-  const [detalhes, setDetalhes] = useState(false)
-  const [dataBusca, setDataBusca] = useState(new Date())
+  const [dataBusca, setDataBusca] = useState([new Date(), new Date()])
 
   const [tipo, setTipo] = useState('vendas')
 
@@ -121,9 +121,12 @@ const Vendas = () =>{
 
   const [vendasTemp, setVendasTemp] = useState([])
 
+  const [dataBuscaInicial, setDataBuscaInicial] = useState(new Date)
+  const [dataBuscaFinal, setDataBuscaFinal] = useState(new Date)
+
   useEffect(()=>{
     if(detalhes){
-      setVendasTemp(loadVendas(dataBusca, cnpjBusca))
+      setVendasTemp(loadVendas(dataBuscaInicial, dataBuscaFinal, cnpjBusca))
     }
 
   },[cnpjBusca])
@@ -131,6 +134,18 @@ const Vendas = () =>{
   function handleDateChange(date){
     setDataBusca(date)
   }
+
+  const [dataInicialExibicao, setDataInicialExibicao] = useState(new Date().toLocaleDateString('pt-BR'))
+  const [dataFinalExibicao, setDataFinalExibicao] = useState(new Date().toLocaleDateString('pt-BR'))
+
+  useEffect(()=>{
+    if((dataBusca[0] !== undefined) && (dataBusca[1] !== undefined)){
+      setDataBuscaInicial(dataBusca[0])
+      setDataBuscaInicial(dataBusca[1])
+      setDataInicialExibicao(dataBusca[0].toLocaleDateString('pt-BR'))
+      setDataFinalExibicao(dataBusca[1].toLocaleDateString('pt-BR'))
+    }
+  },[dataBusca])
 
   function separaAdm(array){
     if(array.length > 0){
@@ -215,9 +230,20 @@ const Vendas = () =>{
           style={{ color:'white' }}
           className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
           onChange={ handleDateChange }
+          selectRange={true}
           value={ dataBusca }
           tileClassName={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
         />
+        <hr/>
+        <div className='container-busca'>
+          <span className={`span-busca ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+            {dataInicialExibicao !== dataFinalExibicao ? 
+              <span dangerouslySetInnerHTML={{__html: `Executar busca do dia <strong>${dataInicialExibicao}</strong> ao dia <strong>${dataFinalExibicao}</strong>`}} /> : 
+              <span dangerouslySetInnerHTML={{__html: `Executar busca do dia <strong>${dataInicialExibicao}</strong>`}} />
+            }
+          </span>
+          <BuscarClienteVendas />
+        </div>
       </div>
     )
   }
@@ -225,8 +251,6 @@ const Vendas = () =>{
   return(
     <VendasContext.Provider 
     value={{
-      detalhes, 
-      setDetalhes,
       dataBusca, 
       setDataBusca, 
       totalDebito,
@@ -258,7 +282,6 @@ const Vendas = () =>{
               <hr className="hr-recebimentos"/>
               { (detalhes) && (vendas.length > 0) ? <TabelaGenericaAdm Array={arrayAdm}/> : <></> }
               { (detalhes) && (vendas.length > 0) ? <hr className='hr-recebimentos'/> : <></> }
-              <BuscarClienteVendas />
             </div>
           </div>
         </div>

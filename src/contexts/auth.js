@@ -32,6 +32,8 @@ function AuthProvider({ children }){
 	const [vendas, setVendas] = useState([])
 	const [creditos, setCreditos] = useState([])
 
+	const [detalhes, setDetalhes] = useState(false)
+
 	const [vendasDash, setVendasDash] = useState([])
 	const [tableData, setTableData] = useState([])
 
@@ -80,9 +82,6 @@ function AuthProvider({ children }){
 
 	const [showErrorMessage, setShowErrorMessage] = useState(false)
 	const [trocarHeader, setTrocarHeader] = useState(false)
-
-	const [nomeHeader, setNomeHeader] = useState('')
-	const [cnpjHeader, setCnpjHeader] = useState('')
 
 	const navigate = useNavigate()
 
@@ -391,16 +390,16 @@ function AuthProvider({ children }){
 
 	// retorna as vendas da data e cliente específicos.
 
-	async function loadVendas(dataInicial, cnpj){
+	async function loadVendas(dataInicial, dataFinal, cnpj){
 		if((dataInicial === '' || undefined) || (cnpj === '' || undefined)){
-			alert('Favor selecionar uma data e cliente válidos')
 			return 0
 		}
 		setLoading(true)
 		try {
 			if(cnpj === 'todos'){
 				let params = {
-					data: dataInicial,
+					datainicial: dataInicial,
+					datafinal: dataFinal,
 					codigoGrupo: Cookies.get('codigoGrupo')
 				}
           
@@ -421,7 +420,8 @@ function AuthProvider({ children }){
 					})
 			} else { 
 				let params = {
-					data: dataInicial,
+					datainicial: dataInicial,
+					datafinal: dataFinal,
 					cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
 				}
           
@@ -547,7 +547,6 @@ function AuthProvider({ children }){
 	async function retornaVendasPeriodo(datainicial, datafinal, cnpj, adquirente, bandeira){
 		setLoading(true)
 		if((dataInicial === '' || undefined) || (cnpj === '' || undefined)){
-			alert('Favor selecionar uma data e cliente válidos')
 			return 0
 		}
 
@@ -941,7 +940,6 @@ function AuthProvider({ children }){
 		setLoading(true)
 		try {
 			if(cnpj === 'todos'){
-				console.log('Todos CNPJs')
 
 				let params = {
 					codigoGrupo: Cookies.get('codigoGrupo'),
@@ -961,7 +959,6 @@ function AuthProvider({ children }){
 				return response.data
 
 			} else {
-				console.log('cnpj específico')
 				let params = {
 					cnpj: cnpj,
 					data: data,
@@ -1015,7 +1012,6 @@ function AuthProvider({ children }){
 		setLoading(true)
 
 		if((dataInicial === '' || undefined) || (cnpj === '' || undefined)){
-			alert('Favor selecionar uma data e cliente válidos')
 			setLoading(false)
 			return 0
 		}
@@ -1255,8 +1251,7 @@ function AuthProvider({ children }){
 				grupoSelecionado, setGrupoSelecionado,
 				clienteSelecionado, setClienteSelecionado,
 				trocarHeader, setTrocarHeader,
-				nomeHeader, setNomeHeader,
-				cnpjHeader, setCnpjHeader,
+				detalhes, setDetalhes
 			}}
 		>
 			{children}
