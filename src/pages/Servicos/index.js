@@ -1,6 +1,7 @@
 import Calendar from 'react-calendar'
 import './servicos.scss'
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState, createContext } from 'react' 
+import { useLocation } from 'react-router-dom'
 import { AuthContext } from '../../contexts/auth'
 import DateRangePicker from '../../components/Componente_TabelaServicos'
 import Cookies from 'js-cookie'
@@ -10,10 +11,17 @@ import TabelaGenericaAdm from '../../components/Componente_TabelaAdm'
 /*
 TODO:
     x calendario -> marcar data inicial e data final
-    - tabela p vizualizar as infos (igual outras tabelas)
+    x tabela p vizualizar as infos (igual outras tabelas)
+    x arrumar css / layout igual das outras paginas
+    - componente botão 
+    - paginação
 
 */
+
+export const ServicosContext = createContext({})
+
 const Servicos = () =>{
+	const location = useLocation()
 
     const { 
         loadAjustes,
@@ -121,7 +129,6 @@ const Servicos = () =>{
         setDetalhes(true);
     }, [ajustesTemp]);
 
-
     function MyCalendar() {
         return (
 			<div>
@@ -138,29 +145,44 @@ const Servicos = () =>{
 	}
 
     return(
-        <div className='appPage app-page-servicos'>
-            <div className='page-servicos-background'>
-                <div className='page-content-servicos'>
-                    <div className='vendas-title-container'>
-                        <h1 className='vendas-title'>Serviços</h1>
+    <ServicosContext.Provider 
+        value={{
+            detalhes, 
+            setDetalhes,
+            dataBusca, 
+            setDataBusca, 
+        }}>
+
+        <div className={`appPage ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+            <div className={`page-servicos-background ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                <div className={`page-content-servicos ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                    <div className={`servicos-title-container ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+							<h1 className={`servicos-title ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Servicos</h1>
                     </div>
 
-                    <div className='date-picker-ajustes'>
-                        <div className='label-picker-servicos'>
-                            {/* <MyCalendar/>
-                            <TabelaServicos array={ajustesTemp}/> */}
-                            {(detalhes) && (ajustesTemp.length > 0)? <TabelaServicos array={ajustesAgrupados.ajustes}/> : <MyCalendar/> } 
-                        </div>
+                    <hr className="hr-recebimentos"/>
                     
-                        <div className='container-ajustes'>
-                            {(detalhes) && (ajustesTemp.length > 0)? <TabelaGenericaAdm Array={ajustesAgrupados.admArray} textColor={'red-global'}/> : <></> }
-                        </div>
+                    {/* 
+                        algo de total de ajustes
+                        e gerar relatorio?
+                     */}
+
+                    <div className='component-container-servicos'>
+
+                        {/* <MyCalendar/>
+                        <TabelaServicos array={ajustesTemp}/> */}
+                        {(detalhes) && (ajustesAgrupados.ajustes.length > 0)? <TabelaServicos array={ajustesAgrupados.ajustes}/> : <MyCalendar/> } 
+
+                        <hr className="hr-recebimentos"/>
+
+                        {(detalhes) && (ajustesAgrupados.ajustes.length > 0)? <TabelaGenericaAdm Array={ajustesAgrupados.admArray} textColor={'red-global'}/> : <></> }
+
                         {(detalhes) && (ajustesTemp.length > 0)?
-                            <></>
-                            :
-                            <div className='btn-container-servicos'>
-                                <button className='btn btn-primary btn-busca-servicos' onClick={handleBuscar}>Pesquisar</button>
-                            </div> 
+                        <></>
+                        :
+                        <div className='btn-container-servicos'>
+                            <button className='btn btn-primary btn-busca-servicos' onClick={handleBuscar}>Pesquisar</button>
+                        </div> 
                         }
                 
                     </div>
@@ -180,6 +202,8 @@ const Servicos = () =>{
                 </div>
             </div>
         </div>
+    </ServicosContext.Provider>
+
     )
 }
 
