@@ -16,59 +16,55 @@ import { AuthContext } from '../../contexts/auth'
 export default function GerarRelatorio({tableData, tipo}){
 
 	const { dateConvert } = useContext(AuthContext)
-
 	const [tipoRelatorio, setTipoRelatorio] = useState('')
 
-	const storedNomeCliente = Cookies.get('Selecionado');
-	const decodedNomeCliente = storedNomeCliente ? decodeURIComponent(storedNomeCliente) : '';
+	const storedNomeCliente = Cookies.get('Selecionado')
+	const decodedNomeCliente = storedNomeCliente ? decodeURIComponent(storedNomeCliente) : ''
 	let nomeCliente = decodedNomeCliente
 
-	const [currentDateTime, setCurrentDateTime] = useState('');
+	const [currentDateTime, setCurrentDateTime] = useState('')
 
 	useEffect(() => {
 		const updateDateTime = () => {
-		  const now = new Date();
+		  const now = new Date()
 		  
 		  // Format date components
-		  const day = ('0' + now.getDate()).slice(-2);
-		  const month = ('0' + (now.getMonth() + 1)).slice(-2);
-		  const year = now.getFullYear();
-		  const formattedDate = `${day}-${month}-${year}`;
+		  const day = ('0' + now.getDate()).slice(-2)
+		  const month = ('0' + (now.getMonth() + 1)).slice(-2)
+		  const year = now.getFullYear()
+		  const formattedDate = `${day}-${month}-${year}`
 	
 		  // Format time components
-		  const hour = ('0' + now.getHours()).slice(-2);
-		  const minute = ('0' + now.getMinutes()).slice(-2);
-		  const second = ('0' + now.getSeconds()).slice(-2);
-		  const formattedTime = `${hour}.${minute}.${second}`;
-		  const formattedDateTime = `${formattedDate} ${formattedTime}`;
+		  const hour = ('0' + now.getHours()).slice(-2)
+		  const minute = ('0' + now.getMinutes()).slice(-2)
+		  const second = ('0' + now.getSeconds()).slice(-2)
+		  const formattedTime = `${hour}.${minute}.${second}`
+		  const formattedDateTime = `${formattedDate} ${formattedTime}`
 
-		  setCurrentDateTime(formattedDateTime);
-
-		};
+		  setCurrentDateTime(formattedDateTime)
+		}
 	
 		// Update the date and time initially
-		updateDateTime();
+		updateDateTime()
 	
 		// Update the date and time every second (optional)
-		const intervalId = setInterval(updateDateTime, 1000);
+		const intervalId = setInterval(updateDateTime, 1000)
 	
 		// Cleanup the interval on component unmount
-		return () => clearInterval(intervalId);
-	  }, []);
+		return () => clearInterval(intervalId)
+	  }, [])
 
 	useEffect(()=>{
 		switch (tipo) {
 			case 'vendas':
 				setTipoRelatorio('Relatório de Vendas')
-				break;
+				break
 			case 'creditos':
 				setTipoRelatorio('Relatório de Créditos')
-				break;
-		
+				break
 			default:
-				break;
+				break
 		}
-
 	},[])
 
 	// EXCEL ////////////////////////////////////////////////////////////
