@@ -282,8 +282,6 @@ const Dashboard = () => {
 			if(totalHoje > 0){
 				setTotalServicosHojeAux(totalHoje)
 			}
-		} else {
-			console.log('não tem dados')
 		}
 	}, [servicos])
 

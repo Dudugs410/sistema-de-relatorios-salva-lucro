@@ -10,7 +10,7 @@ import './detalhesCredito.scss'
 
 const TabelaVendasCreditos = ({array, tipo}) =>{
 
-	const { vendas, creditos, dateConvert, tableData, gerarDados, totaisGlobal, setTotaisGlobal, totaisGlobalVendas, setTotaisGlobalVendas, totaisGlobalCreditos, setTotaisGlobalCreditos, isDarkTheme } = useContext(AuthContext)
+	const { vendas, creditos, dateConvert, tableData, gerarDados, totaisGlobal, setTotaisGlobal, totaisGlobalVendas, setTotaisGlobalVendas, totaisGlobalCreditos, setTotaisGlobalCreditos, isDarkTheme, setDetalhes } = useContext(AuthContext)
 
 	const [vendasArray, setVendasArray] = useState([])
 
@@ -505,6 +505,7 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 					 }
 				</div>
 			</div>
+			<hr className="hr-recebimentos"/>
 			{vendasExibicao.length > itemsPerPage && (
 				<div className="container-btn-pagina">
 					<button
@@ -540,7 +541,11 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 						<FiSkipForward />
 					</button>
 				</div>
+				
 			)}
+			<div className='voltar-container'>
+				<button className={`btn btn-secondary btn-global btn-voltar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={() => { setDetalhes(false)} }>Voltar</button>
+			</div>
 		</>
 	)
 }
