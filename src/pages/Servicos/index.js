@@ -3,8 +3,9 @@ import './servicos.scss'
 import { useContext, useEffect, useState, createContext } from 'react' 
 import { useLocation } from 'react-router-dom'
 import { AuthContext } from '../../contexts/auth'
-import DateRangePicker from '../../components/Componente_TabelaServicos'
+// import DateRangePicker from '../../components/Componente_TabelaServicos'
 import Cookies from 'js-cookie'
+import BuscarClienteServicos from '../../components/Componente_BuscarClienteServicos'
 import TabelaServicos from '../../components/Componente_TabelaServicos'
 import TabelaGenericaAdm from '../../components/Componente_TabelaAdm'
 
@@ -39,10 +40,11 @@ const Servicos = () =>{
     } = useContext(AuthContext)
 
     const [arrayTeste, setArrayTeste] = useState([])
-    const [ajustesTemp, setAjustesTemp] = useState([])
+    const [ajustes, setAjustes] = useState([])
     const [ajustesAgrupados, setAjustesAgrupados] = useState([])
     const [dataBusca, setDataBusca] = useState(new Date())
     const [detalhes, setDetalhes] = useState(false)
+    const [cnpjBusca, setCnpjBusca] = useState(Cookies.get('cnpj'))
 
     useEffect(()=>{
         async function inicializar(){
@@ -56,7 +58,7 @@ const Servicos = () =>{
     useEffect(()=>{
         setDataInicial(new Date())
         setDataFinal(new Date())
-        ajustesTemp.length = 0
+        ajustes.length = 0
         ajustesAgrupados.length = 0
     },[])
             
@@ -69,7 +71,7 @@ const Servicos = () =>{
         try {
             const response = await loadAjustes(Cookies.get('cnpj'), dataInicial, dataFinal)
             if ((response)){
-                setAjustesTemp(response)
+                setAjustes(response)
             } else {
                 console.log('loadAjustes undefined? ', response)
             } 
@@ -100,7 +102,7 @@ const Servicos = () =>{
         let adq_total_value = 0;
 
         // Iterate through each person in the data
-        ajustesTemp.forEach(ajuste => {
+        ajustes.forEach(ajuste => {
         const adq_name = ajuste.nome_adquirente;
         adq_total_value += ajuste['valor']
 
@@ -123,11 +125,11 @@ const Servicos = () =>{
         })
         admArray.push({'id': 't', 'nomeAdquirente': 'Total de ajustes', 'total': adq_total_value})
         
-        const ajustes_agrupados = {'grupos': groupedData, 'admArray': admArray, 'total_ajustes': adq_total_value, 'ajustes': ajustesTemp}
+        const ajustes_agrupados = {'grupos': groupedData, 'admArray': admArray, 'total_ajustes': adq_total_value, 'ajustes': ajustes}
         console.log('total ajustes:', ajustes_agrupados);
         setAjustesAgrupados(ajustes_agrupados)
         setDetalhes(true);
-    }, [ajustesTemp]);
+    }, [ajustes]);
 
     function MyCalendar() {
         return (
@@ -147,8 +149,12 @@ const Servicos = () =>{
     return(
     <ServicosContext.Provider 
         value={{
+            ajustes,
+            setAjustes,
             detalhes, 
             setDetalhes,
+            cnpjBusca,
+            setCnpjBusca,
             dataBusca, 
             setDataBusca, 
         }}>
@@ -170,19 +176,21 @@ const Servicos = () =>{
                     <div className='component-container-servicos'>
 
                         {/* <MyCalendar/>
-                        <TabelaServicos array={ajustesTemp}/> */}
+                        <TabelaServicos array={ajustes}/> */}
                         {(detalhes) && (ajustesAgrupados.ajustes.length > 0)? <TabelaServicos array={ajustesAgrupados.ajustes}/> : <MyCalendar/> } 
 
                         <hr className="hr-recebimentos"/>
 
                         {(detalhes) && (ajustesAgrupados.ajustes.length > 0)? <TabelaGenericaAdm Array={ajustesAgrupados.admArray} textColor={'red-global'}/> : <></> }
 
-                        {(detalhes) && (ajustesTemp.length > 0)?
+                        {(detalhes) && (ajustes.length > 0)?
                         <></>
                         :
                         <div className='btn-container-servicos'>
                             <button className='btn btn-primary btn-busca-servicos' onClick={handleBuscar}>Pesquisar</button>
+                            <BuscarClienteServicos/>
                         </div> 
+
                         }
                 
                     </div>
@@ -210,11 +218,11 @@ const Servicos = () =>{
 export default Servicos
 
 // useEffect(() => {
-                                    //     if(ajustesTemp !== undefined){
+                                    //     if(ajustes !== undefined){
                                     //         let totalTemp = [];
                                     //         console.log('totalTemp: ', totalTemp);
                                           
-                                    //         ajustesTemp.forEach((elemento) => {
+                                    //         ajustes.forEach((elemento) => {
                                     //           let obj = { descricao: '', valor: 0 };
                                     //           let found = false;
                                           
@@ -243,7 +251,7 @@ export default Servicos
                                     //         console.log('totalTemp', totalTemp);
                                     //         setAjustesAgrupados(totalTemp)
                                     //     }
-                                    //   }, [ajustesTemp]);
+                                    //   }, [ajustes]);
                                 
                                     //   useEffect(()=>{
                                     //     console.log('ajustesAgrupados: ', ajustesAgrupados)

@@ -20,18 +20,22 @@ const BuscarClienteServicos = () => {
 	const [arrayDados, setArrayDados] = useState([])
 
 	const { 
+		setLoading,
 		setCnpj,  
 		dateConvertSearch,
 		setTotaisGlobal,
 		isDarkTheme,
-		creditos,
+		ajustes,
 		gerarDados,
+		loadAjustes
 	} = useContext(AuthContext)
 
 	const {
 		detalhes, 
 		setDetalhes,
-		dataBusca, 
+		dataBusca,		
+		cnpjBusca,
+		setCnpjBusca,
 		setDataBusca, 
 	} = useContext(ServicosContext)
     
@@ -65,21 +69,21 @@ const BuscarClienteServicos = () => {
 			return
 		}
 		await buscar()
-		console.log('creditos gerar dados',creditos)
-		await gerarDados(creditos)
+		console.log('ajustes gerar dados',ajustes)
+		await gerarDados(ajustes)
 	}
 
 	async function buscar() {
-		console.log('buscar()')
-		await loadServicos(cnpjBusca, dataBusca, dataBusca)
+		console.log('buscar()', dataBusca)
+		await loadAjustes(cnpjBusca, dataBusca[0], dataBusca[1])
 			.then(() =>{
-				if(dataBusca === '' || cnpjBusca === ''){
+				if(!(dataBusca) || cnpjBusca === ''){
 					return 0
 				}
 				else{
-					alerta(`executou a busca do dia ${dateConvertSearch(dataBusca)}`)
+					alerta(`executou a busca dos dias ${dateConvertSearch(dataBusca[0])} até ${dateConvertSearch(dataBusca[1])}`)
 					setBuscou(true)
-					if(creditos.length === 0){
+					if(ajustes === 0){
 						setDetalhes(false)
 					}
 				}    
@@ -90,7 +94,7 @@ const BuscarClienteServicos = () => {
 	useEffect(()=>{
 		console.log('buscou: ', buscou)
 		if(buscou === true){
-			if((creditos === null) || (creditos.length === 0)){
+			if((ajustes === null) || (ajustes.length === 0)){
 				alerta('não existem vendas para a data selecionada')
 				setBuscou(false)
 				setDetalhes(false)
@@ -128,13 +132,9 @@ const BuscarClienteServicos = () => {
 
 	function handleVoltar(e){
 		e.preventDefault()
-		setServicos([])
+		setAjustes([])
 		setDetalhes(false)
 		setBuscou(false)
-		setTotalLiquido(0.00)
-		setTotalCredito(0.00)
-		setTotalDebito(0.00)
-		setTotalVoucher(0.00)
 		setTotaisGlobal({debito: 0, credito: 0, voucher: 0, liquido: 0})
 		setArrayAdm()
 	}
@@ -156,7 +156,7 @@ const BuscarClienteServicos = () => {
 			<div className='search-bar'>
 				<form className={`date-container-vendas ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>       
 					<div className='submit-container select-align'>
-						{ (detalhes) && (creditos.length > 0) ? <button className={`btn btn-secondary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleBusca}>Pesquisar</button>}
+						{ (detalhes) && (ajustes > 0) ? <button className={`btn btn-secondary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleBusca}>Pesquisar</button>}
 					</div>      
 				</form>
 			</div>
