@@ -33,10 +33,6 @@ const PieChart = ({ data01, arrayAdm, tipo, dados } ) => {
     }
   },[])
 
-  useEffect(()=>{
-    console.log(dado)
-  },[dado])
-
   const handleChartClick = useCallback((event, elements) => {
     if (elements.length > 0) {
       const clickedElementIndex = elements[0].index;

@@ -294,6 +294,12 @@ const Dashboard = () => {
 	},[])
 
 	useEffect(()=>{
+		if(cnpj !== Cookies.get('ultimoCnpj')){
+			setBuscou(!buscou)
+		}
+	},[cnpj])
+
+	useEffect(()=>{
 		async function inicializar(){
 			if(cnpj !== Cookies.get('ultimoCnpj')){
 				await inicializaVendas4dias()
@@ -319,10 +325,11 @@ const Dashboard = () => {
 				})
 			}
 		}
-	},[buscou])
+	},[buscou, cnpj])
 
 	useEffect(()=>{
 		async function inicializar(){
+			console.log(vendasMes)
 			const total = vendasMes.reduce((total, obj) => total + obj.valorvendido, 0)
 			setSomatorioVendasMes(total)
 			if(total > 0){
