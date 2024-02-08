@@ -20,28 +20,28 @@ const BuscarClienteServicos = () => {
 	const [arrayDados, setArrayDados] = useState([])
 
 	const { 
-		setLoading,
 		setCnpj,  
-		dateConvertSearch,
+		setLoading,
+		loadAjustes,
 		setTotaisGlobal,
 		isDarkTheme,
+		setAjustes,
 		ajustes,
 		gerarDados,
-		loadAjustes
 	} = useContext(AuthContext)
 
 	const {
 		detalhes, 
 		setDetalhes,
 		dataBusca,		
+		setDataBusca, 
 		cnpjBusca,
 		setCnpjBusca,
-		setDataBusca, 
 	} = useContext(ServicosContext)
     
-	useEffect(()=>{
-		console.log('Detalhes: ',detalhes)
-	},[detalhes])
+	// useEffect(()=>{
+	// 	console.log('Detalhes: ',detalhes)
+	// },[detalhes])
     
 	useEffect(()=>{
 		setCnpj(Cookies.get('cnpj'))
@@ -62,28 +62,27 @@ const BuscarClienteServicos = () => {
 	}, [])
 
 	async function handleBusca(e){
-		console.log('handleBusca()')
 		e.preventDefault()
 		if(cnpjBusca === '' || cnpjBusca === 'Selecione' || cnpjBusca === undefined){
 			alerta('selecione um cliente válido')
 			return
 		}
 		await buscar()
-		console.log('ajustes gerar dados',ajustes)
-		await gerarDados(ajustes)
+		// await gerarDados(ajustes)
 	}
-
+	
 	async function buscar() {
-		console.log('buscar()', dataBusca)
+		// console.log('cnpj', cnpjBusca)
 		await loadAjustes(cnpjBusca, dataBusca[0], dataBusca[1])
-			.then(() =>{
+		.then(() =>{
+				// console.log('ajustes buscar',ajustes)
 				if(!(dataBusca) || cnpjBusca === ''){
 					return 0
 				}
 				else{
-					alerta(`executou a busca dos dias ${dateConvertSearch(dataBusca[0])} até ${dateConvertSearch(dataBusca[1])}`)
+					alerta(`executou a busca dos dias ${(dataBusca[0].toLocaleDateString('pt-BR'))} até ${(dataBusca[1]).toLocaleDateString('pt-BR')}`)
 					setBuscou(true)
-					if(ajustes === 0){
+					if(ajustes.length === 0){
 						setDetalhes(false)
 					}
 				}    
@@ -92,7 +91,7 @@ const BuscarClienteServicos = () => {
 	}
 
 	useEffect(()=>{
-		console.log('buscou: ', buscou)
+		// console.log('buscou: ', buscou)
 		if(buscou === true){
 			if((ajustes === null) || (ajustes.length === 0)){
 				alerta('não existem vendas para a data selecionada')
@@ -117,7 +116,7 @@ const BuscarClienteServicos = () => {
 	},[alerta, setDetalhes, arrayDados])
 
 	useEffect(()=>{
-		console.log('buscou: ', buscou)
+		// console.log('buscou: ', buscou)
 		if(buscou === true){
 			if((arrayDadosRef === null) || (arrayDadosRef.length === 0)){
 				alertaRef.current('não existem vendas para a data selecionada')
@@ -136,7 +135,7 @@ const BuscarClienteServicos = () => {
 		setDetalhes(false)
 		setBuscou(false)
 		setTotaisGlobal({debito: 0, credito: 0, voucher: 0, liquido: 0})
-		setArrayAdm()
+		// setArrayAdm()
 	}
 
 	return(

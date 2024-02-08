@@ -28,8 +28,9 @@ const Servicos = () =>{
         loadAjustes,
         setGrupos,
         grupos, 
+        ajustes,
+        setAjustes,
         cnpj, 
-        alerta, 
         dataInicial, 
         setDataInicial, 
         dataFinal, 
@@ -39,10 +40,10 @@ const Servicos = () =>{
 		setIsDarkTheme,
     } = useContext(AuthContext)
 
-    const [arrayTeste, setArrayTeste] = useState([])
-    const [ajustes, setAjustes] = useState([])
-    const [ajustesAgrupados, setAjustesAgrupados] = useState([])
-    const [dataBusca, setDataBusca] = useState(new Date())
+	const [arrayAdm, setArrayAdm] = useState([])
+    // const [arrayTeste, setArrayTeste] = useState([])
+    // const [ajustes, setAjustes] = useState([])
+    const [dataBusca, setDataBusca] = useState([new Date(), new Date()])
     const [detalhes, setDetalhes] = useState(false)
     const [cnpjBusca, setCnpjBusca] = useState(Cookies.get('cnpj'))
 
@@ -58,8 +59,8 @@ const Servicos = () =>{
     useEffect(()=>{
         setDataInicial(new Date())
         setDataFinal(new Date())
-        ajustes.length = 0
-        ajustesAgrupados.length = 0
+        // ajustes.length = 0
+        // ajustesAgrupados.length = 0
     },[])
             
     function handleBuscar(e){
@@ -82,7 +83,7 @@ const Servicos = () =>{
 
     function handleDateChange(date){
         setDataBusca(date)
-        console.log(dataBusca)
+        // console.log(dataBusca)
     }
     
     useEffect(() => {
@@ -96,7 +97,6 @@ const Servicos = () =>{
     }, [dataBusca])
 
 
-    // hook que agrupa por adquirente e calcula valor_total dos grupos de ajuste
     useEffect(()=>{
         const groupedData = {};
         let adq_total_value = 0;
@@ -126,8 +126,9 @@ const Servicos = () =>{
         admArray.push({'id': 't', 'nomeAdquirente': 'Total de ajustes', 'total': adq_total_value})
         
         const ajustes_agrupados = {'grupos': groupedData, 'admArray': admArray, 'total_ajustes': adq_total_value, 'ajustes': ajustes}
-        console.log('total ajustes:', ajustes_agrupados);
-        setAjustesAgrupados(ajustes_agrupados)
+        // console.log('total ajustes:', ajustes_agrupados);
+        // setAjustesAgrupados(ajustes_agrupados)
+        setArrayAdm(admArray)
         setDetalhes(true);
     }, [ajustes]);
 
@@ -177,11 +178,11 @@ const Servicos = () =>{
 
                         {/* <MyCalendar/>
                         <TabelaServicos array={ajustes}/> */}
-                        {(detalhes) && (ajustesAgrupados.ajustes.length > 0)? <TabelaServicos array={ajustesAgrupados.ajustes}/> : <MyCalendar/> } 
+                        {(detalhes) && (ajustes.length > 0)? <TabelaServicos array={ajustes}/> : <MyCalendar/> } 
 
                         <hr className="hr-recebimentos"/>
 
-                        {(detalhes) && (ajustesAgrupados.ajustes.length > 0)? <TabelaGenericaAdm Array={ajustesAgrupados.admArray} textColor={'red-global'}/> : <></> }
+                        {(detalhes) && (ajustes.length > 0)? <TabelaGenericaAdm Array={arrayAdm} textColor={'red-global'}/> : <></> }
 
                         {(detalhes) && (ajustes.length > 0)?
                         <></>
