@@ -18,9 +18,7 @@ export default function GerarRelatorio({tableData, tipo}){
 	const { dateConvert } = useContext(AuthContext)
 	const [tipoRelatorio, setTipoRelatorio] = useState('')
 
-	const storedNomeCliente = Cookies.get('Selecionado')
-	const decodedNomeCliente = storedNomeCliente ? decodeURIComponent(storedNomeCliente) : ''
-	let nomeCliente = decodedNomeCliente
+	const [nomeCliente, setNomeCliente] = useState(Cookies.get('headerNome'))
 
 	const [currentDateTime, setCurrentDateTime] = useState('')
 
@@ -33,7 +31,7 @@ export default function GerarRelatorio({tableData, tipo}){
 		  const month = ('0' + (now.getMonth() + 1)).slice(-2)
 		  const year = now.getFullYear()
 		  const formattedDate = `${day}-${month}-${year}`
-	
+
 		  // Format time components
 		  const hour = ('0' + now.getHours()).slice(-2)
 		  const minute = ('0' + now.getMinutes()).slice(-2)
@@ -43,7 +41,7 @@ export default function GerarRelatorio({tableData, tipo}){
 
 		  setCurrentDateTime(formattedDateTime)
 		}
-	
+
 		// Update the date and time initially
 		updateDateTime()
 	
@@ -70,9 +68,11 @@ export default function GerarRelatorio({tableData, tipo}){
 	// EXCEL ////////////////////////////////////////////////////////////
 	
 	const exportToExcel = () => {
-    
+
+		setNomeCliente(Cookies.get('headerNome'))
+
 		if (!tableData || tableData.length === 0) {
-			alert('No data to export.')
+			alert('Sem dados para a exportação.')
 			return
 		}
     
@@ -134,7 +134,7 @@ export default function GerarRelatorio({tableData, tipo}){
 					saveExcelFile(buffer, `${tipoRelatorio} - ${nomeCliente} - ${currentDateTime}.xlsx`)
 				})
 				.catch((error) => {
-					console.error('Error generating Excel file:', error)
+					console.error('Erro ao gerar arquivo excel: ', error)
 				})
 		} else if (tipo === 'creditos'){
 			// Add data rows
@@ -169,7 +169,7 @@ export default function GerarRelatorio({tableData, tipo}){
 				saveExcelFile(buffer, `${tipoRelatorio} - ${nomeCliente} - ${currentDateTime}.xlsx`)
 			})
 			.catch((error) => {
-				console.error('Error generating Excel file:', error)
+				console.error('Erro ao gerar arquivo Excel: ', error)
 			})
 		}
 	}
@@ -187,10 +187,11 @@ export default function GerarRelatorio({tableData, tipo}){
 
 	const generatePdf = () => {
 		if (!tableData || tableData.length === 0) {
-			console.log('tableData: ', tableData)
 			alert('Sem dados para exportar')
 			return
-		} else{
+		} else {
+			setNomeCliente(decodeURIComponent(Cookies.get('headerNome')))
+
 			if(tipo === 'vendas'){
 				const columns = ['CNPJ', 'Adquirente', 'Bandeira', 'Produto', 'Subproduto', 'Valor Bruto', 'Valor Líquido', 'Taxa', 'Valor Desconto', 'NSU', 'Data Venda', 'Hora Venda', 'Data Crédito', 'Código Autorização', 'QTD PARC']
 				const rows = tableData.map(rowData => [rowData.cnpj, rowData.adquirente, rowData.bandeira, rowData.produto, rowData.subproduto, `R$ ${rowData.valorBruto}`, `R$ ${rowData.valorLiquido}`, `${rowData.taxa}%`, `R$ ${rowData.valorDesconto}`, rowData.nsu, dateConvert(rowData.dataVenda), rowData.horaVenda, dateConvert(rowData.dataCredito), rowData.codigoAutorizacao, rowData.quantidadeParcelas ])
