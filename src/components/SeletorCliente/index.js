@@ -125,7 +125,7 @@ const SeletorCliente = () => {
     
 		// Update state with selected value
 		setGruSelecionado(selected)
-		Cookies.set('gruSelecionado', JSON.stringify(gruSelecionado))
+		//Cookies.set('gruSelecionado', JSON.stringify(gruSelecionado))
         
 		// Additional code if needed
 		setCliSelecionado('')
@@ -171,6 +171,7 @@ const SeletorCliente = () => {
 	useEffect(()=>{
 		Cookies.set('podeBuscar', podeBuscar)
 	},[podeBuscar])
+
 
 	return(
 		<>

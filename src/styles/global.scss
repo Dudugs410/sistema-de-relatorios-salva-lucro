@@ -193,8 +193,11 @@
 }
 
 .green-global{
+
     &.light-theme{
-        color: $secondary-color-light;
+        color: rgb(0, 204, 0);
+        font-weight: bold;
+        
     }
     &.dark-theme{
         color: $secondary-color-light;

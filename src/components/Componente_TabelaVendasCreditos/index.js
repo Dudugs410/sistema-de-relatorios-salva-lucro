@@ -236,17 +236,12 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 
 	useEffect(()=>{
 		if(vendasExibicao.length > 0){
-			console.log('gerarDados: ', vendasExibicao)
 			gerarDados(vendasExibicao)
 			carregaTotais(vendasExibicao)
 			setCurrentPage(1)
             
 		}
 	},[vendasExibicao])
-
-	useEffect(()=>{
-		console.log('dados a serem exportados: ', tableData)
-	},[tableData])
 
 	useEffect(()=>{
 
@@ -543,9 +538,10 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 				</div>
 				
 			)}
+			{ sessionStorage.getItem('currentPath') !== '/dashboard' ? 
 			<div className='voltar-container'>
 				<button className={`btn btn-secondary btn-global btn-voltar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={() => { setDetalhes(false)} }>Voltar</button>
-			</div>
+			</div> : <></>}
 		</>
 	)
 }

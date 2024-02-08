@@ -82,6 +82,29 @@ const BuscarClienteCreditos = () => {
 				if(dataBusca === '' || cnpjBusca === ''){
 					return 0
 				} else {
+					//adiciono .toLocaleDateString('pt-BR') às datas para que possamos comparar apenas o dia, mes e ano, sem levar em consideração a hora, minuto e segundos
+					if((dataBusca[0].toLocaleDateString('pt-BR') === dataBusca[1].toLocaleDateString('pt-BR')) && (clicouPesquisar === true)){
+						alerta(`executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')}`)
+						setBuscou(true)
+						
+					} else if ((dataBusca[0].toLocaleDateString('pt-BR') !== dataBusca[1].toLocaleDateString('pt-BR')) && clicouPesquisar === true){
+						alerta(`executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')} ao dia ${dataBusca[1].toLocaleDateString('pt-BR')}`)
+						setBuscou(true)
+					}
+
+					if(creditos.length === 0){
+						setDetalhes(false)
+						setClicouPesquisar(false)
+						
+					}
+				}    
+
+				//
+
+				/*
+				if(dataBusca === '' || cnpjBusca === ''){
+					return 0
+				} else {
 					
 					//adiciono .toLocaleDateString('pt-BR') às datas para que possamos comparar apenas o dia, mes e ano, sem levar em consideração a hora, minuto e segundos
 					
@@ -97,7 +120,7 @@ const BuscarClienteCreditos = () => {
 						setDetalhes(false)
 						setClicouPesquisar(false)
 					}
-				}
+				} */
 			})
 		setLoading(false)
 	}
