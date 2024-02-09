@@ -31,6 +31,7 @@ function AuthProvider({ children }){
   
 	const [vendas, setVendas] = useState([])
 	const [creditos, setCreditos] = useState([])
+	const [ajustes, setAjustes] = useState([])
 
 	const [detalhes, setDetalhes] = useState(false)
 
@@ -650,8 +651,8 @@ function AuthProvider({ children }){
 		try {
 			if(cnpj === 'todos'){
 				let params = {
-					dataInicial: dateConvertSearch(dataInicial),
-					dataFinal: dateConvertSearch(dataFinal),
+					dataInicial: (dataInicial),
+					dataFinal: (dataFinal),
 					codigoGrupo: Cookies.get('codigoGrupo')
 				}
     
@@ -663,16 +664,18 @@ function AuthProvider({ children }){
 					params: params
 				}
 
-				const response = await api.get('/ajustes', config)
+				const response = await api.get('ajustes', config)
 				const recebimentosData = response.data
+				console.log('response data ajustes', response.data)
+				setAjustes(response.data)
 				setLoading(false)
-				return recebimentosData
+				return 
 
 			} else {
 				let params = {
-					cnpj: cnpj,
-					dataInicial: dateConvertSearch(dataInicial),
-					dataFinal: dateConvertSearch(dataFinal)
+					cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
+					dataInicial: dataInicial,
+					dataFinal: dataFinal
 				}
     
 				let config = {
@@ -682,10 +685,11 @@ function AuthProvider({ children }){
 					},
 					params: params
 				}
-				const response = await api.get('/ajustes', config)
-				const recebimentosData = response.data
+				const response = await api.get('ajustes', config)
+				setAjustes(response.data)
+				// const recebimentosData = response.data
 				setLoading(false)
-				return recebimentosData
+				return 	
 			}
 		} catch (error) {
 			console.log(error)
