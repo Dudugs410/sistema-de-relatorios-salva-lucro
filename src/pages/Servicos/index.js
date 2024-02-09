@@ -1,10 +1,10 @@
 import Calendar from 'react-calendar'
 import './servicos.scss'
 import { useContext, useEffect, useState, createContext } from 'react' 
-import { useLocation } from 'react-router-dom'
 import { AuthContext } from '../../contexts/auth'
 // import DateRangePicker from '../../components/Componente_TabelaServicos'
 import Cookies from 'js-cookie'
+import { useLocation } from 'react-router-dom'
 import BuscarClienteServicos from '../../components/Componente_BuscarClienteServicos'
 import TabelaServicos from '../../components/Componente_TabelaServicos'
 import TabelaGenericaAdm from '../../components/Componente_TabelaAdm'
@@ -24,13 +24,18 @@ export const ServicosContext = createContext({})
 const Servicos = () =>{
 	const location = useLocation()
 
+	useEffect(() => {
+		sessionStorage.setItem('currentPath', location.pathname)
+	}, [location])
+    
     const { 
+        cnpj,
+		setCnpj,
         loadAjustes,
         setGrupos,
         grupos, 
         ajustes,
         setAjustes,
-        cnpj, 
         dataInicial, 
         setDataInicial, 
         dataFinal, 
@@ -38,16 +43,24 @@ const Servicos = () =>{
         dateConvert,
         isDarkTheme,
 		setIsDarkTheme,
-
+        detalhes
     } = useContext(AuthContext)
 
 	const [arrayAdm, setArrayAdm] = useState([])
-    const [detalhes, setDetalhes] = useState(false)
     const [cnpjBusca, setCnpjBusca] = useState(Cookies.get('cnpj'))
-    const [totalAjustes, setTotalAjustes] = useState(0)
+    // const [totalAjustes, setTotalAjustes] = useState(0)
     const [dataBusca, setDataBusca] = useState([new Date(), new Date()])
     const [dataInicialExibicao, setDataInicialExibicao] = useState(new Date().toLocaleDateString('pt-BR'))
     const [dataFinalExibicao, setDataFinalExibicao] = useState(new Date().toLocaleDateString('pt-BR'))
+	
+    useEffect(()=>{
+		setAjustes([])
+		setCnpj(Cookies.get('cnpj'))
+	},[])
+
+    useEffect(()=>{
+		setCnpjBusca(cnpj)
+	},[cnpj])
 
     useEffect(()=>{
         async function inicializar(){
@@ -109,7 +122,6 @@ const Servicos = () =>{
         
         const ajustes_agrupados = {'grupos': groupedData, 'admArray': admArray, 'total_ajustes': adq_total_value, 'ajustes': ajustes}
         setArrayAdm(admArray)
-        setDetalhes(true);
     }, [ajustes]);
 
     function MyCalendar() {
@@ -142,8 +154,6 @@ const Servicos = () =>{
             value={{
                 dataBusca, 
                 setDataBusca, 
-                detalhes, 
-                setDetalhes,
                 cnpjBusca,
                 setCnpjBusca,
                 dataFinalExibicao,

@@ -28,13 +28,12 @@ const BuscarClienteServicos = () => {
 		setAjustes,
 		ajustes,
 		gerarDados,
+		detalhes, 
+		setDetalhes,
 	} = useContext(AuthContext)
 
 	const {
-		detalhes, 
-		setDetalhes,
 		dataBusca,		
-		setDataBusca, 
 		cnpjBusca,
 		setCnpjBusca,                
 		dataFinalExibicao,
@@ -70,12 +69,15 @@ const BuscarClienteServicos = () => {
 			return
 		}
 		await buscar()
-		// func p/ prerparar dados pra gerar relatorios -> await gerarDados(ajustes)
+		setDetalhes(true)
+
+		// func p/ prerparar dados pra gerar relatorios -> 
+		// await gerarDados(ajustes)
 	}
 	
 	async function buscar() {
 		// console.log('cnpj', cnpjBusca)
-		await loadAjustes(cnpjBusca, dataBusca[0], dataBusca[1])
+		await loadAjustes(cnpjBusca, dataInicialExibicao, dataFinalExibicao)
 		.then(() =>{
 				// console.log('ajustes buscar',ajustes)
 				if(!(dataBusca) || cnpjBusca === ''){
