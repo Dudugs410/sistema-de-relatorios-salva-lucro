@@ -64,8 +64,6 @@ const SeletorCliente = () => {
 		e.preventDefault()
 		if((cliSelecionado === '') || (cliSelecionado ==='selecione') || (cliSelecionado.value === '')){
 			alerta('Selecione um cliente válido')
-			Cookies.set('cnpj', '')
-			setCnpj('')
 			return
 		}
 		resetaDashboard()
@@ -129,7 +127,6 @@ const SeletorCliente = () => {
         
 		// Additional code if needed
 		setCliSelecionado('')
-		Cookies.set('cnpj', '')
 	}
 
 	const handleSelectChangeCLI = (selected) => {

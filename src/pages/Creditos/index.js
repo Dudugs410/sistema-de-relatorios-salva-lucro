@@ -127,7 +127,7 @@ const Creditos = () =>{
 	const [dataBuscaFinal, setDataBuscaFinal] = useState(new Date)
 
 	useEffect(()=>{
-		if(detalhes){
+		if(detalhes && (cnpjBusca !== '')){
 			setVendasTemp(loadCreditos(cnpjBusca, dataBusca[0], dataBusca[1]))
 		}
 
@@ -141,7 +141,6 @@ const Creditos = () =>{
 	  const [dataFinalExibicao, setDataFinalExibicao] = useState(new Date().toLocaleDateString('pt-BR'))
 	
 	  useEffect(()=>{
-		console.log(dataBusca)
 		if((dataBusca[0] !== undefined) && (dataBusca[1] !== undefined)){
 		  setDataBuscaInicial(dataBusca[0])
 		  setDataBuscaInicial(dataBusca[1])

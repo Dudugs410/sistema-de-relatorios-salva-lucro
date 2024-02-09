@@ -24,6 +24,10 @@ export const ServicosContext = createContext({})
 const Servicos = () =>{
 	const location = useLocation()
 
+	useEffect(() => {
+		sessionStorage.setItem('currentPath', location.pathname)
+	}, [location])
+
     const { 
         loadAjustes,
         setGrupos,
