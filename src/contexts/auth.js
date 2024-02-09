@@ -33,10 +33,14 @@ function AuthProvider({ children }){
 	const [creditos, setCreditos] = useState([])
 	const [ajustes, setAjustes] = useState([])
 
+	const [detalhes, setDetalhes] = useState(false)
+
 	const [vendasDash, setVendasDash] = useState([])
 	const [tableData, setTableData] = useState([])
 
 	const [totaisGlobal, setTotaisGlobal] = useState({debito: 0, credito: 0, voucher: 0, liquido: 0})
+	const [totaisGlobalVendas, setTotaisGlobalVendas] = useState({debito: 0, credito: 0, voucher: 0, liquido: 0})
+	const [totaisGlobalCreditos, setTotaisGlobalCreditos] = useState({debito: 0, credito: 0, voucher: 0, liquido: 0})
 
 	const [recebimentos, setRecebimentos] = useState([])
 	const [recebimentosDash, setRecebimentosDash] = useState([])
@@ -226,6 +230,8 @@ function AuthProvider({ children }){
 		setVendasDash([])
 		setTableData([])
 		setTotaisGlobal({debito: 0, credito: 0, voucher: 0, liquido: 0})
+		setTotaisGlobalVendas({debito: 0, credito: 0, voucher: 0, liquido: 0})
+		setTotaisGlobalCreditos({debito: 0, credito: 0, voucher: 0, liquido: 0})
   
 		setRecebimentos([])
 		setRecebimentosDash([])
@@ -270,6 +276,8 @@ function AuthProvider({ children }){
 
 	function resetaSomatorios(){
 		setTotaisGlobal({debito: 0, credito: 0, voucher: 0, liquido: 0})
+		setTotaisGlobalVendas({debito: 0, credito: 0, voucher: 0, liquido: 0})
+		setTotaisGlobalCreditos({debito: 0, credito: 0, voucher: 0, liquido: 0})
 		setSomatorioCreditosHojeAux(0)
 		setTotalCreditos5diasAux(0)
 		setSomatorioVendasMesAux(0)
@@ -283,6 +291,8 @@ function AuthProvider({ children }){
 		setVendas([])
 		setVendasDash([])
 		setTotaisGlobal({debito: 0, credito: 0, voucher: 0, liquido: 0})
+		setTotaisGlobalVendas({debito: 0, credito: 0, voucher: 0, liquido: 0})
+		setTotaisGlobalCreditos({debito: 0, credito: 0, voucher: 0, liquido: 0})
 		setRecebimentos([])
 		setRecebimentosDash([])
 		setVendaAtual([])
@@ -381,16 +391,16 @@ function AuthProvider({ children }){
 
 	// retorna as vendas da data e cliente específicos.
 
-	async function loadVendas(dataInicial, cnpj){
+	async function loadVendas(dataInicial, dataFinal, cnpj){
 		if((dataInicial === '' || undefined) || (cnpj === '' || undefined)){
-			alert('Favor selecionar uma data e cliente válidos')
 			return 0
 		}
 		setLoading(true)
 		try {
 			if(cnpj === 'todos'){
 				let params = {
-					data: dataInicial,
+					datainicial: dataInicial,
+					datafinal: dataFinal,
 					codigoGrupo: Cookies.get('codigoGrupo')
 				}
           
@@ -411,7 +421,8 @@ function AuthProvider({ children }){
 					})
 			} else { 
 				let params = {
-					data: dataInicial,
+					datainicial: dataInicial,
+					datafinal: dataFinal,
 					cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
 				}
           
@@ -537,7 +548,6 @@ function AuthProvider({ children }){
 	async function retornaVendasPeriodo(datainicial, datafinal, cnpj, adquirente, bandeira){
 		setLoading(true)
 		if((dataInicial === '' || undefined) || (cnpj === '' || undefined)){
-			alert('Favor selecionar uma data e cliente válidos')
 			return 0
 		}
 
@@ -711,6 +721,18 @@ function AuthProvider({ children }){
   
 		let convertedDate = day + '/' + month + '/' + year
 		return convertedDate
+	}
+
+	function timeConvert(time){
+		if(time){
+			let parts = time.split('-')
+			let hours = parts[0]
+			let minutes = parts[1]
+			let seconds = parts[2]
+	  
+			let convertedTime = hours + ':' + minutes + ':' + seconds
+			return convertedTime
+		}
 	}
 
 	function dateConvertSearch(date) {
@@ -922,7 +944,6 @@ function AuthProvider({ children }){
 		setLoading(true)
 		try {
 			if(cnpj === 'todos'){
-				console.log('Todos CNPJs')
 
 				let params = {
 					codigoGrupo: Cookies.get('codigoGrupo'),
@@ -942,7 +963,6 @@ function AuthProvider({ children }){
 				return response.data
 
 			} else {
-				console.log('cnpj específico')
 				let params = {
 					cnpj: cnpj,
 					data: data,
@@ -996,7 +1016,6 @@ function AuthProvider({ children }){
 		setLoading(true)
 
 		if((dataInicial === '' || undefined) || (cnpj === '' || undefined)){
-			alert('Favor selecionar uma data e cliente válidos')
 			setLoading(false)
 			return 0
 		}
@@ -1060,27 +1079,58 @@ function AuthProvider({ children }){
 
 
 	function gerarDados(array){
+		const tipoTemp = Cookies.get('tipo')
 		tableData.length = 0
 		if (array.length > 0) {
-			array.map((venda) => {
-				tableData.push({
-					adquirente: venda.adquirente.nomeAdquirente,
-					bandeira: venda.bandeira.descricaoBandeira,
-					produto: venda.produto.descricaoProduto,
-					nsu: venda.nsu,
-					cnpj: venda.cnpj,
-					codigoVenda: venda.codigoVenda,
-					codigoAutorizacao: venda.codigoAutorizacao,
-					numeroPV: venda.numeroPV,
-					valorBruto: 'R$' + venda.valorBruto.toFixed(2).replaceAll('.', ','),
-					valorLiquido: 'R$' + venda.valorLiquido.toFixed(2).replaceAll('.', ','),
-					taxa: venda.taxa.toFixed(2).replaceAll('.', ',') + '%',
-					dataVenda: dateConvert(venda.dataVenda),
-					horaVenda: venda.horaVenda,
-					dataCredito: dateConvert(venda.dataCredito),
-					parcelas: venda.quantidadeParcelas,
+			if(tipoTemp === 'vendas'){
+				array.map((venda) => {
+					tableData.push({
+						cnpj: venda.cnpj,
+						adquirente: venda.adquirente.nomeAdquirente,
+						bandeira: venda.bandeira.descricaoBandeira,
+						produto: venda.produto.descricaoProduto,
+						subproduto: venda.modalidade.descricaoModalidade,
+						valorBruto: venda.valorBruto.toFixed(2),
+						valorLiquido: venda.valorLiquido.toFixed(2),
+						taxa: venda.taxa.toFixed(2),
+						valorDesconto: venda.valorDesconto.toFixed(2),
+						nsu: venda.nsu,
+						dataVenda: venda.dataVenda,
+						horaVenda: timeConvert(venda.horaVenda),
+						dataCredito: venda.dataCredito,
+						numeroPV: venda.numeroPV,
+						cartao: venda.cartao,
+						codigoAutorizacao: venda.codigoAutorizacao,
+						quantidadeParcelas: venda.quantidadeParcelas,
+						tid: venda.tid,
+					})
 				})
-			})
+			} else if(tipoTemp === 'creditos'){
+				array.map((venda) => {
+					tableData.push({
+						cnpj: venda.cnpj,
+						adquirente: venda.adquirente.nomeAdquirente,
+						bandeira: venda.bandeira.descricaoBandeira,
+						produto: venda.produto.descricaoProduto,
+						subproduto: venda.modalidade.descricaoModalidade,
+						dataCredito: venda.dataCredito,
+						dataVenda: venda.dataVenda,
+						valorBruto: venda.valorBruto,
+						valorLiquido: venda.valorLiquido,
+						taxa: venda.taxa,
+						valorDesconto: venda.valorDesconto,
+						nsu: venda.nsu,
+						cartao: venda.cartao,
+						codigoAutorizacao: venda.codigoAutorizacao,
+						parcela: venda.parcela,
+						totalParcelas: venda.totalParcelas,
+						banco: venda.banco,
+						agencia: venda.agencia,
+						conta: venda.conta,
+						tid: venda.tid,
+					})
+				})
+			}
 		} 
 		return tableData
 	}
@@ -1134,124 +1184,78 @@ function AuthProvider({ children }){
 		<AuthContext.Provider
 			value={{
 				alerta,
-				isSignedIn,
-				setIsSignedIn,
-				loading,
-				setLoading,
-				submitLogin,
-				logout,
-				accessToken,
-				setAccessToken,
-				refreshToken,
-				setRefreshToken,
+				isSignedIn, setIsSignedIn,
+				loading, setLoading,
+				submitLogin, logout,
+				accessToken, setAccessToken,
+				refreshToken, setRefreshToken,
 				expired,
 				dateConvert,
 				dateConvertSearch,
 				dateConvertYYYYMMDD,
 				refresh,
 				////////////////
-				dataInicial,
-				setDataInicial,
-				dataFinal,
-				setDataFinal,
-				cnpj,
-				setCnpj,
-				podeBuscar,
-				setPodeBuscar,
-				ajustes,
-				setAjustes,
-				vendas,
-				setVendas,
-				creditos,
-				setCreditos,
-				vendasDash,
-				setVendasDash,
-				recebimentos,
-				recebimentosDash,
-				setRecebimentosDash,
+				dataInicial, setDataInicial,
+				dataFinal, setDataFinal,
+				cnpj, setCnpj,
+				podeBuscar, setPodeBuscar,
+				vendas, setVendas,
+				creditos, setCreditos,
+				vendasDash, setVendasDash,
+				recebimentos, recebimentosDash, setRecebimentosDash,
 				loadCreditos,
-				bandeiras,
-				setBandeiras,
-				loadBandeiras,
-				grupos,
-				setGrupos,
-				loadGrupos,
-				inicializouGruposAux,
-				setInicializouGruposAux,
-				clientes,
-				setClientes,
+				bandeiras, setBandeiras, loadBandeiras,
+				grupos, setGrupos, loadGrupos,
+				inicializouGruposAux, setInicializouGruposAux,
+				clientes, setClientes,
 				loadVendas,
-				adquirentes,
-				setAdquirentes,
-				loadAdquirentes,
-				vendaAtual,
-				setVendaAtual,
-				vendaDias,
-				setVendaDias,
-				buscou,
-				setBuscou,
+				adquirentes, setAdquirentes, loadAdquirentes,
+				vendaAtual, setVendaAtual,
+				vendaDias, setVendaDias,
+				buscou, setBuscou,
 				loadPeriodo,
-				modalCliente,
-				setModalCliente,
+				modalCliente, setModalCliente,
 				retornaVendasPeriodo,
 				retornaRecebimentos,
 				returnTotalDia,
-				gruSelecionado,
-				setGruSelecionado,
-				listaClientes, 
-				setListaClientes,
+				gruSelecionado, setGruSelecionado,
+				listaClientes, setListaClientes,
 				returnVendas,
 				returnCreditos,
 				converteData,
 				returnTotalMes,
 				returnCreditosBanco,
 				loadAjustes,
-				isDarkTheme,
-				setIsDarkTheme,
-				admVendasAux,
-				setAdmVendasAux,
-				admCreditosAux,
-				setAdmCreditosAux,
-				somatorioCreditosHojeAux,
-				setSomatorioCreditosHojeAux,
-				totalCreditos5diasAux,
-				setTotalCreditos5diasAux,
-				somatorioVendasMesAux,
-				setSomatorioVendasMesAux,
-				totalVendas4diasAux,
-				setTotalVendas4diasAux,
-				graficoVendasAux,
-				setGraficoVendasAux,
-				graficoCreditosAux,
-				setGraficoCreditosAux,
-				inicializouAux,
-				setInicializouAux,
-				tableData,
-				setTableData,
+				isDarkTheme, setIsDarkTheme,
+				admVendasAux, setAdmVendasAux,
+				admCreditosAux, setAdmCreditosAux,
+				somatorioCreditosHojeAux, setSomatorioCreditosHojeAux,
+				totalCreditos5diasAux, setTotalCreditos5diasAux,
+				somatorioVendasMesAux, setSomatorioVendasMesAux,
+				totalVendas4diasAux, setTotalVendas4diasAux,
+				graficoVendasAux, setGraficoVendasAux,
+				graficoCreditosAux, setGraficoCreditosAux,
+				inicializouAux, setInicializouAux,
+				tableData, setTableData,
 				gerarDados,
-				totaisGlobal,
-				setTotaisGlobal,
+				totaisGlobal, setTotaisGlobal,
+				totaisGlobalVendas, setTotaisGlobalVendas,
+				totaisGlobalCreditos, setTotaisGlobalCreditos,
 				resetaSomatorios,
 				getCli,
 				showErrorMessage,
 				setShowErrorMessage,
 				resetaDashboard,
-				admServicosAux,
-				setAdmServicosAux,
-				totalServicosHojeAux,
-				setTotalServicosHojeAux,
-				totalServicosMesAux,
-				setTotalServicosMesAux,
-				graficoServicosAux,
-				setGraficoServicosAux,
+				admServicosAux, setAdmServicosAux,
+				totalServicosHojeAux, setTotalServicosHojeAux,
+				totalServicosMesAux, setTotalServicosMesAux,
+				graficoServicosAux, setGraficoServicosAux,
 				loadDashboard,
 				returnVendasPorPeriodo,
-				grupoSelecionado,
-				setGrupoSelecionado,
-				clienteSelecionado,
-				setClienteSelecionado,
-				trocarHeader,
-				setTrocarHeader,
+				grupoSelecionado, setGrupoSelecionado,
+				clienteSelecionado, setClienteSelecionado,
+				trocarHeader, setTrocarHeader,
+				detalhes, setDetalhes
 			}}
 		>
 			{children}

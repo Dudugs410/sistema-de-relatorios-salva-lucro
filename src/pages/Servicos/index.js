@@ -37,7 +37,8 @@ const Servicos = () =>{
         setDataFinal, 
         dateConvert,
         isDarkTheme,
-		setIsDarkTheme,
+		    setIsDarkTheme,
+
     } = useContext(AuthContext)
 
 	const [arrayAdm, setArrayAdm] = useState([])

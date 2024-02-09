@@ -38,9 +38,10 @@ const Vendas = () =>{
     dateConvertSearch,
     gerarDados,
     tableData,
-    setTotaisGlobal,
+    setTotaisGlobalVendas,
     isDarkTheme,
     setIsDarkTheme,
+    detalhes, setDetalhes,
   } = useContext(AuthContext)
 
   const [totalCredito, setTotalCredito] = useState(0.00)
@@ -50,14 +51,18 @@ const Vendas = () =>{
 
   const [arrayAdm, setArrayAdm] = useState([])
   const [arrayRelatorio, setArrayRelatorio] = useState([])
-  const [detalhes, setDetalhes] = useState(false)
-  const [dataBusca, setDataBusca] = useState(new Date())
+  const [dataBusca, setDataBusca] = useState([new Date(), new Date()])
+
+  const [tipo, setTipo] = useState('vendas')
+
+  useEffect(()=>{
+    setTipo('vendas')
+    Cookies.set('tipo', 'vendas')
+  },[])
 
   // possivelmente utilizar estes parametros para realizar busca por período
 
   const [cnpjBusca, setCnpjBusca] = useState(Cookies.get('cnpj'))
-
-  const [vendasTotais, setVendasTotais] = useState([])
 
   useEffect(()=>{
     setIsDarkTheme(JSON.parse(localStorage.getItem('isDark')))
@@ -86,7 +91,7 @@ const Vendas = () =>{
     setTotalDebito(0.00)
     setTotalVoucher(0.00)
     setTotalLiquido(0.00)
-    setTotaisGlobal({debito: 0, credito: 0, voucher: 0, liquido: 0})
+    setTotaisGlobalVendas({debito: 0, credito: 0, voucher: 0, liquido: 0})
   },[])
 
   useEffect(()=>{
@@ -116,9 +121,12 @@ const Vendas = () =>{
 
   const [vendasTemp, setVendasTemp] = useState([])
 
+  const [dataBuscaInicial, setDataBuscaInicial] = useState(new Date)
+  const [dataBuscaFinal, setDataBuscaFinal] = useState(new Date)
+
   useEffect(()=>{
     if(detalhes){
-      setVendasTemp(loadVendas(dataBusca, cnpjBusca))
+      setVendasTemp(loadVendas(dataBuscaInicial, dataBuscaFinal, cnpjBusca))
     }
 
   },[cnpjBusca])
@@ -126,6 +134,18 @@ const Vendas = () =>{
   function handleDateChange(date){
     setDataBusca(date)
   }
+
+  const [dataInicialExibicao, setDataInicialExibicao] = useState(new Date().toLocaleDateString('pt-BR'))
+  const [dataFinalExibicao, setDataFinalExibicao] = useState(new Date().toLocaleDateString('pt-BR'))
+
+  useEffect(()=>{
+    if((dataBusca[0] !== undefined) && (dataBusca[1] !== undefined)){
+      setDataBuscaInicial(dataBusca[0])
+      setDataBuscaInicial(dataBusca[1])
+      setDataInicialExibicao(dataBusca[0].toLocaleDateString('pt-BR'))
+      setDataFinalExibicao(dataBusca[1].toLocaleDateString('pt-BR'))
+    }
+  },[dataBusca])
 
   function separaAdm(array){
     if(array.length > 0){
@@ -139,7 +159,7 @@ const Vendas = () =>{
         if(temp.length === 0){
           let novoObj = {
               nomeAdquirente: venda.adquirente.nomeAdquirente,
-              total: venda.valorLiquido,
+              total: venda.valorBruto,
               id: 0,
               vendas: []
           }
@@ -147,7 +167,7 @@ const Vendas = () =>{
         }else{
           let novoObj = {
               nomeAdquirente: venda.adquirente.nomeAdquirente,
-              total: venda.valorLiquido,
+              total: venda.valorBruto,
               id: 0,
               vendas: []
           }
@@ -160,7 +180,7 @@ const Vendas = () =>{
           else{
               for(let i = 0; i < temp.length; i++){
                   if(temp[i].nomeAdquirente === venda.adquirente.nomeAdquirente){
-                      temp[i].total += venda.valorLiquido
+                      temp[i].total += venda.valorBruto
                   }
               }
           }
@@ -168,18 +188,18 @@ const Vendas = () =>{
         // eslint-disable-next-line default-case
         switch(venda.produto.descricaoProduto){
           case 'Crédito':
-            totalCreditoTemp += venda.valorLiquido
+            totalCreditoTemp += venda.valorBruto
             break;
 
           case 'Débito':
-            totalDebitoTemp += venda.valorLiquido
+            totalDebitoTemp += venda.valorBruto
             break;
 
           case 'Voucher':
-            totalVoucherTemp += venda.valorLiquido
+            totalVoucherTemp += venda.valorBruto
             break;
         }
-        totalLiquidoTemp += venda.valorLiquido
+        totalLiquidoTemp += venda.valorBruto
       })
         temp.forEach((adq) => {
             let vendasTemp = []
@@ -196,7 +216,8 @@ const Vendas = () =>{
             })
         })
         let totalTemp = {debito: totalDebitoTemp, credito: totalCreditoTemp, voucher: totalVoucherTemp, liquido: totalLiquidoTemp}
-        setTotaisGlobal(totalTemp)
+        
+        setTotaisGlobalVendas(totalTemp)
 
         return temp
     }
@@ -209,9 +230,20 @@ const Vendas = () =>{
           style={{ color:'white' }}
           className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
           onChange={ handleDateChange }
+          selectRange={true}
           value={ dataBusca }
           tileClassName={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
         />
+        <hr/>
+        <div className='container-busca'>
+          <span className={`span-busca ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+            {dataInicialExibicao !== dataFinalExibicao ? 
+              <span dangerouslySetInnerHTML={{__html: `Executar busca do dia <strong>${dataInicialExibicao}</strong> ao dia <strong>${dataFinalExibicao}</strong>`}} /> : 
+              <span dangerouslySetInnerHTML={{__html: `Executar busca do dia <strong>${dataInicialExibicao}</strong>`}} />
+            }
+          </span>
+          <BuscarClienteVendas />
+        </div>
       </div>
     )
   }
@@ -219,8 +251,6 @@ const Vendas = () =>{
   return(
     <VendasContext.Provider 
     value={{
-      detalhes, 
-      setDetalhes,
       dataBusca, 
       setDataBusca, 
       totalDebito,
@@ -244,15 +274,14 @@ const Vendas = () =>{
               <h1 className={`vendas-title ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Calendário de Vendas</h1>
             </div>
             <hr className="hr-recebimentos"/>
-            <TotalModalidadesComp />
+            <TotalModalidadesComp tipo = 'vendas'/>
             <hr className="hr-recebimentos"/>
-            { (detalhes) && (vendas.length > 0) ? <GerarRelatorio className='export' tableData={tableData} dataAtual={dateConvertSearch(dataBusca)} detalhes={detalhes}/> : <></> }
+            { (detalhes) && (vendas.length > 0) ? <GerarRelatorio className='export' tableData={tableData} detalhes={detalhes} tipo='vendas' /> : <></> }
             <div className='component-container-vendas'>
-              { (detalhes) && (vendas.length > 0) ?  <TabelaVendasCreditos array={vendas}/> : <MyCalendar className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/> }
+              { (detalhes) && (vendas.length > 0) ?  <TabelaVendasCreditos array={vendas} tipo = 'vendas'/> : <MyCalendar className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/> }
               <hr className="hr-recebimentos"/>
               { (detalhes) && (vendas.length > 0) ? <TabelaGenericaAdm Array={arrayAdm}/> : <></> }
               { (detalhes) && (vendas.length > 0) ? <hr className='hr-recebimentos'/> : <></> }
-              <BuscarClienteVendas />
             </div>
           </div>
         </div>

@@ -67,7 +67,7 @@
 }
 
 .btn-skip{
-    width: 10%;
+    width: 10%; 
 }
 
 .btn-navigate{
@@ -77,6 +77,16 @@
 .pagina-atual{
     font-weight: bold;
     align-items: center;
+}
+
+.voltar-container{
+    display: flex;
+    padding-top: 10px;
+    justify-content: center;
+}
+
+.btn-voltar{
+    width: 30%;
 }
 
 @media screen and (max-width: 1090px){

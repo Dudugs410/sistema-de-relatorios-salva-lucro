@@ -1,11 +1,49 @@
 /* eslint-disable react/react-in-jsx-scope */
 
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import './totalModalidade.scss'
 import { AuthContext } from '../../contexts/auth'
 
-const TotalModalidadesComp = () =>{
-	const { totaisGlobal, isDarkTheme } = useContext(AuthContext)    
+const TotalModalidadesComp = ({tipo}) =>{
+	const { totaisGlobal, setTotaisGlobal, totaisGlobalVendas, totaisGlobalCreditos, isDarkTheme, detalhes } = useContext(AuthContext)
+
+
+	// Verifica o tipo passado como parâmetro, para definir quais totais serão mostrados, e também para definir se o texto mostrado
+	// no último bloco será 'Total Bruto'(vendas) ou 'Total Líquido'(créditos)
+
+	useEffect(()=>{
+		switch (tipo) {
+			case 'vendas':
+				setTotaisGlobal(totaisGlobalVendas)
+				break;
+			case 'creditos':
+				setTotaisGlobal(totaisGlobalCreditos)
+				break;
+		
+			default:
+				setTotaisGlobal({ debito: 0, credito: 0, voucher: 0, liquido: 0 })
+				break;
+		}
+	},[])
+
+
+	// Utilizo a const detalhes como condição para zerar os valores totais apresentados na parte superior da página.
+	// Se o valor for verdadeiro são renderizados os gráficos com as informações referentes ao período selecionado.
+	// Se o valor for falso, os totais são zerados e são renderizados o Gráfico e botão 'Pesquisar'
+	useEffect(()=>{
+		if(detalhes === false){
+			setTotaisGlobal({ debito: 0, credito: 0, voucher: 0, liquido: 0 })
+		}
+	},[detalhes])
+
+	useEffect(()=>{
+		if(tipo === 'vendas'){
+			setTotaisGlobal(totaisGlobalVendas)
+		} else if(tipo === 'creditos'){
+			setTotaisGlobal(totaisGlobalCreditos)
+		}
+	},[totaisGlobalCreditos, totaisGlobalVendas])
+
 	return(
 		<>
 			<div className='content-container-modalidade'>
@@ -29,7 +67,7 @@ const TotalModalidadesComp = () =>{
 				</div>
 				<div className={`total-container-modalidade ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}> 
 					<div className='text-container-modalidade'>
-						<h1 className='title-modalidade'>Total Líquido</h1>
+						<h1 className='title-modalidade'>{tipo === 'vendas' ? 'Total Bruto' : 'Total Líquido'}</h1>
 						<p className='text-modalidade'>TOTAL: R$ <span className='green-modalidade'>{Number(totaisGlobal.liquido).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></p>
 					</div>
 				</div>

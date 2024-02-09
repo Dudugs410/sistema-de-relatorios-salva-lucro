@@ -16,12 +16,16 @@ const Header = () =>{
     const { cnpj, logout, grupoSelecionado, clienteSelecionado, trocarHeader, setTrocarHeader } = useContext(AuthContext)
     const [nome, setNome] = useState('')
     const [email, setEmail] = useState('')
+    const [isChecked, setIsChecked] = useState(localStorage.getItem('isChecked') === 'true')
+    const [headerNome, setHeaderNome] = useState('Selecione o Grupo e Cliente')
+    const [headerCnpj, setHeaderCnpj] = useState('')
 
-    const [nomeCliente, setNomeCliente] = useState('-')
-    const [codCliente, setCodCliente] = useState('-')
-    const [headerCnpj, setHeaderCnpj] = useState('-')
-
-    const [isChecked, setIsChecked] = useState(localStorage.getItem('isChecked') === 'true');
+    useEffect(()=>{
+        if(Cookies.get('headerNome') !== undefined){
+            setHeaderNome(decodeURIComponent(Cookies.get('HeaderNome')))
+            setHeaderCnpj(Cookies.get('cnpj'))
+        }
+    },[])
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -34,7 +38,7 @@ const Header = () =>{
         setIsDarkTheme(updatedChecked)
         localStorage.setItem('isChecked', updatedChecked)
         localStorage.setItem('isDark', updatedChecked)
-        
+
         if(localStorage.getItem('localUsers') !== null){
             let localUsersTemp = JSON.parse(localStorage.getItem('localUsers'))
             localUsersTemp.map(user => {
@@ -51,33 +55,47 @@ const Header = () =>{
             localStorage.setItem('localUsers', JSON.stringify(localUsersTemp))
         }
     }
-    
 
 /////////////////////////////////////////////////////////////////////////////
-    
+
     useEffect(()=>{
         setNome(JSON.parse(sessionStorage.getItem('userData')).NOME)
         setEmail(JSON.parse(sessionStorage.getItem('userData')).EMAIL)
-        setCodCliente(sessionStorage.getItem('codigoCliente'))
+
+        setHeaderNome(Cookies.get('headerNome'))
+        setHeaderCnpj(Cookies.get('headerCnpj'))
     },[])
 
     useEffect(()=>{
-        console.log('GRUPOSELECIONADO: ', grupoSelecionado)
-        console.log('CLIENTESELECIONADO: ', clienteSelecionado)
-
         if(cnpj === 'todos'){
-            setNomeCliente(grupoSelecionado.label)
-            setHeaderCnpj('Todas as Filiais')
+            if(grupoSelecionado.label !== '-'){
+                setHeaderNome(grupoSelecionado.label)
+                setHeaderCnpj('Todas as Filiais')
+                Cookies.set('headerNome', grupoSelecionado.label)
+                Cookies.set('headerCnpj', 'Todas as Filiais')
+            }
         } else {
-            setNomeCliente(clienteSelecionado.label)
-            setHeaderCnpj(clienteSelecionado.value)
+            if(grupoSelecionado.label !== '-'){
+                setHeaderNome(clienteSelecionado.label)
+                setHeaderCnpj(clienteSelecionado.value)
+                Cookies.set('headerNome', clienteSelecionado.label)
+                Cookies.set('headerCnpj', clienteSelecionado.value)
+            }
         }
     },[trocarHeader])
 
-    ////////////////////////////////////////////////////////////////////////////////////
+    useEffect(()=>{
+        if(headerNome === 'Selecione o Grupo e o Cliente'){
+            setHeaderCnpj('')
+            Cookies.set('headerCnpj', '')
+        }
+    },[headerNome])
 
-    const [optionsWithIcons, setOptionsWithIcons] = useState([]);
+    ////////////////////////////////////////////////////////////////////////////////////
+    
+    const [optionsWithIcons, setOptionsWithIcons] = useState([])
     const [optionsTemp, setOptionsTemp] = useState([])
+
     useEffect(()=>{
         if(sessionStorage.getItem('options')){
             setOptionsTemp(JSON.parse(sessionStorage.getItem('options')))
@@ -92,33 +110,29 @@ const Header = () =>{
             'FiRefreshCcw': FiRefreshCcw,
             'FiTool': FiTool,
             'FiFileText': FiFileText,
-        };
+        }
 
-        let arrayOpcoes = [];
+        let arrayOpcoes = []
 
         optionsTemp.forEach((obj) => {
             switch (obj.nome) {
                 case 'Dashboard':
-                    arrayOpcoes.push({ rota: '/dashboard', nome: 'Início', id: obj.id, icone: icones['FiHome'] });
-                    break;
+                    arrayOpcoes.push({ rota: '/dashboard', nome: 'Início', id: obj.id, icone: icones['FiHome'] })
+                    break
                 case 'Vendas':
-                    arrayOpcoes.push({ rota: '/vendas', nome: 'Vendas', id: obj.id, icone: icones['FiDollarSign'] });
-                    break;
+                    arrayOpcoes.push({ rota: '/vendas', nome: 'Vendas', id: obj.id, icone: icones['FiDollarSign'] })
+                    break
                 case 'Créditos':
-                    arrayOpcoes.push({ rota: '/creditos', nome: 'Créditos', id: obj.id, icone: icones['FiCreditCard'] });
-                    break;
+                    arrayOpcoes.push({ rota: '/creditos', nome: 'Créditos', id: obj.id, icone: icones['FiCreditCard'] })
+                    break
                 case 'Serviços':
-                    arrayOpcoes.push({ rota: '/servicos', nome: 'Serviços', id: obj.id, icone: icones['FiTool'] });
-                    break;
-                // Add other cases here if needed
+                    arrayOpcoes.push({ rota: '/servicos', nome: 'Serviços', id: obj.id, icone: icones['FiTool'] })
+                    break
                 default:
-                    console.log('Opção Não encontrada ou ainda não implementada...');
-                }
-        });
-
-        setOptionsWithIcons(arrayOpcoes);
-
-    }, [optionsTemp]);
+            }
+        })
+        setOptionsWithIcons(arrayOpcoes)
+    }, [optionsTemp])
 
     ////////////////////////////////////////////////////////////////////////////////////
 
@@ -130,21 +144,18 @@ const Header = () =>{
                         <img className='img-header' src={salvaLucroLogoBranco} alt='logo salva lucro'/>
                     </div>
                     <div className="header-info-wrapper px-4 py-3" >
-
                         <div className='navbar-customer-wrapper me-2 text-truncate'>
                             <div className='navbar-customer '>
-                                <span className="d-inline-block">{`${nomeCliente}`}</span>
-                                <span>{headerCnpj? `${headerCnpj}` : '-'}</span>
+                                <span className="d-inline-block">{headerNome === (undefined || '-' || '') ? 'Selecione o Grupo e o Cliente' : headerNome}</span>
+                                <span>{ headerNome === undefined ? '' : headerCnpj }</span>
                             </div>
                             <div className='navbar-customer'>
                                 <span className='client-name pe-2'>{`${nome}`}</span>
                             </div>              
                         </div>
-
                         <div className='btn-container'>
                             <button type='button' className='btn btn-outline-danger px-2 py-1' onClick={logout}>Sair</button> {/* <FiPower color="#dc3545" size={24}/> */}
                         </div>
-
                     </div>
                 </div>
 
@@ -178,4 +189,4 @@ const Header = () =>{
     ////////////////////////////////////////////////////////////////////////////////////
 }
 
-export default Header;
+export default Header

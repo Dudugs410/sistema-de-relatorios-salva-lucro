@@ -7,7 +7,6 @@ import Login from '../pages/Login'
 import Dashboard from '../pages/Dashboard'
 import Vendas from "../pages/Vendas";
 import Recebiveis from "../pages/Creditos";
-import Antecipacoes from "../pages/Antecipacoes";
 import Servicos from "../pages/Servicos";
 import Relatorios from "../pages/Relatorios";
 import DashboardTeste from "../pages/DashboardTeste";

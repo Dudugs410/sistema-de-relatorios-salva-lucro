@@ -282,8 +282,6 @@ const Dashboard = () => {
 			if(totalHoje > 0){
 				setTotalServicosHojeAux(totalHoje)
 			}
-		} else {
-			console.log('não tem dados')
 		}
 	}, [servicos])
 
@@ -294,6 +292,12 @@ const Dashboard = () => {
 	useEffect(()=>{
 		setBuscou(JSON.parse(Cookies.get('buscou')))
 	},[])
+
+	useEffect(()=>{
+		if(cnpj !== Cookies.get('ultimoCnpj')){
+			setBuscou(!buscou)
+		}
+	},[cnpj])
 
 	useEffect(()=>{
 		async function inicializar(){
@@ -312,9 +316,7 @@ const Dashboard = () => {
 		}
 
 		if(buscou){
-			console.log('BUSCOU')
 			if(inicializouAux !== true){
-				console.log('inicializouAux: ', inicializouAux)
 				setLoadingCreditosDash(true)
 				setLoadingVendasDash(true)
 				inicializar().then(() => {
@@ -323,10 +325,11 @@ const Dashboard = () => {
 				})
 			}
 		}
-	},[buscou])
+	},[buscou, cnpj])
 
 	useEffect(()=>{
 		async function inicializar(){
+			console.log(vendasMes)
 			const total = vendasMes.reduce((total, obj) => total + obj.valorvendido, 0)
 			setSomatorioVendasMes(total)
 			if(total > 0){
@@ -554,7 +557,7 @@ const Dashboard = () => {
 						<div className={`data-group-area ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
 							<div className={`graph-data ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
 								<h1 className={`title-chart ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Vendas:</h1>
-								{ inicializouAux === true ? <PieChart data01 = {graficoVendasAux} arrayAdm={admVendasAux} tipo = '0'/> : <PieChart data01 = {graficoVendas} arrayAdm={admVendas}/>}
+								{ inicializouAux === true ? <PieChart data01 = {graficoVendasAux} arrayAdm={admVendasAux} tipo = '0' dados = 'vendas'/> : <PieChart data01 = {graficoVendas} arrayAdm={admVendas}/>}
 								<div className={`dash-table-container ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
 									{ loadingVendasDash && (<LoadingModal/>) }
 									{inicializouAux ? <TabelaHorizontal header='Total Últimos 4 dias' valor={totalVendas4diasAux.toFixed(2)} /> : <TabelaHorizontal header='Total Últimos 4 dias' valor={totalVendas4diasAux.toFixed(2)} />}
@@ -565,7 +568,7 @@ const Dashboard = () => {
 						<div className={`data-group-area ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
 							<div className={`graph-data ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
 								<h1 className={`title-chart ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Créditos:</h1>
-								{ inicializouAux === true ? <PieChart data01 = {graficoCreditosAux} arrayAdm={admCreditosAux} tipo = '0'/> : <PieChart data01 = {graficoCreditos} arrayAdm={admCreditos}/>}
+								{ inicializouAux === true ? <PieChart data01 = {graficoCreditosAux} arrayAdm={admCreditosAux} tipo = '0' dados = 'creditos'/> : <PieChart data01 = {graficoCreditos} arrayAdm={admCreditos}/>}
 								<div className={`dash-table-container ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
 									{ loadingCreditosDash && (<LoadingModal/>) }
 									{inicializouAux ? <TabelaHorizontal header='Previsão de Hoje' valor={somatorioCreditosHojeAux.toFixed(2)} /> : <TabelaHorizontal header='Previsão de Hoje' valor={somatorioCreditosHoje.toFixed(2)} />}
@@ -576,7 +579,7 @@ const Dashboard = () => {
 						<div className={`data-group-area ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
 							<div className={`graph-data ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
 								<h1 className={`title-chart ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Serviços:</h1>
-								{ inicializouAux === true ? <PieChart data01 = {graficoServicosAux} arrayAdm={admServicosAux} tipo = '1'/> : <PieChart data01 = {graficoServicos} arrayAdm={admServicos}/>}
+								{ inicializouAux === true ? <PieChart data01 = {graficoServicosAux} arrayAdm={admServicosAux} tipo = '1' dados = 'servicos'/> : <PieChart data01 = {graficoServicos} arrayAdm={admServicos}/>}
 								<div className={`dash-table-container ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
 									{ loadingCreditosDash && (<LoadingModal/>) }
 									{inicializouAux ? <TabelaHorizontal header='Total de Hoje' valor={totalServicosHojeAux.toFixed(2)} /> : <TabelaHorizontal header='Total de Hoje' valor={totalServicosHoje.toFixed(2)} />}

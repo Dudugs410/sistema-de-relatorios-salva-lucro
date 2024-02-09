@@ -97,6 +97,27 @@
     flex-direction: column;
 }
 
+.container-busca{
+    display: inline-flex;
+    width: 100%;
+    justify-content: space-evenly;
+}
+
+.span-busca{
+    white-space: nowrap;
+    display: flex;
+    align-content: center;
+    flex-wrap: wrap;
+    font-family: Arial, Helvetica, sans-serif;
+
+    &.light-theme{
+        color: $primary-color-light;
+    }
+    &.dark-theme{
+        color:$font-color-dark;
+    }
+}
+
 @media screen and (max-width: 869px){
     .page-content-vendas {
     width: 100%;
