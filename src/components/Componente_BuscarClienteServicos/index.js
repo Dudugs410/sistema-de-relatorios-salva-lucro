@@ -36,7 +36,9 @@ const BuscarClienteServicos = () => {
 		dataBusca,		
 		setDataBusca, 
 		cnpjBusca,
-		setCnpjBusca,
+		setCnpjBusca,                
+		dataFinalExibicao,
+		dataInicialExibicao,
 	} = useContext(ServicosContext)
     
 	// useEffect(()=>{
@@ -68,7 +70,7 @@ const BuscarClienteServicos = () => {
 			return
 		}
 		await buscar()
-		// await gerarDados(ajustes)
+		// func p/ prerparar dados pra gerar relatorios -> await gerarDados(ajustes)
 	}
 	
 	async function buscar() {
@@ -80,7 +82,9 @@ const BuscarClienteServicos = () => {
 					return 0
 				}
 				else{
-					alerta(`executou a busca dos dias ${(dataBusca[0].toLocaleDateString('pt-BR'))} até ${(dataBusca[1]).toLocaleDateString('pt-BR')}`)
+					alerta(dataInicialExibicao !== dataFinalExibicao ? 
+						`executou a busca dos dias ${dataInicialExibicao} até ${dataFinalExibicao}`:
+						`executou a busca do dia ${dataInicialExibicao}`)
 					setBuscou(true)
 					if(ajustes.length === 0){
 						setDetalhes(false)
