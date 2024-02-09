@@ -20,6 +20,7 @@ function RoutesApp(){
         <Route path='/creditos' element = { <Private><Recebiveis/></Private> } />
         <Route path='/servicos' element = { <Private><Servicos/></Private> } />
         <Route path='/relatorios' element = { <Private><Relatorios/></Private> } />
+        {/* <Route path='/antecipacoes' element = { <Private><Antecipacoes/></Private> } /> */}
     </Routes>
     )  
 }

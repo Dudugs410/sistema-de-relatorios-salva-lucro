@@ -128,7 +128,7 @@ const Creditos = () =>{
 
 	useEffect(()=>{
 		if(detalhes){
-			setVendasTemp(loadCreditos(cnpjBusca, dataBusca, dataBusca))
+			setVendasTemp(loadCreditos(cnpjBusca, dataBusca[0], dataBusca[1]))
 		}
 
 	},[cnpjBusca])
