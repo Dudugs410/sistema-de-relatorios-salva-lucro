@@ -46,10 +46,6 @@ const BuscarClienteCreditos = () => {
 	} = useContext(CreditosContext)
     
 	useEffect(()=>{
-		console.log('Detalhes: ',detalhes)
-	},[detalhes])
-    
-	useEffect(()=>{
 		setCnpj(Cookies.get('cnpj'))
 		setCnpjBusca(Cookies.get('cnpj'))
 	},[])
@@ -76,7 +72,6 @@ const BuscarClienteCreditos = () => {
 	}
 
 	async function buscar() {
-		console.log('buscar()')
 		await loadCreditos(cnpjBusca, dataBusca[0], dataBusca[1])
 			.then(() =>{
 				if(dataBusca === '' || cnpjBusca === ''){
@@ -155,7 +150,6 @@ const BuscarClienteCreditos = () => {
 	},[alerta, setDetalhes, arrayDados])
 
 	useEffect(()=>{
-		console.log('buscou: ', buscou)
 		if(buscou === true){
 			if((arrayDadosRef === null) || (arrayDadosRef.length === 0)){
 				alertaRef.current('não existem vendas para a data selecionada')
