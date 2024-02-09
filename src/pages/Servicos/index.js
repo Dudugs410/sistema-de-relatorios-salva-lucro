@@ -37,7 +37,7 @@ const Servicos = () =>{
         setDataFinal, 
         dateConvert,
         isDarkTheme,
-		    setIsDarkTheme,
+		setIsDarkTheme,
 
     } = useContext(AuthContext)
 
@@ -151,8 +151,8 @@ const Servicos = () =>{
     return(
     <ServicosContext.Provider 
         value={{
-            ajustes,
-            setAjustes,
+            //ajustes,
+            //setAjustes,
             detalhes, 
             setDetalhes,
             cnpjBusca,

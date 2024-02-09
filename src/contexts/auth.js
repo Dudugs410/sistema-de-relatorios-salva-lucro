@@ -666,10 +666,10 @@ function AuthProvider({ children }){
 
 				const response = await api.get('ajustes', config)
 				const recebimentosData = response.data
-				console.log('response data ajustes', response.data)
+				//console.log('response data ajustes', response.data)
 				setAjustes(response.data)
 				setLoading(false)
-				return 
+				return response.data
 
 			} else {
 				let params = {
@@ -689,13 +689,17 @@ function AuthProvider({ children }){
 				setAjustes(response.data)
 				// const recebimentosData = response.data
 				setLoading(false)
-				return 	
+				return response.data
 			}
 		} catch (error) {
 			console.log(error)
 			setLoading(false)
 		}
 	}
+
+	useEffect(()=>{
+		console.log('ajustes: ', ajustes)
+	},[ajustes])
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1225,7 +1229,7 @@ function AuthProvider({ children }){
 				converteData,
 				returnTotalMes,
 				returnCreditosBanco,
-				loadAjustes,
+				loadAjustes, ajustes, setAjustes,
 				isDarkTheme, setIsDarkTheme,
 				admVendasAux, setAdmVendasAux,
 				admCreditosAux, setAdmCreditosAux,
