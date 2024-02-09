@@ -18,7 +18,6 @@ import { useLocation } from 'react-router-dom'
 import '../../index.scss'
 
 const Dashboard = () => {
-
 	const location = useLocation()
 
 	useEffect(() => {
@@ -227,21 +226,14 @@ const Dashboard = () => {
             
 			return lastDay
 		}
-
-		console.log('inicializa serviços', 'loadAjustes')
 		const servicosTemp = await loadAjustes(cnpj, firstDay(), lastDay())
 		setServicos(servicosTemp)
 	}
-
-	useEffect(()=>{
-		console.log('servicos: ', servicos)
-	},[servicos])
 
 	useEffect(() => {
 		if(servicos.length > 0){
 			let temp = []
 			let objAdq = {}
-			console.log('servicos antes do .map(): ', servicos)
 			servicos.map((servico) => {
 				if(temp.length === 0){
 					objAdq = {
@@ -255,9 +247,6 @@ const Dashboard = () => {
 				} else {
 					const existingObject = temp.find(obj => obj.nomeAdquirente === servico.nome_adquirente)
 					if (existingObject) {
-						if(servico.nome_adquirente === 'Cielo'){
-							console.log('Servico -> ', servico)
-						}
 						existingObject.total = (existingObject.total || 0) + servico.valor;
 						existingObject.total = parseFloat(existingObject.total.toFixed(2)); // Round to 2 decimal places
 						existingObject.vendas.push(servico);
@@ -537,7 +526,6 @@ const Dashboard = () => {
 	},[admCreditos])
 
 	useEffect(()=>{
-		console.log('admServicos: ', admServicos)
 		setGraficoServicos(carregaGrafico(admServicos))
 		if(admServicosAux.length > 0){
 			setGraficoServicosAux(carregaGrafico(admServicosAux))
