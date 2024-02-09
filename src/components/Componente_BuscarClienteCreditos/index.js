@@ -32,6 +32,7 @@ const BuscarClienteCreditos = () => {
 		detalhes,
 		setDetalhes,
 		setTotaisGlobalCreditos,
+		alerta,
 	} = useContext(AuthContext)
 
 	const {
@@ -50,19 +51,6 @@ const BuscarClienteCreditos = () => {
 		setCnpjBusca(Cookies.get('cnpj'))
 	},[])
 
-	const alerta = useCallback((text) => {
-		toast.info(text, {
-			position: 'top-center',
-			autoClose: 5000,
-			hideProgressBar: true,
-			closeOnClick: true,
-			pauseOnHover: true,
-			draggable: true,
-			progress: undefined,
-			theme: 'light',
-		})
-	}, [])
-
 	async function handleBusca(e){
 		e.preventDefault()
 		setClicouPesquisar(true)
@@ -77,12 +65,13 @@ const BuscarClienteCreditos = () => {
 				if(dataBusca === '' || cnpjBusca === ''){
 					return 0
 				} else {
+					console.log('entrou no else')
 					//adiciono .toLocaleDateString('pt-BR') às datas para que possamos comparar apenas o dia, mes e ano, sem levar em consideração a hora, minuto e segundos
-					if((dataBusca[0].toLocaleDateString('pt-BR') === dataBusca[1].toLocaleDateString('pt-BR')) && (clicouPesquisar === true)){
+					if((dataBusca[0].toLocaleDateString('pt-BR') === dataBusca[1].toLocaleDateString('pt-BR'))){
 						alerta(`executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')}`)
 						setBuscou(true)
 						
-					} else if ((dataBusca[0].toLocaleDateString('pt-BR') !== dataBusca[1].toLocaleDateString('pt-BR')) && clicouPesquisar === true){
+					} else if (dataBusca[0].toLocaleDateString('pt-BR') !== dataBusca[1].toLocaleDateString('pt-BR')){
 						alerta(`executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')} ao dia ${dataBusca[1].toLocaleDateString('pt-BR')}`)
 						setBuscou(true)
 					}
