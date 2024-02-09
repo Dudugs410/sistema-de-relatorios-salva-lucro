@@ -228,14 +228,20 @@ const Dashboard = () => {
 			return lastDay
 		}
 
+		console.log('inicializa serviços', 'loadAjustes')
 		const servicosTemp = await loadAjustes(cnpj, firstDay(), lastDay())
 		setServicos(servicosTemp)
 	}
+
+	useEffect(()=>{
+		console.log('servicos: ', servicos)
+	},[servicos])
 
 	useEffect(() => {
 		if(servicos.length > 0){
 			let temp = []
 			let objAdq = {}
+			console.log('servicos antes do .map(): ', servicos)
 			servicos.map((servico) => {
 				if(temp.length === 0){
 					objAdq = {
@@ -249,8 +255,12 @@ const Dashboard = () => {
 				} else {
 					const existingObject = temp.find(obj => obj.nomeAdquirente === servico.nome_adquirente)
 					if (existingObject) {
-						existingObject.total += servico.valor
-						existingObject.vendas.push(servico)
+						if(servico.nome_adquirente === 'Cielo'){
+							console.log('Servico -> ', servico)
+						}
+						existingObject.total = (existingObject.total || 0) + servico.valor;
+						existingObject.total = parseFloat(existingObject.total.toFixed(2)); // Round to 2 decimal places
+						existingObject.vendas.push(servico);
 					} else {
 						temp.push({
 							nomeAdquirente: servico.nome_adquirente,
@@ -301,7 +311,7 @@ const Dashboard = () => {
 
 	useEffect(()=>{
 		async function inicializar(){
-			if(cnpj !== Cookies.get('ultimoCnpj')){
+			if((cnpj !== Cookies.get('ultimoCnpj')) && (cnpj !== '')) {
 				await inicializaVendas4dias()
 				await inicializaVendas4diasMes()
 				await inicializaVetorVendasMes()
@@ -312,6 +322,8 @@ const Dashboard = () => {
 				setInicializou(true)
 				setInicializouAux(true)
 				sessionStorage.setItem('inicializou', true)
+			} else {
+				return
 			}
 		}
 
@@ -329,7 +341,6 @@ const Dashboard = () => {
 
 	useEffect(()=>{
 		async function inicializar(){
-			console.log(vendasMes)
 			const total = vendasMes.reduce((total, obj) => total + obj.valorvendido, 0)
 			setSomatorioVendasMes(total)
 			if(total > 0){
@@ -526,6 +537,7 @@ const Dashboard = () => {
 	},[admCreditos])
 
 	useEffect(()=>{
+		console.log('admServicos: ', admServicos)
 		setGraficoServicos(carregaGrafico(admServicos))
 		if(admServicosAux.length > 0){
 			setGraficoServicosAux(carregaGrafico(admServicosAux))

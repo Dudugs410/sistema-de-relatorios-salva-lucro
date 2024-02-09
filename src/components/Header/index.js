@@ -99,7 +99,7 @@ const Header = () =>{
     useEffect(()=>{
         if(sessionStorage.getItem('options')){
             setOptionsTemp(JSON.parse(sessionStorage.getItem('options')))
-        }
+    }
     },[])
 
     useEffect(() => {
@@ -128,10 +128,6 @@ const Header = () =>{
                 case 'Serviços':
                     arrayOpcoes.push({ rota: '/servicos', nome: 'Serviços', id: obj.id, icone: icones['FiTool'] })
                     break
-                /*case 'Emissor de Relatórios':
-                    arrayOpcoes.push({ rota: '/relatorios', nome: 'Relatórios', id: obj.id, icone: icones['FiFileText'] })
-                    break */
-                // Add other cases here if needed
                 default:
             }
         })
