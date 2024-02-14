@@ -95,11 +95,10 @@ const Creditos = () =>{
 		setTotaisGlobalCreditos({debito: 0, credito: 0, voucher: 0, liquido: 0})
 	},[])
 
-	/*
 	useEffect(()=>{
 		setCnpj(Cookies.get('cnpj'))
 	},[])
-*/
+	
 	useEffect(()=>{
 		try {
 			if(creditos.length === 0){

@@ -64,6 +64,8 @@ const Header = () =>{
 
         setHeaderNome(Cookies.get('headerNome'))
         setHeaderCnpj(Cookies.get('headerCnpj'))
+
+        setIsDarkTheme(JSON.parse(localStorage.getItem('isDark')))
     },[])
 
     useEffect(()=>{

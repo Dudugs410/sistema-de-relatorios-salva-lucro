@@ -18,6 +18,7 @@ import { useCallback } from 'react'
 const BuscarClienteServicos = () => {
 	const [buscou, setBuscou] = useState(false)
 	const [arrayDados, setArrayDados] = useState([])
+	const [clicouPesquisar, setClicouPesquisar] = useState(false)
 
 	const { 
 		setCnpj,  
@@ -27,12 +28,12 @@ const BuscarClienteServicos = () => {
 		isDarkTheme,
 		setAjustes,
 		ajustes,
+		detalhes,
+		setDetalhes,
 		gerarDados,
 	} = useContext(AuthContext)
 
 	const {
-		detalhes, 
-		setDetalhes,
 		dataBusca,		
 		setDataBusca, 
 		cnpjBusca,
@@ -42,6 +43,7 @@ const BuscarClienteServicos = () => {
 	// useEffect(()=>{
 	// 	console.log('Detalhes: ',detalhes)
 	// },[detalhes])
+
     
 	useEffect(()=>{
 		setCnpj(Cookies.get('cnpj'))
@@ -62,28 +64,36 @@ const BuscarClienteServicos = () => {
 	}, [])
 
 	async function handleBusca(e){
+		console.log('BuscarClienteServicos -> handleBusca()')
 		e.preventDefault()
-		if(cnpjBusca === '' || cnpjBusca === 'Selecione' || cnpjBusca === undefined){
-			alerta('selecione um cliente válido')
-			return
-		}
+		setClicouPesquisar(true)
 		await buscar()
-		// await gerarDados(ajustes)
+		//await gerarDados(ajustes)
+		setDetalhes(true)
 	}
 	
 	async function buscar() {
-		// console.log('cnpj', cnpjBusca)
 		await loadAjustes(cnpjBusca, dataBusca[0], dataBusca[1])
-		.then(() =>{
-				// console.log('ajustes buscar',ajustes)
-				if(!(dataBusca) || cnpjBusca === ''){
+			.then(() =>{
+				if(dataBusca === '' || cnpjBusca === ''){
 					return 0
-				}
-				else{
-					alerta(`executou a busca dos dias ${(dataBusca[0].toLocaleDateString('pt-BR'))} até ${(dataBusca[1]).toLocaleDateString('pt-BR')}`)
-					setBuscou(true)
+				} else {
+					console.log('entrou no else')
+					//adiciono .toLocaleDateString('pt-BR') às datas para que possamos comparar apenas o dia, mes e ano, sem levar em consideração a hora, minuto e segundos
+					if((dataBusca[0].toLocaleDateString('pt-BR') === dataBusca[1].toLocaleDateString('pt-BR'))){
+						alerta(`executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')}`)
+						setBuscou(true)
+						
+					} else if (dataBusca[0].toLocaleDateString('pt-BR') !== dataBusca[1].toLocaleDateString('pt-BR')){
+						alerta(`executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')} ao dia ${dataBusca[1].toLocaleDateString('pt-BR')}`)
+						setBuscou(true)
+					}
+
 					if(ajustes.length === 0){
+						console.log('buscar() -> ajustes: ', ajustes)
 						setDetalhes(false)
+						setClicouPesquisar(false)
+						
 					}
 				}    
 			})
@@ -91,9 +101,12 @@ const BuscarClienteServicos = () => {
 	}
 
 	useEffect(()=>{
-		// console.log('buscou: ', buscou)
+		if(((cnpjBusca === '' || cnpjBusca === 'Selecione' || cnpjBusca === undefined) && (Cookies.get('cnpj') !== '')) && (clicouPesquisar)){
+			alerta('selecione um cliente válido')
+			return
+		}
 		if(buscou === true){
-			if((ajustes === null) || (ajustes.length === 0)){
+			if((vendas === null) || (vendas.length === 0)){
 				alerta('não existem vendas para a data selecionada')
 				setBuscou(false)
 				setDetalhes(false)
@@ -101,6 +114,7 @@ const BuscarClienteServicos = () => {
 			else{
 				setDetalhes(true)
 				setBuscou(false)
+				setClicouPesquisar(false)
 			}
 		}
 	},[buscou])
@@ -136,6 +150,7 @@ const BuscarClienteServicos = () => {
 		setBuscou(false)
 		setTotaisGlobal({debito: 0, credito: 0, voucher: 0, liquido: 0})
 		// setArrayAdm()
+		setClicouPesquisar(false)
 	}
 
 	return(

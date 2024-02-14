@@ -560,8 +560,8 @@ const Dashboard = () => {
 								{ inicializouAux === true ? <PieChart data01 = {graficoVendasAux} arrayAdm={admVendasAux} tipo = '0' dados = 'vendas'/> : <PieChart data01 = {graficoVendas} arrayAdm={admVendas}/>}
 								<div className={`dash-table-container ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
 									{ loadingVendasDash && (<LoadingModal/>) }
-									{inicializouAux ? <TabelaHorizontal header='Total Últimos 4 dias' valor={totalVendas4diasAux.toFixed(2)} /> : <TabelaHorizontal header='Total Últimos 4 dias' valor={totalVendas4diasAux.toFixed(2)} />}
-									{inicializouAux ? <TabelaHorizontal header='Total do Mês' valor={somatorioVendasMesAux.toFixed(2)} /> : <TabelaHorizontal header='Total do Mês' valor={somatorioVendasMesAux.toFixed(2)} />}
+									{inicializouAux ? <TabelaHorizontal header='Total Últimos 4 dias' valor={totalVendas4diasAux.toFixed(2)} /> : <TabelaHorizontal header='Total Últimos 4 dias' valor={totalVendas4dias.toFixed(2)} />}
+									{inicializouAux ? <TabelaHorizontal header='Total do Mês' valor={somatorioVendasMesAux.toFixed(2)} /> : <TabelaHorizontal header='Total do Mês' valor={somatorioVendasMes.toFixed(2)} />}
 								</div>
 							</div>
 						</div>
