@@ -21,7 +21,7 @@ const Header = () =>{
     const [headerCnpj, setHeaderCnpj] = useState('')
 
     useEffect(()=>{
-        if(Cookies.get('headerNome') !== undefined){
+        if(Cookies.get('headerNome') == undefined){
             setHeaderNome(decodeURIComponent(Cookies.get('HeaderNome')))
             setHeaderCnpj(Cookies.get('cnpj'))
         }

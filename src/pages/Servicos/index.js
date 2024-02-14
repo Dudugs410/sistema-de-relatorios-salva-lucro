@@ -3,6 +3,7 @@ import './servicos.scss'
 import { useContext, useEffect, useState, createContext } from 'react' 
 import { AuthContext } from '../../contexts/auth'
 // import DateRangePicker from '../../components/Componente_TabelaServicos'
+import GerarRelatorio from '../../components/Componente_GerarRelatorio'
 import Cookies from 'js-cookie'
 import { useLocation } from 'react-router-dom'
 import BuscarClienteServicos from '../../components/Componente_BuscarClienteServicos'
@@ -35,7 +36,9 @@ const Servicos = () =>{
         ajustes,
         setAjustes,
         dataInicial, 
-        setDataInicial, 
+        setDataInicial,
+        gerarDados,
+		tableData,
         dataFinal, 
         setDataFinal, 
         dateConvert,
@@ -44,6 +47,7 @@ const Servicos = () =>{
         detalhes
     } = useContext(AuthContext)
 
+	const [arrayRelatorio, setArrayRelatorio] = useState([])
 	const [arrayAdm, setArrayAdm] = useState([])
     const [cnpjBusca, setCnpjBusca] = useState(Cookies.get('cnpj'))
     // const [totalAjustes, setTotalAjustes] = useState(0)
@@ -54,6 +58,13 @@ const Servicos = () =>{
     useEffect(()=>{
 		setAjustes([])
 		setCnpj(Cookies.get('cnpj'))
+	},[])
+
+	const [tipo, setTipo] = useState('servicos')
+
+	useEffect(()=>{
+	  setTipo('servicos')
+	  Cookies.set('tipo', 'servicos')
 	},[])
 
     useEffect(()=>{
@@ -120,6 +131,12 @@ const Servicos = () =>{
         
         const ajustes_agrupados = {'grupos': groupedData, 'admArray': admArray, 'total_ajustes': adq_total_value, 'ajustes': ajustes}
         setArrayAdm(admArray)
+
+        if(ajustes.length > 0){
+            setArrayRelatorio(gerarDados(ajustes))
+            // setArrayAdm(separaAdm(ajustes))
+        }
+
     }, [ajustes]);
 
     function MyCalendar() {
@@ -174,7 +191,7 @@ const Servicos = () =>{
                             <h1 className={`servicos-title ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Servicos</h1>
                         </div>
                         <hr className="hr-recebimentos"/>
-                        {/* algo de total de ajustes, gerar relatorio? */}
+						{ (detalhes) && (ajustes.length > 0) ? <GerarRelatorio className='export' tableData={tableData} detalhes={detalhes} tipo='servicos'/> : <></> }
                         <div className='component-container-servicos'>
                             { (detalhes) && (ajustes.length > 0)? <TabelaServicos array={ajustes}/> : <MyCalendar/> } 
                             <hr className="hr-recebimentos"/>
