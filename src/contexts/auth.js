@@ -1134,8 +1134,21 @@ function AuthProvider({ children }){
 						tid: venda.tid,
 					})
 				})
+			} else if(tipoTemp === 'servicos'){
+				array.map((venda) => {
+					tableData.push({
+						cnpj: venda.cnpj,
+						razao_social: venda.razao_social,
+						codigo_estabelecimento: venda.codigo_estabelecimento,
+						adquirente: venda.nome_adquirente,
+						valor: venda.valor,
+						data: venda.data,
+						descricao: venda.descricao,
+					})
+				})
 			}
 		} 
+		console.log('servicos gerar dados: ', tableData)
 		return tableData
 	}
 

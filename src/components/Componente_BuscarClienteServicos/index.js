@@ -68,7 +68,7 @@ const BuscarClienteServicos = () => {
 		e.preventDefault()
 		setClicouPesquisar(true)
 		await buscar()
-		//await gerarDados(ajustes)
+		await gerarDados(ajustes)
 		setDetalhes(true)
 	}
 	
