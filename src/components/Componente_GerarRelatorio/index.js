@@ -60,6 +60,9 @@ export default function GerarRelatorio({tableData, tipo}){
 			case 'creditos':
 				setTipoRelatorio('Relatório de Créditos')
 				break
+
+			case 'servicos':
+				setTipoRelatorio('Relatório de Serviços')
 			default:
 				break
 		}
@@ -171,6 +174,38 @@ export default function GerarRelatorio({tableData, tipo}){
 			.catch((error) => {
 				console.error('Erro ao gerar arquivo Excel: ', error)
 			})
+		} else if (tipo === 'servicos'){
+			// Add data rows
+			tableData.forEach((rowData) => {
+				const values = Object.keys(rowData).map((key) => {
+					// Check if the key is a numeric field that should have "R$" added
+					if (key === 'valor') {
+						// Keep the numeric value unchanged, format with 2 decimal places
+						return Number(rowData[key].toFixed(2));
+					} else if(key === 'data'){
+						return new Date(rowData[key]);
+					} else {
+						return rowData[key];
+					}
+				});
+			
+				worksheet.addRow(values);
+			});
+		
+			const columnWidth = 15; // Set the width to 15 (adjust as needed)
+
+			worksheet.columns.forEach((column) => {
+				column.width = columnWidth;
+			  });
+
+			// Generate Excel file
+			workbook.xlsx.writeBuffer()
+			.then((buffer) => {
+				saveExcelFile(buffer, `${tipoRelatorio} - ${nomeCliente} - ${currentDateTime}.xlsx`)
+			})
+			.catch((error) => {
+				console.error('Erro ao gerar arquivo Excel: ', error)
+			})
 		}
 	}
     
@@ -250,6 +285,64 @@ export default function GerarRelatorio({tableData, tipo}){
 			} else if(tipo === 'creditos'){
 				const columns = [ 'CNPJ', 'Adquirente', 'Bandeira', 'Produto', 'Subproduto', 'Data do Crédito', 'Data da Venda', 'ValorBruto', 'Valor Líquido', 'Taxa', 'Valor Desconto', 'NSU', 'Código Autorização', 'Parcela', 'QTD Parc']
 				const rows = tableData.map(rowData => [rowData.cnpj, rowData.adquirente, rowData.bandeira, rowData.produto, rowData.subproduto, dateConvert(rowData.dataCredito), dateConvert(rowData.dataVenda), `R$ ${rowData.valorBruto.toFixed(2)}`, `R$ ${rowData.valorLiquido.toFixed(2)}`, `${rowData.taxa.toFixed(2)}%`, `R$ ${rowData.valorDesconto.toFixed(2)}`, rowData.nsu, rowData.codigoAutorizacao, rowData.parcela, rowData.totalParcelas ])
+		
+				const columnStyles = {};
+		
+				for (let i = 0; i < columns.length; i++) {
+					columnStyles[i] = { 
+					align: 'center',
+					valign: 'middle',
+					halign : 'center', };
+				}
+		
+				const doc = new jsPDF({
+					orientation: 'landscape',
+					unit: 'mm',
+					format: 'a3',
+				})
+		
+				const styles = {
+					cellPadding: 2, // Adjust the padding as needed
+					align: 'center', // Set the text alignment to center
+				  };
+		
+				var myImg = imgExport
+		
+				doc.autoTable({
+					head: [columns],
+					body: rows,
+					margin: {top: 30},
+					headStyles : {
+						fillColor : [10, 61, 112],
+						valign: 'middle',
+						halign : 'center',
+					},
+					styles: styles,
+					columnStyles: columnStyles,
+					didDrawPage: function (data) {
+						// Add an image to each page in the top right corner
+						const imageWidth = 80 // Adjust width as needed
+						const imageHeight = 13 // Adjust height as needed
+						const positionX = 310
+						const positionY = 8
+		
+						const text = `${tipoRelatorio} ${nomeCliente}`;
+						const textX = 14; // Adjust the X-coordinate as needed
+						const textY = 18; // Adjust the Y-coordinate as needed
+		
+						doc.text(text, textX, textY);
+		
+						doc.addImage(myImg, 'PNG', positionX, positionY, imageWidth, imageHeight)
+					}
+				})
+			
+				doc.save(`${tipoRelatorio} - ${nomeCliente} - ${currentDateTime}.pdf`)
+			} else if(tipo === 'servicos'){
+				const columns = [ 'CNPJ', 'Razão Social', 'Código do estabelecimento', 'Adquirente', 'Valor', 'Data', 'Descrição']
+				const rows = tableData.map(rowData => [
+					rowData.cnpj, rowData.razao_social, rowData.codigo_estabelecimento, 
+					rowData.adquirente, `R$ ${rowData.valor.toFixed(2)}`, dateConvert(rowData.data), rowData.descricao
+				])
 		
 				const columnStyles = {};
 		

@@ -33,6 +33,7 @@ const BuscarClienteCreditos = () => {
 		setDetalhes,
 		setTotaisGlobalCreditos,
 		alerta,
+		converteData,
 	} = useContext(AuthContext)
 
 	const {
@@ -60,7 +61,8 @@ const BuscarClienteCreditos = () => {
 	}
 
 	async function buscar() {
-		await loadCreditos(cnpjBusca, dataBusca[0], dataBusca[1])
+		console.log(dataBusca[0], dataBusca[1])
+		await loadCreditos(cnpjBusca, converteData(dataBusca[0]), converteData(dataBusca[1]))
 			.then(() =>{
 				if(dataBusca === '' || cnpjBusca === ''){
 					return 0
@@ -82,29 +84,6 @@ const BuscarClienteCreditos = () => {
 						
 					}
 				}    
-
-				//
-
-				/*
-				if(dataBusca === '' || cnpjBusca === ''){
-					return 0
-				} else {
-					
-					//adiciono .toLocaleDateString('pt-BR') às datas para que possamos comparar apenas o dia, mes e ano, sem levar em consideração a hora, minuto e segundos
-					
-					if((dataBusca[0].toLocaleDateString('pt-BR') === dataBusca[1].toLocaleDateString('pt-BR')) && (clicouPesquisar === true)){
-						alerta(`executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')}`)
-						setBuscou(true)
-					} else if ((dataBusca[0].toLocaleDateString('pt-BR') !== dataBusca[1].toLocaleDateString('pt-BR')) && clicouPesquisar === true){
-						alerta(`executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')} ao dia ${dataBusca[1].toLocaleDateString('pt-BR')}`)
-						setBuscou(true)
-					}
-
-					if(creditos.length === 0){
-						setDetalhes(false)
-						setClicouPesquisar(false)
-					}
-				} */
 			})
 		setLoading(false)
 	}
