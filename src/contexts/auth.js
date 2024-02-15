@@ -487,6 +487,8 @@ function AuthProvider({ children }){
 	async function loadCreditos(cnpj, dataInicial, dataFinal) {
 		setLoading(true)
 
+		console.log('parametros: ', cnpj, dataInicial, dataFinal)
+
 		try {
 			if(cnpj === 'todos'){
 				const params = {
@@ -761,13 +763,14 @@ function AuthProvider({ children }){
 		return `${ano}-${mes}-${dia}`
 	}
 
-	async function returnVendas(datainicial, cnpj) {
+	async function returnVendas(datainicial, datafinal, cnpj) {
 		try {
 			setLoading(true)
 
 			if(cnpj === 'todos'){
 				let params = {
-					data: datainicial,
+					datainicial: datainicial,
+					datafinal: datafinal,
 					codigoGrupo: Cookies.get('codigoGrupo')
 				}
   
@@ -791,7 +794,8 @@ function AuthProvider({ children }){
 
 			} else {
 				let params = {
-					data: datainicial,
+					datainicial: datainicial,
+					datafinal: datafinal,
 					cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
 				}
   
@@ -883,7 +887,7 @@ function AuthProvider({ children }){
 		}
 	}
 
-	async function returnCreditos(datainicial, datafinal, cnpj) {
+	async function returnCreditos(cnpj, dataInicial, dataFinal) {
 		if(cnpj === ''){
 			alerta('Erro no cliente selecionado. Selecione um cliente válido ou atualize a página e tente novamente')
 			return
@@ -893,8 +897,8 @@ function AuthProvider({ children }){
 
 			if(cnpj === 'todos'){
 				let params = {
-					dataInicial: dateConvert(datainicial),
-					dataFinal: dateConvert(datafinal),
+					dataInicial: dataInicial,
+					dataFinal: dataFinal,
 					codigoGrupo: Cookies.get('codigoGrupo')
 				}
   
@@ -914,8 +918,8 @@ function AuthProvider({ children }){
 			} else {
 				let params = {
 					cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-					dataInicial: dateConvert(datainicial),
-					dataFinal: dateConvert(datafinal),
+					dataInicial: dataInicial,
+					dataFinal: dataFinal,
 				}
   
 				let config = {
@@ -1130,8 +1134,21 @@ function AuthProvider({ children }){
 						tid: venda.tid,
 					})
 				})
+			} else if(tipoTemp === 'servicos'){
+				array.map((venda) => {
+					tableData.push({
+						cnpj: venda.cnpj,
+						razao_social: venda.razao_social,
+						codigo_estabelecimento: venda.codigo_estabelecimento,
+						adquirente: venda.nome_adquirente,
+						valor: venda.valor,
+						data: venda.data,
+						descricao: venda.descricao,
+					})
+				})
 			}
 		} 
+		console.log('servicos gerar dados: ', tableData)
 		return tableData
 	}
 

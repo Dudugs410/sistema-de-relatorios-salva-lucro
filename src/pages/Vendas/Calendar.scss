@@ -115,6 +115,7 @@
   text-transform: uppercase;
   font-weight: bold;
   font-size: 0.75em;
+
   
 }
 
@@ -134,14 +135,31 @@
   justify-content: center;
   font-size: 0.75em;
   font-weight: bold;
+  
 }
+
+//cores dos dias dos finais de semana
 
 .react-calendar__month-view__days__day--weekend {
-  color: #d10000;
+  &.light-theme{
+    color: #d10000 !important; 
+  }
+  &.dark-theme{
+    color: #d10000 !important;
+  }
+
 }
 
+//cores das Datas dos meses vizinhos que aparecem no calendário
+
 .react-calendar__month-view__days__day--neighboringMonth {
-  color: #757575;
+  &.light-theme{
+    color: #757575 !important; 
+  }
+
+  &.dark-theme{
+    color: #474747 !important;
+  }
 }
 
 .react-calendar__year-view .react-calendar__tile,
@@ -156,6 +174,12 @@
   background: none;
   text-align: center;
   line-height: 16px;
+  &.light-theme{
+    color: $font-color-light;
+  }
+  &.dark-theme{
+    color: $font-color-dark;
+  }
 }
 
 .react-calendar__tile:disabled {
@@ -171,18 +195,19 @@
     box-shadow:inset 0px 38px 0px 0px $secondary-color-light;
   }
   &.dark-theme{
-    background-color: $secondary-color-dark;
-    box-shadow:inset 0px 38px 0px 0px $secondary-color-dark;
+    background-color: $background-color-dark;
+    box-shadow:inset 0px 38px 0px 0px $background-color-dark;
   }
 }
 
 .react-calendar__tile--now {
   &.light-theme{
-    background: $secondary-color-light;
+    color: black;
+    background-color: $secondary-color-light;
   }
   &.dark-theme{
-    color: black;
-    background: $secondary-color-dark;
+    color: white;
+    background-color: $background-color-dark;
   }
   
 }
@@ -190,29 +215,29 @@
 .react-calendar__tile--now:enabled:hover,
 .react-calendar__tile--now:enabled:focus {
   &.light-theme{
-    background: $secondary-color-light;
+    background-color: $secondary-color-light;
   }
   &.dark-theme{
-    background: $background-color-dark;
+    background-color: black;
   }
 }
 
 .react-calendar__tile--hasActive {
   &.light-theme{
-    background: $primary-color-light;
+    background-color: $primary-color-light;
   }
   &.dark-theme{
-    background: $primary-color-dark;
+    background-color: $primary-color-dark;
   }
 }
 
 .react-calendar__tile--hasActive:enabled:hover,
 .react-calendar__tile--hasActive:enabled:focus {
   &.light-theme{
-    background: $secondary-color-light;
+    background-color: $secondary-color-light;
   }
   &.dark-theme{
-    background: $secondary-color-dark;
+    background-color: $background-color-dark;
   }
 }
 
@@ -220,11 +245,12 @@
   color: white;
   transition: all 0.4s;
   &.light-theme{
-    background: $primary-color-light;
+    background-color: $primary-color-light;
     box-shadow:inset 0px 38px 0px 0px $secondary-color-light;
   }
   &.dark-theme{
-    background: $primary-color-dark;
+    color: black;
+    background-color: $secondary-color-dark;
     box-shadow:inset 0px 38px 0px 0px $secondary-color-dark;
   }
   
@@ -235,12 +261,12 @@
   transition: all 0.4s;
   &.light-theme{
     color: $secondary-color-light;
-    background: $primary-color-light;
+    background-color: $primary-color-light;
     box-shadow:inset 0px 38px 0px 0px $primary-color-light;
   }
   &.dark-theme{
     color: $secondary-color-dark;
-    background: $background-color-dark;
+    background-color: $background-color-dark;
     box-shadow:inset 0px 38px 0px 0px $background-color-dark;
   }
 }

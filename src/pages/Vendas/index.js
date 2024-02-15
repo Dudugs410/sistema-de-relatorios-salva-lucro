@@ -218,7 +218,6 @@ const Vendas = () =>{
         let totalTemp = {debito: totalDebitoTemp, credito: totalCreditoTemp, voucher: totalVoucherTemp, liquido: totalLiquidoTemp}
         
         setTotaisGlobalVendas(totalTemp)
-
         return temp
     }
   }

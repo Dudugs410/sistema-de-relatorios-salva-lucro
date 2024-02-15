@@ -1,13 +1,16 @@
 import Calendar from 'react-calendar'
 import './servicos.scss'
 import { useContext, useEffect, useState, createContext } from 'react' 
-import { useLocation } from 'react-router-dom'
 import { AuthContext } from '../../contexts/auth'
 // import DateRangePicker from '../../components/Componente_TabelaServicos'
+import GerarRelatorio from '../../components/Componente_GerarRelatorio'
 import Cookies from 'js-cookie'
+import { useLocation } from 'react-router-dom'
 import BuscarClienteServicos from '../../components/Componente_BuscarClienteServicos'
 import TabelaServicos from '../../components/Componente_TabelaServicos'
 import TabelaGenericaAdm from '../../components/Componente_TabelaAdm'
+
+import '../Vendas/Calendar.scss'
 
 /*
 TODO:
@@ -24,33 +27,49 @@ export const ServicosContext = createContext({})
 const Servicos = () =>{
 	const location = useLocation()
 
-	useEffect(() => {
-		sessionStorage.setItem('currentPath', location.pathname)
-	}, [location])
-
     const { 
+        cnpj,
+		setCnpj,
         loadAjustes,
         setGrupos,
         grupos, 
         ajustes,
         setAjustes,
-        cnpj, 
         dataInicial, 
-        setDataInicial, 
+        setDataInicial,
+        gerarDados,
+		tableData,
         dataFinal, 
         setDataFinal, 
         dateConvert,
         isDarkTheme,
 		setIsDarkTheme,
-
+        detalhes
     } = useContext(AuthContext)
 
+	const [arrayRelatorio, setArrayRelatorio] = useState([])
 	const [arrayAdm, setArrayAdm] = useState([])
-    // const [arrayTeste, setArrayTeste] = useState([])
-    // const [ajustes, setAjustes] = useState([])
-    const [dataBusca, setDataBusca] = useState([new Date(), new Date()])
-    const [detalhes, setDetalhes] = useState(false)
     const [cnpjBusca, setCnpjBusca] = useState(Cookies.get('cnpj'))
+    // const [totalAjustes, setTotalAjustes] = useState(0)
+    const [dataBusca, setDataBusca] = useState([new Date(), new Date()])
+    const [dataInicialExibicao, setDataInicialExibicao] = useState(new Date().toLocaleDateString('pt-BR'))
+    const [dataFinalExibicao, setDataFinalExibicao] = useState(new Date().toLocaleDateString('pt-BR'))
+	
+    useEffect(()=>{
+		setAjustes([])
+		setCnpj(Cookies.get('cnpj'))
+	},[])
+
+	const [tipo, setTipo] = useState('servicos')
+
+	useEffect(()=>{
+	  setTipo('servicos')
+	  Cookies.set('tipo', 'servicos')
+	},[])
+
+    useEffect(()=>{
+		setCnpjBusca(cnpj)
+	},[cnpj])
 
     useEffect(()=>{
         async function inicializar(){
@@ -64,43 +83,23 @@ const Servicos = () =>{
     useEffect(()=>{
         setDataInicial(new Date())
         setDataFinal(new Date())
-        // ajustes.length = 0
-        // ajustesAgrupados.length = 0
+        ajustes.length = 0
     },[])
-            
-    function handleBuscar(e){
-        e.preventDefault()
-        buscarAjustes()
-    } 
-        
-    async function buscarAjustes(){
-        try {
-            const response = await loadAjustes(Cookies.get('cnpj'), dataInicial, dataFinal)
-            if ((response)){
-                setAjustes(response)
-            } else {
-                console.log('loadAjustes undefined? ', response)
-            } 
-        } catch (error) {
-            console.log('erro ao buscarAjustes, ', error)
-        }
-    }
 
     function handleDateChange(date){
         setDataBusca(date)
         // console.log(dataBusca)
     }
     
-    useEffect(() => {
-        if(dataBusca.length === 2 ){
+    useEffect(()=>{
+		console.log(dataBusca)
+		if((dataBusca[0] !== undefined) && (dataBusca[1] !== undefined)){
             setDataInicial(dataBusca[0])
             setDataFinal(dataBusca[1])
-        } else {
-            setDataInicial(dataBusca)
-            setDataFinal(dataBusca)
-        }
-    }, [dataBusca])
-
+            setDataInicialExibicao(dataBusca[0].toLocaleDateString('pt-BR'))
+            setDataFinalExibicao(dataBusca[1].toLocaleDateString('pt-BR'))
+		}
+	  },[dataBusca])
 
     useEffect(()=>{
         const groupedData = {};
@@ -131,13 +130,25 @@ const Servicos = () =>{
         admArray.push({'id': 't', 'nomeAdquirente': 'Total de ajustes', 'total': adq_total_value})
         
         const ajustes_agrupados = {'grupos': groupedData, 'admArray': admArray, 'total_ajustes': adq_total_value, 'ajustes': ajustes}
-        // console.log('total ajustes:', ajustes_agrupados);
-        // setAjustesAgrupados(ajustes_agrupados)
         setArrayAdm(admArray)
-        setDetalhes(true);
+
+        if(ajustes.length > 0){
+            setArrayRelatorio(gerarDados(ajustes))
+            // setArrayAdm(separaAdm(ajustes))
+        }
+
     }, [ajustes]);
 
     function MyCalendar() {
+
+        let customDayStyle
+
+        if(isDarkTheme){
+            customDayStyle = {color: 'white'}
+        } else if (isDarkTheme === false){
+            customDayStyle = {color: 'black'}
+        }
+ 
         return (
 			<div>
 				<Calendar
@@ -148,149 +159,50 @@ const Servicos = () =>{
 					value={ dataBusca }
 					tileClassName={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
 				/>
+                <hr/>
+                <div className='container-busca'>
+                    <span className={`span-busca ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                    {dataInicialExibicao !== dataFinalExibicao ? 
+                        <span dangerouslySetInnerHTML={{__html: `Executar busca do dia <strong>${dataInicialExibicao}</strong> ao dia <strong>${dataFinalExibicao}</strong>`}} /> : 
+                        <span dangerouslySetInnerHTML={{__html: `Executar busca do dia <strong>${dataInicialExibicao}</strong>`}} />
+                    }
+                    </span>
+                    <BuscarClienteServicos />
+                </div>
 			</div>
 		)
 	}
 
     return(
-    <ServicosContext.Provider 
-        value={{
-            //ajustes,
-            //setAjustes,
-            detalhes, 
-            setDetalhes,
-            cnpjBusca,
-            setCnpjBusca,
-            dataBusca, 
-            setDataBusca, 
-        }}>
+        <ServicosContext.Provider 
+            value={{
+                dataBusca, 
+                setDataBusca, 
+                cnpjBusca,
+                setCnpjBusca,
+                dataFinalExibicao,
+                dataInicialExibicao,
+            }}>
 
-        <div className={`appPage ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-            <div className={`page-servicos-background ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                <div className={`page-content-servicos ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                    <div className={`servicos-title-container ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-							<h1 className={`servicos-title ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Servicos</h1>
-                    </div>
-
-                    <hr className="hr-recebimentos"/>
-                    
-                    {/* 
-                        algo de total de ajustes
-                        e gerar relatorio?
-                     */}
-
-                    <div className='component-container-servicos'>
-
-                        {/* <MyCalendar/>
-                        <TabelaServicos array={ajustes}/> */}
-                        {(detalhes) && (ajustes.length > 0)? <TabelaServicos array={ajustes}/> : <MyCalendar/> } 
-
+            <div className={`appPage ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                <div className={`page-servicos-background ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                    <div className={`page-content-servicos ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                        <div className={`servicos-title-container ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                            <h1 className={`servicos-title ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Servicos</h1>
+                        </div>
                         <hr className="hr-recebimentos"/>
-
-                        {(detalhes) && (ajustes.length > 0)? <TabelaGenericaAdm Array={arrayAdm} textColor={'red-global'}/> : <></> }
-
-                        {(detalhes) && (ajustes.length > 0)?
-                        <></>
-                        :
-                        <div className='btn-container-servicos'>
-                            <button className='btn btn-primary btn-busca-servicos' onClick={handleBuscar}>Pesquisar</button>
-                            <BuscarClienteServicos/>
-                        </div> 
-
-                        }
-                
+						{ (detalhes) && (ajustes.length > 0) ? <GerarRelatorio className='export' tableData={tableData} detalhes={detalhes} tipo='servicos'/> : <></> }
+                        <div className='component-container-servicos'>
+                            { (detalhes) && (ajustes.length > 0)? <TabelaServicos array={ajustes}/> : <MyCalendar/> } 
+                            <hr className="hr-recebimentos"/>
+                            { (detalhes) && (ajustes.length > 0)? <TabelaGenericaAdm Array={arrayAdm} textColor={'red-global'}/> : <></> }
+                            { (detalhes) && (ajustes.length > 0) ? <hr className='hr-recebimentos'/> : <></> }
+                        </div>
                     </div>
-                            {/* { ajustesAgrupados !== undefined && (ajustesAgrupados.map((elemento) => {
-                                return(
-                                    <div className='card-resumo-total-ajustes'>
-                                    <div className='card-resumo-content-container'>
-                                    <h1 className='h1-total-ajustes'>Resumo Total</h1>
-                                            <div className='card-ajuste-container'>
-                                            {CardServicosTotais(elemento)}                                            
-                                            </div>
-                                        </div>
-                                    </div>
-                                )
-                            }))} */}
-
                 </div>
             </div>
-        </div>
-    </ServicosContext.Provider>
-
+        </ServicosContext.Provider>
     )
 }
 
 export default Servicos
-
-// useEffect(() => {
-                                    //     if(ajustes !== undefined){
-                                    //         let totalTemp = [];
-                                    //         console.log('totalTemp: ', totalTemp);
-                                          
-                                    //         ajustes.forEach((elemento) => {
-                                    //           let obj = { descricao: '', valor: 0 };
-                                    //           let found = false;
-                                          
-                                    //           for (let i = 0; i < totalTemp.length; i++) {
-                                    //             if (totalTemp[i].descricao === elemento.descricao) {
-                                    //               console.log(
-                                    //                 'total ajuste desc: ',
-                                    //                 totalTemp[i].descricao,
-                                    //                 'elemento desc: ',
-                                    //                 elemento.descricao
-                                    //               );
-                                    //               obj.valor = elemento.valor;
-                                    //               totalTemp[i].valor += elemento.valor;
-                                    //               found = true;
-                                    //               break;
-                                    //             }
-                                    //           }
-                                          
-                                    //           if (!found) {
-                                    //             obj.descricao = elemento.descricao;
-                                    //             obj.valor = elemento.valor;
-                                    //             totalTemp.push(obj);
-                                    //           }
-                                    //         });   
-                                
-                                    //         console.log('totalTemp', totalTemp);
-                                    //         setAjustesAgrupados(totalTemp)
-                                    //     }
-                                    //   }, [ajustes]);
-                                
-                                    //   useEffect(()=>{
-                                    //     console.log('ajustesAgrupados: ', ajustesAgrupados)
-                                    //   },[ajustesAgrupados])
-                                
-                                    // function CardServicos(filialAjuste){
-                                    //             return(
-                                    //                     <div className='card-filial'>
-                                    //                         <div className='card-ajuste-container'>
-                                    //                             <div className='card-ajuste'>
-                                    //                                 <h5 className='h5-valores'>Adquirente:</h5>
-                                    //                                 <span className='span-valores'>{filialAjuste.nome_adquirente}</span>
-                                    //                             </div>
-                                    //                             <div className='card-ajuste'>
-                                    //                                 <h5 className='h5-valores'>{filialAjuste.descricao}</h5>
-                                    //                                 <span className='span-valores red'>{filialAjuste.valor}</span>
-                                    //                             </div>
-                                    //                             <div className='card-ajuste'>
-                                    //                                 <h5 className='h5-valores'>Data</h5>
-                                    //                                 <span className='span-valores'>{dateConvert(filialAjuste.data)}</span>
-                                    //                             </div>
-                                    //                         </div>
-                                    //                     </div>
-                                    //             )
-                                    // }
-                                
-                                    // function CardServicosTotais(filialAjuste){
-                                    //     return(
-                                    //         <div className='card-ajuste'>
-                                    //             <h5 className='h5-valores'>{filialAjuste.descricao}</h5>
-                                    //             <span className='span-valores red'>{filialAjuste.valor}</span>
-                                    //         </div>
-                                    //     )
-                                    // }
-                                
-                                ///////////////////////////////////////////
