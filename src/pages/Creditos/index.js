@@ -148,79 +148,53 @@ const Creditos = () =>{
 		}
 	  },[dataBusca])
 
-	function separaAdm(array){
-		if(array.length > 0){
-			let temp = []
-			let totalCreditoTemp = 0
-			let totalDebitoTemp = 0
-			let totalVoucherTemp = 0
-			let totalLiquidoTemp = 0
-
-			array.forEach((venda)=>{
-				if(temp.length === 0){
-					let novoObj = {
-						nomeAdquirente: venda.adquirente.nomeAdquirente,
-						total: venda.valorLiquido,
-						id: 0,
-						vendas: []
-					}
-					temp.push(novoObj)
-				}else{
-					let novoObj = {
-						nomeAdquirente: venda.adquirente.nomeAdquirente,
-						total: venda.valorLiquido,
-						id: 0,
-						vendas: []
-					}
-
-					if(!(temp.find((objeto) => objeto.nomeAdquirente === venda.adquirente.nomeAdquirente && objeto !== ( undefined || [] )))){
-						novoObj.id = (temp.length)
-						temp.push(novoObj)
-					}
-
-					else{
-						for(let i = 0; i < temp.length; i++){
-							if(temp[i].nomeAdquirente === venda.adquirente.nomeAdquirente){
-								temp[i].total += venda.valorLiquido
-							}
-						}
-					}
-				}
-				// eslint-disable-next-line default-case
-				switch(venda.produto.descricaoProduto){
-				case 'Crédito':
-					totalCreditoTemp += venda.valorLiquido
-					break
-
+	  function separaAdm(array) {
+		let sums = {
+			debito: 0,
+			credito: 0,
+			voucher: 0,
+			total: 0
+		};
+	
+		let separatedByAdquirente = [];
+	
+		array.forEach((item) => {
+			// Calculate individual sums
+			switch (item.produto.descricaoProduto) {
 				case 'Débito':
-					totalDebitoTemp += venda.valorLiquido
-					break
-
+					sums.debito += item.valorLiquido;
+					break;
+				case 'Crédito':
+					sums.credito += item.valorLiquido;
+					break;
 				case 'Voucher':
-					totalVoucherTemp += venda.valorLiquido
-					break
-				}
-				totalLiquidoTemp += venda.valorLiquido
-			})
-			temp.forEach((adq) => {
-				let vendasTemp = []
-				vendasTemp.length = 0
-				array.forEach((vendasDia) => {
-					if(vendasDia.length > 0){
-						vendasDia.forEach((venda) => {
-							if(venda.adquirente.nomeAdquirente === adq.nomeAdquirente){
-								vendasTemp.push(venda)
-							}
-							adq.vendas = vendasTemp
-						})
-					}
-				})
-			})
-			let totalTemp = {debito: totalDebitoTemp, credito: totalCreditoTemp, voucher: totalVoucherTemp, liquido: totalLiquidoTemp}
-			setTotaisGlobalCreditos(totalTemp)
+					sums.voucher += item.valorLiquido;
+					break;
+			}
+			sums.total += item.valorLiquido;
+	
+			// Find or create entry in separatedByAdquirente
+			let entry = separatedByAdquirente.find(adquirente => adquirente.nomeAdquirente === item.adquirente.nomeAdquirente);
+			if (!entry) {
+				entry = {
+					id: separatedByAdquirente.length,
+					nomeAdquirente: item.adquirente.nomeAdquirente,
+					total: 0
+				};
+				separatedByAdquirente.push(entry);
+			}
+	
+			// Update total for this adquirente
+			entry.total += item.valorLiquido;
+		});
 
-			return temp
-		}
+		let totalTemp = { debito: sums.debito, credito: sums.credito, voucher: sums.voucher, liquido: sums.total };
+	
+		setTotaisGlobalCreditos(totalTemp);
+		console.log(totalTemp);
+		console.log('Sums:', sums);
+		console.log('Separated by Adquirente:', separatedByAdquirente);
+		return separatedByAdquirente;
 	}
 
 	function MyCalendar() {

@@ -125,36 +125,32 @@ const Dashboard = () => {
 		vendaDataFinal.setDate(vendaDataFinal.getDate() -1)
 		vendaDataFinal = converteData(vendaDataFinal)
 
-		const vendasTemp = await returnVendas(vendaDataInicial, cnpj)
+		const vendasTemp = await returnVendas(vendaDataInicial, vendaDataFinal, cnpj)
         
 		setVendas4dias(vendasTemp)
 	}
 
 	async function inicializaVetorVendasMes() {
-		const dataAtual = new Date()
-		const anoAtual = dataAtual.getFullYear()
-		const mesAtual = dataAtual.getMonth() + 1
-		const ultimoDiaDoMes = new Date(anoAtual, mesAtual, 0).getDate()
-      
+		
 		let vendasTemp = []
-		let paramDiasBusca = []
-		for (let day = 1; day <= ultimoDiaDoMes; day++) {
-			paramDiasBusca.push({
-				dataInicial: `${anoAtual}-${mesAtual}-${day}`,
-				dataFinal: `${anoAtual}-${mesAtual}-${day}`,
-				cnpj: cnpj,
-			})
+
+		function getFirstDayOfMonth() {
+			const currentDate = new Date();
+			const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+			return firstDayOfMonth;
 		}
+	
+		function getLastDayOfMonth(){
+			const currentDate = new Date();
+			const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+			return lastDayOfMonth;
+		}
+	
+		const primeiroDiaDoMes = getFirstDayOfMonth();
+		const ultimoDiaDoMes = getLastDayOfMonth();
       
 		try {
-			setLoadingVendasDash(true)
-			const carregaVendasMes = paramDiasBusca.map((dia) =>
-				returnVendasPorPeriodo(dia.dataInicial, dia.dataFinal, dia.cnpj)
-			)
-      
-			const vendasPromises = await Promise.all(carregaVendasMes)
-      
-			vendasTemp = vendasPromises.filter((vendas) => vendas)
+			vendasTemp = await returnVendas(primeiroDiaDoMes, ultimoDiaDoMes, cnpj)
 		} catch (error) {
 			console.error('Error fetching vendas:', error)
 		} finally {
@@ -164,51 +160,63 @@ const Dashboard = () => {
 		setVetorVendasMes(vendasTemp)
 	}
 
-	async function inicializaVendas4diasMes(){
+	/*async function inicializaVendas4diasMes(){
 		const temp = await returnTotalMes(cnpj)
 		setVendasMes(temp)
-	}
+	}*/
 
 	async function inicializaCreditos5dias(){
-		let creditosTemp
-		let data = new Date()
-		let newdata = dateConvertSearch(data)
+		let creditosTemp;
+		let dataInicial = new Date();
+		let dataFinal = new Date();
+	
+		// Increment dataInicial by 1 day
+		dataInicial.setDate(dataInicial.getDate() + 1);
+	
+		// Increment dataFinal by 5 days
+		dataFinal.setDate(dataFinal.getDate() + 5);
+	
+		creditosTemp = await returnCreditos(cnpj, dataInicial, dataFinal);
 
-		creditosTemp = await returnCreditos( newdata, newdata, cnpj)
-		setCreditos5dias(creditosTemp)
+		if(creditosTemp.length > 0){
+			setCreditos5dias(creditosTemp);
+		}
 	}
 
 	async function inicializaVetorCreditosMes() {
-		setLoadingCreditosDash(true)
-		const dataAtual = new Date()
-		const anoAtual = dataAtual.getFullYear()
-		const mesAtual = dataAtual.getMonth() + 1
-		const ultimoDiaDoMes = new Date(anoAtual, mesAtual, 0).getDate()
-      
-		let creditosTemp = []
-		let paramDiasBusca = []
-		for (let day = 1; day <= ultimoDiaDoMes; day++) {
-			paramDiasBusca.push({
-				dataInicial: `${anoAtual}-${mesAtual}-${day}`,
-				dataFinal: `${anoAtual}-${mesAtual}-${day}`,
-				cnpj: cnpj,
-			})
+		setLoadingCreditosDash(true);
+	
+		function getFirstDayOfMonth() {
+			const currentDate = new Date();
+			const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+			return firstDayOfMonth;
 		}
-      
+	
+		function getLastDayOfMonth(){
+			const currentDate = new Date();
+			const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+			return lastDayOfMonth;
+		}
+	
+		const primeiroDiaDoMes = getFirstDayOfMonth();
+		const ultimoDiaDoMes = getLastDayOfMonth();
+	
+		let creditosTemp = [];
+	
 		try {
-			const carregaCreditosMes = paramDiasBusca.map((dia) =>
-				returnCreditos(dia.dataInicial, dia.dataFinal, dia.cnpj)
-			)
-      
-			const creditosPromises = await Promise.all(carregaCreditosMes)
-			creditosTemp = creditosPromises.filter((creditos) => creditos) 
+			creditosTemp = await returnCreditos(cnpj, primeiroDiaDoMes, ultimoDiaDoMes);
 		} catch (error) {
-			console.error('Error fetching creditos:', error)
+			console.error('Error fetching creditos:', error);
 		} finally {
-			setLoadingCreditosDash(false)
+			setLoadingCreditosDash(false);
 		}
-      
-		setVetorCreditosMes(creditosTemp)
+	
+		if (creditosTemp && creditosTemp.length > 0) {
+			setVetorCreditosMes(creditosTemp);
+		} else {
+			// Handle the case where creditosTemp is empty or undefined
+			console.error('No data available for vetorCreditosMes');
+		}
 	}
 
 	async function inicializaServicos(){
@@ -302,7 +310,7 @@ const Dashboard = () => {
 		async function inicializar(){
 			if((cnpj !== Cookies.get('ultimoCnpj')) && (cnpj !== '')) {
 				await inicializaVendas4dias()
-				await inicializaVendas4diasMes()
+				//await inicializaVendas4diasMes()
 				await inicializaVetorVendasMes()
 				await inicializaCreditos5dias()
 				await inicializaVetorCreditosMes()
@@ -324,20 +332,20 @@ const Dashboard = () => {
 					setLoadingCreditosDash(false)
 					setLoadingVendasDash(false)
 				})
-			}
+			} 
 		}
 	},[buscou, cnpj])
 
 	useEffect(()=>{
 		async function inicializar(){
-			const total = vendasMes.reduce((total, obj) => total + obj.valorvendido, 0)
+			const total = vetorVendasMes.reduce((total, obj) => total + obj.valorLiquido, 0)
 			setSomatorioVendasMes(total)
 			if(total > 0){
 				setSomatorioVendasMesAux(total)
 			}
 		}
 		inicializar()
-	},[vendasMes])
+	},[vetorVendasMes])
 
 	useEffect(()=>{
 		if(vendas4dias === null){
@@ -354,32 +362,47 @@ const Dashboard = () => {
     
 	useEffect(()=>{
 		let dataHoje = new Date()
+		
 		dataHoje = converteData(dataHoje)
 		let totalHoje = 0
 		let total5dias = 0
-		creditos5dias.forEach((venda) => {
+		vetorCreditosMes.forEach((venda) => {
 			if(venda.dataCredito === dataHoje){
 				totalHoje += venda.valorLiquido
 			}
 		})
-		creditos5dias.forEach((venda) => {
-			for(let i = 0; i < 5; i++){
-				let dataHoje2 = new Date()
-				dataHoje2.setDate(dataHoje2.getDate() + i)
-				dataHoje2 = converteData(dataHoje2)
-				if(venda.dataCredito === dataHoje){
-					total5dias += venda.valorLiquido
+
+		vetorCreditosMes.forEach((venda) => {
+			for (let i = 1; i <= 5; i++) {
+				let nextDate = new Date(dataHoje);
+				nextDate.setDate(nextDate.getDate() + i);
+				let nextDateFormatted = nextDate.toISOString().split('T')[0]; // Format as "YYYY-MM-DD"
+				if (venda.dataCredito === nextDateFormatted) {
+					total5dias += venda.valorLiquido;
 				}
 			}
-		})
+		});
+
 		setSomatorioCreditosHoje(totalHoje)
 		setTotalCreditos5dias(total5dias)
-            
+
 		if((totalHoje > 0) && (total5dias > 0)){
 			setSomatorioCreditosHojeAux(totalHoje)
 			setTotalCreditos5diasAux(total5dias)
 		}
-	},[creditos5dias])
+	},[vetorCreditosMes])
+
+	useEffect(()=>{
+		if(inicializouAux === false){
+			setTotalCreditos5diasAux(totalCreditos5dias)
+		}
+	},[totalCreditos5dias])
+
+	useEffect(()=>{
+		if(inicializouAux === false){
+			setSomatorioCreditosHojeAux(somatorioCreditosHoje)
+		}
+	},[somatorioCreditosHoje])
 
 	const sortArray = (arrayAdq) => {
 		const sortedArray = [...arrayAdq].sort((a, b) => {
@@ -398,8 +421,7 @@ const Dashboard = () => {
 
 	useEffect(()=>{
 		let temp = []
-		vetorVendasMes.forEach((array)=>{
-			array.forEach((venda)=>{
+			vetorVendasMes.forEach((venda)=>{
 				if(temp.length === 0){
 					let novoObj = {
 						nomeAdquirente: venda.adquirente.nomeAdquirente,
@@ -420,38 +442,32 @@ const Dashboard = () => {
 						novoObj.id = (temp.length)
 						temp.push(novoObj)
 					}
-    
-					else{
-						for(let i = 0; i < temp.length; i++){
-							if(temp[i].nomeAdquirente === venda.adquirente.nomeAdquirente){
-								temp[i].total += venda.valorBruto
-							}
-						}
+				}
+			})
+
+
+
+			temp.forEach((adq) => {
+				let vendasAdqTemp = []
+				vetorVendasMes.forEach((venda) => {
+					if(venda.adquirente.nomeAdquirente === adq.nomeAdquirente){
+						vendasAdqTemp.push(venda)
 					}
-				}
+				})
+				adq.vendas = vendasAdqTemp
 			})
-		})
-    
-		temp.forEach((adq) => {
-			let vendasTemp = []
-			vendasTemp.length = 0
-			vetorVendasMes.forEach((vendasDia) => {
-				if(vendasDia.length > 0){
-					vendasDia.forEach((venda) => {
-						if(venda.adquirente.nomeAdquirente === adq.nomeAdquirente){
-							vendasTemp.push(venda)
-						}
-						adq.vendas = vendasTemp
-					})
-				}
-			})
-		})
 
 		setAdmVendas(sortArray(temp))
 		if(temp.length > 0){
 			setAdmVendasAux(sortArray(temp))
 		}
 	},[vetorVendasMes])
+
+	useEffect(() => {
+		if(inicializouAux === false){
+			setSomatorioVendasMesAux(somatorioVendasMes)
+		}
+	},[somatorioVendasMes])
 
 	useEffect(()=>{
 		setGraficoVendas(carregaGrafico(admVendas))
@@ -462,8 +478,7 @@ const Dashboard = () => {
 
 	useEffect(()=>{
 		let temp = []
-		vetorCreditosMes.forEach((array)=>{
-			array.forEach((venda)=>{
+			vetorCreditosMes.forEach((venda)=>{
 				if(temp.length === 0){
 					let novoObj = {
 						nomeAdquirente: venda.adquirente.nomeAdquirente,
@@ -475,7 +490,7 @@ const Dashboard = () => {
 				}else{
 					let novoObj = {
 						nomeAdquirente: venda.adquirente.nomeAdquirente,
-						total: venda.valorLiquido,
+						total: venda.valorBruto,
 						id: 0,
 						vendas: []
 					}
@@ -484,33 +499,19 @@ const Dashboard = () => {
 						novoObj.id = (temp.length)
 						temp.push(novoObj)
 					}
-    
-					else{
-						for(let i = 0; i < temp.length; i++){
-							if(temp[i].nomeAdquirente === venda.adquirente.nomeAdquirente){
-								temp[i].total += venda.valorLiquido
-							}
-						}
+				}
+			})
+
+			temp.forEach((adq) => {
+				let creditosAdqTemp = []
+				vetorCreditosMes.forEach((venda) => {
+					if(venda.adquirente.nomeAdquirente === adq.nomeAdquirente){
+						creditosAdqTemp.push(venda)
 					}
-				}
+				})
+				adq.vendas = creditosAdqTemp
 			})
-		})
-    
-		temp.forEach((adq) => {
-			let creditosTemp = []
-			creditosTemp.length = 0
-			vetorCreditosMes.forEach((creditosDia) => {
-				if(creditosDia.length > 0){
-					creditosDia.forEach((credito) => {
-						if(credito.adquirente.nomeAdquirente === adq.nomeAdquirente){
-							creditosTemp.push(credito)
-						}
-						adq.vendas = creditosTemp
-					})
-				}
-			})
-		})
-    
+
 		setAdmCreditos(sortArray(temp))
 		if(temp.length > 0){
 			setAdmCreditosAux(sortArray(temp))

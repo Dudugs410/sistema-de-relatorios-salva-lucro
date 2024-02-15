@@ -33,6 +33,7 @@ const BuscarClienteCreditos = () => {
 		setDetalhes,
 		setTotaisGlobalCreditos,
 		alerta,
+		converteData,
 	} = useContext(AuthContext)
 
 	const {
@@ -60,7 +61,8 @@ const BuscarClienteCreditos = () => {
 	}
 
 	async function buscar() {
-		await loadCreditos(cnpjBusca, dataBusca[0], dataBusca[1])
+		console.log(dataBusca[0], dataBusca[1])
+		await loadCreditos(cnpjBusca, converteData(dataBusca[0]), converteData(dataBusca[1]))
 			.then(() =>{
 				if(dataBusca === '' || cnpjBusca === ''){
 					return 0

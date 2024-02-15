@@ -10,10 +10,9 @@ import './detalhesCredito.scss'
 
 const TabelaVendasCreditos = ({array, tipo}) =>{
 
-	const { vendas, creditos, dateConvert, tableData, gerarDados, totaisGlobal, setTotaisGlobal, totaisGlobalVendas, setTotaisGlobalVendas, totaisGlobalCreditos, setTotaisGlobalCreditos, isDarkTheme, setDetalhes } = useContext(AuthContext)
+	const { dateConvert, gerarDados, setTotaisGlobalVendas, setTotaisGlobalCreditos, isDarkTheme, setDetalhes } = useContext(AuthContext)
 
 	const [vendasArray, setVendasArray] = useState([])
-
 	const [vendasTeste, setVendasTeste] = useState([])
 	const [vendasExibicao, setVendasExibicao] = useState([])
 
@@ -540,7 +539,7 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 			)}
 			{ sessionStorage.getItem('currentPath') !== '/dashboard' ? 
 			<div className='voltar-container'>
-				<button className={`btn btn-secondary btn-global btn-voltar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={() => { setDetalhes(false)} }>Voltar</button>
+				{ sessionStorage.getItem('currentPath') === '/Dashboard' ? <></> : <button className={`btn btn-secondary btn-global btn-voltar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={() => { setDetalhes(false)} }>Voltar</button>}
 			</div> : <></>}
 		</>
 	)
