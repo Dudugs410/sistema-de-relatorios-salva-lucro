@@ -674,18 +674,18 @@ function AuthProvider({ children }){
 				return response.data
 
 			} else {
-				let params = {
+				const params = {
 					cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
 					dataInicial: dataInicial,
-					dataFinal: dataFinal
+					dataFinal: dataFinal,
 				}
     
-				let config = {
-					headers: { 
-						'Content-Type': 'application/json', 
-						'Authorization': `Bearer ${Cookies.get('token')}`
+				const config = {
+					headers: {
+						'Content-Type': 'application/json',
+						'Authorization': `Bearer ${Cookies.get('token')}`,
 					},
-					params: params
+					params,
 				}
 				const response = await api.get('ajustes', config)
 				setAjustes(response.data)

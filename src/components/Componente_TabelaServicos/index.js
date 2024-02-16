@@ -80,6 +80,7 @@ const TabelaServicos = ({ array, tipo }) => {
 		setVendasArray(array)
 
 	},[array])
+
 	useEffect(()=>{
 		if(vendasExibicao.length > 0){
 			// gerarDados(vendasExibicao)
