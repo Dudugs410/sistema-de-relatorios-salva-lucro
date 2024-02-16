@@ -287,6 +287,7 @@ function AuthProvider({ children }){
 	function resetaDashboard(){
 		setVendas([])
 		setCreditos([])
+		setAjustes([]) // adicionando aqui, reseta para o calendário quando troca o cliente.
 		setRecebimentos([])
 		setVendas([])
 		setVendasDash([])
@@ -649,6 +650,9 @@ function AuthProvider({ children }){
 	//Ajustes
 
 	async function loadAjustes(cnpj, dataInicial, dataFinal){
+		if((dataInicial === '' || undefined) || (cnpj === '' || undefined)){
+			return 0
+		}
 		setLoading(true)
 		try {
 			if(cnpj === 'todos'){
@@ -671,6 +675,7 @@ function AuthProvider({ children }){
 				//console.log('response data ajustes', response.data)
 				setAjustes(response.data)
 				setLoading(false)
+				setBuscou(false)
 				return response.data
 
 			} else {
@@ -691,10 +696,12 @@ function AuthProvider({ children }){
 				setAjustes(response.data)
 				// const recebimentosData = response.data
 				setLoading(false)
+				setBuscou(false)
 				return response.data
 			}
 		} catch (error) {
 			console.log(error)
+			setBuscou(false)
 			setLoading(false)
 		}
 	}

@@ -95,7 +95,10 @@ useEffect(() => {
         if(detalhes){
           setAjustesTemp(loadAjustes(cnpjBusca, dataBusca[0], dataBusca[1]))
     }
+
+    // se colocar o cookies.get('codigoGrupo') aqui dentro do array de dependencias, ele reload toda vez que troca o grupo
     },[cnpjBusca])
+
     useEffect(()=>{
         setDataInicial(new Date())
         setDataFinal(new Date())
