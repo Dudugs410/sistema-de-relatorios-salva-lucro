@@ -287,6 +287,7 @@ function AuthProvider({ children }){
 	function resetaDashboard(){
 		setVendas([])
 		setCreditos([])
+		setAjustes([]) // adicionando aqui, reseta para o calendário quando troca o cliente.
 		setRecebimentos([])
 		setVendas([])
 		setVendasDash([])
@@ -649,6 +650,9 @@ function AuthProvider({ children }){
 	//Ajustes
 
 	async function loadAjustes(cnpj, dataInicial, dataFinal){
+		if((dataInicial === '' || undefined) || (cnpj === '' || undefined)){
+			return 0
+		}
 		setLoading(true)
 		try {
 			if(cnpj === 'todos'){
@@ -671,30 +675,33 @@ function AuthProvider({ children }){
 				//console.log('response data ajustes', response.data)
 				setAjustes(response.data)
 				setLoading(false)
+				setBuscou(false)
 				return response.data
 
 			} else {
-				let params = {
+				const params = {
 					cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
 					dataInicial: dataInicial,
-					dataFinal: dataFinal
+					dataFinal: dataFinal,
 				}
     
-				let config = {
-					headers: { 
-						'Content-Type': 'application/json', 
-						'Authorization': `Bearer ${Cookies.get('token')}`
+				const config = {
+					headers: {
+						'Content-Type': 'application/json',
+						'Authorization': `Bearer ${Cookies.get('token')}`,
 					},
-					params: params
+					params,
 				}
 				const response = await api.get('ajustes', config)
 				setAjustes(response.data)
 				// const recebimentosData = response.data
 				setLoading(false)
+				setBuscou(false)
 				return response.data
 			}
 		} catch (error) {
 			console.log(error)
+			setBuscou(false)
 			setLoading(false)
 		}
 	}

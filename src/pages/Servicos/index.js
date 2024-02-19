@@ -12,49 +12,69 @@ import TabelaGenericaAdm from '../../components/Componente_TabelaAdm'
 
 import '../Vendas/Calendar.scss'
 
-/*
-TODO:
-    x calendario -> marcar data inicial e data final
-    x tabela p vizualizar as infos (igual outras tabelas)
-    x arrumar css / layout igual das outras paginas
-    - componente botão 
-    - paginação
-
-*/
 
 export const ServicosContext = createContext({})
 
 const Servicos = () =>{
 	const location = useLocation()
 
+useEffect(() => {
+    sessionStorage.setItem('currentPath', location.pathname);
+}, [location]);
+
     const { 
         cnpj,
 		setCnpj,
         loadAjustes,
-        setGrupos,
-        grupos, 
         ajustes,
         setAjustes,
         dataInicial, 
         setDataInicial,
         gerarDados,
 		tableData,
-        dataFinal, 
+        dataFinal, 		
+        bandeiras, 
+		loadBandeiras,
+        setGrupos,
+        grupos, 
+		adquirentes,
+		loadAdquirentes,
         setDataFinal, 
         dateConvert,
         isDarkTheme,
 		setIsDarkTheme,
-        detalhes
+        detalhes,
     } = useContext(AuthContext)
 
 	const [arrayRelatorio, setArrayRelatorio] = useState([])
 	const [arrayAdm, setArrayAdm] = useState([])
     const [cnpjBusca, setCnpjBusca] = useState(Cookies.get('cnpj'))
-    // const [totalAjustes, setTotalAjustes] = useState(0)
+    const [ajustesTemp, setAjustesTemp] = useState([])
     const [dataBusca, setDataBusca] = useState([new Date(), new Date()])
     const [dataInicialExibicao, setDataInicialExibicao] = useState(new Date().toLocaleDateString('pt-BR'))
     const [dataFinalExibicao, setDataFinalExibicao] = useState(new Date().toLocaleDateString('pt-BR'))
 	
+	useEffect(()=>{
+		setIsDarkTheme(JSON.parse(localStorage.getItem('isDark')))
+	},[])
+
+	useEffect(()=>{
+		async function inicializar(){
+			if(bandeiras.length === 0){
+				await loadBandeiras()
+			}
+      
+			if(grupos.length === 0){
+				setGrupos(JSON.parse(sessionStorage.getItem('grupos')))     
+			}
+      
+			if(adquirentes.length === 0){
+				await loadAdquirentes()
+			}
+		}
+		inicializar()
+	},[])
+
     useEffect(()=>{
 		setAjustes([])
 		setCnpj(Cookies.get('cnpj'))
@@ -72,13 +92,12 @@ const Servicos = () =>{
 	},[cnpj])
 
     useEffect(()=>{
-        async function inicializar(){
-            if(grupos.length === 0){
-            setGrupos(JSON.parse(sessionStorage.getItem('grupos')))       
-            }
-        }
-        inicializar()
-        },[])
+        if(detalhes){
+          setAjustesTemp(loadAjustes(cnpjBusca, dataBusca[0], dataBusca[1]))
+    }
+
+    // se colocar o cookies.get('codigoGrupo') aqui dentro do array de dependencias, ele reload toda vez que troca o grupo
+    },[cnpjBusca])
 
     useEffect(()=>{
         setDataInicial(new Date())
@@ -182,6 +201,8 @@ const Servicos = () =>{
                 setCnpjBusca,
                 dataFinalExibicao,
                 dataInicialExibicao,
+                setCnpjBusca,
+
             }}>
 
             <div className={`appPage ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
