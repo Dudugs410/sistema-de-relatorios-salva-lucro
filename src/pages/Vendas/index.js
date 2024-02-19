@@ -34,14 +34,12 @@ const Vendas = () =>{
     loadAdquirentes,
     vendas,
     loadVendas,
-    returnVendas,
-    dateConvertSearch,
     gerarDados,
     tableData,
     setTotaisGlobalVendas,
     isDarkTheme,
     setIsDarkTheme,
-    detalhes, setDetalhes,
+    detalhes
   } = useContext(AuthContext)
 
   const [totalCredito, setTotalCredito] = useState(0.00)

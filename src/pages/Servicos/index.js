@@ -28,11 +28,9 @@ useEffect(() => {
         loadAjustes,
         ajustes,
         setAjustes,
-        dataInicial, 
         setDataInicial,
         gerarDados,
-		tableData,
-        dataFinal, 		
+		tableData,	
         bandeiras, 
 		loadBandeiras,
         setGrupos,
@@ -40,7 +38,6 @@ useEffect(() => {
 		adquirentes,
 		loadAdquirentes,
         setDataFinal, 
-        dateConvert,
         isDarkTheme,
 		setIsDarkTheme,
         detalhes,
@@ -107,11 +104,9 @@ useEffect(() => {
 
     function handleDateChange(date){
         setDataBusca(date)
-        // console.log(dataBusca)
     }
     
     useEffect(()=>{
-		console.log(dataBusca)
 		if((dataBusca[0] !== undefined) && (dataBusca[1] !== undefined)){
             setDataInicial(dataBusca[0])
             setDataFinal(dataBusca[1])
@@ -209,7 +204,7 @@ useEffect(() => {
                 <div className={`page-servicos-background ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                     <div className={`page-content-servicos ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                         <div className={`servicos-title-container ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                            <h1 className={`servicos-title ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Servicos</h1>
+                            <h1 className={`servicos-title ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Serviços</h1>
                         </div>
                         <hr className="hr-recebimentos"/>
 						{ (detalhes) && (ajustes.length > 0) ? <GerarRelatorio className='export' tableData={tableData} detalhes={detalhes} tipo='servicos'/> : <></> }

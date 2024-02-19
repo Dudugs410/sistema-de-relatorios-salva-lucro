@@ -6,14 +6,12 @@ import './buscarCreditos.scss'
 import { AuthContext } from '../../contexts/auth'
 import { CreditosContext } from '../../pages/Creditos'
 
-import { toast } from 'react-toastify'
 import { ToastContainer } from 'react-toastify'
 
 import '../../styles/global.scss'
 import 'react-toastify/dist/ReactToastify.css'
 import './reactdatepicker.css'
 import Cookies from 'js-cookie'
-import { useCallback } from 'react'
 
 const BuscarClienteCreditos = () => {
 	const [buscou, setBuscou] = useState(false)
@@ -61,13 +59,11 @@ const BuscarClienteCreditos = () => {
 	}
 
 	async function buscar() {
-		console.log(dataBusca[0], dataBusca[1])
 		await loadCreditos(cnpjBusca, converteData(dataBusca[0]), converteData(dataBusca[1]))
 			.then(() =>{
 				if(dataBusca === '' || cnpjBusca === ''){
 					return 0
 				} else {
-					console.log('entrou no else')
 					//adiciono .toLocaleDateString('pt-BR') às datas para que possamos comparar apenas o dia, mes e ano, sem levar em consideração a hora, minuto e segundos
 					if((dataBusca[0].toLocaleDateString('pt-BR') === dataBusca[1].toLocaleDateString('pt-BR'))){
 						alerta(`executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')}`)
@@ -162,7 +158,7 @@ const BuscarClienteCreditos = () => {
 			<div className='search-bar'>
 				<form className={`date-container-vendas ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>       
 					<div className='submit-container select-align'>
-						{ (detalhes) && (creditos.length > 0) ? <button className={`btn btn-secondary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleBusca}>Pesquisar</button>}
+						{ (detalhes) && (creditos.length > 0) ? <button className={`btn btn-secondary btn-global btn-pesquisar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className={`btn btn-primary btn-global btn-pesquisar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleBusca}>Pesquisar</button>}
 					</div>      
 				</form>
 			</div>

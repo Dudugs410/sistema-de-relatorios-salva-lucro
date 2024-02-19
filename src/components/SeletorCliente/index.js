@@ -27,9 +27,7 @@ const SeletorCliente = () => {
 		resetaDashboard,
 		buscou,
 		setBuscou,
-		grupoSelecionado,
 		setGrupoSelecionado,
-		clienteSelecionado,
 		setClienteSelecionado,
 		trocarHeader,
 		setTrocarHeader,
@@ -55,11 +53,6 @@ const SeletorCliente = () => {
 		setSelectedCliLabel('Selecione')
 	},[gruSelecionado])
 
-	/*useEffect(()=>{
-    sessionStorage.setItem('cnpj', cnpj)
-    Cookies.set('cnpj', cnpj)
-    },[cnpj])*/
-
 	function handleCnpj(e){
 		e.preventDefault()
 		if((cliSelecionado === '') || (cliSelecionado ==='selecione') || (cliSelecionado.value === '')){
@@ -67,7 +60,7 @@ const SeletorCliente = () => {
 			return
 		}
 		resetaDashboard()
-		console.log(cliSelecionado.value)
+		//console.log(cliSelecionado.value)
 		if(podeBuscar){
 			resetaSomatorios()
 			setCnpj(cliSelecionado.value)
@@ -132,7 +125,6 @@ const SeletorCliente = () => {
 
 	const handleSelectChangeCLI = (selected) => {
 		setCliSelecionado(selected) // Set cliSelecionado to selected value (CNPJ)
-		console.log('buscou: ', buscou)
 	}
 
 	// clientes
