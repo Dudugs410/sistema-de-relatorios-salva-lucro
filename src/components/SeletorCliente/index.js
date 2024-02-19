@@ -67,6 +67,7 @@ const SeletorCliente = () => {
 			return
 		}
 		resetaDashboard()
+		console.log(cliSelecionado.value)
 		if(podeBuscar){
 			resetaSomatorios()
 			setCnpj(cliSelecionado.value)
@@ -131,6 +132,7 @@ const SeletorCliente = () => {
 
 	const handleSelectChangeCLI = (selected) => {
 		setCliSelecionado(selected) // Set cliSelecionado to selected value (CNPJ)
+		console.log('buscou: ', buscou)
 	}
 
 	// clientes

@@ -274,6 +274,33 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 
 	},[vendasTeste])
 
+	useEffect(() => {
+		if (adquirentesExistentes && adquirentesExistentes.length > 0) {
+			const sortedOptions = adquirentesExistentes.sort((a, b) => a.localeCompare(b)) // Sort options alphabetically by label
+			setAdquirentesExistentes(sortedOptions)
+		}
+	}, [adquirentesExistentes])
+
+	useEffect(() => {
+		if (bandeirasExistentes && bandeirasExistentes.length > 0) {
+			const sortedOptions = bandeirasExistentes.sort((a, b) => a.localeCompare(b)) // Sort options alphabetically by label
+			setBandeirasExistentes(sortedOptions)
+		}
+	}, [bandeirasExistentes])
+
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////
+
+	useEffect(() => {
+		console.log('adquirentes: ', adquirentesExistentes)
+
+	}, [adquirentesExistentes])
+
+	useEffect(() => {
+		console.log('bandeiras: ', bandeirasExistentes)
+
+	}, [bandeirasExistentes])
+
 	// função que altera lista de adquirentes de acordo com a bandeira/adq selecionada, para que o usuário só tenha opções existentes
 	function atualizaADQ(){
 		const adquirentesTemp = []
