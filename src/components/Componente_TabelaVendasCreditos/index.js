@@ -274,6 +274,33 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 
 	},[vendasTeste])
 
+	useEffect(() => {
+		if (adquirentesExistentes && adquirentesExistentes.length > 0) {
+			const sortedOptions = adquirentesExistentes.sort((a, b) => a.localeCompare(b)) // Sort options alphabetically by label
+			setAdquirentesExistentes(sortedOptions)
+		}
+	}, [adquirentesExistentes])
+
+	useEffect(() => {
+		if (bandeirasExistentes && bandeirasExistentes.length > 0) {
+			const sortedOptions = bandeirasExistentes.sort((a, b) => a.localeCompare(b)) // Sort options alphabetically by label
+			setBandeirasExistentes(sortedOptions)
+		}
+	}, [bandeirasExistentes])
+
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////
+
+	useEffect(() => {
+		console.log('adquirentes: ', adquirentesExistentes)
+
+	}, [adquirentesExistentes])
+
+	useEffect(() => {
+		console.log('bandeiras: ', bandeirasExistentes)
+
+	}, [bandeirasExistentes])
+
 	// função que altera lista de adquirentes de acordo com a bandeira/adq selecionada, para que o usuário só tenha opções existentes
 	function atualizaADQ(){
 		const adquirentesTemp = []
@@ -374,7 +401,7 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 		<>
 			<div className='date-container'>
 				<div className='date-column'>
-					<div className='select-card select-align'>
+					<div className='select-card select-align select-align-filtro'>
 						<span className={`span-str ${isDarkTheme ? 'dark-theme' : 'light-theme'}`} style={style}>Adquirente</span>
 						<select className={`${isDarkTheme ? 'dark-theme' : 'light-theme'}`} id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}} style={style}>
 							<option value='' selected>Todas</option>
@@ -385,7 +412,7 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 					</div>
 				</div>
 				<div className='date-column'>
-					<div className='select-card select-align'>
+					<div className='select-card select-align select-align-filtro'>
 						<span className={`span-str ${isDarkTheme ? 'dark-theme' : 'light-theme'}`} style={style}>Bandeira</span>
 						<select className={`${isDarkTheme ? 'dark-theme' : 'light-theme'}`} id='bandeira' value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}} style={style}>
 							<option value='' selected>Todas</option>

@@ -13,19 +13,9 @@ import Cookies from "js-cookie"
 import InstallPWAButton from "../Componente_BotaoPWA"
 
 const Header = () =>{
-    const { cnpj, logout, grupoSelecionado, clienteSelecionado, trocarHeader, setTrocarHeader } = useContext(AuthContext)
-    const [nome, setNome] = useState('')
-    const [email, setEmail] = useState('')
-    const [isChecked, setIsChecked] = useState(localStorage.getItem('isChecked') === 'true')
-    const [headerNome, setHeaderNome] = useState('Selecione o Grupo e Cliente')
-    const [headerCnpj, setHeaderCnpj] = useState('')
+    const { logout } = useContext(AuthContext)
 
-    useEffect(()=>{
-        if(Cookies.get('headerNome') == undefined){
-            setHeaderNome(decodeURIComponent(Cookies.get('HeaderNome')))
-            setHeaderCnpj(Cookies.get('cnpj'))
-        }
-    },[])
+    const [isChecked, setIsChecked] = useState(localStorage.getItem('isChecked') === 'true')
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -59,39 +49,8 @@ const Header = () =>{
 /////////////////////////////////////////////////////////////////////////////
 
     useEffect(()=>{
-        setNome(JSON.parse(sessionStorage.getItem('userData')).NOME)
-        setEmail(JSON.parse(sessionStorage.getItem('userData')).EMAIL)
-
-        setHeaderNome(Cookies.get('headerNome'))
-        setHeaderCnpj(Cookies.get('headerCnpj'))
-
         setIsDarkTheme(JSON.parse(localStorage.getItem('isDark')))
     },[])
-
-    useEffect(()=>{
-        if(cnpj === 'todos'){
-            if(grupoSelecionado.label !== '-'){
-                setHeaderNome(grupoSelecionado.label)
-                setHeaderCnpj('Todas as Filiais')
-                Cookies.set('headerNome', grupoSelecionado.label)
-                Cookies.set('headerCnpj', 'Todas as Filiais')
-            }
-        } else {
-            if(grupoSelecionado.label !== '-'){
-                setHeaderNome(clienteSelecionado.label)
-                setHeaderCnpj(clienteSelecionado.value)
-                Cookies.set('headerNome', clienteSelecionado.label)
-                Cookies.set('headerCnpj', clienteSelecionado.value)
-            }
-        }
-    },[trocarHeader])
-
-    useEffect(()=>{
-        if(headerNome === 'Selecione o Grupo e o Cliente'){
-            setHeaderCnpj('')
-            Cookies.set('headerCnpj', '')
-        }
-    },[headerNome])
 
     ////////////////////////////////////////////////////////////////////////////////////
     
@@ -147,13 +106,6 @@ const Header = () =>{
                     </div>
                     <div className="header-info-wrapper px-4 py-3" >
                         <div className='navbar-customer-wrapper me-2 text-truncate'>
-                            <div className='navbar-customer '>
-                                <span className="d-inline-block">{headerNome === (undefined || '-' || '') ? 'Selecione o Grupo e o Cliente' : headerNome}</span>
-                                <span>{ headerNome === undefined ? '' : headerCnpj }</span>
-                            </div>
-                            <div className='navbar-customer'>
-                                <span className='client-name pe-2'>{`${nome}`}</span>
-                            </div>              
                         </div>
                         <div className='btn-container'>
                             <button type='button' className='btn btn-outline-danger px-2 py-1' onClick={logout}>Sair</button> {/* <FiPower color="#dc3545" size={24}/> */}

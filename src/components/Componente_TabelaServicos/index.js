@@ -80,6 +80,7 @@ const TabelaServicos = ({ array, tipo }) => {
 		setVendasArray(array)
 
 	},[array])
+
 	useEffect(()=>{
 		if(vendasExibicao.length > 0){
 			// gerarDados(vendasExibicao)
@@ -155,6 +156,20 @@ const TabelaServicos = ({ array, tipo }) => {
 			setBandeirasExistentes(todasBandeiras)
 		}
 	}
+
+	useEffect(() => {
+		if (adquirentesExistentes && adquirentesExistentes.length > 0) {
+			const sortedOptions = adquirentesExistentes.sort((a, b) => a.localeCompare(b)) // Sort options alphabetically by label
+			setAdquirentesExistentes(sortedOptions)
+		}
+	}, [adquirentesExistentes])
+
+	useEffect(() => {
+		if (bandeirasExistentes && bandeirasExistentes.length > 0) {
+			const sortedOptions = bandeirasExistentes.sort((a, b) => a.localeCompare(b)) // Sort options alphabetically by label
+			setBandeirasExistentes(sortedOptions)
+		}
+	}, [bandeirasExistentes])
 
 	useEffect(()=>{
 		if(adquirentesExistentes.length > 0 && bandeirasExistentes.length > 0){
@@ -237,12 +252,12 @@ const TabelaServicos = ({ array, tipo }) => {
 					<thead>
 						<tr className={`det-tr-top-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
 							<th className='det-th-global'scope="col">cnpj</th>
-							<th className='det-th-global'scope="col">Razão Social</th>
-							<th className='det-th-global'scope="col">Codigo do Estabelecimento</th>
 							<th className='det-th-global'scope="col">Data</th>
 							<th className='det-th-global'scope="col">Adquirente</th>
 							<th className='det-th-global'scope="col">Serviço</th>
 							<th className='det-th-global'scope="col">Valor</th>
+							{/* <th className='det-th-global'scope="col">Codigo do Estabelecimento</th> */}
+							<th className='det-th-global'scope="col">Razão Social</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -251,12 +266,12 @@ const TabelaServicos = ({ array, tipo }) => {
 								return(
 									<tr key={index} className={`det-tr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}  >
 										<td className='det-td-vendas-global'data-label="cnpj">{venda.cnpj}</td>
-										<td className='det-td-vendas-global'data-label="Razão Social">{venda.razao_social}</td>
-										<td className='det-td-vendas-global'data-label="Código do Estabelecimento">{venda.codigo_estabelecimento}</td>
 										<td className='det-td-vendas-global'data-label="Data">{dateConvert(venda.data)}</td>
 										<td className='det-td-vendas-global'data-label="Adquirente">{venda.nome_adquirente}</td>
 										<td className='det-td-vendas-global'data-label="Serviço">{venda.descricao}</td>
 										<td className='det-td-vendas-global'data-label="Valor"><span className='red-global'>{Number(venda.valor.toFixed(2)).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
+										{/* <td className='det-td-vendas-global'data-label="Código do Estabelecimento">{venda.codigo_estabelecimento}</td> */}
+										<td className='det-td-vendas-global'data-label="Razão Social">{venda.razao_social}</td>
 									</tr>
 								)
 							}

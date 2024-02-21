@@ -84,6 +84,9 @@ function AuthProvider({ children }){
 	const [showErrorMessage, setShowErrorMessage] = useState(false)
 	const [trocarHeader, setTrocarHeader] = useState(false)
 
+	const [textoExport, setTextoExport] = useState(Cookies.get('textoExport'))
+
+
 	const navigate = useNavigate()
 
 	useEffect(() =>{
@@ -287,6 +290,7 @@ function AuthProvider({ children }){
 	function resetaDashboard(){
 		setVendas([])
 		setCreditos([])
+		setAjustes([]) // adicionando aqui, reseta para o calendário quando troca o cliente.
 		setRecebimentos([])
 		setVendas([])
 		setVendasDash([])
@@ -397,7 +401,7 @@ function AuthProvider({ children }){
 		}
 		setLoading(true)
 		try {
-			if(cnpj === 'todos'){
+			if(cnpj === ('todos' || 'TODOS')){
 				let params = {
 					datainicial: dataInicial,
 					datafinal: dataFinal,
@@ -490,7 +494,7 @@ function AuthProvider({ children }){
 		console.log('parametros: ', cnpj, dataInicial, dataFinal)
 
 		try {
-			if(cnpj === 'todos'){
+			if(cnpj === ('todos' || 'TODOS')){
 				const params = {
 					dataInicial: dataInicial,
 					dataFinal: dataFinal,
@@ -649,9 +653,12 @@ function AuthProvider({ children }){
 	//Ajustes
 
 	async function loadAjustes(cnpj, dataInicial, dataFinal){
+		if((dataInicial === '' || undefined) || (cnpj === '' || undefined)){
+			return 0
+		}
 		setLoading(true)
 		try {
-			if(cnpj === 'todos'){
+			if(cnpj === ('todos' || 'TODOS')){
 				let params = {
 					dataInicial: (dataInicial),
 					dataFinal: (dataFinal),
@@ -671,30 +678,33 @@ function AuthProvider({ children }){
 				//console.log('response data ajustes', response.data)
 				setAjustes(response.data)
 				setLoading(false)
+				setBuscou(false)
 				return response.data
 
 			} else {
-				let params = {
+				const params = {
 					cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
 					dataInicial: dataInicial,
-					dataFinal: dataFinal
+					dataFinal: dataFinal,
 				}
     
-				let config = {
-					headers: { 
-						'Content-Type': 'application/json', 
-						'Authorization': `Bearer ${Cookies.get('token')}`
+				const config = {
+					headers: {
+						'Content-Type': 'application/json',
+						'Authorization': `Bearer ${Cookies.get('token')}`,
 					},
-					params: params
+					params,
 				}
 				const response = await api.get('ajustes', config)
 				setAjustes(response.data)
 				// const recebimentosData = response.data
 				setLoading(false)
+				setBuscou(false)
 				return response.data
 			}
 		} catch (error) {
 			console.log(error)
+			setBuscou(false)
 			setLoading(false)
 		}
 	}
@@ -767,7 +777,7 @@ function AuthProvider({ children }){
 		try {
 			setLoading(true)
 
-			if(cnpj === 'todos'){
+			if(cnpj === ('todos' || 'TODOS')){
 				let params = {
 					datainicial: datainicial,
 					datafinal: datafinal,
@@ -829,7 +839,7 @@ function AuthProvider({ children }){
 		try {
 			setLoading(true)
 
-			if(cnpj === 'todos'){
+			if(cnpj === ('todos' || 'TODOS')){
 				let params = {
 					datainicial: datainicial,
 					datafinal: dataFinal,
@@ -895,7 +905,7 @@ function AuthProvider({ children }){
 		try {
 			setLoading(true)
 
-			if(cnpj === 'todos'){
+			if(cnpj === ('todos' || 'TODOS')){
 				let params = {
 					dataInicial: dataInicial,
 					dataFinal: dataFinal,
@@ -947,7 +957,7 @@ function AuthProvider({ children }){
 	async function returnTotalDia(cnpj, data) {
 		setLoading(true)
 		try {
-			if(cnpj === 'todos'){
+			if(cnpj === ('todos' || 'TODOS')){
 
 				let params = {
 					codigoGrupo: Cookies.get('codigoGrupo'),
@@ -1272,7 +1282,8 @@ function AuthProvider({ children }){
 				grupoSelecionado, setGrupoSelecionado,
 				clienteSelecionado, setClienteSelecionado,
 				trocarHeader, setTrocarHeader,
-				detalhes, setDetalhes
+				detalhes, setDetalhes,
+				textoExport, setTextoExport,
 			}}
 		>
 			{children}

@@ -34,14 +34,12 @@ const Vendas = () =>{
     loadAdquirentes,
     vendas,
     loadVendas,
-    returnVendas,
-    dateConvertSearch,
     gerarDados,
     tableData,
     setTotaisGlobalVendas,
     isDarkTheme,
     setIsDarkTheme,
-    detalhes, setDetalhes,
+    detalhes
   } = useContext(AuthContext)
 
   const [totalCredito, setTotalCredito] = useState(0.00)
@@ -92,10 +90,6 @@ const Vendas = () =>{
     setTotalVoucher(0.00)
     setTotalLiquido(0.00)
     setTotaisGlobalVendas({debito: 0, credito: 0, voucher: 0, liquido: 0})
-  },[])
-
-  useEffect(()=>{
-    setCnpj(Cookies.get('cnpj'))
   },[])
 
   useEffect(()=>{

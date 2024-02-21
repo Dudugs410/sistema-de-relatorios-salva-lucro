@@ -6,14 +6,12 @@ import './buscarServicos.scss'
 import { AuthContext } from '../../contexts/auth'
 import { ServicosContext } from '../../pages/Servicos'
 
-import { toast } from 'react-toastify'
 import { ToastContainer } from 'react-toastify'
 
 import '../../styles/global.scss'
 import 'react-toastify/dist/ReactToastify.css'
 import './reactdatepicker.css'
 import Cookies from 'js-cookie'
-import { useCallback } from 'react'
 
 const BuscarClienteServicos = () => {
 	const [buscou, setBuscou] = useState(false)
@@ -31,40 +29,21 @@ const BuscarClienteServicos = () => {
 		detalhes,
 		setDetalhes,
 		gerarDados,
+		alerta,
 	} = useContext(AuthContext)
 
 	const {
-		dataBusca,		
-		setDataBusca, 
+		dataBusca,		 
 		cnpjBusca,
 		setCnpjBusca,
 	} = useContext(ServicosContext)
-    
-	// useEffect(()=>{
-	// 	console.log('Detalhes: ',detalhes)
-	// },[detalhes])
-
     
 	useEffect(()=>{
 		setCnpj(Cookies.get('cnpj'))
 		setCnpjBusca(Cookies.get('cnpj'))
 	},[])
-
-	const alerta = useCallback((text) => {
-		toast.info(text, {
-			position: 'top-center',
-			autoClose: 5000,
-			hideProgressBar: true,
-			closeOnClick: true,
-			pauseOnHover: true,
-			draggable: true,
-			progress: undefined,
-			theme: 'light',
-		})
-	}, [])
-
+    
 	async function handleBusca(e){
-		console.log('BuscarClienteServicos -> handleBusca()')
 		e.preventDefault()
 		setClicouPesquisar(true)
 		await buscar()
@@ -73,12 +52,12 @@ const BuscarClienteServicos = () => {
 	}
 	
 	async function buscar() {
+		console.log('Parametros da busca: ', cnpjBusca, dataBusca[0], dataBusca[1])
 		await loadAjustes(cnpjBusca, dataBusca[0], dataBusca[1])
 			.then(() =>{
 				if(dataBusca === '' || cnpjBusca === ''){
 					return 0
 				} else {
-					console.log('entrou no else')
 					//adiciono .toLocaleDateString('pt-BR') às datas para que possamos comparar apenas o dia, mes e ano, sem levar em consideração a hora, minuto e segundos
 					if((dataBusca[0].toLocaleDateString('pt-BR') === dataBusca[1].toLocaleDateString('pt-BR'))){
 						alerta(`executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')}`)
@@ -90,7 +69,6 @@ const BuscarClienteServicos = () => {
 					}
 
 					if(ajustes.length === 0){
-						console.log('buscar() -> ajustes: ', ajustes)
 						setDetalhes(false)
 						setClicouPesquisar(false)
 						
@@ -130,7 +108,6 @@ const BuscarClienteServicos = () => {
 	},[alerta, setDetalhes, arrayDados])
 
 	useEffect(()=>{
-		// console.log('buscou: ', buscou)
 		if(buscou === true){
 			if((arrayDadosRef === null) || (arrayDadosRef.length === 0)){
 				alertaRef.current('não existem vendas para a data selecionada')
@@ -170,7 +147,7 @@ const BuscarClienteServicos = () => {
 			<div className='search-bar'>
 				<form className={`date-container-vendas ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>       
 					<div className='submit-container select-align'>
-						{ (detalhes) && (ajustes > 0) ? <button className={`btn btn-secondary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleBusca}>Pesquisar</button>}
+						{ (detalhes) && (ajustes.length > 0) ? <button className={`btn btn-secondary btn-global btn-pesquisar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className={`btn btn-primary btn-global btn-pesquisar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleBusca}>Pesquisar</button>}
 					</div>      
 				</form>
 			</div>

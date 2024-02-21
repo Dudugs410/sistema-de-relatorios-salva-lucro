@@ -22,7 +22,6 @@ const Creditos = () =>{
 
 	const {
 		cnpj,
-		setCnpj,
 		bandeiras, 
 		loadBandeiras,
 		grupos,
@@ -42,7 +41,6 @@ const Creditos = () =>{
 
 	useEffect(()=>{
 		setCreditos([])
-		setCnpj(Cookies.get('cnpj'))
 	},[])
 
 	const [tipo, setTipo] = useState('creditos')
@@ -93,10 +91,6 @@ const Creditos = () =>{
 		setTotalLiquido(0.00)
 		setTotaisGlobal({debito: 0, credito: 0, voucher: 0, liquido: 0})
 		setTotaisGlobalCreditos({debito: 0, credito: 0, voucher: 0, liquido: 0})
-	},[])
-
-	useEffect(()=>{
-		setCnpj(Cookies.get('cnpj'))
 	},[])
 	
 	useEffect(()=>{

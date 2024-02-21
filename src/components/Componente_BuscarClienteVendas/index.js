@@ -14,17 +14,16 @@ import 'react-toastify/dist/ReactToastify.css'
 import './reactdatepicker.css'
 import Cookies from 'js-cookie'
 import { useCallback } from 'react'
-
+                                                                                                                                       
 const BuscarClienteVendas = () => {
 	const [buscou, setBuscou] = useState(false)
 	const [arrayDados, setArrayDados] = useState([])
 	const [clicouPesquisar, setClicouPesquisar] = useState(false)
 
-	const { 
-		setCnpj,  
+	const {
+		setCnpj,
 		setLoading,
 		loadVendas,
-		dateConvertSearch,
 		setTotaisGlobal,
 		isDarkTheme,
 		vendas,
@@ -180,8 +179,8 @@ const BuscarClienteVendas = () => {
 			<div className='search-bar'>
 				<form className={`date-container-vendas ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>       
 					<div className='submit-container select-align'>
-						{ (detalhes) && (vendas.length > 0) ? <button className={`btn btn-secondary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleBusca}>Pesquisar</button>}
-					</div>      
+						{ (detalhes) && (vendas.length > 0) ? <button className={`btn btn-secondary btn-global btn-pesquisar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className={`btn btn-primary btn-global btn-pesquisar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleBusca}>Pesquisar</button>}
+					</div>
 				</form>
 			</div>
 		</>
