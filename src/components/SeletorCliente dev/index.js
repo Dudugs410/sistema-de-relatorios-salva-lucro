@@ -50,12 +50,13 @@ const SeletorClienteDev = () => {
 		setPodeBuscar(Cookies.get('podeBuscar'))
 		console.log(Cookies.get('textoExport'))
 		setTextoExport(Cookies.get('textoExport'))
-	
 	},[])
 
 	useEffect(()=>{
 		console.log('cnpj: ', cnpj)
-		Cookies.set('cnpj', cnpj)
+		if((cnpj !== '') || (cnpj === 'nenhum')){
+			Cookies.set('cnpj', cnpj)
+		}
 	},[cnpj])
 
 	useEffect(() => {
