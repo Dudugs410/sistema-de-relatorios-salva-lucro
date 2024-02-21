@@ -10,19 +10,19 @@ import Cookies from 'js-cookie'
 import 'react-toastify/dist/ReactToastify.css'
 import './Seletor.scss'
 
-const SeletorCliente = () => {
+const SeletorClienteDev = () => {
 	const { 
 		gruSelecionado, 
-		setGruSelecionado, 
-		listaClientes, 
-		setListaClientes, 
-		setGrupos, 
-		resetaSomatorios, 
-		alerta, 
+		setGruSelecionado,
+		listaClientes,
+		setListaClientes,
+		setGrupos,
+		resetaSomatorios,
+		alerta,
 		isDarkTheme,
 		grupos,
-		cnpj, 
-		setCnpj, 
+		cnpj,
+		setCnpj,
 		setInicializouAux,
 		resetaDashboard,
 		buscou,
@@ -31,7 +31,13 @@ const SeletorCliente = () => {
 		setClienteSelecionado,
 		trocarHeader,
 		setTrocarHeader,
+		textoExport,
+		setTextoExport,
+		setDetalhes,
 	} = useContext(AuthContext)
+
+	const [grupoTeste, setGrupoTeste] = useState({ value: 'selecione', label: 'Selecione' })
+	const [clienteTeste, setClienteTeste] = useState({ value: 'selecione', label: 'Selecione' })
 
 	const [cliSelecionado, setCliSelecionado] = useState('')
 	const [selectedCliLabel, setSelectedCliLabel] = useState('Selecione')
@@ -42,16 +48,48 @@ const SeletorCliente = () => {
 		setCnpj(sessionStorage.getItem('cnpj'))
 		setGrupos(JSON.parse(sessionStorage.getItem('grupos')))
 		setPodeBuscar(Cookies.get('podeBuscar'))
+		console.log(Cookies.get('textoExport'))
+		setTextoExport(Cookies.get('textoExport'))
 	
 	},[])
 
 	useEffect(()=>{
-		const grupoObj = grupos.find(item => item.CODIGOGRUPO === Number(gruSelecionado.value))
+		console.log('cnpj: ', cnpj)
+		Cookies.set('cnpj', cnpj)
+	},[cnpj])
+
+	useEffect(() => {
+		if(Cookies.get('grupoTeste')){
+			const savedGrupo = JSON.parse(Cookies.get('grupoTeste'));
+			if (savedGrupo) {
+				setGrupoTeste({ value: savedGrupo.value, label: savedGrupo.label });
+			  }
+		}
+		
+		if(Cookies.get('clienteTeste')){
+			const savedCliente = JSON.parse(Cookies.get('clienteTeste'));
+			if (savedCliente) {
+			  setClienteTeste({ value: savedCliente.value, label: savedCliente.label });
+			}
+		}
+	}, []);
+
+	useEffect(()=>{
+		const grupoObj = grupos.find(item => item.CODIGOGRUPO === Number(grupoTeste.value))
 		let cli = grupoObj ? grupoObj.CLIENTES : []
 		setListaClientes(cli)
 		setListaCli([])
+		console.log(grupoTeste.label, decodeURIComponent(Cookies.get('ultimoGrupoSelecionado')))
+		if(grupoTeste.label !== decodeURIComponent(Cookies.get('ultimoGrupoSelecionado'))){
+			setClienteTeste({ value: 'selecione', label: 'Selecione' })
+		} else {
+			const savedCliente = JSON.parse(Cookies.get('clienteTeste'))
+			setClienteTeste({ value: savedCliente.value, label: savedCliente.label })
+		}
 		setSelectedCliLabel('Selecione')
-	},[gruSelecionado])
+		setCnpj('nenhum')
+		setDetalhes(false)
+	},[grupoTeste])
 
 	function handleCnpj(e){
 		e.preventDefault()
@@ -163,7 +201,66 @@ const SeletorCliente = () => {
 		Cookies.set('podeBuscar', podeBuscar)
 	},[podeBuscar])
 
+	useEffect(()=>{
+		console.log('grupo selecionado: ', grupoTeste)
+		setGrupoSelecionado(grupoTeste.value)
+		sessionStorage.setItem('codigoGrupo', grupoTeste.value)
+		Cookies.set('codigoGrupo', grupoTeste.value)
+		Cookies.set('nomeHeader', grupoTeste.label)
+	},[grupoTeste])
 
+	useEffect(()=>{
+		console.log('cliente selecionado: ', clienteTeste)
+		setClienteSelecionado(clienteTeste.value)
+		Cookies.set('filialHeader', clienteTeste.label)
+	},[clienteTeste])
+
+	const handleGrupoChange = selectedOption => {
+		setGrupoTeste(selectedOption);
+		// Save to cookies
+		Cookies.set('grupoTeste', JSON.stringify(selectedOption));
+		setClienteSelecionado('nenhum')
+		setCnpj('nenhum')
+	  };
+	
+	const handleClienteChange = selectedOption => {
+		console.log(podeBuscar)
+		setClienteTeste(selectedOption)
+		Cookies.set('ultimoGrupoSelecionado', grupoTeste.label)
+		// Save to cookies
+		Cookies.set('clienteTeste', JSON.stringify(selectedOption))
+		resetaDashboard()
+		if(podeBuscar){
+			resetaSomatorios()
+			console.log('prestes a setar o cnpj...')
+			setCnpj(selectedOption.value)
+			setInicializouAux(false)
+			sessionStorage.setItem('inicializou', false)
+			sessionStorage.setItem('codigoGrupo', grupoTeste.value)
+			Cookies.set('cnpj', selectedOption.value)
+			setCodigoGrupo(grupoTeste.value)
+			setBuscou(true)
+			setTrocarHeader(!trocarHeader)
+		}
+
+		if(selectedOption.label === 'TODOS'){
+			setTextoExport(grupoTeste.label + ' - todas filiais')
+		} else {
+			setTextoExport(selectedOption.label)
+
+		}
+	}
+
+	useEffect(()=>{
+		setTextoExport(Cookies.get('textoExport'))
+	},[])
+
+	useEffect(()=>{
+		if(textoExport !== undefined){
+			Cookies.set('textoExport', textoExport)
+		}
+	},[textoExport])
+	
 	return(
 		<>
 			{ grupos === null ? <></> : 
@@ -187,11 +284,10 @@ const SeletorCliente = () => {
 									<div className='select-card-seletor'>
 										<span>Grupo</span>
 										<Select
-											className=""
+											className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
 											options={gruposFiltrado}
-											onChange={handleSelectChangeGrupo}
-											value={gruposFiltrado.value}
-											placeholder="Selecione ou digite para filtrar"
+											onChange={handleGrupoChange}
+											value={grupoTeste}
 										/>
 									</div>
 								</div>
@@ -203,11 +299,8 @@ const SeletorCliente = () => {
 											<Select
 												className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
 												options={listaCli}
-												onChange={handleSelectChangeCLI}
-												value={listaCli.CNPJ}
-												placeholder="Selecione o Cliente"
-												defaultValue={selectedCliLabel}
-												key={gruSelecionado ? gruSelecionado.value : 'default'}
+												onChange={handleClienteChange}
+												value={clienteTeste}
 											/>
 										) : (
 											<Select
@@ -222,7 +315,7 @@ const SeletorCliente = () => {
 								</div>
 							</div>
 							<div className="select-btn-seletor">
-								<button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleCnpj} disabled={podeBuscar === false}>Selecionar</button>
+								
 							</div>
 						</form>
 					</div>
@@ -232,4 +325,4 @@ const SeletorCliente = () => {
 	)
 }
 
-export default SeletorCliente
+export default SeletorClienteDev

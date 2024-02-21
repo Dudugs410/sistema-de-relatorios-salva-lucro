@@ -6,14 +6,12 @@ import './buscarServicos.scss'
 import { AuthContext } from '../../contexts/auth'
 import { ServicosContext } from '../../pages/Servicos'
 
-import { toast } from 'react-toastify'
 import { ToastContainer } from 'react-toastify'
 
 import '../../styles/global.scss'
 import 'react-toastify/dist/ReactToastify.css'
 import './reactdatepicker.css'
 import Cookies from 'js-cookie'
-import { useCallback } from 'react'
 
 const BuscarClienteServicos = () => {
 	const [buscou, setBuscou] = useState(false)
@@ -35,8 +33,7 @@ const BuscarClienteServicos = () => {
 	} = useContext(AuthContext)
 
 	const {
-		dataBusca,		
-		setDataBusca, 
+		dataBusca,		 
 		cnpjBusca,
 		setCnpjBusca,
 	} = useContext(ServicosContext)
@@ -45,14 +42,8 @@ const BuscarClienteServicos = () => {
 		setCnpj(Cookies.get('cnpj'))
 		setCnpjBusca(Cookies.get('cnpj'))
 	},[])
-
-	useEffect(()=>{
-		console.log('cnpj busca', cnpjBusca)
-	},[cnpjBusca])
     
-
 	async function handleBusca(e){
-		console.log('BuscarClienteServicos -> handleBusca()')
 		e.preventDefault()
 		setClicouPesquisar(true)
 		await buscar()
@@ -61,6 +52,7 @@ const BuscarClienteServicos = () => {
 	}
 	
 	async function buscar() {
+		console.log('Parametros da busca: ', cnpjBusca, dataBusca[0], dataBusca[1])
 		await loadAjustes(cnpjBusca, dataBusca[0], dataBusca[1])
 			.then(() =>{
 				if(dataBusca === '' || cnpjBusca === ''){
@@ -155,7 +147,7 @@ const BuscarClienteServicos = () => {
 			<div className='search-bar'>
 				<form className={`date-container-vendas ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>       
 					<div className='submit-container select-align'>
-						{ (detalhes) && (ajustes.length > 0) ? <button className={`btn btn-secondary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleBusca}>Pesquisar</button>}
+						{ (detalhes) && (ajustes.length > 0) ? <button className={`btn btn-secondary btn-global btn-pesquisar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className={`btn btn-primary btn-global btn-pesquisar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleBusca}>Pesquisar</button>}
 					</div>      
 				</form>
 			</div>

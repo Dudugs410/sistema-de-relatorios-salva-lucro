@@ -84,6 +84,9 @@ function AuthProvider({ children }){
 	const [showErrorMessage, setShowErrorMessage] = useState(false)
 	const [trocarHeader, setTrocarHeader] = useState(false)
 
+	const [textoExport, setTextoExport] = useState(Cookies.get('textoExport'))
+
+
 	const navigate = useNavigate()
 
 	useEffect(() =>{
@@ -398,7 +401,7 @@ function AuthProvider({ children }){
 		}
 		setLoading(true)
 		try {
-			if(cnpj === 'todos'){
+			if(cnpj === ('todos' || 'TODOS')){
 				let params = {
 					datainicial: dataInicial,
 					datafinal: dataFinal,
@@ -491,7 +494,7 @@ function AuthProvider({ children }){
 		console.log('parametros: ', cnpj, dataInicial, dataFinal)
 
 		try {
-			if(cnpj === 'todos'){
+			if(cnpj === ('todos' || 'TODOS')){
 				const params = {
 					dataInicial: dataInicial,
 					dataFinal: dataFinal,
@@ -655,7 +658,7 @@ function AuthProvider({ children }){
 		}
 		setLoading(true)
 		try {
-			if(cnpj === 'todos'){
+			if(cnpj === ('todos' || 'TODOS')){
 				let params = {
 					dataInicial: (dataInicial),
 					dataFinal: (dataFinal),
@@ -774,7 +777,7 @@ function AuthProvider({ children }){
 		try {
 			setLoading(true)
 
-			if(cnpj === 'todos'){
+			if(cnpj === ('todos' || 'TODOS')){
 				let params = {
 					datainicial: datainicial,
 					datafinal: datafinal,
@@ -836,7 +839,7 @@ function AuthProvider({ children }){
 		try {
 			setLoading(true)
 
-			if(cnpj === 'todos'){
+			if(cnpj === ('todos' || 'TODOS')){
 				let params = {
 					datainicial: datainicial,
 					datafinal: dataFinal,
@@ -902,7 +905,7 @@ function AuthProvider({ children }){
 		try {
 			setLoading(true)
 
-			if(cnpj === 'todos'){
+			if(cnpj === ('todos' || 'TODOS')){
 				let params = {
 					dataInicial: dataInicial,
 					dataFinal: dataFinal,
@@ -954,7 +957,7 @@ function AuthProvider({ children }){
 	async function returnTotalDia(cnpj, data) {
 		setLoading(true)
 		try {
-			if(cnpj === 'todos'){
+			if(cnpj === ('todos' || 'TODOS')){
 
 				let params = {
 					codigoGrupo: Cookies.get('codigoGrupo'),
@@ -1279,7 +1282,8 @@ function AuthProvider({ children }){
 				grupoSelecionado, setGrupoSelecionado,
 				clienteSelecionado, setClienteSelecionado,
 				trocarHeader, setTrocarHeader,
-				detalhes, setDetalhes
+				detalhes, setDetalhes,
+				textoExport, setTextoExport,
 			}}
 		>
 			{children}

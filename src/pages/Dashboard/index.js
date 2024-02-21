@@ -487,7 +487,7 @@ const Dashboard = () => {
 						vendas: []
 					}
 					temp.push(novoObj)
-				}else{
+				} else {
 					let novoObj = {
 						nomeAdquirente: venda.adquirente.nomeAdquirente,
 						total: venda.valorBruto,
