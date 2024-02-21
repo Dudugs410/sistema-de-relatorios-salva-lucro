@@ -308,7 +308,7 @@ const Dashboard = () => {
 
 	useEffect(()=>{
 		async function inicializar(){
-			if((cnpj !== Cookies.get('ultimoCnpj')) && (cnpj !== '')) {
+			if((cnpj !== Cookies.get('ultimoCnpj')) && ((cnpj !== '') && (cnpj !== 'nenhum'))) {
 				await inicializaVendas4dias()
 				//await inicializaVendas4diasMes()
 				await inicializaVetorVendasMes()
