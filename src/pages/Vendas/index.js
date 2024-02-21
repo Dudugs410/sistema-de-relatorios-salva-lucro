@@ -93,10 +93,6 @@ const Vendas = () =>{
   },[])
 
   useEffect(()=>{
-    setCnpj(Cookies.get('cnpj'))
-  },[])
-
-  useEffect(()=>{
     try {
       if(vendas.length === 0){
         setTotalCredito(0.00)

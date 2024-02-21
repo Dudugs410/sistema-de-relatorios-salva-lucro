@@ -3,6 +3,7 @@ import Footer from "../Footer"
 import SeletorCliente from "../SeletorCliente"
 
 import './layout.css'
+import SeletorClienteDev from "../SeletorCliente dev"
 
 
 function Layout({ children }){
@@ -10,7 +11,7 @@ function Layout({ children }){
         <div className='layout'>
             <div className='appPage'>
                 <Header />
-                <SeletorCliente/>
+                <SeletorClienteDev/>
                 { children }
                 <Footer />
             </div>

@@ -401,7 +401,7 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 		<>
 			<div className='date-container'>
 				<div className='date-column'>
-					<div className='select-card select-align'>
+					<div className='select-card select-align select-align-filtro'>
 						<span className={`span-str ${isDarkTheme ? 'dark-theme' : 'light-theme'}`} style={style}>Adquirente</span>
 						<select className={`${isDarkTheme ? 'dark-theme' : 'light-theme'}`} id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}} style={style}>
 							<option value='' selected>Todas</option>
@@ -412,7 +412,7 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 					</div>
 				</div>
 				<div className='date-column'>
-					<div className='select-card select-align'>
+					<div className='select-card select-align select-align-filtro'>
 						<span className={`span-str ${isDarkTheme ? 'dark-theme' : 'light-theme'}`} style={style}>Bandeira</span>
 						<select className={`${isDarkTheme ? 'dark-theme' : 'light-theme'}`} id='bandeira' value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}} style={style}>
 							<option value='' selected>Todas</option>

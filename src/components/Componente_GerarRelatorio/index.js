@@ -15,17 +15,14 @@ import { AuthContext } from '../../contexts/auth'
 
 export default function GerarRelatorio({tableData, tipo}){
 
-	const { dateConvert } = useContext(AuthContext)
+	const { dateConvert, textoExport, setTextoExport } = useContext(AuthContext)
 	const [tipoRelatorio, setTipoRelatorio] = useState('')
-
-	const [nomeCliente, setNomeCliente] = useState(Cookies.get('headerNome'))
-
 	const [currentDateTime, setCurrentDateTime] = useState('')
 
 	useEffect(() => {
 		const updateDateTime = () => {
 		  const now = new Date()
-		  
+
 		  // Format date components
 		  const day = ('0' + now.getDate()).slice(-2)
 		  const month = ('0' + (now.getMonth() + 1)).slice(-2)
@@ -71,8 +68,6 @@ export default function GerarRelatorio({tableData, tipo}){
 	// EXCEL ////////////////////////////////////////////////////////////
 	
 	const exportToExcel = () => {
-
-		setNomeCliente(Cookies.get('headerNome'))
 
 		if (!tableData || tableData.length === 0) {
 			alert('Sem dados para a exportação.')
@@ -134,7 +129,7 @@ export default function GerarRelatorio({tableData, tipo}){
 			// Generate Excel file
 			workbook.xlsx.writeBuffer()
 				.then((buffer) => {
-					saveExcelFile(buffer, `${tipoRelatorio} - ${nomeCliente} - ${currentDateTime}.xlsx`)
+					saveExcelFile(buffer, `${tipoRelatorio} - ${textoExport} - ${currentDateTime}.xlsx`)
 				})
 				.catch((error) => {
 					console.error('Erro ao gerar arquivo excel: ', error)
@@ -169,7 +164,7 @@ export default function GerarRelatorio({tableData, tipo}){
 			// Generate Excel file
 			workbook.xlsx.writeBuffer()
 			.then((buffer) => {
-				saveExcelFile(buffer, `${tipoRelatorio} - ${nomeCliente} - ${currentDateTime}.xlsx`)
+				saveExcelFile(buffer, `${tipoRelatorio} - ${textoExport} - ${currentDateTime}.xlsx`)
 			})
 			.catch((error) => {
 				console.error('Erro ao gerar arquivo Excel: ', error)
@@ -201,7 +196,7 @@ export default function GerarRelatorio({tableData, tipo}){
 			// Generate Excel file
 			workbook.xlsx.writeBuffer()
 			.then((buffer) => {
-				saveExcelFile(buffer, `${tipoRelatorio} - ${nomeCliente} - ${currentDateTime}.xlsx`)
+				saveExcelFile(buffer, `${tipoRelatorio} - ${textoExport} - ${currentDateTime}.xlsx`)
 			})
 			.catch((error) => {
 				console.error('Erro ao gerar arquivo Excel: ', error)
@@ -225,8 +220,6 @@ export default function GerarRelatorio({tableData, tipo}){
 			alert('Sem dados para exportar')
 			return
 		} else {
-			setNomeCliente(decodeURIComponent(Cookies.get('headerNome')))
-
 			if(tipo === 'vendas'){
 				const columns = ['CNPJ', 'Adquirente', 'Bandeira', 'Produto', 'Subproduto', 'Valor Bruto', 'Valor Líquido', 'Taxa', 'Valor Desconto', 'NSU', 'Data Venda', 'Hora Venda', 'Data Crédito', 'Código Autorização', 'QTD PARC']
 				const rows = tableData.map(rowData => [rowData.cnpj, rowData.adquirente, rowData.bandeira, rowData.produto, rowData.subproduto, `R$ ${rowData.valorBruto}`, `R$ ${rowData.valorLiquido}`, `${rowData.taxa}%`, `R$ ${rowData.valorDesconto}`, rowData.nsu, dateConvert(rowData.dataVenda), rowData.horaVenda, dateConvert(rowData.dataCredito), rowData.codigoAutorizacao, rowData.quantidadeParcelas ])
@@ -271,7 +264,7 @@ export default function GerarRelatorio({tableData, tipo}){
 						const positionX = 310
 						const positionY = 8
 		
-						const text = `${tipoRelatorio} ${nomeCliente}`;
+						const text = `${tipoRelatorio} ${textoExport} - ${currentDateTime.replace(/-/g, '/').replace(/\./g, ':')}`;
 						const textX = 14; // Adjust the X-coordinate as needed
 						const textY = 18; // Adjust the Y-coordinate as needed
 		
@@ -281,7 +274,7 @@ export default function GerarRelatorio({tableData, tipo}){
 					}
 				})
 			
-				doc.save(`${tipoRelatorio} - ${nomeCliente} - ${currentDateTime}.pdf`)
+				doc.save(`${tipoRelatorio} - ${textoExport} - ${currentDateTime}.pdf`)
 			} else if(tipo === 'creditos'){
 				const columns = [ 'CNPJ', 'Adquirente', 'Bandeira', 'Produto', 'Subproduto', 'Data do Crédito', 'Data da Venda', 'ValorBruto', 'Valor Líquido', 'Taxa', 'Valor Desconto', 'NSU', 'Código Autorização', 'Parcela', 'QTD Parc']
 				const rows = tableData.map(rowData => [rowData.cnpj, rowData.adquirente, rowData.bandeira, rowData.produto, rowData.subproduto, dateConvert(rowData.dataCredito), dateConvert(rowData.dataVenda), `R$ ${rowData.valorBruto.toFixed(2)}`, `R$ ${rowData.valorLiquido.toFixed(2)}`, `${rowData.taxa.toFixed(2)}%`, `R$ ${rowData.valorDesconto.toFixed(2)}`, rowData.nsu, rowData.codigoAutorizacao, rowData.parcela, rowData.totalParcelas ])
@@ -326,7 +319,7 @@ export default function GerarRelatorio({tableData, tipo}){
 						const positionX = 310
 						const positionY = 8
 		
-						const text = `${tipoRelatorio} ${nomeCliente}`;
+						const text = `${tipoRelatorio} ${textoExport} - ${currentDateTime.replace(/-/g, '/').replace(/\./g, ':')}`;
 						const textX = 14; // Adjust the X-coordinate as needed
 						const textY = 18; // Adjust the Y-coordinate as needed
 		
@@ -336,7 +329,7 @@ export default function GerarRelatorio({tableData, tipo}){
 					}
 				})
 			
-				doc.save(`${tipoRelatorio} - ${nomeCliente} - ${currentDateTime}.pdf`)
+				doc.save(`${tipoRelatorio} - ${textoExport} - ${currentDateTime}.pdf`)
 			} else if(tipo === 'servicos'){
 				const columns = [ 'CNPJ', 'Razão Social', 'Código do estabelecimento', 'Adquirente', 'Valor', 'Data', 'Descrição']
 				const rows = tableData.map(rowData => [
@@ -384,7 +377,7 @@ export default function GerarRelatorio({tableData, tipo}){
 						const positionX = 310
 						const positionY = 8
 		
-						const text = `${tipoRelatorio} ${nomeCliente}`;
+						const text = `${tipoRelatorio} ${textoExport} - ${currentDateTime.replace(/-/g, '/').replace(/\./g, ':')}`;
 						const textX = 14; // Adjust the X-coordinate as needed
 						const textY = 18; // Adjust the Y-coordinate as needed
 		
@@ -394,7 +387,7 @@ export default function GerarRelatorio({tableData, tipo}){
 					}
 				})
 			
-				doc.save(`${tipoRelatorio} - ${nomeCliente} - ${currentDateTime}.pdf`)
+				doc.save(`${tipoRelatorio} - ${textoExport} - ${currentDateTime}.pdf`)
 			}
 		}
 	}

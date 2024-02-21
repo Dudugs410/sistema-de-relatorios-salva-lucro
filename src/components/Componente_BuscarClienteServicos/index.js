@@ -52,6 +52,7 @@ const BuscarClienteServicos = () => {
 	}
 	
 	async function buscar() {
+		console.log('Parametros da busca: ', cnpjBusca, dataBusca[0], dataBusca[1])
 		await loadAjustes(cnpjBusca, dataBusca[0], dataBusca[1])
 			.then(() =>{
 				if(dataBusca === '' || cnpjBusca === ''){
