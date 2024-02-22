@@ -33,7 +33,6 @@ const SeletorClienteDev = () => {
 		setTrocarHeader,
 		textoExport,
 		setTextoExport,
-		setDetalhes,
 	} = useContext(AuthContext)
 
 	const [grupoTeste, setGrupoTeste] = useState({ value: 'selecione', label: 'Selecione' })
@@ -50,52 +49,23 @@ const SeletorClienteDev = () => {
 		setPodeBuscar(Cookies.get('podeBuscar'))
 		console.log(Cookies.get('textoExport'))
 		setTextoExport(Cookies.get('textoExport'))
+	
 	},[])
-
-	useEffect(()=>{
-		console.log('cnpj: ', cnpj)
-		if((cnpj !== '') || (cnpj === 'nenhum')){
-			Cookies.set('cnpj', cnpj)
-		}
-	},[cnpj])
-
-	useEffect(() => {
-		if(Cookies.get('grupoTeste')){
-			const savedGrupo = JSON.parse(Cookies.get('grupoTeste'));
-			if (savedGrupo) {
-				setGrupoTeste({ value: savedGrupo.value, label: savedGrupo.label });
-			  }
-		}
-		
-		if(Cookies.get('clienteTeste')){
-			const savedCliente = JSON.parse(Cookies.get('clienteTeste'));
-			if (savedCliente) {
-			  setClienteTeste({ value: savedCliente.value, label: savedCliente.label });
-			}
-		}
-	}, []);
 
 	useEffect(()=>{
 		const grupoObj = grupos.find(item => item.CODIGOGRUPO === Number(grupoTeste.value))
 		let cli = grupoObj ? grupoObj.CLIENTES : []
 		setListaClientes(cli)
 		setListaCli([])
-		console.log(grupoTeste.label, decodeURIComponent(Cookies.get('ultimoGrupoSelecionado')))
 		if(grupoTeste.label !== decodeURIComponent(Cookies.get('ultimoGrupoSelecionado'))){
 			setClienteTeste({ value: 'selecione', label: 'Selecione' })
-		} else {
-			const savedCliente = JSON.parse(Cookies.get('clienteTeste'))
-			setClienteTeste({ value: savedCliente.value, label: savedCliente.label })
 		}
 		setSelectedCliLabel('Selecione')
-		setCnpj('nenhum')
-		setDetalhes(false)
+		setGruSelecionado(grupoTeste)
 	},[grupoTeste])
 
-	function handleCnpj(e){
-		e.preventDefault()
+	function handleCnpj(){
 		if((cliSelecionado === '') || (cliSelecionado ==='selecione') || (cliSelecionado.value === '')){
-			alerta('Selecione um cliente válido')
 			return
 		}
 		resetaDashboard()
@@ -121,6 +91,10 @@ const SeletorClienteDev = () => {
 		}
 	},[buscou])
 
+	useEffect(()=>{
+		handleCnpj()
+	},[])
+
 	/// React Select
 
 	// grupos
@@ -145,26 +119,6 @@ const SeletorClienteDev = () => {
 			setGruposFiltrado([])
 		}
 	}, [grupos])
-    
-	const handleSelectChangeGrupo = (selected) => {
-
-		// Set value in sessionStorage
-		sessionStorage.setItem('codigoGrupo', selected.value)
-    
-		// Set value in Cookies
-		Cookies.set('codigoGrupo', selected.value)
-    
-		// Update state with selected value
-		setGruSelecionado(selected)
-		//Cookies.set('gruSelecionado', JSON.stringify(gruSelecionado))
-        
-		// Additional code if needed
-		setCliSelecionado('')
-	}
-
-	const handleSelectChangeCLI = (selected) => {
-		setCliSelecionado(selected) // Set cliSelecionado to selected value (CNPJ)
-	}
 
 	// clientes
 
@@ -202,6 +156,22 @@ const SeletorClienteDev = () => {
 		Cookies.set('podeBuscar', podeBuscar)
 	},[podeBuscar])
 
+	useEffect(() => {
+		if(Cookies.get('grupoTeste')){
+			const savedGrupo = JSON.parse(Cookies.get('grupoTeste'));
+			if (savedGrupo) {
+				setGrupoTeste({ value: savedGrupo.value, label: savedGrupo.label });
+			  }
+		}
+		
+		if(Cookies.get('clienteTeste')){
+			const savedCliente = JSON.parse(Cookies.get('clienteTeste'));
+			if (savedCliente) {
+			  setClienteTeste({ value: savedCliente.value, label: savedCliente.label });
+			}
+		}
+	}, []);
+
 	useEffect(()=>{
 		console.log('grupo selecionado: ', grupoTeste)
 		setGrupoSelecionado(grupoTeste.value)
@@ -214,26 +184,23 @@ const SeletorClienteDev = () => {
 		console.log('cliente selecionado: ', clienteTeste)
 		setClienteSelecionado(clienteTeste.value)
 		Cookies.set('filialHeader', clienteTeste.label)
+		setCliSelecionado(clienteTeste)
 	},[clienteTeste])
 
 	const handleGrupoChange = selectedOption => {
 		setGrupoTeste(selectedOption);
 		// Save to cookies
 		Cookies.set('grupoTeste', JSON.stringify(selectedOption));
-		setClienteSelecionado('nenhum')
-		setCnpj('nenhum')
+		Cookies.set('ultimoGrupoSelecionado', selectedOption.label)
 	  };
 	
 	const handleClienteChange = selectedOption => {
-		console.log(podeBuscar)
 		setClienteTeste(selectedOption)
-		Cookies.set('ultimoGrupoSelecionado', grupoTeste.label)
 		// Save to cookies
 		Cookies.set('clienteTeste', JSON.stringify(selectedOption))
 		resetaDashboard()
 		if(podeBuscar){
 			resetaSomatorios()
-			console.log('prestes a setar o cnpj...')
 			setCnpj(selectedOption.value)
 			setInicializouAux(false)
 			sessionStorage.setItem('inicializou', false)

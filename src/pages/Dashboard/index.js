@@ -308,7 +308,7 @@ const Dashboard = () => {
 
 	useEffect(()=>{
 		async function inicializar(){
-			if((cnpj !== Cookies.get('ultimoCnpj')) && ((cnpj !== '') && (cnpj !== 'nenhum'))) {
+			if((cnpj !== Cookies.get('ultimoCnpj')) && (cnpj !== '')) {
 				await inicializaVendas4dias()
 				//await inicializaVendas4diasMes()
 				await inicializaVetorVendasMes()
@@ -419,43 +419,63 @@ const Dashboard = () => {
 		return sortedArray
 	}
 
-	useEffect(()=>{
-		let temp = []
-			vetorVendasMes.forEach((venda)=>{
-				if(temp.length === 0){
-					let novoObj = {
+	function separaAdm(array, tipo) {
+		let sums = {
+			total: 0
+		};
+		let vendasTemp = []
+	
+		let separatedByAdquirente = [];
+	
+		if(tipo === 'vendas'){
+			array.forEach((venda) => {
+				sums.total += venda.valorBruto;
+				vendasTemp.push(venda)
+		
+				// Find or create entry in separatedByAdquirente
+				let entry = separatedByAdquirente.find(adquirente => adquirente.nomeAdquirente === venda.adquirente.nomeAdquirente);
+				if (!entry) {
+					entry = {
+						id: separatedByAdquirente.length,
 						nomeAdquirente: venda.adquirente.nomeAdquirente,
-						total: venda.valorBruto,
-						id: 0,
+						total: 0,
 						vendas: []
-					}
-					temp.push(novoObj)
-				}else{
-					let novoObj = {
-						nomeAdquirente: venda.adquirente.nomeAdquirente,
-						total: venda.valorBruto,
-						id: 0,
-						vendas: []
-					}
-    
-					if(!(temp.find((objeto) => objeto.nomeAdquirente === venda.adquirente.nomeAdquirente && objeto !== ( undefined || [] )))){
-						novoObj.id = (temp.length)
-						temp.push(novoObj)
-					}
+					};
+					
+					separatedByAdquirente.push(entry);
 				}
-			})
+				entry.vendas.push(vendasTemp)
+				// Update total for this adquirente
+				entry.total += venda.valorBruto;
+			});
+		} else if(tipo === 'creditos'){
+			array.forEach((venda) => {
+				sums.total += venda.valorLiquido;
+				vendasTemp.push(venda)
+		
+				// Find or create entry in separatedByAdquirente
+				let entry = separatedByAdquirente.find(adquirente => adquirente.nomeAdquirente === venda.adquirente.nomeAdquirente);
+				if (!entry) {
+					entry = {
+						id: separatedByAdquirente.length,
+						nomeAdquirente: venda.adquirente.nomeAdquirente,
+						total: 0,
+						vendas: []
+					};
+					
+					separatedByAdquirente.push(entry);
+				}
+				entry.vendas.push(vendasTemp)
+				// Update total for this adquirente
+				entry.total += venda.valorLiquido;
+			});
+		}
 
+		return separatedByAdquirente;
+	}
 
-
-			temp.forEach((adq) => {
-				let vendasAdqTemp = []
-				vetorVendasMes.forEach((venda) => {
-					if(venda.adquirente.nomeAdquirente === adq.nomeAdquirente){
-						vendasAdqTemp.push(venda)
-					}
-				})
-				adq.vendas = vendasAdqTemp
-			})
+	useEffect(()=>{
+		let temp = separaAdm(vetorVendasMes, 'vendas')
 
 		setAdmVendas(sortArray(temp))
 		if(temp.length > 0){
@@ -470,6 +490,7 @@ const Dashboard = () => {
 	},[somatorioVendasMes])
 
 	useEffect(()=>{
+		console.log('admVendas: ', admVendas)
 		setGraficoVendas(carregaGrafico(admVendas))
 		if(admVendasAux.length > 0){
 			setGraficoVendasAux(carregaGrafico(admVendasAux))
@@ -477,40 +498,7 @@ const Dashboard = () => {
 	},[admVendas])
 
 	useEffect(()=>{
-		let temp = []
-			vetorCreditosMes.forEach((venda)=>{
-				if(temp.length === 0){
-					let novoObj = {
-						nomeAdquirente: venda.adquirente.nomeAdquirente,
-						total: venda.valorLiquido,
-						id: 0,
-						vendas: []
-					}
-					temp.push(novoObj)
-				} else {
-					let novoObj = {
-						nomeAdquirente: venda.adquirente.nomeAdquirente,
-						total: venda.valorBruto,
-						id: 0,
-						vendas: []
-					}
-    
-					if(!(temp.find((objeto) => objeto.nomeAdquirente === venda.adquirente.nomeAdquirente && objeto !== ( undefined || [] )))){
-						novoObj.id = (temp.length)
-						temp.push(novoObj)
-					}
-				}
-			})
-
-			temp.forEach((adq) => {
-				let creditosAdqTemp = []
-				vetorCreditosMes.forEach((venda) => {
-					if(venda.adquirente.nomeAdquirente === adq.nomeAdquirente){
-						creditosAdqTemp.push(venda)
-					}
-				})
-				adq.vendas = creditosAdqTemp
-			})
+		let temp = separaAdm(vetorCreditosMes, 'creditos')
 
 		setAdmCreditos(sortArray(temp))
 		if(temp.length > 0){
@@ -519,6 +507,7 @@ const Dashboard = () => {
 	},[vetorCreditosMes])
 
 	useEffect(()=>{
+		console.log('admCreditos: ', admCreditos)
 		setGraficoCreditos(carregaGrafico(admCreditos))
 		if(admCreditosAux.length > 0){
 			setGraficoCreditosAux(carregaGrafico(admCreditosAux))
@@ -536,8 +525,7 @@ const Dashboard = () => {
 	function carregaGrafico(array){
 		let label = []
 		let data = []
-
-
+		
 		array.forEach((posicao) => {
 			const valorTotal = posicao.total
 			const nomeAdq = posicao.nomeAdquirente
