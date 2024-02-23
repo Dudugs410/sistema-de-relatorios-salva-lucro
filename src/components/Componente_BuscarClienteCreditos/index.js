@@ -18,7 +18,7 @@ const BuscarClienteCreditos = () => {
 	const [arrayDados, setArrayDados] = useState([])
 	const [clicouPesquisar, setClicouPesquisar] = useState(false)
 
-	const { 
+	const {
 		setCnpj,  
 		setLoading,
 		loadCreditos, 
