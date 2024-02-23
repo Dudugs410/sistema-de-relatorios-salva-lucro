@@ -1,25 +1,17 @@
 import { Link } from "react-router-dom"
-import { FiMoon, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText } from "react-icons/fi"
+import { FiMoon, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText, FiClipboard } from "react-icons/fi"
 import { AuthContext } from "../../contexts/auth"
 import React, { useContext, useEffect, useState } from "react"
-
-
 import salvaLucroLogoBranco from '../../assets/LogoTopo.png'
-import { gruposStatic } from "../../contexts/static"
-
 import './header.scss'
 import '../../index.scss'
 import Cookies from "js-cookie"
-import InstallPWAButton from "../Componente_BotaoPWA"
+import Relogio from "../Componente_Relogio"
 
 const Header = () =>{
-    const { logout } = useContext(AuthContext)
-
+    const { logout, isDarkTheme, setIsDarkTheme } = useContext(AuthContext)
+    
     const [isChecked, setIsChecked] = useState(localStorage.getItem('isChecked') === 'true')
-
-/////////////////////////////////////////////////////////////////////////////
-
-    const {isDarkTheme, setIsDarkTheme} = useContext(AuthContext)
 
     const handleCheckboxChange = () => {
         const updatedChecked = !isChecked
@@ -71,6 +63,7 @@ const Header = () =>{
             'FiRefreshCcw': FiRefreshCcw,
             'FiTool': FiTool,
             'FiFileText': FiFileText,
+            'FiClipboardSign': FiClipboard,
         }
 
         let arrayOpcoes = []
@@ -106,6 +99,7 @@ const Header = () =>{
                     </div>
                     <div className="header-info-wrapper px-4 py-3" >
                         <div className='navbar-customer-wrapper me-2 text-truncate'>
+                            <Relogio/>
                         </div>
                         <div className='btn-container'>
                             <button type='button' className='btn btn-outline-danger px-2 py-1' onClick={logout}>Sair</button> {/* <FiPower color="#dc3545" size={24}/> */}
