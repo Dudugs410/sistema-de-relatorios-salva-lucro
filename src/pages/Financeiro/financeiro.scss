@@ -1,0 +1,32 @@
+.container-financeiro{
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.select-elements-container{
+    display: flex;
+    justify-content: space-around;
+}
+
+.container-select{
+    display: flex;
+    flex-direction: column;
+    width: 30%;
+}
+
+.btn-container-financeiro{
+    display: flex;
+    align-content: center;
+    flex-wrap: wrap;
+    flex-direction: column;
+}
+
+.form-container-relatorios{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: stretch;
+}

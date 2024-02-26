@@ -142,6 +142,19 @@
     }
 }
 
+.navbar-nav .dropdown-menu{
+    position: relative;
+    z-index: 9999;
+    &.light-theme{
+        background-color: $primary-color-light;
+        border: solid $secondary-color-light 1px;
+    }
+    &.dark-theme{
+        background-color: $primary-color-dark;
+        border: solid $secondary-color-dark 1px;
+    }
+}
+
 .btn-container{ // ??
     align-items: center;
     justify-content: center;
@@ -253,6 +266,92 @@
 //     padding: 0px !important;
 //   }
 
+/* Styles for dropdown menu */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 5px;
+    z-index: 1000; /* Ensure the dropdown menu is above other elements */
+  }
+  
+  .dropdown-menu.show {
+    display: block;
+  }
+  
+  /* Styles for dropdown menu items */
+  .dropdown-item {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    color: inherit;
+    text-decoration: none;
+    /* display: block; */
+    padding: 0;
+    position: relative;
+    z-index: 1000;
+    align-items: stretch;
+    align-content: stretch;
+        &.light-theme{
+            color: white;
+            background-color: $primary-color-light;
+        
+        }
+
+        &.dark-theme{
+            color: white;
+            background-color: $secondary-color-dark;
+
+        }
+  }
+
+  .dropdown-button:hover{
+
+    &.light-theme{
+        color: white;
+        background-color: $secondary-color-light;
+       
+    }
+
+    &.dark-theme{
+        color: white;
+        background-color: $secondary-color-dark;
+
+    }
+    
+  }
+  
+  .dropdown-item:hover {
+    &.light-theme{
+        background-color: $primary-color-light;
+       
+    }
+
+    &.dark-theme{
+        background-color: $primary-color-dark;
+
+    }
+  }
+
+    .navbar-nav .dropdown-menu .dropdown-item {
+        text-decoration: none !important;
+    }
+
+    .ms-1 .mt-2 .mb-auto .li-btn-text{
+        text-decoration: none !important;
+    } 
+
+    a{
+        text-decoration: none !important;
+    }
+
+    .dropdown{
+        position: relative;
+        height: 100%;
+    }
 
 @media screen and (max-width: 869px){
 
@@ -393,11 +492,17 @@
         }
         transition: all, 0.4s;
     }
+
+    
 }
 
 @media only screen and (max-width: 517px) {
     /* esconde texto do navbar em telas pequenas*/
     .li-btn-text{
         display: none;
+    }
+
+    .relatorios-child .li-btn-text {
+        display: inline; // Display Relatórios children text
     }
   }

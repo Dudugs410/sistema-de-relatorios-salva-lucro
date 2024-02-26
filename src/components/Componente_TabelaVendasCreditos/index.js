@@ -423,6 +423,7 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 					</div>
 				</div>
 			</div>
+			<hr className='hr-global'/>
 			<div className='dropShadow vendas-view'>
 				<div className={`table-wrapper ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
 				{ tipo === 'vendas' ?
@@ -444,6 +445,7 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 								<th className='det-th-global'scope="col">Data do Crédito</th>
 								<th className='det-th-global'scope="col">Autorização</th>
 								<th className='det-th-global'scope="col">QTD Parcelas</th>
+								<th className='det-th-global'scope="col">TID</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -465,6 +467,7 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 										<td className='det-td-vendas-global'data-label="Data do Crédito">{dateConvert(venda.dataCredito)}</td>
 										<td className='det-td-vendas-global'data-label="Autorização">{venda.codigoAutorizacao}</td>
 										<td className='det-td-vendas-global'data-label="QTD Parcelas">{venda.quantidadeParcelas}</td>
+										<td className='det-td-vendas-global'data-label="TID">{venda.tid}</td>
 									</tr>
 								)
 							})}
@@ -526,7 +529,7 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 					 }
 				</div>
 			</div>
-			<hr className="hr-recebimentos"/>
+			<hr className='hr-global'/>
 			{vendasExibicao.length > itemsPerPage && (
 				<div className="container-btn-pagina">
 					<button
@@ -568,6 +571,7 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 			<div className='voltar-container'>
 				{ sessionStorage.getItem('currentPath') === '/Dashboard' ? <></> : <button className={`btn btn-secondary btn-global btn-voltar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={() => { setDetalhes(false)} }>Voltar</button>}
 			</div> : <></>}
+			<hr className='hr-global'/>
 		</>
 	)
 }

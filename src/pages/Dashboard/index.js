@@ -430,8 +430,8 @@ const Dashboard = () => {
 		if(tipo === 'vendas'){
 			array.forEach((venda) => {
 				sums.total += venda.valorBruto;
-				vendasTemp.push(venda)
-		
+				vendasTemp.push(venda);
+			
 				// Find or create entry in separatedByAdquirente
 				let entry = separatedByAdquirente.find(adquirente => adquirente.nomeAdquirente === venda.adquirente.nomeAdquirente);
 				if (!entry) {
@@ -439,20 +439,22 @@ const Dashboard = () => {
 						id: separatedByAdquirente.length,
 						nomeAdquirente: venda.adquirente.nomeAdquirente,
 						total: 0,
-						vendas: []
+						vendas: [] // Initialize vendas array
 					};
-					
 					separatedByAdquirente.push(entry);
 				}
-				entry.vendas.push(vendasTemp)
+			
+				// Push the current venda into the vendas array of the entry
+				entry.vendas.push(venda);
+			
 				// Update total for this adquirente
 				entry.total += venda.valorBruto;
 			});
 		} else if(tipo === 'creditos'){
 			array.forEach((venda) => {
 				sums.total += venda.valorLiquido;
-				vendasTemp.push(venda)
-		
+				vendasTemp.push(venda);
+			
 				// Find or create entry in separatedByAdquirente
 				let entry = separatedByAdquirente.find(adquirente => adquirente.nomeAdquirente === venda.adquirente.nomeAdquirente);
 				if (!entry) {
@@ -460,12 +462,14 @@ const Dashboard = () => {
 						id: separatedByAdquirente.length,
 						nomeAdquirente: venda.adquirente.nomeAdquirente,
 						total: 0,
-						vendas: []
+						vendas: [] // Initialize vendas array
 					};
-					
 					separatedByAdquirente.push(entry);
 				}
-				entry.vendas.push(vendasTemp)
+			
+				// Push the current venda into the vendas array of the entry
+				entry.vendas.push(venda);
+			
 				// Update total for this adquirente
 				entry.total += venda.valorLiquido;
 			});

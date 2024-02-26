@@ -17,7 +17,6 @@
 .date-container-vendas{
     width: 100%;
     display: inline-flex;
-    padding: 20px;
     flex-direction: row;
     align-items: center;
     transition: all 2s;
@@ -137,6 +136,7 @@
 
 .submit-container{
     width: 100%;
+    align-content: center;
 }
 
 @media screen and (max-width: 869px){
@@ -157,7 +157,6 @@
         display: flex;
         flex-direction: column;
         justify-content: space-evenly;
-        padding: 10px;
         transition: all 2s;
         &.light-theme{
             background-color: $background-color-light;

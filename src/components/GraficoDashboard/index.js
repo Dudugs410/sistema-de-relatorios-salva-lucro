@@ -170,7 +170,7 @@ const PieChart = ({ data01, arrayAdm, tipo, dados } ) => {
       <Pie data={chartData} options={chartOptions} />
       {showAdmModal && selectedAdm && (
         <Modal onClose={() => setShowAdmModal(false)}>
-          { tipo === '0' ? <TabelaVendasCreditos array={selectedAdm.vendas} /> : <TabelaGenerica array = {selectedAdm.vendas}/>}
+          { tipo === '0' ? <TabelaVendasCreditos array={selectedAdm.vendas} tipo={dados} /> : <TabelaGenerica array = {selectedAdm.vendas}/>}
         </Modal>
       )}
     </div>

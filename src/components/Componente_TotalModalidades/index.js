@@ -46,6 +46,7 @@ const TotalModalidadesComp = ({tipo}) =>{
 
 	return(
 		<>
+			<hr className="hr-global"/>
 			<div className='content-container-modalidade'>
 				<div className={`total-container-modalidade ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
 					<div className='text-container-modalidade'>
@@ -72,6 +73,7 @@ const TotalModalidadesComp = ({tipo}) =>{
 					</div>
 				</div>
 			</div>
+			<hr className="hr-global"/>
 		</>
 	)
 }

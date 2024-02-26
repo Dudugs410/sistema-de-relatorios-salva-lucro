@@ -483,9 +483,7 @@ function AuthProvider({ children }){
 			setLoading(false)
 		}
 	}
-      
-
-
+    
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	async function loadCreditos(cnpj, dataInicial, dataFinal) {
@@ -1091,7 +1089,6 @@ function AuthProvider({ children }){
 		})
 	}
 
-
 	function gerarDados(array){
 		const tipoTemp = Cookies.get('tipo')
 		tableData.length = 0
@@ -1119,6 +1116,7 @@ function AuthProvider({ children }){
 						tid: venda.tid,
 					})
 				})
+				console.log(`${tipoTemp} ao gerar dados: `, tableData)
 			} else if(tipoTemp === 'creditos'){
 				array.map((venda) => {
 					tableData.push({
@@ -1144,6 +1142,7 @@ function AuthProvider({ children }){
 						tid: venda.tid,
 					})
 				})
+				console.log(`${tipoTemp} ao gerar dados: `, tableData)
 			} else if(tipoTemp === 'servicos'){
 				array.map((venda) => {
 					tableData.push({
@@ -1156,9 +1155,9 @@ function AuthProvider({ children }){
 						descricao: venda.descricao,
 					})
 				})
+				console.log(`${tipoTemp} ao gerar dados: `, tableData)
 			}
 		} 
-		console.log('servicos gerar dados: ', tableData)
 		return tableData
 	}
 

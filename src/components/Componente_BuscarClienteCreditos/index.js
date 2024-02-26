@@ -90,8 +90,8 @@ const BuscarClienteCreditos = () => {
 			return
 		}
 		if(buscou === true){
-			if((vendas === null) || (vendas.length === 0)){
-				alerta('não existem vendas para a data selecionada')
+			if((creditos === null) || (creditos.length === 0)){
+				alerta('não existem creditos para a data selecionada')
 				setBuscou(false)
 				setDetalhes(false)
 			}
@@ -116,7 +116,7 @@ const BuscarClienteCreditos = () => {
 	useEffect(()=>{
 		if(buscou === true){
 			if((arrayDadosRef === null) || (arrayDadosRef.length === 0)){
-				alertaRef.current('não existem vendas para a data selecionada')
+				alertaRef.current('não existem creditos para a data selecionada')
 				setBuscou(false)
 			}
 			else{
@@ -156,7 +156,7 @@ const BuscarClienteCreditos = () => {
 				theme="light"
 			/>
 			<div className='search-bar'>
-				<form className={`date-container-vendas ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>       
+				<form className={`date-container-creditos ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>       
 					<div className='submit-container select-align'>
 						{ (detalhes) && (creditos.length > 0) ? <button className={`btn btn-secondary btn-global btn-pesquisar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className={`btn btn-primary btn-global btn-pesquisar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleBusca}>Pesquisar</button>}
 					</div>      

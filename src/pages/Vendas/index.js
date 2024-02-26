@@ -13,6 +13,7 @@ import Cookies from 'js-cookie'
 import TabelaVendasCreditos from '../../components/Componente_TabelaVendasCreditos'
 import { useLocation } from 'react-router-dom'
 import '../../index.scss'
+import MyCalendar from '../../components/Componente_Calendario'
 
 export const VendasContext = createContext({})
 
@@ -90,6 +91,10 @@ const Vendas = () =>{
     setTotalVoucher(0.00)
     setTotalLiquido(0.00)
     setTotaisGlobalVendas({debito: 0, credito: 0, voucher: 0, liquido: 0})
+  },[])
+
+  useEffect(()=>{
+    setCnpj(Cookies.get('cnpj'))
   },[])
 
   useEffect(()=>{
@@ -216,31 +221,6 @@ const Vendas = () =>{
     }
   }
 
-  function MyCalendar() {
-    return (
-      <div>
-        <Calendar
-          style={{ color:'white' }}
-          className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
-          onChange={ handleDateChange }
-          selectRange={true}
-          value={ dataBusca }
-          tileClassName={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
-        />
-        <hr/>
-        <div className='container-busca'>
-          <span className={`span-busca ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-            {dataInicialExibicao !== dataFinalExibicao ? 
-              <span dangerouslySetInnerHTML={{__html: `Executar busca do dia <strong>${dataInicialExibicao}</strong> ao dia <strong>${dataFinalExibicao}</strong>`}} /> : 
-              <span dangerouslySetInnerHTML={{__html: `Executar busca do dia <strong>${dataInicialExibicao}</strong>`}} />
-            }
-          </span>
-          <BuscarClienteVendas />
-        </div>
-      </div>
-    )
-  }
-
   return(
     <VendasContext.Provider 
     value={{
@@ -266,16 +246,14 @@ const Vendas = () =>{
             <div className={`vendas-title-container ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
               <h1 className={`vendas-title ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Calendário de Vendas</h1>
             </div>
-            <hr className="hr-recebimentos"/>
             <TotalModalidadesComp tipo = 'vendas'/>
-            <hr className="hr-recebimentos"/>
             { (detalhes) && (vendas.length > 0) ? <GerarRelatorio className='export' tableData={tableData} detalhes={detalhes} tipo='vendas' /> : <></> }
             <div className='component-container-vendas'>
-              { (detalhes) && (vendas.length > 0) ?  <TabelaVendasCreditos array={vendas} tipo = 'vendas'/> : <MyCalendar className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/> }
-              <hr className="hr-recebimentos"/>
+              { (detalhes) && (vendas.length > 0) ?  <TabelaVendasCreditos array={vendas} tipo = 'vendas'/> : <MyCalendar dataInicialExibicao={dataInicialExibicao} dataFinalExibicao={dataFinalExibicao} dataBusca={dataBusca} handleDateChange={handleDateChange} className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/> }
               { (detalhes) && (vendas.length > 0) ? <TabelaGenericaAdm Array={arrayAdm}/> : <></> }
-              { (detalhes) && (vendas.length > 0) ? <hr className='hr-recebimentos'/> : <></> }
+              { (detalhes) && (vendas.length > 0) ? <hr className='hr-global'/> : <></> }
             </div>
+            <BuscarClienteVendas />
           </div>
         </div>
       </div>
