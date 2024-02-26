@@ -319,18 +319,20 @@
 
   @media screen and (max-width: 869px){
     .page-content-global {
-    width: 100%;
-    padding: 1%;
-    margin-left: 0%;
-    flex-direction: row;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-    border-radius: 0;
+        width: 100%;
+        padding: 1%;
+        margin-left: 0%;
+        flex-direction: row;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        border-radius: 0;
+
     }
 
     .page-background-global{
         display: flex;
         justify-content: center;
         transition: all 2s;
+        
     }
 }
