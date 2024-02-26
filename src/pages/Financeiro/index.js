@@ -5,7 +5,6 @@ import Select from 'react-select'
 
 import '../../styles/global.scss'
 import './financeiro.scss'
-import Calendar from 'react-calendar';
 import MyCalendar from '../../components/Componente_Calendario';
 
 const Financeiro = () =>{
