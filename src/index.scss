@@ -4,24 +4,22 @@
   font-family: $default-font;
 }
 
-html, body, .app, #root, .appPage{
+html, body, .app, #root, .appPage, .app-page{
   height: 100%;
   width: 100%;
+  font-family: $default-font;
    &.light-theme{
     background-color: $background-color-light;
-    font-family: $default-font;
    }
+
    &.dark-theme{
     background-color: $background-color-dark;
-    color: $font-color-dark;
    }
-  
 }
 
-.appPage{
+.appPage, .app-page{
   min-height: 100vh;
   font-family: sans-serif;
-  transition: all 0.4s;
 
   &.light-theme{
     background-color: $background-color-light;

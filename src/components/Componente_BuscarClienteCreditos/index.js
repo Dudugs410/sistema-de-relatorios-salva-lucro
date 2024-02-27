@@ -158,7 +158,7 @@ const BuscarClienteCreditos = () => {
 			<div className='search-bar'>
 				<form className={`date-container-creditos ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>       
 					<div className='submit-container select-align'>
-						{ (detalhes) && (creditos.length > 0) ? <button className={`btn btn-secondary btn-global btn-pesquisar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className={`btn btn-primary btn-global btn-pesquisar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleBusca}>Pesquisar</button>}
+						{ (detalhes) && (creditos.length > 0) ? <button className={`btn btn-secondary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleBusca}>Pesquisar</button>}
 					</div>      
 				</form>
 			</div>

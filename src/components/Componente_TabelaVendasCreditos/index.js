@@ -423,7 +423,7 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 					</div>
 				</div>
 			</div>
-			<hr className='hr-global'/>
+			<hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
 			<div className='dropShadow vendas-view'>
 				<div className={`table-wrapper ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
 				{ tipo === 'vendas' ?
@@ -529,7 +529,7 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 					 }
 				</div>
 			</div>
-			<hr className='hr-global'/>
+			<hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
 			{vendasExibicao.length > itemsPerPage && (
 				<div className="container-btn-pagina">
 					<button
@@ -569,9 +569,9 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 			)}
 			{ sessionStorage.getItem('currentPath') !== '/dashboard' ? 
 			<div className='voltar-container'>
-				{ sessionStorage.getItem('currentPath') === '/Dashboard' ? <></> : <button className={`btn btn-secondary btn-global btn-voltar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={() => { setDetalhes(false)} }>Voltar</button>}
+				{ sessionStorage.getItem('currentPath') === '/Dashboard' ? <></> : <button className={`btn btn-secondary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={() => { setDetalhes(false)} }>Voltar</button>}
 			</div> : <></>}
-			<hr className='hr-global'/>
+			<hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
 		</>
 	)
 }

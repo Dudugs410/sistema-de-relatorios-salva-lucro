@@ -173,17 +173,16 @@ useEffect(() => {
                         <div className={`servicos-title-container ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                             <h1 className={`servicos-title ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Serviços</h1>
                         </div>
-                        <hr className="hr-recebimentos"/>
+                        <hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
 						{ (detalhes) && (ajustes.length > 0) ? <GerarRelatorio className='export' tableData={tableData} detalhes={detalhes} tipo='servicos'/> : <></> }
                         <div className='component-container-servicos'>
                             { (detalhes) && (ajustes.length > 0)? <TabelaServicos array={ajustes}/> : <MyCalendar dataInicialExibicao={dataInicialExibicao} dataFinalExibicao={dataFinalExibicao} dataBusca={dataBusca} handleDateChange={handleDateChange}/> } 
                             { (detalhes) && (ajustes.length > 0)? <TabelaGenericaAdm Array={arrayAdm} textColor={'red-global'}/> : <></> }
-                            { (detalhes) && (ajustes.length > 0) ? <hr className='hr-recebimentos'/> : <></> }
+                            { (detalhes) && (ajustes.length > 0) ? <hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/> : <></> }
                         </div>
                         <BuscarClienteServicos />
                     </div>
                 </div>
-                
             </div>
         </ServicosContext.Provider>
     )

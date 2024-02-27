@@ -84,8 +84,8 @@ const BuscarClienteServicos = () => {
 			return
 		}
 		if(buscou === true){
-			if((vendas === null) || (vendas.length === 0)){
-				alerta('não existem vendas para a data selecionada')
+			if((ajustes === null) || (ajustes.length === 0)){
+				alerta('não existem ajustes para a data selecionada')
 				setBuscou(false)
 				setDetalhes(false)
 			}
@@ -110,7 +110,7 @@ const BuscarClienteServicos = () => {
 	useEffect(()=>{
 		if(buscou === true){
 			if((arrayDadosRef === null) || (arrayDadosRef.length === 0)){
-				alertaRef.current('não existem vendas para a data selecionada')
+				alertaRef.current('não existem ajustes para a data selecionada')
 				setBuscou(false)
 			}
 			else{

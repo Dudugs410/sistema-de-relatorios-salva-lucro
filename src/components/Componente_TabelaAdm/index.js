@@ -35,7 +35,6 @@ export default function TabelaGenericaAdm({Array, textColor}) {
 					:
 					<></>
 			}
-
 		</div>
 	)
 }

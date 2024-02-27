@@ -6,13 +6,11 @@
     flex-direction: column;
     align-items: center;
     height: 100%;
-    transition: all 2s;
 }
 
 .page-background-global{
     display: flex;
     justify-content: center;
-    transition: all 2s;
     &.light-theme{
         background-color: $background-color-light;
     }
@@ -31,7 +29,6 @@
     padding: 10px;
     margin-top: 10px;
     margin-bottom: 54px;
-    transition: all 2s;
     &.light-theme{
         background-color: $background-color-light;
     }
@@ -69,6 +66,15 @@
     }
 }
 
+span{
+    &.light-theme{
+        color: $font-color-light;
+    }
+    &.dark-theme{
+        color: $font-color-dark;
+    }
+}
+
 .hr-global{
     width: 100%;
     margin: 1rem 0;
@@ -94,6 +100,7 @@
     justify-content: center;
     border-radius: 10px;
     font-weight: 200;
+    align-items: center;
 
     &.light-theme{
         border: solid $secondary-color-light 1px;

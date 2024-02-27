@@ -246,6 +246,7 @@ const TabelaServicos = ({ array, tipo }) => {
 			</div>
 		</div>
 	</div>
+		<hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
 		<div className='dropShadow vendas-view'>
 			<div className={`table-wrapper ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
 				<table className={`table table-striped det-table-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
@@ -280,7 +281,7 @@ const TabelaServicos = ({ array, tipo }) => {
 				</table>
 			</div>
 		</div>
-		<hr className="hr-recebimentos"/>
+		<hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
 			{vendasExibicao.length > itemsPerPage && (
 				<div className="container-btn-pagina">
 					<button
@@ -322,6 +323,7 @@ const TabelaServicos = ({ array, tipo }) => {
 			<div className='voltar-container'>
 				<button className={`btn btn-secondary btn-global btn-voltar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={() => { setDetalhes(false)} }>Voltar</button>
 			</div> : <></>}
+			<hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
 	</>
 	)
 }

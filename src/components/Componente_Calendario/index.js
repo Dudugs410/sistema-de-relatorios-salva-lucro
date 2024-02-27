@@ -18,7 +18,7 @@ const MyCalendar = ({dataInicialExibicao, dataFinalExibicao, dataBusca, handleDa
           value={ dataBusca }
           tileClassName={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
         />
-        <hr className='hr-global'/>
+        <hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
         <div className='container-busca'>
           <span className={`span-busca ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
             {dataInicialExibicao !== dataFinalExibicao ? 
@@ -27,7 +27,7 @@ const MyCalendar = ({dataInicialExibicao, dataFinalExibicao, dataBusca, handleDa
             }
           </span>
         </div>
-        <hr className="hr-global"/>
+        <hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
       </div>
     )
   }
