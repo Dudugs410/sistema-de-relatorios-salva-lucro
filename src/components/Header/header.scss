@@ -492,8 +492,12 @@
         }
         transition: all, 0.4s;
     }
+}
 
-    
+@media screen and (max-width: 637px) {
+    .li-btn-text{
+        display: none;
+    }
 }
 
 @media only screen and (max-width: 517px) {
@@ -506,3 +510,6 @@
         display: inline; // Display Relatórios children text
     }
   }
+
+
+

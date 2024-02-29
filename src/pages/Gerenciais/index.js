@@ -7,6 +7,8 @@ import '../../styles/global.scss'
 import '../Financeiro/financeiro.scss'
 import Calendar from 'react-calendar';
 import MyCalendar from '../../components/Componente_Calendario';
+import base64PDFdownload from '../../components/Componente_Base64PDF';
+
 
 const Gerenciais = () =>{
     const location = useLocation();
@@ -58,6 +60,7 @@ const Gerenciais = () =>{
     function handleExport(e){
         e.preventDefault()
         console.log('dataBusca: ', dataBusca)
+        base64PDFdownload()
     }
 
   return(
@@ -70,30 +73,27 @@ const Gerenciais = () =>{
             <hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
             <div className='container-financeiro'>
                 <MyCalendar dataInicialExibicao={dataInicialExibicao} dataFinalExibicao={dataFinalExibicao} dataBusca={dataBusca} handleDateChange={handleDateChange} className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
-                    <form className='form-container-relatorios'>
+                <form className='form-container-relatorios'>
                     <div className='select-elements-container'>
                         <div className='container-select'>
                             <span className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Tipo de Relatório</span>
-                            <select 
-                                className={`select-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} 
+                            <Select 
                                 value={tipoRelatorio} 
-                                onChange={handleRelatorio}>
-                                <option value="">Selecione</option>
-							    {opcoesRelatorio.map((option)=>(
-								<option key={option.value} value={option.value}>{option.label}</option>
-							    ))}
-						    </select>
+                                onChange={handleRelatorio}
+                                placeholder="Selecione"
+                                options={opcoesRelatorio}
+                                isSearchable={false}
+                            />
                         </div>
                         <div className='container-select'>
                             <span className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Formato</span>
-                            <select
-                                className={`select-global select-disabled-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} 
+                            <Select 
                                 value={formatoRelatorio} 
                                 onChange={handleFormato}
-                                disabled
-                                >
-                                <option value="0">PDF</option>
-						    </select>
+                                options={opcoesFormato}
+                                isSearchable={false}
+                                isDisabled={true}
+                            />
                         </div>
                     </div>
                     <div className='btn-container-financeiro'>

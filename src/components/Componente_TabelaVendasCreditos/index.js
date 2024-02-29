@@ -8,7 +8,9 @@ import { FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward } from 'react-
 import '../../styles/global.scss'
 import './detalhesCredito.scss'
 
-const TabelaVendasCreditos = ({array, tipo}) =>{
+const TabelaVendasCreditos = ({array, tipo, isDashboard}) =>{
+
+	console.log('array dentro da tabela do gráfico: ', array)
 
 	const { dateConvert, gerarDados, setTotaisGlobalVendas, setTotaisGlobalCreditos, isDarkTheme, setDetalhes } = useContext(AuthContext)
 
@@ -24,6 +26,9 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 
 	const [banSelecionada, setBanSelecionada] = useState('')
 	const [adqSelecionada, setAdqSelecionada] = useState('')
+
+	const [nomeAdquirente, setNomeAdquirente] = useState('')
+	const [total, setTotal] = useState('')
 
 
 	//adicionando páginas à tabela:
@@ -64,24 +69,30 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 
 	// // // // // // // // // // // // // // // // // // // // // // // // // // //
 
-
 	useEffect(()=>{
-		if(array.length > 0){
-			setVendasArray(array)
+		console.log('tranqueira: ', array)
+		if(array){
+			if(isDashboard){
+				if(array.vendas.length > 0){
+					setVendasArray(array.vendas)
+					setNomeAdquirente(array.nomeAdquirente)
+					setTotal(array.total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }))
+				}
+			} else {
+				if(array.length > 0){
+					setVendasArray(array)
+				}
+			}
 		}
-	},[])
+	},[array])
 
 	useEffect(()=>{
+		console.log('vendasArray: ', vendasArray)
 		async function init(){
 			setVendasTeste(vendasArray)
 		}
 		init()
 	},[vendasArray])
-
-	useEffect(()=>{
-		setVendasArray(array)
-
-	},[array])
 
 	function carregaTotais(array){
 		//totais líquido:
@@ -291,6 +302,9 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////
 
+	//useEffects que mostram o array de bandeiras/adquirentes atualizado, após o filtro.
+
+	/*
 	useEffect(() => {
 		console.log('adquirentes: ', adquirentesExistentes)
 
@@ -300,6 +314,7 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 		console.log('bandeiras: ', bandeirasExistentes)
 
 	}, [bandeirasExistentes])
+	*/
 
 	// função que altera lista de adquirentes de acordo com a bandeira/adq selecionada, para que o usuário só tenha opções existentes
 	function atualizaADQ(){
@@ -390,7 +405,7 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 		// Retrieve the value from sessionStorage
 		const pagina = sessionStorage.getItem('currentPath')
     
-		if (pagina === '/dashboard') {
+		if ((pagina === '/dashboard') || (pagina === '/Dashboard')) {
 			setStyle({ display: 'none' })
 		} else {
 			setStyle({ display: 'block' })
@@ -399,10 +414,20 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 
 	return(
 		<>
+			{(sessionStorage.getItem('currentPath') === '/dashboard') || (sessionStorage.getItem('currentPath') === '/Dashboard') ? 
+				<div className={`header-tabela-grafico ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
+					<div className='total-container-dashboard'>
+						<h3 className='titulo-grafico'>Adquirente: &nbsp;</h3><h3 style={{ fontWeight: 'bold' }}>{nomeAdquirente}</h3>
+					</div>
+					<div className='total-container-dashboard'>
+						<h3 className='titulo-grafico'>Total: &nbsp;</h3><h3 className={`green-global ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>{total}</h3>
+					</div>
+				</div> : <></>
+			}
 			<div className='date-container'>
 				<div className='date-column'>
 					<div className='select-card select-align select-align-filtro'>
-						<span className={`span-str ${isDarkTheme ? 'dark-theme' : 'light-theme'}`} style={style}>Adquirente</span>
+					<span className={`span-str ${isDarkTheme ? 'dark-theme' : 'light-theme'}`} style={style}>Adquirente</span>
 						<select className={`${isDarkTheme ? 'dark-theme' : 'light-theme'}`} id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}} style={style}>
 							<option value='' selected>Todas</option>
 							{adquirentesExistentes.map((ADQ)=>(
@@ -565,11 +590,10 @@ const TabelaVendasCreditos = ({array, tipo}) =>{
 						<FiSkipForward />
 					</button>
 				</div>
-				
 			)}
-			{ sessionStorage.getItem('currentPath') !== '/dashboard' ? 
+			{ (isDashboard === false) ? 
 			<div className='voltar-container'>
-				{ sessionStorage.getItem('currentPath') === '/Dashboard' ? <></> : <button className={`btn btn-secondary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={() => { setDetalhes(false)} }>Voltar</button>}
+				<button className={`btn btn-secondary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={() => { setDetalhes(false)} }>Voltar</button>
 			</div> : <></>}
 			<hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
 		</>

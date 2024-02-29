@@ -121,7 +121,7 @@ const Header = () => {
                                         <Link to={opcao.rota} className="nav-hover active text-shadow">
                                             <button className={`px-2 me-1 li-button-content nav-hover-button ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
                                                 {opcao.icone && React.createElement(opcao.icone)}
-                                                <span className="ms-1 mt-2 mb-auto li-btn-text ">{opcao.nome}</span>
+                                                <span className="ms-1 mt-2 mb-auto li-btn-text">{opcao.nome}</span>
                                             </button>
                                         </Link>
                                     )}

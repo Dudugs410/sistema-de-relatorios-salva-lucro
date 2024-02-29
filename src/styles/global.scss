@@ -44,7 +44,6 @@
     width: 100%;
     border-radius: 20px;
     padding: 10px;
-    transition: all 2s;
     &.light-theme{
         color: $primary-color-light;
         background-color: $secondary-color-light;
@@ -57,7 +56,6 @@
 
 .title-global{
     margin: 0;
-    transition: all 2s;
     &.light-theme{
         color: $font-color-light;
     }
@@ -294,7 +292,6 @@ span{
 
 .red-global{
     color:rgb(218, 100, 100);
-
 }
 
 ///Paginas 
@@ -339,7 +336,6 @@ span{
     .page-background-global{
         display: flex;
         justify-content: center;
-        transition: all 2s;
         
     }
 }

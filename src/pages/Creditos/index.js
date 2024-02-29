@@ -218,7 +218,7 @@ const Creditos = () =>{
 						<TotalModalidadesComp tipo = 'creditos'/>
 						{ (detalhes) && (creditos.length > 0) ? <GerarRelatorio className='export' tableData={tableData} detalhes={detalhes} tipo='creditos'/> : <></> }
 						<div className='component-container-vendas'>
-							{ (detalhes) && (creditos.length > 0) ?  <TabelaVendasCreditos array={creditos} tipo = 'creditos'/> : <MyCalendar dataInicialExibicao={dataInicialExibicao} dataFinalExibicao={dataFinalExibicao} dataBusca={dataBusca} handleDateChange={handleDateChange} className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/> }
+							{ (detalhes) && (creditos.length > 0) ?  <TabelaVendasCreditos array={creditos} tipo = 'creditos' isDashboard={false}/> : <MyCalendar dataInicialExibicao={dataInicialExibicao} dataFinalExibicao={dataFinalExibicao} dataBusca={dataBusca} handleDateChange={handleDateChange} className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/> }
 							{ (detalhes) && (creditos.length > 0) ? <TabelaGenericaAdm Array={arrayAdm}/> : <></> }
 							{ (detalhes) && (creditos.length > 0) ? <hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/> : <></> }
 						</div>

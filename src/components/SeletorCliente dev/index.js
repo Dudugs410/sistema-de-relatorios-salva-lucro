@@ -47,9 +47,7 @@ const SeletorClienteDev = () => {
 		setCnpj(sessionStorage.getItem('cnpj'))
 		setGrupos(JSON.parse(sessionStorage.getItem('grupos')))
 		setPodeBuscar(Cookies.get('podeBuscar'))
-		console.log(Cookies.get('textoExport'))
 		setTextoExport(Cookies.get('textoExport'))
-	
 	},[])
 
 	useEffect(()=>{

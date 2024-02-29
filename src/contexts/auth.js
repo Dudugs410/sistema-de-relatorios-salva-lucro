@@ -1142,7 +1142,6 @@ function AuthProvider({ children }){
 						tid: venda.tid,
 					})
 				})
-				console.log(`${tipoTemp} ao gerar dados: `, tableData)
 			} else if(tipoTemp === 'servicos'){
 				array.map((venda) => {
 					tableData.push({

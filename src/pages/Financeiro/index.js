@@ -1,19 +1,19 @@
 import { useEffect, useContext, createContext, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { AuthContext } from '../../contexts/auth';
-import Select from 'react-select'
-
 import '../../styles/global.scss'
+import Select from 'react-select'
 import './financeiro.scss'
 import MyCalendar from '../../components/Componente_Calendario';
+import base64PDFdownload from '../../components/Componente_Base64PDF';
 
 const Financeiro = () =>{
     const location = useLocation();
     const { isDarkTheme } = useContext(AuthContext)
 
     const [dataBusca, setDataBusca] = useState([new Date, new Date])
-    const [tipoRelatorio, setTipoRelatorio] = useState('selecione')
-    const [formatoRelatorio, setFormatoRelatorio] = useState('selecione')
+    const [tipoRelatorio, setTipoRelatorio] = useState(null)
+    const [formatoRelatorio, setFormatoRelatorio] = useState(null)
     const [clickCount, setClickCount] = useState(0);
 
     const [dataBuscaInicial, setDataBuscaInicial] = useState(new Date)
@@ -63,6 +63,7 @@ const Financeiro = () =>{
     function handleExport(e){
         e.preventDefault()
         console.log('dataBusca: ', dataBusca)
+        base64PDFdownload()
     }
 
     return(
@@ -79,27 +80,23 @@ const Financeiro = () =>{
                     <div className='select-elements-container'>
                         <div className='container-select'>
                             <span className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Tipo de Relatório</span>
-                            <select 
-                                className={`select-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} 
+                            <Select
                                 value={tipoRelatorio} 
-                                onChange={handleRelatorio}>
-                                <option value="">Selecione</option>
-							    {opcoesRelatorio.map((option)=>(
-								<option key={option.value} value={option.value}>{option.label}</option>
-							    ))}
-						    </select>
+                                onChange={handleRelatorio}
+                                placeholder="Selecione"
+                                options={opcoesRelatorio}
+                                isSearchable={false}
+						    />
                         </div>
                         <div className='container-select'>
                             <span className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Formato</span>
-                            <select 
-                                className={`select-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} 
+                            <Select 
                                 value={formatoRelatorio} 
-                                onChange={handleFormato}>
-                                <option value="">Selecione</option>
-							    {opcoesFormato.map((option)=>(
-								<option key={option.value} value={option.value}>{option.label}</option>
-							    ))}
-						    </select>
+                                onChange={handleFormato}
+                                placeholder="Selecione"
+                                options={opcoesFormato}
+                                isSearchable={false}
+						    />
                         </div>
                     </div>
                     <div className='btn-container-financeiro'>

@@ -494,8 +494,10 @@ const Dashboard = () => {
 	},[somatorioVendasMes])
 
 	useEffect(()=>{
-		console.log('admVendas: ', admVendas)
-		setGraficoVendas(carregaGrafico(admVendas))
+		if(admVendas.length > 0){
+			console.log('admVendas: ', admVendas)
+			setGraficoVendas(carregaGrafico(admVendas))
+		}
 		if(admVendasAux.length > 0){
 			setGraficoVendasAux(carregaGrafico(admVendasAux))
 		}
