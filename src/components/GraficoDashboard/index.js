@@ -34,7 +34,7 @@ const PieChart = ({ data01, arrayAdm, tipo, dados } ) => {
   },[])
 
   const handleChartClick = useCallback((event, elements) => {
-    console.log('array adm grafico dashboard: ', arrayAdm)
+    //console.log('array adm grafico dashboard: ', arrayAdm)
     if (elements.length > 0) {
       const clickedElementIndex = elements[0].index;
       const selectedAdmData = arrayAdm[clickedElementIndex];
@@ -42,7 +42,7 @@ const PieChart = ({ data01, arrayAdm, tipo, dados } ) => {
       setSelectedAdm(selectedAdmData);
       setShowAdmModal(true);
 
-      console.log('Array da Fatia Clicada: ', arrayAdm[clickedElementIndex])
+      //console.log('Array da Fatia Clicada: ', arrayAdm[clickedElementIndex])
 
     }
   }, [arrayAdm]);

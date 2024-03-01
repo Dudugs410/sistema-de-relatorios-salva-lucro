@@ -58,9 +58,7 @@ export default function Private({children}){
     return (
       <>
         <Layout>{ children }</Layout> 
-        {loading && (
-              <LoadingModal />
-          )}
+
       </>
     )
   }

@@ -10,7 +10,7 @@ import './detalhesCredito.scss'
 
 const TabelaVendasCreditos = ({array, tipo, isDashboard}) =>{
 
-	console.log('array dentro da tabela do gráfico: ', array)
+	//console.log('array dentro da tabela do gráfico: ', array)
 
 	const { dateConvert, gerarDados, setTotaisGlobalVendas, setTotaisGlobalCreditos, isDarkTheme, setDetalhes } = useContext(AuthContext)
 
@@ -70,7 +70,7 @@ const TabelaVendasCreditos = ({array, tipo, isDashboard}) =>{
 	// // // // // // // // // // // // // // // // // // // // // // // // // // //
 
 	useEffect(()=>{
-		console.log('tranqueira: ', array)
+		//console.log('tranqueira: ', array)
 		if(array){
 			if(isDashboard){
 				if(array.vendas.length > 0){
@@ -87,7 +87,7 @@ const TabelaVendasCreditos = ({array, tipo, isDashboard}) =>{
 	},[array])
 
 	useEffect(()=>{
-		console.log('vendasArray: ', vendasArray)
+		//console.log('vendasArray: ', vendasArray)
 		async function init(){
 			setVendasTeste(vendasArray)
 		}

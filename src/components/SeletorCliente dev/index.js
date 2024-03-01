@@ -171,7 +171,7 @@ const SeletorClienteDev = () => {
 	}, []);
 
 	useEffect(()=>{
-		console.log('grupo selecionado: ', grupoTeste)
+		//console.log('grupo selecionado: ', grupoTeste)
 		setGrupoSelecionado(grupoTeste.value)
 		sessionStorage.setItem('codigoGrupo', grupoTeste.value)
 		Cookies.set('codigoGrupo', grupoTeste.value)
@@ -179,7 +179,7 @@ const SeletorClienteDev = () => {
 	},[grupoTeste])
 
 	useEffect(()=>{
-		console.log('cliente selecionado: ', clienteTeste)
+		//console.log('cliente selecionado: ', clienteTeste)
 		setClienteSelecionado(clienteTeste.value)
 		Cookies.set('filialHeader', clienteTeste.label)
 		setCliSelecionado(clienteTeste)
