@@ -9,7 +9,7 @@ import base64PDFdownload from '../../components/Componente_Base64PDF';
 
 const Financeiro = () =>{
     const location = useLocation();
-    const { isDarkTheme } = useContext(AuthContext)
+    const { isDarkTheme, loading, setLoading } = useContext(AuthContext)
 
     const [dataBusca, setDataBusca] = useState([new Date, new Date])
     const [tipoRelatorio, setTipoRelatorio] = useState(null)
@@ -62,8 +62,10 @@ const Financeiro = () =>{
 
     function handleExport(e){
         e.preventDefault()
+        setLoading(true)
         console.log('dataBusca: ', dataBusca)
         base64PDFdownload()
+        setLoading(false)
     }
 
     return(

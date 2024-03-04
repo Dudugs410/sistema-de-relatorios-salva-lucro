@@ -17,6 +17,7 @@ const SeletorClienteDev = () => {
 		listaClientes,
 		setListaClientes,
 		setGrupos,
+		loadGrupos,
 		resetaSomatorios,
 		alerta,
 		isDarkTheme,
@@ -45,7 +46,11 @@ const SeletorClienteDev = () => {
 
 	useEffect(()=>{
 		setCnpj(sessionStorage.getItem('cnpj'))
-		setGrupos(JSON.parse(sessionStorage.getItem('grupos')))
+		if(sessionStorage.getItem('grupos')){
+			setGrupos(JSON.parse(sessionStorage.getItem('grupos')))
+		} else {
+			loadGrupos()
+		}
 		setPodeBuscar(Cookies.get('podeBuscar'))
 		setTextoExport(Cookies.get('textoExport'))
 	},[])

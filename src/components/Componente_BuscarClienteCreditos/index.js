@@ -6,8 +6,6 @@ import './buscarCreditos.scss'
 import { AuthContext } from '../../contexts/auth'
 import { CreditosContext } from '../../pages/Creditos'
 
-import { ToastContainer } from 'react-toastify'
-
 import '../../styles/global.scss'
 import 'react-toastify/dist/ReactToastify.css'
 import './reactdatepicker.css'
@@ -59,38 +57,40 @@ const BuscarClienteCreditos = () => {
 	}
 
 	async function buscar() {
+		setLoading();
 		await loadCreditos(cnpjBusca, converteData(dataBusca[0]), converteData(dataBusca[1]))
-			.then(() =>{
-				if(dataBusca === '' || cnpjBusca === ''){
-					return 0
+			.then(() => {
+				if (dataBusca === '' || cnpjBusca === '') {
+					return 0;
 				} else {
 					//adiciono .toLocaleDateString('pt-BR') às datas para que possamos comparar apenas o dia, mes e ano, sem levar em consideração a hora, minuto e segundos
-					if((dataBusca[0].toLocaleDateString('pt-BR') === dataBusca[1].toLocaleDateString('pt-BR'))){
-						alerta(`executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')}`)
-						setBuscou(true)
-						
-					} else if (dataBusca[0].toLocaleDateString('pt-BR') !== dataBusca[1].toLocaleDateString('pt-BR')){
-						alerta(`executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')} ao dia ${dataBusca[1].toLocaleDateString('pt-BR')}`)
-						setBuscou(true)
+					if ((dataBusca[0].toLocaleDateString('pt-BR') === dataBusca[1].toLocaleDateString('pt-BR'))) {
+						console.log('mostrou alerta créditos');
+						alerta(`executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')}`);
+						setBuscou(true);
+					} else if (dataBusca[0].toLocaleDateString('pt-BR') !== dataBusca[1].toLocaleDateString('pt-BR')) {
+						console.log('mostrou alerta créditos');
+						alerta(`executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')} ao dia ${dataBusca[1].toLocaleDateString('pt-BR')}`);
+						setBuscou(true);
 					}
-
-					if(creditos.length === 0){
-						setDetalhes(false)
-						setClicouPesquisar(false)
-						
+					if (creditos.length === 0) {
+						setDetalhes(false);
+						setClicouPesquisar(false);
 					}
-				}    
-			})
-		setLoading(false)
+				}
+			});
+		setLoading(false);
 	}
 
 	useEffect(()=>{
 		if(((cnpjBusca === '' || cnpjBusca === 'Selecione' || cnpjBusca === undefined) && (Cookies.get('cnpj') !== '')) && (clicouPesquisar)){
+			console.log('alerta useEffect')
 			alerta('selecione um cliente válido')
 			return
 		}
 		if(buscou === true){
 			if((creditos === null) || (creditos.length === 0)){
+				console.log('alerta useEffect 2')
 				alerta('não existem creditos para a data selecionada')
 				setBuscou(false)
 				setDetalhes(false)
@@ -99,29 +99,6 @@ const BuscarClienteCreditos = () => {
 				setDetalhes(true)
 				setBuscou(false)
 				setClicouPesquisar(false)
-			}
-		}
-	},[buscou])
-
-	const alertaRef = useRef()
-	const setDetalhesRef = useRef()
-	const arrayDadosRef = useRef()
-
-	useEffect(()=>{
-		alertaRef.current = alerta
-		setDetalhesRef.current = setDetalhes
-		arrayDadosRef.current = arrayDados                   
-	},[alerta, setDetalhes, arrayDados])
-
-	useEffect(()=>{
-		if(buscou === true){
-			if((arrayDadosRef === null) || (arrayDadosRef.length === 0)){
-				alertaRef.current('não existem creditos para a data selecionada')
-				setBuscou(false)
-			}
-			else{
-				setDetalhesRef.current(true)
-				setBuscou(false)
 			}
 		}
 	},[buscou])
@@ -143,22 +120,10 @@ const BuscarClienteCreditos = () => {
 
 	return(
 		<>
-			<ToastContainer
-				position="top-center"
-				autoClose={5000}
-				hideProgressBar
-				newestOnTop={false}
-				closeOnClick
-				rtl={false}
-				pauseOnFocusLoss
-				draggable
-				pauseOnHover
-				theme="light"
-			/>
 			<div className='search-bar'>
 				<form className={`date-container-creditos ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>       
 					<div className='submit-container select-align'>
-						{ (detalhes) && (creditos.length > 0) ? <button className={`btn btn-secondary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleBusca}>Pesquisar</button>}
+						{ (detalhes) && (creditos.length > 0) ? <button className={`btn btn-secondary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={(e) => handleBusca(e)}>Pesquisar</button>}
 					</div>      
 				</form>
 			</div>

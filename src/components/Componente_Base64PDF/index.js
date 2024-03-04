@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { base64PDFexample } from '../../contexts/static';
 
 const base64PDFdownload = () => {

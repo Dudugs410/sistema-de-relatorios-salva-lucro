@@ -60,10 +60,12 @@ const BuscarClienteServicos = () => {
 				} else {
 					//adiciono .toLocaleDateString('pt-BR') às datas para que possamos comparar apenas o dia, mes e ano, sem levar em consideração a hora, minuto e segundos
 					if((dataBusca[0].toLocaleDateString('pt-BR') === dataBusca[1].toLocaleDateString('pt-BR'))){
+						console.log('mostrou alerta servicos')
 						alerta(`executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')}`)
 						setBuscou(true)
 						
 					} else if (dataBusca[0].toLocaleDateString('pt-BR') !== dataBusca[1].toLocaleDateString('pt-BR')){
+						console.log('mostrou alerta servicos')
 						alerta(`executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')} ao dia ${dataBusca[1].toLocaleDateString('pt-BR')}`)
 						setBuscou(true)
 					}
@@ -75,7 +77,6 @@ const BuscarClienteServicos = () => {
 					}
 				}    
 			})
-		setLoading(false)
 	}
 
 	useEffect(()=>{
@@ -97,29 +98,6 @@ const BuscarClienteServicos = () => {
 		}
 	},[buscou])
 
-	const alertaRef = useRef()
-	const setDetalhesRef = useRef()
-	const arrayDadosRef = useRef()
-
-	useEffect(()=>{
-		alertaRef.current = alerta
-		setDetalhesRef.current = setDetalhes
-		arrayDadosRef.current = arrayDados                   
-	},[alerta, setDetalhes, arrayDados])
-
-	useEffect(()=>{
-		if(buscou === true){
-			if((arrayDadosRef === null) || (arrayDadosRef.length === 0)){
-				alertaRef.current('não existem ajustes para a data selecionada')
-				setBuscou(false)
-			}
-			else{
-				setDetalhesRef.current(true)
-				setBuscou(false)
-			}
-		}
-	},[buscou])
-
 	function handleVoltar(e){
 		e.preventDefault()
 		setAjustes([])
@@ -132,22 +110,10 @@ const BuscarClienteServicos = () => {
 
 	return(
 		<>
-			<ToastContainer
-				position="top-center"
-				autoClose={5000}
-				hideProgressBar
-				newestOnTop={false}
-				closeOnClick
-				rtl={false}
-				pauseOnFocusLoss
-				draggable
-				pauseOnHover
-				theme="light"
-			/>
 			<div className='search-bar'>
 				<form className={`date-container-vendas ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>       
 					<div className='submit-container select-align select-align-filtro'>
-						{ (detalhes) && (ajustes.length > 0) ? <button className={`btn btn-secondary btn-global btn-pesquisar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className={`btn btn-primary btn-global btn-pesquisar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleBusca}>Pesquisar</button>}
+						{ (detalhes) && (ajustes.length > 0) ? <button className={`btn btn-secondary btn-global btn-pesquisar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className={`btn btn-primary btn-global btn-pesquisar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={(e) => handleBusca(e)}>Pesquisar</button>}
 					</div>      
 				</form>
 			</div>
