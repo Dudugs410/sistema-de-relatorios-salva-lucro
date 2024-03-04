@@ -1,0 +1,55 @@
+.container-financeiro{
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.select-elements-container{
+    display: flex;
+    justify-content: space-around;
+}
+
+.container-select{
+    display: flex;
+    flex-direction: column;
+    width: 30%;
+    align-items: center;
+}
+
+.btn-container-financeiro{
+    display: flex;
+    align-content: center;
+    flex-wrap: wrap;
+    flex-direction: column;
+}
+
+.form-container-relatorios{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: stretch;
+}
+
+.css-b62m3t-container{
+    width: 100% !important;
+}
+
+@media screen and (max-width: 869px){
+    .page-content-global {
+    width: 100%;
+    padding: 1%;
+    margin-left: 0%;
+    flex-direction: row;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    border-radius: 0;
+    }
+
+    .page-background-global{
+        display: flex;
+        justify-content: center;
+        transition: all 2s;
+    }
+}

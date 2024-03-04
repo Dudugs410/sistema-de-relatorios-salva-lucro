@@ -17,6 +17,7 @@ const SeletorClienteDev = () => {
 		listaClientes,
 		setListaClientes,
 		setGrupos,
+		loadGrupos,
 		resetaSomatorios,
 		alerta,
 		isDarkTheme,
@@ -45,11 +46,13 @@ const SeletorClienteDev = () => {
 
 	useEffect(()=>{
 		setCnpj(sessionStorage.getItem('cnpj'))
-		setGrupos(JSON.parse(sessionStorage.getItem('grupos')))
+		if(sessionStorage.getItem('grupos')){
+			setGrupos(JSON.parse(sessionStorage.getItem('grupos')))
+		} else {
+			loadGrupos()
+		}
 		setPodeBuscar(Cookies.get('podeBuscar'))
-		console.log(Cookies.get('textoExport'))
 		setTextoExport(Cookies.get('textoExport'))
-	
 	},[])
 
 	useEffect(()=>{
@@ -173,7 +176,7 @@ const SeletorClienteDev = () => {
 	}, []);
 
 	useEffect(()=>{
-		console.log('grupo selecionado: ', grupoTeste)
+		//console.log('grupo selecionado: ', grupoTeste)
 		setGrupoSelecionado(grupoTeste.value)
 		sessionStorage.setItem('codigoGrupo', grupoTeste.value)
 		Cookies.set('codigoGrupo', grupoTeste.value)
@@ -181,7 +184,7 @@ const SeletorClienteDev = () => {
 	},[grupoTeste])
 
 	useEffect(()=>{
-		console.log('cliente selecionado: ', clienteTeste)
+		//console.log('cliente selecionado: ', clienteTeste)
 		setClienteSelecionado(clienteTeste.value)
 		Cookies.set('filialHeader', clienteTeste.label)
 		setCliSelecionado(clienteTeste)

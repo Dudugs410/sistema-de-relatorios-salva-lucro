@@ -162,6 +162,26 @@
     text-shadow: 1px 1px 1px #000000;
 }
 
+.span-table-servicos-red{
+    &.light-theme{
+        color: rgb(218, 100, 100);
+    }
+    &.dark-theme{
+        color: rgb(218, 100, 100);
+    }
+}
+
+.span-table-servicos-green{
+    &.light-theme{
+        color: rgb(0, 204, 0);
+        font-weight: bold;
+        
+    }
+    &.dark-theme{
+        color: $secondary-color-light;
+    }
+}
+
 @media screen and (max-width: 869px){
     .vendas-container{
         height: 90%;

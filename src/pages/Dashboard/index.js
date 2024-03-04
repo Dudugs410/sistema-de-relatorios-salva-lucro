@@ -338,7 +338,7 @@ const Dashboard = () => {
 
 	useEffect(()=>{
 		async function inicializar(){
-			const total = vetorVendasMes.reduce((total, obj) => total + obj.valorLiquido, 0)
+			const total = vetorVendasMes.reduce((total, obj) => total + obj.valorBruto, 0)
 			setSomatorioVendasMes(total)
 			if(total > 0){
 				setSomatorioVendasMesAux(total)
@@ -393,6 +393,14 @@ const Dashboard = () => {
 	},[vetorCreditosMes])
 
 	useEffect(()=>{
+		//console.log('créditos dos próximos 5 dias: ', creditos5dias)
+		const total = creditos5dias.reduce((total, obj) => total + obj.valorLiquido, 0)
+		setTotalCreditos5dias(total)
+	},[creditos5dias])
+
+
+	useEffect(()=>{
+		//console.log('somatório dos créditos dos próximos 5 dias: ', totalCreditos5dias)
 		if(inicializouAux === false){
 			setTotalCreditos5diasAux(totalCreditos5dias)
 		}
@@ -430,8 +438,8 @@ const Dashboard = () => {
 		if(tipo === 'vendas'){
 			array.forEach((venda) => {
 				sums.total += venda.valorBruto;
-				vendasTemp.push(venda)
-		
+				vendasTemp.push(venda);
+			
 				// Find or create entry in separatedByAdquirente
 				let entry = separatedByAdquirente.find(adquirente => adquirente.nomeAdquirente === venda.adquirente.nomeAdquirente);
 				if (!entry) {
@@ -439,20 +447,22 @@ const Dashboard = () => {
 						id: separatedByAdquirente.length,
 						nomeAdquirente: venda.adquirente.nomeAdquirente,
 						total: 0,
-						vendas: []
+						vendas: [] // Initialize vendas array
 					};
-					
 					separatedByAdquirente.push(entry);
 				}
-				entry.vendas.push(vendasTemp)
+			
+				// Push the current venda into the vendas array of the entry
+				entry.vendas.push(venda);
+			
 				// Update total for this adquirente
 				entry.total += venda.valorBruto;
 			});
 		} else if(tipo === 'creditos'){
 			array.forEach((venda) => {
 				sums.total += venda.valorLiquido;
-				vendasTemp.push(venda)
-		
+				vendasTemp.push(venda);
+			
 				// Find or create entry in separatedByAdquirente
 				let entry = separatedByAdquirente.find(adquirente => adquirente.nomeAdquirente === venda.adquirente.nomeAdquirente);
 				if (!entry) {
@@ -460,12 +470,14 @@ const Dashboard = () => {
 						id: separatedByAdquirente.length,
 						nomeAdquirente: venda.adquirente.nomeAdquirente,
 						total: 0,
-						vendas: []
+						vendas: [] // Initialize vendas array
 					};
-					
 					separatedByAdquirente.push(entry);
 				}
-				entry.vendas.push(vendasTemp)
+			
+				// Push the current venda into the vendas array of the entry
+				entry.vendas.push(venda);
+			
 				// Update total for this adquirente
 				entry.total += venda.valorLiquido;
 			});
@@ -490,8 +502,10 @@ const Dashboard = () => {
 	},[somatorioVendasMes])
 
 	useEffect(()=>{
-		console.log('admVendas: ', admVendas)
-		setGraficoVendas(carregaGrafico(admVendas))
+		if(admVendas.length > 0){
+			//console.log('admVendas: ', admVendas)
+			setGraficoVendas(carregaGrafico(admVendas))
+		}
 		if(admVendasAux.length > 0){
 			setGraficoVendasAux(carregaGrafico(admVendasAux))
 		}
@@ -507,7 +521,7 @@ const Dashboard = () => {
 	},[vetorCreditosMes])
 
 	useEffect(()=>{
-		console.log('admCreditos: ', admCreditos)
+		//console.log('admCreditos: ', admCreditos)
 		setGraficoCreditos(carregaGrafico(admCreditos))
 		if(admCreditosAux.length > 0){
 			setGraficoCreditosAux(carregaGrafico(admCreditosAux))
