@@ -1,0 +1,76 @@
+@import '../../styles/_variables.scss';
+
+/* The Modal (background) */
+.modal {
+    position: fixed; /* Stay in place */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    z-index: 8;
+  }
+  
+  /* Modal Content/Box */
+  .modal-content {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    border: none;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+  }
+  
+  /* Spinner */
+  .spinner {
+    border: 16px solid $background-color-light; /* Light grey */
+    border-top: 2px solid $secondary-color-light; /* Blue */
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 2s linear infinite;
+    margin: auto;
+  }
+  
+  /* Spinner animation */
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .loadingModal{
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 7;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0,0,0,0.4);
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    flex-direction: row;
+    align-content: center;
+    flex-wrap: wrap;
+  }
+
+  .spinner-container{
+    background-color: $primary-color-light;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+    border-radius: 5px;
+  }
+
+  .modal-text{
+    padding-top: 0.5em;
+    color: $secondary-color-light;
+    
+  }

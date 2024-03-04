@@ -483,9 +483,7 @@ function AuthProvider({ children }){
 			setLoading(false)
 		}
 	}
-      
-
-
+    
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	async function loadCreditos(cnpj, dataInicial, dataFinal) {
@@ -542,6 +540,10 @@ function AuthProvider({ children }){
 			}
 		} catch (error) {
 			console.error('Error loading creditos:', error)
+			if(error.response.status === 401){
+				logout()
+				alert('Sessão Expirada')
+			}
 			setLoading(false)
 			// Handle specific errors here, e.g., display a message to the user
 		}
@@ -615,6 +617,10 @@ function AuthProvider({ children }){
 			})
 			.catch((error) => {
 				setLoading(false)
+				if(error.response.status === 401){
+					logout()
+					alert('Sessão Expirada')
+				}
 				console.log(error)
 			})
 	}
@@ -644,6 +650,10 @@ function AuthProvider({ children }){
 			return recebimentosData
 		} catch (error) {
 			console.log(error)
+			if(error.response.status === 401){
+				logout()
+				alert('Sessão Expirada')
+			}
 			setLoading(false)
 		}
 	}
@@ -704,6 +714,10 @@ function AuthProvider({ children }){
 			}
 		} catch (error) {
 			console.log(error)
+			if(error.response.status === 401){
+				logout()
+				alert('Sessão Expirada')
+			}
 			setBuscou(false)
 			setLoading(false)
 		}
@@ -722,6 +736,10 @@ function AuthProvider({ children }){
 				Cookies.set('refreshToken', refreshToken)        
 			}).catch(error => {
 				console.log(error)
+				if(error.response.status === 401){
+					logout()
+					alert('Sessão Expirada')
+				}
 			})
 	}
 
@@ -829,8 +847,11 @@ function AuthProvider({ children }){
 		} catch (error) {
 			console.error('Error fetching vendas:', error)
 			setShowErrorMessage(true)
+			if(error.response.status === 401){
+				logout()
+				alert('Sessão Expirada')
+			}
 			setLoading(false)
-			logout()
 			return []
 		}
 	}
@@ -891,8 +912,11 @@ function AuthProvider({ children }){
 		} catch (error) {
 			console.error('Error fetching vendas:', error)
 			setShowErrorMessage(true)
+			if(error.response.status === 401){
+				logout()
+				alert('Sessão Expirada')
+			}
 			setLoading(false)
-			logout()
 			return []
 		}
 	}
@@ -948,8 +972,11 @@ function AuthProvider({ children }){
 		} catch (error) {
 			console.error('Error fetching creditos:', error)
 			setShowErrorMessage(true)
+			if(error.response.status === 401){
+				logout()
+				alert('Sessão Expirada')
+			}
 			setLoading(false)
-			logout()
 			return []
 		}
 	}
@@ -1079,6 +1106,7 @@ function AuthProvider({ children }){
 	}
 
 	function alerta(text){
+		console.log('função alerta')
 		toast.info(text, {
 			position: 'top-center',
 			autoClose: 5000,
@@ -1090,7 +1118,6 @@ function AuthProvider({ children }){
 			theme: 'light',
 		})
 	}
-
 
 	function gerarDados(array){
 		const tipoTemp = Cookies.get('tipo')
@@ -1119,6 +1146,7 @@ function AuthProvider({ children }){
 						tid: venda.tid,
 					})
 				})
+				console.log(`${tipoTemp} ao gerar dados: `, tableData)
 			} else if(tipoTemp === 'creditos'){
 				array.map((venda) => {
 					tableData.push({
@@ -1156,9 +1184,9 @@ function AuthProvider({ children }){
 						descricao: venda.descricao,
 					})
 				})
+				console.log(`${tipoTemp} ao gerar dados: `, tableData)
 			}
 		} 
-		console.log('servicos gerar dados: ', tableData)
 		return tableData
 	}
 

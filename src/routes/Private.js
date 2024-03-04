@@ -13,7 +13,7 @@ export default function Private({children}){
 
   const navigate = useNavigate()
 
-  const { setIsDarkTheme, isSignedIn, setIsSignedIn, setAccessToken, accessToken, loading, refresh, expired, cnpj, setCnpj } = useContext(AuthContext)
+  const { isSignedIn, setIsSignedIn, setAccessToken, accessToken, loading, refresh, expired, cnpj, setCnpj } = useContext(AuthContext)
 
 
   useEffect(()=>{
@@ -61,7 +61,7 @@ export default function Private({children}){
         {loading && (
               <LoadingModal />
           )}
-      </>
+      </>  
     )
   }
 }

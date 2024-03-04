@@ -89,12 +89,38 @@
     justify-content: center;
 }
 
-.btn-voltar{
-    width: 30%;
-}
-
 .select-align-filtro{
     align-content: center !important;
+}
+
+.header-tabela-grafico{
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-around;
+    font-family: $default-font;
+
+    &.light-theme{
+        color: $font-color-light;
+    }
+    &.dark-theme{
+        color: $font-color-dark;
+    }
+}
+
+.titulo-grafico{
+    margin: 0;
+    padding: 0;
+}
+
+.total-container-dashboard{
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
 }
 
 @media screen and (max-width: 1090px){
