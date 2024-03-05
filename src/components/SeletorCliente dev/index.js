@@ -199,7 +199,6 @@ const SeletorClienteDev = () => {
 	
 	const handleClienteChange = selectedOption => {
 		setClienteTeste(selectedOption)
-		// Save to cookies
 		Cookies.set('clienteTeste', JSON.stringify(selectedOption))
 		resetaDashboard()
 		if(podeBuscar){
@@ -231,6 +230,33 @@ const SeletorClienteDev = () => {
 			Cookies.set('textoExport', textoExport)
 		}
 	},[textoExport])
+
+/*	useEffect(()=>{
+		setGruSelecionado(grupoTeste.value)
+	},[handleGrupoChange])
+
+	useEffect(()=>{
+		setCnpj(clienteTeste.value)
+		console.log('grupo: ', cnpj)
+	},[handleClienteChange])*/
+
+	useEffect(()=>{
+		console.log('cnpjoto: ', cnpj)
+	},[cnpj])
+
+	useEffect(()=>{
+		console.log('CLI: ', clienteTeste)
+		setCnpj(clienteTeste.value)
+		if(Cookies.get('cnpj') !== 'selecione'){
+			Cookies.set('cnpj', clienteTeste.value)
+		}
+	},[clienteTeste])
+
+	useEffect(()=>{
+		console.log('GRU: ', grupoTeste)
+		setGrupoSelecionado(grupoTeste.value)
+		Cookies.set('grupo', grupoTeste.value)
+	},[grupoTeste])
 	
 	return(
 		<>

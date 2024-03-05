@@ -138,13 +138,22 @@ const Vendas = () =>{
   const [dataFinalExibicao, setDataFinalExibicao] = useState(new Date().toLocaleDateString('pt-BR'))
 
   useEffect(()=>{
+    console.log('dataBusca VENDAS: ', dataBusca)
     if((dataBusca[0] !== undefined) && (dataBusca[1] !== undefined)){
-      setDataBuscaInicial(dataBusca[0])
-      setDataBuscaInicial(dataBusca[1])
+      setDataBuscaInicial(dataBusca[0].toLocaleDateString('pt-BR'))
+      setDataBuscaFinal(dataBusca[1].toLocaleDateString('pt-BR'))
       setDataInicialExibicao(dataBusca[0].toLocaleDateString('pt-BR'))
       setDataFinalExibicao(dataBusca[1].toLocaleDateString('pt-BR'))
     }
   },[dataBusca])
+
+  useEffect(()=>{
+    console.log(dataBuscaInicial)
+  },[dataBuscaInicial])
+
+  useEffect(()=>{
+    console.log(dataBuscaFinal)
+  },[dataBuscaFinal])
 
   function separaAdm(array){
     if(array.length > 0){

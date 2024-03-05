@@ -975,6 +975,9 @@ function AuthProvider({ children }){
 			if(error.response.status === 401){
 				logout()
 				alert('Sessão Expirada')
+			} else {
+				alert('erro ', error.response.status)
+				logout()
 			}
 			setLoading(false)
 			return []
