@@ -70,7 +70,7 @@ const BuscarClienteVendas = () => {
 		if(cnpjBusca === '' || cnpjBusca === 'Selecione' || cnpjBusca === undefined){
 			return
 		}
-		await loadVendas(dataBusca[0], dataBusca[1], cnpjBusca)
+		await loadVendas(dataBusca[0].toLocaleDateString('pt-BR'), dataBusca[1].toLocaleDateString('pt-BR'), cnpjBusca)
 			.then(() =>{
 				if(dataBusca === '' || cnpjBusca === ''){
 					return 0
