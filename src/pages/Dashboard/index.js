@@ -64,6 +64,7 @@ const Dashboard = () => {
 		returnVendasPorPeriodo,
 		buscou,
 		setBuscou,
+		setCnpj,
 	} = useContext(AuthContext)
 
 	useEffect(()=>{
@@ -301,26 +302,28 @@ const Dashboard = () => {
 	},[])
 
 	useEffect(()=>{
-		if(cnpj !== Cookies.get('ultimoCnpj')){
+		if((cnpj !== Cookies.get('ultimoCnpj')) && (cnpj !== 'selecione')){
 			setBuscou(!buscou)
 		}
 	},[cnpj])
 
 	useEffect(()=>{
 		async function inicializar(){
-			if((cnpj !== Cookies.get('ultimoCnpj')) && (cnpj !== '')) {
-				await inicializaVendas4dias()
-				//await inicializaVendas4diasMes()
-				await inicializaVetorVendasMes()
-				await inicializaCreditos5dias()
-				await inicializaVetorCreditosMes()
-				await inicializaServicos()
-
-				setInicializou(true)
-				setInicializouAux(true)
-				sessionStorage.setItem('inicializou', true)
-			} else {
-				return
+			if(cnpj !== 'selecione'){
+				if((cnpj !== Cookies.get('ultimoCnpj')) && (cnpj !== '')) {
+					await inicializaVendas4dias()
+					//await inicializaVendas4diasMes()
+					await inicializaVetorVendasMes()
+					await inicializaCreditos5dias()
+					await inicializaVetorCreditosMes()
+					await inicializaServicos()
+	
+					setInicializou(true)
+					setInicializouAux(true)
+					sessionStorage.setItem('inicializou', true)
+				} else {
+					return
+				}
 			}
 		}
 

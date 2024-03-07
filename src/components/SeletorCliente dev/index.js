@@ -37,10 +37,9 @@ const SeletorClienteDev = () => {
 	} = useContext(AuthContext)
 
 	const [grupoTeste, setGrupoTeste] = useState({ value: 'selecione', label: 'Selecione' })
-	const [clienteTeste, setClienteTeste] = useState({ value: 'selecione', label: 'Selecione' })
+	const [clienteTeste, setClienteTeste] = useState({ value: 'todos', label: 'TODOS' })
 
 	const [cliSelecionado, setCliSelecionado] = useState('')
-	const [selectedCliLabel, setSelectedCliLabel] = useState('Selecione')
 	const [codigoGrupo, setCodigoGrupo] = useState('')
 	const [podeBuscar, setPodeBuscar] = useState(true)
 
@@ -59,11 +58,10 @@ const SeletorClienteDev = () => {
 		const grupoObj = grupos.find(item => item.CODIGOGRUPO === Number(grupoTeste.value))
 		let cli = grupoObj ? grupoObj.CLIENTES : []
 		setListaClientes(cli)
-		setListaCli([])
+		setClientesFiltrados([])
 		if(grupoTeste.label !== decodeURIComponent(Cookies.get('ultimoGrupoSelecionado'))){
-			setClienteTeste({ value: 'selecione', label: 'Selecione' })
+			setClienteTeste({ value: 'todos', label: 'TODOS' })
 		}
-		setSelectedCliLabel('Selecione')
 		setGruSelecionado(grupoTeste)
 	},[grupoTeste])
 
@@ -123,11 +121,31 @@ const SeletorClienteDev = () => {
 		}
 	}, [grupos])
 
+	const [podeSetarCliente, setPodeSetarCliente] = useState(false)
+	const [grupoInicial, setGrupoInicial] = useState({})
+
+	useEffect(()=>{
+		// setar valor com a primeira opcao do vetor de grupos filtrado (gruposFiltrado)
+		console.log('gruposFiltrado: ', gruposFiltrado)
+		if(gruposFiltrado.length > 0){
+			setGrupoTeste({value: gruposFiltrado[0].value, label: gruposFiltrado[0].label})
+			setPodeSetarCliente(true)
+		}
+	},[gruposFiltrado])
+
+	useEffect(()=>{
+		if(grupoTeste){
+			Cookies.set('codigoGrupo', grupoTeste.value)
+			setGrupoInicial(grupoTeste)
+		}
+	},[grupoTeste])
+
 	// clientes
 
-	const [listaCli, setListaCli] = useState([])
+	const [clientesFiltrados, setClientesFiltrados] = useState([])
 
 	useEffect(() => {
+		console.log('lista clientes effect')
 		if (listaClientes && listaClientes.length > 0) {
 			const sortedOptions = listaClientes
 				.map((CLI) => ({
@@ -137,11 +155,20 @@ const SeletorClienteDev = () => {
 				.sort((a, b) => a.label.localeCompare(b.label)) // Sort options alphabetically by label
 			let todos = {value: 'todos', label: 'TODOS'}
 			sortedOptions.unshift(todos)
-			setListaCli(sortedOptions)
+			setClientesFiltrados(sortedOptions)
 		} else {
-			setListaCli([])
+			setClientesFiltrados([])
 		}
 	}, [listaClientes])
+
+	useEffect(()=>{
+		// setar valor com a primeira opcao do vetor de clientes filtrado (listaClientes)
+		console.log('listaClientes: ', listaClientes)
+		if((podeSetarCliente) && (gruposFiltrado.length > 0) && (clientesFiltrados.length > 0)){
+			console.log('podeSetarCliente effect')
+			setClienteTeste({value: clientesFiltrados[0].value, label: clientesFiltrados[0].label})
+		}
+	},[podeSetarCliente])
 
 	useEffect(()=>{
 		if((cliSelecionado.value === cnpj) && (gruSelecionado.value === codigoGrupo)){
@@ -231,15 +258,6 @@ const SeletorClienteDev = () => {
 		}
 	},[textoExport])
 
-/*	useEffect(()=>{
-		setGruSelecionado(grupoTeste.value)
-	},[handleGrupoChange])
-
-	useEffect(()=>{
-		setCnpj(clienteTeste.value)
-		console.log('grupo: ', cnpj)
-	},[handleClienteChange])*/
-
 	useEffect(()=>{
 		console.log('cnpjoto: ', cnpj)
 	},[cnpj])
@@ -247,17 +265,30 @@ const SeletorClienteDev = () => {
 	useEffect(()=>{
 		console.log('CLI: ', clienteTeste)
 		setCnpj(clienteTeste.value)
-		if(Cookies.get('cnpj') !== 'selecione'){
-			Cookies.set('cnpj', clienteTeste.value)
-		}
+		Cookies.set('cnpj', clienteTeste.value)
 	},[clienteTeste])
 
 	useEffect(()=>{
 		console.log('GRU: ', grupoTeste)
 		setGrupoSelecionado(grupoTeste.value)
-		Cookies.set('grupo', grupoTeste.value)
+		
 	},[grupoTeste])
 	
+	useEffect(()=>{
+		if(Cookies.get('isCliente') === true){
+			setGrupoTeste({})
+			setClienteTeste({value: 'todos', label:'Total'})
+		}
+	},[])
+
+	useEffect(()=>{
+		if((!isNaN(grupoInicial.value)) && (grupoInicial.value !== 'selecione')){
+			console.log(grupoInicial.value)
+			Cookies.set('grupo', grupoInicial.value)
+			setBuscou(!buscou)
+		}
+	},[grupoInicial])
+
 	return(
 		<>
 			{ grupos === null ? <></> : 
@@ -295,7 +326,7 @@ const SeletorClienteDev = () => {
 										{listaClientes.length > 0 ? (
 											<Select
 												className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
-												options={listaCli}
+												options={clientesFiltrados}
 												onChange={handleClienteChange}
 												value={clienteTeste}
 											/>
