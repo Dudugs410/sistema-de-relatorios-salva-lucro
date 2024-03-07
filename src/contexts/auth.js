@@ -152,6 +152,15 @@ function AuthProvider({ children }){
 				sessionStorage.setItem('options', JSON.stringify(opt))
 				const gru = await loadGrupos()
 				sessionStorage.setItem('grupos', JSON.stringify(gru))
+				console.log('gru: ', gru)
+				if(gru.length === 1){
+					console.log('length = 1')
+					setGruSelecionado(gru[(gru.length - 1)])
+					setCnpj('todos')
+					Cookies.set('cnpj', 'todos')
+					Cookies.set('isCliente', 'true')
+					Cookies.set('ultimoGrupoSelecionado', 'nenhum')
+				}
 			}
   
 			const userResponse = await api.get('/usuario')
@@ -794,8 +803,9 @@ function AuthProvider({ children }){
 	async function returnVendas(datainicial, datafinal, cnpj) {
 		try {
 			setLoading(true)
+			console.log('Código Grupo: ', Cookies.get('codigoGrupo'))
 
-			if(cnpj === ('todos' || 'TODOS')){
+			if(cnpj === ('todos' || 'TODOS') && (Cookies.get('codigoGrupo') !== 'selecione')){
 				let params = {
 					datainicial: datainicial,
 					datafinal: datafinal,
