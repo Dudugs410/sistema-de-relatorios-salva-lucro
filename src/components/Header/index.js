@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { FiMoon, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText, FiClipboard, FiDownload } from "react-icons/fi";
+import { FiMoon, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText, FiClipboard, FiDownload, FiCalendar } from "react-icons/fi";
 import { AuthContext } from "../../contexts/auth";
 import React, { useContext, useEffect, useState } from "react";
 import salvaLucroLogoBranco from '../../assets/LogoTopo.png';
@@ -9,11 +9,33 @@ import Cookies from "js-cookie";
 import Relogio from "../Componente_Relogio";
 
 const Header = () => {
-    const { logout, isDarkTheme, setIsDarkTheme } = useContext(AuthContext);
+    const { logout, isDarkTheme, setIsDarkTheme, isCheckedCalendar, setIsCheckedCalendar,} = useContext(AuthContext);
 
     const [isChecked, setIsChecked] = useState(localStorage.getItem('isChecked') === 'true');
     const [showRelatoriosDropdown, setShowRelatoriosDropdown] = useState(false);
     const [showExportacoesDropdown, setShowExportacoesDropdown] = useState(false); // New state variable
+
+    const handleCheckboxChangeCalendar = () => {
+		setIsCheckedCalendar(!isCheckedCalendar); // Toggle the state
+	  };
+  
+	  useEffect(()=>{
+		console.log('checkbox marcada? ', isCheckedCalendar)
+        if (localStorage.getItem('localUsers') !== null) {
+            let localUsersTemp = JSON.parse(localStorage.getItem('localUsers'));
+            localUsersTemp.map(user => {
+                if (user.id === Cookies.get('userID')) {
+                    user.calendar = isCheckedCalendar;
+                }
+            });
+            localStorage.setItem('localUsers', JSON.stringify(localUsersTemp));
+        } else {
+            let localUsersTemp = [];
+            let userTemp = { id: Cookies.get('userID'), calendar: isCheckedCalendar };
+            localUsersTemp.push(userTemp);
+            localStorage.setItem('localUsers', JSON.stringify(localUsersTemp));
+        }
+	  },[isCheckedCalendar])
 
     const handleCheckboxChange = () => {
         const updatedChecked = !isChecked;
@@ -83,6 +105,23 @@ const Header = () => {
         setOptionsWithIcons(arrayOpcoes);
     }, []);
 
+const CustomCheckbox = ({ isChecked, handleCheckboxChange }) => {
+  return (
+    <label className="checkbox-label">
+      <input
+        type="checkbox"
+        checked={isChecked}
+        onChange={handleCheckboxChange}
+        className="checkbox-input"
+      />
+      <span className="checkbox-custom"></span> {/* This is for the custom checkbox appearance */}
+      <span className="checkbox-icon">
+        <FiCalendar color="white" size={20} />
+      </span>
+    </label>
+  );
+};
+
     return (
         <>
             <div className="header-bg-image">
@@ -150,6 +189,7 @@ const Header = () => {
                                     <input type="checkbox" id="toggleButton" checked={isChecked} onChange={handleCheckboxChange}/>
                                     <span className="slider"><FiMoon/><FiSun/></span>
                                 </label>
+                                <CustomCheckbox isChecked={isCheckedCalendar} handleCheckboxChange={handleCheckboxChangeCalendar}/>
                             </div>
                         </div>
                     </div>

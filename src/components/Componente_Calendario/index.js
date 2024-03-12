@@ -8,28 +8,18 @@ import '../../styles/global.scss'
 import { FiCalendar } from "react-icons/fi";
 
 const MyCalendar = ({dataInicialExibicao, dataFinalExibicao, dataBusca, handleDateChange }) => {
-    const { isDarkTheme } = useContext(AuthContext)
+    const { isDarkTheme, isCheckedCalendar, setIsCheckedCalendar } = useContext(AuthContext)
 
-    const [isChecked, setIsChecked] = useState(true);
-    
-    const handleCheckboxChange = () => {
-      setIsChecked(!isChecked); // Toggle the state
-    };
+    const [dateRange, setDateRange] = useState([new Date(), new Date()]);
+
+
 
     useEffect(()=>{
-      console.log('checkbox marcada? ', isChecked)
-    },[isChecked])
+      handleDateChange(dateRange)
+    },[dateRange])
 
     //date-range-picker
     const MyDatePicker = () => {
-      const [dateRange, setDateRange] = useState([new Date(), new Date()]);
-
-      const myHandleDateChange = () => {
-        console.log()
-        const datechanger = [dateRange[0], dateRange[1]]
-        handleDateChange(datechanger)
-      }
-    
       return (
         <div className="form-container-relatorios">
           <div className='select-elements-container'>
@@ -48,9 +38,6 @@ const MyCalendar = ({dataInicialExibicao, dataFinalExibicao, dataBusca, handleDa
               />
             </div>
           </div>
-          <div className='btn-container-financeiro'>
-            <button className={`btn btn-global ${isDarkTheme ? 'dark-theme' : 'light-theme'}`} onClick={() => myHandleDateChange(dateRange)}>Selecionar</button>
-          </div>
         </div>
       );
     };
@@ -59,16 +46,7 @@ const MyCalendar = ({dataInicialExibicao, dataFinalExibicao, dataBusca, handleDa
 
     return (
       <div className='component-container'>
-        <label className={`label-calendar ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
-          <input
-            type="checkbox"
-            checked={isChecked}
-            onChange={handleCheckboxChange}/>
-            <FiCalendar />
-            Display
-        </label>
-      
-        { isChecked ? <>
+        { isCheckedCalendar ? <>
         <Calendar
           style={{ color:'white' }}
           className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}

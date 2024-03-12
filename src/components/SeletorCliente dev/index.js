@@ -9,31 +9,25 @@ import Cookies from 'js-cookie'
 
 import 'react-toastify/dist/ReactToastify.css'
 import './Seletor.scss'
+import { FiCalendar } from 'react-icons/fi'
 
 const SeletorClienteDev = () => {
 	const { 
-		gruSelecionado, 
-		setGruSelecionado,
-		listaClientes,
-		setListaClientes,
-		setGrupos,
-		loadGrupos,
+		gruSelecionado,	setGruSelecionado,
+		listaClientes, setListaClientes,
+		grupos, setGrupos, loadGrupos,
 		resetaSomatorios,
 		alerta,
 		isDarkTheme,
-		grupos,
-		cnpj,
-		setCnpj,
+		cnpj, setCnpj,
 		setInicializouAux,
 		resetaDashboard,
-		buscou,
-		setBuscou,
+		buscou, setBuscou,
 		setGrupoSelecionado,
 		setClienteSelecionado,
-		trocarHeader,
-		setTrocarHeader,
-		textoExport,
-		setTextoExport,
+		trocarHeader, setTrocarHeader,
+		textoExport, setTextoExport,
+		
 	} = useContext(AuthContext)
 
 	const [grupoTeste, setGrupoTeste] = useState({ value: 'selecione', label: 'Selecione' })
@@ -343,7 +337,7 @@ const SeletorClienteDev = () => {
 								</div>
 							</div>
 							<div className="select-btn-seletor">
-								
+
 							</div>
 						</form>
 					</div>

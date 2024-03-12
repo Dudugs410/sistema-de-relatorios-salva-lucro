@@ -86,6 +86,8 @@ function AuthProvider({ children }){
 
 	const [textoExport, setTextoExport] = useState(Cookies.get('textoExport'))
 
+	const [isCheckedCalendar, setIsCheckedCalendar] = useState(true);
+
 
 	const navigate = useNavigate()
 
@@ -139,11 +141,12 @@ function AuthProvider({ children }){
 					localStorage.setItem('localUsers', JSON.stringify(updatedUsers))
 				} else {
 					// Add new user to localUsers
-					userTemp = { id: userId, theme: false}
+					userTemp = { id: userId, theme: false, calendar: true}
 					localUsers.push(userTemp)
 					setIsDarkTheme(false)
 					localStorage.setItem('isDark', false)
 					localStorage.setItem('isChecked', false)
+					localStorage.setItem('calendar', true)
 					localStorage.setItem('localUsers', JSON.stringify(localUsers))
 				}
 				setCnpj('')
@@ -1325,6 +1328,7 @@ function AuthProvider({ children }){
 				trocarHeader, setTrocarHeader,
 				detalhes, setDetalhes,
 				textoExport, setTextoExport,
+				isCheckedCalendar, setIsCheckedCalendar,
 			}}
 		>
 			{children}
