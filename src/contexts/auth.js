@@ -679,8 +679,8 @@ function AuthProvider({ children }){
 		try {
 			if(cnpj === ('todos' || 'TODOS')){
 				let params = {
-					dataInicial: (dataInicial),
-					dataFinal: (dataFinal),
+					dataInicial: (dataInicial.toLocaleString('pt-BR')),
+					dataFinal: (dataFinal.toLocaleString('pt-BR')),
 					codigoGrupo: Cookies.get('codigoGrupo')
 				}
     
@@ -703,8 +703,8 @@ function AuthProvider({ children }){
 			} else {
 				const params = {
 					cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-					dataInicial: dataInicial,
-					dataFinal: dataFinal,
+					dataInicial: dataInicial.toLocaleString('pt-BR'),
+					dataFinal: dataFinal.toLocaleString('pt-BR'),
 				}
     
 				const config = {

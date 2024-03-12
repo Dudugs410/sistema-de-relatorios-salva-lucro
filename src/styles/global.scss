@@ -173,6 +173,7 @@ span{
     --bs-table-hover-color: var(--bs-emphasis-color);
     --bs-table-hover-bg: rgba(var(--bs-emphasis-color-rgb), 0.075);
     
+    height: auto;
     width: 100%;
     margin-bottom: 1rem;
     vertical-align: top;
@@ -261,6 +262,10 @@ span{
       &.dark-theme {
         --bs-table-bg: $background-color-dark;
       }
+}
+
+tr{
+    height: 1.5em;
 }
 
 .det-th-global, .det-td-global{

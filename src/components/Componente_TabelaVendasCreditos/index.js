@@ -410,7 +410,7 @@ const TabelaVendasCreditos = ({array, tipo, isDashboard}) =>{
 		} else {
 			setStyle({ display: 'block' })
 		}
-	}, [])
+	},[])
 
 	return(
 		<>

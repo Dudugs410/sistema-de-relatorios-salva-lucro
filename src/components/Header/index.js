@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { FiMoon, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText, FiClipboard } from "react-icons/fi";
+import { FiMoon, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText, FiClipboard, FiDownload } from "react-icons/fi";
 import { AuthContext } from "../../contexts/auth";
 import React, { useContext, useEffect, useState } from "react";
 import salvaLucroLogoBranco from '../../assets/LogoTopo.png';
@@ -13,6 +13,7 @@ const Header = () => {
 
     const [isChecked, setIsChecked] = useState(localStorage.getItem('isChecked') === 'true');
     const [showRelatoriosDropdown, setShowRelatoriosDropdown] = useState(false);
+    const [showExportacoesDropdown, setShowExportacoesDropdown] = useState(false); // New state variable
 
     const handleCheckboxChange = () => {
         const updatedChecked = !isChecked;
@@ -52,6 +53,7 @@ const Header = () => {
             'FiTool': FiTool,
             'FiFileText': FiFileText,
             'FiClipboardSign': FiClipboard,
+            'FiDownload': FiDownload,
         };
 
         const orderedOptions = [
@@ -61,8 +63,11 @@ const Header = () => {
             { nome: 'Serviços', icone: icones['FiTool'], rota: '/servicos' },
             { nome: 'Relatórios', icone: icones['FiFileText'], children: [
                 { nome: 'Financeiro', rota: '/financeiro' },
-                { nome: 'Gerenciais', rota: '/gerenciais' }
-            ]}
+                { nome: 'Gerenciais', rota: '/gerenciais' },
+            ]},
+            { nome: 'Exportações', icone: icones['FiDownload'], children: [
+                { nome: 'Sysmo', rota: '/sysmo' },
+            ]},
         ];
 
         let arrayOpcoes = [];
@@ -102,12 +107,24 @@ const Header = () => {
                                 {optionsWithIcons.length > 0 && optionsWithIcons.map((opcao, index) => (
                                     <li className="nav-item" key={index}>
                                     {opcao.children ? (
-                                        <div className="nav-hover dropdown" onMouseEnter={() => setShowRelatoriosDropdown(true)} onMouseLeave={() => setShowRelatoriosDropdown(false)}>
-                                            <button className={`px-2 me-1 li-button-content nav-hover-button dropdown-button ${isDarkTheme ? 'dark-theme' : 'light-theme'}`} style={{ width: '120px' }}>
+                                        <div className="nav-hover dropdown" onMouseEnter={() => {
+                                            if (opcao.nome === 'Relatórios') {
+                                                setShowRelatoriosDropdown(true);
+                                            } else if (opcao.nome === 'Exportações') {
+                                                setShowExportacoesDropdown(true);
+                                            }
+                                        }} onMouseLeave={() => {
+                                            if (opcao.nome === 'Relatórios') {
+                                                setShowRelatoriosDropdown(false);
+                                            } else if (opcao.nome === 'Exportações') {
+                                                setShowExportacoesDropdown(false);
+                                            }
+                                        }}>
+                                            <button className={`px-2 me-1 li-button-content nav-hover-button dropdown-button ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
                                                 {opcao.icone && React.createElement(opcao.icone)}
                                                 <span className="ms-1 mt-2 mb-auto li-btn-text">{opcao.nome}</span>
                                             </button>
-                                            <div className={`dropdown-menu ${isDarkTheme ? 'dark-theme' : 'light-theme'} ${showRelatoriosDropdown ? 'show' : ''}`} aria-labelledby="dropdownMenuButton" style={{ position: 'absolute', top: '100%', left: 0 }}>
+                                            <div className={`dropdown-menu ${isDarkTheme ? 'dark-theme' : 'light-theme'} ${opcao.nome === 'Relatórios' ? (showRelatoriosDropdown ? 'show' : '') : (showExportacoesDropdown ? 'show' : '')}`} aria-labelledby="dropdownMenuButton" style={{ position: 'absolute', top: '100%', left: 0 }}>
                                                 {opcao.children.map((childOption, childIndex) => (
                                                     <Link key={childIndex} to={childOption.rota} className={`dropdown-item ${isDarkTheme ? 'dark-theme' : 'light-theme'} relatorios-child`}>
                                                         <button className={`px-2 me-1 li-button-content nav-hover-button dropdown-button ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
