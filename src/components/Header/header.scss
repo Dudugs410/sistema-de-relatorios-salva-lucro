@@ -198,7 +198,7 @@
 
     &.dark-theme{
         color: $primary-color-dark;
-        background-color: white;
+        background-color: $secondary-color-dark;
     }
     
     transition: all, 0.4s;
@@ -326,11 +326,13 @@
   
   .dropdown-item:hover {
     &.light-theme{
+        color: $primary-color-light;
         background-color: $primary-color-light;
        
     }
 
     &.dark-theme{
+        color: $primary-color-dark;
         background-color: $primary-color-dark;
 
     }
@@ -400,6 +402,32 @@
       .checkbox-custom {
         transition: background-color 0.3s, border-color 0.3s;
       }
+
+      .li-button-content{
+    
+        &.light-theme{
+            color: white;
+            background-color: $primary-color-light;
+        }
+    
+        &.dark-theme{
+            color: $font-color-dark;
+            background-color: $primary-color-dark;
+        }
+    }
+    
+    .li-button-content:hover{
+        &.light-theme{
+            color: $font-color-light;
+            background-color: $secondary-color-light;
+        }
+    
+        &.dark-theme{
+            color: $primary-color-dark;
+            background-color: $secondary-color-dark;
+        }
+        transition: all, 0.4s;
+    }
 
 @media screen and (max-width: 869px){
 
@@ -515,7 +543,6 @@
     
     .li-button-content{
         width: 100%;
-        color: white;
         display: inline-flex;
         flex-direction: row;
         flex-wrap: wrap;
@@ -524,10 +551,12 @@
         border: none;
     
         &.light-theme{
+            color: white;
             background-color: $primary-color-light;
         }
     
         &.dark-theme{
+            color: $font-color-dark;
             background-color: $primary-color-dark;
         }
     }
@@ -540,7 +569,7 @@
     
         &.dark-theme{
             color: $primary-color-dark;
-            background-color: white;
+            background-color: $secondary-color-dark;
         }
         transition: all, 0.4s;
     }
@@ -560,6 +589,32 @@
     .relatorios-child .li-btn-text {
         display: inline; // Display Relatórios children text
     }
+
+    .li-button-content{
+    
+        &.light-theme{
+            color: white;
+            background-color: $primary-color-light;
+        }
+    
+        &.dark-theme{
+            color: $font-color-dark;
+            background-color: $primary-color-dark;
+        }
+    }
+    
+    .li-button-content:hover{
+        &.light-theme{
+            color: $primary-color-light;
+            background-color: $secondary-color-light;
+        }
+    
+        &.dark-theme{
+            color: $primary-color-dark;
+            background-color: $secondary-color-dark;
+        }
+        transition: all, 0.4s;
+    }
 }
 
 @media only screen and (max-width: 517px) {
@@ -570,6 +625,32 @@
 
     .relatorios-child .li-btn-text {
         display: inline; // Display Relatórios children text
+    }
+
+    .li-button-content{
+    
+        &.light-theme{
+            color: white;
+            background-color: $primary-color-light;
+        }
+    
+        &.dark-theme{
+            color: $font-color-dark;
+            background-color: $primary-color-dark;
+        }
+    }
+    
+    .li-button-content:hover{
+        &.light-theme{
+            color: $primary-color-light;
+            background-color: $secondary-color-light;
+        }
+    
+        &.dark-theme{
+            color: $primary-color-dark;
+            background-color: $secondary-color-dark;
+        }
+        transition: all, 0.4s;
     }
   }
 

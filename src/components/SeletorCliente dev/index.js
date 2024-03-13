@@ -174,6 +174,13 @@ const SeletorClienteDev = () => {
 		}
 		setGrupoSelecionado(gruSelecionado)
 		setClienteSelecionado(cliSelecionado)
+
+		if(cliSelecionado.label !== 'TODOS'){
+			setTextoExport(cliSelecionado.label)
+		} else {
+			setTextoExport(gruSelecionado.label + ' - todas filiais')
+		}
+
 	},[cliSelecionado, cnpj, codigoGrupo, gruSelecionado])
 
 	useEffect(()=>{
