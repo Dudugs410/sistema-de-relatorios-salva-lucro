@@ -93,6 +93,7 @@ const Gerenciais = () =>{
                                 value={formatoRelatorio} 
                                 onChange={handleFormato}
                                 options={opcoesFormato}
+                                placeholder={'PDF'}
                                 isSearchable={false}
                                 isDisabled={true}
                             />

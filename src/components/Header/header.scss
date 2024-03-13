@@ -403,6 +403,10 @@
 
 @media screen and (max-width: 869px){
 
+    .li-btn-text{
+        display: none
+    }
+
     .header-bg-image{
         width: 100%;
         display: flex;
@@ -540,6 +544,10 @@
         }
         transition: all, 0.4s;
     }
+
+    .relatorios-child .li-btn-text {
+        display: inline; // Display Relatórios children text
+    }
 }
 
 
@@ -547,6 +555,10 @@
 @media screen and (max-width: 637px) {
     .li-btn-text{
         display: none;
+    }
+
+    .relatorios-child .li-btn-text {
+        display: inline; // Display Relatórios children text
     }
 }
 

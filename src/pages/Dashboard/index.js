@@ -27,44 +27,24 @@ const Dashboard = () => {
 	const {  
 		returnVendas,
 		returnCreditos,
-		returnTotalMes,
 		cnpj, 
-		dateConvertSearch, 
 		modalCliente,
 		converteData,
-		admVendasAux,
-		setAdmVendasAux,
-		admCreditosAux,
-		setAdmCreditosAux,
-		somatorioCreditosHojeAux,
-		setSomatorioCreditosHojeAux,
-		totalCreditos5diasAux,
-		setTotalCreditos5diasAux,
-		somatorioVendasMesAux,
-		setSomatorioVendasMesAux,
-		totalVendas4diasAux,
-		setTotalVendas4diasAux,
-		graficoVendasAux,
-		setGraficoVendasAux,
-		graficoCreditosAux,
-		setGraficoCreditosAux,
-		inicializouAux,
-		setInicializouAux,
-		isDarkTheme,
-		setIsDarkTheme,
+		admVendasAux, setAdmVendasAux,
+		admCreditosAux, setAdmCreditosAux,
+		somatorioCreditosHojeAux, setSomatorioCreditosHojeAux,
+		totalCreditos5diasAux, setTotalCreditos5diasAux,
+		somatorioVendasMesAux, setSomatorioVendasMesAux,
+		totalVendas4diasAux, setTotalVendas4diasAux,
+		graficoVendasAux, setGraficoVendasAux,
+		graficoCreditosAux,	setGraficoCreditosAux,
+		inicializouAux,	setInicializouAux,
+		isDarkTheme, setIsDarkTheme,
 		loadAjustes,
-		admServicosAux,
-		setAdmServicosAux,
-		graficoServicosAux,
-		setGraficoServicosAux,
-		totalServicosHojeAux,
-		setTotalServicosHojeAux,
-		totalServicosMesAux,
-		setTotalServicosMesAux,
-		returnVendasPorPeriodo,
-		buscou,
-		setBuscou,
-		setCnpj,
+		admServicosAux,	setAdmServicosAux,
+		graficoServicosAux,	setGraficoServicosAux, totalServicosHojeAux, setTotalServicosHojeAux, totalServicosMesAux, setTotalServicosMesAux,
+		buscou,	setBuscou,
+		gruSelecionado,
 	} = useContext(AuthContext)
 
 	useEffect(()=>{
@@ -306,6 +286,15 @@ const Dashboard = () => {
 			setBuscou(!buscou)
 		}
 	},[cnpj])
+
+	useEffect(()=>{
+		console.log(cnpj)
+		if((cnpj === 'todos')){
+			console.log('TODOS CNPJs')
+			setInicializouAux(false)
+			setBuscou(!buscou)
+		}
+	},[gruSelecionado])
 
 	useEffect(()=>{
 		async function inicializar(){

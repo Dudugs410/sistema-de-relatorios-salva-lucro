@@ -167,7 +167,7 @@ const CustomCheckbox = ({ isChecked, handleCheckboxChange }) => {
                                                 {opcao.children.map((childOption, childIndex) => (
                                                     <Link key={childIndex} to={childOption.rota} className={`dropdown-item ${isDarkTheme ? 'dark-theme' : 'light-theme'} relatorios-child`}>
                                                         <button className={`px-2 me-1 li-button-content nav-hover-button dropdown-button ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
-                                                            <span className="ms-1 mt-2 mb-auto li-btn-text ">{childOption.nome}</span>
+                                                            <span className="ms-1 mt-2 mb-auto li-btn-text span-option">{childOption.nome}</span>
                                                         </button>
                                                     </Link>
                                                 ))}
