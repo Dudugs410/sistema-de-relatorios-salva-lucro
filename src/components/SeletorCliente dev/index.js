@@ -215,7 +215,6 @@ const SeletorClienteDev = () => {
 		setGrupoTeste(selectedOption);
 		// Save to cookies
 		Cookies.set('grupoTeste', JSON.stringify(selectedOption));
-		Cookies.set('ultimoGrupoSelecionado', selectedOption.label)
 	  };
 	
 	const handleClienteChange = selectedOption => {

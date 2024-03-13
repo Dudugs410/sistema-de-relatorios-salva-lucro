@@ -288,11 +288,15 @@ const Dashboard = () => {
 	},[cnpj])
 
 	useEffect(()=>{
-		console.log(cnpj)
-		if((cnpj === 'todos')){
-			console.log('TODOS CNPJs')
+		console.log('gruSelecionado useEffect')
+		console.log('CNPJ: ', cnpj)
+		console.log('gruSelecionado label: ', gruSelecionado.label, 'ultimoGrupo: ', Cookies.get('ultimoGrupoSelecionado'))
+		if((cnpj === 'todos') && (Cookies.get('ultimoGrupoSelecionado') !== gruSelecionado.label)){
+			console.log('TODOS CNPJs e Selecionou outro grupo')
 			setInicializouAux(false)
+			setInicializou(false)
 			setBuscou(!buscou)
+			Cookies.set('ultimoGrupoSelecionado', gruSelecionado.label)
 		}
 	},[gruSelecionado])
 
