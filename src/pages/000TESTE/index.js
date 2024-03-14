@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import MyCalendar from "../../components/Componente_Calendario";
 import ResizableComponent from "../../components/Componente_Resizeable";
 import { AuthContext } from "../../contexts/auth";
@@ -9,7 +9,16 @@ const handleDateChange = () =>{
 
 const PageTeste = () => {
 
-    const {isDarkTheme} = useContext(AuthContext)
+  const {isDarkTheme, loading, setLoading} = useContext(AuthContext)
+
+  useEffect(()=>{
+    setLoading(true)
+  },[])
+
+  useEffect(()=>{
+    console.log(loading)
+
+  },[loading])
 
   const compTeste = () => {
     return (

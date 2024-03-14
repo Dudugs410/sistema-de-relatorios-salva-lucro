@@ -366,7 +366,6 @@ function AuthProvider({ children }){
 	async function loadGrupos() {
 		try {
 			if (!inicializouGruposAux) {
-				setLoading(true)
 				const response = await api.get('/grupo')
 				const gru = response.data
     
@@ -385,7 +384,6 @@ function AuthProvider({ children }){
 			}
 		} catch (error) {
 			console.error(error)
-			setLoading(false)
 			throw new Error(error.message) // Re-throw the error for handling in the caller function
 		}
 	}

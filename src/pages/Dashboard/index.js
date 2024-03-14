@@ -288,11 +288,7 @@ const Dashboard = () => {
 	},[cnpj])
 
 	useEffect(()=>{
-		console.log('gruSelecionado useEffect')
-		console.log('CNPJ: ', cnpj)
-		console.log('gruSelecionado label: ', gruSelecionado.label, 'ultimoGrupo: ', Cookies.get('ultimoGrupoSelecionado'))
 		if((cnpj === 'todos') && (Cookies.get('ultimoGrupoSelecionado') !== gruSelecionado.label)){
-			console.log('TODOS CNPJs e Selecionou outro grupo')
 			setInicializouAux(false)
 			setInicializou(false)
 			setBuscou(!buscou)
@@ -389,14 +385,12 @@ const Dashboard = () => {
 	},[vetorCreditosMes])
 
 	useEffect(()=>{
-		//console.log('créditos dos próximos 5 dias: ', creditos5dias)
 		const total = creditos5dias.reduce((total, obj) => total + obj.valorLiquido, 0)
 		setTotalCreditos5dias(total)
 	},[creditos5dias])
 
 
 	useEffect(()=>{
-		//console.log('somatório dos créditos dos próximos 5 dias: ', totalCreditos5dias)
 		if(inicializouAux === false){
 			setTotalCreditos5diasAux(totalCreditos5dias)
 		}
@@ -499,7 +493,6 @@ const Dashboard = () => {
 
 	useEffect(()=>{
 		if(admVendas.length > 0){
-			//console.log('admVendas: ', admVendas)
 			setGraficoVendas(carregaGrafico(admVendas))
 		}
 		if(admVendasAux.length > 0){
@@ -517,12 +510,10 @@ const Dashboard = () => {
 	},[vetorCreditosMes])
 
 	useEffect(()=>{
-		//console.log('admCreditos: ', admCreditos)
 		setGraficoCreditos(carregaGrafico(admCreditos))
 		if(admCreditosAux.length > 0){
 			setGraficoCreditosAux(carregaGrafico(admCreditosAux))
 		}
-
 	},[admCreditos])
 
 	useEffect(()=>{

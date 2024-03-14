@@ -1,15 +1,16 @@
-import React from "react"
+import React, { useContext } from "react"
 import './loadingModal.scss'
+import LoadingIcons from 'react-loading-icons'
+import { AuthContext } from "../../contexts/auth"
 
 const LoadingModal = () => {
 
+    const { isDarkTheme } = useContext(AuthContext)
+
     return(
         <>
-            <div className="loadingModal">
-                <div className='spinner-container'>
-                    <span className='modal-text'>Carregando...</span>
-                    <div className='spinner'></div>
-                </div>
+            <div className={`loadingModal ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
+                { isDarkTheme ? <LoadingIcons.TailSpin stroke='white'/> : <LoadingIcons.Oval stroke='white'/> }
             </div>
         </>
     )

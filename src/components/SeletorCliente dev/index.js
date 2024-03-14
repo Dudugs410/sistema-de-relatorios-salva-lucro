@@ -64,7 +64,6 @@ const SeletorClienteDev = () => {
 			return
 		}
 		resetaDashboard()
-		//console.log(cliSelecionado.value)
 		if(podeBuscar){
 			resetaSomatorios()
 			setCnpj(cliSelecionado.value)
@@ -120,7 +119,6 @@ const SeletorClienteDev = () => {
 
 	useEffect(()=>{
 		// setar valor com a primeira opcao do vetor de grupos filtrado (gruposFiltrado)
-		console.log('gruposFiltrado: ', gruposFiltrado)
 		if(gruposFiltrado.length > 0){
 			setGrupoTeste({value: gruposFiltrado[0].value, label: gruposFiltrado[0].label})
 			setPodeSetarCliente(true)
@@ -139,7 +137,6 @@ const SeletorClienteDev = () => {
 	const [clientesFiltrados, setClientesFiltrados] = useState([])
 
 	useEffect(() => {
-		console.log('lista clientes effect')
 		if (listaClientes && listaClientes.length > 0) {
 			const sortedOptions = listaClientes
 				.map((CLI) => ({
@@ -157,9 +154,7 @@ const SeletorClienteDev = () => {
 
 	useEffect(()=>{
 		// setar valor com a primeira opcao do vetor de clientes filtrado (listaClientes)
-		console.log('listaClientes: ', listaClientes)
 		if((podeSetarCliente) && (gruposFiltrado.length > 0) && (clientesFiltrados.length > 0)){
-			console.log('podeSetarCliente effect')
 			setClienteTeste({value: clientesFiltrados[0].value, label: clientesFiltrados[0].label})
 		}
 	},[podeSetarCliente])
@@ -204,7 +199,6 @@ const SeletorClienteDev = () => {
 	}, []);
 
 	useEffect(()=>{
-		//console.log('grupo selecionado: ', grupoTeste)
 		setGrupoSelecionado(grupoTeste.value)
 		sessionStorage.setItem('codigoGrupo', grupoTeste.value)
 		Cookies.set('codigoGrupo', grupoTeste.value)
@@ -212,7 +206,6 @@ const SeletorClienteDev = () => {
 	},[grupoTeste])
 
 	useEffect(()=>{
-		//console.log('cliente selecionado: ', clienteTeste)
 		setClienteSelecionado(clienteTeste.value)
 		Cookies.set('filialHeader', clienteTeste.label)
 		setCliSelecionado(clienteTeste)
@@ -258,18 +251,14 @@ const SeletorClienteDev = () => {
 		}
 	},[textoExport])
 
-	useEffect(()=>{
-		console.log('cnpjoto: ', cnpj)
-	},[cnpj])
+
 
 	useEffect(()=>{
-		console.log('CLI: ', clienteTeste)
 		setCnpj(clienteTeste.value)
 		Cookies.set('cnpj', clienteTeste.value)
 	},[clienteTeste])
 
 	useEffect(()=>{
-		console.log('GRU: ', grupoTeste)
 		setGrupoSelecionado(grupoTeste.value)
 		
 	},[grupoTeste])
@@ -283,7 +272,6 @@ const SeletorClienteDev = () => {
 
 	useEffect(()=>{
 		if((!isNaN(grupoInicial.value)) && (grupoInicial.value !== 'selecione')){
-			console.log(grupoInicial.value)
 			Cookies.set('grupo', grupoInicial.value)
 			setBuscou(!buscou)
 		}

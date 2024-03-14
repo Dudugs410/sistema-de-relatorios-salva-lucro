@@ -34,16 +34,6 @@ const Financeiro = () =>{
         setFormatoRelatorio(selectedOption)
     }
 
-    useEffect(()=>{
-        console.log('tipo do relatório: ', tipoRelatorio)
-
-    },[tipoRelatorio])
-
-    useEffect(()=>{
-        console.log('formato do relatório: ', formatoRelatorio)
-
-    },[formatoRelatorio])
-
     const handleDateChange = date => {
         setDataBusca(date)
     }
@@ -63,7 +53,6 @@ const Financeiro = () =>{
     function handleExport(e){
         e.preventDefault()
         setLoading(true)
-        console.log('dataBusca: ', dataBusca)
         base64PDFdownload()
         setLoading(false)
     }

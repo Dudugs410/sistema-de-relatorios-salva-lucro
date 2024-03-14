@@ -112,11 +112,11 @@ const CustomCheckbox = ({ isChecked, handleCheckboxChange }) => {
         type="checkbox"
         checked={isChecked}
         onChange={handleCheckboxChange}
-        className="checkbox-input"
+        className={`checkbox-input ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}
       />
-      <span className="checkbox-custom"></span> {/* This is for the custom checkbox appearance */}
-      <span className="checkbox-icon">
-        <FiCalendar color="white" size={20} />
+      <span className={`checkbox-custom ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}></span> {/* This is for the custom checkbox appearance */}
+      <span className={`checkbox-icon ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
+        <FiCalendar className={`calendar-icon ${isDarkTheme ? 'dark-theme' : 'light-theme'} ${isCheckedCalendar ? 'isCheckedCalendar' : ''}`} size={20} />
       </span>
     </label>
   );

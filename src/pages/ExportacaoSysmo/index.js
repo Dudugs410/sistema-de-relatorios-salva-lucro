@@ -81,7 +81,6 @@ const ExportacaoSysmo = () =>{
     function handleExport(e){
         e.preventDefault()
         setLoading(true)
-        console.log('dataBusca: ', dataBusca)
         base64PDFdownload()
         setLoading(false)
     }
@@ -93,14 +92,6 @@ const ExportacaoSysmo = () =>{
     function handleAdq(e){
         setAdqSelecionada(e)
     }
-
-    useEffect(()=>{
-        console.log('banSelecionada: ', banSelecionada)
-    },[banSelecionada])
-
-    useEffect(()=>{
-        console.log('adqSelecionada: ', adqSelecionada)
-    },[adqSelecionada])
 
     useEffect(()=>{
         console.log('Parâmetros Selecionados: ',

@@ -374,18 +374,27 @@
         border: 2px solid #ccc; /* Border color for unchecked state */
         border-radius: 4px;
         margin-right: 8px;
-      }
-      
-      .checkbox-input:checked + .checkbox-custom {
-        background-color: $secondary-color-light; /* Background color for checked state */
-        border-color: $secondary-color-light;
         &.light-theme{
-            background-color: $primary-color-light;
+            border-color: $primary-color-light;
            
         }
     
         &.dark-theme{
-            background-color: $primary-color-dark;
+            border-color: $primary-color-dark;
+    
+        }
+      }
+      
+      .checkbox-input:checked + .checkbox-custom {
+        &.light-theme{
+            border-color: $secondary-color-light;
+            background-color: $secondary-color-light;
+           
+        }
+    
+        &.dark-theme{
+            border-color: $secondary-color-dark;
+            background-color: $secondary-color-dark;
     
         }
       }
@@ -428,6 +437,31 @@
         }
         transition: all, 0.4s;
     }
+
+    .calendar-icon{
+        position: relative;
+        right: 28px;
+        top: -2px;
+        &.light-theme{
+            color: $secondary-color-light;
+        }
+    
+        &.dark-theme{
+            color: $secondary-color-dark;
+        }
+
+        &.isCheckedCalendar{
+            &.light-theme{
+                color: $primary-color-light;
+            }
+        
+            &.dark-theme{
+                color: $primary-color-dark;
+            }
+        }
+        transition: all, 0.4s;
+    }
+
 
 @media screen and (max-width: 869px){
 

@@ -27,7 +27,7 @@ function RoutesApp(){
         <Route path='/gerenciais' element = { <Private><Gerenciais/></Private> }/>
         <Route path='/sysmo' element = {<Private><ExportacaoSysmo/></Private> }/>
 
-        <Route path='/TESTE' element = {<PageTeste/>} />
+        <Route path='/TESTE' element = {<Private><PageTeste/></Private>} />
     </Routes>
     )
 }
