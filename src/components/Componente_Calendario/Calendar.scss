@@ -280,3 +280,59 @@
   }
   
 }
+
+.input-picker{
+  width: 100%;
+  &.light-theme{
+    color: $font-color-light;
+   }
+   &.dark-theme{
+     color: $primary-color-dark;
+   }
+}
+
+.component-container{
+  display: inline-table;
+  width: 100%;
+}
+
+.container-select{
+  display: grid;
+}
+
+.parent-container{
+  width:100%;
+}
+
+.picker-container{
+  display: inline-flex;
+  flex-direction: row;
+  width: 100%;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+}
+
+.date-wrapper{
+  display: grid;
+}
+
+.label-calendar{
+  &.light-theme{
+      color: $font-color-light;
+     }
+  &.dark-theme{
+      color: $font-color-dark;
+  }
+}
+
+.span-picker{
+  font-weight: bold;
+
+  &.light-theme{
+   color: $font-color-light;
+  }
+  &.dark-theme{
+    color: $font-color-dark;
+  }
+}
+

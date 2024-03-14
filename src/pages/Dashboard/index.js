@@ -27,44 +27,24 @@ const Dashboard = () => {
 	const {  
 		returnVendas,
 		returnCreditos,
-		returnTotalMes,
 		cnpj, 
-		dateConvertSearch, 
 		modalCliente,
 		converteData,
-		admVendasAux,
-		setAdmVendasAux,
-		admCreditosAux,
-		setAdmCreditosAux,
-		somatorioCreditosHojeAux,
-		setSomatorioCreditosHojeAux,
-		totalCreditos5diasAux,
-		setTotalCreditos5diasAux,
-		somatorioVendasMesAux,
-		setSomatorioVendasMesAux,
-		totalVendas4diasAux,
-		setTotalVendas4diasAux,
-		graficoVendasAux,
-		setGraficoVendasAux,
-		graficoCreditosAux,
-		setGraficoCreditosAux,
-		inicializouAux,
-		setInicializouAux,
-		isDarkTheme,
-		setIsDarkTheme,
+		admVendasAux, setAdmVendasAux,
+		admCreditosAux, setAdmCreditosAux,
+		somatorioCreditosHojeAux, setSomatorioCreditosHojeAux,
+		totalCreditos5diasAux, setTotalCreditos5diasAux,
+		somatorioVendasMesAux, setSomatorioVendasMesAux,
+		totalVendas4diasAux, setTotalVendas4diasAux,
+		graficoVendasAux, setGraficoVendasAux,
+		graficoCreditosAux,	setGraficoCreditosAux,
+		inicializouAux,	setInicializouAux,
+		isDarkTheme, setIsDarkTheme,
 		loadAjustes,
-		admServicosAux,
-		setAdmServicosAux,
-		graficoServicosAux,
-		setGraficoServicosAux,
-		totalServicosHojeAux,
-		setTotalServicosHojeAux,
-		totalServicosMesAux,
-		setTotalServicosMesAux,
-		returnVendasPorPeriodo,
-		buscou,
-		setBuscou,
-		setCnpj,
+		admServicosAux,	setAdmServicosAux,
+		graficoServicosAux,	setGraficoServicosAux, totalServicosHojeAux, setTotalServicosHojeAux, totalServicosMesAux, setTotalServicosMesAux,
+		buscou,	setBuscou,
+		gruSelecionado,
 	} = useContext(AuthContext)
 
 	useEffect(()=>{
@@ -308,6 +288,15 @@ const Dashboard = () => {
 	},[cnpj])
 
 	useEffect(()=>{
+		if((cnpj === 'todos') && (Cookies.get('ultimoGrupoSelecionado') !== gruSelecionado.label)){
+			setInicializouAux(false)
+			setInicializou(false)
+			setBuscou(!buscou)
+			Cookies.set('ultimoGrupoSelecionado', gruSelecionado.label)
+		}
+	},[gruSelecionado])
+
+	useEffect(()=>{
 		async function inicializar(){
 			if(cnpj !== 'selecione'){
 				if((cnpj !== Cookies.get('ultimoCnpj')) && (cnpj !== '')) {
@@ -396,14 +385,12 @@ const Dashboard = () => {
 	},[vetorCreditosMes])
 
 	useEffect(()=>{
-		//console.log('créditos dos próximos 5 dias: ', creditos5dias)
 		const total = creditos5dias.reduce((total, obj) => total + obj.valorLiquido, 0)
 		setTotalCreditos5dias(total)
 	},[creditos5dias])
 
 
 	useEffect(()=>{
-		//console.log('somatório dos créditos dos próximos 5 dias: ', totalCreditos5dias)
 		if(inicializouAux === false){
 			setTotalCreditos5diasAux(totalCreditos5dias)
 		}
@@ -506,7 +493,6 @@ const Dashboard = () => {
 
 	useEffect(()=>{
 		if(admVendas.length > 0){
-			//console.log('admVendas: ', admVendas)
 			setGraficoVendas(carregaGrafico(admVendas))
 		}
 		if(admVendasAux.length > 0){
@@ -524,12 +510,10 @@ const Dashboard = () => {
 	},[vetorCreditosMes])
 
 	useEffect(()=>{
-		//console.log('admCreditos: ', admCreditos)
 		setGraficoCreditos(carregaGrafico(admCreditos))
 		if(admCreditosAux.length > 0){
 			setGraficoCreditosAux(carregaGrafico(admCreditosAux))
 		}
-
 	},[admCreditos])
 
 	useEffect(()=>{

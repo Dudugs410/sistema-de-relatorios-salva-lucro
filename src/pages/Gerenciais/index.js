@@ -33,16 +33,6 @@ const Gerenciais = () =>{
         setFormatoRelatorio(selectedOption)
     }
 
-    useEffect(()=>{
-        console.log('tipo do relatório: ', tipoRelatorio)
-
-    },[tipoRelatorio])
-
-    useEffect(()=>{
-        console.log('formato do relatório: ', formatoRelatorio)
-
-    },[formatoRelatorio])
-
     const handleDateChange = date => {
         setDataBusca(date)
     }
@@ -60,7 +50,6 @@ const Gerenciais = () =>{
     function handleExport(e){
         e.preventDefault()
         setLoading(true)
-        console.log('dataBusca: ', dataBusca)
         base64PDFdownload()
         setLoading(false)
     }
@@ -68,7 +57,7 @@ const Gerenciais = () =>{
   return(
       <div className={`appPage ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
         <div className={`page-background-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-          <div className={`page-content-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+          <div className={`page-content-global page-content-exportacao ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
             <div className={`title-container-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
               <h1 className={`title-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Relatórios Gerenciais</h1>
             </div>
@@ -78,7 +67,7 @@ const Gerenciais = () =>{
                 <form className='form-container-relatorios'>
                     <div className='select-elements-container'>
                         <div className='container-select'>
-                            <span className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Tipo de Relatório</span>
+                            <span className={`span-picker ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Tipo de Relatório</span>
                             <Select 
                                 value={tipoRelatorio} 
                                 onChange={handleRelatorio}
@@ -88,11 +77,12 @@ const Gerenciais = () =>{
                             />
                         </div>
                         <div className='container-select'>
-                            <span className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Formato</span>
+                            <span className={`span-picker ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Formato</span>
                             <Select 
                                 value={formatoRelatorio} 
                                 onChange={handleFormato}
                                 options={opcoesFormato}
+                                placeholder={'PDF'}
                                 isSearchable={false}
                                 isDisabled={true}
                             />
