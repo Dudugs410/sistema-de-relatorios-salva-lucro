@@ -1,67 +1,35 @@
 @import '../../styles/_variables.scss';
 
-/* The Modal (background) */
-.modal {
-    position: fixed; /* Stay in place */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-    z-index: 8;
-  }
-  
-
-  
-  /* Spinner */
-  .spinner {
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 2s linear infinite;
-    margin: auto;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Adding a subtle shadow */
-  
-    /* Adding a gradient background */
-    background: linear-gradient(45deg, #ff8a00, #e52e71);
-  
-    /* Adding a transition for smoother theme change */
-    transition: border-color 0.3s ease;
-  
-    &.light-theme {
-      border: 16px solid $background-color-light;
-      border-top: 2px solid $secondary-color-light;
-    }
-  
-    &.dark-theme {
-      border: 16px solid $background-color-dark;
-      border-top: 2px solid $secondary-color-dark;
-    }
-  }
-
-  .loadingModal{
+  .loading-modal{
     position: fixed;
-    left: 0;
     top: 0;
-    z-index: 7;
-    height: 100%;
-    width: 100%;
-    background-color: rgba(0,0,0,0.4);
+    left: 0;
     display: flex;
+    width: -webkit-fill-available;
+    height: 100%;
+    /* padding-top: 45%; */
+    /* padding-bottom: 45%; */
+    background-color: rgba(0, 0, 0, 0.3);
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
-    text-align: center;
-    flex-direction: row;
-    align-content: center;
-    flex-wrap: wrap;
-    color: #99cc33
   }
 
-  /*
-  path{
-    stroke: $primary-color-light;
+  .progress, .progress-stacked {
+    width:20%;
   }
 
-  circle{
-    stroke: $secondary-color-light;
-  } */
+  .progress-bar{
+    color: $font-color-light;
+    background-color: $secondary-color-light;
+    
+  }
+
+  .progress, .progress-stacked {
+    --bs-progress-bar-bg: $secondary-color-light;
+  }
+
+  .hr-loading{
+    width: 20%;
+    color: white;
+  }
