@@ -86,6 +86,8 @@ function AuthProvider({ children }){
 
 	const [textoExport, setTextoExport] = useState(Cookies.get('textoExport'))
 
+	const [isCheckedCalendar, setIsCheckedCalendar] = useState(true);
+
 
 	const navigate = useNavigate()
 
@@ -139,11 +141,12 @@ function AuthProvider({ children }){
 					localStorage.setItem('localUsers', JSON.stringify(updatedUsers))
 				} else {
 					// Add new user to localUsers
-					userTemp = { id: userId, theme: false}
+					userTemp = { id: userId, theme: false, calendar: true}
 					localUsers.push(userTemp)
 					setIsDarkTheme(false)
 					localStorage.setItem('isDark', false)
 					localStorage.setItem('isChecked', false)
+					localStorage.setItem('calendar', true)
 					localStorage.setItem('localUsers', JSON.stringify(localUsers))
 				}
 				setCnpj('')
@@ -363,7 +366,6 @@ function AuthProvider({ children }){
 	async function loadGrupos() {
 		try {
 			if (!inicializouGruposAux) {
-				setLoading(true)
 				const response = await api.get('/grupo')
 				const gru = response.data
     
@@ -382,7 +384,6 @@ function AuthProvider({ children }){
 			}
 		} catch (error) {
 			console.error(error)
-			setLoading(false)
 			throw new Error(error.message) // Re-throw the error for handling in the caller function
 		}
 	}
@@ -679,8 +680,8 @@ function AuthProvider({ children }){
 		try {
 			if(cnpj === ('todos' || 'TODOS')){
 				let params = {
-					dataInicial: (dataInicial),
-					dataFinal: (dataFinal),
+					dataInicial: (dataInicial.toLocaleString('pt-BR')),
+					dataFinal: (dataFinal.toLocaleString('pt-BR')),
 					codigoGrupo: Cookies.get('codigoGrupo')
 				}
     
@@ -703,8 +704,8 @@ function AuthProvider({ children }){
 			} else {
 				const params = {
 					cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-					dataInicial: dataInicial,
-					dataFinal: dataFinal,
+					dataInicial: dataInicial.toLocaleString('pt-BR'),
+					dataFinal: dataFinal.toLocaleString('pt-BR'),
 				}
     
 				const config = {
@@ -1325,6 +1326,7 @@ function AuthProvider({ children }){
 				trocarHeader, setTrocarHeader,
 				detalhes, setDetalhes,
 				textoExport, setTextoExport,
+				isCheckedCalendar, setIsCheckedCalendar,
 			}}
 		>
 			{children}

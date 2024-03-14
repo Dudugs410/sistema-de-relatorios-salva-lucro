@@ -75,10 +75,6 @@ const Relatorios = () =>{
     setDataBusca(dataBusca)
   }
 
-  useEffect(()=>{
-    console.log(dataBusca)
-  },[dataBusca])
-
   let data = new Date
 
   function MyCalendar() {

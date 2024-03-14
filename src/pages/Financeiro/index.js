@@ -34,16 +34,6 @@ const Financeiro = () =>{
         setFormatoRelatorio(selectedOption)
     }
 
-    useEffect(()=>{
-        console.log('tipo do relatório: ', tipoRelatorio)
-
-    },[tipoRelatorio])
-
-    useEffect(()=>{
-        console.log('formato do relatório: ', formatoRelatorio)
-
-    },[formatoRelatorio])
-
     const handleDateChange = date => {
         setDataBusca(date)
     }
@@ -63,7 +53,6 @@ const Financeiro = () =>{
     function handleExport(e){
         e.preventDefault()
         setLoading(true)
-        console.log('dataBusca: ', dataBusca)
         base64PDFdownload()
         setLoading(false)
     }
@@ -71,40 +60,40 @@ const Financeiro = () =>{
     return(
       <div className={`appPage ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
         <div className={`page-background-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-          <div className={`page-content-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+          <div className={`page-content-global page-content-exportacao ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
             <div className={`title-container-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
               <h1 className={`title-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Relatórios Financeiros</h1>
             </div>
             <hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
             <div className='container-financeiro'>
-            <MyCalendar dataInicialExibicao={dataInicialExibicao} dataFinalExibicao={dataFinalExibicao} dataBusca={dataBusca} handleDateChange={handleDateChange} className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
-                <form className='form-container-relatorios'>
-                    <div className='select-elements-container'>
-                        <div className='container-select'>
-                            <span className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Tipo de Relatório</span>
-                            <Select
-                                value={tipoRelatorio} 
-                                onChange={handleRelatorio}
-                                placeholder="Selecione"
-                                options={opcoesRelatorio}
-                                isSearchable={false}
-						    />
+                <MyCalendar dataInicialExibicao={dataInicialExibicao} dataFinalExibicao={dataFinalExibicao} dataBusca={dataBusca} handleDateChange={handleDateChange} className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
+                    <form className='form-container-relatorios'>
+                        <div className='select-elements-container'>
+                            <div className='container-select'>
+                                <span className={`span-picker ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Tipo de Relatório</span>
+                                <Select
+                                    value={tipoRelatorio} 
+                                    onChange={handleRelatorio}
+                                    placeholder="Selecione"
+                                    options={opcoesRelatorio}
+                                    isSearchable={false}
+                                />
+                            </div>
+                            <div className='container-select'>
+                                <span className={`span-picker ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Formato</span>
+                                <Select 
+                                    value={formatoRelatorio} 
+                                    onChange={handleFormato}
+                                    placeholder="Selecione"
+                                    options={opcoesFormato}
+                                    isSearchable={false}
+                                />
+                            </div>
                         </div>
-                        <div className='container-select'>
-                            <span className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Formato</span>
-                            <Select 
-                                value={formatoRelatorio} 
-                                onChange={handleFormato}
-                                placeholder="Selecione"
-                                options={opcoesFormato}
-                                isSearchable={false}
-						    />
+                        <div className='btn-container-financeiro'>
+                            <button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleExport}>Exportar</button>
                         </div>
-                    </div>
-                    <div className='btn-container-financeiro'>
-                        <button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleExport}>Exportar</button>
-                    </div>
-                </form>
+                    </form>
             </div>
           </div>
         </div>

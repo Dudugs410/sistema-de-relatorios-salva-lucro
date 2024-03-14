@@ -1,0 +1,23 @@
+@import '../../styles/variables';
+
+.radio-container-exportacao {
+    display: inline-flex;
+}
+
+.radio{
+    display: inline-flex;
+    width: -webkit-fill-available;
+}
+
+.radio-label{
+    &.light-theme{
+        color: $font-color-light;
+       }
+    &.dark-theme{
+        color: $font-color-dark;
+    }
+}
+
+.label-container{
+    width: 100%;
+}

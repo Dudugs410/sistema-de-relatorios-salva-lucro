@@ -2,7 +2,6 @@
 
 .vendas-view{
     width: 100%;
-    min-height: 500px;
     overflow: scroll;
     &.light-theme{
         background-color: $background-color-light;
@@ -40,8 +39,9 @@
 }
 
 .table-wrapper{
-    height: 500px;
-    padding-bottom: 10%;
+    height: auto;
+    max-height: 400px;
+    /* padding-bottom: 10%;*/
     &.light-theme{
         background-color: $background-color-light;
     }

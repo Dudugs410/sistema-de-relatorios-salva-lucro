@@ -198,7 +198,7 @@
 
     &.dark-theme{
         color: $primary-color-dark;
-        background-color: white;
+        background-color: $secondary-color-dark;
     }
     
     transition: all, 0.4s;
@@ -326,11 +326,13 @@
   
   .dropdown-item:hover {
     &.light-theme{
+        color: $primary-color-light;
         background-color: $primary-color-light;
        
     }
 
     &.dark-theme{
+        color: $primary-color-dark;
         background-color: $primary-color-dark;
 
     }
@@ -353,7 +355,119 @@
         height: 100%;
     }
 
+    .checkbox-label {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        flex-direction: row;
+        padding-left: 10px;
+      }
+      
+      .checkbox-input {
+        display: none; /* Hide the default checkbox */
+      }
+      
+      .checkbox-custom {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #ccc; /* Border color for unchecked state */
+        border-radius: 4px;
+        margin-right: 8px;
+        &.light-theme{
+            border-color: $primary-color-light;
+           
+        }
+    
+        &.dark-theme{
+            border-color: $primary-color-dark;
+    
+        }
+      }
+      
+      .checkbox-input:checked + .checkbox-custom {
+        &.light-theme{
+            border-color: $secondary-color-light;
+            background-color: $secondary-color-light;
+           
+        }
+    
+        &.dark-theme{
+            border-color: $secondary-color-dark;
+            background-color: $secondary-color-dark;
+    
+        }
+      }
+      
+      .checkbox-icon {
+        margin-right: 8px;
+      }
+      
+      .checkbox-label:hover .checkbox-custom {
+        border-color: #999; /* Change border color on hover */
+      }
+      
+      /* Animation example */
+      .checkbox-custom {
+        transition: background-color 0.3s, border-color 0.3s;
+      }
+
+      .li-button-content{
+    
+        &.light-theme{
+            color: white;
+            background-color: $primary-color-light;
+        }
+    
+        &.dark-theme{
+            color: $font-color-dark;
+            background-color: $primary-color-dark;
+        }
+    }
+    
+    .li-button-content:hover{
+        &.light-theme{
+            color: $font-color-light;
+            background-color: $secondary-color-light;
+        }
+    
+        &.dark-theme{
+            color: $primary-color-dark;
+            background-color: $secondary-color-dark;
+        }
+        transition: all, 0.4s;
+    }
+
+    .calendar-icon{
+        position: relative;
+        right: 28px;
+        top: -2px;
+        &.light-theme{
+            color: $secondary-color-light;
+        }
+    
+        &.dark-theme{
+            color: $secondary-color-dark;
+        }
+
+        &.isCheckedCalendar{
+            &.light-theme{
+                color: $primary-color-light;
+            }
+        
+            &.dark-theme{
+                color: $primary-color-dark;
+            }
+        }
+        transition: all, 0.4s;
+    }
+
+
 @media screen and (max-width: 869px){
+
+    .li-btn-text{
+        display: none
+    }
 
     .header-bg-image{
         width: 100%;
@@ -463,7 +577,6 @@
     
     .li-button-content{
         width: 100%;
-        color: white;
         display: inline-flex;
         flex-direction: row;
         flex-wrap: wrap;
@@ -472,10 +585,12 @@
         border: none;
     
         &.light-theme{
+            color: white;
             background-color: $primary-color-light;
         }
     
         &.dark-theme{
+            color: $font-color-dark;
             background-color: $primary-color-dark;
         }
     }
@@ -488,15 +603,51 @@
     
         &.dark-theme{
             color: $primary-color-dark;
-            background-color: white;
+            background-color: $secondary-color-dark;
         }
         transition: all, 0.4s;
     }
+
+    .relatorios-child .li-btn-text {
+        display: inline; // Display Relatórios children text
+    }
 }
+
+
 
 @media screen and (max-width: 637px) {
     .li-btn-text{
         display: none;
+    }
+
+    .relatorios-child .li-btn-text {
+        display: inline; // Display Relatórios children text
+    }
+
+    .li-button-content{
+    
+        &.light-theme{
+            color: white;
+            background-color: $primary-color-light;
+        }
+    
+        &.dark-theme{
+            color: $font-color-dark;
+            background-color: $primary-color-dark;
+        }
+    }
+    
+    .li-button-content:hover{
+        &.light-theme{
+            color: $primary-color-light;
+            background-color: $secondary-color-light;
+        }
+    
+        &.dark-theme{
+            color: $primary-color-dark;
+            background-color: $secondary-color-dark;
+        }
+        transition: all, 0.4s;
     }
 }
 
@@ -508,6 +659,32 @@
 
     .relatorios-child .li-btn-text {
         display: inline; // Display Relatórios children text
+    }
+
+    .li-button-content{
+    
+        &.light-theme{
+            color: white;
+            background-color: $primary-color-light;
+        }
+    
+        &.dark-theme{
+            color: $font-color-dark;
+            background-color: $primary-color-dark;
+        }
+    }
+    
+    .li-button-content:hover{
+        &.light-theme{
+            color: $primary-color-light;
+            background-color: $secondary-color-light;
+        }
+    
+        &.dark-theme{
+            color: $primary-color-dark;
+            background-color: $secondary-color-dark;
+        }
+        transition: all, 0.4s;
     }
   }
 

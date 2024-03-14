@@ -1,0 +1,30 @@
+.react-resizeable{
+    display: flex;
+    border: 1px solid black;
+    width: 100px;
+    height: 100px;
+    position: relative;
+    cursor: se-resize;
+    justify-content: center;
+    align-items: center;
+}
+
+.custom-resize{
+    display: flex;
+    place-content: center;
+    align-items: center;
+    width: 100%;
+    flex-flow: column;
+    
+}
+
+.react-resizeable:first-child{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid black;
+}
+
+.react-resizeable>*{
+    user-select: none; /* Disable text selection */
+}
