@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './radio.scss'
+import './radio.scss'; // Import the SCSS file with the custom radio styles
 import { useContext } from 'react';
 import { AuthContext } from '../../contexts/auth';
 
@@ -7,20 +7,20 @@ const RadioSelect = ({ options, onSelect }) => {
   // State to hold the selected option
   const [selectedOption, setSelectedOption] = useState(null);
 
-  const { isDarkTheme } = useContext(AuthContext)
+  const { isDarkTheme } = useContext(AuthContext);
 
   // Function to handle option selection
   const handleOptionChange = (optionValue) => {
     setSelectedOption(optionValue);
-    onSelect(optionValue) // executa a função passada como prop, nesse caso servirá para passar a optionValue para o componente pai
-    //No caso deste component, onSelect é uma arrow function que seta o valor da const 'tipo' de acordo com a opção clicada
+    onSelect(optionValue); // Execute the function passed as prop
   };
 
   return (
-    <div className='radio-container-exportacao'>
+    <div className={`radio-container-exportacao ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
       {options.map((option) => (
-        <div className='radio' key={option.value}>
+        <div className={`radio ${isDarkTheme ? 'dark-theme' : 'light-theme'}`} key={option.value}>
           <input
+            className={`input-r ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}
             type="radio"
             id={option.value}
             name="radioSelect"
@@ -28,9 +28,8 @@ const RadioSelect = ({ options, onSelect }) => {
             checked={selectedOption === option.value}
             onChange={() => handleOptionChange(option.value)}
           />
-          <div className='label-container'>
-            <label className={`radio-label ${isDarkTheme ? 'dark-theme' : 'light-theme'}`} htmlFor={option.value}>{option.label}</label>
-          </div>
+          <span className={`radio-indicator ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}></span>
+          <label className={`radio-label ${isDarkTheme ? 'dark-theme' : 'light-theme'}`} htmlFor={option.value}>{option.label}</label>
         </div>
       ))}
     </div>
