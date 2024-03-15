@@ -147,7 +147,30 @@ const PieChart = ({ data01, arrayAdm, tipo, dados } ) => {
     plugins: {
       legend: {
         display: true,
-        position: "top"
+        position: "left",
+        labels: {
+          // Use a callback function to generate custom legend labels
+          generateLabels: function(chart) {
+            const { data } = chart;
+            if (data.labels.length && data.datasets.length) {
+              return data.labels.map((label, index) => {
+                const value = data.datasets[0].data[index];
+                const formattedValue = value.toLocaleString('pt-BR', {
+                  style: 'currency',
+                  currency: 'BRL',
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                });
+                return {
+                  text: `${label}: ${formattedValue}`,
+                  fillStyle: data.datasets[0].backgroundColor[index],
+                  hidden: isNaN(data.datasets[0].data[index]) || chart.getDatasetMeta(0).data[index].hidden,
+                };
+              });
+            }
+            return [];
+          },
+        },
       },
       tooltip: {
         callbacks: {
@@ -170,7 +193,7 @@ const PieChart = ({ data01, arrayAdm, tipo, dados } ) => {
   };
 
   return (
-    <div className='chart-container' style={{ height: '250px', position: 'relative', maintainAspectRatio: false }}>
+    <div className='chart-container' style={{ height: '290px', position: 'relative', maintainAspectRatio: false }}>
       <Pie data={chartData} options={chartOptions} />
       {showAdmModal && selectedAdm && (
         <Modal onClose={() => setShowAdmModal(false)}>
