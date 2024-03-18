@@ -6,6 +6,7 @@ import './grafico.scss'
 import TabelaVendasCreditos from '../Componente_TabelaVendasCreditos';
 import TabelaGenerica from '../Componente_TabelaGenerica';
 import { AuthContext } from '../../contexts/auth';
+import { CenturyView } from 'react-calendar';
 
 
 
@@ -146,17 +147,6 @@ const PieChart = ({ data01, arrayAdm, tipo, dados } ) => {
     maintainAspectRatio: false,
     onClick: handleChartClick,
     responsive: true,
-    onClick: (event, elements) => {
-      if (elements && elements.length > 0) {
-        const datasetIndex = elements[0]._datasetIndex;
-        const dataIndex = elements[0]._index;
-        const dataset = chart.data.datasets[datasetIndex];
-        
-        // Toggle visibility of the clicked slice
-        dataset.data[dataIndex] = dataset.data[dataIndex] ? null : dataBackup[datasetIndex][dataIndex];
-        chart.update();
-      }
-    },
     plugins: {
       colors: {
         forceOverride: true
