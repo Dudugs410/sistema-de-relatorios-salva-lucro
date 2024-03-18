@@ -146,6 +146,17 @@ const PieChart = ({ data01, arrayAdm, tipo, dados } ) => {
     maintainAspectRatio: false,
     onClick: handleChartClick,
     responsive: true,
+    onClick: (event, elements) => {
+      if (elements && elements.length > 0) {
+        const datasetIndex = elements[0]._datasetIndex;
+        const dataIndex = elements[0]._index;
+        const dataset = chart.data.datasets[datasetIndex];
+        
+        // Toggle visibility of the clicked slice
+        dataset.data[dataIndex] = dataset.data[dataIndex] ? null : dataBackup[datasetIndex][dataIndex];
+        chart.update();
+      }
+    },
     plugins: {
       colors: {
         forceOverride: true
@@ -154,7 +165,6 @@ const PieChart = ({ data01, arrayAdm, tipo, dados } ) => {
         display: true,
         position: "left",
         labels: {
-          color: 'black',
           // Use a callback function to generate custom legend labels
           generateLabels: function (chart) {
             const { data } = chart;

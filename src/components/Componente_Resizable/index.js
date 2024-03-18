@@ -1,6 +1,7 @@
-import React, { useState, Children, cloneElement } from 'react';
+import React, { useState } from 'react';
 import { Resizable } from 'react-resizable';
 import 'react-resizable/css/styles.css'; // Import resizable styles
+import './resizable.scss'
 
 const ResizableComponent = ({ width, height, children }) => {
   const [size, setSize] = useState({ width, height });
@@ -8,11 +9,6 @@ const ResizableComponent = ({ width, height, children }) => {
   const onResize = (event, { size }) => {
     setSize(size);
   };
-
-  // Clone and pass size prop to children
-  const resizableChildren = Children.map(children, child => {
-    return cloneElement(child, { size });
-  });
 
   return (
     <Resizable
@@ -22,18 +18,7 @@ const ResizableComponent = ({ width, height, children }) => {
       draggableOpts={{ enableUserSelectHack: false }}
       className='react-resizeable'
     >
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: '100%',
-          height: `${size.height}px`,
-        }}
-        className='custom-resize'
-      >
-        {resizableChildren}
-      </div>
+      <div className='responsive' style={{ width: size.width, height: size.height }}>{children}</div>
     </Resizable>
   );
 };
