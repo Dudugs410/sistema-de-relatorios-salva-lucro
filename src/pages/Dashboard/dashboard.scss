@@ -70,12 +70,13 @@
 }
 
 .graph-data{
+  display: flex;
   height: 460px;
   width: 100%;
   border-radius: 20px;
-  box-shadow:inset 0px 270px 0px 0px;
+  box-shadow: inset 0px 270px 0px 0px;
   transition: all 2s;
-
+  flex-direction: column;
 
   &.light-theme{
     background-color: $background-color-light;

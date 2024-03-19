@@ -13,6 +13,9 @@ import Financeiro from "../pages/Financeiro";
 import Gerenciais from "../pages/Gerenciais";
 import PageTeste from "../pages/000TESTE";
 import ExportacaoSysmo from "../pages/ExportacaoSysmo";
+import ExportacaoMeta from "../pages/ExportacaoMeta";
+import ExportacaoMetaSapiranga from "../pages/ExportacaoMetaSapiranga";
+import Administracao from "../pages/Administracao";
 
 function RoutesApp(){
     return(
@@ -26,6 +29,9 @@ function RoutesApp(){
         <Route path='/financeiro' element = { <Private><Financeiro/></Private> }/>
         <Route path='/gerenciais' element = { <Private><Gerenciais/></Private> }/>
         <Route path='/sysmo' element = {<Private><ExportacaoSysmo/></Private> }/>
+        <Route path='/meta' element = {<Private><ExportacaoMeta/></Private> }/>
+        <Route path='/metasapiranga' element = {<Private><ExportacaoMetaSapiranga/></Private> }/>
+        <Route path='/administracao' element = {<Private><Administracao/></Private>}/>
 
         <Route path='/TESTE' element = {<Private><PageTeste/></Private>} />
     </Routes>

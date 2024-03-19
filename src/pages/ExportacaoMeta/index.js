@@ -1,14 +1,14 @@
 import { useEffect, useContext, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { AuthContext } from '../../contexts/auth';
+import { AuthContext } from '../../contexts/auth'
 import '../../styles/global.scss'
 import Select from 'react-select'
-import './exportacao.scss'
-import MyCalendar from '../../components/Componente_Calendario';
-import base64PDFdownload from '../../components/Componente_Base64PDF';
-import RadioSelect from '../../components/Componente_RadioSelect';
+import '../ExportacaoSysmo'
+import MyCalendar from '../../components/Componente_Calendario'
+import base64PDFdownload from '../../components/Componente_Base64PDF'
+import RadioSelect from '../../components/Componente_RadioSelect'
 
-const ExportacaoSysmo = () =>{
+const ExportacaoMeta = () =>{
     const location = useLocation();
     const { isDarkTheme, setLoading, bandeiras, loadBandeiras, adquirentes, loadAdquirentes } = useContext(AuthContext)
 
@@ -106,7 +106,7 @@ const ExportacaoSysmo = () =>{
         <div className={`page-background-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
           <div className={`page-content-global page-content-exportacao ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
             <div className={`title-container-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-              <h1 className={`title-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Exportação Sysmo</h1>
+              <h1 className={`title-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Exportação Meta</h1>
             </div>
             <hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
             <div className=''>
@@ -146,4 +146,4 @@ const ExportacaoSysmo = () =>{
     )
 }
 
-export default ExportacaoSysmo
+export default ExportacaoMeta
