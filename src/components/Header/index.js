@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { FiMoon, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText, FiClipboard, FiDownload, FiCalendar } from "react-icons/fi";
+import { FiMoon, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText, FiClipboard, FiDownload, FiCalendar, FiList, FiPaperclip } from "react-icons/fi";
 import { AuthContext } from "../../contexts/auth";
 import React, { useContext, useEffect, useState } from "react";
 import salvaLucroLogoBranco from '../../assets/LogoTopo.png';
@@ -76,6 +76,7 @@ const Header = () => {
             'FiFileText': FiFileText,
             'FiClipboardSign': FiClipboard,
             'FiDownload': FiDownload,
+            'FiPaperClip': FiPaperclip,
         };
 
         const orderedOptions = [
@@ -89,7 +90,10 @@ const Header = () => {
             ]},
             { nome: 'Exportações', icone: icones['FiDownload'], children: [
                 { nome: 'Sysmo', rota: '/sysmo' },
+                { nome: 'Meta', rota: '/meta' },
+                { nome: 'Meta Sapiranga', rota: '/metasapiranga' },
             ]},
+            { nome: 'Administração', icone: icones['FiPaperClip'], rota: '/administracao' },
         ];
 
         let arrayOpcoes = [];
