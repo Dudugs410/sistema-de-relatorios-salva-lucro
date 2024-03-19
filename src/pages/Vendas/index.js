@@ -14,7 +14,7 @@ import TabelaVendasCreditos from '../../components/Componente_TabelaVendasCredit
 import { useLocation } from 'react-router-dom'
 import '../../index.scss'
 import MyCalendar from '../../components/Componente_Calendario'
-import ResizableComponent from '../../components/Componente_Resizeable'
+import ResizableComponent from '../../components/Componente_Resizable'
 
 export const VendasContext = createContext({})
 
