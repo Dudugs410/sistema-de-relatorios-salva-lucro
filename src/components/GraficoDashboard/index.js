@@ -1,10 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
 import Modal from '../Modal';
 import './grafico.scss'
 import TabelaVendasCreditos from '../Componente_TabelaVendasCreditos';
 import TabelaGenerica from '../Componente_TabelaGenerica';
+import { AuthContext } from '../../contexts/auth';
 
 
 
@@ -12,6 +13,7 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 const PieChart = ({ data01, arrayAdm, tipo, dados } ) => {
 
+  const { isDarkTheme } = useContext(AuthContext)
   const [selectedAdm, setSelectedAdm] = useState(null)
   const [showAdmModal, setShowAdmModal] = useState(false)
   const [dado, setDado] = useState('')
@@ -144,27 +146,45 @@ const PieChart = ({ data01, arrayAdm, tipo, dados } ) => {
     maintainAspectRatio: false,
     onClick: handleChartClick,
     responsive: true,
+    onClick: (event, elements) => {
+      if (elements && elements.length > 0) {
+        const datasetIndex = elements[0]._datasetIndex;
+        const dataIndex = elements[0]._index;
+        const dataset = chart.data.datasets[datasetIndex];
+        
+        // Toggle visibility of the clicked slice
+        dataset.data[dataIndex] = dataset.data[dataIndex] ? null : dataBackup[datasetIndex][dataIndex];
+        chart.update();
+      }
+    },
     plugins: {
+      colors: {
+        forceOverride: true
+      },
       legend: {
         display: true,
         position: "left",
         labels: {
           // Use a callback function to generate custom legend labels
-          generateLabels: function(chart) {
+          generateLabels: function (chart) {
             const { data } = chart;
             if (data.labels.length && data.datasets.length) {
               return data.labels.map((label, index) => {
                 const value = data.datasets[0].data[index];
-                const formattedValue = value.toLocaleString('pt-BR', {
-                  style: 'currency',
-                  currency: 'BRL',
+                const formattedValue = value.toLocaleString("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
+                  
                 });
                 return {
                   text: `${label}: ${formattedValue}`,
                   fillStyle: data.datasets[0].backgroundColor[index],
-                  hidden: isNaN(data.datasets[0].data[index]) || chart.getDatasetMeta(0).data[index].hidden,
+                  fontColor: `${isDarkTheme ? '#fff' : 'rgb(10,61,112)'}`,
+                  hidden:
+                    isNaN(data.datasets[0].data[index]) ||
+                    chart.getDatasetMeta(0).data[index].hidden,
                 };
               });
             }
@@ -176,9 +196,9 @@ const PieChart = ({ data01, arrayAdm, tipo, dados } ) => {
         callbacks: {
           label: (context) => {
             const value = context.dataset.data[context.dataIndex];
-            const formattedValue = value.toLocaleString('pt-BR', {
-              style: 'currency',
-              currency: 'BRL',
+            const formattedValue = value.toLocaleString("pt-BR", {
+              style: "currency",
+              currency: "BRL",
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             });
@@ -186,11 +206,20 @@ const PieChart = ({ data01, arrayAdm, tipo, dados } ) => {
           },
         },
       },
-    },  
-    layout:{
-      padding: 10
-    }
+    },
+    layout: {
+      autoPadding: true,
+    },
   };
+
+  const styleTag = document.createElement('style');
+styleTag.innerHTML = `
+  .chartjs-render-monitor .chart-legend li span {
+    color: red; /* Change the color here */
+  }
+`;
+document.head.appendChild(styleTag);
+  
 
   return (
     <div className='chart-container' style={{ height: '290px', position: 'relative', maintainAspectRatio: false }}>

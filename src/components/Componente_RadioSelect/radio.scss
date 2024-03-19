@@ -3,7 +3,6 @@
 .radio-container-exportacao {
     display: inline-flex;
     justify-content: space-around;
-    width: 25%;
 }
 
 .radio {
@@ -11,15 +10,14 @@
     align-items: center;
 }
 
-.radio-label:hover{
+.radio-label:hover {
     cursor: pointer;
-    &.light-theme{
-        color:$secondary-color-light;
+    &.light-theme {
+        color: $secondary-color-light;
     }
-    &.dark-theme{
-        color: white;
+    &.dark-theme {
+        color: darkgray;
     }
-    
 }
 
 .radio input[type="radio"] {
@@ -27,27 +25,44 @@
 }
 
 .radio-indicator {
+    position: relative; /* Make position relative for absolute positioning */
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    background-color: #ccc; /* Default color */
     margin-right: 5px; /* Adjust spacing between indicator and label */
+    &.light-theme {
+        background-color: #ccc; /* Default color */
+    }
+    &.dark-theme {
+        background-color: rgb(49, 49, 49);
+    }
 }
 
 /* Style the custom radio indicator when it's checked */
 .radio input[type="radio"]:checked + .radio-indicator {
     cursor: pointer;
-    &.light-theme{
-        background-color:$secondary-color-light;
+    &.light-theme {
+        background-color: $secondary-color-light;
     }
-    &.dark-theme{
-        background-color: rgb(27, 27, 27);
+    &.dark-theme {
+        background-color: white;
     }
 }
 
-/*.radio input[type="radio"] + .radio-indicator {
-    cursor: pointer;
-}*/
+/* Add dot in the center of the selected option */
+.radio input[type="radio"]:checked + .radio-indicator::after {
+    content: ''; /* Add an empty content */
+    display: block;
+    width: 10px; /* Adjust size of the dot */
+    height: 10px; /* Adjust size of the dot */
+    border-radius: 50%;
+    background-color: black; /* Color of the dot */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    
+}
 
 .radio-label {
     color: inherit; /* Inherit color from parent */
