@@ -452,7 +452,7 @@ const TabelaVendasCreditos = ({array, tipo, isDashboard}) =>{
 			<div className='dropShadow vendas-view'>
 				<div className={`table-wrapper ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
 				{ tipo === 'vendas' ?
-					<table className={`table table-striped det-table-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+					<table className={`table table-striped table-hover det-table-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
 						<thead>
 							<tr className={`det-tr-top-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
 								<th className='det-th-global'scope="col">CNPJ</th>

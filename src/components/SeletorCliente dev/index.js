@@ -27,7 +27,6 @@ const SeletorClienteDev = () => {
 		setClienteSelecionado,
 		trocarHeader, setTrocarHeader,
 		textoExport, setTextoExport,
-		
 	} = useContext(AuthContext)
 
 	const [grupoTeste, setGrupoTeste] = useState({ value: 'selecione', label: 'Selecione' })

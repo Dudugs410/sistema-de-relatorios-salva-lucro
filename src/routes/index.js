@@ -16,6 +16,7 @@ import ExportacaoSysmo from "../pages/ExportacaoSysmo";
 import ExportacaoMeta from "../pages/ExportacaoMeta";
 import ExportacaoMetaSapiranga from "../pages/ExportacaoMetaSapiranga";
 import Administracao from "../pages/Administracao";
+import Suporte from "../pages/Suporte";
 
 function RoutesApp(){
     return(
@@ -32,6 +33,8 @@ function RoutesApp(){
         <Route path='/meta' element = {<Private><ExportacaoMeta/></Private> }/>
         <Route path='/metasapiranga' element = {<Private><ExportacaoMetaSapiranga/></Private> }/>
         <Route path='/administracao' element = {<Private><Administracao/></Private>}/>
+        <Route path='/suporte' element = {<Private><Suporte/></Private>}/>
+
 
         <Route path='/TESTE' element = {<Private><PageTeste/></Private>} />
     </Routes>

@@ -13,7 +13,7 @@ export default function TabelaGenericaAdm({Array, textColor}) {
 			{ 
 				Array ?
 					<div className='content tabela-adm-content'>
-						<table className={`table table-striped det-table-global elemento-table ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+						<table className={`table table-striped table-hover det-table-global elemento-table ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
 							<thead className='thead-global'>
 								<tr className={`det-tr-top-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
 									<th className='det-td-global' data-label='Adquirente'>Adquirente</th>

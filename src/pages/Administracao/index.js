@@ -62,7 +62,11 @@ const Administracao = () =>{
     const PlaceHolder = () =>{
         return(
             <table class="table table-striped table-hover table-bordered">
-            <thead><FiPlus />Adicionar</thead>
+                <thead>
+                    <tr>
+                        <th colspan="6"><FiPlus className='icon' />Adicionar</th>
+                    </tr>
+                </thead>
             <thead>
                 <tr>
                     <th scope="col"></th>
@@ -75,28 +79,28 @@ const Administracao = () =>{
             </thead>
             <tbody>
                 <tr>
-                    <th scope="row"><FiEdit/></th>
+                    <th scope="row"><FiEdit className='icon' /></th>
                         <td>Amex</td>
                         <td>Crédito À Vista</td>
                         <td>Redecen</td>
                         <td>1.36</td>
-                        <td><FiTrash/></td>
+                        <td><FiTrash className='icon'/></td>
                 </tr>
                 <tr>
-                    <th scope="row"><FiEdit /></th>
+                    <th scope="row"><FiEdit className='icon' /></th>
                         <td>Amex</td>
                         <td>Crédito parcelado s/juros 2 a 6x</td>
                         <td>Redecen</td>
                         <td>2.19</td>
-                        <td><FiTrash/></td>
+                        <td><FiTrash className='icon'/></td>
                 </tr>
                 <tr>
-                    <th scope="row"><FiEdit /></th>
+                    <th scope="row"><FiEdit className='icon' /></th>
                         <td>Elo</td>
                         <td>Crédito parcelado s/juros 2 a 6x</td>
                         <td>Redecen</td>
                         <td>1.74</td>
-                        <td><FiTrash/></td>
+                        <td><FiTrash  className='icon' /></td>
                 </tr>
             </tbody>
         </table>
@@ -117,10 +121,16 @@ const Administracao = () =>{
                     <form className=''>
                         <div className='component-container'>
                             <h5 style={{fontWeight: 'bold'}}>Tipo de Taxa</h5>
+                            <br/>
                             <RadioSelect options={radioOptions} onSelect={(e) => {setTipo(e)}}/>
+                            <br/>
                         </div>
                         <div className='component-container'>
+                            <br/>
+                            <h5 style={{fontWeight: 'bold'}}>Cadastro de Taxas Comparativas</h5>
+                            <br/>
                             <PlaceHolder /> 
+                            <br/>
                         </div>
                         <div className='btn-container-financeiro'>
                             <button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleExport}>Gerar PDF</button>
