@@ -393,6 +393,7 @@ function AuthProvider({ children }){
 		setLoading(true)
 		await api.get('/adquirente')
 			.then( response => {
+				console.log(response)
 				setAdquirentes(response.data)
 				setLoading(false)
 			})

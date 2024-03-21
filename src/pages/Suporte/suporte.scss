@@ -7,12 +7,10 @@
     /* Add any other styles as needed */
     &.light-theme{
         color: $font-color-light;
-        background-color: beige;
     }
 
     &.dark-theme{
         color: lightgrey;
-        background-color: darkgray;
     }
 }
 
@@ -21,11 +19,12 @@
     flex-direction: column;
     align-items: stretch;
     width: 100%;
+    height: 100%;
 }
 
 .input-suporte{
     display: flex;
-    //width: 100%;
+    width: 100%;
     flex-direction: row;
     align-items: flex-end;
     justify-content: space-evenly;
@@ -33,10 +32,12 @@
 
 .input-block{
     width: 100%;
+    padding: 2px;
 }
 
 .input-block > .btn-global{
     width: 100%;
+    padding: 2px;
 }
 
 .input-suporte > .btn-global{
@@ -60,5 +61,54 @@
     overflow-x: scroll;
 }
 
+.page-suporte-content{
+    width: 100%;
+    min-width: 300px;
+}
 
+.consulta-arquivos{
+    height: 100%;
+    width: 100%;
+    border: solid gray 1px;
+}
 
+.input-suporte-correcao {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .input-block-correcao {
+    flex: 0 0 calc(50% - 0.5px); /* Each block takes up 50% of the container's width minus 0.5px for margin */
+    margin: 0.25px; /* 1px margin between blocks */
+  }
+
+.input-suporte-cli-adq{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    height: 1.7em;
+    margin-bottom: 10px;
+}
+                 
+.input-block-cli-adq{
+
+}
+
+.form-suport{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    height: 100px;
+}
+
+@media screen and (max-width: 1067px){
+    .input-suporte {
+        display: flex;
+        flex-wrap: wrap;
+      }
+      
+      .input-block {
+        flex: 0 0 calc(50% - 0.5px); /* Each block takes up 50% of the container's width minus 0.5px for margin */
+        margin: 0.25px; /* 1px margin between blocks */
+      }
+}
