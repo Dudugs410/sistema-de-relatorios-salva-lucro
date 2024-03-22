@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { FiMoon, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText, FiClipboard, FiDownload, FiCalendar, FiList, FiPaperclip, FiSettings } from "react-icons/fi";
+import { FiMoon, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText, FiClipboard, FiDownload, FiCalendar, FiList, FiPaperclip, FiSettings, FiTruck, FiShoppingBag } from "react-icons/fi";
 import { AuthContext } from "../../contexts/auth";
 import React, { useContext, useEffect, useState } from "react";
 import salvaLucroLogoBranco from '../../assets/LogoTopo.png';
@@ -9,11 +9,13 @@ import Cookies from "js-cookie";
 import Relogio from "../Componente_Relogio";
 
 const Header = () => {
-    const { logout, isDarkTheme, setIsDarkTheme, isCheckedCalendar, setIsCheckedCalendar,} = useContext(AuthContext);
+    const { logout, isDarkTheme, setIsDarkTheme, isCheckedCalendar, setIsCheckedCalendar,} = useContext(AuthContext)
 
-    const [isChecked, setIsChecked] = useState(localStorage.getItem('isChecked') === 'true');
-    const [showRelatoriosDropdown, setShowRelatoriosDropdown] = useState(false);
-    const [showExportacoesDropdown, setShowExportacoesDropdown] = useState(false); // New state variable
+    const [isChecked, setIsChecked] = useState(localStorage.getItem('isChecked') === 'true')
+    const [showRelatoriosDropdown, setShowRelatoriosDropdown] = useState(false)
+    const [showExportacoesDropdown, setShowExportacoesDropdown] = useState(false) // New state variable
+    const [showDeliveryDropdown, setShowDeliveryDropdown] = useState(false) // New state variable
+    const [showConciliacaoDropdown, setShowConciliacaoDropdown] = useState(false) // New state variable
 
     const handleCheckboxChangeCalendar = () => {
 		setIsCheckedCalendar(!isCheckedCalendar); // Toggle the state
@@ -78,6 +80,8 @@ const Header = () => {
             'FiDownload': FiDownload,
             'FiPaperClip': FiPaperclip,
             'FiSettings': FiSettings,
+            'FiTruck': FiTruck,
+            'FiShoppingBag': FiShoppingBag,
         };
 
         const orderedOptions = [
@@ -97,6 +101,12 @@ const Header = () => {
             ]},
             { nome: 'Administração', icone: icones['FiPaperClip'], rota: '/administracao' },
             { nome: 'Suporte', icone: icones['FiSettings'], rota: '/suporte' },
+            { nome: 'Delivery', icone: icones['FiTruck'], children: [
+                { nome: 'Vendas i-Food', rota: '/ifood' },
+            ]},
+            { nome: 'Conciliacao', icone: icones['FiShoppingBag'], children: [
+                { nome: 'Cnab240', rota: '/cnab240' },
+            ]},
         ];
 
         let arrayOpcoes = [];
@@ -150,27 +160,35 @@ const CustomCheckbox = ({ isChecked, handleCheckboxChange }) => {
                     <div className={`barra-header ${isDarkTheme ? 'dark-theme' : 'light-theme' }`}>
                         <div className="li-container px-3">
                             <ul className={`navbar-nav pe-2 ${isDarkTheme ? 'dark-theme' : 'light-theme' }`}>
-                                {optionsWithIcons.length > 0 && optionsWithIcons.map((opcao, index) => (
-                                    <li className="nav-item" key={index}>
+                            {optionsWithIcons.length > 0 && optionsWithIcons.map((opcao, index) => (
+                                <li className="nav-item" key={index}>
                                     {opcao.children ? (
                                         <div className="nav-hover dropdown" onMouseEnter={() => {
                                             if (opcao.nome === 'Relatórios') {
                                                 setShowRelatoriosDropdown(true);
                                             } else if (opcao.nome === 'Exportações') {
                                                 setShowExportacoesDropdown(true);
+                                            } else if (opcao.nome === 'Delivery') {
+                                                setShowDeliveryDropdown(true);
+                                            } else if (opcao.nome === 'Conciliacao') {
+                                                setShowConciliacaoDropdown(true);
                                             }
                                         }} onMouseLeave={() => {
                                             if (opcao.nome === 'Relatórios') {
                                                 setShowRelatoriosDropdown(false);
                                             } else if (opcao.nome === 'Exportações') {
                                                 setShowExportacoesDropdown(false);
+                                            } else if (opcao.nome === 'Delivery') {
+                                                setShowDeliveryDropdown(false);
+                                            } else if (opcao.nome === 'Conciliacao') {
+                                                setShowConciliacaoDropdown(false);
                                             }
                                         }}>
                                             <button className={`px-2 me-1 li-button-content nav-hover-button dropdown-button ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
                                                 {opcao.icone && React.createElement(opcao.icone)}
                                                 <span className="ms-1 mt-2 mb-auto li-btn-text">{opcao.nome}</span>
                                             </button>
-                                            <div className={`dropdown-menu ${isDarkTheme ? 'dark-theme' : 'light-theme'} ${opcao.nome === 'Relatórios' ? (showRelatoriosDropdown ? 'show' : '') : (showExportacoesDropdown ? 'show' : '')}`} aria-labelledby="dropdownMenuButton" style={{ position: 'absolute', top: '100%', left: 0 }}>
+                                            <div className={`dropdown-menu ${isDarkTheme ? 'dark-theme' : 'light-theme'} ${opcao.nome === 'Relatórios' ? (showRelatoriosDropdown ? 'show' : '') : (opcao.nome === 'Exportações' ? (showExportacoesDropdown ? 'show' : '') : (opcao.nome === 'Delivery' ? (showDeliveryDropdown ? 'show' : '') : (opcao.nome === 'Conciliacao' ? (showConciliacaoDropdown ? 'show' : '') : '')))}`} aria-labelledby="dropdownMenuButton" style={{ position: 'absolute', top: '100%', left: 0 }}>
                                                 {opcao.children.map((childOption, childIndex) => (
                                                     <Link key={childIndex} to={childOption.rota} className={`dropdown-item ${isDarkTheme ? 'dark-theme' : 'light-theme'} relatorios-child`}>
                                                         <button className={`px-2 me-1 li-button-content nav-hover-button dropdown-button ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
@@ -188,8 +206,8 @@ const CustomCheckbox = ({ isChecked, handleCheckboxChange }) => {
                                             </button>
                                         </Link>
                                     )}
-                                    </li>
-                                ))}
+                                </li>
+                            ))}
                             </ul>
                             <div className="toggle-container me-1">
                                 <label className="switch">

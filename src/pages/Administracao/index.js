@@ -120,14 +120,14 @@ const Administracao = () =>{
                 <div className=''>
                     <form className=''>
                         <div className='component-container'>
-                            <h5 style={{fontWeight: 'bold'}}>Tipo de Taxa</h5>
+                            <h5 className={`${isDarkTheme ? 'dark-theme' : 'light-theme'}`} style={{fontWeight: 'bold'}}>Tipo de Taxa</h5>
                             <br/>
                             <RadioSelect options={radioOptions} onSelect={(e) => {setTipo(e)}}/>
                             <br/>
                         </div>
                         <div className='component-container'>
                             <br/>
-                            <h5 style={{fontWeight: 'bold'}}>Cadastro de Taxas Comparativas</h5>
+                            <h5 className={`${isDarkTheme ? 'dark-theme' : 'light-theme'}`} style={{fontWeight: 'bold'}}>Cadastro de Taxas Comparativas</h5>
                             <br/>
                             <PlaceHolder /> 
                             <br/>

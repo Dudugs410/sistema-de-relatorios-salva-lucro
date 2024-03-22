@@ -16,9 +16,9 @@ import ExportacaoMeta from "../pages/ExportacaoMeta";
 import ExportacaoMetaSapiranga from "../pages/ExportacaoMetaSapiranga";
 import Administracao from "../pages/Administracao";
 import Suporte from "../pages/Suporte";
-import Delivery from "../pages/Delivery";
-import ConciliacaoBancaria from "../pages/Delivery";
 import OutrosRelatorios from "../pages/OutrosRelatorios";
+import Ifood from "../pages/Ifood";
+import Cnab240 from "../pages/Cnab240";
 
 function RoutesApp(){
     return(
@@ -36,8 +36,8 @@ function RoutesApp(){
         <Route path='/metasapiranga' element = {<Private><ExportacaoMetaSapiranga/></Private> }/>
         <Route path='/administracao' element = {<Private><Administracao/></Private>}/>
         <Route path='/suporte' element = {<Private><Suporte/></Private>}/>
-        <Route path='/delivery' element = {<Private><Delivery/></Private>} />
-        <Route path='/conciliacaobancaria' element = {<Private><ConciliacaoBancaria/></Private>} />
+        <Route path='/ifood' element = {<Private><Ifood/></Private>} />
+        <Route path='/cnab240' element = {<Private><Cnab240/></Private>} />
 
         <Route path='/TESTE' element = {<Private><PageTeste/></Private>} />
     </Routes>

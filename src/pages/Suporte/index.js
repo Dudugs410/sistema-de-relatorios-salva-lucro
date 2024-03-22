@@ -497,6 +497,7 @@ const Suporte = () =>{
                             />
                         ) : <></>}
                     </div>
+                    <br/>
                     <div className='input-block-cli-adq'>
                         <button className={`btn btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><FiFilePlus /> &nbsp; Gerar Excel</button>
                     </div>
