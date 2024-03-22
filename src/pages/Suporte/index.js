@@ -64,7 +64,7 @@ const Suporte = () =>{
     const PlaceHolder = () =>{
         return(
             <div className='table-suporte-container'>
-                <table class="table table-striped table-hover table-bordered table-suporte">
+                <table className="table table-striped table-hover table-bordered table-suporte">
                     <thead>
                         <tr>
                             <th scope="col">Estabelecimento</th>
@@ -101,7 +101,7 @@ const Suporte = () =>{
     const PlaceHolder2 = () =>{
         return(
             <div className='table-suporte-container'>
-                <table class="table table-striped table-hover table-bordered table-suporte">
+                <table className="table table-striped table-hover table-bordered table-suporte">
                     <thead>
                         <tr>
                             <th scope="col">Ver</th>
@@ -192,15 +192,15 @@ const Suporte = () =>{
                 <div className='suporte-content'>
                     <div className='input-suporte'>
                         <div className='input-block'>
-                            <h6><b>Estabelecimento</b></h6>
+                            <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Estabelecimento</b></h6>
                             <input className='input-suporte' type='text'/>
                         </div>
                         <div className='input-block'>
-                            <h6><b>CNPJ</b></h6>
+                            <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>CNPJ</b></h6>
                             <input className='input-suporte' type='text'/>    
                         </div>
                         <div className='input-block'>
-                            <h6><b>Razão Social</b></h6>
+                            <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Razão Social</b></h6>
                             <input className='input-suporte' type='text'/>                    
                         </div>
                         <div className='input-block'>
@@ -237,15 +237,15 @@ const Suporte = () =>{
                 <div className='suporte-content'>
                     <div className='input-suporte'>
                         <div className='input-block'>
-                            <h6><b>Estabelecimento</b></h6>
+                            <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Estabelecimento</b></h6>
                             <input className='input-suporte' type='text'/>
                         </div>
                         <div className='input-block'>
-                            <h6><b>CNPJ</b></h6>
+                            <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>CNPJ</b></h6>
                             <input className='input-suporte' type='text'/>    
                         </div>
                         <div className='input-block'>
-                            <h6><b>Razão Social</b></h6>
+                            <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Razão Social</b></h6>
                             <input className='input-suporte' type='text'/>                    
                         </div>
                         <div className='input-block'>
@@ -273,15 +273,15 @@ const Suporte = () =>{
                 <div className='suporte-content'>
                     <div className='input-suporte'>
                         <div className='input-block'>
-                            <h6><b>Estabelecimento</b></h6>
+                            <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Estabelecimento</b></h6>
                             <input className='input-suporte' type='text'/>
                         </div>
                         <div className='input-block'>
-                            <h6><b>CNPJ</b></h6>
+                            <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>CNPJ</b></h6>
                             <input className='input-suporte' type='text'/>    
                         </div>
                         <div className='input-block'>
-                            <h6><b>Razão Social</b></h6>
+                            <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Razão Social</b></h6>
                             <input className='input-suporte' type='text'/>                    
                         </div>
                         <div className='input-block'>
@@ -312,15 +312,15 @@ const Suporte = () =>{
                 <div className='suporte-content'>
                     <div className='input-suporte'>
                         <div className='input-block'>
-                            <h6><b>Estabelecimento</b></h6>
+                            <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Estabelecimento</b></h6>
                             <input className='input-suporte' type='text'/>
                         </div>
                         <div className='input-block'>
-                            <h6><b>CNPJ</b></h6>
+                            <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>CNPJ</b></h6>
                             <input className='input-suporte' type='text'/>    
                         </div>
                         <div className='input-block'>
-                            <h6><b>Razão Social</b></h6>
+                            <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Razão Social</b></h6>
                             <input className='input-suporte' type='text'/>                    
                         </div>
                         <div className='input-block'>
@@ -351,19 +351,19 @@ const Suporte = () =>{
                 <div className='suporte-content'>
                     <div className='input-suporte'>
                         <div className='input-block'>
-                            <h6><b>Estabelecimento</b></h6>
+                            <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Estabelecimento</b></h6>
                             <input className='input-suporte' type='text'/>
                         </div>
                         <div className='input-block'>
-                            <h6><b>CNPJ</b></h6>
+                            <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>CNPJ</b></h6>
                             <input className='input-suporte' type='text'/>    
                         </div>
                         <div className='input-block'>
-                            <h6><b>Razão Social</b></h6>
+                            <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Razão Social</b></h6>
                             <input className='input-suporte' type='text'/>                    
                         </div>
                         <div className='input-block'>
-                            <h6><b>Código do Cliente</b></h6>
+                            <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Código do Cliente</b></h6>
                             <input className='input-suporte' type='text'/>                    
                         </div>
                         <div className='radio-suporte'>
@@ -385,7 +385,7 @@ const Suporte = () =>{
             <div className='suporte-content'>
                 <div className='input-suporte'>
                     <div className='input-block'>
-                        <h6><b>Nome do Arquivo</b></h6>
+                        <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Nome do Arquivo</b></h6>
                         <input className='input-suporte' type='text'/>
                     </div>
                     <div className='input-block'>
@@ -408,34 +408,41 @@ const Suporte = () =>{
                 </div>
                 <div className='input-suporte-correcao'>
                     <div className='input-block-correcao'>
-                        <h6><b>Adquirente *</b></h6>
-                        <input className='input-suporte' type='text'/>
+                        <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Adquirente *</b></h6>
+                        <input className='input-suporte input-correcao' type='text'/>
                     </div>
+                    <br/>
                     <div className='input-block-correcao'>
-                        <h6><b>Cód do Estabelecimento na Adquirente *</b></h6>
-                        <input className='input-suporte' type='text'/>
+                        <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Cód do Estabelecimento na Adquirente *</b></h6>
+                        <input className='input-suporte input-correcao' type='text'/>
                     </div>
+                    <br/>
                     <div className='input-block-correcao'>
-                        <h6><b>CNPJ Origem *</b></h6>
-                        <input className='input-suporte' type='text'/>                    
+                        <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>CNPJ Origem *</b></h6>
+                        <input className='input-suporte input-correcao' type='text'/>                    
                     </div>
+                    <br/>
                     <div className='input-block-correcao'>
-                        <h6><b>Razão Social Origem</b></h6>
-                        <input className='input-suporte' type='text'/>                    
+                        <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Razão Social Origem</b></h6>
+                        <input className='input-suporte input-correcao' type='text'/>                    
                     </div>
+                    <br/>
                     <div className='input-block-correcao'>
-                        <h6><b>CNPJ Destino *</b></h6>
-                        <input className='input-suporte' type='text'/>                    
+                        <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>CNPJ Destino *</b></h6>
+                        <input className='input-suporte input-correcao' type='text'/>                    
                     </div>
+                    <br/>
                     <div className='input-block-correcao'>
-                        <h6><b>Razão Social Destino</b></h6>
-                        <input className='input-suporte' type='text'/>                    
+                        <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Razão Social Destino</b></h6>
+                        <input className='input-suporte input-correcao' type='text'/>                    
                     </div>
+                    <br/>
+                    <hr className='hr-global'/>
                     <div className='input-block-correcao'>
-                        <button className={`btn btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Aplicar Correção</button>
+                        <button className={`btn btn-global btn-correcao ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Aplicar Correção</button>
                     </div>
                     <div className='input-block-corração'>
-                        <p >Campos com * são obrigatórios</p>
+                        <p className='p-correcao'>Campos com * são obrigatórios</p>
                     </div>
                 </div>
             </div>
@@ -480,7 +487,7 @@ const Suporte = () =>{
                 </div>
                 <div className='input-suporte-cli-adq'>
                     <div className='input-block-cli-adq'>
-                        <h6><b>Adquirente *</b></h6>
+                        <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Adquirente *</b></h6>
                         {adqfiltradas.length > 0 ? (
                             <Select
                                 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
@@ -505,10 +512,8 @@ const Suporte = () =>{
         {value: 3, label: 'Autorização C6-Bank', componente: AutC6},
         {value: 4, label: 'Gestão de Adquirentes', componente: GestaoAdq},
         {value: 5, label: 'Consulta de Arquivos Importados', componente: ConsultaArquivo},
-        {value: 6, label: 'Emissor de Relatórios', componente: AutCielo},
-        {value: 7, label: 'Relatório de Importação', componente: AutCielo},
-        {value: 8, label: 'Corrigir Cadastro de Adquirente', componente: CorrigirAdq},
-        {value: 9, label: 'Clientes por Adquirentes', componente: RelatorioCliAdq},
+        {value: 6, label: 'Corrigir Cadastro de Adquirente', componente: CorrigirAdq},
+        {value: 7, label: 'Clientes por Adquirentes', componente: RelatorioCliAdq},
     ]
     const [tipoOpcao, setTipoOpcao] = useState(null)
     useEffect(()=>{
@@ -533,7 +538,7 @@ const Suporte = () =>{
             <div className='page-suporte-content'>
                 <div className=''>
                     <form className='form-suporte'>
-                        <h5>Tipo</h5>
+                        <h5 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Tipo</h5>
                         <Select
                             value={tipoOpcao} 
                             onChange={handleTipoOpcao}
@@ -545,7 +550,7 @@ const Suporte = () =>{
                     <hr className='hr-global'/>
                     {tipoOpcao && (
                         <div style={{width: '100%', height: '100%'}}>
-                            <h5 style={{paddingTop: '5px', paddingBottom: '5px'}}>{tipoOpcao.label}</h5>
+                            <h5 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} style={{paddingTop: '5px', paddingBottom: '5px'}}>{tipoOpcao.label}</h5>
                             {tipoOpcao.componente && <tipoOpcao.componente isDarkTheme={isDarkTheme} />} {/* Render the component if it exists */}
                         </div>
                     )}

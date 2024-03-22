@@ -88,6 +88,7 @@ const Header = () => {
             { nome: 'Relatórios', icone: icones['FiFileText'], children: [
                 { nome: 'Financeiro', rota: '/financeiro' },
                 { nome: 'Gerenciais', rota: '/gerenciais' },
+                { nome: 'Outros', rota: '/outrosrelatorios'},
             ]},
             { nome: 'Exportações', icone: icones['FiDownload'], children: [
                 { nome: 'Sysmo', rota: '/sysmo' },
