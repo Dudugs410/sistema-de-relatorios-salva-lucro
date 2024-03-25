@@ -17,8 +17,8 @@ import ExportacaoMetaSapiranga from "../pages/ExportacaoMetaSapiranga";
 import Administracao from "../pages/Administracao";
 import Suporte from "../pages/Suporte";
 import OutrosRelatorios from "../pages/OutrosRelatorios";
-import Ifood from "../pages/Ifood";
-import Cnab240 from "../pages/Cnab240";
+import VendasDelivery from "../pages/VendasDelivery";
+import ConciliacaoBancaria from "../pages/ConciliacaoBancaria";
 
 function RoutesApp(){
     return(
@@ -31,15 +31,15 @@ function RoutesApp(){
         <Route path='/financeiro' element = { <Private><Financeiro/></Private> }/>
         <Route path='/gerenciais' element = { <Private><Gerenciais/></Private> }/>
         <Route path='/outrosrelatorios' element = { <Private><OutrosRelatorios/></Private> }/>
-        <Route path='/sysmo' element = {<Private><ExportacaoSysmo/></Private> }/>
-        <Route path='/meta' element = {<Private><ExportacaoMeta/></Private> }/>
-        <Route path='/metasapiranga' element = {<Private><ExportacaoMetaSapiranga/></Private> }/>
-        <Route path='/administracao' element = {<Private><Administracao/></Private>}/>
-        <Route path='/suporte' element = {<Private><Suporte/></Private>}/>
-        <Route path='/ifood' element = {<Private><Ifood/></Private>} />
-        <Route path='/cnab240' element = {<Private><Cnab240/></Private>} />
+        <Route path='/sysmo' element = { <Private><ExportacaoSysmo/></Private> }/>
+        <Route path='/meta' element = { <Private><ExportacaoMeta/></Private> }/>
+        <Route path='/metasapiranga' element = { <Private><ExportacaoMetaSapiranga/></Private> }/>
+        <Route path='/administracao' element = { <Private><Administracao/></Private> }/>
+        <Route path='/suporte' element = { <Private><Suporte/></Private> }/>
+        <Route path='/vendasdelivery' element = { <Private><VendasDelivery/></Private> } />
+        <Route path='/conciliacao' element = { <Private><ConciliacaoBancaria/></Private> } />
 
-        <Route path='/TESTE' element = {<Private><PageTeste/></Private>} />
+        <Route path='/TESTE' element = { <Private><PageTeste/></Private> } />
     </Routes>
     )
 }

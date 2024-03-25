@@ -12,10 +12,31 @@ const Header = () => {
     const { logout, isDarkTheme, setIsDarkTheme, isCheckedCalendar, setIsCheckedCalendar,} = useContext(AuthContext)
 
     const [isChecked, setIsChecked] = useState(localStorage.getItem('isChecked') === 'true')
+    
+    const [showInicioDropdown, setShowInicioDropdown] = useState(false)
+    const [showVendasDropdown, setShowVendasDropdown] = useState(false)
+    const [showCreditosDropdown, setShowCreditosDropdown] = useState(false)
+    const [showServicosDropdown, setShowServicosDropdown] = useState(false)
     const [showRelatoriosDropdown, setShowRelatoriosDropdown] = useState(false)
     const [showExportacoesDropdown, setShowExportacoesDropdown] = useState(false) // New state variable
+    const [showAdministracaoDropdown, setShowAdministracaoDropdown] = useState(false)
+    const [showSuporteDropdown, setShowSuporteDropdown] = useState(false)
     const [showDeliveryDropdown, setShowDeliveryDropdown] = useState(false) // New state variable
     const [showConciliacaoDropdown, setShowConciliacaoDropdown] = useState(false) // New state variable
+
+    const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth <= 1231);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsSmallScreen(window.innerWidth <= 1231);
+        };
+
+        window.addEventListener("resize", handleResize);
+
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
+    }, []);
 
     const handleCheckboxChangeCalendar = () => {
 		setIsCheckedCalendar(!isCheckedCalendar); // Toggle the state
@@ -85,10 +106,18 @@ const Header = () => {
         };
 
         const orderedOptions = [
-            { nome: 'Início', icone: icones['FiHome'], rota: '/dashboard' },
-            { nome: 'Vendas', icone: icones['FiDollarSign'], rota: '/vendas' },
-            { nome: 'Créditos', icone: icones['FiCreditCard'], rota: '/creditos' },
-            { nome: 'Serviços', icone: icones['FiTool'], rota: '/servicos' },
+            { nome: 'Início', icone: icones['FiHome'], rota: '/dashboard', children:[
+                { nome: 'Início', rota: '/dashboard' }
+            ]},
+            { nome: 'Vendas', icone: icones['FiDollarSign'], rota: '/vendas', children:[
+                { nome: 'Vendas', rota: '/vendas' }
+            ]},
+            { nome: 'Créditos', icone: icones['FiCreditCard'], rota: '/creditos', children:[
+                { nome: 'Créditos', rota: '/creditos' }
+            ]},
+            { nome: 'Serviços', icone: icones['FiTool'], rota: '/servicos', children:[
+                { nome: 'Serviços', rota: '/servicos' }
+            ]},
             { nome: 'Relatórios', icone: icones['FiFileText'], children: [
                 { nome: 'Financeiro', rota: '/financeiro' },
                 { nome: 'Gerenciais', rota: '/gerenciais' },
@@ -99,13 +128,17 @@ const Header = () => {
                 { nome: 'Meta', rota: '/meta' },
                 { nome: 'Meta Sapiranga', rota: '/metasapiranga' },
             ]},
-            { nome: 'Administração', icone: icones['FiPaperClip'], rota: '/administracao' },
-            { nome: 'Suporte', icone: icones['FiSettings'], rota: '/suporte' },
+            { nome: 'Administração', icone: icones['FiPaperClip'], rota: '/administracao', children:[
+                { nome: 'Administração', rota: '/administracao' }
+            ]},
+            { nome: 'Suporte', icone: icones['FiSettings'], rota: '/suporte', children:[
+                { nome: 'Suporte', rota: '/suporte' }
+            ]},
             { nome: 'Delivery', icone: icones['FiTruck'], children: [
-                { nome: 'Vendas i-Food', rota: '/ifood' },
+                { nome: 'Vendas Delivery', rota: '/vendasdelivery' },
             ]},
             { nome: 'Conciliacao', icone: icones['FiShoppingBag'], children: [
-                { nome: 'Cnab240', rota: '/cnab240' },
+                { nome: 'Conciliação Bancária', rota: '/conciliacao' },
             ]},
         ];
 
@@ -164,20 +197,44 @@ const CustomCheckbox = ({ isChecked, handleCheckboxChange }) => {
                                 <li className="nav-item" key={index}>
                                     {opcao.children ? (
                                         <div className="nav-hover dropdown" onMouseEnter={() => {
-                                            if (opcao.nome === 'Relatórios') {
+                                            if (opcao.nome === 'Início') {
+                                                setShowInicioDropdown(true);
+                                            } else if (opcao.nome === 'Vendas') {
+                                                setShowVendasDropdown(true);
+                                            } else if (opcao.nome === 'Créditos') {
+                                                setShowCreditosDropdown(true);
+                                            } else if (opcao.nome === 'Serviços') {
+                                                setShowServicosDropdown(true);
+                                            } else if(opcao.nome === 'Relatórios') {
                                                 setShowRelatoriosDropdown(true);
                                             } else if (opcao.nome === 'Exportações') {
                                                 setShowExportacoesDropdown(true);
+                                            } else if (opcao.nome === 'Administração') {
+                                                setShowAdministracaoDropdown(true);
+                                            } else if (opcao.nome === 'Suporte') {
+                                                setShowSuporteDropdown(true);
                                             } else if (opcao.nome === 'Delivery') {
                                                 setShowDeliveryDropdown(true);
                                             } else if (opcao.nome === 'Conciliacao') {
                                                 setShowConciliacaoDropdown(true);
                                             }
                                         }} onMouseLeave={() => {
-                                            if (opcao.nome === 'Relatórios') {
+                                            if (opcao.nome === 'Início') {
+                                                setShowInicioDropdown(false);
+                                            } else if (opcao.nome === 'Vendas') {
+                                                setShowVendasDropdown(false);
+                                            } else if (opcao.nome === 'Créditos') {
+                                                setShowCreditosDropdown(false);
+                                            } else if (opcao.nome === 'Serviços') {
+                                                setShowServicosDropdown(false);
+                                            } else if(opcao.nome === 'Relatórios') {
                                                 setShowRelatoriosDropdown(false);
                                             } else if (opcao.nome === 'Exportações') {
                                                 setShowExportacoesDropdown(false);
+                                            } else if (opcao.nome === 'Administração') {
+                                                setShowAdministracaoDropdown(false);
+                                            } else if (opcao.nome === 'Suporte') {
+                                                setShowSuporteDropdown(false);
                                             } else if (opcao.nome === 'Delivery') {
                                                 setShowDeliveryDropdown(false);
                                             } else if (opcao.nome === 'Conciliacao') {
@@ -188,7 +245,7 @@ const CustomCheckbox = ({ isChecked, handleCheckboxChange }) => {
                                                 {opcao.icone && React.createElement(opcao.icone)}
                                                 <span className="ms-1 mt-2 mb-auto li-btn-text">{opcao.nome}</span>
                                             </button>
-                                            <div className={`dropdown-menu ${isDarkTheme ? 'dark-theme' : 'light-theme'} ${opcao.nome === 'Relatórios' ? (showRelatoriosDropdown ? 'show' : '') : (opcao.nome === 'Exportações' ? (showExportacoesDropdown ? 'show' : '') : (opcao.nome === 'Delivery' ? (showDeliveryDropdown ? 'show' : '') : (opcao.nome === 'Conciliacao' ? (showConciliacaoDropdown ? 'show' : '') : '')))}`} aria-labelledby="dropdownMenuButton" style={{ position: 'absolute', top: '100%', left: 0 }}>
+                                            <div className={`dropdown-menu ${isDarkTheme ? 'dark-theme' : 'light-theme'} ${opcao.nome === 'Relatórios' ? (showRelatoriosDropdown ? 'show' : '') : (opcao.nome === 'Início' ? (showInicioDropdown ? 'show' : '') : (opcao.nome === 'Vendas' ? (showVendasDropdown ? 'show' : '') : (opcao.nome === 'Créditos' ? (showCreditosDropdown ? 'show' : '') : (opcao.nome === 'Serviços' ? (showServicosDropdown ? 'show' : '') : (opcao.nome === 'Exportações' ? (showExportacoesDropdown ? 'show' : '') : (opcao.nome === 'Administração' ? (showAdministracaoDropdown ? 'show' : '') : (opcao.nome === 'Suporte' ? (showSuporteDropdown ? 'show' : '') : (opcao.nome === 'Delivery' ? (showDeliveryDropdown ? 'show' : '') : (opcao.nome === 'Conciliacao' ? (showConciliacaoDropdown ? 'show' : '') : '')))))))))}`} aria-labelledby="dropdownMenuButton" style={{ position: 'absolute', top: '100%', left: 0 }}>
                                                 {opcao.children.map((childOption, childIndex) => (
                                                     <Link key={childIndex} to={childOption.rota} className={`dropdown-item ${isDarkTheme ? 'dark-theme' : 'light-theme'} relatorios-child`}>
                                                         <button className={`px-2 me-1 li-button-content nav-hover-button dropdown-button ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
