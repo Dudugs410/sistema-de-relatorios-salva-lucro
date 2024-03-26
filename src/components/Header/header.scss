@@ -227,6 +227,19 @@
     }
 }
 
+.navbar-nav .dropdown-menu-normal{
+    position: relative;
+    z-index: 9999;
+    &.light-theme{
+        background-color: $primary-color-light;
+        border: solid $secondary-color-light 1px;
+    }
+    &.dark-theme{
+        background-color: $primary-color-dark;
+        border: solid $secondary-color-dark 1px;
+    }
+}
+
 .btn-container{ // ??
     align-items: center;
     justify-content: center;
@@ -353,6 +366,21 @@
   .dropdown-menu.show {
     display: block;
   }
+
+  .dropdown-menu-normal {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 5px;
+    z-index: 1000; /* Ensure the dropdown menu is above other elements */
+  }
+  
+  .dropdown-menu-normal.show {
+    display: block;
+  }
   
   /* Styles for dropdown menu items */
   .dropdown-item {
@@ -411,6 +439,10 @@
   }
 
     .navbar-nav .dropdown-menu .dropdown-item {
+        text-decoration: none !important;
+    }
+
+    .navbar-nav .dropdown-menu-normal .dropdown-item {
         text-decoration: none !important;
     }
 
