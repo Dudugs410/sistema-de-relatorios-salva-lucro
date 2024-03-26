@@ -8,6 +8,8 @@ html, body, .app, #root, .appPage, .app-page{
   height: 100%;
   width: 100%;
   font-family: $default-font;
+  overflow-x: hidden;
+  
    &.light-theme{
     background-color: $background-color-light;
    }
