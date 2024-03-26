@@ -1,0 +1,29 @@
+@import '../../styles/variables';
+
+.layout{
+    height: 100%;
+    width: 100%;
+}
+
+.btn-contato-container{
+    position: fixed;
+    bottom: 41px;
+    right: 6px;
+    border-radius: 12px;
+
+    &.light-theme{
+        border: solid $primary-color-light 2px;
+    }
+
+    &.dark-theme{
+        border: solid $primary-color-dark 2px;
+    }
+}
+
+.btn-contato{
+    width: 40px;
+    bottom: 0;
+    right: 0;
+    transition: all 0.4s;
+
+}
