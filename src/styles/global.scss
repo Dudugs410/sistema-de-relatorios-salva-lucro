@@ -100,6 +100,9 @@ span{
     font-weight: 200;
     align-items: center;
 
+    background-color:aquamarine;
+    border-color: bisque;
+
     &.light-theme{
         border: solid $secondary-color-light 1px;
         background-color: $secondary-color-light;

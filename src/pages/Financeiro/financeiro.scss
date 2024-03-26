@@ -1,0 +1,19 @@
+.page-content-financeiro{
+    width: 80%;
+    padding: 1%;
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    border-radius: 20px;
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 54px;
+    transition: all 2s;
+}
+
+@media screen and (max-width: 869px){
+    .page-content-financeiro{
+        width: 100%;
+        border-radius: 0px;
+    }
+}

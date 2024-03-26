@@ -17,6 +17,30 @@ html, body, .app, #root, .appPage, .app-page{
    }
 }
 
+h5{
+  &.light-theme{
+    font-weight: bold;
+    color: $font-color-light;
+  }
+
+  &.dark-theme{
+    font-weight: bold;
+    color: $font-color-dark;
+  }
+}
+
+h6{
+  &.light-theme{
+    font-weight: 400;
+    color: $font-color-light;
+  }
+
+  &.dark-theme{
+    font-weight: 400;
+    color: $font-color-dark;
+  }
+}
+
 .appPage, .app-page{
   min-height: 100vh;
   font-family: sans-serif;
