@@ -9,6 +9,78 @@
     background-size: cover;
 }
 
+.side-bar-container{
+    position: absolute;
+    top:0;
+    left:0;
+    z-index:1;
+}
+
+.side-bar-container:first-child{
+    height: 100%;
+    background-color: lightblue;
+}
+
+.li-sidebar{
+    width: 100%;
+}
+
+.li-sidebar>button{
+    position: relative;
+    top: 0;
+    left:0;
+    width: 100%;
+    color: white;
+}
+
+.p-side-bar{
+    display: none;
+}
+
+.mobile{
+    display: flex;
+    width: 200px;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0;
+}
+
+.btn-mobile{
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    width: 100%;
+    transition: all .4s;
+    &.light-theme{
+        color: white;
+        border: solid $secondary-color-light 1px;
+        background-color: #0a3d70e7;
+    }
+    &.dark-theme{
+        color: $font-color-dark;
+        border: solid $secondary-color-dark 1px;
+        background-color: #231f20f1;
+    }
+}
+
+.btn-mobile:hover{
+    &.light-theme{
+        color: $font-color-light;
+        border: solid $primary-color-light 1px;
+        background-color: $secondary-color-light;
+    }
+    &.dark-theme{
+        color: $primary-color-dark;
+        border: solid white 1px;
+        background-color: $secondary-color-dark;
+    }
+}
+
+.transition-slide-down {
+    transition: all 0.3s ease-in-out; /* Adjust the duration and easing function as needed */
+}
+
 .header-bg{
     width: 100%;
     color:white;
@@ -155,6 +227,19 @@
     }
 }
 
+.navbar-nav .dropdown-menu-normal{
+    position: relative;
+    z-index: 9999;
+    &.light-theme{
+        background-color: $primary-color-light;
+        border: solid $secondary-color-light 1px;
+    }
+    &.dark-theme{
+        background-color: $primary-color-dark;
+        border: solid $secondary-color-dark 1px;
+    }
+}
+
 .btn-container{ // ??
     align-items: center;
     justify-content: center;
@@ -268,6 +353,21 @@
 
 /* Styles for dropdown menu */
 .dropdown-menu {
+    inset: 0px auto auto 0px;
+    position: absolute;
+    margin: 0px;
+    transform: translate(202px, 0px);
+    background: none;
+    border: none;
+    padding: 0;
+    z-index: 1000; /* Ensure the dropdown menu is above other elements */
+  }
+  
+  .dropdown-menu.show {
+    display: block;
+  }
+
+  .dropdown-menu-normal {
     display: none;
     position: absolute;
     top: 100%;
@@ -278,7 +378,7 @@
     z-index: 1000; /* Ensure the dropdown menu is above other elements */
   }
   
-  .dropdown-menu.show {
+  .dropdown-menu-normal.show {
     display: block;
   }
   
@@ -339,6 +439,10 @@
   }
 
     .navbar-nav .dropdown-menu .dropdown-item {
+        text-decoration: none !important;
+    }
+
+    .navbar-nav .dropdown-menu-normal .dropdown-item {
         text-decoration: none !important;
     }
 
@@ -462,11 +566,38 @@
         transition: all, 0.4s;
     }
 
-
 @media screen and (max-width: 1231px){
+
+    .navbar-nav{
+        display: none;
+    }
+
+    .toggle-container {
+        display: flex;
+        align-items: center;
+        padding: 0 5px 0 5px;
+        flex-direction: row;
+        width: 100%;
+        justify-content: flex-end;
+        position: relative;
+        left: 50px;
+    }
+
+    .p-side-bar{
+        margin-left: 10px;
+        margin-top: 10px;
+        margin-right: 0;
+        margin-bottom: 0;
+        width: 15%;
+        display: block;
+    }
 
     .li-btn-text{
         display: none
+    }
+
+    .a-side-bar{
+        width: 50px !important;
     }
 
     .header-bg-image{
@@ -616,6 +747,21 @@
 
 
 @media screen and (max-width: 637px) {
+    .navbar-nav{
+        display: none;
+    }
+
+    .toggle-container {
+        display: flex;
+        align-items: center;
+        padding: 0 5px 0 5px;
+        flex-direction: row;
+        width: 100%;
+        justify-content: flex-end;
+        position: relative;
+        left: 50px;
+    }
+
     .li-btn-text{
         display: none;
     }
@@ -652,6 +798,21 @@
 }
 
 @media only screen and (max-width: 517px) {
+    .navbar-nav{
+        display: none;
+    }
+
+    .toggle-container {
+        display: flex;
+        align-items: center;
+        padding: 0 5px 0 5px;
+        flex-direction: row;
+        width: 100%;
+        justify-content: flex-end;
+        position: relative;
+        left: 50px;
+    }
+
     /* esconde texto do navbar em telas pequenas*/
     .li-btn-text{
         display: none;
