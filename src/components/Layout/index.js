@@ -2,7 +2,7 @@ import Header from "../Header"
 import Footer from "../Footer"
 import SeletorClienteDev from "../SeletorCliente dev"
 import './layout.scss'
-import { FiMail } from "react-icons/fi"
+import { FiMail, FiPlusCircle } from "react-icons/fi"
 import { useContext } from "react"
 import { AuthContext } from "../../contexts/auth"
 
@@ -24,6 +24,7 @@ function Layout({ children }){
                         <span><FiMail  size={30}/></span>
                     </button>
                 </div>
+                <span className={`span-plus ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}><FiPlusCircle size={20}/></span>
                 <Footer />
             </div>
         </div>
@@ -32,5 +33,3 @@ function Layout({ children }){
 }
 
 export default Layout
-
-//<Footer />

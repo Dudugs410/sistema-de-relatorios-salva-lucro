@@ -10,6 +10,7 @@
     bottom: 41px;
     right: 6px;
     border-radius: 12px;
+    
 
     &.light-theme{
         border: solid $primary-color-light 2px;
@@ -20,10 +21,30 @@
     }
 }
 
+.span-plus{
+    position: fixed;
+    bottom: 35px;
+    right: 0px;
+    border-radius: 12px;
+    line-height: normal;
+
+    &.light-theme{
+        background-color: $secondary-color-light;
+        border: solid $primary-color-light 2px;
+    }
+
+    &.dark-theme{
+        background-color: $secondary-color-dark;
+        color: black;
+        border: solid $primary-color-dark 2px;
+    }
+}
+
 .btn-contato{
     width: 40px;
     bottom: 0;
     right: 0;
     transition: all 0.4s;
+    width: 100% !important;
 
 }
