@@ -1,0 +1,14 @@
+@import '../../styles/variables';
+
+.container-conciliacao{
+    border: solid $primary-color-light 1px;
+    height:400px;
+
+    &.light-theme{
+        border: solid $primary-color-light 1px;
+    }
+
+    &.dark-theme{
+        border: solid $primary-color-dark 1px;
+    }
+}
