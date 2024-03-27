@@ -29,12 +29,12 @@
     line-height: normal;
 
     &.light-theme{
-        background-color: $secondary-color-light;
+        background-color: white;
         border: solid $primary-color-light 2px;
     }
 
     &.dark-theme{
-        background-color: $secondary-color-dark;
+        background-color: white;
         color: black;
         border: solid $primary-color-dark 2px;
     }

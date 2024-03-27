@@ -21,7 +21,7 @@ function Layout({ children }){
                 { children }
                 <div className={`btn-contato-container ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
                     <button className={`btn-global btn-contato ${isDarkTheme ? 'dark-theme' : 'light-theme'}`} onClick={handleClick}>
-                        <span><FiMail  size={30}/></span>
+                        <span><FiMail size={30}/></span>
                     </button>
                 </div>
                 <span className={`span-plus ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}><FiPlusCircle size={20}/></span>
