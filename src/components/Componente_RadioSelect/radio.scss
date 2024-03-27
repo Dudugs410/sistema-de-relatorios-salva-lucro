@@ -24,6 +24,14 @@
     display: none; /* Hide the actual radio input */
 }
 
+.radio input[type=radio]:checked + .radio-indicator::after {
+    content: "";
+    width: 12px !important;
+    height: 12px !important;
+    background-color: $primary-color-light !important;
+    
+}
+
 .radio-indicator {
     position: relative; /* Make position relative for absolute positioning */
     width: 20px;
