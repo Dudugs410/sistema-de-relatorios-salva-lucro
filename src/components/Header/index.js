@@ -198,7 +198,7 @@ const SideBar = () =>{
                                                     {option.icone && React.createElement(option.icone)}
                                                     <span className="mb-auto mobile">{option.nome}</span>
                                                 </button>
-                                                <ul className="dropdown-menu" aria-labelledby={`dropdownMenuButton${index}`} style={{left: 'auto', right: 0}}>
+                                                <ul className="dropdown-menu dropdown-menu-mobile" aria-labelledby={`dropdownMenuButton${index}`} style={{left: 'auto', right: 0}}>
                                                     {option.children.map((childOption, childIndex) => (
                                                         <li className='li-side-bar' key={childIndex}>
                                                             <Link to={childOption.rota} className={`dropdown-item ${isDarkTheme ? 'dark-theme' : 'light-theme' }`}>

@@ -10,10 +10,10 @@
 }
 
 .side-bar-container{
-    position: absolute;
-    top:0;
-    left:0;
-    z-index:1;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1;
 }
 
 .side-bar-container:first-child{
@@ -381,6 +381,18 @@
   .dropdown-menu-normal.show {
     display: block;
   }
+
+  .dropdown-menu-mobile{
+    display: none !important;
+    inset: 0px auto auto 0px !important;
+    position: absolute !important;
+    margin: 0px !important;
+    transform: translate(202px, 0px) !important;
+}
+
+.dropdown-menu-mobile.show{
+    display: block !important;
+}
   
   /* Styles for dropdown menu items */
   .dropdown-item {

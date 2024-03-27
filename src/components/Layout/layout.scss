@@ -1,0 +1,104 @@
+@import '../../styles/variables';
+
+.layout{
+    height: 100%;
+    width: 100%;
+}
+
+.btn-contato-container{
+    position: fixed;
+    bottom: 41px;
+    right: 6px;
+    border-radius: 12px;
+    
+
+    &.light-theme{
+        border: solid $primary-color-light 2px;
+    }
+
+    &.dark-theme{
+        border: solid $primary-color-dark 2px;
+    }
+}
+
+.span-plus{
+    position: fixed;
+    bottom: 35px;
+    right: 0px;
+    border-radius: 12px;
+    line-height: normal;
+
+    &.light-theme{
+        background-color: white;
+        border: solid $primary-color-light 2px;
+    }
+
+    &.dark-theme{
+        background-color: white;
+        color: black;
+        border: solid $primary-color-dark 2px;
+    }
+}
+
+.btn-contato{
+    width: 40px;
+    bottom: 0;
+    right: 0;
+    transition: all 0.4s;
+    width: 100% !important;
+
+}
+
+////
+
+.modal-layout{
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999999999999;
+    flex-direction: column;
+    align-content: center;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.modal-layout-content{
+    display: flex;
+    width: 50%;
+    height: 65%;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: space-evenly;
+    border-radius: 10px;
+
+    &.light-theme{
+        color: $font-color-light;
+        background-color: $background-color-light;
+    }
+
+    &.dark-theme{
+        color: $font-color-dark;
+        background-color: $primary-color-dark;
+    }
+}
+
+.modal-layout-body{
+    display: flex;
+    /* height: 100%; */
+    width: 100%;
+    align-items: center;
+    justify-content: space-evenly;
+    align-content: stretch;
+    flex-direction: column;
+}   
+
+.form-contato-container{
+    height: 100%;
+    width: 100%;
+    display: contents;
+}
