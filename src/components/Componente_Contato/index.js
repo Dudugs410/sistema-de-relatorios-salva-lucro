@@ -19,6 +19,40 @@ const Contato = () => {
     window.location.href = `mailto:example@example.com?subject=${formData.nome}&body=${formData.menssagem}`;
   };
 
+  const Modal = ({ isOpen, onClose, children }) => {
+    if (!isOpen) return null;
+  
+    return (
+      <div className="modal-overlay" onClick={onClose}>
+        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          {children}
+          <button onClick={onClose}>Close</button>
+        </div>
+      </div>
+    );
+  };
+  
+    const [isModalOpen, setIsModalOpen] = useState(false);
+  
+    const openModal = () => {
+      setIsModalOpen(true);
+    };
+  
+    const closeModal = () => {
+      setIsModalOpen(false);
+    };
+  
+    return (
+      <div>
+        <button onClick={openModal}>Open Modal</button>
+        <Modal isOpen={isModalOpen} onClose={closeModal}>
+          <h2>This is a modal</h2>
+          <p>You can put any content here.</p>
+        </Modal>
+      </div>
+    );
+  };
+
   return (
     <form className='form-contato-container' onSubmit={handleSubmit}>
       <div className=''>
