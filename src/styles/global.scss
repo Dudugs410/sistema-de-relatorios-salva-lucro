@@ -11,6 +11,7 @@
 .page-background-global{
     display: flex;
     justify-content: center;
+    transition: all 2s;
     &.light-theme{
         background-color: $background-color-light;
     }
@@ -344,6 +345,7 @@ tr{
     .page-background-global{
         display: flex;
         justify-content: center;
+        transition: all 2s;
         
     }
 }

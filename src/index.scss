@@ -10,6 +10,7 @@ html, body, .app, #root, .appPage, .app-page{
   font-family: $default-font;
   overflow-x: hidden;
   display: contents;
+  transition: all 2s;
   
    &.light-theme{
     background-color: $background-color-light;

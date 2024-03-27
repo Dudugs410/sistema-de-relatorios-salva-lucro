@@ -4,6 +4,7 @@ import SeletorClienteDev from "../SeletorCliente dev"
 import { FiMail, FiPlusCircle } from "react-icons/fi"
 import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "../../contexts/auth"
+import '../../styles/global.scss'
 import './layout.scss'
 
 function Layout({ children }){
@@ -74,10 +75,12 @@ function Layout({ children }){
 
     const FormContato = () => {
         return (
+          <>
+          <h1 className={`title-chart title-form ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} style={{margin: 0}}><b>Contato</b></h1>
+          <hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
             <form className='form-contato-container' onSubmit={handleSubmit}>
-            <h3><b>Contato</b></h3>
               <div className='input-container'>
-                <h6 htmlFor="nome"><b>Nome:</b> *</h6>
+                <h6 className={`form-input-title ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} htmlFor="nome"><b className='form-input-b'>Nome:</b> *</h6>
                 <input
                   type="text"
                   value={nomeTemp}
@@ -87,7 +90,7 @@ function Layout({ children }){
                 />
               </div>
               <div className='input-container'>
-                <h6 htmlFor="email"><b>E-mail:</b> *</h6>
+                <h6 className={`form-input-title ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} htmlFor="email"><b className='form-input-b'>E-mail:</b> *</h6>
                 <input
                   type="email"
                   value={emailTemp}
@@ -97,7 +100,7 @@ function Layout({ children }){
                 />
               </div>
               <div className='input-container'>
-                <h6 htmlFor="menssagem"><b>Mensagem:</b> *</h6>
+                <h6 className={`form-input-title ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} htmlFor="menssagem"><b className='form-input-b'>Mensagem:</b> *</h6>
                 <textarea
                   value={mensagemTemp}
                   onChange={handleChangeMensagem}
@@ -105,8 +108,10 @@ function Layout({ children }){
                   required
                 />
               </div>
+              <hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
               <button className={`btn btn-global ${isDarkTheme ? 'dark-theme' : 'light-theme'}`} type='submit' >Enviar</button>
             </form>
+            </>
           );
     }
 
@@ -122,8 +127,7 @@ function Layout({ children }){
         );
     };
           
-    const Contato = () => {
-        
+    const Contato = () => { 
         return (
             <div>
                 <Modal isOpen={isModalOpen} onClose={closeModal}>
@@ -136,7 +140,7 @@ function Layout({ children }){
     };
 
     return(
-        <div className='layout'>
+        <div className={`layout ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
             <div className='appPage'>
                 <Header />
                 <SeletorClienteDev/>

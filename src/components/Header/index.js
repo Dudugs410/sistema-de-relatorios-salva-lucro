@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { FiMoon, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText, FiClipboard, FiDownload, FiCalendar, FiList, FiPaperclip, FiSettings, FiTruck, FiShoppingBag, FiMenu } from "react-icons/fi";
 import { AuthContext } from "../../contexts/auth";
 import React, { useContext, useEffect, useRef, useState } from "react";
@@ -13,16 +13,8 @@ const Header = () => {
 
     const [isChecked, setIsChecked] = useState(localStorage.getItem('isChecked') === 'true')
     
-    const [showInicioDropdown, setShowInicioDropdown] = useState(false)
-    const [showVendasDropdown, setShowVendasDropdown] = useState(false)
-    const [showCreditosDropdown, setShowCreditosDropdown] = useState(false)
-    const [showServicosDropdown, setShowServicosDropdown] = useState(false)
     const [showRelatoriosDropdown, setShowRelatoriosDropdown] = useState(false)
-    const [showExportacoesDropdown, setShowExportacoesDropdown] = useState(false) // New state variable
-    const [showAdministracaoDropdown, setShowAdministracaoDropdown] = useState(false)
-    const [showSuporteDropdown, setShowSuporteDropdown] = useState(false)
-    const [showDeliveryDropdown, setShowDeliveryDropdown] = useState(false) // New state variable
-    const [showConciliacaoDropdown, setShowConciliacaoDropdown] = useState(false) // New state variable
+    const [showExportacoesDropdown, setShowExportacoesDropdown] = useState(false)
 
     const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth <= 1231);
 
@@ -230,12 +222,18 @@ const SideBar = () =>{
     );
     }
 
+    const navigate = useNavigate()
+
+    const handleLogo = () => {
+        navigate('/dashboard')
+    }
+
     return (
         <>
             <div className="header-bg-image">
                 <div className={`header-bg ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
                     <div className='navbar-title'>
-                        <img className='img-header' src={salvaLucroLogoBranco} alt='logo salva lucro'/>
+                        <img className='img-header' src={salvaLucroLogoBranco} alt='logo salva lucro' onClick={handleLogo}/>
                     </div>
                     <div className="header-info-wrapper px-4 py-3">
                         <div className='navbar-customer-wrapper me-2 text-truncate'>
@@ -273,7 +271,7 @@ const SideBar = () =>{
                                                 {opcao.icone && React.createElement(opcao.icone)}
                                                 <span className="ms-1 mt-2 mb-auto li-btn-text">{opcao.nome}</span>
                                             </button>
-                                            <div className={`dropdown-menu-normal ${isDarkTheme ? 'dark-theme' : 'light-theme'} ${opcao.nome === 'Relatórios' ? (showRelatoriosDropdown ? 'show' : '') : (opcao.nome === 'Início' ? (showInicioDropdown ? 'show' : '') : (opcao.nome === 'Vendas' ? (showVendasDropdown ? 'show' : '') : (opcao.nome === 'Créditos' ? (showCreditosDropdown ? 'show' : '') : (opcao.nome === 'Serviços' ? (showServicosDropdown ? 'show' : '') : (opcao.nome === 'Exportações' ? (showExportacoesDropdown ? 'show' : '') : (opcao.nome === 'Administração' ? (showAdministracaoDropdown ? 'show' : '') : (opcao.nome === 'Suporte' ? (showSuporteDropdown ? 'show' : '') : (opcao.nome === 'Delivery' ? (showDeliveryDropdown ? 'show' : '') : (opcao.nome === 'Conciliacao' ? (showConciliacaoDropdown ? 'show' : '') : '')))))))))}`} aria-labelledby="dropdownMenuButton" style={{ position: 'absolute', top: '100%', left: 0 }}>
+                                            <div className={`dropdown-menu-normal ${isDarkTheme ? 'dark-theme' : 'light-theme'} ${opcao.nome === 'Relatórios' ? (showRelatoriosDropdown ? 'show' : '') : (opcao.nome === 'Exportações' ? (showExportacoesDropdown ? 'show' : '') : '')}`} aria-labelledby="dropdownMenuButton" style={{ position: 'absolute', top: '100%', left: 0 }}>
                                                 {opcao.children.map((childOption, childIndex) => (
                                                     <Link key={childIndex} to={childOption.rota} className={`dropdown-item ${isDarkTheme ? 'dark-theme' : 'light-theme'} relatorios-child`}>
                                                         <button className={`px-2 me-1 li-button-content nav-hover-button dropdown-button ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>

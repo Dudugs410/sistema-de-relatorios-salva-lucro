@@ -347,6 +347,11 @@
     transform: translateX(31px);
   }
 
+  img.img-header:hover{
+    cursor: pointer !important;
+    z-index: 999999999999999999999999;
+  }
+
 //   .nav-link{
 //     padding: 0px !important;
 //   }
