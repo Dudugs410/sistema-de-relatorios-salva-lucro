@@ -127,8 +127,7 @@ function Layout({ children }){
         );
     };
           
-    const Contato = () => {
-        
+    const Contato = () => { 
         return (
             <div>
                 <Modal isOpen={isModalOpen} onClose={closeModal}>
