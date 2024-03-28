@@ -18,7 +18,7 @@ const RadioSelect = ({ options, onSelect }) => {
   return (
     <div className={`radio-container-exportacao ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
       {options.map((option) => (
-        <div className={`radio ${isDarkTheme ? 'dark-theme' : 'light-theme'}`} key={option.value}>
+        <div className={`radio ${isDarkTheme ? 'dark-theme' : 'light-theme'}`} key={option.value} onClick={() => handleOptionChange(option.value)}>
           <input
             className={`input-r ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}
             type="radio"
