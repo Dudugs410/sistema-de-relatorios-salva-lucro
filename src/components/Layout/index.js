@@ -79,7 +79,7 @@ function Layout({ children }){
           <h1 className={`title-chart title-form ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} style={{margin: 0}}><b>Contato</b></h1>
           <hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
             <form className='form-contato-container' onSubmit={handleSubmit}>
-              <div className='input-container'>
+              <div className='input-container input-container-contato'>
                 <h6 className={`form-input-title ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} htmlFor="nome"><b className='form-input-b'>Nome:</b> *</h6>
                 <input
                   type="text"
@@ -89,7 +89,7 @@ function Layout({ children }){
                   required
                 />
               </div>
-              <div className='input-container'>
+              <div className='input-container input-container-contato'>
                 <h6 className={`form-input-title ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} htmlFor="email"><b className='form-input-b'>E-mail:</b> *</h6>
                 <input
                   type="email"
@@ -99,7 +99,7 @@ function Layout({ children }){
                   required
                 />
               </div>
-              <div className='input-container'>
+              <div className='input-container input-container-contato'>
                 <h6 className={`form-input-title ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} htmlFor="menssagem"><b className='form-input-b'>Mensagem:</b> *</h6>
                 <textarea
                   value={mensagemTemp}
