@@ -366,8 +366,8 @@ const Suporte = () =>{
                             <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Código do Cliente</b></h6>
                             <input className='input-suporte' type='text'/>                    
                         </div>
-                        <div className='radio-suporte'>
-                        <RadioSelect options={radioOptions} onSelect={(e) => {setRadioOption(e)}}/>
+                        <div className='input-block'>
+                            <div className='radio-suporte'><RadioSelect options={radioOptions} onSelect={(e) => {setRadioOption(e)}}/></div>
                         </div>
                         <div className='input-block'>
                             <button className={`btn btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><FiSearch />&nbsp;Filtrar</button>
