@@ -88,6 +88,8 @@ function AuthProvider({ children }){
 
 	const [isCheckedCalendar, setIsCheckedCalendar] = useState(true);
 
+	const [carregou, setCarregou] = useState(false)
+
 
 	const navigate = useNavigate()
 
@@ -1328,6 +1330,7 @@ function AuthProvider({ children }){
 				detalhes, setDetalhes,
 				textoExport, setTextoExport,
 				isCheckedCalendar, setIsCheckedCalendar,
+				carregou, setCarregou
 			}}
 		>
 			{children}

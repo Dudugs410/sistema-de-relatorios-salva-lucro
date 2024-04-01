@@ -17,9 +17,8 @@ import Cookies from 'js-cookie'
 import { useLocation } from 'react-router-dom'
 import '../../index.scss'
 import LazyLoader from '../../components/Componente_LazyLoader/index.js'
-import { toast } from 'react-toastify'
 
-const Dashboard = () => {
+const DashboardCopy = () => {
 	const location = useLocation()
 
 	useEffect(() => {
@@ -303,14 +302,6 @@ const Dashboard = () => {
 	},[gruSelecionado])
 
 	useEffect(()=>{
-		if(inicializouAux === true){
-			setLoadingVendas(false)
-			setLoadingCreditos(false)
-			setLoadingServicos(false)
-		}
-	},[])
-
-	useEffect(()=>{
 		async function inicializar(){
 			if(cnpj !== 'selecione'){
 				if((cnpj !== Cookies.get('ultimoCnpj')) && (cnpj !== '')) {
@@ -330,7 +321,6 @@ const Dashboard = () => {
 					setLoadingCreditos(false)
 					setLoadingServicos(false)
 					sessionStorage.setItem('inicializou', true)
-					Carregou()
 				} else {
 					setLoadingVendas(false)
 					setLoadingCreditos(false)
@@ -562,36 +552,45 @@ const Dashboard = () => {
 		return obj
 	}
 
-	const Carregou = () => {
-		toast.success("Success Notification !", {
-		  position: toast.POSITION.BOTTOM_RIGHT,
-		});
-	  };
-
 	const LazyAreaVendas = () => {
+		const [isLoading, setIsLoading] = useState(true);
+
+		useEffect(()=>{
+			if(loadingVendas === false){
+				setIsLoading(false)
+			}
+		},[loadingVendas])
+
 		return(
 			<>
-				{loadingVendas ? 
-					<LazyLoader /> 
-				: 
-					<div className={`graph-data ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-						<h1 className={`title-chart ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Vendas:</h1>
-						{ inicializouAux === true ? <PieChart data01 = {graficoVendasAux} arrayAdm={admVendasAux} tipo = '0' dados = 'vendas'/> : <PieChart data01 = {graficoVendas} arrayAdm={admVendas}/>}
-						<div className={`dash-table-container ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
-							{ loadingVendasDash && (<LoadingModal/>) }
-							{ inicializouAux ? <TabelaHorizontal header='Total Últimos 4 dias' valor={totalVendas4diasAux.toFixed(2)} /> : <TabelaHorizontal header='Total Últimos 4 dias' valor={totalVendas4dias.toFixed(2)} />}
-							{ inicializouAux ? <TabelaHorizontal header='Total do Mês' valor={somatorioVendasMesAux.toFixed(2)} /> : <TabelaHorizontal header='Total do Mês' valor={somatorioVendasMes.toFixed(2)} />}
-						</div>
-					</div>}
+			{isLoading ? 
+				<LazyLoader /> 
+			: 
+				<div className={`graph-data ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+					<h1 className={`title-chart ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Vendas:</h1>
+					{ inicializouAux === true ? <PieChart data01 = {graficoVendasAux} arrayAdm={admVendasAux} tipo = '0' dados = 'vendas'/> : <PieChart data01 = {graficoVendas} arrayAdm={admVendas}/>}
+					<div className={`dash-table-container ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
+						{ loadingVendasDash && (<LoadingModal/>) }
+						{ inicializouAux ? <TabelaHorizontal header='Total Últimos 4 dias' valor={totalVendas4diasAux.toFixed(2)} /> : <TabelaHorizontal header='Total Últimos 4 dias' valor={totalVendas4dias.toFixed(2)} />}
+						{ inicializouAux ? <TabelaHorizontal header='Total do Mês' valor={somatorioVendasMesAux.toFixed(2)} /> : <TabelaHorizontal header='Total do Mês' valor={somatorioVendasMes.toFixed(2)} />}
+					</div>
+				</div>}
 			</>
 		)
 	}
 
 	const LazyAreaCreditos = () => {
+		const [isLoading, setIsLoading] = useState(true);
+
+		useEffect(()=>{
+			if(loadingCreditos === false){
+				setIsLoading(false)
+			}
+		},[loadingCreditos])
 
 		return(
 			<>
-				{ loadingCreditos ? 
+				{ isLoading ? 
 					<LazyLoader /> 
 				: 
 					<div className={`graph-data ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
@@ -610,10 +609,17 @@ const Dashboard = () => {
 	}
 
 	const LazyAreaServicos = () => {
+		const [isLoading, setIsLoading] = useState(true);
+
+		useEffect(()=>{
+			if(loadingServicos === false){
+				setIsLoading(false)
+			}
+		},[loadingServicos])
 
 		return(
 			<>
-				{ loadingServicos ? 
+				{ isLoading ? 
 					<LazyLoader /> 
 				: 
 					<div className={`graph-data ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
@@ -627,6 +633,7 @@ const Dashboard = () => {
 					</div>				
 				}
 			</>
+
 		)
 	}
 
@@ -655,4 +662,4 @@ const Dashboard = () => {
 	)  
 }
 
-export default Dashboard
+export default DashboardCopy

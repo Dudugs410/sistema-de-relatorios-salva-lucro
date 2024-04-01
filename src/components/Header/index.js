@@ -35,7 +35,6 @@ const Header = () => {
 	  };
   
 	  useEffect(()=>{
-		console.log('checkbox marcada? ', isCheckedCalendar)
         if (localStorage.getItem('localUsers') !== null) {
             let localUsersTemp = JSON.parse(localStorage.getItem('localUsers'));
             localUsersTemp.map(user => {

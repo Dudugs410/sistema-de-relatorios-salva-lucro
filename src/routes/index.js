@@ -19,6 +19,7 @@ import Suporte from "../pages/Suporte";
 import OutrosRelatorios from "../pages/OutrosRelatorios";
 import VendasDelivery from "../pages/VendasDelivery";
 import ConciliacaoBancaria from "../pages/ConciliacaoBancaria";
+import DashboardCopy from "../pages/Dashboard copy";
 
 function RoutesApp(){
     return(
@@ -39,6 +40,7 @@ function RoutesApp(){
         <Route path='/vendasdelivery' element = { <Private><VendasDelivery/></Private> } />
         <Route path='/conciliacao' element = { <Private><ConciliacaoBancaria/></Private> } />
 
+        <Route path= '/DASHTESTE' element = { <Private><DashboardCopy/></Private>} />
         <Route path='/TESTE' element = { <Private><PageTeste/></Private> } />
     </Routes>
     )
