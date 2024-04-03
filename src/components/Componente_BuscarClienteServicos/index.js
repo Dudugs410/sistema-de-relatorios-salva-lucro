@@ -6,10 +6,12 @@ import './buscarServicos.scss'
 import { AuthContext } from '../../contexts/auth'
 import { ServicosContext } from '../../pages/Servicos'
 
-import { ToastContainer } from 'react-toastify'
-
 import '../../styles/global.scss'
+
+import { toast } from 'react-toastify'
+import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+
 import './reactdatepicker.css'
 import Cookies from 'js-cookie'
 
@@ -44,9 +46,13 @@ const BuscarClienteServicos = () => {
 	},[])
     
 	async function handleBusca(e){
+		toast.promise(buscar, {
+			pending: 'Carregando...',
+			success: 'Carregado com Sucesso',
+			error: 'Ocorreu um Erro',
+		})
 		e.preventDefault()
 		setClicouPesquisar(true)
-		await buscar()
 		await gerarDados(ajustes)
 		setDetalhes(true)
 	}
@@ -59,15 +65,17 @@ const BuscarClienteServicos = () => {
 					return 0
 				} else {
 					//adiciono .toLocaleDateString('pt-BR') às datas para que possamos comparar apenas o dia, mes e ano, sem levar em consideração a hora, minuto e segundos
-					if((dataBusca[0].toLocaleDateString('pt-BR') === dataBusca[1].toLocaleDateString('pt-BR'))){
-						console.log('mostrou alerta servicos')
-						alerta(`executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')}`)
-						setBuscou(true)
-						
-					} else if (dataBusca[0].toLocaleDateString('pt-BR') !== dataBusca[1].toLocaleDateString('pt-BR')){
-						console.log('mostrou alerta servicos')
-						alerta(`executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')} ao dia ${dataBusca[1].toLocaleDateString('pt-BR')}`)
-						setBuscou(true)
+					if(buscou !== true){
+						if((dataBusca[0].toLocaleDateString('pt-BR') === dataBusca[1].toLocaleDateString('pt-BR'))){
+							console.log('mostrou alerta servicos')
+							alerta(`executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')}`)
+							setBuscou(true)
+							
+						} else if (dataBusca[0].toLocaleDateString('pt-BR') !== dataBusca[1].toLocaleDateString('pt-BR')){
+							console.log('mostrou alerta servicos')
+							alerta(`executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')} ao dia ${dataBusca[1].toLocaleDateString('pt-BR')}`)
+							setBuscou(true)
+						}
 					}
 
 					if(ajustes.length === 0){
@@ -86,7 +94,7 @@ const BuscarClienteServicos = () => {
 		}
 		if(buscou === true){
 			if((ajustes === null) || (ajustes.length === 0)){
-				alerta('não existem ajustes para a data selecionada')
+				toast.error('não existem ajustes para a data selecionada')
 				setBuscou(false)
 				setDetalhes(false)
 			}
@@ -117,6 +125,17 @@ const BuscarClienteServicos = () => {
 					</div>      
 				</form>
 			</div>
+			<ToastContainer
+                position="bottom-right" // Set position to bottom right
+                autoClose={5000} // Adjust as per your requirements
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
 		</>
 	)
 }

@@ -1125,7 +1125,7 @@ function AuthProvider({ children }){
 	function alerta(text){
 		console.log('função alerta')
 		toast.info(text, {
-			position: 'top-center',
+			position: 'bottom-right',
 			autoClose: 5000,
 			hideProgressBar: true,
 			closeOnClick: true,

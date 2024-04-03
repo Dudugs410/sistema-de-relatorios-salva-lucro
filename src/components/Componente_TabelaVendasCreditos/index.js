@@ -10,6 +10,10 @@ import './detalhesCredito.scss'
 
 const TabelaVendasCreditos = ({array, tipo, isDashboard}) =>{
 
+	useEffect(()=>{
+		console.log('ARRAY VENDASCREDITO: ', array)
+	},[])
+
 	//console.log('array dentro da tabela do gráfico: ', array)
 
 	const { dateConvert, gerarDados, setTotaisGlobalVendas, setTotaisGlobalCreditos, isDarkTheme, setDetalhes } = useContext(AuthContext)

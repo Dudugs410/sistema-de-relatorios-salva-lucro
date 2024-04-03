@@ -4,7 +4,6 @@ import { useState, useEffect, useContext } from 'react'
 import Select from 'react-select'
 
 import { AuthContext } from '../../contexts/auth'
-import { ToastContainer } from 'react-toastify'
 import Cookies from 'js-cookie'
 
 import 'react-toastify/dist/ReactToastify.css'
@@ -168,18 +167,6 @@ const SeletorCliente = () => {
 		<>
 			{ grupos === null ? <></> : 
 				<>
-					<ToastContainer
-						position="top-center"
-						autoClose={5000}
-						hideProgressBar
-						newestOnTop={false}
-						closeOnClick
-						rtl={false}
-						pauseOnFocusLoss
-						draggable
-						pauseOnHover
-						theme="light"
-					/>
 					<div className='search-bar-seletor'>
 						<form className={`date-container-seletor p-4 ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
 							<div className='cli-container'>

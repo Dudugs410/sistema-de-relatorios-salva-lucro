@@ -30,6 +30,8 @@ const base64PDFdownload = () => {
     // Cleanup
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+
+    
 }
 
 export default base64PDFdownload;

@@ -13,10 +13,10 @@ export default function Private({children}){
 
   const navigate = useNavigate()
 
-  const { setIsSignedIn, setAccessToken, accessToken, loading, setCnpj } = useContext(AuthContext)
-
+  const { loading, setCnpj } = useContext(AuthContext)
 
   useEffect(()=>{
+    console.log('Private Effect')
     if(sessionStorage.getItem('isSignedIn') !== 'true'){
       setIsSignedIn(false)
       navigate('/')
@@ -26,10 +26,6 @@ export default function Private({children}){
   useEffect(()=>{
     setCnpj(Cookies.get('cnpj'))
   },[])
-
-  useEffect(()=>{
-    setAccessToken(Cookies.get('token'))
-  },[accessToken])
 
   useEffect(()=>{
     if(Cookies.get('cnpj') !== '' && null){

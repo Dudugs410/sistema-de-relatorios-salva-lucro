@@ -13,11 +13,8 @@ const ExportacaoSysmo = () =>{
     const { isDarkTheme, setLoading, bandeiras, loadBandeiras, adquirentes, loadAdquirentes } = useContext(AuthContext)
 
     const [dataBusca, setDataBusca] = useState([new Date, new Date])
-    const [tipoRelatorio, setTipoRelatorio] = useState(null)
-    const [formatoRelatorio, setFormatoRelatorio] = useState(null)
 
     const [dataBuscaInicial, setDataBuscaInicial] = useState(new Date)
-    const [dataBuscaFinal, setDataBuscaFinal] = useState(new Date)
 
     const [listaBan, setListaBan] = useState([])
     const [listaAdq, setListaAdq] = useState([])

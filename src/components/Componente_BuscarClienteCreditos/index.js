@@ -7,7 +7,11 @@ import { AuthContext } from '../../contexts/auth'
 import { CreditosContext } from '../../pages/Creditos'
 
 import '../../styles/global.scss'
+
+import { toast } from 'react-toastify'
+import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+
 import './reactdatepicker.css'
 import Cookies from 'js-cookie'
 
@@ -49,30 +53,37 @@ const BuscarClienteCreditos = () => {
 	},[])
 
 	async function handleBusca(e){
+		toast.promise(buscar, {
+			pending: 'Carregando...',
+			success: 'Carregado com Sucesso',
+			error: 'Ocorreu um Erro',
+		})
 		e.preventDefault()
 		setClicouPesquisar(true)
-		await buscar()
 		await gerarDados(creditos)
 		setDetalhes(true)
 	}
 
 	async function buscar() {
-		setLoading();
+		setLoading(true);
 		await loadCreditos(cnpjBusca, converteData(dataBusca[0]), converteData(dataBusca[1]))
 			.then(() => {
 				if (dataBusca === '' || cnpjBusca === '') {
 					return 0;
 				} else {
 					//adiciono .toLocaleDateString('pt-BR') às datas para que possamos comparar apenas o dia, mes e ano, sem levar em consideração a hora, minuto e segundos
-					if ((dataBusca[0].toLocaleDateString('pt-BR') === dataBusca[1].toLocaleDateString('pt-BR'))) {
-						console.log('mostrou alerta créditos');
-						alerta(`executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')}`);
-						setBuscou(true);
-					} else if (dataBusca[0].toLocaleDateString('pt-BR') !== dataBusca[1].toLocaleDateString('pt-BR')) {
-						console.log('mostrou alerta créditos');
-						alerta(`executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')} ao dia ${dataBusca[1].toLocaleDateString('pt-BR')}`);
-						setBuscou(true);
+					if(buscou !== true){
+						if ((dataBusca[0].toLocaleDateString('pt-BR') === dataBusca[1].toLocaleDateString('pt-BR'))) {
+							console.log('mostrou alerta créditos');
+							alerta(`executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')}`);
+							setBuscou(true);
+						} else if (dataBusca[0].toLocaleDateString('pt-BR') !== dataBusca[1].toLocaleDateString('pt-BR')) {
+							console.log('mostrou alerta créditos');
+							alerta(`executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')} ao dia ${dataBusca[1].toLocaleDateString('pt-BR')}`);
+							setBuscou(true);
+						}
 					}
+
 					if (creditos.length === 0) {
 						setDetalhes(false);
 						setClicouPesquisar(false);
@@ -91,7 +102,7 @@ const BuscarClienteCreditos = () => {
 		if(buscou === true){
 			if((creditos === null) || (creditos.length === 0)){
 				console.log('alerta useEffect 2')
-				alerta('não existem creditos para a data selecionada')
+				toast.error('não existem creditos para a data selecionada')
 				setBuscou(false)
 				setDetalhes(false)
 			}
@@ -127,6 +138,17 @@ const BuscarClienteCreditos = () => {
 					</div>      
 				</form>
 			</div>
+			<ToastContainer
+                position="bottom-right" // Set position to bottom right
+                autoClose={5000} // Adjust as per your requirements
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
 		</>
 	)
 }

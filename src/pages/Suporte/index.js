@@ -17,7 +17,6 @@ const Suporte = () =>{
 
     const [dataBusca, setDataBusca] = useState([new Date, new Date])
     const [dataBuscaInicial, setDataBuscaInicial] = useState(new Date)
-    const [dataBuscaFinal, setDataBuscaFinal] = useState(new Date)
 
     useEffect(() => {
         sessionStorage.setItem('currentPath', location.pathname);

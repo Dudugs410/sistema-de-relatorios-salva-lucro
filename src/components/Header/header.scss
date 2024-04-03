@@ -614,12 +614,14 @@
     }
 
     .a-side-bar{
+        
         width: 50px !important;
+        border-radius: 12px;
         &.light-theme{
-            border: solid $primary-color-light 1px !important;
+            border: solid $primary-color-light 2px !important;
         }
         &.dark-theme{
-            border: solid $primary-color-dark 1px !important;
+            border: solid $primary-color-dark 2px !important;
         }
     }
 

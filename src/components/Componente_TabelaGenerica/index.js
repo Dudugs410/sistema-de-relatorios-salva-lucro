@@ -9,6 +9,10 @@ import '../../styles/global.scss'
 
 const TabelaGenerica = ({ array }) => {  
 
+	useEffect(()=>{
+		console.log('ARRAY SERVIÇOS: ', array)
+	},[])
+
 	const {isDarkTheme, dateConvert} = useContext(AuthContext)
 
 	const [nomeAdquirente, setNomeAdquirente] = useState('')

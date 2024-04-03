@@ -42,6 +42,17 @@ export default function PageTeste() {
     return <p><i>Loading...</i></p>;
   }
 
+  const lazyContainerTest = () =>{
+    return(
+      <div className='lazy-container'>
+        <div className='lazy-list'>
+          <div className='lazy-circle'>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   const MarkdownPreview = lazy(() => import('../../components/Componente_LazyLoader/index.js'));
 
   return (

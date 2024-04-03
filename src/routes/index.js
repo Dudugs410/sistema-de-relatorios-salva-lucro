@@ -22,6 +22,10 @@ import ConciliacaoBancaria from "../pages/ConciliacaoBancaria";
 import DashboardCopy from "../pages/Dashboard copy";
 
 function RoutesApp(){
+    useEffect(()=>{
+        console.log('routes app')
+    },[])
+    
     return(
     <Routes>
         <Route path='/' element = {<Login/>}/>

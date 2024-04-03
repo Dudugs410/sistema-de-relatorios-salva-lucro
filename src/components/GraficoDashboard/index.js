@@ -16,7 +16,7 @@ const PieChart = ({ data01, arrayAdm, tipo, dados } ) => {
 
   const { isDarkTheme } = useContext(AuthContext)
   const [selectedAdm, setSelectedAdm] = useState(null)
-  const [showAdmModal, setShowAdmModal] = useState(false)
+  const [showAdmModal, setShowAdmModal] = useState(null)
   const [dado, setDado] = useState('')
 
   useEffect(()=>{
@@ -44,6 +44,7 @@ const PieChart = ({ data01, arrayAdm, tipo, dados } ) => {
 
       setSelectedAdm(selectedAdmData);
       setShowAdmModal(true);
+      sessionStorage.setItem('showModalDash', true)
 
       //console.log('Array da Fatia Clicada: ', arrayAdm[clickedElementIndex])
 

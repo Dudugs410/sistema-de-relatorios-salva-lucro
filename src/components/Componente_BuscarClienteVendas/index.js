@@ -8,9 +8,9 @@ import { VendasContext } from '../../pages/Vendas'
 
 import { toast } from 'react-toastify'
 import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 import '../../styles/global.scss'
-import 'react-toastify/dist/ReactToastify.css'
 import './reactdatepicker.css'
 import Cookies from 'js-cookie'
 import { useCallback } from 'react'
@@ -50,13 +50,17 @@ const BuscarClienteVendas = () => {
 		setCnpjBusca(Cookies.get('cnpj'))
 	},[])
 
-	async function handleBusca(e){
+	async function handleBusca(e) {
+		toast.promise(buscar, {
+			pending: 'Carregando...',
+			success: 'Carregado com Sucesso',
+			error: 'Ocorreu um Erro',
+		})
 		e.preventDefault()
-
+	
 		setClicouPesquisar(true)
-		await buscar()
 		await gerarDados(vendas)
-
+	
 		setDetalhes(true)
 	}
 
@@ -67,6 +71,7 @@ const BuscarClienteVendas = () => {
 	},[detalhes])
 
 	async function buscar() {
+		console.log('função buscar')
 		if(cnpjBusca === '' || cnpjBusca === 'Selecione' || cnpjBusca === undefined){
 			return
 		}
@@ -76,21 +81,24 @@ const BuscarClienteVendas = () => {
 					return 0
 				} else {
 					//adiciono .toLocaleDateString('pt-BR') às datas para que possamos comparar apenas o dia, mes e ano, sem levar em consideração a hora, minuto e segundos
-					if(dataBusca[0].toLocaleDateString('pt-BR') === dataBusca[1].toLocaleDateString('pt-BR')){
-						console.log('mostrou alerta vendas')
-						alerta(`executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')}`);
-						setBuscou(true)
-					} else if (dataBusca[0].toLocaleDateString('pt-BR') !== dataBusca[1].toLocaleDateString('pt-BR')){
-						console.log('mostrou alerta vendas')
-						alerta(`executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')} ao dia ${dataBusca[1].toLocaleDateString('pt-BR')}`);
-						setBuscou(true)
+					if(buscou !== true){
+						if(dataBusca[0].toLocaleDateString('pt-BR') === dataBusca[1].toLocaleDateString('pt-BR')){
+							console.log('mostrou alerta vendas')
+							alerta(`executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')}`);
+							setBuscou(true)
+						} else if (dataBusca[0].toLocaleDateString('pt-BR') !== dataBusca[1].toLocaleDateString('pt-BR')){
+							console.log('mostrou alerta vendas')
+							alerta(`executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')} ao dia ${dataBusca[1].toLocaleDateString('pt-BR')}`);
+							setBuscou(true)
+						}
 					}
 
-					if(vendas.length === 0){
+					if((vendas.length === 0) || (vendas.length === null)){
 						setDetalhes(false)
 					}
 				}    
 			})
+			
 		setLoading(false)
 	}
 
@@ -101,7 +109,7 @@ const BuscarClienteVendas = () => {
 		}
 		if(buscou === true){
 			if((vendas === null) || (vendas.length === 0)){
-				alerta('não existem vendas para a data selecionada')
+				toast.error('não existem vendas para a data selecionada')
 				setBuscou(false)
 				setDetalhes(false)
 				setClicouPesquisar(false)
@@ -137,6 +145,17 @@ const BuscarClienteVendas = () => {
 					</div>
 				</form>
 			</div>
+			<ToastContainer
+                position="bottom-right" // Set position to bottom right
+                autoClose={5000} // Adjust as per your requirements
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
 		</>
 	)
 }

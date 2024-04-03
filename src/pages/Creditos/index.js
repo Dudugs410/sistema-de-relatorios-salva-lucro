@@ -34,7 +34,6 @@ const Creditos = () =>{
 		gerarDados,
 		tableData,
 		isDarkTheme,
-		setIsDarkTheme,
 		setTotaisGlobal,setTotaisGlobalCreditos,
 		detalhes,
 	} = useContext(AuthContext)
@@ -60,13 +59,13 @@ const Creditos = () =>{
 	const [dataBusca, setDataBusca] = useState([new Date(), new Date])
 
 	const [cnpjBusca, setCnpjBusca] = useState('')
-	const [vendasTotais, setVendasTotais] = useState([])
 
 	useEffect(()=>{
-		setIsDarkTheme(JSON.parse(localStorage.getItem('isDark')))
+		//setIsDarkTheme(JSON.parse(localStorage.getItem('isDark')))
 	},[])
 
 	useEffect(()=>{
+		console.log('pagina Créditos')
 		async function inicializar(){
 			if(bandeiras.length === 0){
 				await loadBandeiras()
@@ -185,8 +184,6 @@ const Creditos = () =>{
 		let totalTemp = { debito: sums.debito, credito: sums.credito, voucher: sums.voucher, liquido: sums.total };
 	
 		setTotaisGlobalCreditos(totalTemp);
-		console.log(totalTemp);
-		console.log('Sums:', sums);
 		console.log('Separated by Adquirente:', separatedByAdquirente);
 		return separatedByAdquirente;
 	}
