@@ -1250,6 +1250,511 @@ function AuthProvider({ children }){
 			console.log(error)
 		}
 	}
+
+	const [vetorVendasMes, setVetorVendasMes] = useState([])
+	const [vetorCreditosMes, setVetorCreditosMes] = useState([])
+
+	const [vendas4dias, setVendas4dias] = useState([])
+	const [creditos5dias, setCreditos5dias] = useState([])
+
+	const [totalVendas4dias, setTotalVendas4dias] = useState(0)
+	const [totalCreditos5dias, setTotalCreditos5dias] = useState(0)
+
+	const [vendasMes, setVendasMes] = useState([])
+	const [somatorioVendasMes, setSomatorioVendasMes] = useState(0)
+
+	const [creditosMes, setCreditosMes] = useState([])
+	const [somatorioCreditosHoje, setSomatorioCreditosHoje] = useState(0)
+
+	const [totalServicosHoje, setTotalServicosHoje] = useState(0)
+	const [totalServicosMes, setTotalServicosMes] = useState(0)
+
+	const [admVendas, setAdmVendas] = useState([])
+	const [admCreditos, setAdmCreditos] = useState([])
+	const [admServicos, setAdmServicos] = useState([])
+
+	const [graficoVendas, setGraficoVendas] = useState({ labels: [], data: [] })
+	const [graficoCreditos, setGraficoCreditos] = useState({ labels: [], data: [] })
+	const [graficoServicos, setGraficoServicos] = useState({labels: [], data: []})
+
+	const [cnpjSelecionado, setCnpjSelecionado] = useState(false)
+
+	const [inicializou, setInicializou] = useState(false)
+	
+	const [loadingVendasDash, setLoadingVendasDash] = useState(null)
+	const [loadingCreditosDash, setLoadingCreditosDash] = useState(null)
+
+	// ajustes/serviços
+
+	const [servicos, setServicos] = useState([])
+
+	const [loadingVendas, setLoadingVendas] = useState([])
+	const [loadingCreditos, setLoadingCreditos] = useState([])
+	const [loadingServicos, setLoadingServicos] = useState([])
+
+	async function inicializaVendas4dias(){
+		let vendaDataInicial = new Date()
+		let vendaDataFinal = new Date()
+
+		vendaDataInicial.setDate(vendaDataInicial.getDate() - 4)
+		vendaDataInicial = converteData(vendaDataInicial)
+
+		vendaDataFinal.setDate(vendaDataFinal.getDate() -1)
+		vendaDataFinal = converteData(vendaDataFinal)
+
+		const vendasTemp = await returnVendas(vendaDataInicial, vendaDataFinal, cnpj)
+		
+		setVendas4dias(vendasTemp)
+	}
+
+	async function inicializaVetorVendasMes() {
+		
+		let vendasTemp = []
+
+		function getFirstDayOfMonth() {
+			const currentDate = new Date();
+			const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+			return firstDayOfMonth;
+		}
+	
+		function getLastDayOfMonth(){
+			const currentDate = new Date();
+			const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+			return lastDayOfMonth;
+		}
+	
+		const primeiroDiaDoMes = getFirstDayOfMonth();
+		const ultimoDiaDoMes = getLastDayOfMonth();
+	  
+		try {
+			vendasTemp = await returnVendas(primeiroDiaDoMes, ultimoDiaDoMes, cnpj)
+		} catch (error) {
+			console.error('Error fetching vendas:', error)
+		} finally {
+			setLoadingVendasDash(false)
+		}
+	  
+		setVetorVendasMes(vendasTemp)
+	}
+
+	/*async function inicializaVendas4diasMes(){
+		const temp = await returnTotalMes(cnpj)
+		setVendasMes(temp)
+	}*/
+
+	async function inicializaCreditos5dias(){
+		let creditosTemp;
+		let dataInicial = new Date();
+		let dataFinal = new Date();
+	
+		// Increment dataInicial by 1 day
+		dataInicial.setDate(dataInicial.getDate() + 1);
+	
+		// Increment dataFinal by 5 days
+		dataFinal.setDate(dataFinal.getDate() + 5);
+	
+		creditosTemp = await returnCreditos(cnpj, dataInicial, dataFinal);
+
+		if(creditosTemp.length > 0){
+			setCreditos5dias(creditosTemp);
+		}
+	}
+
+	async function inicializaVetorCreditosMes() {
+		setLoadingCreditosDash(true);
+	
+		function getFirstDayOfMonth() {
+			const currentDate = new Date();
+			const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+			return firstDayOfMonth;
+		}
+	
+		function getLastDayOfMonth(){
+			const currentDate = new Date();
+			const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+			return lastDayOfMonth;
+		}
+	
+		const primeiroDiaDoMes = getFirstDayOfMonth();
+		const ultimoDiaDoMes = getLastDayOfMonth();
+	
+		let creditosTemp = [];
+	
+		try {
+			creditosTemp = await returnCreditos(cnpj, primeiroDiaDoMes, ultimoDiaDoMes);
+		} catch (error) {
+			console.error('Error fetching creditos:', error);
+		} finally {
+			setLoadingCreditosDash(false);
+		}
+	
+		if (creditosTemp && creditosTemp.length > 0) {
+			setVetorCreditosMes(creditosTemp);
+		} else {
+			// Handle the case where creditosTemp is empty or undefined
+			console.error('No data available for vetorCreditosMes');
+		}
+	}
+
+	async function inicializaServicos(){
+
+		function firstDay() {
+			const today = new Date()
+			const firstDay = new Date(today.getFullYear(), today.getMonth(), 1)
+			
+			return firstDay
+		}
+
+		function lastDay() {
+			const today = new Date()
+			const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0)
+			
+			return lastDay
+		}
+		const servicosTemp = await loadAjustes(cnpj, firstDay(), lastDay())
+		setServicos(servicosTemp)
+	}
+
+	useEffect(() => {
+		if(servicos.length > 0){
+			let temp = []
+			let objAdq = {}
+			servicos.map((servico) => {
+				if(temp.length === 0){
+					objAdq = {
+						nomeAdquirente: servico.nome_adquirente,
+						total: servico.valor,
+						id: 0,
+						vendas: [servico]
+					}
+					temp.push(objAdq)
+
+				} else {
+					const existingObject = temp.find(obj => obj.nomeAdquirente === servico.nome_adquirente)
+					if (existingObject) {
+						existingObject.total = (existingObject.total || 0) + servico.valor;
+						existingObject.total = parseFloat(existingObject.total.toFixed(2)); // Round to 2 decimal places
+						existingObject.vendas.push(servico);
+					} else {
+						temp.push({
+							nomeAdquirente: servico.nome_adquirente,
+							total: servico.valor,
+							id: temp.length,
+							vendas: [servico]
+						})
+					}
+				}})
+			setAdmServicos(sortArray(temp))        
+			if(temp.length > 0){
+				setAdmServicosAux(sortArray(temp))
+			}
+
+			const totalMesTemp = servicos.reduce((total, obj) => total + obj.valor, 0)
+			setTotalServicosMes(totalMesTemp)
+			setTotalServicosMesAux(totalMesTemp)
+
+
+			let dataHoje = new Date()
+			dataHoje = converteData(dataHoje)
+			let totalHoje = 0
+			servicos.forEach((servico) => {
+				if(servico.data === dataHoje){
+					totalHoje += servico.valor
+				}
+			})
+			setTotalServicosHoje(totalHoje)    
+			if(totalHoje > 0){
+				setTotalServicosHojeAux(totalHoje)
+			}
+		}
+	}, [servicos])
+
+	///////////////////////////////////////////////////////////////////////////////
+	//// Inicializar Dados de Vendas e Créditos ///////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////
+
+	useEffect(()=>{
+		if(Cookies.get('buscou')){
+			setBuscou(JSON.parse(Cookies.get('buscou')))
+		}
+	},[])
+
+	useEffect(()=>{
+		if((cnpj !== Cookies.get('ultimoCnpj')) && (cnpj !== 'selecione')){
+			setBuscou(!buscou)
+		}
+	},[cnpj])
+
+	useEffect(()=>{
+		if((cnpj === 'todos') && (Cookies.get('ultimoGrupoSelecionado') !== gruSelecionado.label)){
+			setInicializouAux(false)
+			setInicializou(false)
+			setBuscou(!buscou)
+			Cookies.set('ultimoGrupoSelecionado', gruSelecionado.label)
+		}
+	},[gruSelecionado])
+
+	useEffect(()=>{
+		if(inicializouAux === true){
+			setLoadingVendas(false)
+			setLoadingCreditos(false)
+			setLoadingServicos(false)
+		}
+	},[])
+
+	useEffect(()=>{
+		async function inicializar(){
+			const total = vetorVendasMes.reduce((total, obj) => total + obj.valorBruto, 0)
+			setSomatorioVendasMes(total)
+			if(total > 0){
+				setSomatorioVendasMesAux(total)
+			}
+		}
+		inicializar()
+	},[vetorVendasMes])
+
+	useEffect(()=>{
+		if(vendas4dias === null){
+			setTotalVendas4dias(0)
+			setTotalVendas4diasAux(0)
+			return
+		}
+		const totalTemp = vendas4dias.reduce((total, obj) => total + obj.valorBruto, 0)
+		setTotalVendas4dias(totalTemp)
+		if(totalTemp > 0){
+			setTotalVendas4diasAux(totalTemp)
+		}
+	},[vendas4dias])
+	
+	useEffect(()=>{
+		let dataHoje = new Date()
+		
+		dataHoje = converteData(dataHoje)
+		let totalHoje = 0
+		let total5dias = 0
+		vetorCreditosMes.forEach((venda) => {
+			if(venda.dataCredito === dataHoje){
+				totalHoje += venda.valorLiquido
+			}
+		})
+
+		vetorCreditosMes.forEach((venda) => {
+			for (let i = 1; i <= 5; i++) {
+				let nextDate = new Date(dataHoje);
+				nextDate.setDate(nextDate.getDate() + i);
+				let nextDateFormatted = nextDate.toISOString().split('T')[0]; // Format as "YYYY-MM-DD"
+				if (venda.dataCredito === nextDateFormatted) {
+					total5dias += venda.valorLiquido;
+				}
+			}
+		});
+
+		setSomatorioCreditosHoje(totalHoje)
+		setTotalCreditos5dias(total5dias)
+
+		if((totalHoje > 0) && (total5dias > 0)){
+			setSomatorioCreditosHojeAux(totalHoje)
+			setTotalCreditos5diasAux(total5dias)
+		}
+	},[vetorCreditosMes])
+
+	useEffect(()=>{
+		const total = creditos5dias.reduce((total, obj) => total + obj.valorLiquido, 0)
+		setTotalCreditos5dias(total)
+	},[creditos5dias])
+
+
+	useEffect(()=>{
+		if(inicializouAux === false){
+			setTotalCreditos5diasAux(totalCreditos5dias)
+		}
+	},[totalCreditos5dias])
+
+	useEffect(()=>{
+		if(inicializouAux === false){
+			setSomatorioCreditosHojeAux(somatorioCreditosHoje)
+		}
+	},[somatorioCreditosHoje])
+
+	const sortArray = (arrayAdq) => {
+		const sortedArray = [...arrayAdq].sort((a, b) => {
+			const nameA = a.nomeAdquirente.toUpperCase()
+			const nameB = b.nomeAdquirente.toUpperCase()
+			if (nameA < nameB) {
+				return -1
+			}
+			if (nameA > nameB) {
+				return 1
+			}
+			return 0
+		})
+		return sortedArray
+	}
+
+	function separaAdm(array, tipo) {
+		let sums = {
+			total: 0
+		};
+		let vendasTemp = []
+	
+		let separatedByAdquirente = [];
+	
+		if(tipo === 'vendas'){
+			array.forEach((venda) => {
+				sums.total += venda.valorBruto;
+				vendasTemp.push(venda);
+			
+				// Find or create entry in separatedByAdquirente
+				let entry = separatedByAdquirente.find(adquirente => adquirente.nomeAdquirente === venda.adquirente.nomeAdquirente);
+				if (!entry) {
+					entry = {
+						id: separatedByAdquirente.length,
+						nomeAdquirente: venda.adquirente.nomeAdquirente,
+						total: 0,
+						vendas: [] // Initialize vendas array
+					};
+					separatedByAdquirente.push(entry);
+				}
+			
+				// Push the current venda into the vendas array of the entry
+				entry.vendas.push(venda);
+			
+				// Update total for this adquirente
+				entry.total += venda.valorBruto;
+			});
+		} else if(tipo === 'creditos'){
+			array.forEach((venda) => {
+				sums.total += venda.valorLiquido;
+				vendasTemp.push(venda);
+			
+				// Find or create entry in separatedByAdquirente
+				let entry = separatedByAdquirente.find(adquirente => adquirente.nomeAdquirente === venda.adquirente.nomeAdquirente);
+				if (!entry) {
+					entry = {
+						id: separatedByAdquirente.length,
+						nomeAdquirente: venda.adquirente.nomeAdquirente,
+						total: 0,
+						vendas: [] // Initialize vendas array
+					};
+					separatedByAdquirente.push(entry);
+				}
+			
+				// Push the current venda into the vendas array of the entry
+				entry.vendas.push(venda);
+			
+				// Update total for this adquirente
+				entry.total += venda.valorLiquido;
+			});
+		}
+
+		return separatedByAdquirente;
+	}
+
+	useEffect(()=>{
+		let temp = separaAdm(vetorVendasMes, 'vendas')
+
+		setAdmVendas(sortArray(temp))
+		if(temp.length > 0){
+			setAdmVendasAux(sortArray(temp))
+		}
+	},[vetorVendasMes])
+
+	useEffect(() => {
+		if(inicializouAux === false){
+			setSomatorioVendasMesAux(somatorioVendasMes)
+		}
+	},[somatorioVendasMes])
+
+	useEffect(()=>{
+		if(admVendas.length > 0){
+			setGraficoVendas(carregaGrafico(admVendas))
+		}
+		if(admVendasAux.length > 0){
+			setGraficoVendasAux(carregaGrafico(admVendasAux))
+		}
+	},[admVendas])
+
+	useEffect(()=>{
+		let temp = separaAdm(vetorCreditosMes, 'creditos')
+
+		setAdmCreditos(sortArray(temp))
+		if(temp.length > 0){
+			setAdmCreditosAux(sortArray(temp))
+		}
+	},[vetorCreditosMes])
+
+	useEffect(()=>{
+		setGraficoCreditos(carregaGrafico(admCreditos))
+		if(admCreditosAux.length > 0){
+			setGraficoCreditosAux(carregaGrafico(admCreditosAux))
+		}
+	},[admCreditos])
+
+	useEffect(()=>{
+		setGraficoServicos(carregaGrafico(admServicos))
+		if(admServicosAux.length > 0){
+			setGraficoServicosAux(carregaGrafico(admServicosAux))
+		}
+	},[admServicos])
+
+	function carregaGrafico(array){
+		let label = []
+		let data = []
+		
+		array.forEach((posicao) => {
+			const valorTotal = posicao.total
+			const nomeAdq = posicao.nomeAdquirente
+			let temp = valorTotal.toFixed(2)
+			label.push(nomeAdq)
+			data.push(Number(temp))
+		})
+		const obj = {labels: label, data: data}
+		return obj
+	}
+
+	const loadDashboardPage = () =>{
+		console.log('executou loadDashboardPage')
+		async function inicializar(){
+			if(cnpj !== 'selecione'){
+				if((cnpj !== Cookies.get('ultimoCnpj')) && (cnpj !== '')) {
+					setLoadingVendas(true)
+					await inicializaVendas4dias()
+					//await inicializaVendas4diasMes()
+					await inicializaVetorVendasMes()
+					setLoadingCreditos(true)
+					await inicializaCreditos5dias()
+					await inicializaVetorCreditosMes()
+					setLoadingServicos(true)
+					await inicializaServicos()
+	
+					setInicializou(true)
+					setInicializouAux(true)
+					setLoadingVendas(false)
+					setLoadingCreditos(false)
+					setLoadingServicos(false)
+					sessionStorage.setItem('inicializou', true)
+					toast.success('Dashboard Carregado');
+				} else {
+					setLoadingVendas(false)
+					setLoadingCreditos(false)
+					setLoadingServicos(false)
+					return
+				}
+			}
+		}
+
+		if(buscou){
+			if(inicializouAux !== true){
+				setLoadingCreditosDash(true)
+				setLoadingVendasDash(true)
+				inicializar().then(() => {
+					setLoadingCreditosDash(false)
+					setLoadingVendasDash(false)
+				})
+			} 
+		}
+		
+	}
   
 
 	return(
@@ -1330,7 +1835,34 @@ function AuthProvider({ children }){
 				detalhes, setDetalhes,
 				textoExport, setTextoExport,
 				isCheckedCalendar, setIsCheckedCalendar,
-				carregou, setCarregou
+				carregou, setCarregou,
+				loadDashboardPage,
+				vetorVendasMes, setVetorVendasMes,
+				vetorCreditosMes, setVetorCreditosMes,
+				vendas4dias, setVendas4dias,
+				creditos5dias, setCreditos5dias,
+				totalVendas4dias, setTotalVendas4dias,
+				totalCreditos5dias, setTotalCreditos5dias,
+				vendasMes, setVendasMes,
+				somatorioVendasMes, setSomatorioVendasMes,
+				creditosMes, setCreditosMes,
+				somatorioCreditosHoje, setSomatorioCreditosHoje,
+				totalServicosHoje, setTotalServicosHoje,
+				totalServicosMes, setTotalServicosMes,
+				admVendas, setAdmVendas,
+				admCreditos, setAdmCreditos,
+				admServicos, setAdmServicos,
+				graficoVendas, setGraficoVendas,
+				graficoCreditos, setGraficoCreditos,
+				graficoServicos, setGraficoServicos,
+				cnpjSelecionado, setCnpjSelecionado,
+				inicializou, setInicializou,
+				loadingVendasDash, setLoadingVendasDash,
+				loadingCreditosDash, setLoadingCreditosDash,
+				servicos, setServicos,
+				loadingVendas, setLoadingVendas,
+				loadingCreditos, setLoadingCreditos,
+				loadingServicos, setLoadingServicos,
 			}}
 		>
 			{children}

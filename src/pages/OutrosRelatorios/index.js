@@ -12,7 +12,7 @@ import { FiFilePlus, FiPlus, FiTrash2 } from 'react-icons/fi';
 
 const OutrosRelatorios = () =>{
     const location = useLocation();
-    const { isDarkTheme, loading, setLoading } = useContext(AuthContext)
+    const { isDarkTheme } = useContext(AuthContext)
 
     const [dataBusca, setDataBusca] = useState([new Date, new Date])
     const [tipoRelatorio, setTipoRelatorio] = useState(null)
@@ -55,9 +55,7 @@ const OutrosRelatorios = () =>{
 
     function handleExport(e){
         e.preventDefault()
-        setLoading(true)
         base64PDFdownload()
-        setLoading(false)
     }
 
     const botao = <button className={`btn-outros-relatorios ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><FiTrash2 /></button>

@@ -125,17 +125,6 @@ const BuscarClienteServicos = () => {
 					</div>      
 				</form>
 			</div>
-			<ToastContainer
-                position="bottom-right" // Set position to bottom right
-                autoClose={5000} // Adjust as per your requirements
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-            />
 		</>
 	)
 }

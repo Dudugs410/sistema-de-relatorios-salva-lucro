@@ -13,7 +13,7 @@ export default function Private({children}){
 
   const navigate = useNavigate()
 
-  const { loading, setCnpj } = useContext(AuthContext)
+  const { setCnpj } = useContext(AuthContext)
 
   useEffect(()=>{
     console.log('Private Effect')
@@ -37,9 +37,6 @@ export default function Private({children}){
     return (
       <>
         <Layout>{ children }</Layout> 
-        {loading && (
-              <LoadingModal />
-          )}
       </>  
     )
   }
