@@ -187,7 +187,7 @@
     display: flex;
     text-align: center;
     justify-content: center;
-    transition: all 2s;
+    transition: all .4s;
     &.light-theme{
         border: solid $secondary-color-light 1px;
         background-color: $secondary-color-light;

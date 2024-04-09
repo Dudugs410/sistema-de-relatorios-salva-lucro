@@ -10,7 +10,6 @@ const SideBar = ({ options }) =>{
     const { isDarkTheme } = useContext(AuthContext)
 
     useEffect(() => {
-        console.log('Comp SideBar Effect')
         function handleClickOutside(event) {
             const sidebarButton = document.querySelector('.side-bar-container .btn-primary');
             const collapseElement = document.getElementById('multiCollapseExample1');

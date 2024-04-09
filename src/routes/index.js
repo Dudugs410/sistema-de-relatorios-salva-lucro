@@ -21,10 +21,6 @@ import VendasDelivery from "../pages/VendasDelivery";
 import ConciliacaoBancaria from "../pages/ConciliacaoBancaria";
 
 function RoutesApp(){
-    useEffect(()=>{
-        console.log('routes app')
-    },[])
-    
     return(
     <Routes>
         <Route path='/' element = {<Login/>}/>

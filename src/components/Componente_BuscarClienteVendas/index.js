@@ -32,23 +32,22 @@ const BuscarClienteVendas = () => {
 		setDetalhes,
 		setTotaisGlobalVendas,
 		alerta,
-	} = useContext(AuthContext)
+		setVendas,
+		dataBuscaVendas,
+		cnpjBuscaVendas,
+		setCnpjBuscaVendas,
+		setTotalDebitoVendas,
+		setTotalCreditoVendas,
+		setTotalVoucherVendas,
+		setTotalLiquidoVendas,
+		setArrayAdmVendas,
 
-	const {
-		dataBusca,
-		cnpjBusca,
-		setCnpjBusca,
-		setTotalDebito,
-		setTotalCredito,
-		setTotalVoucher,
-		setTotalLiquido,
-		setArrayAdm,
-	} = useContext(VendasContext)
+	} = useContext(AuthContext)
     
-	useEffect(()=>{
+	/*useEffect(()=>{
 		setCnpj(Cookies.get('cnpj'))
 		setCnpjBusca(Cookies.get('cnpj'))
-	},[])
+	},[])*/
 
 	async function handleBusca(e) {
 
@@ -72,23 +71,23 @@ const BuscarClienteVendas = () => {
 
 	async function buscar() {
 		console.log('função buscar')
-		if(cnpjBusca === '' || cnpjBusca === 'Selecione' || cnpjBusca === undefined){
+		if(cnpjBuscaVendas === '' || cnpjBuscaVendas === 'Selecione' || cnpjBuscaVendas === undefined){
 			return
 		}
-		await loadVendas(dataBusca[0].toLocaleDateString('pt-BR'), dataBusca[1].toLocaleDateString('pt-BR'), cnpjBusca)
+		await loadVendas(dataBuscaVendas[0].toLocaleDateString('pt-BR'), dataBuscaVendas[1].toLocaleDateString('pt-BR'), cnpjBuscaVendas)
 			.then(() =>{
-				if(dataBusca === '' || cnpjBusca === ''){
+				if(dataBuscaVendas === '' || cnpjBuscaVendas === ''){
 					return 0
 				} else {
 					//adiciono .toLocaleDateString('pt-BR') às datas para que possamos comparar apenas o dia, mes e ano, sem levar em consideração a hora, minuto e segundos
 					if(buscou !== true){
-						if(dataBusca[0].toLocaleDateString('pt-BR') === dataBusca[1].toLocaleDateString('pt-BR')){
+						if(dataBuscaVendas[0].toLocaleDateString('pt-BR') === dataBuscaVendas[1].toLocaleDateString('pt-BR')){
 							console.log('mostrou alerta vendas')
-							alerta(`executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')}`);
+							alerta(`executou a busca do dia ${dataBuscaVendas[0].toLocaleDateString('pt-BR')}`);
 							setBuscou(true)
-						} else if (dataBusca[0].toLocaleDateString('pt-BR') !== dataBusca[1].toLocaleDateString('pt-BR')){
+						} else if (dataBuscaVendas[0].toLocaleDateString('pt-BR') !== dataBuscaVendas[1].toLocaleDateString('pt-BR')){
 							console.log('mostrou alerta vendas')
-							alerta(`executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')} ao dia ${dataBusca[1].toLocaleDateString('pt-BR')}`);
+							alerta(`executou a busca do dia ${dataBuscaVendas[0].toLocaleDateString('pt-BR')} ao dia ${dataBuscaVendas[1].toLocaleDateString('pt-BR')}`);
 							setBuscou(true)
 						}
 					}
@@ -103,7 +102,7 @@ const BuscarClienteVendas = () => {
 	}
 
 	useEffect(()=>{
-		if(((cnpjBusca === '' || cnpjBusca === 'Selecione' || cnpjBusca === undefined) && (Cookies.get('cnpj') !== '')) && (clicouPesquisar)){
+		if(((cnpjBuscaVendas === '' || cnpjBuscaVendas === 'Selecione' || cnpjBuscaVendas === undefined) && (Cookies.get('cnpj') !== '')) && (clicouPesquisar)){
 			alerta('selecione um cliente válido')
 			return
 		}
@@ -126,14 +125,15 @@ const BuscarClienteVendas = () => {
 		e.preventDefault()
 		setDetalhes(false)
 		setBuscou(false)
-		setTotalLiquido(0.00)
-		setTotalCredito(0.00)
-		setTotalDebito(0.00)
-		setTotalVoucher(0.00)
+		setTotalLiquidoVendas(0.00)
+		setTotalCreditoVendas(0.00)
+		setTotalDebitoVendas(0.00)
+		setTotalVoucherVendas(0.00)
 		setTotaisGlobal({debito: 0, credito: 0, voucher: 0, liquido: 0})
 		setTotaisGlobalVendas({ debito: 0, credito: 0, voucher: 0, liquido: 0 })
-		setArrayAdm()
+		setArrayAdmVendas()
 		setClicouPesquisar(false)
+		setVendas([])
 	}
 
 	return(
@@ -141,7 +141,7 @@ const BuscarClienteVendas = () => {
 			<div className='search-bar'>
 				<form className={`date-container-vendas ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>       
 					<div className='submit-container select-align'>
-						{ (detalhes) && (vendas.length > 0) ? <button className={`btn btn-secondary btn-global btn-pesquisar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className={`btn btn-primary btn-global btn-pesquisar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleBusca}>Pesquisar</button>}
+						{ vendas.length > 0 ? <button className={`btn btn-secondary btn-global btn-pesquisar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className={`btn btn-primary btn-global btn-pesquisar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleBusca}>Pesquisar</button>}
 					</div>
 				</form>
 			</div>

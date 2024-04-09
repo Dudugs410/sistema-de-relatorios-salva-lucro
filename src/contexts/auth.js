@@ -60,7 +60,8 @@ function AuthProvider({ children }){
 	const [inicializouGruposAux, setInicializouGruposAux] = useState(false)
 
 	const [modalCliente, setModalCliente] = useState(true)
-	const [buscou, setBuscou] = useState(false)
+	const [buscou, setBuscou] = useState(true)
+	const [carregouDashboard, setCarregouDashboard] = useState(false)
 
 	const [isDarkTheme, setIsDarkTheme] = useState(false)
 
@@ -90,6 +91,8 @@ function AuthProvider({ children }){
 
 	const [carregou, setCarregou] = useState(false)
 
+	const [pagina, setPagina] = useState(sessionStorage.getItem('currentPath'))
+
 
 	const navigate = useNavigate()
 
@@ -97,6 +100,19 @@ function AuthProvider({ children }){
 		setDataInicial(new Date())
 		setAccessToken('')
 	},[])
+
+	useEffect(()=>{
+		if((cnpj === ('todos' || 'TODOS')) && (gruSelecionado !== 'selecione')){
+			
+		}
+		setVendas([])
+		setCreditos([])
+		setServicos([])
+		setDetalhes(false)
+		setBuscou(!buscou)
+		setInicializouAux(false)
+		setInicializou(false)
+	},[cnpj, gruSelecionado])
 
 	/////Login do usuário
 	async function submitLogin(login, password) {
@@ -502,8 +518,6 @@ function AuthProvider({ children }){
 	async function loadCreditos(cnpj, dataInicial, dataFinal) {
 		setLoading(true)
 
-		console.log('parametros: ', cnpj, dataInicial, dataFinal)
-
 		try {
 			if(cnpj === ('todos' || 'TODOS')){
 				const params = {
@@ -807,7 +821,6 @@ function AuthProvider({ children }){
 	async function returnVendas(datainicial, datafinal, cnpj) {
 		try {
 			setLoading(true)
-			console.log('Código Grupo: ', Cookies.get('codigoGrupo'))
 
 			if(cnpj === ('todos' || 'TODOS') && (Cookies.get('codigoGrupo') !== 'selecione')){
 				let params = {
@@ -1481,7 +1494,7 @@ function AuthProvider({ children }){
 
 	useEffect(()=>{
 		if((cnpj !== Cookies.get('ultimoCnpj')) && (cnpj !== 'selecione')){
-			setBuscou(!buscou)
+			//setBuscou(!buscou)
 		}
 	},[cnpj])
 
@@ -1489,7 +1502,7 @@ function AuthProvider({ children }){
 		if((cnpj === 'todos') && (Cookies.get('ultimoGrupoSelecionado') !== gruSelecionado.label)){
 			setInicializouAux(false)
 			setInicializou(false)
-			setBuscou(!buscou)
+			//setBuscou(!buscou)
 			Cookies.set('ultimoGrupoSelecionado', gruSelecionado.label)
 		}
 	},[gruSelecionado])
@@ -1711,51 +1724,369 @@ function AuthProvider({ children }){
 		const obj = {labels: label, data: data}
 		return obj
 	}
+	//
 
-	const loadDashboardPage = () =>{
-		console.log('executou loadDashboardPage')
-		async function inicializar(){
-			if(cnpj !== 'selecione'){
-				if((cnpj !== Cookies.get('ultimoCnpj')) && (cnpj !== '')) {
-					setLoadingVendas(true)
-					await inicializaVendas4dias()
-					//await inicializaVendas4diasMes()
-					await inicializaVetorVendasMes()
-					setLoadingCreditos(true)
-					await inicializaCreditos5dias()
-					await inicializaVetorCreditosMes()
-					setLoadingServicos(true)
-					await inicializaServicos()
+		//
+
+		const [paginaAtual, setPaginaAtual] = useState('')
+		const [dataInicialDisplay, setDataInicialDisplay] = useState('')
+		const [dataFinalDisplay, setDataFinalDisplay] = useState('')
 	
-					setInicializou(true)
-					setInicializouAux(true)
-					setLoadingVendas(false)
-					setLoadingCreditos(false)
-					setLoadingServicos(false)
-					sessionStorage.setItem('inicializou', true)
-					toast.success('Dashboard Carregado');
+		useEffect(()=>{
+			console.log('effect data display')
+			console.log('inicial: ', dataInicialDisplay, 'final: ', dataFinalDisplay)
+	
+		},[dataInicialDisplay, dataFinalDisplay])
+	
+		//
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	const loadDashboardPage = async () => {
+		console.log('executou loadDashboardPage');
+		async function inicializar() {
+			if (cnpj !== 'selecione') {
+				if ((cnpj !== Cookies.get('ultimoCnpj')) && (cnpj !== '') || (cnpj === ('todos' || 'TODOS'))) {
+					setLoadingVendas(true);
+					setLoadingCreditos(true);
+					setLoadingServicos(true);
+	
+					try {
+						await Promise.all([
+							inicializaVendas4dias(),
+							inicializaVetorVendasMes(),
+							inicializaCreditos5dias(),
+							inicializaVetorCreditosMes(),
+							inicializaServicos()
+						]);
+		
+						setInicializou(true);
+						setInicializouAux(true);
+						setLoadingVendas(false);
+						setLoadingCreditos(false);
+						setLoadingServicos(false);
+						sessionStorage.setItem('inicializou', true);
+						toast.success('Dashboard Carregado');
+					} catch (error) {
+						setLoadingVendas(false);
+						setLoadingCreditos(false);
+						setLoadingServicos(false);
+						console.error('Error occurred during initialization:', error);
+						toast.error('Ocorreu um erro durante a inicialização.');
+					}
 				} else {
-					setLoadingVendas(false)
-					setLoadingCreditos(false)
-					setLoadingServicos(false)
-					return
+					setLoadingVendas(false);
+					setLoadingCreditos(false);
+					setLoadingServicos(false);
+					return;
 				}
 			}
 		}
+	
+		if (buscou) {
+			if (inicializouAux !== true) {
+				setLoadingCreditosDash(true);
+				setLoadingVendasDash(true);
+				await inicializar();
+				setLoadingCreditosDash(false);
+				setLoadingVendasDash(false);
+			}
+		}
+	}
 
-		if(buscou){
-			if(inicializouAux !== true){
-				setLoadingCreditosDash(true)
-				setLoadingVendasDash(true)
-				inicializar().then(() => {
-					setLoadingCreditosDash(false)
-					setLoadingVendasDash(false)
-				})
-			} 
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	const [totalCreditoVendas, setTotalCreditoVendas] = useState(0.00)
+	const [totalDebitoVendas, setTotalDebitoVendas] = useState(0.00)
+	const [totalVoucherVendas, setTotalVoucherVendas] = useState(0.00)
+	const [totalLiquidoVendas, setTotalLiquidoVendas] = useState(0.00)
+
+	const [arrayAdmVendas, setArrayAdmVendas] = useState([])
+	const [arrayRelatorioVendas, setArrayRelatorioVendas] = useState([])
+	const [dataBuscaVendas, setDataBuscaVendas] = useState([new Date(), new Date()])
+	const [cnpjBuscaVendas, setCnpjBuscaVendas] = useState(Cookies.get('cnpj'))
+	const [tipo, setTipo] = useState('vendas')
+
+	const [vendasTemp, setVendasTemp] = useState([])
+	const [dataBuscaInicialVendas, setDataBuscaInicialVendas] = useState(new Date)
+	const [dataBuscaFinalVendas, setDataBuscaFinalVendas] = useState(new Date)
+
+	const [dataInicialExibicaoVendas, setDataInicialExibicaoVendas] = useState(new Date().toLocaleDateString('pt-BR'))
+	const [dataFinalExibicaoVendas, setDataFinalExibicaoVendas] = useState(new Date().toLocaleDateString('pt-BR'))
+
+	const inicializarVendasPage = async () => {
+		if(bandeiras.length === 0){
+			await loadBandeiras()
 		}
 		
+		if(grupos.length === 0){
+			setGrupos(JSON.parse(sessionStorage.getItem('grupos')))     
+		}
+		
+		if(adquirentes.length === 0){
+			await loadAdquirentes()
+		}
 	}
+
+	function handleDateChangeVendas(date){
+		setDataBuscaVendas(date)
+	}
+
+	function separaAdmArray(array){
+		if(array.length > 0){
+		let temp = []
+		let totalCreditoTemp = 0
+		let totalDebitoTemp = 0
+		let totalVoucherTemp = 0
+		let totalLiquidoTemp = 0
+
+		array.forEach((venda)=>{
+			if(temp.length === 0){
+			let novoObj = {
+				nomeAdquirente: venda.adquirente.nomeAdquirente,
+				total: venda.valorBruto,
+				id: 0,
+				vendas: []
+			}
+			temp.push(novoObj)
+			}else{
+			let novoObj = {
+				nomeAdquirente: venda.adquirente.nomeAdquirente,
+				total: venda.valorBruto,
+				id: 0,
+				vendas: []
+			}
+
+			if(!(temp.find((objeto) => objeto.nomeAdquirente === venda.adquirente.nomeAdquirente && objeto !== ( undefined || [] )))){
+				novoObj.id = (temp.length)
+				temp.push(novoObj)
+			}
+
+			else{
+				for(let i = 0; i < temp.length; i++){
+					if(temp[i].nomeAdquirente === venda.adquirente.nomeAdquirente){
+						temp[i].total += venda.valorBruto
+					}
+				}
+			}
+			}
+			// eslint-disable-next-line default-case
+			switch(venda.produto.descricaoProduto){
+			case 'Crédito':
+				totalCreditoTemp += venda.valorBruto
+				break;
+
+			case 'Débito':
+				totalDebitoTemp += venda.valorBruto
+				break;
+
+			case 'Voucher':
+				totalVoucherTemp += venda.valorBruto
+				break;
+			}
+			totalLiquidoTemp += venda.valorBruto
+		})
+			temp.forEach((adq) => {
+				let vendasTemp = []
+				vendasTemp.length = 0
+				array.forEach((vendasDia) => {
+					if(vendasDia.length > 0){
+						vendasDia.forEach((venda) => {
+							if(venda.adquirente.nomeAdquirente === adq.nomeAdquirente){
+								vendasTemp.push(venda)
+							}
+							adq.vendas = vendasTemp
+						})
+					}
+				})
+			})
+			let totalTemp = {debito: totalDebitoTemp, credito: totalCreditoTemp, voucher: totalVoucherTemp, liquido: totalLiquidoTemp}
+			
+			setTotaisGlobalVendas(totalTemp)
+			return temp
+		}
+	}
+
+	useEffect(()=>{
+		if(detalhes){
+			setVendasTemp(loadVendas(dataBuscaInicialVendas, dataBuscaFinalVendas, cnpjBuscaVendas))
+		}
+	},[cnpjBuscaVendas])
+
+	useEffect(()=>{
+		if((dataBuscaVendas[0] !== undefined) && (dataBuscaVendas[1] !== undefined)){
+		setDataBuscaInicialVendas(dataBuscaVendas[0].toLocaleDateString('pt-BR'))
+		setDataBuscaFinalVendas(dataBuscaVendas[1].toLocaleDateString('pt-BR'))
+		setDataInicialExibicaoVendas(dataBuscaVendas[0].toLocaleDateString('pt-BR'))
+		setDataFinalExibicaoVendas(dataBuscaVendas[1].toLocaleDateString('pt-BR'))
+		}
+	},[dataBuscaVendas])
+
+	const loadVendasPage = async () => {
+
+		setTipo('vendas')
+		Cookies.set('tipo', 'vendas')
+		await inicializarVendasPage()
+
+		toast.promise(inicializarVendasPage, {
+			pending: 'Carregando...',
+			success: 'Vendas Carregadas com Sucesso',
+			error: 'Ocorreu um Erro',
+		})
+		vendas.length = 0
+		setTotalCreditoVendas(0.00)
+		setTotalDebitoVendas(0.00)
+		setTotalVoucherVendas(0.00)
+		setTotalLiquidoVendas(0.00)
+		setTotaisGlobalVendas({debito: 0, credito: 0, voucher: 0, liquido: 0})
+	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////
+
+	const [dataInicialExibicaoCreditos, setDataInicialExibicaoCreditos] = useState(new Date().toLocaleDateString('pt-BR'))
+	const [dataFinalExibicaoCreditos, setDataFinalExibicaoCreditos] = useState(new Date().toLocaleDateString('pt-BR'))
+	const [totalCreditoCreditos, setTotalCreditoCreditos] = useState(0.00)
+	const [totalDebitoCreditos, setTotalDebitoCreditos] = useState(0.00)
+	const [totalVoucherCreditos, setTotalVoucherCreditos] = useState(0.00)
+	const [totalLiquidoCreditos, setTotalLiquidoCreditos] = useState(0.00)
+	const [arrayAdmCreditos, setArrayAdmCreditos] = useState([])
+	const [arrayRelatorioCreditos, setArrayRelatorioCreditos] = useState([])
+	const [dataBuscaCreditos, setDataBuscaCreditos] = useState([new Date(), new Date])
+	const [cnpjBuscaCreditos, setCnpjBuscaCreditos] = useState('')
+	const [creditosTemp, setCreditosTemp] = useState([])
+	const [dataBuscaInicialCreditos, setDataBuscaInicialCreditos] = useState(new Date)
+	const [dataBuscaFinalCreditos, setDataBuscaFinalCreditos] = useState(new Date)
+
+	useEffect(()=>{
+		setCreditos([])
+	},[])
+
+	useEffect(()=>{
+	  setTipo('creditos')
+	  Cookies.set('tipo', 'creditos')
+	},[])
+
+	useEffect(()=>{
+		//setIsDarkTheme(JSON.parse(localStorage.getItem('isDark')))
+	},[])
+
+	useEffect(()=>{
+		creditos.length = 0
+		setTotalCreditoCreditos(0.00)
+		setTotalDebitoCreditos(0.00)
+		setTotalVoucherCreditos(0.00)
+		setTotalLiquidoCreditos(0.00)
+		setTotaisGlobal({debito: 0, credito: 0, voucher: 0, liquido: 0})
+		setTotaisGlobalCreditos({debito: 0, credito: 0, voucher: 0, liquido: 0})
+	},[])
+	
+	useEffect(()=>{
+		try {
+			if(creditos.length === 0){
+				setTotalCreditoCreditos(0.00)
+				setTotalDebitoCreditos(0.00)
+				setTotalVoucherCreditos(0.00)
+				setTotalLiquidoCreditos(0.00)
+			}
+			else if(creditos.length > 0){
+				setArrayRelatorioCreditos(gerarDados(creditos))
+				setArrayAdmCreditos(separaAdmCreditos(creditos))
+			}
+		} catch (error) {
+			console.log(error)
+		}
+	},[creditos])
+
+	useEffect(()=>{
+		setCnpjBuscaCreditos(cnpj)
+	},[cnpj])
+
+	useEffect(()=>{
+		if(detalhes && (cnpjBuscaCreditos !== '')){
+			setCreditosTemp(loadCreditos(cnpjBuscaCreditos, dataBuscaCreditos[0], dataBuscaCreditos[1]))
+		}
+
+	},[cnpjBuscaCreditos])
+
+	useEffect(()=>{
+		if((dataBuscaCreditos[0] !== undefined) && (dataBuscaCreditos[1] !== undefined)){
+			setDataBuscaInicialCreditos(dataBuscaCreditos[0].toLocaleDateString('pt-BR'))
+			setDataBuscaFinalCreditos(dataBuscaCreditos[1].toLocaleDateString('pt-BR'))
+			setDataInicialExibicaoCreditos(dataBuscaCreditos[0].toLocaleDateString('pt-BR'))
+			setDataFinalExibicaoCreditos(dataBuscaCreditos[1].toLocaleDateString('pt-BR'))
+		}
+		},[dataBuscaCreditos])
+
+	function separaAdmCreditos(array) {
+		let sums = {
+			debito: 0,
+			credito: 0,
+			voucher: 0,
+			total: 0
+		};
+	
+		let separatedByAdquirente = [];
+	
+		array.forEach((item) => {
+			// Calculate individual sums
+			switch (item.produto.descricaoProduto) {
+				case 'Débito':
+					sums.debito += item.valorLiquido;
+					break;
+				case 'Crédito':
+					sums.credito += item.valorLiquido;
+					break;
+				case 'Voucher':
+					sums.voucher += item.valorLiquido;
+					break;
+			}
+			sums.total += item.valorLiquido;
+	
+			// Find or create entry in separatedByAdquirente
+			let entry = separatedByAdquirente.find(adquirente => adquirente.nomeAdquirente === item.adquirente.nomeAdquirente);
+			if (!entry) {
+				entry = {
+					id: separatedByAdquirente.length,
+					nomeAdquirente: item.adquirente.nomeAdquirente,
+					total: 0
+				};
+				separatedByAdquirente.push(entry);
+			}
+	
+			// Update total for this adquirente
+			entry.total += item.valorLiquido;
+		});
+
+		let totalTemp = { debito: sums.debito, credito: sums.credito, voucher: sums.voucher, liquido: sums.total };
+	
+		setTotaisGlobalCreditos(totalTemp);
+		console.log('Separated by Adquirente:', separatedByAdquirente);
+		return separatedByAdquirente;
+	}
+
+	function handleDateChangeCreditos(date){
+		setDataBuscaCreditos(date)
+	}
+		
+	const loadCreditosPage = async () => {
+		if(bandeiras.length === 0){
+			await loadBandeiras()
+		}
   
+		if(grupos.length === 0){
+			setGrupos(JSON.parse(sessionStorage.getItem('grupos')))     
+		}
+  
+		if(adquirentes.length === 0){
+			await loadAdquirentes()
+		}
+	}
 
 	return(
 		<AuthContext.Provider
@@ -1836,7 +2167,6 @@ function AuthProvider({ children }){
 				textoExport, setTextoExport,
 				isCheckedCalendar, setIsCheckedCalendar,
 				carregou, setCarregou,
-				loadDashboardPage,
 				vetorVendasMes, setVetorVendasMes,
 				vetorCreditosMes, setVetorCreditosMes,
 				vendas4dias, setVendas4dias,
@@ -1863,6 +2193,68 @@ function AuthProvider({ children }){
 				loadingVendas, setLoadingVendas,
 				loadingCreditos, setLoadingCreditos,
 				loadingServicos, setLoadingServicos,
+				carregouDashboard, setCarregouDashboard,
+				loadDashboardPage,
+				pagina, setPagina,
+				
+				//
+				
+				loadVendasPage,
+				dataBuscaVendas, 
+				setDataBuscaVendas, 
+				totalDebitoVendas,
+				setTotalDebitoVendas,
+				totalCreditoVendas,
+				setTotalCreditoVendas,
+				totalVoucherVendas,
+				setTotalVoucherVendas,
+				totalLiquidoVendas,
+				setTotalLiquidoVendas,
+				cnpjBuscaVendas,
+				setCnpjBuscaVendas,
+				dataInicialExibicaoVendas,
+				dataFinalExibicaoVendas,
+				handleDateChangeVendas,
+				separaAdmArray,
+				totalCreditoVendas, setTotalCreditoVendas,
+				totalDebitoVendas, setTotalDebitoVendas,
+				totalVoucherVendas, setTotalVoucherVendas,
+				totalLiquidoVendas, setTotalLiquidoVendas,
+				arrayAdmVendas, setArrayAdmVendas,
+				arrayRelatorioVendas, setArrayRelatorioVendas,
+				dataBuscaVendas, setDataBuscaVendas,
+				cnpjBuscaVendas, setCnpjBuscaVendas,
+				tipo, setTipo,
+				vendasTemp, setVendasTemp,
+				dataBuscaInicialVendas, setDataBuscaInicialVendas,
+				dataBuscaFinalVendas, setDataBuscaFinalVendas,
+				dataInicialExibicaoVendas, setDataInicialExibicaoVendas,
+				dataFinalExibicaoVendas, setDataFinalExibicaoVendas,
+
+				//
+
+				loadCreditosPage, handleDateChangeCreditos,
+				dataInicialExibicaoCreditos, setDataInicialExibicaoCreditos,
+				dataFinalExibicaoCreditos, setDataFinalExibicaoCreditos,
+				totalCreditoCreditos, setTotalCreditoCreditos,
+				totalDebitoCreditos, setTotalDebitoCreditos,
+				totalVoucherCreditos, setTotalVoucherCreditos,
+				totalLiquidoCreditos, setTotalLiquidoCreditos,
+				arrayAdmCreditos, setArrayAdmCreditos,
+				arrayRelatorioCreditos, setArrayRelatorioCreditos,
+				dataBuscaCreditos, setDataBuscaCreditos,
+				cnpjBuscaCreditos, setCnpjBuscaCreditos,
+				creditosTemp, setCreditosTemp,
+				dataBuscaInicialCreditos, setDataBuscaInicialCreditos,
+				dataBuscaFinalCreditos, setDataBuscaFinalCreditos,
+
+				//
+
+				paginaAtual, setPaginaAtual,
+				dataInicialDisplay, setDataInicialDisplay,
+				dataFinalDisplay, setDataFinalDisplay,
+
+				//
 			}}
 		>
 			{children}

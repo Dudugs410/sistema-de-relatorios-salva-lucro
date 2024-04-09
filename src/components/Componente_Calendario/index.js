@@ -8,11 +8,8 @@ import '../../styles/global.scss'
 import { FiCalendar } from "react-icons/fi";
 
 const MyCalendar = ({dataInicialExibicao, dataFinalExibicao, dataBusca, handleDateChange }) => {
-    const { isDarkTheme, isCheckedCalendar, setIsCheckedCalendar } = useContext(AuthContext)
-
+    const { isDarkTheme, isCheckedCalendar } = useContext(AuthContext)
     const [dateRange, setDateRange] = useState([new Date(), new Date()]);
-
-
 
     useEffect(()=>{
       handleDateChange(dateRange)

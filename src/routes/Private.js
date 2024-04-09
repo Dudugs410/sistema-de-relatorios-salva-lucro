@@ -16,22 +16,21 @@ export default function Private({children}){
   const { setCnpj } = useContext(AuthContext)
 
   useEffect(()=>{
-    console.log('Private Effect')
     if(sessionStorage.getItem('isSignedIn') !== 'true'){
       setIsSignedIn(false)
       navigate('/')
     }
   },[])
 
-  useEffect(()=>{
+  /*useEffect(()=>{
     setCnpj(Cookies.get('cnpj'))
-  },[])
+  },[])*/
 
-  useEffect(()=>{
+  /*useEffect(()=>{
     if(Cookies.get('cnpj') !== '' && null){
       setCnpj(Cookies.get('cnpj'))
     }
-  },[])
+  },[])*/
   
   if(sessionStorage.getItem('isSignedIn') === 'true'){
     return (

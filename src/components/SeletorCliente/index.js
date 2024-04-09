@@ -38,7 +38,7 @@ const SeletorCliente = () => {
 	const [podeBuscar, setPodeBuscar] = useState(true)
 
 	useEffect(()=>{
-		setCnpj(sessionStorage.getItem('cnpj'))
+		//setCnpj(sessionStorage.getItem('cnpj'))
 		setGrupos(JSON.parse(sessionStorage.getItem('grupos')))
 		setPodeBuscar(Cookies.get('podeBuscar'))
 	

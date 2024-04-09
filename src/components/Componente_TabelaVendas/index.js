@@ -5,10 +5,7 @@ import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../../contexts/auth'
 import { FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward } from 'react-icons/fi'
 
-import '../../styles/global.scss'
-import './detalhesCredito.scss'
-
-const TabelaVendasCreditos = ({array, tipo, isDashboard}) =>{
+const TabelaVendas = ({array}) =>{
 
 	useEffect(()=>{
 		console.log('ARRAY VENDASCREDITO: ', array)
@@ -24,8 +21,6 @@ const TabelaVendasCreditos = ({array, tipo, isDashboard}) =>{
 			pagina, 
 			dataBuscaInicialVendas, 
 			dataBuscaFinalVendas,
-			dataBuscaInicialCreditos,
-			dataBuscaFinalCreditos,
 		 } = useContext(AuthContext)
 
 	const [vendasArray, setVendasArray] = useState([])
@@ -86,17 +81,9 @@ const TabelaVendasCreditos = ({array, tipo, isDashboard}) =>{
 	useEffect(()=>{
 		//console.log('tranqueira: ', array)
 		if(array){
-			if(isDashboard){
-				if(array.vendas.length > 0){
-					setVendasArray(array.vendas)
-					setNomeAdquirente(array.nomeAdquirente)
-					setTotal(array.total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }))
-				}
-			} else {
-				if(array.length > 0){
-					setVendasArray(array)
-				}
-			}
+            if(array.length > 0){
+                setVendasArray(array)
+            }
 		}
 	},[array])
 
@@ -413,56 +400,13 @@ const TabelaVendasCreditos = ({array, tipo, isDashboard}) =>{
 
 	},[adqSelecionada])
 
-	const [style, setStyle] = useState({})
-	const [paginaAtual, setPaginaAtual] = useState('')
-	const [dataInicialDisplay, setDataInicialDisplay] = useState(new Date)
-	const [dataFinalDisplay, setDataFinalDisplay] = useState(new Date)
-
-	useEffect(() => {
-		// Retrieve the value from sessionStorage
-		const pagina = sessionStorage.getItem('currentPath')
-    
-		if ((pagina === '/dashboard') || (pagina === '/Dashboard')) {
-			setStyle({ display: 'none' })
-		} else {
-			setStyle({ display: 'block' })
-		}
-		
-		switch (pagina){
-			case '/vendas':
-				setPaginaAtual('Vendas')
-				setDataInicialDisplay(dataBuscaInicialVendas)
-				setDataFinalDisplay(dataBuscaFinalVendas)
-				break;
-			case '/creditos':
-				setPaginaAtual('Créditos')
-				setDataInicialDisplay(dataBuscaInicialCreditos)
-				setDataFinalDisplay(dataBuscaFinalCreditos)
-				break;
-			default:
-				setPaginaAtual('Dados')
-				break;
-			}
-
-	},[pagina])
-
 	return(
 		<>
-			{(sessionStorage.getItem('currentPath') === '/dashboard') || (sessionStorage.getItem('currentPath') === '/Dashboard') ? 
-				<div className={`header-tabela-grafico ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
-					<div className='total-container-dashboard'>
-						<h3 className='titulo-grafico'>Adquirente: &nbsp;</h3><h3 style={{ fontWeight: 'bold' }}>{nomeAdquirente}</h3>
-					</div>
-					<div className='total-container-dashboard'>
-						<h3 className='titulo-grafico'>Total: &nbsp;</h3><h3 className={`green-global ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>{total}</h3>
-					</div>
-				</div> : <></>
-			}
 			<div className='date-container'>
 				<div className='date-column'>
 					<div className='select-card select-align select-align-filtro'>
-					<span className={`span-str ${isDarkTheme ? 'dark-theme' : 'light-theme'}`} style={style}>Adquirente</span>
-						<select className={`${isDarkTheme ? 'dark-theme' : 'light-theme'}`} id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}} style={style}>
+					<span className={`span-str ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>Adquirente</span>
+						<select className={`${isDarkTheme ? 'dark-theme' : 'light-theme'}`} id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}}>
 							<option value='' selected>Todas</option>
 							{adquirentesExistentes.map((ADQ)=>(
 								<option key={ADQ} value={ADQ}>{ADQ}</option>
@@ -472,8 +416,8 @@ const TabelaVendasCreditos = ({array, tipo, isDashboard}) =>{
 				</div>
 				<div className='date-column'>
 					<div className='select-card select-align select-align-filtro'>
-						<span className={`span-str ${isDarkTheme ? 'dark-theme' : 'light-theme'}`} style={style}>Bandeira</span>
-						<select className={`${isDarkTheme ? 'dark-theme' : 'light-theme'}`} id='bandeira' value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}} style={style}>
+						<span className={`span-str ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>Bandeira</span>
+						<select className={`${isDarkTheme ? 'dark-theme' : 'light-theme'}`} id='bandeira' value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}}>
 							<option value='' selected>Todas</option>
 							{bandeirasExistentes.map((BAN)=>(
 								<option key={BAN} value={BAN}>{BAN}</option>
@@ -484,26 +428,16 @@ const TabelaVendasCreditos = ({array, tipo, isDashboard}) =>{
 			</div>
 			<hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
 			<div className='container-busca'>
-			{ tipo === 'vendas' ? 
 					<span className={`span-busca ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
 						{dataBuscaInicialVendas !== dataBuscaFinalVendas ? 
-							<span dangerouslySetInnerHTML={{__html: `Exibindo ${paginaAtual} do dia <strong>${dataInicialDisplay}</strong> ao dia <strong>${dataFinalDisplay}</strong>`}} /> : 
-							<span dangerouslySetInnerHTML={{__html: `Exibindo ${paginaAtual} do dia <strong>${dataInicialDisplay}</strong>`}} />
+							<span dangerouslySetInnerHTML={{__html: `Exibindo Vendas do dia <strong>${dataBuscaInicialVendas}</strong> ao dia <strong>${dataBuscaFinalVendas}</strong>`}} /> : 
+							<span dangerouslySetInnerHTML={{__html: `Exibindo Vendas do dia <strong>${dataBuscaInicialVendas}</strong>`}} />
 						}
 					</span>
-				: 
-					<span className={`span-busca ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-						{dataBuscaInicialCreditos !== dataBuscaFinalCreditos ? 
-							<span dangerouslySetInnerHTML={{__html: `Exibindo ${paginaAtual} do dia <strong>${dataInicialDisplay}</strong> ao dia <strong>${dataFinalDisplay}</strong>`}} /> : 
-							<span dangerouslySetInnerHTML={{__html: `Exibindo ${paginaAtual} do dia <strong>${dataInicialDisplay}</strong>`}} />
-						}
-					</span>
-				}
         	</div>
 			<hr className='hr-global'/>
 			<div className='dropShadow vendas-view'>
 				<div className={`table-wrapper ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
-				{ tipo === 'vendas' ?
 					<table className={`table table-striped table-hover det-table-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
 						<thead>
 							<tr className={`det-tr-top-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
@@ -550,60 +484,6 @@ const TabelaVendasCreditos = ({array, tipo, isDashboard}) =>{
 							})}
 						</tbody>
 					</table> 
-					: 
-					<table className={`table table-striped det-table-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-						<thead>
-							<tr className={`det-tr-top-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-								<th className='det-th-global'scope="col">CNPJ</th>
-								<th className='det-th-global'scope="col">Adquirente</th>
-								<th className='det-th-global'scope="col">Bandeira</th>
-								<th className='det-th-global'scope="col">Produto</th>
-								<th className='det-th-global'scope="col">Subproduto</th>
-								<th className='det-th-global'scope="col">Data do Crédito</th>
-								<th className='det-th-global'scope="col">Data da Venda</th>
-								<th className='det-th-global'scope="col">Valor Bruto</th>
-								<th className='det-th-global'scope="col">Valor Líquido</th>
-								<th className='det-th-global'scope="col">Taxa</th>
-								<th className='det-th-global'scope="col">Valor Desconto</th>
-								<th className='det-th-global'scope="col">NSU</th>
-								<th className='det-th-global'scope="col">Autorização</th>
-								<th className='det-th-global'scope="col">Parcela</th>
-								<th className='det-th-global'scope="col">QTD Parcelas</th>
-								<th className='det-th-global'scope="col">Banco</th>
-								<th className='det-th-global'scope="col">Agência</th>
-								<th className='det-th-global'scope="col">Conta</th>
-								<th className='det-th-global'scope="col">TID</th>
-							</tr>
-						</thead>
-						<tbody>
-							{vendasExibicao.length > 0 && currentItems.map((venda, index)=>{
-								return(
-									<tr key={index} className={`det-tr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}  >
-										<td className='det-td-vendas-global'data-label="CNPJ">{venda.cnpj}</td>
-										<td className='det-td-vendas-global'data-label="Adquirente">{venda.adquirente.nomeAdquirente}</td>
-										<td className='det-td-vendas-global'data-label="Bandeira">{venda.bandeira.descricaoBandeira}</td>
-										<td className='det-td-vendas-global'data-label="Produto">{venda.produto.descricaoProduto}</td>
-										<td className='det-td-vendas-global'data-label="Subproduto">{venda.modalidade.descricaoModalidade}</td>
-										<td className='det-td-vendas-global'data-label="Data do Crédito">{dateConvert(venda.dataCredito)}</td>
-										<td className='det-td-vendas-global'data-label="Data da Venda">{dateConvert(venda.dataVenda)}</td>
-										<td className='det-td-vendas-global'data-label="Valor Bruto"><span className={`green-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>{Number(venda.valorBruto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
-										<td className='det-td-vendas-global'data-label="Valor Líquido"><span className={`green-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>{Number(venda.valorLiquido).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
-										<td className='det-td-vendas-global'data-label="Taxa"><span className='red-global'>{Number(venda.taxa).toFixed(2)}%</span></td>
-										<td className='det-td-vendas-global'data-label="Valor Desconto"><span className='red-global'>{Number(venda.valorDesconto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
-										<td className='det-td-vendas-global'data-label="NSU">{venda.nsu}</td>
-										<td className='det-td-vendas-global'data-label="Autorização">{venda.codigoAutorizacao}</td>
-										<td className='det-td-vendas-global'data-label="Parcela">{venda.parcela}</td>
-										<td className='det-td-vendas-global'data-label="QTD Parcelas">{venda.totalParcelas}</td>
-										<td className='det-td-vendas-global'data-label="Banco">{venda.banco}</td>
-										<td className='det-td-vendas-global'data-label="Agência">{venda.agencia}</td>
-										<td className='det-td-vendas-global'data-label="Conta">{venda.conta}</td>
-										<td className='det-td-vendas-global'data-label="TID">{venda.tid}</td>
-									</tr>
-								)
-							})}
-						</tbody>
-					</table>
-					 }
 				</div>
 			</div>
 			<hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
@@ -648,4 +528,4 @@ const TabelaVendasCreditos = ({array, tipo, isDashboard}) =>{
 	)
 }
 
-export default TabelaVendasCreditos
+export default TabelaVendas

@@ -317,12 +317,7 @@ const TabelaServicos = ({ array, tipo }) => {
 						<FiSkipForward />
 					</button>
 				</div>
-				
 			)}
-			{ sessionStorage.getItem('currentPath') !== '/dashboard' ? 
-			<div className='voltar-container'>
-				<button className={`btn btn-secondary btn-global btn-voltar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={() => { setDetalhes(false)} }>Voltar</button>
-			</div> : <></>}
 			<hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
 	</>
 	)

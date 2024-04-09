@@ -19,7 +19,7 @@
     flex-wrap: wrap;
     align-content: center;
     justify-content: center;
-    transition: all 2s;
+    transition: all .4s;
         &.light-theme{
             color: $primary-color-light;
             background-color: $background-color-light;
@@ -62,7 +62,7 @@
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    transition: all 2s;
+    transition: all .4s;
     &.light-theme{
         color: $font-color-light;
     }
@@ -73,7 +73,7 @@
 }
 
 .green-modalidade{
-    transition: all 2s;
+    transition: all .4s;
     color: $secondary-color-light;
     font-weight: bold;
 

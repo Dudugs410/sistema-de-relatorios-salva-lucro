@@ -4,7 +4,7 @@
     width: 100%;
     display: flex;
     flex-direction: column;
-    transition: all 2s;
+    transition: all .4s;
 }
 
 .content{
@@ -18,13 +18,13 @@
     flex-direction: column;
     align-items: center;
     height: 100%;
-    transition: all 2s;
+    transition: all .4s;
 }
 
 .page-servicos-background{
     display: flex;
     justify-content: center;
-    transition: all 2s;
+    transition: all .4s;
     &.light-theme{
         background-color: $background-color-light;
     }
@@ -43,7 +43,7 @@
     padding: 10px;
     margin-top: 10px;
     margin-bottom: 54px;
-    transition: all 2s;
+    transition: all .4s;
     &.light-theme{
         background-color: $background-color-light;
     }
@@ -55,7 +55,7 @@
 .servicos-title-container{
     text-align: center;
     border-bottom: solid white 1px;
-    transition: all 2s;
+    transition: all .4s;
     width: 100%;
     border-radius: 20px;
     padding: 10px;
@@ -71,7 +71,7 @@
 
 .servicos-title{
     margin: 0;
-    transition: all 2s;
+    transition: all .4s;
     &.light-theme{
         color: $font-color-light;
     }

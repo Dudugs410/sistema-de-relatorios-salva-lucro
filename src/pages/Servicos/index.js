@@ -75,7 +75,7 @@ useEffect(() => {
 
     useEffect(()=>{
 		setAjustes([])
-		setCnpj(Cookies.get('cnpj'))
+		//setCnpj(Cookies.get('cnpj'))
 	},[])
 
 	const [tipo, setTipo] = useState('servicos')

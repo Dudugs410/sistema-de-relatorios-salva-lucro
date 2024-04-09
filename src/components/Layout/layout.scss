@@ -3,7 +3,7 @@
 .layout{
     height: 100%;
     width: 100%;
-    transition: all 2s;
+    transition: all .4s;
     &.light-theme{
         background-color: $background-color-light;
     }

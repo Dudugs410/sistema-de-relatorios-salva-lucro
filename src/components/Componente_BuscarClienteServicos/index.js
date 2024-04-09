@@ -40,15 +40,14 @@ const BuscarClienteServicos = () => {
 		setCnpjBusca,
 	} = useContext(ServicosContext)
     
-	useEffect(()=>{
+	/*useEffect(()=>{
 		setCnpj(Cookies.get('cnpj'))
 		setCnpjBusca(Cookies.get('cnpj'))
-	},[])
+	},[])*/
     
 	async function handleBusca(e){
 		toast.promise(buscar, {
 			pending: 'Carregando...',
-			success: 'Carregado com Sucesso',
 			error: 'Ocorreu um Erro',
 		})
 		e.preventDefault()
@@ -58,33 +57,24 @@ const BuscarClienteServicos = () => {
 	}
 	
 	async function buscar() {
-		console.log('Parametros da busca: ', cnpjBusca, dataBusca[0], dataBusca[1])
 		await loadAjustes(cnpjBusca, dataBusca[0], dataBusca[1])
-			.then(() =>{
-				if(dataBusca === '' || cnpjBusca === ''){
-					return 0
-				} else {
-					//adiciono .toLocaleDateString('pt-BR') às datas para que possamos comparar apenas o dia, mes e ano, sem levar em consideração a hora, minuto e segundos
-					if(buscou !== true){
-						if((dataBusca[0].toLocaleDateString('pt-BR') === dataBusca[1].toLocaleDateString('pt-BR'))){
-							console.log('mostrou alerta servicos')
-							alerta(`executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')}`)
-							setBuscou(true)
-							
-						} else if (dataBusca[0].toLocaleDateString('pt-BR') !== dataBusca[1].toLocaleDateString('pt-BR')){
-							console.log('mostrou alerta servicos')
-							alerta(`executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')} ao dia ${dataBusca[1].toLocaleDateString('pt-BR')}`)
-							setBuscou(true)
-						}
-					}
+		.then(() => {
+			if (dataBusca === '' || cnpjBusca === '') {
+				return 0;
+			} else {
+				//adiciono .toLocaleDateString('pt-BR') às datas para que possamos comparar apenas o dia, mes e ano, sem levar em consideração a hora, minuto e segundos
+				if(buscou !== true){
+					toast.success(dataBusca[0].toLocaleDateString('pt-BR') === dataBusca[1].toLocaleDateString('pt-BR') ? `executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')}` : `executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')} ao dia ${dataBusca[1].toLocaleDateString('pt-BR')}`)
+					setBuscou(true);	
+				}
 
-					if(ajustes.length === 0){
-						setDetalhes(false)
-						setClicouPesquisar(false)
-						
-					}
-				}    
-			})
+				if (ajustes.length === 0) {
+					setDetalhes(false);
+					setClicouPesquisar(false);
+				}
+			}
+		});
+	setLoading(false);
 	}
 
 	useEffect(()=>{
