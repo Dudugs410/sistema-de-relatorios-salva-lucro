@@ -1,48 +1,16 @@
 /* eslint-disable react/react-in-jsx-scope */
 
-import { useContext, useEffect } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import './totalModalidade.scss'
 import { AuthContext } from '../../contexts/auth'
 
-const TotalModalidadesComp = ({tipo}) =>{
-	const { totaisGlobal, setTotaisGlobal, totaisGlobalVendas, totaisGlobalCreditos, isDarkTheme, detalhes } = useContext(AuthContext)
+const TotalModalidadesComp = ({totals}) =>{
+	const { isDarkTheme } = useContext(AuthContext)
 
-
-	// Verifica o tipo passado como parâmetro, para definir quais totais serão mostrados, e também para definir se o texto mostrado
-	// no último bloco será 'Total Bruto'(vendas) ou 'Total Líquido'(créditos)
-
-	useEffect(()=>{
-		switch (tipo) {
-			case 'vendas':
-				setTotaisGlobal(totaisGlobalVendas)
-				break;
-			case 'creditos':
-				setTotaisGlobal(totaisGlobalCreditos)
-				break;
-		
-			default:
-				setTotaisGlobal({ debito: 0, credito: 0, voucher: 0, liquido: 0 })
-				break;
-		}
-	},[])
-
-
-	// Utilizo a const detalhes como condição para zerar os valores totais apresentados na parte superior da página.
-	// Se o valor for verdadeiro são renderizados os gráficos com as informações referentes ao período selecionado.
-	// Se o valor for falso, os totais são zerados e são renderizados o Gráfico e botão 'Pesquisar'
-	useEffect(()=>{
-		if(detalhes === false){
-			setTotaisGlobal({ debito: 0, credito: 0, voucher: 0, liquido: 0 })
-		}
-	},[detalhes])
-
-	useEffect(()=>{
-		if(tipo === 'vendas'){
-			setTotaisGlobal(totaisGlobalVendas)
-		} else if(tipo === 'creditos'){
-			setTotaisGlobal(totaisGlobalCreditos)
-		}
-	},[totaisGlobalCreditos, totaisGlobalVendas])
+	const debit = totals.debit || 0
+	const credit = totals.credit || 0
+	const voucher = totals.voucher || 0
+	const total = totals.total || 0
 
 	return(
 		<>
@@ -51,25 +19,25 @@ const TotalModalidadesComp = ({tipo}) =>{
 				<div className={`total-container-modalidade ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
 					<div className='text-container-modalidade'>
 						<h1 className='title-modalidade'>Débito</h1>
-						<p className='text-modalidade'>TOTAL: R$ <span className='green-modalidade'>{Number(totaisGlobal.debito).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></p>
+						<p className='text-modalidade'>TOTAL: <span className='green-modalidade'>{Number(debit).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></p>
 					</div>
 				</div>
 				<div className={`total-container-modalidade ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
 					<div className='text-container-modalidade'>
 						<h1 className='title-modalidade'>Crédito</h1>
-						<p className='text-modalidade'>TOTAL: R$ <span className='green-modalidade'>{Number(totaisGlobal.credito).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></p>
+						<p className='text-modalidade'>TOTAL: <span className='green-modalidade'>{Number(credit).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></p>
 					</div>
 				</div>
 				<div className={`total-container-modalidade ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}> 
 					<div className='text-container-modalidade'>
 						<h1 className='title-modalidade'>Voucher</h1>
-						<p className='text-modalidade'>TOTAL: R$ <span className='green-modalidade span-modalidade'>{Number(totaisGlobal.voucher).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></p>
+						<p className='text-modalidade'>TOTAL: <span className='green-modalidade span-modalidade'>{Number(voucher).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></p>
 					</div>
 				</div>
 				<div className={`total-container-modalidade ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}> 
 					<div className='text-container-modalidade'>
-						<h1 className='title-modalidade'>{tipo === 'vendas' ? 'Total Bruto' : 'Total Líquido'}</h1>
-						<p className='text-modalidade'>TOTAL: R$ <span className='green-modalidade'>{Number(totaisGlobal.liquido).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></p>
+						<h1 className='title-modalidade'>{sessionStorage.getItem('currentPath') === '/vendas' ? 'Total Bruto' : 'Total Líquido'}</h1>
+						<p className='text-modalidade'>TOTAL: <span className='green-modalidade'>{Number(total).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></p>
 					</div>
 				</div>
 			</div>

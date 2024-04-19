@@ -5,21 +5,25 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './Calendar.scss'
 import '../../styles/global.scss'
-import { FiCalendar } from "react-icons/fi";
 
-const MyCalendar = ({dataInicialExibicao, dataFinalExibicao, dataBusca, handleDateChange }) => {
+const MyCalendar = ({ onLoadData, getCalendarDate }) => {
     const { isDarkTheme, isCheckedCalendar } = useContext(AuthContext)
+    
     const [dateRange, setDateRange] = useState([new Date(), new Date()]);
 
     useEffect(()=>{
-      handleDateChange(dateRange)
+      getCalendarDate(dateRange)
     },[dateRange])
+
+    const handleDateChange = (date) =>{
+      setDateRange(date)
+    }
 
     //date-range-picker
     const MyDatePicker = () => {
       return (
-        <div className="form-container-relatorios">
-          <div className='select-elements-container'>
+        <div className='form-container-picker'>
+          <div className='select-elements-container-picker'>
             <div className='container-select'>
               <span className={`span-picker ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>Data Inicial</span>
               <DatePicker className={`input-picker ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}
@@ -39,8 +43,6 @@ const MyCalendar = ({dataInicialExibicao, dataFinalExibicao, dataBusca, handleDa
       );
     };
 
-    //
-
     return (
       <div className='component-container'>
         { isCheckedCalendar ? <>
@@ -49,7 +51,7 @@ const MyCalendar = ({dataInicialExibicao, dataFinalExibicao, dataBusca, handleDa
           className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
           onChange={ handleDateChange }
           selectRange={true}
-          value={ dataBusca }
+          value={ dateRange }
           tileClassName={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
         />
  
@@ -61,12 +63,14 @@ const MyCalendar = ({dataInicialExibicao, dataFinalExibicao, dataBusca, handleDa
         <hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
         <div className='container-busca'>
           <span className={`span-busca ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-            {dataInicialExibicao !== dataFinalExibicao ? 
-              <span dangerouslySetInnerHTML={{__html: `Executar busca do dia <strong>${dataInicialExibicao}</strong> ao dia <strong>${dataFinalExibicao}</strong>`}} /> : 
-              <span dangerouslySetInnerHTML={{__html: `Executar busca do dia <strong>${dataInicialExibicao}</strong>`}} />
+            {dateRange[0].toLocaleDateString('pt-BR') !== dateRange[1].toLocaleDateString('pt-BR') ? 
+              <span dangerouslySetInnerHTML={{__html: `Executar busca do dia <strong>${dateRange[0].toLocaleDateString('pt-BR')}</strong> ao dia <strong>${dateRange[1].toLocaleDateString('pt-BR')}</strong>`}} /> : 
+              <span dangerouslySetInnerHTML={{__html: `Executar busca do dia <strong>${dateRange[0].toLocaleDateString('pt-BR')}</strong>`}} />
             }
           </span>
         </div>
+        <hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
+        <button className={`btn btn-primary btn-global btn-pesquisar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={ onLoadData }>Pesquisar</button>
         <hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
       </div>
     )

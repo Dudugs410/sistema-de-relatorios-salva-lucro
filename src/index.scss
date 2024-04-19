@@ -11,14 +11,7 @@ html, body, .app, #root, .appPage, .app-page{
   overflow-x: hidden;
   display: contents;
   transition: all .4s;
-  
-   &.light-theme{
-    background-color: $background-color-light;
-   }
-
-   &.dark-theme{
-    background-color: $background-color-dark;
-   }
+  //background-color: $background-color;
 }
 
 h5{

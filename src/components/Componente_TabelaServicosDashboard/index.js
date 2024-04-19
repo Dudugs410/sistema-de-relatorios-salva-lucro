@@ -7,13 +7,16 @@ import { FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward } from 'react-
 import '../Componente_TabelaVendasCreditos/detalhesCredito.scss'
 import '../../styles/global.scss'
 
-const TabelaServicos = ({ array }) => {  
+const TabelaServicosDashboard = ({ array }) => {  
 	const { 
-		isDarkTheme, dateConvert, gerarDados,
-		servicesDateRange,
+		dateConvert, 
+		isDarkTheme, 
+		dataBuscaInicialServicos, 
+		dataBuscaFinalServicos, 
 	} = useContext(AuthContext)
 
 	const [vendasArray, setVendasArray] = useState([])
+
 	const [vendasTeste, setVendasTeste] = useState([])
 	const [vendasExibicao, setVendasExibicao] = useState([])
 
@@ -27,13 +30,8 @@ const TabelaServicos = ({ array }) => {
 	const [adqSelecionada, setAdqSelecionada] = useState('')
 
 	//adicionando páginas à tabela:
-
 	const [currentPage, setCurrentPage] = useState(1)
 	const [itemsPerPage] = useState(15) // Number of items per page
-
-	useEffect(()=>{
-		console.log('array tabela serviços: ', array)
-	},[])
 
 	useEffect(() => {
 		setCurrentPage(1) // Reset page to 1 when data changes
@@ -69,15 +67,14 @@ const TabelaServicos = ({ array }) => {
 	////////////////////////////////////////////////////
 	
 	useEffect(()=>{
-		console.log('tranqueira: ', array)
-		console.log('não é dashboard')
-		if(array.length > 0){
-			setVendasArray(array)
+		if(array){
+			if(array.sales.length > 0){
+				setVendasArray(array.sales)
+			}
 		}
 	},[])
 
 	useEffect(()=>{
-		console.log(vendasArray)
 		async function init(){
 			setVendasTeste(vendasArray)
 		}
@@ -86,14 +83,13 @@ const TabelaServicos = ({ array }) => {
 
 	useEffect(()=>{
 		if(vendasExibicao.length > 0){
-			gerarDados(vendasExibicao)
+			// gerarDados(vendasExibicao)
+			// carregaTotais(vendasExibicao)
 			setCurrentPage(1)   
 		}
 	},[vendasExibicao])
 
 	useEffect(()=>{
-		console.log('vendasTeste antes do erro', vendasTeste)
-
 		setVendasExibicao(vendasTeste)
 
 		const bandeirasTemp = []
@@ -221,43 +217,9 @@ const TabelaServicos = ({ array }) => {
 
 	},[adqSelecionada])
 
+
 	return(
 		<>
-		<div className='date-container'>
-			<div className='date-picker-container'>
-				<div className='date-column'>
-					<div className='select-card select-align select-align-filtro'>
-						<span className={`span-str ${isDarkTheme ? 'dark-theme' : 'light-theme'}`} >Adquirente</span>
-						<select className={`${isDarkTheme ? 'dark-theme' : 'light-theme'}`} id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}} >
-							<option value='' selected>Todas</option>
-							{adquirentesExistentes.map((ADQ)=>(
-								<option key={ADQ} value={ADQ}>{ADQ}</option>
-							))}
-						</select>
-					</div>
-				</div>
-				<div className='date-column'>
-					<div className='select-card select-align select-align-filtro'>
-						<span className={`span-str ${isDarkTheme ? 'dark-theme' : 'light-theme'}`} >Serviço</span>
-						<select className={`${isDarkTheme ? 'dark-theme' : 'light-theme'}`} id='bandeira' value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}} >
-							<option value='' selected>Todas</option>
-							{bandeirasExistentes.map((BAN)=>(
-								<option key={BAN} value={BAN}>{BAN}</option>
-							))}
-						</select>
-					</div>
-				</div>
-			</div>
-			<hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
-			<div className='container-busca'>
-				<span className={`span-busca ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-					{servicesDateRange[0].toLocaleDateString('pt-BR') !== servicesDateRange[1].toLocaleDateString('pt-BR') ? 
-						<span dangerouslySetInnerHTML={{__html: `Exibindo Ajustes/Serviços do dia <strong>${servicesDateRange[0].toLocaleDateString('pt-BR')}</strong> ao dia <strong>${servicesDateRange[1].toLocaleDateString('pt-BR')}</strong>`}} /> : 
-						<span dangerouslySetInnerHTML={{__html: `Exibindo Ajustes/Serviços do dia <strong>${servicesDateRange[0].toLocaleDateString('pt-BR')}</strong>`}} />
-					}
-				</span>
-			</div>
-		</div>
 		<hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
 		<div className='dropShadow vendas-view'>
 			<div className={`table-wrapper ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
@@ -337,4 +299,4 @@ const TabelaServicos = ({ array }) => {
 	)
 }
 
-export default TabelaServicos
+export default TabelaServicosDashboard

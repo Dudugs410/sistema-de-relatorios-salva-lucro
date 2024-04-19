@@ -84,19 +84,10 @@ const TabelaVendasCreditos = ({array, tipo, isDashboard}) =>{
 	// // // // // // // // // // // // // // // // // // // // // // // // // // //
 
 	useEffect(()=>{
-		//console.log('tranqueira: ', array)
-		if(array){
-			if(isDashboard){
-				if(array.vendas.length > 0){
-					setVendasArray(array.vendas)
-					setNomeAdquirente(array.nomeAdquirente)
-					setTotal(array.total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }))
-				}
-			} else {
-				if(array.length > 0){
-					setVendasArray(array)
-				}
-			}
+		console.log('tranqueira: ', array)
+		console.log('não é dashboard')
+		if(array.length > 0){
+			setVendasArray(array)
 		}
 	},[array])
 
@@ -448,16 +439,14 @@ const TabelaVendasCreditos = ({array, tipo, isDashboard}) =>{
 
 	return(
 		<>
-			{(sessionStorage.getItem('currentPath') === '/dashboard') || (sessionStorage.getItem('currentPath') === '/Dashboard') ? 
-				<div className={`header-tabela-grafico ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
-					<div className='total-container-dashboard'>
-						<h3 className='titulo-grafico'>Adquirente: &nbsp;</h3><h3 style={{ fontWeight: 'bold' }}>{nomeAdquirente}</h3>
-					</div>
-					<div className='total-container-dashboard'>
-						<h3 className='titulo-grafico'>Total: &nbsp;</h3><h3 className={`green-global ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>{total}</h3>
-					</div>
-				</div> : <></>
-			}
+			<div className={`header-tabela-grafico ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
+				<div className='total-container-dashboard'>
+					<h3 className='titulo-grafico'>Adquirente: &nbsp;</h3><h3 style={{ fontWeight: 'bold' }}>{nomeAdquirente}</h3>
+				</div>
+				<div className='total-container-dashboard'>
+					<h3 className='titulo-grafico'>Total: &nbsp;</h3><h3 className={`green-global ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>{total}</h3>
+				</div>
+			</div>
 			<div className='date-container'>
 				<div className='date-column'>
 					<div className='select-card select-align select-align-filtro'>

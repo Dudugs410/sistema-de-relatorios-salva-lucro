@@ -5,12 +5,12 @@ import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../../contexts/auth'
 import { FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward } from 'react-icons/fi'
 
+const TabelaVendasDashboard = ({array}) =>{
 
-const TabelaCreditos = ({array}) =>{
-
-	const { isDarkTheme, dateConvert, gerarDados, 
-			creditsDateRange, setCreditsTotal,
-	} = useContext(AuthContext)
+	const { dateConvert,
+			gerarDados, 
+			isDarkTheme,
+		 } = useContext(AuthContext)
 
 	const [vendasArray, setVendasArray] = useState([])
 	const [vendasTeste, setVendasTeste] = useState([])
@@ -66,7 +66,9 @@ const TabelaCreditos = ({array}) =>{
 
 	useEffect(()=>{
 		if(array){
-            setVendasArray(array) 
+			if(array.sales.length > 0){
+				setVendasArray(array.sales)
+			}
 		}
 	},[array])
 
@@ -77,96 +79,11 @@ const TabelaCreditos = ({array}) =>{
 		init()
 	},[vendasArray])
 
-	function loadTotals(array){
-		if(array.length > 0){
-			let temp = []
-			let totalCreditoTemp = 0
-			let totalDebitoTemp = 0
-			let totalVoucherTemp = 0
-			let totalLiquidoTemp = 0
-    
-			array.forEach((venda)=>{
-				if(temp.length === 0){
-					let newObj = {
-						adminName: venda.adquirente.nomeAdquirente,
-						total: venda.valorLiquido,
-						id: 0,
-						sales: []
-					}
-					temp.push(newObj)
-				}else{
-					let newObj = {
-						adminName: venda.adquirente.nomeAdquirente,
-						total: venda.valorLiquido,
-						id: 0,
-						sales: []
-					}
-    
-					if(!(temp.find((objeto) => objeto.adminName === venda.adquirente.nomeAdquirente && objeto !== ( undefined || [] )))){
-						newObj.id = (temp.length)
-						temp.push(newObj)
-					}
-    
-					else{
-						for(let i = 0; i < temp.length; i++){
-							if(temp[i].adminName === venda.adquirente.nomeAdquirente){
-								temp[i].total += venda.valorLiquido
-							}
-						}
-					}
-				}
-				// eslint-disable-next-line default-case
-				switch(venda.produto.descricaoProduto){
-				case 'Crédito':
-					totalCreditoTemp += venda.valorLiquido
-					break
-    
-				case 'Débito':
-					totalDebitoTemp += venda.valorLiquido
-					break
-    
-				case 'Voucher':
-					totalVoucherTemp += venda.valorLiquido
-					break
-				}
-				totalLiquidoTemp += venda.valorLiquido
-			})
-			temp.forEach((adq) => {
-				let vendasTemp = []
-				vendasTemp.length = 0
-				array.forEach((vendasDia) => {
-					if(vendasDia.length > 0){
-						vendasDia.forEach((venda) => {
-							if(venda.adquirente.nomeAdquirente === adq.adminName){
-								vendasTemp.push(venda)
-							}
-							adq.sales = vendasTemp
-						})
-					}
-				})
-			})
-            
-			let totalTemp = {debit: totalDebitoTemp, credit: totalCreditoTemp, voucher: totalVoucherTemp, total: totalLiquidoTemp}
-			setCreditsTotal(totalTemp)
-		}
-	}
-
-	useEffect(()=>{
-		if(vendasExibicao.length > 0){
-			gerarDados(vendasExibicao)
-			loadTotals(vendasExibicao)
-			setCurrentPage(1)
-            
-		}
-	},[vendasExibicao])
-
 	useEffect(()=>{
 
 		setVendasExibicao(vendasTeste)
-
 		const bandeirasTemp = []
 		const uniqueStringsSet = new Set()
-        
 		vendasTeste.forEach(item => {
 			if (!uniqueStringsSet.has(item.bandeira.descricaoBandeira)) {
 				uniqueStringsSet.add(item.bandeira.descricaoBandeira)
@@ -288,50 +205,14 @@ const TabelaCreditos = ({array}) =>{
 			let arrayFiltrado = vendasTeste.filter(venda => venda.bandeira.descricaoBandeira === banSelecionada)
 			setVendasExibicao(arrayFiltrado)
 		}
-
 	},[adqSelecionada])
 
 	return(
 		<>
-			<div className='date-container'>
-				<div className='date-picker-container'>
-					<div className='date-column'>
-						<div className='select-card select-align select-align-filtro'>
-						<span className={`span-str ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>Adquirente</span>
-							<select className={`${isDarkTheme ? 'dark-theme' : 'light-theme'}`} id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}}>
-								<option value=''>Todas</option>
-								{adquirentesExistentes.map((ADQ)=>(
-									<option key={ADQ} value={ADQ}>{ADQ}</option>
-								))}
-							</select>
-						</div>
-					</div>
-					<div className='date-column'>
-						<div className='select-card select-align select-align-filtro'>
-							<span className={`span-str ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>Bandeira</span>
-							<select className={`${isDarkTheme ? 'dark-theme' : 'light-theme'}`} id='bandeira' value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}}>
-								<option value=''>Todas</option>
-								{bandeirasExistentes.map((BAN)=>(
-									<option key={BAN} value={BAN}>{BAN}</option>
-								))}
-							</select>
-						</div>
-					</div>
-				</div>
-				<hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
-				<div className='container-busca'>	
-					<span className={`span-busca ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-						{creditsDateRange[0].toLocaleDateString('pt-BR') !== creditsDateRange[1].toLocaleDateString('pt-BR') ? 
-							<span dangerouslySetInnerHTML={{__html: `Exibindo Créditos do dia <strong>${creditsDateRange[0].toLocaleDateString('pt-BR')}</strong> ao dia <strong>${creditsDateRange[1].toLocaleDateString('pt-BR')}</strong>`}} /> : 
-							<span dangerouslySetInnerHTML={{__html: `Exibindo Créditos do dia <strong>${creditsDateRange[0].toLocaleDateString('pt-BR')}</strong>`}} />
-						}
-					</span>
-				</div>
-			</div>
 			<hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
 			<div className='dropShadow vendas-view'>
 				<div className={`table-wrapper ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
-					<table className={`table table-striped det-table-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+					<table className={`table table-striped table-hover det-table-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
 						<thead>
 							<tr className={`det-tr-top-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
 								<th className='det-th-global'scope="col">CNPJ</th>
@@ -339,19 +220,16 @@ const TabelaCreditos = ({array}) =>{
 								<th className='det-th-global'scope="col">Bandeira</th>
 								<th className='det-th-global'scope="col">Produto</th>
 								<th className='det-th-global'scope="col">Subproduto</th>
-								<th className='det-th-global'scope="col">Data do Crédito</th>
-								<th className='det-th-global'scope="col">Data da Venda</th>
 								<th className='det-th-global'scope="col">Valor Bruto</th>
 								<th className='det-th-global'scope="col">Valor Líquido</th>
 								<th className='det-th-global'scope="col">Taxa</th>
 								<th className='det-th-global'scope="col">Valor Desconto</th>
 								<th className='det-th-global'scope="col">NSU</th>
+								<th className='det-th-global'scope="col">Data da Venda</th>
+								<th className='det-th-global'scope="col">Hora da Venda</th>
+								<th className='det-th-global'scope="col">Data do Crédito</th>
 								<th className='det-th-global'scope="col">Autorização</th>
-								<th className='det-th-global'scope="col">Parcela</th>
 								<th className='det-th-global'scope="col">QTD Parcelas</th>
-								<th className='det-th-global'scope="col">Banco</th>
-								<th className='det-th-global'scope="col">Agência</th>
-								<th className='det-th-global'scope="col">Conta</th>
 								<th className='det-th-global'scope="col">TID</th>
 							</tr>
 						</thead>
@@ -364,25 +242,22 @@ const TabelaCreditos = ({array}) =>{
 										<td className='det-td-vendas-global'data-label="Bandeira">{venda.bandeira.descricaoBandeira}</td>
 										<td className='det-td-vendas-global'data-label="Produto">{venda.produto.descricaoProduto}</td>
 										<td className='det-td-vendas-global'data-label="Subproduto">{venda.modalidade.descricaoModalidade}</td>
-										<td className='det-td-vendas-global'data-label="Data do Crédito">{dateConvert(venda.dataCredito)}</td>
-										<td className='det-td-vendas-global'data-label="Data da Venda">{dateConvert(venda.dataVenda)}</td>
 										<td className='det-td-vendas-global'data-label="Valor Bruto"><span className={`green-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>{Number(venda.valorBruto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
 										<td className='det-td-vendas-global'data-label="Valor Líquido"><span className={`green-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>{Number(venda.valorLiquido).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
 										<td className='det-td-vendas-global'data-label="Taxa"><span className='red-global'>{Number(venda.taxa).toFixed(2)}%</span></td>
 										<td className='det-td-vendas-global'data-label="Valor Desconto"><span className='red-global'>{Number(venda.valorDesconto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
 										<td className='det-td-vendas-global'data-label="NSU">{venda.nsu}</td>
+										<td className='det-td-vendas-global'data-label="Data da Venda">{dateConvert(venda.dataVenda)}</td>
+										<td className='det-td-vendas-global'data-label="Hora da Venda">{ venda.horaVenda?.replaceAll('-', ':')}</td>
+										<td className='det-td-vendas-global'data-label="Data do Crédito">{dateConvert(venda.dataCredito)}</td>
 										<td className='det-td-vendas-global'data-label="Autorização">{venda.codigoAutorizacao}</td>
-										<td className='det-td-vendas-global'data-label="Parcela">{venda.parcela}</td>
-										<td className='det-td-vendas-global'data-label="QTD Parcelas">{venda.totalParcelas}</td>
-										<td className='det-td-vendas-global'data-label="Banco">{venda.banco}</td>
-										<td className='det-td-vendas-global'data-label="Agência">{venda.agencia}</td>
-										<td className='det-td-vendas-global'data-label="Conta">{venda.conta}</td>
+										<td className='det-td-vendas-global'data-label="QTD Parcelas">{venda.quantidadeParcelas}</td>
 										<td className='det-td-vendas-global'data-label="TID">{venda.tid}</td>
 									</tr>
 								)
 							})}
 						</tbody>
-					</table>
+					</table> 
 				</div>
 			</div>
 			<hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
@@ -427,4 +302,4 @@ const TabelaCreditos = ({array}) =>{
 	)
 }
 
-export default TabelaCreditos
+export default TabelaVendasDashboard

@@ -32,13 +32,17 @@ const BuscarClienteServicos = () => {
 		setDetalhes,
 		gerarDados,
 		alerta,
+		dataBuscaServicos, setDataBuscaServicos, 
+		cnpjBuscaServicos, setCnpjBuscaServicos,
+		dataInicialExibicaoServicos, setDataInicialExibicaoServicos,
+		dataFinalExibicaoServicos, setDataFinalExibicaoServicos,
+		arrayRelatorioServicos, setArrayRelatorioServicos,
+		arrayAdmServicos, setArrayAdmServicos,
+		ajustesTempServicos, setAjustesTempServicos,
+		dataInicialServicos, setDataInicialServicos,
+		dataFinalServicos,  setDataFinalServicos,
+		loadServicosPage, handleDateChangeServicos,
 	} = useContext(AuthContext)
-
-	const {
-		dataBusca,		 
-		cnpjBusca,
-		setCnpjBusca,
-	} = useContext(ServicosContext)
     
 	/*useEffect(()=>{
 		setCnpj(Cookies.get('cnpj'))
@@ -57,14 +61,14 @@ const BuscarClienteServicos = () => {
 	}
 	
 	async function buscar() {
-		await loadAjustes(cnpjBusca, dataBusca[0], dataBusca[1])
+		await loadAjustes(cnpjBuscaServicos, dataBuscaServicos[0], dataBuscaServicos[1])
 		.then(() => {
-			if (dataBusca === '' || cnpjBusca === '') {
+			if (dataBuscaServicos === '' || cnpjBuscaServicos === '') {
 				return 0;
 			} else {
 				//adiciono .toLocaleDateString('pt-BR') às datas para que possamos comparar apenas o dia, mes e ano, sem levar em consideração a hora, minuto e segundos
 				if(buscou !== true){
-					toast.success(dataBusca[0].toLocaleDateString('pt-BR') === dataBusca[1].toLocaleDateString('pt-BR') ? `executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')}` : `executou a busca do dia ${dataBusca[0].toLocaleDateString('pt-BR')} ao dia ${dataBusca[1].toLocaleDateString('pt-BR')}`)
+					toast.success(dataBuscaServicos[0].toLocaleDateString('pt-BR') === dataBuscaServicos[1].toLocaleDateString('pt-BR') ? `executou a busca do dia ${dataBuscaServicos[0].toLocaleDateString('pt-BR')}` : `executou a busca do dia ${dataBuscaServicos[0].toLocaleDateString('pt-BR')} ao dia ${dataBuscaServicos[1].toLocaleDateString('pt-BR')}`)
 					setBuscou(true);	
 				}
 
@@ -78,7 +82,7 @@ const BuscarClienteServicos = () => {
 	}
 
 	useEffect(()=>{
-		if(((cnpjBusca === '' || cnpjBusca === 'Selecione' || cnpjBusca === undefined) && (Cookies.get('cnpj') !== '')) && (clicouPesquisar)){
+		if(((cnpjBuscaServicos === '' || cnpjBuscaServicos === 'Selecione' || cnpjBuscaServicos === undefined) && (Cookies.get('cnpj') !== '')) && (clicouPesquisar)){
 			alerta('selecione um cliente válido')
 			return
 		}
@@ -111,7 +115,7 @@ const BuscarClienteServicos = () => {
 			<div className='search-bar'>
 				<form className={`date-container-vendas ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>       
 					<div className='submit-container select-align select-align-filtro'>
-						{ (detalhes) && (ajustes.length > 0) ? <button className={`btn btn-secondary btn-global btn-pesquisar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className={`btn btn-primary btn-global btn-pesquisar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={(e) => handleBusca(e)}>Pesquisar</button>}
+						{ ajustes.length > 0 ? <button className={`btn btn-secondary btn-global btn-pesquisar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className={`btn btn-primary btn-global btn-pesquisar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={(e) => handleBusca(e)}>Pesquisar</button>}
 					</div>      
 				</form>
 			</div>

@@ -10,14 +10,14 @@ import { FiFilePlus } from 'react-icons/fi'
 
 import './GerarRelatorio.scss'
 import { imgExport } from '../../contexts/images'
-import Cookies from 'js-cookie'
 import { AuthContext } from '../../contexts/auth'
 
-export default function GerarRelatorio({tableData, tipo}){
+export default function GerarRelatorio({tableData}){
 
 	const { dateConvert, textoExport, setTextoExport } = useContext(AuthContext)
 	const [tipoRelatorio, setTipoRelatorio] = useState('')
 	const [currentDateTime, setCurrentDateTime] = useState('')
+	const [tipo, setTipo] = useState('')
 
 	useEffect(() => {
 		const updateDateTime = () => {
@@ -50,16 +50,19 @@ export default function GerarRelatorio({tableData, tipo}){
 	  }, [])
 
 	useEffect(()=>{
-		switch (tipo) {
-			case 'vendas':
+		switch (sessionStorage.getItem('currentPath')) {
+			case '/vendas':
 				setTipoRelatorio('Relatório de Vendas')
+				setTipo('vendas')
 				break
-			case 'creditos':
+			case '/creditos':
 				setTipoRelatorio('Relatório de Créditos')
+				setTipo('creditos')
 				break
 
-			case 'servicos':
+			case '/servicos':
 				setTipoRelatorio('Relatório de Serviços')
+				setTipo('servicos')
 			default:
 				break
 		}

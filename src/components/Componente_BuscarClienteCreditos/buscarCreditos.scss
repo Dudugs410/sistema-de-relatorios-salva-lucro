@@ -22,12 +22,18 @@
     transition: all .4s;
 }
 
+.date-column-container{
+    display: flex;
+}
+
 .date-column{
     display: flex;
     flex-direction: column;
     height: 100%;
     width: 100%;
 }
+
+
 
 .date-text{
     transition: all .4s;

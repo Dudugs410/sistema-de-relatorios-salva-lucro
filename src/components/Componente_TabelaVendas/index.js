@@ -7,20 +7,8 @@ import { FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward } from 'react-
 
 const TabelaVendas = ({array}) =>{
 
-	useEffect(()=>{
-		console.log('ARRAY VENDASCREDITO: ', array)
-	},[])
-
-	//console.log('array dentro da tabela do gráfico: ', array)
-
-	const { dateConvert,
-			gerarDados, 
-			setTotaisGlobalVendas, 
-			setTotaisGlobalCreditos, 
-			isDarkTheme,
-			pagina, 
-			dataBuscaInicialVendas, 
-			dataBuscaFinalVendas,
+	const { isDarkTheme, dateConvert, gerarDados, 
+			salesDateRange, setSalesTotal,
 		 } = useContext(AuthContext)
 
 	const [vendasArray, setVendasArray] = useState([])
@@ -79,131 +67,51 @@ const TabelaVendas = ({array}) =>{
 	// // // // // // // // // // // // // // // // // // // // // // // // // // //
 
 	useEffect(()=>{
-		//console.log('tranqueira: ', array)
-		if(array){
-            if(array.length > 0){
-                setVendasArray(array)
-            }
+		if(array.length > 0){
+			setVendasArray(array)
 		}
 	},[array])
 
 	useEffect(()=>{
-		//console.log('vendasArray: ', vendasArray)
 		async function init(){
 			setVendasTeste(vendasArray)
 		}
 		init()
 	},[vendasArray])
 
-	function carregaTotais(array){
-		//totais líquido:
-
+	function loadTotals(array){
 		if(array.length > 0){
 			let temp = []
 			let totalCreditoTemp = 0
 			let totalDebitoTemp = 0
 			let totalVoucherTemp = 0
-			let totalLiquidoTemp = 0
+			let totalBrutoTemp = 0
     
 			array.forEach((venda)=>{
 				if(temp.length === 0){
-					let novoObj = {
-						nomeAdquirente: venda.adquirente.nomeAdquirente,
-						total: venda.valorLiquido,
+					let newObj = {
+						adminName: venda.adquirente.nomeAdquirente,
+						total: venda.valorBruto,
 						id: 0,
-						vendas: []
+						sales: []
 					}
-					temp.push(novoObj)
+					temp.push(newObj)
 				}else{
-					let novoObj = {
-						nomeAdquirente: venda.adquirente.nomeAdquirente,
-						total: venda.valorLiquido,
+					let newObj = {
+						adminName: venda.adquirente.nomeAdquirente,
+						total: venda.valorBruto,
 						id: 0,
-						vendas: []
+						sales: []
 					}
     
-					if(!(temp.find((objeto) => objeto.nomeAdquirente === venda.adquirente.nomeAdquirente && objeto !== ( undefined || [] )))){
-						novoObj.id = (temp.length)
-						temp.push(novoObj)
+					if(!(temp.find((objeto) => objeto.adminName === venda.adquirente.nomeAdquirente && objeto !== ( undefined || [] )))){
+						newObj.id = (temp.length)
+						temp.push(newObj)
 					}
     
 					else{
 						for(let i = 0; i < temp.length; i++){
-							if(temp[i].nomeAdquirente === venda.adquirente.nomeAdquirente){
-								temp[i].total += venda.valorLiquido
-							}
-						}
-					}
-				}
-				// eslint-disable-next-line default-case
-				switch(venda.produto.descricaoProduto){
-				case 'Crédito':
-					totalCreditoTemp += venda.valorLiquido
-					break
-    
-				case 'Débito':
-					totalDebitoTemp += venda.valorLiquido
-					break
-    
-				case 'Voucher':
-					totalVoucherTemp += venda.valorLiquido
-					break
-				}
-				totalLiquidoTemp += venda.valorLiquido
-			})
-			temp.forEach((adq) => {
-				let vendasTemp = []
-				vendasTemp.length = 0
-				array.forEach((vendasDia) => {
-					if(vendasDia.length > 0){
-						vendasDia.forEach((venda) => {
-							if(venda.adquirente.nomeAdquirente === adq.nomeAdquirente){
-								vendasTemp.push(venda)
-							}
-							adq.vendas = vendasTemp
-						})
-					}
-				})
-			})
-            
-			let totalTemp = {debito: totalDebitoTemp, credito: totalCreditoTemp, voucher: totalVoucherTemp, liquido: totalLiquidoTemp}
-			setTotaisGlobalCreditos(totalTemp)
-		}
-
-		//totais Bruto:
-
-		if(array.length > 0){
-			let temp = []
-			let totalCreditoTemp = 0
-			let totalDebitoTemp = 0
-			let totalVoucherTemp = 0
-			let totalLiquidoTemp = 0
-    
-			array.forEach((venda)=>{
-				if(temp.length === 0){
-					let novoObj = {
-						nomeAdquirente: venda.adquirente.nomeAdquirente,
-						total: venda.valorBruto,
-						id: 0,
-						vendas: []
-					}
-					temp.push(novoObj)
-				}else{
-					let novoObj = {
-						nomeAdquirente: venda.adquirente.nomeAdquirente,
-						total: venda.valorBruto,
-						id: 0,
-						vendas: []
-					}
-    
-					if(!(temp.find((objeto) => objeto.nomeAdquirente === venda.adquirente.nomeAdquirente && objeto !== ( undefined || [] )))){
-						novoObj.id = (temp.length)
-						temp.push(novoObj)
-					}
-    
-					else{
-						for(let i = 0; i < temp.length; i++){
-							if(temp[i].nomeAdquirente === venda.adquirente.nomeAdquirente){
+							if(temp[i].adminName === venda.adquirente.nomeAdquirente){
 								temp[i].total += venda.valorBruto
 							}
 						}
@@ -223,7 +131,7 @@ const TabelaVendas = ({array}) =>{
 					totalVoucherTemp += venda.valorBruto
 					break
 				}
-				totalLiquidoTemp += venda.valorBruto
+				totalBrutoTemp += venda.valorBruto
 			})
 			temp.forEach((adq) => {
 				let vendasTemp = []
@@ -231,24 +139,24 @@ const TabelaVendas = ({array}) =>{
 				array.forEach((vendasDia) => {
 					if(vendasDia.length > 0){
 						vendasDia.forEach((venda) => {
-							if(venda.adquirente.nomeAdquirente === adq.nomeAdquirente){
+							if(venda.adquirente.nomeAdquirente === adq.adminName){
 								vendasTemp.push(venda)
 							}
-							adq.vendas = vendasTemp
+							adq.sales = vendasTemp
 						})
 					}
 				})
 			})
             
-			let totalTemp = {debito: totalDebitoTemp, credito: totalCreditoTemp, voucher: totalVoucherTemp, liquido: totalLiquidoTemp}
-			setTotaisGlobalVendas(totalTemp)
+			let totalTemp = {debit: totalDebitoTemp, credit: totalCreditoTemp, voucher: totalVoucherTemp, total: totalBrutoTemp}
+			setSalesTotal(totalTemp)
 		}
 	}
 
 	useEffect(()=>{
 		if(vendasExibicao.length > 0){
 			gerarDados(vendasExibicao)
-			carregaTotais(vendasExibicao)
+			loadTotals(vendasExibicao)
 			setCurrentPage(1)
             
 		}
@@ -260,7 +168,7 @@ const TabelaVendas = ({array}) =>{
 
 		const bandeirasTemp = []
 		const uniqueStringsSet = new Set()
-        
+
 		vendasTeste.forEach(item => {
 			if (!uniqueStringsSet.has(item.bandeira.descricaoBandeira)) {
 				uniqueStringsSet.add(item.bandeira.descricaoBandeira)
@@ -397,45 +305,46 @@ const TabelaVendas = ({array}) =>{
 			let arrayFiltrado = vendasTeste.filter(venda => venda.bandeira.descricaoBandeira === banSelecionada)
 			setVendasExibicao(arrayFiltrado)
 		}
-
 	},[adqSelecionada])
 
 	return(
 		<>
 			<div className='date-container'>
-				<div className='date-column'>
-					<div className='select-card select-align select-align-filtro'>
-					<span className={`span-str ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>Adquirente</span>
-						<select className={`${isDarkTheme ? 'dark-theme' : 'light-theme'}`} id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}}>
-							<option value='' selected>Todas</option>
-							{adquirentesExistentes.map((ADQ)=>(
-								<option key={ADQ} value={ADQ}>{ADQ}</option>
-							))}
-						</select>
+					<div className='date-picker-container'>
+						<div className='date-column'>
+							<div className='select-card select-align select-align-filtro'>
+								<span className={`span-str ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>Adquirente</span>
+								<select className={`${isDarkTheme ? 'dark-theme' : 'light-theme'}`} id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}}>
+									<option value=''>Todas</option>
+									{adquirentesExistentes.map((ADQ)=>(
+										<option key={ADQ} value={ADQ}>{ADQ}</option>
+									))}
+								</select>
+							</div>
+						</div>
+						<div className='date-column'>
+							<div className='select-card select-align select-align-filtro'>
+								<span className={`span-str ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>Bandeira</span>
+								<select className={`${isDarkTheme ? 'dark-theme' : 'light-theme'}`} id='bandeira' value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}}>
+									<option value='' defaultValue={'Todas'}>Todas</option>
+									{bandeirasExistentes.map((BAN)=>(
+										<option key={BAN} value={BAN}>{BAN}</option>
+									))}
+								</select>
+							</div>
+						</div>
 					</div>
-				</div>
-				<div className='date-column'>
-					<div className='select-card select-align select-align-filtro'>
-						<span className={`span-str ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>Bandeira</span>
-						<select className={`${isDarkTheme ? 'dark-theme' : 'light-theme'}`} id='bandeira' value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}}>
-							<option value='' selected>Todas</option>
-							{bandeirasExistentes.map((BAN)=>(
-								<option key={BAN} value={BAN}>{BAN}</option>
-							))}
-						</select>
-					</div>
+				<hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
+				<div className='container-busca'>
+						<span className={`span-busca ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+							{salesDateRange[0].toLocaleDateString('pt-BR') !== salesDateRange[1].toLocaleDateString('pt-BR') ? 
+								<span dangerouslySetInnerHTML={{__html: `Exibindo Vendas do dia <strong>${salesDateRange[0].toLocaleDateString('pt-BR')}</strong> ao dia <strong>${salesDateRange[1].toLocaleDateString('pt-BR')}</strong>`}} /> : 
+								<span dangerouslySetInnerHTML={{__html: `Exibindo Vendas do dia <strong>${salesDateRange[0].toLocaleDateString('pt-BR')}</strong>`}} />
+							}
+						</span>
 				</div>
 			</div>
 			<hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
-			<div className='container-busca'>
-					<span className={`span-busca ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-						{dataBuscaInicialVendas !== dataBuscaFinalVendas ? 
-							<span dangerouslySetInnerHTML={{__html: `Exibindo Vendas do dia <strong>${dataBuscaInicialVendas}</strong> ao dia <strong>${dataBuscaFinalVendas}</strong>`}} /> : 
-							<span dangerouslySetInnerHTML={{__html: `Exibindo Vendas do dia <strong>${dataBuscaInicialVendas}</strong>`}} />
-						}
-					</span>
-        	</div>
-			<hr className='hr-global'/>
 			<div className='dropShadow vendas-view'>
 				<div className={`table-wrapper ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
 					<table className={`table table-striped table-hover det-table-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>

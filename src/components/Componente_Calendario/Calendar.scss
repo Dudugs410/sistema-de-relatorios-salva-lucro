@@ -19,6 +19,16 @@
   }
 }
 
+.form-container-picker{
+  width: 100%;
+}
+
+.select-elements-container-picker{
+    display: inline-flex;
+    width: 100%;
+    justify-content: space-evenly;
+}
+
 .react-calendar--doubleView {
   width: 700px;
   
@@ -292,8 +302,10 @@
 }
 
 .component-container{
-  display: inline-table;
+  display: inline-flex;
+  align-items: center;
   width: 100%;
+  flex-direction: column;
 }
 
 .container-select{

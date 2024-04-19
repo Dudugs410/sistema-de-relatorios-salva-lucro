@@ -10,27 +10,12 @@ import Relogio from "../Componente_Relogio";
 import SideBar from "../Componente_SideBar";
 
 const Header = () => {
-    const { logout, isDarkTheme, setIsDarkTheme, isCheckedCalendar, setIsCheckedCalendar,} = useContext(AuthContext)
+    const { logout, isDarkTheme, setIsDarkTheme, isCheckedCalendar, setIsCheckedCalendar, toggleTheme} = useContext(AuthContext)
 
     const [isChecked, setIsChecked] = useState(localStorage.getItem('isChecked') === 'true')
     
     const [showRelatoriosDropdown, setShowRelatoriosDropdown] = useState(false)
     const [showExportacoesDropdown, setShowExportacoesDropdown] = useState(false)
-
-    const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth <= 1231);
-
-    useEffect(() => {
-        console.log('Header Effect')
-        const handleResize = () => {
-            setIsSmallScreen(window.innerWidth <= 1231);
-        };
-
-        window.addEventListener("resize", handleResize);
-
-        return () => {
-            window.removeEventListener("resize", handleResize);
-        };
-    }, []);
 
     const handleCheckboxChangeCalendar = () => {
 		setIsCheckedCalendar(!isCheckedCalendar); // Toggle the state
@@ -60,6 +45,8 @@ const Header = () => {
         localStorage.setItem('isChecked', updatedChecked);
         localStorage.setItem('isDark', updatedChecked);
 
+        toggleTheme()
+
         if (localStorage.getItem('localUsers') !== null) {
             let localUsersTemp = JSON.parse(localStorage.getItem('localUsers'));
             localUsersTemp.map(user => {
@@ -79,7 +66,7 @@ const Header = () => {
     useEffect(() => {
         //setIsDarkTheme(JSON.parse(localStorage.getItem('isDark')));
     }, []);
-
+    
     const [optionsWithIcons, setOptionsWithIcons] = useState([]);
 
     useEffect(() => {

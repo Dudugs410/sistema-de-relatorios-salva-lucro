@@ -12,180 +12,91 @@ import TabelaGenericaAdm from '../../components/Componente_TabelaAdm'
 
 import '../Vendas/Calendar.scss'
 import MyCalendar from '../../components/Componente_Calendario'
+import { toast } from 'react-toastify'
+import DisplayData from '../../components/Componente_DisplayData'
 
 
 export const ServicosContext = createContext({})
 
 const Servicos = () =>{
-	const location = useLocation()
+	const location = useLocation();
 
-useEffect(() => {
-    sessionStorage.setItem('currentPath', location.pathname);
-}, [location]);
+	useEffect(() => {
+		sessionStorage.setItem('currentPath', location.pathname);
+	}, [location]);
+  
+	const {
+	  isDarkTheme, setIsDarkTheme,
+	  servicesPageArray, setServicesPageArray,
+	  servicesPageAdminArray, setServicesPageAdminArray,
+	  servicesDateRange, setServicesDateRange,
+	  loadServices, tableData,
+	  groupServicesByAdmin,
 
-    const { 
-        cnpj,
-		setCnpj,
-        loadAjustes,
-        ajustes,
-        setAjustes,
-        setDataInicial,
-        gerarDados,
-		tableData,	
-        bandeiras, 
-		loadBandeiras,
-        setGrupos,
-        grupos, 
-		adquirentes,
-		loadAdquirentes,
-        setDataFinal, 
-        isDarkTheme,
-		setIsDarkTheme,
-        detalhes,
-    } = useContext(AuthContext)
-
-	const [arrayRelatorio, setArrayRelatorio] = useState([])
-	const [arrayAdm, setArrayAdm] = useState([])
-    const [cnpjBusca, setCnpjBusca] = useState(Cookies.get('cnpj'))
-    const [ajustesTemp, setAjustesTemp] = useState([])
-    const [dataBusca, setDataBusca] = useState([new Date(), new Date()])
-    const [dataInicialExibicao, setDataInicialExibicao] = useState(new Date().toLocaleDateString('pt-BR'))
-    const [dataFinalExibicao, setDataFinalExibicao] = useState(new Date().toLocaleDateString('pt-BR'))
-	
+	  alerta,
+	} = useContext(AuthContext)
+  
 	useEffect(()=>{
 		setIsDarkTheme(JSON.parse(localStorage.getItem('isDark')))
-	},[])
+		Cookies.set('tipo', 'servicos')
+	  },[])
 
 	useEffect(()=>{
-		async function inicializar(){
-			if(bandeiras.length === 0){
-				await loadBandeiras()
-			}
-      
-			if(grupos.length === 0){
-				setGrupos(JSON.parse(sessionStorage.getItem('grupos')))     
-			}
-      
-			if(adquirentes.length === 0){
-				await loadAdquirentes()
-			}
+		if(servicesPageArray.length>0){
+		  setServicesPageAdminArray(groupServicesByAdmin(servicesPageArray));
 		}
-		inicializar()
-	},[])
+	  },[servicesPageArray])
+	  
+  const resetValues = () => {
+    setServicesPageArray([])
+    setServicesPageAdminArray([])
+    tableData.length = 0
+  }
 
-    useEffect(()=>{
-		setAjustes([])
-		//setCnpj(Cookies.get('cnpj'))
-	},[])
-
-	const [tipo, setTipo] = useState('servicos')
-
-	useEffect(()=>{
-	  setTipo('servicos')
-	  Cookies.set('tipo', 'servicos')
-	},[])
-
-    useEffect(()=>{
-		setCnpjBusca(cnpj)
-	},[cnpj])
-
-    useEffect(()=>{
-        if(detalhes){
-          setAjustesTemp(loadAjustes(cnpjBusca, dataBusca[0], dataBusca[1]))
+  async function handleLoadData(e) {
+    e.preventDefault();
+    try {
+      await toast.promise(loadData(), {
+        pending: 'Carregando...',
+        success: 'Carregado com Sucesso',
+        error: 'Ocorreu um Erro',
+      });
+    } catch (error) {
+      console.error('Error handling busca:', error);
     }
-
-    // se colocar o cookies.get('codigoGrupo') aqui dentro do array de dependencias, ele reload toda vez que troca o grupo
-    },[cnpjBusca])
-
-    useEffect(()=>{
-        setDataInicial(new Date())
-        setDataFinal(new Date())
-        ajustes.length = 0
-    },[])
-
-    function handleDateChange(date){
-        setDataBusca(date)
+  }
+  
+  async function loadData() {
+    try {
+      setServicesPageArray(await loadServices(servicesDateRange[0].toLocaleDateString('pt-BR'), servicesDateRange[1].toLocaleDateString('pt-BR')));
+    } catch (error) {
+      console.error('Error fetching sales data:', error);
+      toast.error(error)
+      throw error;
     }
-    
-    useEffect(()=>{
-		if((dataBusca[0] !== undefined) && (dataBusca[1] !== undefined)){
-            setDataInicial(dataBusca[0])
-            setDataFinal(dataBusca[1])
-            setDataInicialExibicao(dataBusca[0].toLocaleDateString('pt-BR'))
-            setDataFinalExibicao(dataBusca[1].toLocaleDateString('pt-BR'))
-		}
-	  },[dataBusca])
+  }
 
-    useEffect(()=>{
-        const groupedData = {};
-        let adq_total_value = 0;
+  const handleDateRangeChange = (dateRange) => {
+    setServicesDateRange(dateRange)
+  }
 
-        // Iterate through each person in the data
-        ajustes.forEach(ajuste => {
-        const adq_name = ajuste.nome_adquirente;
-        adq_total_value += ajuste['valor']
-
-        // Check if a group already exist
-        if (!groupedData[adq_name]) {
-            // If not, create a new group 
-            groupedData[adq_name] = [ajuste];
-            groupedData[adq_name]['valor_total'] = ajuste['valor']
-        } else {
-            // If a group already exists, add to the existing group
-            groupedData[adq_name].push(ajuste);
-            groupedData[adq_name]['valor_total'] += ajuste['valor']
-        }
-        });
-
-        // converte para obj aceito pela tabelaAdm generica
-        let admArray = [];
-        Object.keys(groupedData).forEach( (groupName, i) => {
-            admArray.push({'id': i, 'nomeAdquirente': groupName, 'total': groupedData[groupName].valor_total})
-        })
-        admArray.push({'id': 't', 'nomeAdquirente': 'Total de ajustes', 'total': adq_total_value})
-        
-        const ajustes_agrupados = {'grupos': groupedData, 'admArray': admArray, 'total_ajustes': adq_total_value, 'ajustes': ajustes}
-        setArrayAdm(admArray)
-
-        if(ajustes.length > 0){
-            setArrayRelatorio(gerarDados(ajustes))
-            // setArrayAdm(separaAdm(ajustes))
-        }
-
-    }, [ajustes]);
-
-    return(
-        <ServicosContext.Provider 
-            value={{
-                dataBusca, 
-                setDataBusca, 
-                cnpjBusca,
-                setCnpjBusca,
-                dataFinalExibicao,
-                dataInicialExibicao,
-                setCnpjBusca,
-
-            }}>
-
-            <div className={`appPage ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                <div className={`page-servicos-background ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                    <div className={`page-content-servicos ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                        <div className={`servicos-title-container ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                            <h1 className={`servicos-title ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Serviços</h1>
-                        </div>
-                        <hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
-						{ (detalhes) && (ajustes.length > 0) ? <GerarRelatorio className='export' tableData={tableData} detalhes={detalhes} tipo='servicos'/> : <></> }
-                        <div className='component-container-servicos'>
-                            { (detalhes) && (ajustes.length > 0)? <TabelaServicos array={ajustes}/> : <MyCalendar dataInicialExibicao={dataInicialExibicao} dataFinalExibicao={dataFinalExibicao} dataBusca={dataBusca} handleDateChange={handleDateChange}/> } 
-                            { (detalhes) && (ajustes.length > 0)? <TabelaGenericaAdm Array={arrayAdm} textColor={'red-global'}/> : <></> }
-                            { (detalhes) && (ajustes.length > 0) ? <hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/> : <></> }
-                        </div>
-                        <BuscarClienteServicos />
-                    </div>
-                </div>
-            </div>
-        </ServicosContext.Provider>
-    )
+	return(
+		<div className={`appPage ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+		  <div className={`page-vendas-background ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+			<div className={`page-content-vendas ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+			  <div className={`vendas-title-container ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+				<h1 className={`vendas-title ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Serviços</h1>
+			  </div>
+			  <div className='component-container-vendas'>
+				{ servicesPageArray.length > 0 ? 
+          <DisplayData dataArray={servicesPageArray} adminDataArray={servicesPageAdminArray} totals={null} tableData={tableData} onGoBack={resetValues}/>
+          : 
+          <MyCalendar className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange}/> }
+			  </div>
+			</div>
+		  </div>
+		</div>
+	)
 }
 
 export default Servicos

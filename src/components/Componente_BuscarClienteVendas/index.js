@@ -76,26 +76,19 @@ const BuscarClienteVendas = () => {
 		}
 		await loadVendas(dataBuscaVendas[0].toLocaleDateString('pt-BR'), dataBuscaVendas[1].toLocaleDateString('pt-BR'), cnpjBuscaVendas)
 			.then(() =>{
-				if(dataBuscaVendas === '' || cnpjBuscaVendas === ''){
-					return 0
-				} else {
-					//adiciono .toLocaleDateString('pt-BR') às datas para que possamos comparar apenas o dia, mes e ano, sem levar em consideração a hora, minuto e segundos
-					if(buscou !== true){
-						if(dataBuscaVendas[0].toLocaleDateString('pt-BR') === dataBuscaVendas[1].toLocaleDateString('pt-BR')){
-							console.log('mostrou alerta vendas')
-							alerta(`executou a busca do dia ${dataBuscaVendas[0].toLocaleDateString('pt-BR')}`);
-							setBuscou(true)
-						} else if (dataBuscaVendas[0].toLocaleDateString('pt-BR') !== dataBuscaVendas[1].toLocaleDateString('pt-BR')){
-							console.log('mostrou alerta vendas')
-							alerta(`executou a busca do dia ${dataBuscaVendas[0].toLocaleDateString('pt-BR')} ao dia ${dataBuscaVendas[1].toLocaleDateString('pt-BR')}`);
-							setBuscou(true)
-						}
+				
+				//adiciono .toLocaleDateString('pt-BR') às datas para que possamos comparar apenas o dia, mes e ano, sem levar em consideração a hora, minuto e segundos
+				if(buscou !== true){
+					if(dataBuscaVendas[0].toLocaleDateString('pt-BR') === dataBuscaVendas[1].toLocaleDateString('pt-BR')){
+						console.log('mostrou alerta vendas')
+						alerta(`executou a busca do dia ${dataBuscaVendas[0].toLocaleDateString('pt-BR')}`);
+						setBuscou(true)
+					} else if (dataBuscaVendas[0].toLocaleDateString('pt-BR') !== dataBuscaVendas[1].toLocaleDateString('pt-BR')){
+						console.log('mostrou alerta vendas')
+						alerta(`executou a busca do dia ${dataBuscaVendas[0].toLocaleDateString('pt-BR')} ao dia ${dataBuscaVendas[1].toLocaleDateString('pt-BR')}`);
+						setBuscou(true)
 					}
-
-					if((vendas.length === 0) || (vendas.length === null)){
-						setDetalhes(false)
-					}
-				}    
+				}   
 			})
 			
 		setLoading(false)
