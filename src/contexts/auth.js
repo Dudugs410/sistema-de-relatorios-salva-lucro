@@ -22,24 +22,11 @@ function AuthProvider({ children }){
 
 	////////////////////////////////////////////////////////////////
 
-	const [cnpj, setCnpj] = useState('')
-	const [podeBuscar, setPodeBuscar] = useState(true)
 	const [tableData, setTableData] = useState([])
-	const [bandeiras, setBandeiras] = useState([])
-	const [adquirentes, setAdquirentes] = useState([])
-	const [grupos, setGrupos] = useState([])
-	const [grupoSelecionado, setGrupoSelecionado] = useState({value: 0, label: '-'})
-	const [clientes, setClientes] = useState([])
-	const [clienteSelecionado, setClienteSelecionado] = useState({value: 0, label: '-'})
-	const [gruSelecionado, setGruSelecionado] = useState('')
-	const [listaClientes, setListaClientes] = useState('')
-	const [buscou, setBuscou] = useState(true)
 	const [isDarkTheme, setIsDarkTheme] = useState(false)
 	const [trocarHeader, setTrocarHeader] = useState(false)
 	const [textoExport, setTextoExport] = useState(Cookies.get('textoExport'))
 	const [isCheckedCalendar, setIsCheckedCalendar] = useState(true);
-	const [carregou, setCarregou] = useState(false)
-	const [cnpjSelecionado, setCnpjSelecionado] = useState(false)
 
 	//////////////////////////////////////////////////////////////////
 
@@ -49,37 +36,11 @@ function AuthProvider({ children }){
 
 	const [loggedUserData, setLoggedUserData] = useState({})
 
-	// parâmetros a serem utilizados em consultas a APIs (talves utilizar Cookies ou session storage ao invés disso)
-
-	const [apiCNPJ, setApiCNPJ] = useState('todos')
-	const [apiGroupCode, setApiGroupCode] = useState('')
-
 	const [groupsList, setGroupsList] = useState([])
 	const [clientsList, setClientsList] = useState([])
 
 	// Função que loga o usuário e gerencia quaisquer dados relevantes à isso
 	const loginApp = async (login, password) => {
-		/*try {
-			console.log('entrou')
-		  // Decode the JWT token
-		  const decodedToken = jwtDecode(token);
-		  
-		  console.log(jwtDecode(token))
-		  // Check if the token contains necessary information
-		  // For example, you can check for the presence of user ID or expiration time
-		  // You can modify this condition based on your JWT structure and authentication requirements
-		  if (decodedToken && decodedToken.exp && decodedToken.exp > Date.now() / 1000) {
-			// Token is valid
-			return true;
-		  } else {
-			// Token is expired or invalid
-			return false;
-		  }
-		} catch (error) {
-		  // An error occurred during decoding (e.g., invalid token format)
-		  console.error('Error decoding JWT token:', error);
-		  return false;
-		}*/
 		try {
 			const response = await api.post('token', { client_id: login, client_secret: md5(password) })
 			const responseData = response.data
@@ -125,9 +86,11 @@ function AuthProvider({ children }){
 				sessionStorage.setItem('options', JSON.stringify(opt))
 				
 				const gru = await loadGroupsList()
-				sessionStorage.setItem('grupos', JSON.stringify(gru))
-				setApiGroupCode(gru[0].CODIGOGRUPO)
-				setApiCNPJ('todos')
+
+				sessionStorage.setItem('groupsStorage', JSON.stringify(gru))
+				console.log(gru[0].CODIGOGRUPO)
+				Cookies.set('groupCode', gru[0].CODIGOGRUPO)
+				Cookies.set('cnpj', 'todos')
 			}
   
 			const userResponse = await api.get('/usuario')
@@ -154,11 +117,6 @@ function AuthProvider({ children }){
 		}
 	}
 
-	// consts que guardarão as listas de Grupos, Clientes, Bandeiras e Adquirentes, respectivamente //
-
-	const [cardBannersList, setCardBannersList] = useState([])
-	const [cardAdminsList, setCardAdminsList] = useState([])
-
 	// funções que retornam arrays com Grupos, Clientes, Bandeiras e Adquirentes, respectivamente //
 
 		const loadGroupsList = async () => {
@@ -167,34 +125,11 @@ function AuthProvider({ children }){
 				const gru = response.data
 				setGroupsList(gru)
 				setClientsList(gru[0].CLIENTES)
-				sessionStorage.setItem('groups', JSON.stringify(gru))
-	
 				return gru
 			} catch (error) {
 				console.error(error)
 				throw new Error(error.message) // Re-throw the error for handling in the caller function
 			}
-		}
-		const loadBannersList = async () => {
-			await api.get('/bandeira')
-			.then( response => {
-				setCardBannersList(response.data)
-
-			})
-			.catch(error =>{
-				console.log(error)
-
-			})
-		}
-		const loadCardAdminsList = async () => {
-			await api.get('/adquirente')
-			.then( response => {
-				setAdquirentes(response.data)
-
-			})
-			.catch((error) =>{
-				console.log(error)
-			})
 		}
 
 	// *** funções API *** //
@@ -202,6 +137,8 @@ function AuthProvider({ children }){
 		// retorna array de vendas //
 		const loadSales = async (startDate, endDate) => {
 			try {
+				const apiCNPJ = Cookies.get('cnpj')
+				const apiGroupCode = Cookies.get('groupCode')
 				if(apiCNPJ === ('todos' || 'TODOS') && (apiGroupCode !== 'selecione')){
 					let params = {
 						datainicial: startDate,
@@ -242,9 +179,11 @@ function AuthProvider({ children }){
 				return []
 			}
 		}
-
+		// retorna array de créditos/recebimentos
 		const loadCredits = async (startDate, endDate) => {
 			try {
+				const apiCNPJ = Cookies.get('cnpj')
+				const apiGroupCode = Cookies.get('groupCode')
 				if(apiCNPJ === ('todos' || 'TODOS') && (apiGroupCode !== 'selecione')){
 					let params = {
 						dataInicial: startDate,
@@ -285,9 +224,11 @@ function AuthProvider({ children }){
 				return []
 			}
 		}
-
+		// retorna array de serviços/ajustes
 		const loadServices = async (startDate, endDate) => {
 			try {
+				const apiCNPJ = Cookies.get('cnpj')
+				const apiGroupCode = Cookies.get('groupCode')
 				if(apiCNPJ === ('todos' || 'TODOS') && (apiGroupCode !== 'selecione')){
 					let params = {
 						dataInicial: startDate,
@@ -794,19 +735,17 @@ function AuthProvider({ children }){
 
 		// função que gerencia o carregamento de tudo que será visto no Dashboard
 
-		const loadDashboard = async () => {
-			if(isLoadedDashboard === false){
-				try {
-					Promise.all([
-						loadSalesGroup(),
-						loadCreditsGroup(),
-						loadServicesGroup()
-					]).then(()=>{
-						setIsLoadedDashboard(true)
-					})
-				} catch (error) {
-					console.log('erro: ', error)
-				}
+		const loadDashboard = async () => {	
+			try {
+				Promise.all([
+					loadSalesGroup(),
+					loadCreditsGroup(),
+					loadServicesGroup()
+				]).then(()=>{
+					setIsLoadedDashboard(true)
+				})
+			} catch (error) {
+				console.log('erro: ', error)
 			}
 		}
 
@@ -1137,88 +1076,6 @@ function AuthProvider({ children }){
 
 	const navigate = useNavigate()
 
-	/////Login do usuário
-	async function submitLogin(login, password) {
-		try {
-  
-			const response = await api.post('token', { client_id: login, client_secret: md5(password) })
-			const responseData = response.data
-  
-			Cookies.set('token', responseData.acess_token)
-			Cookies.set('refreshToken', responseData.refresh_token)
-			Cookies.set('buscou', false)
-			setAccessToken(responseData.acess_token)
-			setRefreshToken(responseData.refresh_token)
-      
-			const userId = jwtDecode(responseData.acess_token).id
-			Cookies.set('userID', userId)
-
-			const loggedSuccessfully = JSON.parse(responseData.sucess)
-			if (loggedSuccessfully) {
-				Cookies.set('mostrarModal', true)
-				let localUsers = []
-				if (localStorage.getItem('localUsers') !== null) {
-					localUsers = JSON.parse(localStorage.getItem('localUsers'))
-				}
-
-				let userTemp = {}
-
-				const userExists = localUsers.some(storedUser => storedUser.id === userId)
-
-				if (userExists) {
-					// Handle existing user in localUsers
-					const updatedUsers = localUsers.map(user => {
-						if (user.id === userId) {
-							userTemp = {id: userId, theme: JSON.parse(user.theme)}
-							setIsDarkTheme(JSON.parse(user.theme))
-							localStorage.setItem('isDark', JSON.parse(user.theme))
-							localStorage.setItem('isChecked', JSON.parse(user.theme))
-							return { ...user, theme: user.theme } // Update the theme if needed
-						}
-						return user
-					})
-					localStorage.setItem('localUsers', JSON.stringify(updatedUsers))
-				} else {
-					// Add new user to localUsers
-					userTemp = { id: userId, theme: false, calendar: true}
-					localUsers.push(userTemp)
-					setIsDarkTheme(false)
-					localStorage.setItem('isDark', false)
-					localStorage.setItem('isChecked', false)
-					localStorage.setItem('calendar', true)
-					localStorage.setItem('localUsers', JSON.stringify(localUsers))
-				}
-				const opt = await loadOptions()
-				sessionStorage.setItem('options', JSON.stringify(opt))
-				const gru = await loadGrupos()
-				
-				if(gru.length === 1){
-					setGruSelecionado(gru[(gru.length - 1)])
-					setApiCNPJ('todos')
-				}
-			}
-
-			const userResponse = await api.get('/usuario')
-			const userList = userResponse.data
-			const userMatch = userList.find((user) => (user.LOGIN.toLowerCase() === login.toLowerCase()) && (user.SENHA === md5(password)))
-  
-			if (userMatch) {
-				const userData = { NOME: userMatch.NOME, EMAIL: userMatch.EMAIL }
-				sessionStorage.setItem('isSignedIn', true)
-				sessionStorage.setItem('userData', JSON.stringify(userData))
-  
-				const isDark = localStorage.getItem('isDark')
-				setIsDarkTheme(isDark ? isDark : false)
-				setIsSignedIn(true)
-			} else {
-				console.log('Usuario não encontrado')
-			}
-		} catch (error) {
-			console.error(error)
-			alert(error.message)
-		}
-	}
-
 	async function loadOptions() {
 		try {
 			let params = {
@@ -1262,52 +1119,7 @@ function AuthProvider({ children }){
 
 	//////////////////////////////////////////////////////////////////
 
-	//Bandeiras
-    
-	async function loadBandeiras(){
-
-		await api.get('/bandeira')
-			.then( response => {
-				setBandeiras(response.data)
-
-			})
-			.catch(error =>{
-				console.log(error)
-
-			})
-	}
-
-	//Grupo de Clientes
-
-	async function loadGrupos() {
-		try {
-			const response = await api.get('/grupo')
-			const gru = response.data
-
-			setGrupos(gru)
-			sessionStorage.setItem('grupos', JSON.stringify(gru))
-
-			return gru
-		} catch (error) {
-			console.error(error)
-			throw new Error(error.message) // Re-throw the error for handling in the caller function
-		}
-	}
-
-	async function loadAdquirentes(){
-      
-
-		await api.get('/adquirente')
-			.then( response => {
-				setAdquirentes(response.data)
-
-			})
-			.catch((error) =>{
-				console.log(error)
-			})
-	}
-
-
+	// funções de Manipulação de formato de Data
 
 	function dateConvert(date) {
 		let parts = date.split('-')
@@ -1346,9 +1158,6 @@ function AuthProvider({ children }){
 	function dateConvertYYYYMMDD(date){
 		return date.toISOString().split('T')[0]
 	}
-	/////////////////////////////////////////////////////////////////////////////////
-	/////////////////////////////////////////////////////////////////////////////////
-	/////////////////////////////////////////////////////////////////////////////////
 
 	function converteData(data){
 		const ano = data.getFullYear()
@@ -1356,6 +1165,8 @@ function AuthProvider({ children }){
 		const dia = String(data.getDate()).padStart(2, '0')
 		return `${ano}-${mes}-${dia}`
 	}
+
+	//////////////////////////////////////////////////////////////////	
 
 	function alerta(text){
 		toast.info(text, {
@@ -1369,6 +1180,8 @@ function AuthProvider({ children }){
 			theme: 'light',
 		})
 	}
+
+	//Funções que organizam os Dados para as funções de exportação em PDF e EXCEL
 
 	function gerarDados(array){
 		if(array.length === 0){
@@ -1453,28 +1266,7 @@ function AuthProvider({ children }){
 		return tableData
 	}
 
-	async function getCli(){
-		jwtDecode(Cookies.get('token'))
-
-		let params = {
-			codigo: JSON.parse(Cookies.get('cliCodigo'))
-		}
-
-		let config = {
-			headers: { 
-				'Content-Type': 'application/json', 
-				'Authorization': `Bearer ${Cookies.get('token')}`
-			},
-			params: params
-		}
-
-		try{
-			const response = await api.get('Cliente', config)
-			return response
-		} catch (error) {
-			console.log(error)
-		}
-	}
+	// Função que organiza array em ordem alfabética
 
 	const sortArray = (arrayAdq) => {
 		const sortedArray = [...arrayAdq].sort((a, b) => {
@@ -1496,33 +1288,10 @@ function AuthProvider({ children }){
 			value={{
 				alerta,
 				isSignedIn, setIsSignedIn,
-				submitLogin, logout,
+				logout,
 				accessToken, setAccessToken,
 
 				////////////////
-				cnpj, setCnpj,
-				podeBuscar, setPodeBuscar,
-				bandeiras, setBandeiras, loadBandeiras,
-				grupos, setGrupos, loadGrupos,
-				clientes, setClientes,
-				adquirentes, setAdquirentes, loadAdquirentes,
-				buscou, setBuscou,
-				gruSelecionado, setGruSelecionado,
-				listaClientes, setListaClientes,
-				getCli,
-				grupoSelecionado, setGrupoSelecionado,
-				clienteSelecionado, setClienteSelecionado,
-				carregou, setCarregou,
-				cnpjSelecionado, setCnpjSelecionado,
-
-				// Vamos usar: 
-
-				isDarkTheme, setIsDarkTheme,
-				tableData, setTableData,
-				trocarHeader, setTrocarHeader,
-				textoExport, setTextoExport,
-				isCheckedCalendar, setIsCheckedCalendar,
-				converteData, dateConvert, dateConvertSearch, dateConvertYYYYMMDD,
 
 				//****************************************************//
 				//****************************************************//
@@ -1533,11 +1302,6 @@ function AuthProvider({ children }){
 				//****************************************************//
 				//****************************************************//
 				//****************************************************//
-
-				// Seletor Cliente //
-
-				apiCNPJ, setApiCNPJ,
-				apiGroupCode, setApiGroupCode,
 
 				// Dashboard //
 				
@@ -1573,9 +1337,15 @@ function AuthProvider({ children }){
 				loginApp,
 				groupByAdmin, groupServicesByAdmin,
 				gerarDados, gerarDadosServicos,
+				isDarkTheme, setIsDarkTheme,
+				tableData, setTableData,
+				trocarHeader, setTrocarHeader,
+				textoExport, setTextoExport,
+				isCheckedCalendar, setIsCheckedCalendar,
+				converteData, dateConvert, dateConvertSearch, dateConvertYYYYMMDD,
 
 				groupsList, clientsList,
-				loadGroupsList,
+				loadGroupsList, setGroupsList,
 			}}
 		>
 			{children}

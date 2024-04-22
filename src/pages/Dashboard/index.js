@@ -45,13 +45,14 @@ const Dashboard = () => {
 	},[])
 
 	useEffect(()=>{
-		async function inicializar(){
+		/*async function inicializar(){
 			loadDashboard()
 		}
 		if(isLoadedDashboard){
 			inicializar()
-		}
-	},[apiGroupCode, apiCNPJ])
+		}*/
+		loadDashboard()
+	},[isLoadedDashboard])
 
 	return(
 		<>

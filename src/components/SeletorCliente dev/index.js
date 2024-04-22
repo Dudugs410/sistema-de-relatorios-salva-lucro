@@ -17,7 +17,8 @@ const SeletorClienteDev = () => {
 
 		apiCNPJ, setApiCNPJ,
 		apiGroupCode, setApiGroupCode,
-		groupsList, clientsList,
+
+		isLoadedDashboard, setIsLoadedDashboard, setIsLoadedSalesDashboard, setIsLoadedCreditsDashboard, setIsLoadedServicesDashboard
 
 		// // // // // // // // // // // // // // // // // //
 
@@ -26,97 +27,140 @@ const SeletorClienteDev = () => {
 
 	// // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
 
-	const [groupsSelect, setGroupsSelect] = useState([])
-	const [clientsSelect, setClientsSelect] = useState([])
+	const [selectorGroupList, setSelectorGroupList] = useState(JSON.parse(sessionStorage.getItem('groupsStorage')))
 
+	//array com as opções disponíveis
+	const [groupOptions, setGroupOptions] = useState([])
+	const [clientOptions, setClientOptions] = useState([])
+
+	//objeto da Opção Selecionada:
 	const [selectedGroup, setSelectedGroup] = useState({value: null, label: ''})
-	const [selectedClient, setSelectedClient] = useState({value: null, label: ''})
+	const [selectedClient, setSelectedClient] = useState({value: 'todos', label: 'TODOS'})
 	
 	// // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
+
+	useEffect(()=>{
+		console.log('selectorGroupList: ', selectorGroupList)
+	},[])
 
 	/// React Select
 
 	// grupos
 
+	// Inicializa a Lista de grupos dentro do componente ReactSelect,
+	// Estruturado da forma correta, com o valor(código do grupo), 
+	// label(nome do grupo) e clients(array com os clientes pertencentes
+	// àquele grupo)
+
 	const iniGroupsList = async () => {
-		console.log('groupsList -> ', groupsList)
-		if (groupsList && groupsList.length > 0) {
-			const sortedOptions = groupsList
+		console.log('groupsList -> ', selectorGroupList)
+		if (selectorGroupList && selectorGroupList.length > 0) {
+			const sortedOptions = selectorGroupList
 				.map((GRU) => ({
 					value: GRU.CODIGOGRUPO,
 					label: GRU.NOMEGRUPO,
+					clients: GRU.CLIENTES
 				}))
 				.sort((a, b) => a.label.localeCompare(b.label)) // Sort options alphabetically by label
-			setGroupsSelect(sortedOptions)
+			setGroupOptions(sortedOptions)
+			setSelectedGroup(sortedOptions[0])
+			setSelectedClient({label: 'TODOS', value: 'todos'})
+			Cookies.set('groupCode', sortedOptions[0].value)
+			Cookies.set('cnpj', 'todos')
+			
 		} else {
-			setGroupsSelect([])
+			setGroupOptions([])
 		}
 	}
 
 	useEffect(()=>{
-		// setar valor com a primeira opcao do vetor de grupos filtrado (gruposFiltrado)
-		if(groupsSelect.length > 0){
-			setSelectedGroup(groupsSelect[0])
-		}
-	},[groupsSelect])
-
-	const iniClientsList = async () => {
-		console.log('clientsList -> ', clientsList)
-		if (clientsList && clientsList.length > 0) {
-			const sortedOptions = clientsList
-				.map((CLI) => ({
-					value: CLI.CNPJ,
-					label: CLI.NOMECLIENTE,
-				}))
-				.sort((a, b) => a.label.localeCompare(b.label)) // Sort options alphabetically by label
-			let todos = {value: 'todos', label: 'TODOS'}
-			sortedOptions.unshift(todos)
-			setClientsSelect(sortedOptions)
-		} else {
-			setClientsSelect([])
-		}
-	}
+		iniGroupsList()
+	},[])
 
 	useEffect(()=>{
-		// setar valor com a primeira opcao do vetor de grupos filtrado (gruposFiltrado)
-		if(groupsSelect.length > 0){
-			setSelectedClient(clientsSelect[0])
+		if(selectedGroup){
+			console.log('selectedGroup: ', selectedGroup)
+			const todosOption = { label: 'TODOS', value: 'todos' };
+			const clients = selectedGroup.clients
+			if (clients && clients.length > 0) {
+				const sortedOptions = clients
+					.map((CLI) => ({
+						value: CLI.CNPJ,
+						label: CLI.NOMECLIENTE,
+					}))
+					.sort((a, b) => a.label.localeCompare(b.label)); // Sort options alphabetically by label
+				setClientOptions([todosOption, ...sortedOptions]);
+				setSelectedClient(clientOptions[0]); // Update selected client
+				Cookies.set('cnpj', sortedOptions[0].value);
+				setIsLoadedDashboard(!isLoadedDashboard); // Update isLoadedDashboard state
+			} else {
+				setClientOptions([]);
+			}
 		}
-	},[clientsSelect])
+	}, [selectedGroup]);
+/*
+	useEffect(()=>{
+		console.log('groupOptions: ', groupOptions)
+		setSelectedGroup(groupOptions[0])
+		setSelectedClient({label: 'TODOS', value:'todos'})
+	},[groupOptions])
 
-
+	useEffect(()=>{
+		if(selectedGroup){
+			console.log('selectedGroup: ', selectedGroup)
+			const todosOption = { label: 'TODOS', value: 'todos' };
+			const clients = selectedGroup.clients
+			if (clients && clients.length > 0) {
+				const sortedOptions = clients
+					.map((CLI) => ({
+						value: CLI.CNPJ,
+						label: CLI.NOMECLIENTE,
+					}))
+					.sort((a, b) => a.label.localeCompare(b.label)) // Sort options alphabetically by label
+				setClientOptions([todosOption, ...sortedOptions])
+			} else {
+				setClientOptions([])
+			}
+		}
+	},[selectedGroup])
+	
+	// Inicializar Componente:
 	useEffect(() => {
 		async function initialize(){
 			await iniGroupsList()
-			await iniClientsList()
 		}
 		initialize()
+		setApiGroupCode(selectedGroup.value)
+		setApiCNPJ('todos')
 	}, [])
 
+	*/
+
+	////////////////////////////////////////////////////
+	//Funções dos Select:
+
+	//Ao Selecionar Grupo:
 	const handleGroupChange = (selected) => {
+		setIsLoadedSalesDashboard(false)
+		setIsLoadedCreditsDashboard(false)
+		setIsLoadedServicesDashboard(false)
+		setIsLoadedDashboard(!isLoadedDashboard)
 		setSelectedGroup(selected)
-		setSelectedClient(clientsSelect[0])
-		setApiGroupCode(selected.value)
-		setApiCNPJ('todos')
-		iniClientsList()
 	}
 
+	//Ao Selecionar Cliente:
 	const handleClientChange = (selected) => {
+		setIsLoadedSalesDashboard(false)
+		setIsLoadedCreditsDashboard(false)
+		setIsLoadedServicesDashboard(false)
+		setIsLoadedDashboard(!isLoadedDashboard)
 		setSelectedClient(selected)
-		setApiCNPJ(selected.value)
 	}
 
-	useEffect(()=>{
-		console.log('apiCNPJ ---> ', apiCNPJ)
-	},[apiCNPJ])
-
-	useEffect(()=>{
-		console.log('apiGroupCode ---> ', apiGroupCode)
-	},[apiGroupCode])
-
+	////////////////////////////////////////////////////
 	return(
 		<>
-			{ groupsList === null ? <></> : 
+			{ selectorGroupList === null ? <></> : 
 				<>
 					<div className='search-bar-seletor'>
 						<form className={`date-container-seletor p-4 ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
@@ -126,7 +170,7 @@ const SeletorClienteDev = () => {
 										<span>Grupo</span>
 										<Select
 											className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
-											options={groupsSelect}
+											options={groupOptions}
 											onChange={handleGroupChange}
 											value={selectedGroup}
 										/>
@@ -136,10 +180,11 @@ const SeletorClienteDev = () => {
 								<div className='date-column-seletor '>
 									<div className='select-card-seletor'>
 										<span>Cliente</span>
-										{clientsSelect.length > 0 ? (
+										{clientOptions && clientOptions.length > 0 ? (
 											<Select
 												className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
-												options={clientsSelect}
+												options={clientOptions}
+												placeholder="Selecione o Cliente / Filial"
 												onChange={handleClientChange}
 												value={selectedClient}
 											/>

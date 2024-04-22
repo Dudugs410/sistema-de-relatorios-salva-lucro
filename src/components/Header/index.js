@@ -10,7 +10,7 @@ import Relogio from "../Componente_Relogio";
 import SideBar from "../Componente_SideBar";
 
 const Header = () => {
-    const { logout, isDarkTheme, setIsDarkTheme, isCheckedCalendar, setIsCheckedCalendar, toggleTheme} = useContext(AuthContext)
+    const { logout, isDarkTheme, setIsDarkTheme, isCheckedCalendar, setIsCheckedCalendar } = useContext(AuthContext)
 
     const [isChecked, setIsChecked] = useState(localStorage.getItem('isChecked') === 'true')
     
@@ -44,8 +44,6 @@ const Header = () => {
         setIsDarkTheme(updatedChecked);
         localStorage.setItem('isChecked', updatedChecked);
         localStorage.setItem('isDark', updatedChecked);
-
-        toggleTheme()
 
         if (localStorage.getItem('localUsers') !== null) {
             let localUsersTemp = JSON.parse(localStorage.getItem('localUsers'));
