@@ -1,60 +1,32 @@
 @import './styles/variables';
 
 *{
-  font-family: $default-font;
+  font-family: var(--default-font-app);
 }
 
 html, body, .app, #root, .appPage, .app-page{
   height: 100%;
   width: 100%;
-  font-family: $default-font;
   overflow-x: hidden;
   display: contents;
   transition: all .4s;
-  //background-color: $background-color;
 }
 
 h5{
-  &.light-theme{
-    font-weight: bold;
-    color: $font-color-light;
-  }
-
-  &.dark-theme{
-    font-weight: bold;
-    color: $font-color-dark;
-  }
+  color: var(--font-color);
 }
 
 h6{
-  &.light-theme{
-    font-weight: 400;
-    color: $font-color-light;
-  }
-
-  &.dark-theme{
-    font-weight: 400;
-    color: $font-color-dark;
-  }
+  color: var(--font-color);
 }
 
 .appPage, .app-page{
   min-height: 100vh;
   font-family: sans-serif;
-
-  &.light-theme{
-    background-color: $background-color-light;
-  }
-
-  &.dark-theme{
-    background-color: $background-color-dark;
-  }
+  background-color: var(--background-color)
   
 }
 
-code {
-  font-family: $default-font;
-}
 a{
   color: black;
   text-decoration: none;

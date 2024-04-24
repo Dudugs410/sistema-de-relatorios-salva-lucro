@@ -1,25 +1,105 @@
 
-//Cores do Tema Claro
+:root {
+    /* Current Theme Colors */
+    --primary-color: rgb(10, 61, 112);        
+    --secondary-color: rgb(153, 204, 51);
+    --background-color: #fff;
+    --font-color: rgb(10, 61, 112);
+    --header-text-color: white;
 
-$primary-color-light: rgb(10,61,112);
-$secondary-color-light: rgb(153,204,51);
-$background-color-light: #fff;
+    //total Modalidades
+    --modalidades-border: rgb(10, 61, 112);
 
-//Cores do Tema Escuro
+    //Table
+    --table-background: white;
+    --table-row-hover-color: rgb(153, 204, 51);
+    --table-row-hover-bg: rgb(10, 61, 112);
 
-$primary-color-dark: rgb(35, 31, 32);
-$secondary-color-dark: white;
-$background-color-dark: #0e0e0e;
+    //header
+    --header-bg: rgba(10,61,112,0.945);
 
-//fonte
+    //calendar
+    --calendar-cell-color: rgb(10, 61, 112);
+    --calendar-now-color: rgb(153, 204, 51);
+    --calendar-neighbor-color: #757575;
+    --calendar-btn-navigation-color: rgb(10, 61, 112);
+    --calendar-neighbor-bg: rgb(187, 187, 187);
 
-$default-font: Arial, Helvetica, sans-serif;
-$font-color-light: rgb(10,61,112);
-$font-color-dark: white;
+    //outros
+    --subtitle-color: rgb(10, 61, 112);
 
-//variáveis padrão do web app
+    //-----------------------------------------------------------------//
 
-$default-background: #fff;
-$default-primary: #000;
-$default-secondary: #4f4f4f;
-$default-font-app: $default-font;
+    /* Light Theme Colors */
+    --primary-color-light: rgb(10, 61, 112);
+    --secondary-color-light: rgb(153, 204, 51);
+    --background-color-light: #fff;
+    --font-color-light: rgb(10, 61, 112);
+    --header-text-color-light: white;
+
+    //total Modalidades
+    --modalidades-border-light: rgb(10, 61, 112);
+
+    //Table
+    --table-background-light: white;
+    --table-row-hover-color-light: rgb(153, 204, 51);
+    --table-row-hover-bg-light: rgb(10, 61, 112);
+    
+    //header
+    --header-bg-light: rgba(10,61,112,0.945);
+
+    //calendar
+    --calendar-cell-color-light: rgb(10, 61, 112);
+    --calendar-now-color-light: rgb(153, 204, 51);
+    --calendar-neighbor-color-light: #757575;
+    --calendar-btn-navigation-color-light: rgb(10, 61, 112);
+    --calendar-neighbor-bg-light: rgb(187, 187, 187);
+
+    //subtitle
+    --subtitle-light: rgb(10, 61, 112);
+
+    //-----------------------------------------------------------------//
+
+    /* Dark Theme Colors */
+    --primary-color-dark: rgb(35, 31, 32);
+    --secondary-color-dark: darkgray;
+    --background-color-dark: rgb(10, 10, 10);
+    --font-color-dark: lightgray;
+    --header-text-color-dark: black;
+    
+    //total Modalidades
+    --modalidades-border-dark: rgb(97, 97, 97);
+    
+    //Table
+    --table-background-dark: rgb(10, 10, 10);
+    --table-row-hover-color-dark: rgb(35, 31, 32);
+    --table-row-hover-bg-dark: rgb(97, 97, 97);
+
+    //header
+    --header-bg-dark: rgba(35,31,32, 0.945);
+    
+    //calendar
+    --calendar-cell-color-dark: rgb(97, 97, 97);
+    --calendar-now-color-dark: white;
+    --calendar-neighbor-color-dark: rgb(26, 26, 26);
+    --calendar-btn-navigation-color-dark: white;
+    --calendar-neighbor-bg-dark: black;
+
+    //subtitle
+    --subtitle-dark: darkgray;
+
+    //*****************************************************************//
+
+    //fonte
+
+    --default-font: Arial, Helvetica, sans-serif;
+
+    //variáveis padrão do web app
+
+    --default-background: #fff;
+    --default-primary: #000;
+    --default-secondary: #4f4f4f;
+    --default-font-app: var(--default-font);
+    
+  }
+

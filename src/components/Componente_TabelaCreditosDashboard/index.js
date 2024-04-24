@@ -8,7 +8,7 @@ import { FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward } from 'react-
 
 const TabelaCreditosDashboard = ({array}) =>{
 
-	const { dateConvert, isDarkTheme } = useContext(AuthContext)
+	const { dateConvert } = useContext(AuthContext)
 
 	const [vendasArray, setVendasArray] = useState([])
 	const [vendasTeste, setVendasTeste] = useState([])
@@ -206,12 +206,12 @@ const TabelaCreditosDashboard = ({array}) =>{
 
 	return(
 		<>
-			<hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
+			<hr className='hr-global'/>
 			<div className='dropShadow vendas-view'>
-				<div className={`table-wrapper ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
-					<table className={`table table-striped table-hover det-table-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+				<div className='table-wrapper'>
+					<table className='table table-striped table-hover det-table-global'>
 						<thead>
-							<tr className={`det-tr-top-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+							<tr className='det-tr-top-global'>
 								<th className='det-th-global'scope="col">CNPJ</th>
 								<th className='det-th-global'scope="col">Adquirente</th>
 								<th className='det-th-global'scope="col">Bandeira</th>
@@ -233,14 +233,14 @@ const TabelaCreditosDashboard = ({array}) =>{
 						<tbody>
 							{vendasExibicao.length > 0 && currentItems.map((venda, index)=>{
 								return(
-									<tr key={index} className={`det-tr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}  >
+									<tr key={index} className='det-tr-global'>
 										<td className='det-td-vendas-global'data-label="CNPJ">{venda.cnpj}</td>
 										<td className='det-td-vendas-global'data-label="Adquirente">{venda.adquirente.nomeAdquirente}</td>
 										<td className='det-td-vendas-global'data-label="Bandeira">{venda.bandeira.descricaoBandeira}</td>
 										<td className='det-td-vendas-global'data-label="Produto">{venda.produto.descricaoProduto}</td>
 										<td className='det-td-vendas-global'data-label="Subproduto">{venda.modalidade.descricaoModalidade}</td>
-										<td className='det-td-vendas-global'data-label="Valor Bruto"><span className={`green-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>{Number(venda.valorBruto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
-										<td className='det-td-vendas-global'data-label="Valor Líquido"><span className={`green-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>{Number(venda.valorLiquido).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
+										<td className='det-td-vendas-global'data-label="Valor Bruto"><span className='green-global'>{Number(venda.valorBruto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
+										<td className='det-td-vendas-global'data-label="Valor Líquido"><span className='green-global'>{Number(venda.valorLiquido).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
 										<td className='det-td-vendas-global'data-label="Taxa"><span className='red-global'>{Number(venda.taxa).toFixed(2)}%</span></td>
 										<td className='det-td-vendas-global'data-label="Valor Desconto"><span className='red-global'>{Number(venda.valorDesconto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
 										<td className='det-td-vendas-global'data-label="NSU">{venda.nsu}</td>
@@ -257,36 +257,36 @@ const TabelaCreditosDashboard = ({array}) =>{
 					</table> 
 				</div>
 			</div>
-			<hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
+			<hr className='hr-global'/>
 			{vendasExibicao.length > itemsPerPage && (
 				<div className="container-btn-pagina">
 					<button
-						className={`btn btn-primary btn-global btn-skip ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}
+						className='btn btn-primary btn-global btn-skip'
 						onClick={goToFirstPage}
 						disabled={currentPage === 1} // Disable if already on the first page
 					>
 						<FiSkipBack />
 					</button>
 					<button
-						className={`btn btn-primary btn-global btn-navigate ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}
+						className='btn btn-primary btn-global btn-navigate'
 						onClick={goToPrevPage}
 						disabled={currentPage === 1} // Disable if it's the first page
 					>
 						<FiChevronLeft/> {/* Left arrow */}
 					</button>
-					<div className={`pagina-atual ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
-						<span className={`texto-paginacao ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>Página </span>
-						<span className={`texto-paginacao ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>{currentPage}</span>
+					<div className='pagina-atual'>
+						<span className='texto-paginacao'>Página </span>
+						<span className='texto-paginacao'>{currentPage}</span>
 					</div>
 					<button
-						className={`btn btn-primary btn-global btn-navigate ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}
+						className='btn btn-primary btn-global btn-navigate'
 						onClick={goToNextPage}
 						disabled={currentPage === Math.ceil(vendasExibicao.length / itemsPerPage)} // Disable if it's the last page
 					>
 						<FiChevronRight/> {/* Right arrow */}
 					</button>
 					<button
-						className={`btn btn-primary btn-global btn-skip ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}
+						className='btn btn-primary btn-global btn-skip'
 						onClick={goToLastPage}
 						disabled={currentPage === Math.ceil(vendasExibicao.length / itemsPerPage)} // Disable if already on the last page
 					>
@@ -294,7 +294,7 @@ const TabelaCreditosDashboard = ({array}) =>{
 					</button>
 				</div>
 			)}
-			<hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
+			<hr className='hr-global'/>
 		</>
 	)
 }

@@ -33,7 +33,7 @@ const ExportacaoSysmo = () =>{
     }, [location]);
 
     useEffect(()=>{
-        async function inicializar(){
+    /*    async function inicializar(){
           if(bandeiras.length === 0){
             await loadBandeiras()
           }
@@ -42,10 +42,10 @@ const ExportacaoSysmo = () =>{
             await loadAdquirentes()
           }
         }
-        inicializar()
+        inicializar() */
       },[])
 
-      useEffect(() => {
+/*      useEffect(() => {
         if (bandeiras.length > 0) {
             const listaBanOptions = bandeiras.map(bandeira => ({ value: bandeira.codigoBandeira, label: bandeira.descricaoBandeira }));
             setListaBan(listaBanOptions);
@@ -57,7 +57,7 @@ const ExportacaoSysmo = () =>{
             const listaAdqOptions = adquirentes.map(adquirente => ({ value: adquirente.codigoAdquirente, label: adquirente.nomeAdquirente }));
             setListaAdq(listaAdqOptions);
         }
-    }, [adquirentes]);
+    }, [adquirentes]); */
 
     const handleDateChange = date => {
         setDataBusca(date)
@@ -98,21 +98,27 @@ const ExportacaoSysmo = () =>{
         'Data: ', dataBusca)
     },[tipo])
 
+    function handleLoadData(){
+        console.log('loadData')
+    }
+
+    function handleDateRangeChange(){
+        console.log('handleDateRangeChange')
+    }
+
     return(
-      <div className={`appPage ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-        <div className={`page-background-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-          <div className={`page-content-global page-content-exportacao ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-            <div className={`title-container-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-              <h1 className={`title-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Exportação Sysmo</h1>
-            </div>
-            <hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
-            <div className=''>
-            <MyCalendar dataInicialExibicao={dataInicialExibicao} dataFinalExibicao={dataFinalExibicao} dataBusca={dataBusca} handleDateChange={handleDateChange} className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
-                <div className=''>
-                    <form className=''>
-                        <div className='component-container'>
-                            <RadioSelect options={radioOptions} onSelect={(e) => {setTipo(e)}}/>
-                            <div className=''>
+    <div className='appPage'>
+        <div className='page-background-global'>
+            <div className='page-content-global page-content-exportacao'>
+                <div className='title-container-global'>
+                    <h1 className='title-global'>Exportação Sysmo</h1>
+                </div>
+                <MyCalendar onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange}/>
+                <form>
+                    <div className='component-container'>
+                        <RadioSelect options={radioOptions} onSelect={(e) => {setTipo(e)}}/>
+                        <div className='select-container'>
+                            <div className='select-component'>
                                 <span className={`span-picker ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Bandeira</span>
                                 <Select
                                     value={banSelecionada} 
@@ -121,7 +127,7 @@ const ExportacaoSysmo = () =>{
                                     options={listaBan}
                                 />
                             </div>
-                            <div className=''>
+                            <div className='select-component'>
                                 <span className={`span-picker ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Adquirente</span>
                                 <Select 
                                     value={adqSelecionada} 
@@ -131,15 +137,14 @@ const ExportacaoSysmo = () =>{
                                 />
                             </div>
                         </div>
-                        <div className='btn-container-financeiro'>
-                            <button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleExport}>Gerar Arquivo</button>
-                        </div>
-                    </form>
-                </div>
+                    </div>
+                    <div className='btn-container-financeiro'>
+                        <button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleExport}>Gerar Arquivo</button>
+                    </div>
+                </form>
             </div>
-          </div>
         </div>
-      </div>
+    </div>
     )
 }
 

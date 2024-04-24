@@ -2,21 +2,12 @@
 
 .content-area {
   position: relative;
-  /* height: 100%; */
-  /* width: 100%; */
-  /* margin: 0 10% 10% 10%; */
   padding: 3% 5% 10%;
   display: flex;
-  /* padding: 5.8%; */
   flex-direction: column;
   transition: all 0.4s;
-  &.light-theme{
-    background-color: $background-color-light;
-  }
+  background-color: var(--background-color);
 
-  &.dark-theme{
-    background-color: $background-color-dark;
-  }
 }
 
 .content-area + .dash{
@@ -24,45 +15,23 @@
 }
 
 .data-group-area{
-  .data-group-area {
-    position: relative;
-    //padding-bottom: 3%;
-    /* height: 100%; */
-    /* width: 100%; */
-    /* padding-top: 2%; */
-    /* padding-left: 20%; */
-    /* padding-right: 20%; */
-    /* display: block; */
-    /* flex-direction: column; */
-}
-  &.light-theme{
-    background-color: $background-color-light;
-  }
+  position: relative;
+  background-color: var(--background-color);
 
-  &.dark-theme{
-    background-color: $background-color-dark;
-  }
 }
 
 .dash-table-container{
   padding: 10px;
   display: flex;
   flex-direction: column;
+  border-bottom: var(--primary-color);
   
-  &.light-theme{
-    border-bottom: $primary-color-light;
-  }
-
-  &.dark-theme{
-    border-bottom: $primary-color-dark;
-  }
 }
 
 .title-chart{
   width: 95%;
   display: block;
   text-align: center;
-  
   font-family: sans-serif;
   font-size: 1.5em;
   margin-top: 8px;
@@ -71,15 +40,9 @@
   padding: 5px;
   border-radius: 20px;
   transition: all .4s;
+  color: var(--primary-color);
+  background-color: var(--secondary-color);
 
-    &.light-theme{
-      color: $font-color-light;
-      background-color: $secondary-color-light;
-    }
-    &.dark-theme{
-      color: $font-color-dark;
-      background-color: $primary-color-dark;
-    }
 }
 
 .data-group-area{
@@ -96,17 +59,9 @@
   transition: all .4s;
   flex-direction: column;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.7); /* Soft shadow effect */
+  background-color: var(--background-color);
+  color:var(--font-color);
 
-  &.light-theme{
-    background-color: $background-color-light;
-    color:white;
-  }
-
-  &.dark-theme{
-    background-color: $background-color-dark;
-    color: $background-color-dark;
-    
-  }
 }
 
 .dash-body-flex{

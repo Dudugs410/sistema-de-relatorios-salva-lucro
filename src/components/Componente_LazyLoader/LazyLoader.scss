@@ -10,14 +10,8 @@
     align-items: center;
     border-radius: 10px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Soft shadow effect */
-    
-    &.light-theme{
-        border: solid $secondary-color-light 1px;
-    }
+    border: solid var(--secondary-color) 1px;
 
-    &.dark-theme{
-        border: solid $secondary-color-dark 1px;
-    }
 }
 
 .lazy-loading-container {
@@ -44,14 +38,7 @@
     animation: spin 1s linear infinite;
     margin-right: 20px;
     transition: all 0.3s ease-in-out; /* Smooth transition */
-    
-    &.light-theme{
-        border-top: 4px solid $secondary-color-light; /* Blue color for spinner */
-    }
-
-    &.dark-theme{
-        border-top: 4px solid $secondary-color-dark; /* Blue color for spinner */
-    }
+    border-top: 4px solid var(--secondary-color); /* Blue color for spinner */
   }
   
   @keyframes spin {

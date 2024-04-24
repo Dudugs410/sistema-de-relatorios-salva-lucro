@@ -8,15 +8,8 @@
   font-family: Arial, Helvetica, sans-serif;
   line-height: 1.125em;
   margin: 0;
-  
-  &.light-theme{
-    background-color: $primary-color-light;
-    border: 1px solid $background-color-light;
-  }
-  &.dark-theme{
-    background-color: $primary-color-dark;
-    border: 1px solid $background-color-dark;
-  }
+  background-color: var(--primary-color);
+  border: 1px solid var(--background-color);
 }
 
 .form-container-picker{
@@ -58,14 +51,8 @@
   margin: 0;
   border: 0;
   outline: none;
-  &.light-theme{
-    background-color: $background-color-light;
-    border: 1px solid $primary-color-light;
-  }
-  &.dark-theme{
-    background-color: $primary-color-dark;
-    border: 1px solid $background-color-dark;
-  }
+  background-color: var(--background-color);
+  border: 1px solid var(--primary-color);
 }
 
 .react-calendar button:enabled:hover {
@@ -75,30 +62,20 @@
 .react-calendar__navigation {
   display: flex;
   height: 44px;
-  &.light-theme{
-    border: 1px solid $primary-color-light;
-  }
-  &.dark-theme{
-    border: 1px solid $background-color-dark;
-  }
+  border: 1px solid var(--primary-color);
 }
 
 .react-calendar__navigation button {
   min-width: 44px;
   font-weight: bold;
   transition: all 0.4s;
+  color: var(--calendar-btn-navigation-color);
+  //variável específica?
 }
 
 .react-calendar__navigation{
-  &.light-theme{
-    background: $background-color-light;
-    color: $primary-color-light;
-  }
-  &.dark-theme{
-    background: $background-color-dark;
-    color: $font-color-dark;
-  }
-  
+  background: var(--background-color);
+  color: var(--primary-color);
 }
 
 .react-calendar__navigation button:disabled {
@@ -107,17 +84,9 @@
 
 .react-calendar__navigation button:enabled:hover,
 .react-calendar__navigation button:enabled:focus {
-
-  &.light-theme{
-    background-color: $secondary-color-light;
-    box-shadow:inset 0px 38px 0px 0px $secondary-color-light;
-    color: $font-color-light;
-  }
-  &.dark-theme{
-    background-color: $secondary-color-dark;
-    box-shadow:inset 0px 38px 0px 0px $secondary-color-dark;
-    color: $font-color-dark;
-  }
+    background-color: var(--secondary-color);
+    box-shadow:inset 0px 38px 0px 0px var(--secondary-color);
+    color: var(--font-color);
 }
 
 .react-calendar__month-view__weekdays {
@@ -131,12 +100,7 @@
 
 .react-calendar__month-view__weekdays__weekday {
   padding: 0.5em;
-  &.light-theme{
-    border: 1px solid $primary-color-light;
-  }
-  &.dark-theme{
-    border: 1px solid $primary-color-dark;
-  }
+  border: 1px solid var(--primary-color);
 }
 
 .react-calendar__month-view__weekNumbers .react-calendar__tile {
@@ -151,25 +115,16 @@
 //cores dos dias dos finais de semana
 
 .react-calendar__month-view__days__day--weekend {
-  &.light-theme{
-    color: #d10000 !important; 
-  }
-  &.dark-theme{
-    color: #d10000 !important;
-  }
-
+  color: #d10000 !important;
+  
 }
 
 //cores das Datas dos meses vizinhos que aparecem no calendário
 
 .react-calendar__month-view__days__day--neighboringMonth {
-  &.light-theme{
-    color: #757575 !important; 
-  }
-
-  &.dark-theme{
-    color: #474747 !important;
-  }
+  color: var(--calendar-neighbor-color) !important;
+  background-color: var(--calendar-neighbor-bg) !important;
+  //variável específica
 }
 
 .react-calendar__year-view .react-calendar__tile,
@@ -184,12 +139,7 @@
   background: none;
   text-align: center;
   line-height: 16px;
-  &.light-theme{
-    color: $font-color-light;
-  }
-  &.dark-theme{
-    color: $font-color-dark;
-  }
+  color: var(--calendar-cell-color);
 }
 
 .react-calendar__tile:disabled {
@@ -200,105 +150,55 @@
 .react-calendar__tile:enabled:focus {
 
   transition: all 0.4s;
-  &.light-theme{
-    background-color: $secondary-color-light;
-    box-shadow:inset 0px 38px 0px 0px $secondary-color-light;
-  }
-  &.dark-theme{
-    background-color: $background-color-dark;
-    box-shadow:inset 0px 38px 0px 0px $background-color-dark;
-  }
+  color: var(--primary-color);
+  background-color: var(--secondary-color);
+  box-shadow:inset 0px 38px 0px 0px var(--secondary-color);
+
 }
 
 .react-calendar__tile--now {
-  &.light-theme{
-    color: black;
-    background-color: $secondary-color-light;
-  }
-  &.dark-theme{
-    color: white;
-    background-color: $background-color-dark;
-  }
-  
+  font-weight: bold;
+  color: var(--calendar-now-color);
+  background-color: var(--secondary-color);
+  //variável-específica
 }
 
 .react-calendar__tile--now:enabled:hover,
 .react-calendar__tile--now:enabled:focus {
-  &.light-theme{
-    background-color: $secondary-color-light;
-  }
-  &.dark-theme{
-    background-color: black;
-  }
+    background-color: var(--secondary-color);
 }
 
 .react-calendar__tile--hasActive {
-  &.light-theme{
-    background-color: $primary-color-light;
-  }
-  &.dark-theme{
-    background-color: $primary-color-dark;
-  }
+  background-color: var(--primary-color);
 }
 
 .react-calendar__tile--hasActive:enabled:hover,
 .react-calendar__tile--hasActive:enabled:focus {
-  &.light-theme{
-    background-color: $secondary-color-light;
-  }
-  &.dark-theme{
-    background-color: $background-color-dark;
-  }
+  background-color: var(--secondary-color);
 }
 
 .react-calendar__tile--active {
   color: white;
   transition: all 0.4s;
-  &.light-theme{
-    background-color: $primary-color-light;
-    box-shadow:inset 0px 38px 0px 0px $secondary-color-light;
-  }
-  &.dark-theme{
-    color: black;
-    background-color: $secondary-color-dark;
-    box-shadow:inset 0px 38px 0px 0px $secondary-color-dark;
-  }
-  
+  background-color: var(--primary-color);
+  box-shadow:inset 0px 38px 0px 0px var(--secondary-color);
 }
 
 .react-calendar__tile--active:enabled:hover,
 .react-calendar__tile--active:enabled:focus {
   transition: all 0.4s;
-  &.light-theme{
-    color: $secondary-color-light;
-    background-color: $primary-color-light;
-    box-shadow:inset 0px 38px 0px 0px $primary-color-light;
-  }
-  &.dark-theme{
-    color: $secondary-color-dark;
-    background-color: $background-color-dark;
-    box-shadow:inset 0px 38px 0px 0px $background-color-dark;
-  }
+  color: var(--secondary-color);
+  background-color: var(--primary-color);
+  box-shadow:inset 0px 38px 0px 0px var(--primary-color);
 }
 
 .react-calendar--selectRange .react-calendar__tile--hover {
-  &.light-theme{
-    background-color: $background-color-light;
-  }
-  &.dark-theme{
-    background-color: $background-color-dark;
-  }
-  
+  background-color: var(--background-color);
 }
 
 .input-picker{
   width: 100%;
-  &.light-theme{
-    color: $font-color-light;
-   }
-   &.dark-theme{
-     color: $primary-color-dark;
-   }
+  color: var(--font-color);
 }
 
 .component-container{
@@ -329,22 +229,11 @@
 }
 
 .label-calendar{
-  &.light-theme{
-      color: $font-color-light;
-     }
-  &.dark-theme{
-      color: $font-color-dark;
-  }
+  color: var(--font-color);
 }
 
 .span-picker{
   font-weight: bold;
-
-  &.light-theme{
-   color: $font-color-light;
-  }
-  &.dark-theme{
-    color: $font-color-dark;
-  }
+  color: var(--font-color);
 }
 

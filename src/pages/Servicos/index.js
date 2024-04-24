@@ -10,7 +10,6 @@ import BuscarClienteServicos from '../../components/Componente_BuscarClienteServ
 import TabelaServicos from '../../components/Componente_TabelaServicos'
 import TabelaGenericaAdm from '../../components/Componente_TabelaAdm'
 
-import '../Vendas/Calendar.scss'
 import MyCalendar from '../../components/Componente_Calendario'
 import { toast } from 'react-toastify'
 import DisplayData from '../../components/Componente_DisplayData'

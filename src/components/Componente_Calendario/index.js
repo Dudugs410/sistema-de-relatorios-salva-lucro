@@ -25,15 +25,15 @@ const MyCalendar = ({ onLoadData, getCalendarDate }) => {
         <div className='form-container-picker'>
           <div className='select-elements-container-picker'>
             <div className='container-select'>
-              <span className={`span-picker ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>Data Inicial</span>
-              <DatePicker className={`input-picker ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}
+              <span className='span-picker'>Data Inicial</span>
+              <DatePicker className='input-picker'
                 selected={dateRange[0]}
                 onChange={(date) => setDateRange([date, dateRange[1]])}
               />
             </div>
             <div className='container-select'>
-              <span className={`span-picker ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>Data Final</span>
-              <DatePicker className={`input-picker ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}
+              <span className='span-picker'>Data Final</span>
+              <DatePicker className='input-picker'
                 selected={dateRange[1]}
                 onChange={(date) => setDateRange([dateRange[0], date])}
               />
@@ -46,13 +46,12 @@ const MyCalendar = ({ onLoadData, getCalendarDate }) => {
     return (
       <div className='component-container'>
         { isCheckedCalendar ? <>
+        <hr className='hr-global'/>
         <Calendar
           style={{ color:'white' }}
-          className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
           onChange={ handleDateChange }
           selectRange={true}
           value={ dateRange }
-          tileClassName={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
         />
  
         </>
@@ -60,18 +59,18 @@ const MyCalendar = ({ onLoadData, getCalendarDate }) => {
         <>
           <MyDatePicker />
         </>}
-        <hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
+        <hr className='hr-global'/>
         <div className='container-busca'>
-          <span className={`span-busca ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+          <span className='span-busca'>
             {dateRange[0].toLocaleDateString('pt-BR') !== dateRange[1].toLocaleDateString('pt-BR') ? 
               <span dangerouslySetInnerHTML={{__html: `Executar busca do dia <strong>${dateRange[0].toLocaleDateString('pt-BR')}</strong> ao dia <strong>${dateRange[1].toLocaleDateString('pt-BR')}</strong>`}} /> : 
               <span dangerouslySetInnerHTML={{__html: `Executar busca do dia <strong>${dateRange[0].toLocaleDateString('pt-BR')}</strong>`}} />
             }
           </span>
         </div>
-        <hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
-        <button className={`btn btn-primary btn-global btn-pesquisar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={ onLoadData }>Pesquisar</button>
-        <hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
+        <hr className='hr-global'/>
+        <button className='btn btn-primary btn-global btn-pesquisar' onClick={ onLoadData }>Pesquisar</button>
+        <hr className='hr-global'/>
       </div>
     )
   }

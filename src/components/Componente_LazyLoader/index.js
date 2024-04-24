@@ -5,13 +5,11 @@ import { AuthContext } from "../../contexts/auth"
 
 const LazyLoader = () => {
 
-    const { isDarkTheme } = useContext(AuthContext)
-
     return(
-        <div className={`lazy-loader ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
+        <div className='lazy-loader'>
             <div className="lazy-loading-animation">
-                <div className={`lazy-loading-spinner ${ isDarkTheme ? 'dark-theme' : 'light-theme' }`}></div>
-                <div className="lazy-loading-text"></div>
+                <div className='lazy-loading-spinner'></div>
+                <div className='lazy-loading-text'></div>
             </div>
         </div>
     )

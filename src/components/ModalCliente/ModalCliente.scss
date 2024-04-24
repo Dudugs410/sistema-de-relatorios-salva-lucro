@@ -19,8 +19,8 @@
 .modal-window{
     width: 80%;
     height: 50%;
-    background-color: $primary-color-light;
-    border: solid 2px $secondary-color-light;
+    background-color: var(--primary-color);
+    border: solid 2px var(--secondary-color);
     border-radius: 20px;
     z-index: 2;
 }

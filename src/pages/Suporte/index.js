@@ -26,14 +26,14 @@ const Suporte = () =>{
         async function inicializar(){
             await loadAdquirentes();
         }
-        inicializar()
+        //inicializar()
     },[])
 
-    useEffect(()=>{
+ /*   useEffect(()=>{
         if(adquirentes){
             console.log('adquirentes: ', adquirentes)
         }
-    },[adquirentes])
+    },[adquirentes]) */
 
     const handleDateChange = date => {
         setDataBusca(date)
@@ -58,6 +58,14 @@ const Suporte = () =>{
         setLoading(true)
         base64PDFdownload()
         setLoading(false)
+    }
+
+    function handleLoadData(){
+        console.log('loadData')
+    }
+
+    function handleDateRangeChange(){
+        console.log('handleDateRangeChange')
     }
 
     const PlaceHolder = () =>{
@@ -175,7 +183,7 @@ const Suporte = () =>{
 
     const suporte = () =>{
         return(
-            <MyCalendar dataInicialExibicao={dataInicialExibicao}  dataFinalExibicao={dataFinalExibicao} dataBusca={dataBusca} handleDateChange={handleDateChange}/>        
+            <MyCalendar onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange}/>        
         )
     }
 

@@ -4,8 +4,7 @@ import BuscarClienteVendas from '../../components/Componente_BuscarClienteVendas
 import TabelaGenericaAdm from '../../components/Componente_TabelaAdm'
 import TotalModalidadesComp from '../../components/Componente_TotalModalidades'
 import GerarRelatorio from "../../components/Componente_GerarRelatorio"
-import '../Vendas/Calendar.scss'
-import './creditos.scss'
+import '../Vendas/vendas.scss'
 import { AuthContext } from '../../contexts/auth'
 import Cookies from 'js-cookie'
 import TabelaCreditos from '../../components/Componente_TabelaCreditos'

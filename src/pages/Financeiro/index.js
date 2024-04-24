@@ -57,6 +57,14 @@ const Financeiro = () =>{
         setLoading(false)
     }
 
+    function handleLoadData(){
+        console.log('loadData')
+    }
+
+    function handleDateRangeChange(){
+        console.log('handleDateRangeChange')
+    }
+
     return(
       <div className={`appPage ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
         <div className={`page-background-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
@@ -66,7 +74,7 @@ const Financeiro = () =>{
             </div>
             <hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
             <div className='container-financeiro' style={{width: '100%'}}>
-                <MyCalendar dataInicialExibicao={dataInicialExibicao} dataFinalExibicao={dataFinalExibicao} dataBusca={dataBusca} handleDateChange={handleDateChange} className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
+            <MyCalendar onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange}/>
                     <form className='form-container-relatorios'>
                         <div className='select-elements-container'>
                             <div className='container-select'>

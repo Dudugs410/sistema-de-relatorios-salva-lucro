@@ -41,6 +41,14 @@ const VendasDelivery = () => {
         setAppSelecionado(opcao)
     }
 
+    function handleLoadData(){
+        console.log('loadData')
+    }
+
+    function handleDateRangeChange(){
+        console.log('handleDateRangeChange')
+    }
+
     return(
         <div className={`appPage ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
           <div className={`page-background-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
@@ -56,7 +64,7 @@ const VendasDelivery = () => {
                         </div>
                         <div className=''>
                             <div className='input-block-cli-adq'>
-                                <MyCalendar dataInicialExibicao={dataInicialExibicao}  dataFinalExibicao={dataFinalExibicao} dataBusca={dataBusca} handleDateChange={handleDateChange}/>        
+                            <MyCalendar onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange}/>        
                                 <hr className='hr-global'/>
                                 <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Aplicativo</b></h6>
                                 <Select

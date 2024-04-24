@@ -20,13 +20,13 @@
   }
 
   .progress-bar{
-    color: $font-color-light;
-    background-color: $secondary-color-light;
+    color: rgb(10, 61, 112);
+    background-color: rgb(153, 204, 51);
     
   }
 
   .progress, .progress-stacked {
-    --bs-progress-bar-bg: $secondary-color-light;
+    --bs-progress-bar-bg: var(--secondary-color);
   }
 
   .hr-loading{

@@ -1,17 +1,9 @@
 @import '../../styles/variables';
 
 .container-cielo{
-    /* Adjust width, height, padding, margins, etc. as needed */
     width: 100%;
-    margin: 0 auto; /* Center horizontally */
-    /* Add any other styles as needed */
-    &.light-theme{
-        color: $font-color-light;
-    }
-
-    &.dark-theme{
-        color: lightgrey;
-    }
+    margin: 0 auto;
+    color: var(--font-color);
 }
 
 .suporte-content{
@@ -92,8 +84,8 @@
   }
   
   .input-block-correcao {
-    flex: 0 0 calc(50% - 0.5px); /* Each block takes up 50% of the container's width minus 0.5px for margin */
-    margin: 0.25px; /* 1px margin between blocks */
+    flex: 0 0 calc(50% - 0.5px);
+    margin: 0.25px;
   }
 
 .input-suporte-cli-adq{
@@ -102,10 +94,6 @@
     justify-content: space-evenly;
     height: 1.7em;
     margin-bottom: 10px;
-}
-                 
-.input-block-cli-adq{
-
 }
 
 .form-suport{
@@ -122,7 +110,7 @@
       }
       
       .input-block {
-        flex: 0 0 calc(50% - 0.5px); /* Each block takes up 50% of the container's width minus 0.5px for margin */
-        margin: 0.25px; /* 1px margin between blocks */
+        flex: 0 0 calc(50% - 0.5px);
+        margin: 0.25px;
       }
 }

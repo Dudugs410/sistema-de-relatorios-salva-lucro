@@ -7,12 +7,11 @@ import Cookies from 'js-cookie'
 import api, { config } from '../services/api'
 
 import md5 from 'md5'
-import { gruposStatic } from './static'
+
 
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import jwtDecode from 'jwt-decode'
-import { id } from 'date-fns/locale'
 
 export const AuthContext = createContext({})
 
@@ -27,6 +26,7 @@ function AuthProvider({ children }){
 	const [trocarHeader, setTrocarHeader] = useState(false)
 	const [textoExport, setTextoExport] = useState(Cookies.get('textoExport'))
 	const [isCheckedCalendar, setIsCheckedCalendar] = useState(true);
+	const [changedOption, setChangedOption] = useState(false)
 
 	//////////////////////////////////////////////////////////////////
 
@@ -88,7 +88,6 @@ function AuthProvider({ children }){
 				const gru = await loadGroupsList()
 
 				sessionStorage.setItem('groupsStorage', JSON.stringify(gru))
-				console.log(gru[0].CODIGOGRUPO)
 				Cookies.set('groupCode', gru[0].CODIGOGRUPO)
 				Cookies.set('cnpj', 'todos')
 			}
@@ -742,6 +741,7 @@ function AuthProvider({ children }){
 					loadCreditsGroup(),
 					loadServicesGroup()
 				]).then(()=>{
+					console.log('.then()')
 					setIsLoadedDashboard(true)
 				})
 			} catch (error) {
@@ -1334,6 +1334,7 @@ function AuthProvider({ children }){
 				servicesDateRange, setServicesDateRange,
 
 				// outros / compartilhados //
+
 				loginApp,
 				groupByAdmin, groupServicesByAdmin,
 				gerarDados, gerarDadosServicos,
@@ -1346,6 +1347,8 @@ function AuthProvider({ children }){
 
 				groupsList, clientsList,
 				loadGroupsList, setGroupsList,
+
+				changedOption, setChangedOption,
 			}}
 		>
 			{children}

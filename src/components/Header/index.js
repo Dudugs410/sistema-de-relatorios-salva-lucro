@@ -12,7 +12,7 @@ import SideBar from "../Componente_SideBar";
 const Header = () => {
     const { logout, isDarkTheme, setIsDarkTheme, isCheckedCalendar, setIsCheckedCalendar } = useContext(AuthContext)
 
-    const [isChecked, setIsChecked] = useState(localStorage.getItem('isChecked') === 'true')
+    const [isChecked, setIsChecked] = useState(localStorage.getItem('isChecked') ? false : true )
     
     const [showRelatoriosDropdown, setShowRelatoriosDropdown] = useState(false)
     const [showExportacoesDropdown, setShowExportacoesDropdown] = useState(false)
@@ -44,7 +44,7 @@ const Header = () => {
         setIsDarkTheme(updatedChecked);
         localStorage.setItem('isChecked', updatedChecked);
         localStorage.setItem('isDark', updatedChecked);
-
+      
         if (localStorage.getItem('localUsers') !== null) {
             let localUsersTemp = JSON.parse(localStorage.getItem('localUsers'));
             localUsersTemp.map(user => {
@@ -62,8 +62,50 @@ const Header = () => {
     }
 
     useEffect(() => {
-        //setIsDarkTheme(JSON.parse(localStorage.getItem('isDark')));
+        setIsChecked(JSON.parse(localStorage.getItem('isChecked')));
     }, []);
+
+    useEffect(()=>{
+                // Update CSS custom properties based on the theme
+                const root = document.documentElement;
+                if (isChecked) {
+                  root.style.setProperty('--primary-color', 'var(--primary-color-dark)')
+                  root.style.setProperty('--secondary-color', 'var(--secondary-color-dark)')
+                  root.style.setProperty('--background-color', 'var(--background-color-dark)')
+                  root.style.setProperty('--font-color', 'var(--font-color-dark)')
+                  root.style.setProperty('--table-background', 'var(--table-background-dark)')
+                  root.style.setProperty('--header-text-color', 'var(--header-text-color-dark)')
+                  root.style.setProperty('--modalidades-border', 'var(--modalidades-border-dark)')
+                  root.style.setProperty('--table-row-hover-color', 'var(table-row-hover-color-dark)')
+                  root.style.setProperty('--table-row-hover-bg', 'var(--table-row-hover-bg-dark)')
+                  root.style.setProperty('--header-bg', 'var(--header-bg-dark)')
+                  root.style.setProperty('--calendar-cell-color', 'var(--calendar-cell-color-dark)')                  
+                  root.style.setProperty('--calendar-now-color', 'var(--calendar-now-color-dark)')
+                  root.style.setProperty('--calendar-neighbor-color', 'var(--calendar-neighbor-color-dark)')
+                  root.style.setProperty('--calendar-btn-navigation-color', 'var(--calendar-btn-navigation-color-dark)')
+                  root.style.setProperty('--calendar-neighbor-bg', 'var(--calendar-neighbor-bg-dark)')
+                  root.style.setProperty('--subtitle-color', 'var(--subtitle-dark)')
+
+                } else { 
+                  root.style.setProperty('--primary-color', 'var(--primary-color-light)')
+                  root.style.setProperty('--secondary-color', 'var(--secondary-color-light)')
+                  root.style.setProperty('--background-color', 'var(--background-color-light)')
+                  root.style.setProperty('--font-color', 'var(--font-color-light)')
+                  root.style.setProperty('--table-background', 'var(--table-background-light)')
+                  root.style.setProperty('--header-text-color', 'var(--header-text-color-light)')
+                  root.style.setProperty('--modadlidades-border', 'var(modalidades-border-light)')
+                  root.style.setProperty('--table-row-hover-color', 'var(table-row-hover-color-light)')
+                  root.style.setProperty('--table-row-hover-bg', 'var(--table-row-hover-bg-light)')
+                  root.style.setProperty('--header-bg', 'var(--header-bg-light)')
+                  root.style.setProperty('--calendar-cell-color', 'var(--calendar-cell-color-light)')                  
+                  root.style.setProperty('--calendar-now-color', 'var(--calendar-now-color-light)')
+                  root.style.setProperty('--calendar-neighbor-color', 'var(--calendar-neighbor-color-light)')
+                  root.style.setProperty('--calendar-btn-navigation-color', 'var(--calendar-btn-navigation-color-light)')
+                  root.style.setProperty('--calendar-neighbor-bg', 'var(--calendar-neighbor-bg-light)')
+                  root.style.setProperty('--subtitle-color', 'var(--subtitle-light)')
+
+                }
+    },[isChecked])
     
     const [optionsWithIcons, setOptionsWithIcons] = useState([]);
 
@@ -181,7 +223,7 @@ const CustomCheckbox = ({ isChecked, handleCheckboxChange }) => {
                                         }}>
                                             <button className={`px-2 me-1 li-button-content nav-hover-button dropdown-button ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
                                                 {opcao.icone && React.createElement(opcao.icone)}
-                                                <span className="ms-1 mt-2 mb-auto li-btn-text">{opcao.nome}</span>
+                                                <span className="ms-1 mt-2 mb-auto li-btn-text span-header">{opcao.nome}</span>
                                             </button>
                                             <div className={`dropdown-menu-normal ${isDarkTheme ? 'dark-theme' : 'light-theme'} ${opcao.nome === 'Relatórios' ? (showRelatoriosDropdown ? 'show' : '') : (opcao.nome === 'Exportações' ? (showExportacoesDropdown ? 'show' : '') : '')}`} aria-labelledby="dropdownMenuButton" style={{ position: 'absolute', top: '100%', left: 0 }}>
                                                 {opcao.children.map((childOption, childIndex) => (

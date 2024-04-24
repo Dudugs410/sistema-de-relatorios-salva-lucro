@@ -42,10 +42,10 @@ const ExportacaoMetaSapiranga = () =>{
             await loadAdquirentes()
           }
         }
-        inicializar()
+        //inicializar()
       },[])
 
-      useEffect(() => {
+/*      useEffect(() => {
         if (bandeiras.length > 0) {
             const listaBanOptions = bandeiras.map(bandeira => ({ value: bandeira.codigoBandeira, label: bandeira.descricaoBandeira }));
             setListaBan(listaBanOptions);
@@ -57,7 +57,7 @@ const ExportacaoMetaSapiranga = () =>{
             const listaAdqOptions = adquirentes.map(adquirente => ({ value: adquirente.codigoAdquirente, label: adquirente.nomeAdquirente }));
             setListaAdq(listaAdqOptions);
         }
-    }, [adquirentes]);
+    }, [adquirentes]); */
 
     const handleDateChange = date => {
         setDataBusca(date)
@@ -98,6 +98,14 @@ const ExportacaoMetaSapiranga = () =>{
         'Data: ', dataBusca)
     },[tipo])
 
+    function handleLoadData(){
+        console.log('loadData')
+    }
+
+    function handleDateRangeChange(){
+        console.log('handleDateRangeChange')
+    }
+
     return(
       <div className={`appPage ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
         <div className={`page-background-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
@@ -107,7 +115,7 @@ const ExportacaoMetaSapiranga = () =>{
             </div>
             <hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
             <div className=''>
-            <MyCalendar dataInicialExibicao={dataInicialExibicao} dataFinalExibicao={dataFinalExibicao} dataBusca={dataBusca} handleDateChange={handleDateChange} className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
+            <MyCalendar onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange}/>
                 <div className=''>
                     <form className=''>
                         <div className='component-container'>

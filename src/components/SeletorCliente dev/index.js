@@ -15,10 +15,9 @@ const SeletorClienteDev = () => {
 
 		// // // // // // // // // // // // // // // // // //
 
-		apiCNPJ, setApiCNPJ,
-		apiGroupCode, setApiGroupCode,
+		changedOption, setChangedOption,
 
-		isLoadedDashboard, setIsLoadedDashboard, setIsLoadedSalesDashboard, setIsLoadedCreditsDashboard, setIsLoadedServicesDashboard
+		setIsLoadedSalesDashboard, setIsLoadedCreditsDashboard, setIsLoadedServicesDashboard
 
 		// // // // // // // // // // // // // // // // // //
 
@@ -39,10 +38,6 @@ const SeletorClienteDev = () => {
 	
 	// // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
 
-	useEffect(()=>{
-		console.log('selectorGroupList: ', selectorGroupList)
-	},[])
-
 	/// React Select
 
 	// grupos
@@ -53,7 +48,6 @@ const SeletorClienteDev = () => {
 	// àquele grupo)
 
 	const iniGroupsList = async () => {
-		console.log('groupsList -> ', selectorGroupList)
 		if (selectorGroupList && selectorGroupList.length > 0) {
 			const sortedOptions = selectorGroupList
 				.map((GRU) => ({
@@ -79,7 +73,6 @@ const SeletorClienteDev = () => {
 
 	useEffect(()=>{
 		if(selectedGroup){
-			console.log('selectedGroup: ', selectedGroup)
 			const todosOption = { label: 'TODOS', value: 'todos' };
 			const clients = selectedGroup.clients
 			if (clients && clients.length > 0) {
@@ -92,49 +85,12 @@ const SeletorClienteDev = () => {
 				setClientOptions([todosOption, ...sortedOptions]);
 				setSelectedClient(clientOptions[0]); // Update selected client
 				Cookies.set('cnpj', sortedOptions[0].value);
-				setIsLoadedDashboard(!isLoadedDashboard); // Update isLoadedDashboard state
+				setChangedOption(!changedOption)
 			} else {
 				setClientOptions([]);
 			}
 		}
 	}, [selectedGroup]);
-/*
-	useEffect(()=>{
-		console.log('groupOptions: ', groupOptions)
-		setSelectedGroup(groupOptions[0])
-		setSelectedClient({label: 'TODOS', value:'todos'})
-	},[groupOptions])
-
-	useEffect(()=>{
-		if(selectedGroup){
-			console.log('selectedGroup: ', selectedGroup)
-			const todosOption = { label: 'TODOS', value: 'todos' };
-			const clients = selectedGroup.clients
-			if (clients && clients.length > 0) {
-				const sortedOptions = clients
-					.map((CLI) => ({
-						value: CLI.CNPJ,
-						label: CLI.NOMECLIENTE,
-					}))
-					.sort((a, b) => a.label.localeCompare(b.label)) // Sort options alphabetically by label
-				setClientOptions([todosOption, ...sortedOptions])
-			} else {
-				setClientOptions([])
-			}
-		}
-	},[selectedGroup])
-	
-	// Inicializar Componente:
-	useEffect(() => {
-		async function initialize(){
-			await iniGroupsList()
-		}
-		initialize()
-		setApiGroupCode(selectedGroup.value)
-		setApiCNPJ('todos')
-	}, [])
-
-	*/
 
 	////////////////////////////////////////////////////
 	//Funções dos Select:
@@ -144,7 +100,7 @@ const SeletorClienteDev = () => {
 		setIsLoadedSalesDashboard(false)
 		setIsLoadedCreditsDashboard(false)
 		setIsLoadedServicesDashboard(false)
-		setIsLoadedDashboard(!isLoadedDashboard)
+		setChangedOption(!changedOption)
 		setSelectedGroup(selected)
 	}
 
@@ -153,11 +109,10 @@ const SeletorClienteDev = () => {
 		setIsLoadedSalesDashboard(false)
 		setIsLoadedCreditsDashboard(false)
 		setIsLoadedServicesDashboard(false)
-		setIsLoadedDashboard(!isLoadedDashboard)
+		setChangedOption(!changedOption)
 		setSelectedClient(selected)
 	}
 
-	////////////////////////////////////////////////////
 	return(
 		<>
 			{ selectorGroupList === null ? <></> : 
@@ -199,9 +154,6 @@ const SeletorClienteDev = () => {
 										)}
 									</div>
 								</div>
-							</div>
-							<div className="select-btn-seletor">
-
 							</div>
 						</form>
 					</div>

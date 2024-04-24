@@ -4,7 +4,6 @@ import BuscarClienteVendas from '../../components/Componente_BuscarClienteVendas
 import TabelaGenericaAdm from '../../components/Componente_TabelaAdm'
 import TotalModalidadesComp from '../../components/Componente_TotalModalidades'
 import GerarRelatorio from "../../components/Componente_GerarRelatorio"
-import './Calendar.scss'
 import './vendas.scss'
 import { AuthContext } from '../../contexts/auth'
 import Cookies from 'js-cookie'
@@ -97,7 +96,7 @@ const Vendas = () =>{
               { salesPageArray.length > 0 ? 
                 <DisplayData dataArray={salesPageArray} adminDataArray={salesPageAdminArray} totals={salesTotal} tableData={tableData} onGoBack={resetValues}/>
                 :
-                <MyCalendar className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange}/> 
+                <MyCalendar onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange}/> 
               }
             </div>
           </div>

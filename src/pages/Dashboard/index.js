@@ -30,7 +30,7 @@ const Dashboard = () => {
 		salesDashboard, isLoadedSalesDashboard,
 		creditsDashboard, isLoadedCreditsDashboard,
 		servicesDashboard, isLoadedServicesDashboard,
-		apiGroupCode, apiCNPJ,
+		changedOption
 	} = useContext(AuthContext)
 
 	useEffect(()=>{
@@ -45,14 +45,10 @@ const Dashboard = () => {
 	},[])
 
 	useEffect(()=>{
-		/*async function inicializar(){
+		if(isLoadedDashboard){
 			loadDashboard()
 		}
-		if(isLoadedDashboard){
-			inicializar()
-		}*/
-		loadDashboard()
-	},[isLoadedDashboard])
+	},[changedOption])
 
 	return(
 		<>

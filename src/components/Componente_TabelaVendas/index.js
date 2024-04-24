@@ -344,12 +344,12 @@ const TabelaVendas = ({array}) =>{
 						</span>
 				</div>
 			</div>
-			<hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
+			<hr className='hr-global'/>
 			<div className='dropShadow vendas-view'>
-				<div className={`table-wrapper ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
-					<table className={`table table-striped table-hover det-table-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+				<div className='table-wrapper'>
+					<table className='table table-striped table-hover det-table-global'>
 						<thead>
-							<tr className={`det-tr-top-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+							<tr className='det-tr-top-global'>
 								<th className='det-th-global'scope="col">CNPJ</th>
 								<th className='det-th-global'scope="col">Adquirente</th>
 								<th className='det-th-global'scope="col">Bandeira</th>
@@ -371,7 +371,7 @@ const TabelaVendas = ({array}) =>{
 						<tbody>
 							{vendasExibicao.length > 0 && currentItems.map((venda, index)=>{
 								return(
-									<tr key={index} className={`det-tr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}  >
+									<tr key={index} className='det-tr-global'>
 										<td className='det-td-vendas-global'data-label="CNPJ">{venda.cnpj}</td>
 										<td className='det-td-vendas-global'data-label="Adquirente">{venda.adquirente.nomeAdquirente}</td>
 										<td className='det-td-vendas-global'data-label="Bandeira">{venda.bandeira.descricaoBandeira}</td>
@@ -432,7 +432,7 @@ const TabelaVendas = ({array}) =>{
 					</button>
 				</div>
 			)}
-			<hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
+			<hr className='hr-global'/>
 		</>
 	)
 }

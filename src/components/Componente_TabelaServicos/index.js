@@ -4,8 +4,6 @@
 import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../../contexts/auth'
 import { FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward } from 'react-icons/fi'
-import '../Componente_TabelaVendasCreditos/detalhesCredito.scss'
-import '../../styles/global.scss'
 
 const TabelaServicos = ({ array }) => {  
 	const { 
@@ -261,9 +259,9 @@ const TabelaServicos = ({ array }) => {
 		<hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
 		<div className='dropShadow vendas-view'>
 			<div className={`table-wrapper ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
-				<table className={`table table-striped det-table-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+				<table className={`table table-striped table-hover det-table-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
 					<thead>
-						<tr className={`det-tr-top-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+						<tr className='det-tr-top-global'>
 							<th className='det-th-global'scope="col">cnpj</th>
 							<th className='det-th-global'scope="col">Data</th>
 							<th className='det-th-global'scope="col">Adquirente</th>
@@ -277,7 +275,7 @@ const TabelaServicos = ({ array }) => {
 						{
 						vendasExibicao.length > 0 && currentItems.map((venda, index)=>{
 								return(
-									<tr key={index} className={`det-tr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}  >
+									<tr key={index} className='det-tr-global'>
 										<td className='det-td-vendas-global'data-label="cnpj">{venda.cnpj}</td>
 										<td className='det-td-vendas-global'data-label="Data">{dateConvert(venda.data)}</td>
 										<td className='det-td-vendas-global'data-label="Adquirente">{venda.nome_adquirente}</td>
@@ -293,7 +291,7 @@ const TabelaServicos = ({ array }) => {
 				</table>
 			</div>
 		</div>
-		<hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
+		<hr className='hr-global'/>
 			{vendasExibicao.length > itemsPerPage && (
 				<>
 					<div className="container-btn-pagina">

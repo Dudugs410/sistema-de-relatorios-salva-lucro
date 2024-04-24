@@ -2,8 +2,9 @@
 
 .radio-container-exportacao {
     display: inline-flex;
-    justify-content: space-around;
-    
+    width: 100%;
+    justify-content: flex-start;
+    flex-direction: row;
 }
 
 .radio {
@@ -14,12 +15,7 @@
 
 .radio-label:hover {
     cursor: pointer;
-    &.light-theme {
-        color: $secondary-color-light;
-    }
-    &.dark-theme {
-        color: darkgray;
-    }
+    color: var(--secondary-color);
 }
 
 .radio input[type="radio"] {
@@ -31,8 +27,6 @@
     content: "";
     width: 12px;
     height: 12px;
-    //background-color: $primary-color-light !important;
-    
 }
 
 .radio-indicator {
@@ -41,69 +35,19 @@
     width: 12px;
     border-radius: 50%;
     margin-right: 5px; /* Adjust spacing between indicator and label */
-    &.light-theme {
-        background-color: #ccc; /* Default color */
-    }
-    &.dark-theme {
-        background-color: rgb(49, 49, 49);
-    }
+    background-color: lightgray; /* Default color */
 }
 
 .radio-indicator:hover {
     cursor: pointer;
-    &.light-theme {
-        color: $secondary-color-light;
-    }
-    &.dark-theme {
-        color: darkgray;
-    }
+    color: var(--secondary-color);
 }
 
 /* Style the custom radio indicator when it's checked */
 .radio input[type="radio"]:checked + .radio-indicator {
     cursor: pointer;
-    &.light-theme {
-        background-color: $secondary-color-light;
-    }
-    &.dark-theme {
-        background-color: white;
-    }
+    background-color: var(--primary-color);
 }
-
-/* Add dot in the center of the selected option */
-/*.radio input[type="radio"]:checked + .radio-indicator::after + .dark-theme {
-    content: "";
-    display: block;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-        border: solid $primary-color-dark 1px;
-}*/
-
-.radio input[type=radio]:checked + .radio-indicator.dark-theme {
-    border: solid $primary-color-dark 1px;
-    background-color: $secondary-color-dark;
-}
-
-.radio input[type=radio]:checked + .radio-indicator.light-theme {
-    border: solid $primary-color-light 1px;
-    background-color: $secondary-color-light;
-}
-/*
-&.light-theme{
-    border: solid $primary-color-light 1px;
-    background-color: $secondary-color-light;
-}
-
-&.dark-theme{
-    border: solid $primary-color-dark 1px;
-    background-color: $secondary-color-dark;
-}
-*/
 
 .radio-label {
     color: inherit; /* Inherit color from parent */

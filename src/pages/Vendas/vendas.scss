@@ -26,12 +26,7 @@
     display: flex;
     justify-content: center;
     transition: all .4s;
-    &.light-theme{
-        background-color: $background-color-light;
-    }
-    &.dark-theme{
-        background-color: $background-color-dark;
-    }
+    background-color: var(--background-color)
 }
 
 .page-content-vendas{
@@ -45,23 +40,13 @@
     margin-top: 10px;
     margin-bottom: 54px;
     transition: all .4s;
-    &.light-theme{
-        background-color: $background-color-light;
-    }
-    &.dark-theme{
-        background-color: $background-color-dark;
-    }
+    background-color: var(--background-color);
 }
 
 .vendas-title{
     margin: 0;
     transition: all .4s;
-    &.light-theme{
-        color: $font-color-light;
-    }
-    &.dark-theme{
-        color: $font-color-dark;
-    }
+    color: var(--primary-color);
 }
 
 .vendas-title-container{
@@ -71,15 +56,8 @@
     border-radius: 20px;
     padding: 10px;
     transition: all .4s;
-    &.light-theme{
-        color: $primary-color-light;
-        background-color: $secondary-color-light;
-    }
-    &.dark-theme{
-        color:$font-color-dark;
-        background-color: $primary-color-dark;
-    }
-    
+    color: var(--font-color);
+    background-color: var(--secondary-color);
 }
 
 .hr-vendas{
@@ -109,13 +87,7 @@
     align-content: center;
     flex-wrap: wrap;
     font-family: Arial, Helvetica, sans-serif;
-
-    &.light-theme{
-        color: $primary-color-light;
-    }
-    &.dark-theme{
-        color:$font-color-dark;
-    }
+    color: var(--font-color);
 }
 
 @media screen and (max-width: 869px){

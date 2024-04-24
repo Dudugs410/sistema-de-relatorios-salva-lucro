@@ -22,12 +22,7 @@
     width: 100%;
     bottom: 100%;
     transition: all .4s;
-    &.light-theme{
-        background-color: $primary-color-light;
-    }
-    &.dark-theme{
-        background-color: $primary-color-dark;
-    }
+    background-color: var(--primary-color);
 }
 
 .footer-content{
@@ -41,10 +36,5 @@
     height: 2.2em;
     bottom: 0;
     transition: all .4s;
-    &.light-theme{
-        background-color: $primary-color-light;
-    }
-    &.dark-theme{
-        background-color: $primary-color-dark;
-    }
+    background-color: var(--primary-color);
 }
