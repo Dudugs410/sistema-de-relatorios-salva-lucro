@@ -10,14 +10,17 @@ html, body, .app, #root, .appPage, .app-page{
   overflow-x: hidden;
   display: contents;
   transition: all .4s;
+  background-color: var(--background-color);
 }
 
 h5{
-  color: var(--font-color);
+  color: var(--subtitle-color);
+  --bs-heading-color: var(--subtitle-color);
 }
 
 h6{
-  color: var(--font-color);
+  color: var(--subtitle-color);
+  --bs-heading-color: var(--subtitle-color);
 }
 
 .appPage, .app-page{

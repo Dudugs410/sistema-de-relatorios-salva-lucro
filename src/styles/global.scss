@@ -73,7 +73,7 @@
 
     border: solid var(--secondary-color) 1px;
     background-color: var(--secondary-color);
-    color:var(--font-color);
+    color:var(--primary-color);
 
 }
 
@@ -132,6 +132,11 @@
 
     --bs-table-striped-color: var(--font-color);
     --bs-table-striped-bg: rgba(var(--primary-color), 0.05);
+}
+
+.table-bordered>:not(caption)>* {
+    border-width: var(--bs-border-width) 0;
+    border-color: (var(--primary-color))
 }
 
 

@@ -266,6 +266,23 @@ function AuthProvider({ children }){
 			}
 		}
 
+		const loadBanners = async () => {
+			try {
+				const response = await api.get('bandeira')
+				return response.data
+			} catch (error) {
+				console.log(error)
+			}
+		}
+
+		const loadAdmins = async () => {
+			try {
+				const response = await api.get('adquirente')
+				return response.data
+			} catch (error) {
+				console.log(error)
+			}
+		}
 	// >>> Dashboard <<< //
 
 		// *** Definição de consts / useStates *** 
@@ -1336,6 +1353,7 @@ function AuthProvider({ children }){
 				// outros / compartilhados //
 
 				loginApp,
+				loadBanners, loadAdmins,
 				groupByAdmin, groupServicesByAdmin,
 				gerarDados, gerarDadosServicos,
 				isDarkTheme, setIsDarkTheme,

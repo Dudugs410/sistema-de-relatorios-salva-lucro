@@ -9,12 +9,12 @@ import Select from 'react-select'
 import '../../styles/global.scss'
 import './suporte.scss'
 import RadioSelect from '../../components/Componente_RadioSelect'
-import { adquirentesStatic } from '../../contexts/static'
 
 const Suporte = () =>{
     const location = useLocation();
-    const { isDarkTheme, setLoading, adquirentes, loadAdquirentes} = useContext(AuthContext)
+    const { loadAdmins} = useContext(AuthContext)
 
+    const [adminsList, setAdminsList] = useState([])
     const [dataBusca, setDataBusca] = useState([new Date, new Date])
     const [dataBuscaInicial, setDataBuscaInicial] = useState(new Date)
 
@@ -22,18 +22,26 @@ const Suporte = () =>{
         sessionStorage.setItem('currentPath', location.pathname);
     }, [location]);
 
-    useEffect(()=>{
-        async function inicializar(){
-            await loadAdquirentes();
+    useEffect(() => {
+        async function inicializar() {
+            console.log('inicializar');
+            try {
+                const response = await loadAdmins();
+                console.log('API Response:', response); // Log the API response
+                setAdminsList(response); // Update state with the API response
+            } catch (error) {
+                console.error('Error loading admins:', error); // Log any errors
+            }
         }
-        //inicializar()
-    },[])
+        inicializar();
+    }, []);
+    
 
- /*   useEffect(()=>{
-        if(adquirentes){
-            console.log('adquirentes: ', adquirentes)
+    useEffect(()=>{
+        if(adminsList){
+            console.log('adminsList: ', adminsList)
         }
-    },[adquirentes]) */
+    },[adminsList])
 
     const handleDateChange = date => {
         setDataBusca(date)
@@ -55,9 +63,7 @@ const Suporte = () =>{
 
     function handleExport(e){
         e.preventDefault()
-        setLoading(true)
         base64PDFdownload()
-        setLoading(false)
     }
 
     function handleLoadData(){
@@ -187,9 +193,9 @@ const Suporte = () =>{
         )
     }
 
-    const AutCielo = ({ isDarkTheme }) =>{
+    const AutCielo = () =>{
         return(
-            <div className={`container-cielo ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} >
+            <div className='container-cielo'>
                 <div>
                     <h4>Prezado Cliente</h4>
                     <p>Para que possamos ter acesso aos arquivos de extratos da Administradora Cielo, é necessária sua autorização eletrônica, para isso, nosso sistema está integrado com o portal da Cielo.
@@ -199,38 +205,38 @@ const Suporte = () =>{
                 <div className='suporte-content'>
                     <div className='input-suporte'>
                         <div className='input-block'>
-                            <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Estabelecimento</b></h6>
+                            <h6><b>Estabelecimento</b></h6>
                             <input className='input-suporte' type='text'/>
                         </div>
                         <div className='input-block'>
-                            <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>CNPJ</b></h6>
+                            <h6><b>CNPJ</b></h6>
                             <input className='input-suporte' type='text'/>    
                         </div>
                         <div className='input-block'>
-                            <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Razão Social</b></h6>
+                            <h6><b>Razão Social</b></h6>
                             <input className='input-suporte' type='text'/>                    
                         </div>
                         <div className='input-block'>
-                            <button className={`btn btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><FiSearch />&nbsp;Filtrar</button>
+                            <button className='btn btn-global'><FiSearch />&nbsp;Filtrar</button>
                         </div>
                     </div>
-                    <hr className={`hr-global ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}/>
+                    <hr className='hr-global'/>
                     <PlaceHolder />
                     <div className='input-suporte'>
                         <div className='input-block'>
-                            <button className={`btn btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><FiLock />&nbsp;Autorizar</button>
+                            <button className='btn btn-global'><FiLock />&nbsp;Autorizar</button>
                         </div>
                         <div className='input-block'>
-                            <button className={`btn btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><FiCheckSquare />&nbsp;Consultar Status</button>
+                            <button className='btn btn-global'><FiCheckSquare />&nbsp;Consultar Status</button>
                         </div>
                         <div className='input-block'>
-                            <button className={`btn btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><FiActivity />&nbsp;Credenciar</button>
+                            <button className='btn btn-global'><FiActivity />&nbsp;Credenciar</button>
                         </div>
                         <div className='input-block'>
-                            <button className={`btn btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><FiUpload />&nbsp;Atualizar Status</button>
+                            <button className='btn btn-global'><FiUpload />&nbsp;Atualizar Status</button>
                         </div>
                         <div className='input-block'>
-                            <button className={`btn btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><FiCopy />&nbsp;Duplicação</button>
+                            <button className='btn btn-global'><FiCopy />&nbsp;Duplicação</button>
                         </div>
                     </div>
                 </div>
@@ -238,35 +244,35 @@ const Suporte = () =>{
         )
     }
 
-    const AutStone = ({ isDarkTheme }) =>{
+    const AutStone = () =>{
         return(
-            <div className={`container-cielo ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} >
+            <div className='container-cielo'>
                 <div className='suporte-content'>
                     <div className='input-suporte'>
                         <div className='input-block'>
-                            <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Estabelecimento</b></h6>
+                            <h6><b>Estabelecimento</b></h6>
                             <input className='input-suporte' type='text'/>
                         </div>
                         <div className='input-block'>
-                            <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>CNPJ</b></h6>
+                            <h6><b>CNPJ</b></h6>
                             <input className='input-suporte' type='text'/>    
                         </div>
                         <div className='input-block'>
-                            <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Razão Social</b></h6>
+                            <h6><b>Razão Social</b></h6>
                             <input className='input-suporte' type='text'/>                    
                         </div>
                         <div className='input-block'>
-                            <button className={`btn btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><FiSearch />&nbsp;Filtrar</button>
+                            <button className='btn btn-global'><FiSearch />&nbsp;Filtrar</button>
                         </div>
                     </div>
-                    <hr className={`hr-global ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}/>
+                    <hr className='hr-global'/>
                     <PlaceHolder />
                     <div className='input-suporte'>
                         <div className='input-block'>
-                            <button className={`btn btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><FiLock />&nbsp;Autorizar</button>
+                            <button className='btn btn-global'><FiLock />&nbsp;Autorizar</button>
                         </div>
                         <div className='input-block'>
-                            <button className={`btn btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><FiUpload />&nbsp;Atualizar Status</button>
+                            <button className='btn btn-global'><FiUpload />&nbsp;Atualizar Status</button>
                         </div>
                     </div>
                 </div>
@@ -274,38 +280,38 @@ const Suporte = () =>{
         )
     }
 
-    const AutRedeCard = ({isDarkTheme}) =>{
+    const AutRedeCard = () =>{
         return(
-            <div className={`container-cielo ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} >
+            <div className='container-cielo' >
                 <div className='suporte-content'>
                     <div className='input-suporte'>
                         <div className='input-block'>
-                            <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Estabelecimento</b></h6>
+                            <h6><b>Estabelecimento</b></h6>
                             <input className='input-suporte' type='text'/>
                         </div>
                         <div className='input-block'>
-                            <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>CNPJ</b></h6>
+                            <h6><b>CNPJ</b></h6>
                             <input className='input-suporte' type='text'/>    
                         </div>
                         <div className='input-block'>
-                            <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Razão Social</b></h6>
+                            <h6><b>Razão Social</b></h6>
                             <input className='input-suporte' type='text'/>                    
                         </div>
                         <div className='input-block'>
-                            <button className={`btn btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><FiSearch />&nbsp;Filtrar</button>
+                            <button className='btn btn-global'><FiSearch />&nbsp;Filtrar</button>
                         </div>
                     </div>
-                    <hr className={`hr-global ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}/>
+                    <hr className='hr-global'/>
                     <PlaceHolder />
                     <div className='input-suporte'>
                         <div className='input-block'>
-                            <button className={`btn btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><FiLock />&nbsp;Autorizar</button>
+                            <button className='btn btn-global'><FiLock />&nbsp;Autorizar</button>
                         </div>
                         <div className='input-block'>
-                            <button className={`btn btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><FiActivity />&nbsp;Credenciar</button>
+                            <button className='btn btn-global'><FiActivity />&nbsp;Credenciar</button>
                         </div>
                         <div className='input-block'>
-                            <button className={`btn btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><FiUpload />&nbsp;Atualizar Status</button>
+                            <button className='btn btn-global'><FiUpload />&nbsp;Atualizar Status</button>
                         </div>
                     </div>
                 </div>
@@ -313,35 +319,35 @@ const Suporte = () =>{
         )
     }
     
-    const AutC6 = ({ isDarkTheme }) =>{
+    const AutC6 = () =>{
         return(
-            <div className={`container-cielo ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} >
+            <div className='container-cielo' >
                 <div className='suporte-content'>
                     <div className='input-suporte'>
                         <div className='input-block'>
-                            <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Estabelecimento</b></h6>
+                            <h6><b>Estabelecimento</b></h6>
                             <input className='input-suporte' type='text'/>
                         </div>
                         <div className='input-block'>
-                            <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>CNPJ</b></h6>
+                            <h6><b>CNPJ</b></h6>
                             <input className='input-suporte' type='text'/>    
                         </div>
                         <div className='input-block'>
-                            <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Razão Social</b></h6>
+                            <h6><b>Razão Social</b></h6>
                             <input className='input-suporte' type='text'/>                    
                         </div>
                         <div className='input-block'>
-                            <button className={`btn btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><FiSearch />&nbsp;Filtrar</button>
+                            <button className='btn btn-global'><FiSearch />&nbsp;Filtrar</button>
                         </div>
                     </div>
-                    <hr className={`hr-global ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}/>
+                    <hr className='hr-global'/>
                     <PlaceHolder />
                     <div className='input-suporte'>
                         <div className='input-block'>
-                            <button className={`btn btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><FiLock />&nbsp;Autorizar</button>
+                            <button className='btn btn-global'><FiLock />&nbsp;Autorizar</button>
                         </div>
                         <div className='input-block'>
-                            <button className={`btn btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><FiUpload />&nbsp;Atualizar Status</button>
+                            <button className='btn btn-global'><FiUpload />&nbsp;Atualizar Status</button>
                         </div>
                     </div>
                 </div>
@@ -352,51 +358,51 @@ const Suporte = () =>{
     const radioOptions = [{value: 0, label: 'Identificados'},{value: 1, label: 'Pendentes'}]
     const [radioOption, setRadioOption] = useState(null)
 
-    const GestaoAdq = ({isDarkTheme}) =>{
+    const GestaoAdq = () =>{
         return(
-            <div className={`container-cielo ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} >
+            <div className='container-cielo' >
                 <div className='suporte-content'>
                     <div className='input-suporte'>
                         <div className='input-block'>
-                            <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Estabelecimento</b></h6>
+                            <h6><b>Estabelecimento</b></h6>
                             <input className='input-suporte' type='text'/>
                         </div>
                         <div className='input-block'>
-                            <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>CNPJ</b></h6>
+                            <h6><b>CNPJ</b></h6>
                             <input className='input-suporte' type='text'/>    
                         </div>
                         <div className='input-block'>
-                            <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Razão Social</b></h6>
+                            <h6><b>Razão Social</b></h6>
                             <input className='input-suporte' type='text'/>                    
                         </div>
                         <div className='input-block'>
-                            <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Código do Cliente</b></h6>
+                            <h6><b>Código do Cliente</b></h6>
                             <input className='input-suporte' type='text'/>                    
                         </div>
                         <div className='input-block'>
                             <div className='radio-suporte'><RadioSelect options={radioOptions} onSelect={(e) => {setRadioOption(e)}}/></div>
                         </div>
                         <div className='input-block'>
-                            <button className={`btn btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><FiSearch />&nbsp;Filtrar</button>
+                            <button className='btn btn-global'><FiSearch />&nbsp;Filtrar</button>
                         </div>
                     </div>
-                    <hr className={`hr-global ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}/>
+                    <hr className='hr-global'/>
                     <PlaceHolder2 />
                 </div>
             </div>
         )
     }
 
-    const ConsultaArquivo = ({isDarkTheme}) =>{
+    const ConsultaArquivo = () =>{
         return(
             <div className='suporte-content'>
                 <div className='input-suporte'>
                     <div className='input-block'>
-                        <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Nome do Arquivo</b></h6>
+                        <h6><b>Nome do Arquivo</b></h6>
                         <input className='input-suporte' type='text'/>
                     </div>
                     <div className='input-block'>
-                        <button className={`btn btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><FiSearch />&nbsp;Filtrar</button>
+                        <button className='btn btn-global'><FiSearch />&nbsp;Filtrar</button>
                     </div>
                 </div>
                 <div className='consulta-arquivos'>
@@ -406,47 +412,47 @@ const Suporte = () =>{
         )
     }
 
-    const CorrigirAdq = ({isDarkTheme}) =>{
+    const CorrigirAdq = () =>{
         return(
-            <div className={`container-cielo ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} >
+            <div className='container-cielo' >
                 <div>
-                    <p>Realiza a correção dos cruzamentos entre Clientes x Adquirentes cadastrados incorretamente.</p>
+                    <p>Realiza a correção dos cruzamentos entre Clientes x adminsList cadastrados incorretamente.</p>
                     <br/><br/>
                 </div>
                 <div className='input-suporte-correcao'>
                     <div className='input-block-correcao'>
-                        <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Adquirente *</b></h6>
+                        <h6><b>Adquirente *</b></h6>
                         <input className='input-suporte input-correcao' type='text'/>
                     </div>
                     <br/>
                     <div className='input-block-correcao'>
-                        <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Cód do Estabelecimento na Adquirente *</b></h6>
+                        <h6><b>Cód do Estabelecimento na Adquirente *</b></h6>
                         <input className='input-suporte input-correcao' type='text'/>
                     </div>
                     <br/>
                     <div className='input-block-correcao'>
-                        <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>CNPJ Origem *</b></h6>
+                        <h6><b>CNPJ Origem *</b></h6>
                         <input className='input-suporte input-correcao' type='text'/>                    
                     </div>
                     <br/>
                     <div className='input-block-correcao'>
-                        <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Razão Social Origem</b></h6>
+                        <h6><b>Razão Social Origem</b></h6>
                         <input className='input-suporte input-correcao' type='text'/>                    
                     </div>
                     <br/>
                     <div className='input-block-correcao'>
-                        <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>CNPJ Destino *</b></h6>
+                        <h6><b>CNPJ Destino *</b></h6>
                         <input className='input-suporte input-correcao' type='text'/>                    
                     </div>
                     <br/>
                     <div className='input-block-correcao'>
-                        <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Razão Social Destino</b></h6>
+                        <h6><b>Razão Social Destino</b></h6>
                         <input className='input-suporte input-correcao' type='text'/>                    
                     </div>
                     <br/>
                     <hr className='hr-global'/>
                     <div className='input-block-correcao'>
-                        <button className={`btn btn-global btn-correcao ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Aplicar Correção</button>
+                        <button className='btn btn-global btn-correcao'>Aplicar Correção</button>
                     </div>
                     <div className='input-block-corração'>
                         <p className='p-correcao'>Campos com * são obrigatórios</p>
@@ -465,13 +471,10 @@ const Suporte = () =>{
         setAdqSelecionada(adq)
     }
 
-    useEffect(()=>{
-        console.log('adqSelecionada: ', adqSelecionada)
-    },[adqSelecionada])
-
     useEffect(()=>{     
-        if (adquirentes && adquirentes.length > 0) {
-            const sortedOptions = adquirentes
+        if (adminsList && adminsList.length > 0) {
+            console.log(adminsList)
+            const sortedOptions = adminsList
                 .map((ADQ) => ({
                     value: ADQ.codigoAdquirente,
                     label: ADQ.nomeAdquirente,
@@ -483,21 +486,20 @@ const Suporte = () =>{
         } else {
             setAdqFiltradas([])
         } 
-    },[adquirentes])
+    },[adminsList])
 
-    const RelatorioCliAdq = ({isDarkTheme, adqSelecionada}) =>{
+    const RelatorioCliAdq = () =>{
         return(
-            <div className={`container-cielo ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} >
+            <div className='container-cielo' style={{marginBottom: '300px'}} >
                 <div>
                     <p>Gera um arquivo Excel com todos <b>Clientes</b> que possuem a <b>Adquirente</b> selecionada.</p>
                     <br/><br/>
                 </div>
                 <div className='input-suporte-cli-adq'>
-                    <div className='input-block-cli-adq'>
-                        <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Adquirente *</b></h6>
+                    <div className='select-container'>
+                        <h6><b>Adquirente *</b></h6>
                         {adqfiltradas.length > 0 ? (
                             <Select
-                                className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
                                 options={adqfiltradas}
                                 onChange={handleAdqChange}
                                 value={adqSelecionada}
@@ -506,7 +508,7 @@ const Suporte = () =>{
                     </div>
                     <br/>
                     <div className='input-block-cli-adq'>
-                        <button className={`btn btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><FiFilePlus /> &nbsp; Gerar Excel</button>
+                        <button className='btn btn-global'><FiFilePlus /> &nbsp; Gerar Excel</button>
                     </div>
                 </div>
             </div>
@@ -521,7 +523,7 @@ const Suporte = () =>{
         {value: 4, label: 'Gestão de Adquirentes', componente: GestaoAdq},
         {value: 5, label: 'Consulta de Arquivos Importados', componente: ConsultaArquivo},
         {value: 6, label: 'Corrigir Cadastro de Adquirente', componente: CorrigirAdq},
-        {value: 7, label: 'Clientes por Adquirentes', componente: RelatorioCliAdq},
+        {value: 7, label: 'Clientes por Adquirente', componente: RelatorioCliAdq},
     ]
     const [tipoOpcao, setTipoOpcao] = useState(null)
     useEffect(()=>{
@@ -536,17 +538,17 @@ const Suporte = () =>{
     }
 
     return(
-      <div className={`appPage ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-        <div className={`page-background-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-          <div className={`page-content-global page-content-exportacao ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-            <div className={`title-container-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-              <h1 className={`title-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Suporte</h1>
+      <div className='appPage'>
+        <div className='page-background-global'>
+          <div className='page-content-global page-content-exportacao'>
+            <div className='title-container-global'>
+              <h1 className='title-global'>Suporte</h1>
             </div>
-            <hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
+            <hr className='hr-global'/>
             <div className='page-suporte-content'>
                 <div className=''>
                     <form className='form-suporte'>
-                        <h5 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Tipo</h5>
+                        <h5>Tipo</h5>
                         <Select
                             value={tipoOpcao} 
                             onChange={handleTipoOpcao}
@@ -558,8 +560,8 @@ const Suporte = () =>{
                     <hr className='hr-global'/>
                     {tipoOpcao && (
                         <div style={{width: '100%', height: '100%'}}>
-                            <h5 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} style={{paddingTop: '5px', paddingBottom: '5px'}}>{tipoOpcao.label}</h5>
-                            {tipoOpcao.componente && <tipoOpcao.componente isDarkTheme={isDarkTheme} />} {/* Render the component if it exists */}
+                            <h5 style={{paddingTop: '5px', paddingBottom: '5px'}}>{tipoOpcao.label}</h5>
+                            {tipoOpcao.componente && <tipoOpcao.componente />} {/* Render the component if it exists */}
                         </div>
                     )}
                 </div>

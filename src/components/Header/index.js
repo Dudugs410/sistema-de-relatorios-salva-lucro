@@ -85,7 +85,7 @@ const Header = () => {
                   root.style.setProperty('--calendar-btn-navigation-color', 'var(--calendar-btn-navigation-color-dark)')
                   root.style.setProperty('--calendar-neighbor-bg', 'var(--calendar-neighbor-bg-dark)')
                   root.style.setProperty('--subtitle-color', 'var(--subtitle-dark)')
-
+                    
                 } else { 
                   root.style.setProperty('--primary-color', 'var(--primary-color-light)')
                   root.style.setProperty('--secondary-color', 'var(--secondary-color-light)')

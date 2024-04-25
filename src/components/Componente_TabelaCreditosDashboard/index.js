@@ -23,7 +23,6 @@ const TabelaCreditosDashboard = ({array}) =>{
 	const [banSelecionada, setBanSelecionada] = useState('')
 	const [adqSelecionada, setAdqSelecionada] = useState('')
 
-
 	//adicionando páginas à tabela:
 
 	const [currentPage, setCurrentPage] = useState(1)
@@ -54,11 +53,6 @@ const TabelaCreditosDashboard = ({array}) =>{
 	const indexOfLastItem = currentPage * itemsPerPage
 	const indexOfFirstItem = indexOfLastItem - itemsPerPage
 	const currentItems = vendasExibicao.slice(indexOfFirstItem, indexOfLastItem)
-  
-	// Change page
-	const paginate = (pageNumber) => {
-		setCurrentPage(pageNumber)
-	}
 
 	// // // // // // // // // // // // // // // // // // // // // // // // // // //
 
