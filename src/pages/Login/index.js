@@ -9,6 +9,8 @@ import LoadingModal from "../../components/LoadingModal"
 import api from "../../services/api"
 import md5 from "md5"
 
+//teste home
+
 ///////////////////////////////////////////////////////////////
 
 const Login = () => {
