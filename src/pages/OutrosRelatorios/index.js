@@ -58,7 +58,7 @@ const OutrosRelatorios = () =>{
         base64PDFdownload()
     }
 
-    const botao = <button className={`btn-outros-relatorios ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><FiTrash2 /></button>
+    const botao = <button className='btn-outros-relatorios'><FiTrash2 /></button>
 
     const PlaceHolder = () =>{
         return(
@@ -188,13 +188,13 @@ const OutrosRelatorios = () =>{
     }
 
     return(
-      <div className={`appPage ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-        <div className={`page-background-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-          <div className={`page-content-global page-content-exportacao ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-            <div className={`title-container-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+      <div className='appPage'>
+        <div className='page-background-global'>
+          <div className='page-content-global page-content-exportacao'>
+            <div className='title-container-global'>
               <h1 className='title-global'>Outros Relatórios</h1>
             </div>
-            <hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
+            <hr className='hr-global'/>
             <div className='container-financeiro' style={{width: '100%'}}>
                 <h5 className='subtitle'>Resumo Mensal Agendado</h5>
                 <br/>
@@ -202,11 +202,11 @@ const OutrosRelatorios = () =>{
                     <div className='select-elements-container'>
                         <PlaceHolder />
                         <br/>
-                        <button className={`btn btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={incluir}><FiPlus/>&nbsp;Incluir</button>
+                        <button className='btn btn-global' onClick={incluir}><FiPlus/>&nbsp;Incluir</button>
                     </div>
                 </form>
             </div>
-            <hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
+            <hr className='hr-global'/>
             <div className='container-financeiro'>
                 <h5 className='subtitle'>Relatório de Arquivos Importados</h5>
                 <br/>
@@ -242,7 +242,7 @@ const OutrosRelatorios = () =>{
                         </div>
                         <div className='input-block-cli-adq'>
                             <h6 className='subtitle'><b>Gerar</b></h6>
-                            <button className={`btn btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><FiFilePlus /> &nbsp; XLS</button>
+                            <button className='btn btn-global'><FiFilePlus /> &nbsp; XLS</button>
                         </div>
                     </div>
                 </form>

@@ -5,17 +5,31 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './Calendar.scss'
 import '../../styles/global.scss'
+import { useLocation } from "react-router-dom";
 
 const MyCalendar = ({ onLoadData, getCalendarDate }) => {
-    const { isDarkTheme, isCheckedCalendar } = useContext(AuthContext)
+    const { isCheckedCalendar } = useContext(AuthContext)
+
+    const location = useLocation();
     
     const [dateRange, setDateRange] = useState([new Date(), new Date()]);
+    const [allowRange, setAllowRange] = useState(true)
 
     useEffect(()=>{
+      if(location.pathname === '/sysmo'){
+        setAllowRange(false)
+      } else {
+        setAllowRange(true)
+      }
+    },[location])
+
+    useEffect(()=>{
+      console.log('date range antes de dar m... : ', dateRange)
       getCalendarDate(dateRange)
     },[dateRange])
 
     const handleDateChange = (date) =>{
+      
       setDateRange(date)
     }
 
@@ -23,6 +37,7 @@ const MyCalendar = ({ onLoadData, getCalendarDate }) => {
     const MyDatePicker = () => {
       return (
         <div className='form-container-picker'>
+          <hr className='hr-global'/>
           <div className='select-elements-container-picker'>
             <div className='container-select'>
               <span className='span-picker'>Data Inicial</span>
@@ -50,7 +65,7 @@ const MyCalendar = ({ onLoadData, getCalendarDate }) => {
         <Calendar
           style={{ color:'white' }}
           onChange={ handleDateChange }
-          selectRange={true}
+          selectRange={allowRange}
           value={ dateRange }
         />
  
@@ -69,8 +84,8 @@ const MyCalendar = ({ onLoadData, getCalendarDate }) => {
           </span>
         </div>
         <hr className='hr-global'/>
-        <button className='btn btn-primary btn-global btn-pesquisar' onClick={ onLoadData }>Pesquisar</button>
-        <hr className='hr-global'/>
+        {(sessionStorage.getItem('currentPath') === ('/vendas' || '/creditos' || '/servicos')) ? <button className='btn btn-primary btn-global btn-pesquisar' onClick={ onLoadData }>Pesquisar</button> : <></>}
+        {(sessionStorage.getItem('currentPath') === ('/vendas' || '/creditos' || '/servicos')) ? <hr className='hr-global'/> : <></>}
       </div>
     )
   }

@@ -24,7 +24,6 @@ const Vendas = () =>{
   }, [location]);
 
   const {
-    isDarkTheme, setIsDarkTheme,
     salesPageArray, setSalesPageArray,
     salesPageAdminArray, setSalesPageAdminArray,
     salesDateRange, setSalesDateRange,
@@ -33,11 +32,6 @@ const Vendas = () =>{
     
     alerta, gerarDados,
   } = useContext(AuthContext)
-
-  useEffect(()=>{
-    setIsDarkTheme(JSON.parse(localStorage.getItem('isDark')))
-    Cookies.set('tipo', 'vendas')
-  },[])
 
   useEffect(()=>{
     if(salesPageArray.length>0){
@@ -86,11 +80,11 @@ const Vendas = () =>{
   }
 
   return(
-      <div className={`appPage ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-        <div className={`page-vendas-background ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-          <div className={`page-content-vendas ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-            <div className={`vendas-title-container ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-              <h1 className={`vendas-title ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Calendário de Vendas</h1>
+      <div className='appPage'>
+        <div className='page-vendas-background'>
+          <div className='page-content-vendas'>
+            <div className='vendas-title-container'>
+              <h1 className='vendas-title'>Calendário de Vendas</h1>
             </div>
             <div className='component-container-vendas'>
               { salesPageArray.length > 0 ? 

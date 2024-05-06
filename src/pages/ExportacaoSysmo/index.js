@@ -7,10 +7,11 @@ import './exportacao.scss'
 import MyCalendar from '../../components/Componente_Calendario';
 import base64PDFdownload from '../../components/Componente_Base64PDF';
 import RadioSelect from '../../components/Componente_RadioSelect';
+import Cookies from 'js-cookie'
 
 const ExportacaoSysmo = () =>{
     const location = useLocation();
-    const { loadBanners, loadAdmins } = useContext(AuthContext)
+    const { loadBanners, loadAdmins, loadSysmo } = useContext(AuthContext)
 
     const [dataBusca, setDataBusca] = useState([new Date, new Date])
 
@@ -25,10 +26,12 @@ const ExportacaoSysmo = () =>{
     const [selectedBan, setSelectedBan] = useState('Selecione')
     const [selectedAdm, setSelectedAdm] = useState('Selecione')
 
+    const [obj, setObj] = useState({})
+
     const [type, setType] = useState('')
     const radioOptions = [
         {value: 'Vendas', label: 'Vendas'}, 
-        {value: 'Creditos', label: 'Créditos'}
+        {value: 'Recebimentos', label: 'Créditos'}
     ]
 
     useEffect(() => {
@@ -51,20 +54,19 @@ const ExportacaoSysmo = () =>{
       },[])
 
     useEffect(() => {
-        if(bannersList){
-            if (bannersList.length > 0) {
-                const bannersListOptions = bannersList.map(banner => ({ value: banner.codigoBandeira, label: banner.descricaoBandeira }));
-                setBanOptions(bannersListOptions);
-            }
+        if(bannersList && bannersList.length > 0){
+            const bannersListOptions = bannersList.map(banner => ({ value: banner.codigoBandeira, label: banner.descricaoBandeira }));
+            bannersListOptions.unshift({label: "TODOS", value: 0}); // Add the new option as the first object
+            setBanOptions(bannersListOptions);
         }
     }, [bannersList]);
+    
 
     useEffect(() => {
-        if(adminsList){
-            if (adminsList.length > 0) {
-                const adminsListOptions = adminsList.map(admin => ({ value: admin.codigoAdquirente, label: admin.nomeAdquirente }));
-                setAdmOptions(adminsListOptions);
-            }
+        if (adminsList && adminsList.length > 0) {
+            const adminsListOptions = adminsList.map(admin => ({ value: admin.codigoAdquirente, label: admin.nomeAdquirente }));
+            adminsListOptions.unshift({label: "TODOS", value: 0}); // Add the new option as the first object
+            setAdmOptions(adminsListOptions);
         }
     }, [adminsList]);
 
@@ -82,6 +84,8 @@ const ExportacaoSysmo = () =>{
 
     function handleExport(e){
         e.preventDefault()
+        console.log('handleExport...')
+        loadSysmo(obj)
         base64PDFdownload()
     }
 
@@ -94,12 +98,22 @@ const ExportacaoSysmo = () =>{
     }
 
     useEffect(()=>{
-        console.log('Parâmetros Selecionados: ',
-        'Type: ', type,
-        'Bandeira: ', selectedBan,
-        'Adquirente: ', selectedAdm,
-        'Data: ', dataBusca)
-    },[type])
+        /*if(type === 'Vendas'){
+            setType('Venda')
+        } else if(type === 'Creditos'){
+            setType('Credito')
+        }*/
+        setObj({
+            TIPO: type,
+            Bandeira: selectedBan.value,
+            Adquirente: selectedAdm.value,
+            Data: dataBusca[0].toLocaleDateString('pt-BR'),  
+        })
+    },[type, selectedBan, selectedAdm, dataBusca])
+
+    useEffect(()=>{
+        console.log('obj : ', obj)
+    },[obj])
 
     function handleLoadData(){
         console.log('loadData')

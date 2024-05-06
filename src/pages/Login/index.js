@@ -15,7 +15,6 @@ const Login = () => {
     const {
         loginApp,
         isSignedIn, 
-        setIsDarkTheme,
     } = useContext(AuthContext)
     const navigate = useNavigate()
 

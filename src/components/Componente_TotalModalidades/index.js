@@ -16,25 +16,25 @@ const TotalModalidadesComp = ({totals}) =>{
 		<>
 			<hr className="hr-global"/>
 			<div className='content-container-modalidade'>
-				<div className={`total-container-modalidade ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+				<div className='total-container-modalidade'>
 					<div className='text-container-modalidade'>
 						<h1 className='title-modalidade'>Débito</h1>
 						<p className='text-modalidade'>TOTAL: <span className='green-modalidade'>{Number(debit).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></p>
 					</div>
 				</div>
-				<div className={`total-container-modalidade ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+				<div className='total-container-modalidade'>
 					<div className='text-container-modalidade'>
 						<h1 className='title-modalidade'>Crédito</h1>
 						<p className='text-modalidade'>TOTAL: <span className='green-modalidade'>{Number(credit).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></p>
 					</div>
 				</div>
-				<div className={`total-container-modalidade ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}> 
+				<div className='total-container-modalidade'> 
 					<div className='text-container-modalidade'>
 						<h1 className='title-modalidade'>Voucher</h1>
 						<p className='text-modalidade'>TOTAL: <span className='green-modalidade span-modalidade'>{Number(voucher).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></p>
 					</div>
 				</div>
-				<div className={`total-container-modalidade ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}> 
+				<div className='total-container-modalidade'> 
 					<div className='text-container-modalidade'>
 						<h1 className='title-modalidade'>{sessionStorage.getItem('currentPath') === '/vendas' ? 'Total Bruto' : 'Total Líquido'}</h1>
 						<p className='text-modalidade'>TOTAL: <span className='green-modalidade'>{Number(total).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></p>

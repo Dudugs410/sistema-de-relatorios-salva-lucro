@@ -22,20 +22,14 @@ const Creditos = () =>{
 	}, [location]);
   
 	const {
-	  isDarkTheme, setIsDarkTheme,
 	  creditsPageArray, setCreditsPageArray,
 	  creditsPageAdminArray, setCreditsPageAdminArray,
 	  creditsDateRange, setCreditsDateRange,
 	  loadCredits, loadTotalCredits, creditsTotal, setCreditsTotal, tableData,
 	  groupByAdmin,
 
-	  alerta,
 	} = useContext(AuthContext)
   
-	useEffect(()=>{
-		setIsDarkTheme(JSON.parse(localStorage.getItem('isDark')))
-		Cookies.set('tipo', 'creditos')
-	  },[])
 
 	useEffect(()=>{
 		if(creditsPageArray.length>0){
@@ -88,17 +82,17 @@ const Creditos = () =>{
   }
 
 	return(
-		<div className={`appPage ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-		  <div className={`page-vendas-background ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-			<div className={`page-content-vendas ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-			  <div className={`vendas-title-container ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-				<h1 className={`vendas-title ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Calendário de Créditos</h1>
+		<div className='appPage'>
+		  <div className='page-vendas-background'>
+			<div className='page-content-vendas'>
+			  <div className='vendas-title-container'>
+				<h1 className='vendas-title'>Calendário de Créditos</h1>
 			  </div>
 			  <div className='component-container-vendas'>
 				{ creditsPageArray.length > 0 ? 
           <DisplayData dataArray={creditsPageArray} adminDataArray={creditsPageAdminArray} totals={creditsTotal} tableData={tableData} onGoBack={resetValues}/>
           : 
-          <MyCalendar className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange}/> }
+          <MyCalendar onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange}/> }
 			  </div>
 			</div>
 		  </div>

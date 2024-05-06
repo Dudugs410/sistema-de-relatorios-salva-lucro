@@ -10,10 +10,10 @@ const LoadingModal = () => {
 
     return(
         <>
-            <div className={`loading-modal ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
+            <div className='loading-modal'>
                 {/*<LoadingIcons.TailSpin stroke='white'/>*/}
                 {/*<br/>*/}
-                <ProgressBar animated now={100} label={'Carregando'} className={`${isDarkTheme ? 'dark-theme' : 'light-theme'}`} />
+                <ProgressBar animated now={100} label={'Carregando'}/>
             </div>
         </>
     )

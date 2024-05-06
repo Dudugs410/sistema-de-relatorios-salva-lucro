@@ -208,23 +208,6 @@ const TabelaVendas = ({array}) =>{
 		}
 	}, [bandeirasExistentes])
 
-
-	///////////////////////////////////////////////////////////////////////////////////////////////////
-
-	//useEffects que mostram o array de bandeiras/adquirentes atualizado, após o filtro.
-
-	/*
-	useEffect(() => {
-		console.log('adquirentes: ', adquirentesExistentes)
-
-	}, [adquirentesExistentes])
-
-	useEffect(() => {
-		console.log('bandeiras: ', bandeirasExistentes)
-
-	}, [bandeirasExistentes])
-	*/
-
 	// função que altera lista de adquirentes de acordo com a bandeira/adq selecionada, para que o usuário só tenha opções existentes
 	function atualizaADQ(){
 		const adquirentesTemp = []
@@ -313,8 +296,8 @@ const TabelaVendas = ({array}) =>{
 					<div className='date-picker-container'>
 						<div className='date-column'>
 							<div className='select-card select-align select-align-filtro'>
-								<span className={`span-str ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>Adquirente</span>
-								<select className={`${isDarkTheme ? 'dark-theme' : 'light-theme'}`} id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}}>
+								<span className='span-str'>Adquirente</span>
+								<select id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}}>
 									<option value=''>Todas</option>
 									{adquirentesExistentes.map((ADQ)=>(
 										<option key={ADQ} value={ADQ}>{ADQ}</option>
@@ -324,8 +307,8 @@ const TabelaVendas = ({array}) =>{
 						</div>
 						<div className='date-column'>
 							<div className='select-card select-align select-align-filtro'>
-								<span className={`span-str ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>Bandeira</span>
-								<select className={`${isDarkTheme ? 'dark-theme' : 'light-theme'}`} id='bandeira' value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}}>
+								<span className='span-str'>Bandeira</span>
+								<select id='bandeira' value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}}>
 									<option value='' defaultValue={'Todas'}>Todas</option>
 									{bandeirasExistentes.map((BAN)=>(
 										<option key={BAN} value={BAN}>{BAN}</option>
@@ -334,9 +317,9 @@ const TabelaVendas = ({array}) =>{
 							</div>
 						</div>
 					</div>
-				<hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
+				<hr className='hr-global'/>
 				<div className='container-busca'>
-						<span className={`span-busca ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+						<span className='span-busca'>
 							{salesDateRange[0].toLocaleDateString('pt-BR') !== salesDateRange[1].toLocaleDateString('pt-BR') ? 
 								<span dangerouslySetInnerHTML={{__html: `Exibindo Vendas do dia <strong>${salesDateRange[0].toLocaleDateString('pt-BR')}</strong> ao dia <strong>${salesDateRange[1].toLocaleDateString('pt-BR')}</strong>`}} /> : 
 								<span dangerouslySetInnerHTML={{__html: `Exibindo Vendas do dia <strong>${salesDateRange[0].toLocaleDateString('pt-BR')}</strong>`}} />
@@ -377,8 +360,8 @@ const TabelaVendas = ({array}) =>{
 										<td className='det-td-vendas-global'data-label="Bandeira">{venda.bandeira.descricaoBandeira}</td>
 										<td className='det-td-vendas-global'data-label="Produto">{venda.produto.descricaoProduto}</td>
 										<td className='det-td-vendas-global'data-label="Subproduto">{venda.modalidade.descricaoModalidade}</td>
-										<td className='det-td-vendas-global'data-label="Valor Bruto"><span className={`green-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>{Number(venda.valorBruto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
-										<td className='det-td-vendas-global'data-label="Valor Líquido"><span className={`green-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>{Number(venda.valorLiquido).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
+										<td className='det-td-vendas-global'data-label="Valor Bruto"><span className='green-global'>{Number(venda.valorBruto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
+										<td className='det-td-vendas-global'data-label="Valor Líquido"><span className='green-global'>{Number(venda.valorLiquido).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
 										<td className='det-td-vendas-global'data-label="Taxa"><span className='red-global'>{Number(venda.taxa).toFixed(2)}%</span></td>
 										<td className='det-td-vendas-global'data-label="Valor Desconto"><span className='red-global'>{Number(venda.valorDesconto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
 										<td className='det-td-vendas-global'data-label="NSU">{venda.nsu}</td>
@@ -395,36 +378,36 @@ const TabelaVendas = ({array}) =>{
 					</table> 
 				</div>
 			</div>
-			<hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
+			<hr className='hr-global'/>
 			{vendasExibicao.length > itemsPerPage && (
 				<div className="container-btn-pagina">
 					<button
-						className={`btn btn-primary btn-global btn-skip ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}
+						className='btn btn-primary btn-global btn-skip'
 						onClick={goToFirstPage}
 						disabled={currentPage === 1} // Disable if already on the first page
 					>
 						<FiSkipBack />
 					</button>
 					<button
-						className={`btn btn-primary btn-global btn-navigate ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}
+						className='btn btn-primary btn-global btn-navigate'
 						onClick={goToPrevPage}
 						disabled={currentPage === 1} // Disable if it's the first page
 					>
 						<FiChevronLeft/> {/* Left arrow */}
 					</button>
-					<div className={`pagina-atual ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
-						<span className={`texto-paginacao ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>Página </span>
-						<span className={`texto-paginacao ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>{currentPage}</span>
+					<div className='pagina-atual'>
+						<span className='texto-paginacao'>Página </span>
+						<span className='texto-paginacao'>{currentPage}</span>
 					</div>
 					<button
-						className={`btn btn-primary btn-global btn-navigate ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}
+						className='btn btn-primary btn-global btn-navigate'
 						onClick={goToNextPage}
 						disabled={currentPage === Math.ceil(vendasExibicao.length / itemsPerPage)} // Disable if it's the last page
 					>
 						<FiChevronRight/> {/* Right arrow */}
 					</button>
 					<button
-						className={`btn btn-primary btn-global btn-skip ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}
+						className='btn btn-primary btn-global btn-skip'
 						onClick={goToLastPage}
 						disabled={currentPage === Math.ceil(vendasExibicao.length / itemsPerPage)} // Disable if already on the last page
 					>

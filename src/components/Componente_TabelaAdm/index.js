@@ -25,7 +25,7 @@ export default function TabelaGenericaAdm({Array, textColor}) {
 									return (
 										<tr key={elemento.id}>
 											<td className='det-td-global det-vendas-global' data-label="Adquirente">{elemento.adminName}</td>
-											<td className='det-td-global det-vendas-global' data-label="Total"><span className={`${Number(elemento.total) >= 0 ? 'span-table-servicos-green' : 'span-table-servicos-red'} ${textColor? textColor: 'green-global'} ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>{Number(elemento.total).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
+											<td className='det-td-global det-vendas-global' data-label="Total"><span className={`${Number(elemento.total) >= 0 ? 'span-table-servicos-green' : 'span-table-servicos-red'} ${textColor? textColor: 'green-global'} `}>{Number(elemento.total).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
 										</tr>
 									)
 								})}

@@ -44,6 +44,60 @@
     color: var(--primary-color);
 }
 
+.container-global{
+    width: 100%;
+    padding: 1%;
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    border-radius: 20px;
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 54px;
+    transition: all .4s;
+}
+
+.css-13cymwt-control{
+    background-color: var(--background-color) !important;
+}
+
+.css-1dimb5e-singleValue{
+    color: var(--font-color) !important;
+}
+
+.css-t3ipsp-control {
+    color: var(--font-color) !important;
+    background-color: var(--background-color) !important;
+    border-color: var(--secondary-color) !important;
+    box-shadow: 0 0 0 1px var(--secondary-color) !important;
+}
+
+.css-t3ipsp-control:hover{
+    border-color: var(--secondary-color) !important;
+    box-shadow: 0 0 0 1px var(--secondary-color) !important;
+    background-color: var(--secondary-color) !important;
+}
+
+.css-qbdosj-Input {
+    visibility: visible;
+    -webkit-flex: 1 1 auto;
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+    display: inline-grid;
+    grid-area: 1 / 1 / 2 / 3;
+    grid-template-columns: 0 min-content;
+    margin: 2px;
+    padding-bottom: 2px;
+    padding-top: 2px;
+    color: var(--font-color) !important;
+    box-sizing: border-box;
+}
+
+.css-1nmdiq5-menu{
+    color: var(--font-color) !important;
+    background-color: var(--background-color) !important;
+}
+
 .hr-global{
     width: 100%;
     margin: 1rem 0;

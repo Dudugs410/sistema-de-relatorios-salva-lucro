@@ -57,21 +57,25 @@
     align-content: center;
     flex-wrap: wrap;
     justify-content: center;
-
 }
 
 .modal-layout-content{
     display: flex;
     width: 50%;
-    height: 65%;
+    height: 60%;
     flex-direction: column;
     flex-wrap: wrap;
     align-content: center;
     justify-content: space-evenly;
     border-radius: 15px;
     color: var(--font-color);
+    //background-color: var(--background-color);
+    //border: solid var(--secondary-color) 2px;
+}
+
+.modal-layout-contato-content{
     background-color: var(--background-color);
-    border: solid var(--primary-color) 2px;
+    border: solid var(--secondary-color) 2px;
 }
 
 .title-form{

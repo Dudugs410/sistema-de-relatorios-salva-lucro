@@ -22,9 +22,7 @@ function AuthProvider({ children }){
 	////////////////////////////////////////////////////////////////
 
 	const [tableData, setTableData] = useState([])
-	const [isDarkTheme, setIsDarkTheme] = useState(false)
-	const [trocarHeader, setTrocarHeader] = useState(false)
-	const [textoExport, setTextoExport] = useState(Cookies.get('textoExport'))
+	const [exportName, setExportName] = useState('')
 	const [isCheckedCalendar, setIsCheckedCalendar] = useState(true);
 	const [changedOption, setChangedOption] = useState(false)
 
@@ -45,10 +43,11 @@ function AuthProvider({ children }){
 			const response = await api.post('token', { client_id: login, client_secret: md5(password) })
 			const responseData = response.data
 			Cookies.set('token', responseData.acess_token)
+			Cookies.set('refreshToken', responseData.refresh_token)
 			const userId = jwtDecode(responseData.acess_token).id
 			Cookies.set('userID', userId)
 			const loggedSuccessfully = JSON.parse(responseData.sucess)
-			
+
 			if (loggedSuccessfully) {
 				let localUsers = []
 				if (localStorage.getItem('localUsers') !== null) {
@@ -64,7 +63,6 @@ function AuthProvider({ children }){
 					const updatedUsers = localUsers.map(user => {
 						if (user.id === userId) {
 							userTemp = {id: userId, theme: JSON.parse(user.theme)}
-							setIsDarkTheme(JSON.parse(user.theme))
 							localStorage.setItem('isDark', JSON.parse(user.theme))
 							localStorage.setItem('isChecked', JSON.parse(user.theme))
 							return { ...user, theme: user.theme } // Update the theme if needed
@@ -76,7 +74,6 @@ function AuthProvider({ children }){
 					// Add new user to localUsers
 					userTemp = { id: userId, theme: false, calendar: true}
 					localUsers.push(userTemp)
-					setIsDarkTheme(false)
 					localStorage.setItem('isDark', false)
 					localStorage.setItem('isChecked', false)
 					localStorage.setItem('calendar', true)
@@ -101,9 +98,6 @@ function AuthProvider({ children }){
 				sessionStorage.setItem('isSignedIn', true)
 				sessionStorage.setItem('userData', JSON.stringify(userData))
 				localStorage.setItem('isSignedIn', true)
-  
-				const isDark = localStorage.getItem('isDark')
-				setIsDarkTheme(isDark ? isDark : false)
 				sessionStorage.setItem('isSignedIn', true)
 				setIsSignedIn(true)
 			} else {
@@ -146,10 +140,6 @@ function AuthProvider({ children }){
 					}
 	
 					let config = {
-						headers: {
-							'Content-Type': 'application/json',
-							'Authorization': `Bearer ${Cookies.get('token')}`
-						},
 						params: params
 					}
 
@@ -164,10 +154,6 @@ function AuthProvider({ children }){
 					}
 	
 					let config = {
-						headers: {
-							'Content-Type': 'application/json',
-							'Authorization': `Bearer ${Cookies.get('token')}`
-						},
 						params: params
 					}
 					const response = await api.get('vendas', config)
@@ -191,10 +177,6 @@ function AuthProvider({ children }){
 					}
 	  
 					let config = {
-						headers: {
-							'Content-Type': 'application/json',
-							'Authorization': `Bearer ${Cookies.get('token')}`
-						},
 						params: params
 					}
 					const response = await api.get('recebimentos', config)
@@ -208,10 +190,6 @@ function AuthProvider({ children }){
 					}
 	  
 					let config = {
-						headers: {
-							'Content-Type': 'application/json',
-							'Authorization': `Bearer ${Cookies.get('token')}`
-						},
 						params: params
 					}
 	  
@@ -236,10 +214,6 @@ function AuthProvider({ children }){
 					}
 		
 					let config = {
-						headers: { 
-							'Content-Type': 'application/json', 
-							'Authorization': `Bearer ${Cookies.get('token')}`
-						},
 						params: params
 					}
 					const response = await api.get('ajustes', config)
@@ -252,10 +226,6 @@ function AuthProvider({ children }){
 					}
 		
 					let config = {
-						headers: {
-							'Content-Type': 'application/json',
-							'Authorization': `Bearer ${Cookies.get('token')}`,
-						},
 						params,
 					}
 					const response = await api.get('ajustes', config)
@@ -265,7 +235,58 @@ function AuthProvider({ children }){
 				console.log(error)
 			}
 		}
+		// retorna Objeto de Taxas
+		const loadTaxes = async () => {
+			try {
+				//const apiClientCode = Cookies.get('clientCode')
+				const apiClientCode = '215'
+				if(apiClientCode !== ('todos' || 'TODOS')){
+					let params = {
+						codigo: apiClientCode
+					}
+	
+					let config = {
+						params: params
+					}
 
+					const response = await api.get('taxas', config)
+					return response.data
+				} else {
+					console.log('codigo do cliente invalido: ', apiClientCode)
+					return []
+				}
+			} catch (error) {
+				console.error('Error fetching vendas:', error)
+				return []
+			}
+		}
+		//Adiciona nova Taxa
+		const addTax = async (tax) => {
+			setIsLoadingTaxes(true)
+			try {
+				//const apiClientCode = Cookies.get('clientCode')
+				const apiClientCode = '215'
+				/*if(apiClientCode !== ('todos' || 'TODOS' || undefined)){
+					let body = tax
+					/api.post('taxas', body)
+					.then(response =>{
+						console.log('response: ', response)
+					})
+					.catch(error =>{
+						console.log('error: ', error)
+					})
+				} else {
+					console.log('else')
+					return []
+				} */
+				setIsLoadingTaxes(false)
+			} catch (error) {
+				console.error('Error fetching vendas:', error)
+				setIsLoadingTaxes(false)
+				return
+			}
+		}
+		// retorna array de bandeiras
 		const loadBanners = async () => {
 			try {
 				const response = await api.get('bandeira')
@@ -274,14 +295,64 @@ function AuthProvider({ children }){
 				console.log(error)
 			}
 		}
-
+		// retorna array de administradoras
 		const loadAdmins = async () => {
 			try {
 				const response = await api.get('adquirente')
+				//await refreshSession()
 				return response.data
 			} catch (error) {
 				console.log(error)
 			}
+		}
+		// retorna array de modalidades e seus respectivos códigos
+		const loadMods = async () => {
+			try {
+				const response = await api.get('Modalidade')
+				//await refreshSession()
+				return response.data
+			} catch (error) {
+				console.log(error)
+			}
+		}
+		// retorna string do arquivo SYSMO
+		const loadSysmo = async (obj) => {
+			console.log('obj: ', obj)
+			try {
+				let params = {
+					tipo: obj.TIPO,
+					bandeira: obj.Bandeira,
+					adquirente: obj.Adquirente,
+					data: obj.Data
+				}
+
+				let config = {
+					params: params
+				}
+
+				const response = await api.get('Sysmo', config)
+				//await refreshSession()
+				console.log(response)
+				return response.data
+			} catch (error) {
+				console.log(error)
+			}
+		} 
+		// renova o access token/sessão do usuário
+		const refreshSession = async () =>{
+			console.log('refreshSession()')
+			try {
+					let refreshToken = Cookies.get('refreshToken')
+					console.log('refresh token: ', refreshToken)
+					const encodedRefreshToken = encodeURIComponent(refreshToken);
+					console.log('Encoded: ', encodedRefreshToken)
+					const response = await api.post('token/refresh/' + encodedRefreshToken);
+					console.log('refresh response: ', response)
+					Cookies.set('token', response.data.acess_token)
+					Cookies.set('refreshToken', response.data.refresh_token)
+			} catch (error) {
+				console.log(error)
+			}	
 		}
 	// >>> Dashboard <<< //
 
@@ -298,7 +369,6 @@ function AuthProvider({ children }){
 		const [isLoadedSalesDashboard, setIsLoadedSalesDashboard] = useState(false)
 		const [isLoadedCreditsDashboard, setIsLoadedCreditsDashboard] = useState(false)
 		const [isLoadedServicesDashboard, setIsLoadedServicesDashboard] = useState(false)
-
 				// consts que guardarão os objetos referentes à cada grupo de dados no Dashboard
 
 				const [salesDashboard, setSalesDashboard] = useState({
@@ -345,7 +415,6 @@ function AuthProvider({ children }){
 		// ************** //
 		//  >> Vendas <<  //
 		// ************** //
-
 		const loadSalesGroup = async ()=> {
 			let salesMonth
 			let salesLast4
@@ -475,7 +544,6 @@ function AuthProvider({ children }){
 		// ************** //
 		// >> Créditos << //
 		// ************** //
-
 		const loadCreditsGroup = async ()=> {
 			let creditsMonth
 			
@@ -605,11 +673,9 @@ function AuthProvider({ children }){
 				console.log('Erro: ', error);
 			}
 		}
-
 		// ************** //
 		// >> Serviços << //
 		// ************** //
-
 		const loadServicesGroup = async ()=> {
 
 			let servicesMonth
@@ -767,7 +833,6 @@ function AuthProvider({ children }){
 		}
 
 		// >>> Página de Vendas <<< //
-
 		const [salesPageArray, setSalesPageArray] = useState([])
 		const [salesPageAdminArray, setSalesPageAdminArray] =  useState([])
 		const [salesTotal, setSalesTotal] = useState({
@@ -779,7 +844,6 @@ function AuthProvider({ children }){
 		const [salesDateRange, setSalesDateRange] = useState([new Date(), new Date()])
 
 		// >>> Página de Créditos <<< //
-
 		const [creditsPageArray, setCreditsPageArray] = useState([])
 		const [creditsPageAdminArray, setCreditsPageAdminArray] = useState([])
 		const [creditsTotal, setCreditsTotal] = useState({
@@ -790,12 +854,13 @@ function AuthProvider({ children }){
 		})
 		const [creditsDateRange, setCreditsDateRange] = useState([new Date(), new Date()])
 
-		// >>> Página de Créditos <<< //
-
+		// >>> Página de Serviços <<< //
 		const [servicesPageArray, setServicesPageArray] = useState([])
 		const [servicesPageAdminArray, setServicesPageAdminArray] = useState([])
 		const [servicesDateRange, setServicesDateRange] = useState([new Date(), new Date()])
 
+		// >>> Página de Taxas <<< //
+		const [isLoadingTaxes, setIsLoadingTaxes] = useState(false)
 	////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
@@ -1100,10 +1165,6 @@ function AuthProvider({ children }){
 			}
   
 			let config = {
-				headers: {
-					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${Cookies.get('token')}`
-				},
 				params: params
 			}
   
@@ -1350,16 +1411,22 @@ function AuthProvider({ children }){
 				servicesPageAdminArray, setServicesPageAdminArray,
 				servicesDateRange, setServicesDateRange,
 
+				// Taxas
+
+				loadTaxes, addTax, isLoadingTaxes,
+
+				// Sysmo
+
+				loadSysmo,
+
 				// outros / compartilhados //
 
-				loginApp,
-				loadBanners, loadAdmins,
+				loginApp, 
+				loadBanners, loadAdmins, loadMods,
 				groupByAdmin, groupServicesByAdmin,
 				gerarDados, gerarDadosServicos,
-				isDarkTheme, setIsDarkTheme,
 				tableData, setTableData,
-				trocarHeader, setTrocarHeader,
-				textoExport, setTextoExport,
+				exportName, setExportName,
 				isCheckedCalendar, setIsCheckedCalendar,
 				converteData, dateConvert, dateConvertSearch, dateConvertYYYYMMDD,
 

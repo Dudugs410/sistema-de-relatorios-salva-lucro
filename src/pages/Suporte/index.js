@@ -27,7 +27,6 @@ const Suporte = () =>{
             console.log('inicializar');
             try {
                 const response = await loadAdmins();
-                console.log('API Response:', response); // Log the API response
                 setAdminsList(response); // Update state with the API response
             } catch (error) {
                 console.error('Error loading admins:', error); // Log any errors
@@ -35,17 +34,6 @@ const Suporte = () =>{
         }
         inicializar();
     }, []);
-    
-
-    useEffect(()=>{
-        if(adminsList){
-            console.log('adminsList: ', adminsList)
-        }
-    },[adminsList])
-
-    const handleDateChange = date => {
-        setDataBusca(date)
-    }
 
     const [dataInicialExibicao, setDataInicialExibicao] = useState(new Date().toLocaleDateString('pt-BR'))
     const [dataFinalExibicao, setDataFinalExibicao] = useState(new Date().toLocaleDateString('pt-BR'))
@@ -473,7 +461,6 @@ const Suporte = () =>{
 
     useEffect(()=>{     
         if (adminsList && adminsList.length > 0) {
-            console.log(adminsList)
             const sortedOptions = adminsList
                 .map((ADQ) => ({
                     value: ADQ.codigoAdquirente,

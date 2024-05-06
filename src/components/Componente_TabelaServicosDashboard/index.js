@@ -220,12 +220,12 @@ const TabelaServicosDashboard = ({ array }) => {
 
 	return(
 		<>
-		<hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
+		<hr className='hr-global'/>
 		<div className='dropShadow vendas-view'>
-			<div className={`table-wrapper ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
-				<table className={`table table-striped det-table-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+			<div className='table-wrapper'>
+				<table className='table table-striped det-table-global table-hover'>
 					<thead>
-						<tr className={`det-tr-top-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+						<tr className='det-tr-top-global'>
 							<th className='det-th-global'scope="col">cnpj</th>
 							<th className='det-th-global'scope="col">Data</th>
 							<th className='det-th-global'scope="col">Adquirente</th>
@@ -239,7 +239,7 @@ const TabelaServicosDashboard = ({ array }) => {
 						{
 						vendasExibicao.length > 0 && currentItems.map((venda, index)=>{
 								return(
-									<tr key={index} className={`det-tr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}  >
+									<tr key={index} className='det-tr-global'>
 										<td className='det-td-vendas-global'data-label="cnpj">{venda.cnpj}</td>
 										<td className='det-td-vendas-global'data-label="Data">{dateConvert(venda.data)}</td>
 										<td className='det-td-vendas-global'data-label="Adquirente">{venda.nome_adquirente}</td>
@@ -255,44 +255,44 @@ const TabelaServicosDashboard = ({ array }) => {
 				</table>
 			</div>
 		</div>
-		<hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
+		<hr className='hr-global'/>
 			{vendasExibicao.length > itemsPerPage && (
 				<>
 					<div className="container-btn-pagina">
 						<button
-							className={`btn btn-primary btn-global btn-skip ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}
+							className='btn btn-primary btn-global btn-skip'
 							onClick={goToFirstPage}
 							disabled={currentPage === 1} // Disable if already on the first page
 						>
 							<FiSkipBack />
 						</button>
 						<button
-							className={`btn btn-primary btn-global btn-navigate ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}
+							className='btn btn-primary btn-global btn-navigate'
 							onClick={goToPrevPage}
 							disabled={currentPage === 1} // Disable if it's the first page
 						>
 							<FiChevronLeft/> {/* Left arrow */}
 						</button>
-						<div className={`pagina-atual ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
-							<span className={`texto-paginacao ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>Página </span>
-							<span className={`texto-paginacao ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>{currentPage}</span>
+						<div className='pagina-atual'>
+							<span className='texto-paginacao'>Página </span>
+							<span className='texto-paginacao'>{currentPage}</span>
 						</div>
 						<button
-							className={`btn btn-primary btn-global btn-navigate ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}
+							className='btn btn-primary btn-global btn-navigate'
 							onClick={goToNextPage}
 							disabled={currentPage === Math.ceil(vendasExibicao.length / itemsPerPage)} // Disable if it's the last page
 						>
 							<FiChevronRight/> {/* Right arrow */}
 						</button>
 						<button
-							className={`btn btn-primary btn-global btn-skip ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}
+							className='btn btn-primary btn-global btn-skip'
 							onClick={goToLastPage}
 							disabled={currentPage === Math.ceil(vendasExibicao.length / itemsPerPage)} // Disable if already on the last page
 						>
 							<FiSkipForward />
 						</button>
 					</div>
-					<hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
+					<hr className='hr-global'/>
 				</>	
 			)}
 	</>

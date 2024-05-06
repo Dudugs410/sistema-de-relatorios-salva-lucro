@@ -14,7 +14,7 @@ const Modal = ({ onClose, children }) => {
 
   return (
     <div className="modal-overlay">
-      <div className={`modal-window-content ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
+      <div className='modal-window-content'>
         <div className="modal-content-adq">
           <button className="btn btn-danger modal-close" onClick={onClose}>
             <FiX />

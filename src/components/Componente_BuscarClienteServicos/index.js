@@ -113,9 +113,9 @@ const BuscarClienteServicos = () => {
 	return(
 		<>
 			<div className='search-bar'>
-				<form className={`date-container-vendas ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>       
+				<form className='date-container-vendas'>       
 					<div className='submit-container select-align select-align-filtro'>
-						{ ajustes.length > 0 ? <button className={`btn btn-secondary btn-global btn-pesquisar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className={`btn btn-primary btn-global btn-pesquisar ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={(e) => handleBusca(e)}>Pesquisar</button>}
+						{ ajustes.length > 0 ? <button className='btn btn-secondary btn-global btn-pesquisar' onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className='btn btn-primary btn-global btn-pesquisar' onClick={(e) => handleBusca(e)}>Pesquisar</button>}
 					</div>      
 				</form>
 			</div>

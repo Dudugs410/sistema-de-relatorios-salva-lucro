@@ -225,8 +225,8 @@ const TabelaServicos = ({ array }) => {
 			<div className='date-picker-container'>
 				<div className='date-column'>
 					<div className='select-card select-align select-align-filtro'>
-						<span className={`span-str ${isDarkTheme ? 'dark-theme' : 'light-theme'}`} >Adquirente</span>
-						<select className={`${isDarkTheme ? 'dark-theme' : 'light-theme'}`} id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}} >
+						<span className='span-str'>Adquirente</span>
+						<select id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}} >
 							<option value='' selected>Todas</option>
 							{adquirentesExistentes.map((ADQ)=>(
 								<option key={ADQ} value={ADQ}>{ADQ}</option>
@@ -236,8 +236,8 @@ const TabelaServicos = ({ array }) => {
 				</div>
 				<div className='date-column'>
 					<div className='select-card select-align select-align-filtro'>
-						<span className={`span-str ${isDarkTheme ? 'dark-theme' : 'light-theme'}`} >Serviço</span>
-						<select className={`${isDarkTheme ? 'dark-theme' : 'light-theme'}`} id='bandeira' value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}} >
+						<span className='span-str'>Serviço</span>
+						<select id='bandeira' value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}} >
 							<option value='' selected>Todas</option>
 							{bandeirasExistentes.map((BAN)=>(
 								<option key={BAN} value={BAN}>{BAN}</option>
@@ -246,9 +246,9 @@ const TabelaServicos = ({ array }) => {
 					</div>
 				</div>
 			</div>
-			<hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
+			<hr className='hr-global'/>
 			<div className='container-busca'>
-				<span className={`span-busca ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+				<span className='span-busca'>
 					{servicesDateRange[0].toLocaleDateString('pt-BR') !== servicesDateRange[1].toLocaleDateString('pt-BR') ? 
 						<span dangerouslySetInnerHTML={{__html: `Exibindo Ajustes/Serviços do dia <strong>${servicesDateRange[0].toLocaleDateString('pt-BR')}</strong> ao dia <strong>${servicesDateRange[1].toLocaleDateString('pt-BR')}</strong>`}} /> : 
 						<span dangerouslySetInnerHTML={{__html: `Exibindo Ajustes/Serviços do dia <strong>${servicesDateRange[0].toLocaleDateString('pt-BR')}</strong>`}} />
@@ -256,10 +256,11 @@ const TabelaServicos = ({ array }) => {
 				</span>
 			</div>
 		</div>
-		<hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
+		<hr className='hr-global'/>
 		<div className='dropShadow vendas-view'>
-			<div className={`table-wrapper ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
-				<table className={`table table-striped table-hover det-table-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+			<div className='table-wrapper'
+			>
+				<table className='table table-striped table-hover det-table-global'>
 					<thead>
 						<tr className='det-tr-top-global'>
 							<th className='det-th-global'scope="col">cnpj</th>
@@ -296,39 +297,39 @@ const TabelaServicos = ({ array }) => {
 				<>
 					<div className="container-btn-pagina">
 						<button
-							className={`btn btn-primary btn-global btn-skip ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}
+							className='btn btn-primary btn-global btn-skip'
 							onClick={goToFirstPage}
 							disabled={currentPage === 1} // Disable if already on the first page
 						>
 							<FiSkipBack />
 						</button>
 						<button
-							className={`btn btn-primary btn-global btn-navigate ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}
+							className='btn btn-primary btn-global btn-navigate `}
 							onClick={goToPrevPage}
 							disabled={currentPage === 1} // Disable if it's the first page
 						>
 							<FiChevronLeft/> {/* Left arrow */}
 						</button>
-						<div className={`pagina-atual ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
-							<span className={`texto-paginacao ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>Página </span>
-							<span className={`texto-paginacao ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>{currentPage}</span>
+						<div className={`pagina-atual `}>
+							<span className='texto-paginacao'>Página </span>
+							<span className='texto-paginacao' >{currentPage}</span>
 						</div>
 						<button
-							className={`btn btn-primary btn-global btn-navigate ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}
+							className='btn btn-primary btn-global btn-navigate'
 							onClick={goToNextPage}
 							disabled={currentPage === Math.ceil(vendasExibicao.length / itemsPerPage)} // Disable if it's the last page
 						>
 							<FiChevronRight/> {/* Right arrow */}
 						</button>
 						<button
-							className={`btn btn-primary btn-global btn-skip ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}
+							className={`btn btn-primary btn-global btn-skip `}
 							onClick={goToLastPage}
 							disabled={currentPage === Math.ceil(vendasExibicao.length / itemsPerPage)} // Disable if already on the last page
 						>
 							<FiSkipForward />
 						</button>
 					</div>
-					<hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
+					<hr className='hr-global'/>
 				</>	
 			)}
 	</>

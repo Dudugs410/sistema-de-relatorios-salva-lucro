@@ -9,18 +9,10 @@ import Cookies from 'js-cookie'
 import 'react-toastify/dist/ReactToastify.css'
 import './Seletor.scss'
 
-const SeletorClienteDev = () => {
+const SeletorCliente = () => {
 	const { 
-		isDarkTheme,
-
-		// // // // // // // // // // // // // // // // // //
-
 		changedOption, setChangedOption,
-
 		setIsLoadedSalesDashboard, setIsLoadedCreditsDashboard, setIsLoadedServicesDashboard
-
-		// // // // // // // // // // // // // // // // // //
-
 	} = useContext(AuthContext)
 
 
@@ -61,6 +53,7 @@ const SeletorClienteDev = () => {
 			setSelectedClient({label: 'TODOS', value: 'todos'})
 			Cookies.set('groupCode', sortedOptions[0].value)
 			Cookies.set('cnpj', 'todos')
+			Cookies.set('clientCode', '-')
 			
 		} else {
 			setGroupOptions([])
@@ -80,17 +73,30 @@ const SeletorClienteDev = () => {
 					.map((CLI) => ({
 						value: CLI.CNPJ,
 						label: CLI.NOMECLIENTE,
+						cod: CLI.CODIGOCLIENTE,
 					}))
 					.sort((a, b) => a.label.localeCompare(b.label)); // Sort options alphabetically by label
 				setClientOptions([todosOption, ...sortedOptions]);
 				setSelectedClient(clientOptions[0]); // Update selected client
 				Cookies.set('cnpj', sortedOptions[0].value);
+				Cookies.set('clientCode', sortedOptions.CODIGOCLIENTE)
+				Cookies.set('clientOptions', JSON.stringify(sortedOptions))
 				setChangedOption(!changedOption)
 			} else {
 				setClientOptions([]);
 			}
 		}
 	}, [selectedGroup]);
+
+	useEffect(()=>{
+		if(selectedClient && (selectedClient.label !== 'TODOS')){
+			Cookies.set('cnpj', selectedClient.value)
+			Cookies.set('clientCode', selectedClient.cod)
+		} else if (selectedClient){
+			Cookies.set('cnpj', selectedClient.value)
+			Cookies.set('clientCode', 'todos')
+		}
+	},[selectedClient])
 
 	////////////////////////////////////////////////////
 	//Funções dos Select:
@@ -111,6 +117,7 @@ const SeletorClienteDev = () => {
 		setIsLoadedServicesDashboard(false)
 		setChangedOption(!changedOption)
 		setSelectedClient(selected)
+		Cookies.set('clientName', JSON.stringify(selected.label))
 	}
 
 	return(
@@ -118,13 +125,12 @@ const SeletorClienteDev = () => {
 			{ selectorGroupList === null ? <></> : 
 				<>
 					<div className='search-bar-seletor'>
-						<form className={`date-container-seletor p-4 ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+						<form className='date-container-seletor p-4'>
 							<div className='cli-container'>
 								<div className='date-column-seletor'>
 									<div className='select-card-seletor'>
 										<span>Grupo</span>
 										<Select
-											className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
 											options={groupOptions}
 											onChange={handleGroupChange}
 											value={selectedGroup}
@@ -137,7 +143,6 @@ const SeletorClienteDev = () => {
 										<span>Cliente</span>
 										{clientOptions && clientOptions.length > 0 ? (
 											<Select
-												className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
 												options={clientOptions}
 												placeholder="Selecione o Cliente / Filial"
 												onChange={handleClientChange}
@@ -145,7 +150,6 @@ const SeletorClienteDev = () => {
 											/>
 										) : (
 											<Select
-												className={`${isDarkTheme === true ? 'dark-theme-disabled' : 'light-theme-disabled'} select-disabled`}
 												options={[]}
 												isDisabled
 												placeholder="Selecione o Cliente / Filial"
@@ -163,4 +167,4 @@ const SeletorClienteDev = () => {
 	)
 }
 
-export default SeletorClienteDev
+export default SeletorCliente

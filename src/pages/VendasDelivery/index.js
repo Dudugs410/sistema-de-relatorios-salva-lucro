@@ -50,25 +50,24 @@ const VendasDelivery = () => {
     }
 
     return(
-        <div className={`appPage ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-          <div className={`page-background-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-            <div className={`page-content-global page-content-financeiro ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                <div className={`title-container-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                    <h1 className={`title-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Vendas Delivery</h1>          
+        <div className='appPage'>
+          <div className='page-background-global'>
+            <div className='page-content-global page-content-financeiro'>
+                <div className='title-container-global'>
+                    <h1 className='title-global'>Vendas Delivery</h1>          
                 </div>
                 <hr className="hr-recebimentos"/>
-                <div className={`container-cielo ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} >
+                <div className='container-cielo'>
                     <div>
                         <div>
-                            <h5 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Relatório Detalhado de Vendas</h5>
+                            <h5>Relatório Detalhado de Vendas</h5>
                         </div>
                         <div className=''>
                             <div className='input-block-cli-adq'>
                             <MyCalendar onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange}/>        
                                 <hr className='hr-global'/>
-                                <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Aplicativo</b></h6>
+                                <h6><b>Aplicativo</b></h6>
                                 <Select
-                                    className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
                                     options={appOptions}
                                     onChange={handleAppChange}
                                     value={appSelecionado}
@@ -76,8 +75,8 @@ const VendasDelivery = () => {
                             </div>
                             <br/>
                             <div className=''>
-                                <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><b>Gerar</b></h6>
-                                <button className={`btn btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}><FiFilePlus /> &nbsp; Excel</button>
+                                <h6><b>Gerar</b></h6>
+                                <button className='btn btn-global'><FiFilePlus /> &nbsp; Excel</button>
                             </div>
                         </div>
                     </div>

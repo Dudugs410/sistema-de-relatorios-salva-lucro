@@ -19,6 +19,7 @@ import Suporte from "../pages/Suporte";
 import OutrosRelatorios from "../pages/OutrosRelatorios";
 import VendasDelivery from "../pages/VendasDelivery";
 import ConciliacaoBancaria from "../pages/ConciliacaoBancaria";
+import Taxas from "../pages/Taxas";
 
 function RoutesApp(){
     return(
@@ -38,7 +39,7 @@ function RoutesApp(){
         <Route path='/suporte' element = { <Private><Suporte/></Private> }/>
         <Route path='/vendasdelivery' element = { <Private><VendasDelivery/></Private> } />
         <Route path='/conciliacao' element = { <Private><ConciliacaoBancaria/></Private> } />
-
+        <Route path='/Taxas' element = {<Private><Taxas/></Private>} />
         <Route path='/TESTE' element = { <Private><PageTeste/></Private> } />
     </Routes>
     )

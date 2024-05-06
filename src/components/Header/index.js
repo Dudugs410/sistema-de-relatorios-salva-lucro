@@ -1,5 +1,5 @@
 import { Link, Navigate, useNavigate } from "react-router-dom";
-import { FiMoon, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText, FiClipboard, FiDownload, FiCalendar, FiList, FiPaperclip, FiSettings, FiTruck, FiShoppingBag, FiMenu, FiSidebar } from "react-icons/fi";
+import { FiMoon, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText, FiClipboard, FiDownload, FiCalendar, FiList, FiPaperclip, FiSettings, FiTruck, FiShoppingBag, FiMenu, FiSidebar, FiTable } from "react-icons/fi";
 import { AuthContext } from "../../contexts/auth";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import salvaLucroLogoBranco from '../../assets/LogoTopo.png';
@@ -10,7 +10,7 @@ import Relogio from "../Componente_Relogio";
 import SideBar from "../Componente_SideBar";
 
 const Header = () => {
-    const { logout, isDarkTheme, setIsDarkTheme, isCheckedCalendar, setIsCheckedCalendar } = useContext(AuthContext)
+    const { logout, isCheckedCalendar, setIsCheckedCalendar } = useContext(AuthContext)
 
     const [isChecked, setIsChecked] = useState(localStorage.getItem('isChecked') ? false : true )
     
@@ -41,9 +41,7 @@ const Header = () => {
     const handleCheckboxChange = () => {
         const updatedChecked = !isChecked;
         setIsChecked(updatedChecked);
-        setIsDarkTheme(updatedChecked);
         localStorage.setItem('isChecked', updatedChecked);
-        localStorage.setItem('isDark', updatedChecked);
       
         if (localStorage.getItem('localUsers') !== null) {
             let localUsersTemp = JSON.parse(localStorage.getItem('localUsers'));
@@ -123,6 +121,7 @@ const Header = () => {
             'FiSettings': FiSettings,
             'FiTruck': FiTruck,
             'FiShoppingBag': FiShoppingBag,
+            'FiTable': FiTable,
         };
 
         const orderedOptions = [
@@ -144,6 +143,7 @@ const Header = () => {
             { nome: 'Suporte', icone: icones['FiSettings'], rota: '/suporte'},
             { nome: 'Delivery', icone: icones['FiTruck'], rota: '/vendasdelivery'},
             { nome: 'Conciliacao', icone: icones['FiShoppingBag'], rota: '/conciliacao'},
+            { nome: 'Taxas', icone: icones['FiTable'], rota: '/taxas'}
         ];
 
         let arrayOpcoes = [];
@@ -166,11 +166,11 @@ const CustomCheckbox = ({ isChecked, handleCheckboxChange }) => {
         type="checkbox"
         checked={isChecked}
         onChange={handleCheckboxChange}
-        className={`checkbox-input ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}
+        className='checkbox-input'
       />
-      <span className={`checkbox-custom ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}></span> {/* This is for the custom checkbox appearance */}
-      <span className={`checkbox-icon ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
-        <FiCalendar className={`calendar-icon ${isDarkTheme ? 'dark-theme' : 'light-theme'} ${isCheckedCalendar ? 'isCheckedCalendar' : ''}`} size={20} />
+      <span className='checkbox-custom'></span> {/* This is for the custom checkbox appearance */}
+      <span className='checkbox-icon'>
+        <FiCalendar className={`calendar-icon ${isCheckedCalendar ? 'isCheckedCalendar' : ''}`} size={20} />
       </span>
     </label>
   );
@@ -185,7 +185,7 @@ const CustomCheckbox = ({ isChecked, handleCheckboxChange }) => {
     return (
         <>
             <div className="header-bg-image">
-                <div className={`header-bg ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                <div className='header-bg'>
                     <div className='navbar-title'>
                         <img className='img-header' src={salvaLucroLogoBranco} alt='logo salva lucro' onClick={handleLogo}/>
                     </div>
@@ -202,9 +202,9 @@ const CustomCheckbox = ({ isChecked, handleCheckboxChange }) => {
                 <SideBar options={ optionsWithIcons }/>
 
                 <div className='header-content'>
-                    <div className={`barra-header ${isDarkTheme ? 'dark-theme' : 'light-theme' }`}>
+                    <div className='barra-header'>
                         <div className="li-container px-3">
-                            <ul className={`navbar-nav pe-2 ${isDarkTheme ? 'dark-theme' : 'light-theme' }`}>
+                            <ul className='navbar-nav pe-2'>
                             {optionsWithIcons.length > 0 && optionsWithIcons.map((opcao, index) => (
                                 <li className="nav-item" key={index}>
                                     {opcao.children ? (
@@ -221,14 +221,14 @@ const CustomCheckbox = ({ isChecked, handleCheckboxChange }) => {
                                                 setShowExportacoesDropdown(false);
                                             }
                                         }}>
-                                            <button className={`px-2 me-1 li-button-content nav-hover-button dropdown-button ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
+                                            <button className='px-2 me-1 li-button-content nav-hover-button dropdown-button'>
                                                 {opcao.icone && React.createElement(opcao.icone)}
                                                 <span className="ms-1 mt-2 mb-auto li-btn-text span-header">{opcao.nome}</span>
                                             </button>
-                                            <div className={`dropdown-menu-normal ${isDarkTheme ? 'dark-theme' : 'light-theme'} ${opcao.nome === 'Relatórios' ? (showRelatoriosDropdown ? 'show' : '') : (opcao.nome === 'Exportações' ? (showExportacoesDropdown ? 'show' : '') : '')}`} aria-labelledby="dropdownMenuButton" style={{ position: 'absolute', top: '100%', left: 0 }}>
+                                            <div className={`dropdown-menu-normal ${opcao.nome === 'Relatórios' ? (showRelatoriosDropdown ? 'show' : '') : (opcao.nome === 'Exportações' ? (showExportacoesDropdown ? 'show' : '') : '')}`} aria-labelledby="dropdownMenuButton" style={{ position: 'absolute', top: '100%', left: 0 }}>
                                                 {opcao.children.map((childOption, childIndex) => (
-                                                    <Link key={childIndex} to={childOption.rota} className={`dropdown-item ${isDarkTheme ? 'dark-theme' : 'light-theme'} relatorios-child`}>
-                                                        <button className={`px-2 me-1 li-button-content nav-hover-button dropdown-button ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
+                                                    <Link key={childIndex} to={childOption.rota} className='dropdown-item relatorios-child'>
+                                                        <button className='px-2 me-1 li-button-content nav-hover-button dropdown-button'>
                                                             <span className="ms-1 mt-2 mb-auto li-btn-text span-option">{childOption.nome}</span>
                                                         </button>
                                                     </Link>
@@ -237,7 +237,7 @@ const CustomCheckbox = ({ isChecked, handleCheckboxChange }) => {
                                         </div>
                                     ) : (
                                         <Link to={opcao.rota} className="nav-hover active text-shadow">
-                                            <button className={`px-2 me-1 li-button-content nav-hover-button ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
+                                            <button className='px-2 me-1 li-button-content nav-hover-button' >
                                                 {opcao.icone && React.createElement(opcao.icone)}
                                                 <span className="ms-1 mt-2 mb-auto li-btn-text">{opcao.nome}</span>
                                             </button>
