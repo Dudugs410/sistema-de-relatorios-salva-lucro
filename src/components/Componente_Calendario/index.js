@@ -14,12 +14,15 @@ const MyCalendar = ({ onLoadData, getCalendarDate }) => {
     
     const [dateRange, setDateRange] = useState([new Date(), new Date()]);
     const [allowRange, setAllowRange] = useState(true)
+    const [showPesquisar, setShowPesquisar] = useState(true)
 
     useEffect(()=>{
       if(location.pathname === '/sysmo'){
         setAllowRange(false)
+        setShowPesquisar(false)
       } else {
         setAllowRange(true)
+        setShowPesquisar(true)
       }
     },[location])
 
@@ -84,8 +87,8 @@ const MyCalendar = ({ onLoadData, getCalendarDate }) => {
           </span>
         </div>
         <hr className='hr-global'/>
-        {(sessionStorage.getItem('currentPath') === ('/vendas' || '/creditos' || '/servicos')) ? <button className='btn btn-primary btn-global btn-pesquisar' onClick={ onLoadData }>Pesquisar</button> : <></>}
-        {(sessionStorage.getItem('currentPath') === ('/vendas' || '/creditos' || '/servicos')) ? <hr className='hr-global'/> : <></>}
+        { showPesquisar === true ? <button className='btn btn-primary btn-global btn-pesquisar' onClick={ onLoadData }>Pesquisar</button> : <></> }
+        { showPesquisar === true ? <hr className='hr-global'/> : <></> }
       </div>
     )
   }

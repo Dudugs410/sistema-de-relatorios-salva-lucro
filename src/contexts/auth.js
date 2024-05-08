@@ -238,8 +238,8 @@ function AuthProvider({ children }){
 		// retorna Objeto de Taxas
 		const loadTaxes = async () => {
 			try {
-				//const apiClientCode = Cookies.get('clientCode')
-				const apiClientCode = '215'
+				const apiClientCode = Cookies.get('clientCode')
+				//const apiClientCode = '215'
 				if(apiClientCode !== ('todos' || 'TODOS')){
 					let params = {
 						codigo: apiClientCode
@@ -264,11 +264,11 @@ function AuthProvider({ children }){
 		const addTax = async (tax) => {
 			setIsLoadingTaxes(true)
 			try {
-				//const apiClientCode = Cookies.get('clientCode')
-				const apiClientCode = '215'
-				/*if(apiClientCode !== ('todos' || 'TODOS' || undefined)){
+				const apiClientCode = Cookies.get('clientCode')
+				//const apiClientCode = '215'
+				if(apiClientCode !== ('todos' || 'TODOS' || undefined)){
 					let body = tax
-					/api.post('taxas', body)
+					api.post('taxas', body)
 					.then(response =>{
 						console.log('response: ', response)
 					})
@@ -278,7 +278,7 @@ function AuthProvider({ children }){
 				} else {
 					console.log('else')
 					return []
-				} */
+				}
 				setIsLoadingTaxes(false)
 			} catch (error) {
 				console.error('Error fetching vendas:', error)

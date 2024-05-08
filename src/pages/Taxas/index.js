@@ -26,6 +26,7 @@ const Taxas = () =>{
     const [modsList, setModsList] = useState([])
 
     const cliOptions = JSON.parse(Cookies.get('clientOptions'))
+    
     const [banOptions, setBanOptions] = useState([])
     const [admOptions, setAdmOptions] = useState([])
     const [modOptions, setModOptions] = useState([])
@@ -222,7 +223,7 @@ const Taxas = () =>{
             const newTaxObj = {
                 ADQCODIGO: selectedAdm.value,
                 BADCODIGO: selectedBan.value,
-                CLICODIGO: 215,
+                CLICODIGO: clientCode,
                 MODCODIGO: selectedMod.value,
                 TAXAPERCENTUAL: parseFloat(tax)
             };
@@ -561,14 +562,26 @@ const Taxas = () =>{
             </div>
             <hr className='hr-global'/>
             <div className='container-global'>
-                { ((taxesList && taxesList.length > 0) && (clientCode !== ('todos' || undefined))) ? 
+                { ((taxesList && taxesList.length > 0) && (clientCode !== ('todos' || undefined))) && 
                 <>    
                     <h3 className='subtitle'>Cliente: {JSON.parse(Cookies.get('clientName'))}</h3>
                     <hr className='hr-global'/>
                     <TaxesTable />
                 </>
-                : 
-                <span>Selecione um Cliente para exibir as Taxas</span>}      
+                }
+                { ((taxesList && taxesList.length === 0) && (clientCode !== ('todos' || undefined))) && 
+                <>  
+                    <span>Sem Taxas Cadastradas</span>
+                    <br/> 
+                    <button className='btn btn-primary btn-global' onClick={()=>{setIsModalOpen(true)}}><FiPlus className='icon' />Adicionar Taxa</button>
+                </>
+                }
+                {
+                    clientCode === ('todos' || undefined) ?
+                        <span>Selecione um cliente para exibir as taxas cadastradas</span>
+                        : 
+                        <></>
+                }
             </div>
             <hr className='hr-global'/>
           </div>
