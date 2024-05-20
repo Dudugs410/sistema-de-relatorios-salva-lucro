@@ -12,7 +12,9 @@ import './Seletor.scss'
 const SeletorCliente = () => {
 	const { 
 		changedOption, setChangedOption,
-		setIsLoadedSalesDashboard, setIsLoadedCreditsDashboard, setIsLoadedServicesDashboard
+		setIsLoadedSalesDashboard, setIsLoadedCreditsDashboard, setIsLoadedServicesDashboard,
+		setExportName,
+		setSalesPageArray, setCreditsPageArray, setServicesPageArray,
 	} = useContext(AuthContext)
 
 
@@ -81,6 +83,7 @@ const SeletorCliente = () => {
 				Cookies.set('cnpj', sortedOptions[0].value);
 				Cookies.set('clientCode', sortedOptions.CODIGOCLIENTE)
 				Cookies.set('clientOptions', JSON.stringify(sortedOptions))
+				Cookies.set('groupName', JSON.stringify(selectedGroup.label))
 				setChangedOption(!changedOption)
 			} else {
 				setClientOptions([]);
@@ -89,12 +92,17 @@ const SeletorCliente = () => {
 	}, [selectedGroup]);
 
 	useEffect(()=>{
+		setSalesPageArray([])
+		setCreditsPageArray([])
+		setServicesPageArray([])
 		if(selectedClient && (selectedClient.label !== 'TODOS')){
 			Cookies.set('cnpj', selectedClient.value)
 			Cookies.set('clientCode', selectedClient.cod)
+			setExportName(selectedClient.label)
 		} else if (selectedClient){
 			Cookies.set('cnpj', selectedClient.value)
 			Cookies.set('clientCode', 'todos')
+			setExportName(selectedGroup.label + ' - Todas Filiais')
 		}
 	},[selectedClient])
 

@@ -11,10 +11,14 @@ import '../../index.scss'
 import './displayData.scss'
 import TabelaServicos from '../Componente_TabelaServicos'
 
-
-export const VendasContext = createContext({})
-
 const DisplayData = ({ dataArray, adminDataArray, totals, tableData, onGoBack }) =>{
+  const { gerarDados } = useContext(AuthContext)
+
+  useEffect(() => {
+    if(dataArray && dataArray.length > 0){
+      gerarDados(dataArray)
+    }
+  },[])
 
   return(
       <>

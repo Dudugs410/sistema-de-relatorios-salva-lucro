@@ -20,6 +20,8 @@ export default function GerarRelatorio({tableData}){
 	const [tipo, setTipo] = useState('')
 
 	useEffect(() => {
+		console.log('tableData? -> ', tableData)
+
 		const updateDateTime = () => {
 		  const now = new Date()
 
@@ -221,6 +223,7 @@ export default function GerarRelatorio({tableData}){
 	const generatePdf = () => {
 		if (!tableData || tableData.length === 0) {
 			alert('Sem dados para exportar')
+			console.log('tableData ->->-> ', tableData)
 			return
 		} else {
 			if(tipo === 'vendas'){

@@ -103,6 +103,7 @@ const ExportacaoSysmo = () =>{
         } else if(type === 'Creditos'){
             setType('Credito')
         }*/
+
         setObj({
             TIPO: type,
             Bandeira: selectedBan.value,

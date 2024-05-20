@@ -1265,10 +1265,10 @@ function AuthProvider({ children }){
 		if(array.length === 0){
 			return
 		}
-		const tipoTemp = Cookies.get('tipo')
+		const tipoTemp = sessionStorage.getItem('currentPath')
 		tableData.length = 0
 		if (array.length > 0) {
-			if(tipoTemp === 'vendas'){
+			if(tipoTemp === '/vendas'){
 				array.map((venda) => {
 					tableData.push({
 						cnpj: venda.cnpj,
@@ -1292,7 +1292,7 @@ function AuthProvider({ children }){
 					})
 				})
 				console.log(`${tipoTemp} ao gerar dados: `, tableData)
-			} else if(tipoTemp === 'creditos'){
+			} else if(tipoTemp === '/creditos'){
 				array.map((venda) => {
 					tableData.push({
 						cnpj: venda.cnpj,
@@ -1315,6 +1315,18 @@ function AuthProvider({ children }){
 						agencia: venda.agencia,
 						conta: venda.conta,
 						tid: venda.tid,
+					})
+				})
+			} else if (tipoTemp === '/servicos') {
+				array.map((venda) => {
+					tableData.push({
+						cnpj: venda.cnpj,
+						razao_social: venda.razao_social,
+						codigo_estabelecimento: venda.codigo_estabelecimento,
+						adquirente: venda.nome_adquirente,
+						valor: venda.valor,
+						data: venda.data,
+						descricao: venda.descricao,
 					})
 				})
 			}
