@@ -13,6 +13,7 @@ const MyCalendar = ({ onLoadData, getCalendarDate }) => {
     const location = useLocation();
     
     const [dateRange, setDateRange] = useState([new Date(), new Date()]);
+    const [dateSysmo, setDateSysmo] = useState(new Date())
     const [allowRange, setAllowRange] = useState(true)
     const [showPesquisar, setShowPesquisar] = useState(true)
 
@@ -32,8 +33,11 @@ const MyCalendar = ({ onLoadData, getCalendarDate }) => {
     },[dateRange])
 
     const handleDateChange = (date) =>{
-      
       setDateRange(date)
+    }
+
+    const handleDateChangeSysmo = (date) =>{
+      setDateSysmo(date)
     }
 
     //date-range-picker
@@ -61,35 +65,94 @@ const MyCalendar = ({ onLoadData, getCalendarDate }) => {
       );
     };
 
-    return (
-      <div className='component-container'>
-        { isCheckedCalendar ? <>
-        <hr className='hr-global'/>
-        <Calendar
-          style={{ color:'white' }}
-          onChange={ handleDateChange }
-          selectRange={allowRange}
-          value={ dateRange }
-        />
- 
-        </>
-        : 
-        <>
-          <MyDatePicker />
-        </>}
-        <hr className='hr-global'/>
-        <div className='container-busca'>
-          <span className='span-busca'>
-            {dateRange[0].toLocaleDateString('pt-BR') !== dateRange[1].toLocaleDateString('pt-BR') ? 
-              <span dangerouslySetInnerHTML={{__html: `Executar busca do dia <strong>${dateRange[0].toLocaleDateString('pt-BR')}</strong> ao dia <strong>${dateRange[1].toLocaleDateString('pt-BR')}</strong>`}} /> : 
-              <span dangerouslySetInnerHTML={{__html: `Executar busca do dia <strong>${dateRange[0].toLocaleDateString('pt-BR')}</strong>`}} />
-            }
-          </span>
+    const MyDatePickerSysmo = () => {
+      return (
+        <div className='form-container-picker'>
+          <hr className='hr-global'/>
+          <div className='select-elements-container-picker'>
+            <div className='container-select'>
+              <span className='span-picker'>Data</span>
+              <DatePicker className='input-picker'
+                selected={dateSysmo}
+                onChange={(date) => setDateSysmo(date)}
+              />
+            </div>
+          </div>
         </div>
-        <hr className='hr-global'/>
-        { showPesquisar === true ? <button className='btn btn-primary btn-global btn-pesquisar' onClick={ onLoadData }>Pesquisar</button> : <></> }
-        { showPesquisar === true ? <hr className='hr-global'/> : <></> }
-      </div>
+      );
+    };
+
+    const CalendarDefault = () => {
+      return (
+        <div className='component-container'>
+          { isCheckedCalendar ? <>
+          <hr className='hr-global'/>
+          <Calendar
+            style={{ color:'white' }}
+            onChange={ handleDateChange }
+            selectRange={allowRange}
+            value={ dateRange }
+          />
+   
+          </>
+          : 
+          <>
+            <MyDatePicker />
+          </>}
+          <hr className='hr-global'/>
+          <div className='container-busca'>
+            <span className='span-busca'>
+              {dateRange[0].toLocaleDateString('pt-BR') !== dateRange[1].toLocaleDateString('pt-BR') ? 
+                <span dangerouslySetInnerHTML={{__html: `Executar busca do dia <strong>${dateRange[0].toLocaleDateString('pt-BR')}</strong> ao dia <strong>${dateRange[1].toLocaleDateString('pt-BR')}</strong>`}} /> : 
+                <span dangerouslySetInnerHTML={{__html: `Executar busca do dia <strong>${dateRange[0].toLocaleDateString('pt-BR')}</strong>`}} />
+              }
+            </span>
+          </div>
+          <hr className='hr-global'/>
+          { showPesquisar === true ? <button className='btn btn-primary btn-global btn-pesquisar' onClick={ onLoadData }>Pesquisar</button> : <></> }
+          { showPesquisar === true ? <hr className='hr-global'/> : <></> }
+        </div>
+      )
+    }
+
+    const CalendarSysmo = () => {
+      return (
+        <div className='component-container'>
+          { isCheckedCalendar ? <>
+          <hr className='hr-global'/>
+          <Calendar
+            style={{ color:'white' }}
+            onChange={ handleDateChangeSysmo }
+            value={ dateSysmo }
+          />
+   
+          </>
+          : 
+          <>
+            <MyDatePickerSysmo />
+          </>}
+          <hr className='hr-global'/>
+          <div className='container-busca'>
+            <span className='span-busca'>
+                <span dangerouslySetInnerHTML={{__html: `Executar busca do dia <strong>${dateSysmo.toLocaleDateString('pt-BR')}</strong>`}} />
+            </span>
+          </div>
+          <hr className='hr-global'/>
+          { showPesquisar === true ? <button className='btn btn-primary btn-global btn-pesquisar' onClick={ onLoadData }>Pesquisar</button> : <></> }
+          { showPesquisar === true ? <hr className='hr-global'/> : <></> }
+        </div>
+      )
+    }
+
+    return(
+      <>
+        { 
+          allowRange === true ? 
+            <CalendarDefault/> 
+            : 
+            <CalendarSysmo/>
+        }
+      </>
     )
   }
 
