@@ -83,8 +83,6 @@ const TabelaServicosDashboard = ({ array }) => {
 
 	useEffect(()=>{
 		if(vendasExibicao.length > 0){
-			// gerarDados(vendasExibicao)
-			// carregaTotais(vendasExibicao)
 			setCurrentPage(1)   
 		}
 	},[vendasExibicao])

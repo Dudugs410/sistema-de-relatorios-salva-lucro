@@ -7,7 +7,7 @@ import { FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward } from 'react-
 
 const TabelaServicos = ({ array }) => {  
 	const { 
-		isDarkTheme, dateConvert, gerarDados,
+		isDarkTheme, dateConvert, gerarDadosServicos,
 		servicesDateRange,
 	} = useContext(AuthContext)
 
@@ -84,7 +84,8 @@ const TabelaServicos = ({ array }) => {
 
 	useEffect(()=>{
 		if(vendasExibicao.length > 0){
-			gerarDados(vendasExibicao)
+			console.log(vendasExibicao, 'eeeeeeeeeee')
+			gerarDadosServicos(vendasExibicao)
 			setCurrentPage(1)   
 		}
 	},[vendasExibicao])

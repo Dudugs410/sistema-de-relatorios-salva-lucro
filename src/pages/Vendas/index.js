@@ -14,8 +14,6 @@ import MyCalendar from '../../components/Componente_Calendario'
 import DisplayData from '../../components/Componente_DisplayData'
 import { toast } from 'react-toastify'
 
-export const VendasContext = createContext({})
-
 const Vendas = () =>{
   const location = useLocation();
 
@@ -27,10 +25,9 @@ const Vendas = () =>{
     salesPageArray, setSalesPageArray,
     salesPageAdminArray, setSalesPageAdminArray,
     salesDateRange, setSalesDateRange,
-    loadSales, loadTotalSales, salesTotal, setSalesTotal, tableData,
+    loadSales, loadTotalSales, salesTotal, setSalesTotal, salesTableData,
+    btnDisabledSales, setBtnDisabledSales,
     groupByAdmin,
-    
-    alerta, gerarDados,
   } = useContext(AuthContext)
 
   useEffect(()=>{
@@ -43,13 +40,14 @@ const Vendas = () =>{
   const resetValues = () => {
     setSalesPageArray([])
     setSalesPageAdminArray([])
+    setBtnDisabledSales(false)
     setSalesTotal({
       debit: 0,
       credit: 0,
       voucher: 0,
       total: 0
     })
-    tableData.length = 0
+    salesTableData.length = 0
   }
 
   async function handleLoadData(e) {
@@ -88,9 +86,9 @@ const Vendas = () =>{
             </div>
             <div className='component-container-vendas'>
               { salesPageArray.length > 0 ? 
-                <DisplayData dataArray={salesPageArray} adminDataArray={salesPageAdminArray} totals={salesTotal} tableData={tableData} onGoBack={resetValues}/>
+                <DisplayData dataArray={salesPageArray} adminDataArray={salesPageAdminArray} totals={salesTotal} tableData={salesTableData} onGoBack={resetValues}/>
                 :
-                <MyCalendar onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange}/> 
+                <MyCalendar onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange} btnDisabled={btnDisabledSales}/> 
               }
             </div>
           </div>

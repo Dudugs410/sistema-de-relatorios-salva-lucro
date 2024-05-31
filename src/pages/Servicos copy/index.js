@@ -15,35 +15,37 @@ import { toast } from 'react-toastify'
 import DisplayData from '../../components/Componente_DisplayData'
 
 
+export const ServicosContext = createContext({})
+
 const Servicos = () =>{
-  const location = useLocation();
+	const location = useLocation();
 
-  useEffect(() => {
-      sessionStorage.setItem('currentPath', location.pathname);
-  }, [location]);
-
+	useEffect(() => {
+		sessionStorage.setItem('currentPath', location.pathname);
+	}, [location]);
+  
 	const {
 	  servicesPageArray, setServicesPageArray,
 	  servicesPageAdminArray, setServicesPageAdminArray,
 	  servicesDateRange, setServicesDateRange,
-	  loadServices, servicesTableData,
+	  loadServices, tableData,
+	  groupServicesByAdmin,
     btnDisabledServices, setBtnDisabledServices,
-    groupServicesByAdmin,
 
 	  alerta,
 	} = useContext(AuthContext)
 
-  useEffect(()=>{
-    if(servicesPageArray.length>0){
-      setServicesPageAdminArray(groupServicesByAdmin(servicesPageArray));
-    }
-  },[servicesPageArray])
-
+	useEffect(()=>{
+		if(servicesPageArray.length>0){
+		  setServicesPageAdminArray(groupServicesByAdmin(servicesPageArray));
+		}
+	  },[servicesPageArray])
+	  
   const resetValues = () => {
     setServicesPageArray([])
     setServicesPageAdminArray([])
     setBtnDisabledServices(false)
-    servicesTableData.length = 0
+    tableData.length = 0
   }
 
   async function handleLoadData(e) {
@@ -82,7 +84,7 @@ const Servicos = () =>{
 			  </div>
 			  <div className='component-container-vendas'>
 				{ servicesPageArray.length > 0 ? 
-          <DisplayData dataArray={servicesPageArray} adminDataArray={servicesPageAdminArray} totals={null} tableData={servicesTableData} onGoBack={resetValues}/>
+          <DisplayData dataArray={servicesPageArray} adminDataArray={servicesPageAdminArray} totals={null} tableData={tableData} onGoBack={resetValues}/>
           : 
           <MyCalendar onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange} btnDisabled={btnDisabledServices}/> }
 			  </div>
@@ -93,4 +95,3 @@ const Servicos = () =>{
 }
 
 export default Servicos
-

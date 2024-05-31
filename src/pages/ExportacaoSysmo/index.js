@@ -11,7 +11,7 @@ import Cookies from 'js-cookie'
 
 const ExportacaoSysmo = () =>{
     const location = useLocation();
-    const { loadBanners, loadAdmins, loadSysmo } = useContext(AuthContext)
+    const { loadBanners, loadAdmins, loadSysmo, btnDisabledSysmo, setBtnDisabledSysmo } = useContext(AuthContext)
 
     const [dataBusca, setDataBusca] = useState([new Date, new Date])
 
@@ -87,6 +87,7 @@ const ExportacaoSysmo = () =>{
         console.log('handleExport...')
         loadSysmo(obj)
         base64PDFdownload()
+        setBtnDisabledSysmo(false)
     }
 
     function handleBan(e){
@@ -131,7 +132,7 @@ const ExportacaoSysmo = () =>{
                 <div className='title-container-global'>
                     <h1 className='title-global'>Exportação Sysmo</h1>
                 </div>
-                <MyCalendar onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange}/>
+                <MyCalendar onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange} btnDisabled={btnDisabledSysmo}/>
                 <form>
                     <div className='component-container'>
                         <RadioSelect options={radioOptions} onSelect={(e) => {setType(e)}}/>
@@ -157,7 +158,7 @@ const ExportacaoSysmo = () =>{
                         </div>
                     </div>
                     <div className='btn-container-financeiro'>
-                        <button className='btn btn-primary btn-global' onClick={handleExport}>Gerar Arquivo</button>
+                        <button className='btn btn-primary btn-global' onClick={handleExport} disabled={btnDisabledSysmo}>Gerar Arquivo</button>
                     </div>
                 </form>
             </div>

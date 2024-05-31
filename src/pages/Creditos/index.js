@@ -26,7 +26,8 @@ const Creditos = () =>{
 	  creditsPageAdminArray, setCreditsPageAdminArray,
 	  creditsDateRange, setCreditsDateRange,
 	  loadCredits, loadTotalCredits, creditsTotal, setCreditsTotal, tableData,
-	  groupByAdmin,
+	  groupByAdmin, 
+    btnDisabledCredits, setBtnDisabledCredits
 
 	} = useContext(AuthContext)
   
@@ -41,6 +42,7 @@ const Creditos = () =>{
   const resetValues = () => {
     setCreditsPageArray([])
     setCreditsPageAdminArray([])
+    setBtnDisabledCredits(false)
     setCreditsTotal({
       debit: 0,
       credit: 0,
@@ -92,7 +94,7 @@ const Creditos = () =>{
 				{ creditsPageArray.length > 0 ? 
           <DisplayData dataArray={creditsPageArray} adminDataArray={creditsPageAdminArray} totals={creditsTotal} tableData={tableData} onGoBack={resetValues}/>
           : 
-          <MyCalendar onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange}/> }
+          <MyCalendar onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange} btnDisabled={btnDisabledCredits}/> }
 			  </div>
 			</div>
 		  </div>

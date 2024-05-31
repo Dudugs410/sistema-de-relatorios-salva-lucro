@@ -12,13 +12,42 @@ import './displayData.scss'
 import TabelaServicos from '../Componente_TabelaServicos'
 
 const DisplayData = ({ dataArray, adminDataArray, totals, tableData, onGoBack }) =>{
-  const { gerarDados } = useContext(AuthContext)
+  const { gerarDados, gerarDadosServicos } = useContext(AuthContext)
+
+  const [exportPage, setExportPage] = useState('')
+
+  useEffect(()=>{
+    switch (sessionStorage.getItem('currentPath')) {
+      case '/vendas':
+        setExportPage('/vendas')
+        break;
+
+      case '/creditos':
+        setExportPage('/creditos')
+        break;
+
+      case '/servicos':
+        setExportPage('/servicos')
+        break;
+    
+      default:
+        break;
+    }
+  },[])
 
   useEffect(() => {
     if(dataArray && dataArray.length > 0){
-      gerarDados(dataArray)
+      if(sessionStorage.getItem('currentPath') === '/servicos'){
+        gerarDadosServicos(dataArray)
+      } else if ((sessionStorage.getItem('currentPath') === '/vendas') || (sessionStorage.getItem('currentPath') === '/creditos')){
+        gerarDados(dataArray)
+      }
     }
   },[])
+
+  useEffect(()=>{
+
+  },[exportPage])
 
   return(
       <>
@@ -26,9 +55,9 @@ const DisplayData = ({ dataArray, adminDataArray, totals, tableData, onGoBack })
         {sessionStorage.getItem('currentPath') === '/servicos' ? <hr className='hr-global'/> : null}
         <GerarRelatorio className='export' tableData={tableData}/>
         <div className='component-container-vendas'>
-          {sessionStorage.getItem('currentPath') === '/vendas' ? <TabelaVendas array={dataArray}/> : null}
-          {sessionStorage.getItem('currentPath') === '/creditos' ? <TabelaCreditos array={dataArray}/> : null}
-          {sessionStorage.getItem('currentPath') === '/servicos' ? <TabelaServicos array={dataArray}/> : null}      
+          {exportPage === '/vendas' ? <TabelaVendas array={dataArray}/> : null}
+          {exportPage === '/creditos' ? <TabelaCreditos array={dataArray}/> : null}
+          {exportPage === '/servicos' ? <TabelaServicos array={dataArray}/> : null}      
           <TabelaGenericaAdm Array={adminDataArray}/>
           <hr className='hr-global'/>
         </div>

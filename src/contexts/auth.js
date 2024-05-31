@@ -22,6 +22,10 @@ function AuthProvider({ children }){
 	////////////////////////////////////////////////////////////////
 
 	const [tableData, setTableData] = useState([])
+	const [salesTableData, setSalesTableData] = useState([])
+	const [creditsTableData, setCreditsTableData] = useState([])
+	const [servicesTableData, setServicesTableData] = useState([])
+
 	const [exportName, setExportName] = useState('')
 	const [isCheckedCalendar, setIsCheckedCalendar] = useState(true);
 	const [changedOption, setChangedOption] = useState(false)
@@ -127,8 +131,17 @@ function AuthProvider({ children }){
 
 	// *** funções API *** //
 
+		//controladores do disabled dos botões nas páginas com calendarios
+
+		const [btnDisabledSales, setBtnDisabledSales] = useState(false)
+		const [btnDisabledCredits, setBtnDisabledCredits] = useState(false)
+		const [btnDisabledServices, setBtnDisabledServices] = useState(false)
+		const [btnDisabledSysmo, setBtnDisabledSysmo] = useState(false)
+
+
 		// retorna array de vendas //
 		const loadSales = async (startDate, endDate) => {
+			setBtnDisabledSales(true)
 			try {
 				const apiCNPJ = Cookies.get('cnpj')
 				const apiGroupCode = Cookies.get('groupCode')
@@ -166,6 +179,7 @@ function AuthProvider({ children }){
 		}
 		// retorna array de créditos/recebimentos
 		const loadCredits = async (startDate, endDate) => {
+			setBtnDisabledCredits(true)
 			try {
 				const apiCNPJ = Cookies.get('cnpj')
 				const apiGroupCode = Cookies.get('groupCode')
@@ -203,6 +217,7 @@ function AuthProvider({ children }){
 		}
 		// retorna array de serviços/ajustes
 		const loadServices = async (startDate, endDate) => {
+			setBtnDisabledServices(true)
 			try {
 				const apiCNPJ = Cookies.get('cnpj')
 				const apiGroupCode = Cookies.get('groupCode')
@@ -318,6 +333,7 @@ function AuthProvider({ children }){
 		// retorna string do arquivo SYSMO
 		const loadSysmo = async (obj) => {
 			console.log('obj: ', obj)
+			setBtnDisabledSysmo(true)
 			try {
 				let params = {
 					tipo: obj.TIPO,
@@ -1266,11 +1282,12 @@ function AuthProvider({ children }){
 			return
 		}
 		const tipoTemp = sessionStorage.getItem('currentPath')
-		tableData.length = 0
+		salesTableData.length = 0
+		creditsTableData.length = 0
 		if (array.length > 0) {
 			if(tipoTemp === '/vendas'){
 				array.map((venda) => {
-					tableData.push({
+					salesTableData.push({
 						cnpj: venda.cnpj,
 						adquirente: venda.adquirente.nomeAdquirente,
 						bandeira: venda.bandeira.descricaoBandeira,
@@ -1291,10 +1308,11 @@ function AuthProvider({ children }){
 						tid: venda.tid,
 					})
 				})
-				console.log(`${tipoTemp} ao gerar dados: `, tableData)
+				console.log(`${tipoTemp} ao gerar dados: `, salesTableData)
+				return salesTableData
 			} else if(tipoTemp === '/creditos'){
 				array.map((venda) => {
-					tableData.push({
+					creditsTableData.push({
 						cnpj: venda.cnpj,
 						adquirente: venda.adquirente.nomeAdquirente,
 						bandeira: venda.bandeira.descricaoBandeira,
@@ -1317,32 +1335,21 @@ function AuthProvider({ children }){
 						tid: venda.tid,
 					})
 				})
-			} else if (tipoTemp === '/servicos') {
-				array.map((venda) => {
-					tableData.push({
-						cnpj: venda.cnpj,
-						razao_social: venda.razao_social,
-						codigo_estabelecimento: venda.codigo_estabelecimento,
-						adquirente: venda.nome_adquirente,
-						valor: venda.valor,
-						data: venda.data,
-						descricao: venda.descricao,
-					})
-				})
+				return creditsTableData
 			}
 		} 
-		return tableData
 	}
 
 	function gerarDadosServicos(array){
+		servicesTableData.length = 0
 		console.log('gerarDados array:', array)
 		if(array.length === 0){
 			return
 		}
-		tableData.length = 0
+		servicesTableData.length = 0
 		if (array.length > 0) {
 			array.map((venda) => {
-				tableData.push({
+				servicesTableData.push({
 					cnpj: venda.cnpj,
 					razao_social: venda.razao_social,
 					codigo_estabelecimento: venda.codigo_estabelecimento,
@@ -1353,7 +1360,7 @@ function AuthProvider({ children }){
 				})
 			})
 		} 
-		return tableData
+		return servicesTableData
 	}
 
 	// Função que organiza array em ordem alfabética
@@ -1407,6 +1414,8 @@ function AuthProvider({ children }){
 				salesPageArray, setSalesPageArray,
 				salesPageAdminArray, setSalesPageAdminArray,
 				salesTotal, setSalesTotal,
+				btnDisabledSales, setBtnDisabledSales,
+				salesTableData, setSalesTableData,
 
 				// Creditos //
 
@@ -1415,6 +1424,8 @@ function AuthProvider({ children }){
 				creditsPageAdminArray, setCreditsPageAdminArray,
 				creditsDateRange, setCreditsDateRange,
 				creditsTotal, setCreditsTotal,
+				btnDisabledCredits, setBtnDisabledCredits,
+				creditsTableData, setCreditsTableData,
 
 				// Serviços //
 
@@ -1422,6 +1433,8 @@ function AuthProvider({ children }){
 				servicesPageArray, setServicesPageArray,
 				servicesPageAdminArray, setServicesPageAdminArray,
 				servicesDateRange, setServicesDateRange,
+				btnDisabledServices, setBtnDisabledServices,
+				servicesTableData, setServicesTableData,
 
 				// Taxas
 
@@ -1430,6 +1443,7 @@ function AuthProvider({ children }){
 				// Sysmo
 
 				loadSysmo,
+				btnDisabledSysmo, setBtnDisabledSysmo,
 
 				// outros / compartilhados //
 

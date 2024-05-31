@@ -7,7 +7,7 @@ import './Calendar.scss'
 import '../../styles/global.scss'
 import { useLocation } from "react-router-dom";
 
-const MyCalendar = ({ onLoadData, getCalendarDate }) => {
+const MyCalendar = ({ onLoadData, getCalendarDate, btnDisabled}) => {
     const { isCheckedCalendar } = useContext(AuthContext)
 
     const location = useLocation();
@@ -28,7 +28,6 @@ const MyCalendar = ({ onLoadData, getCalendarDate }) => {
     },[location])
 
     useEffect(()=>{
-      console.log('date range antes de dar m... : ', dateRange)
       getCalendarDate(dateRange)
     },[dateRange])
 
@@ -109,7 +108,7 @@ const MyCalendar = ({ onLoadData, getCalendarDate }) => {
             </span>
           </div>
           <hr className='hr-global'/>
-          { showPesquisar === true ? <button className='btn btn-primary btn-global btn-pesquisar' onClick={ onLoadData }>Pesquisar</button> : <></> }
+          { showPesquisar === true ? <button className='btn btn-primary btn-global btn-pesquisar' onClick={ onLoadData } disabled={btnDisabled}>Pesquisar</button> : <></> }
           { showPesquisar === true ? <hr className='hr-global'/> : <></> }
         </div>
       )
@@ -138,7 +137,7 @@ const MyCalendar = ({ onLoadData, getCalendarDate }) => {
             </span>
           </div>
           <hr className='hr-global'/>
-          { showPesquisar === true ? <button className='btn btn-primary btn-global btn-pesquisar' onClick={ onLoadData }>Pesquisar</button> : <></> }
+          { showPesquisar === true ? <button className='btn btn-primary btn-global btn-pesquisar' onClick={ onLoadData } disabled={btnDisabled}>Pesquisar</button> : <></> }
           { showPesquisar === true ? <hr className='hr-global'/> : <></> }
         </div>
       )
