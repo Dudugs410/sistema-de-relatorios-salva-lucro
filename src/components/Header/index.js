@@ -1,5 +1,5 @@
 import { Link, Navigate, useNavigate } from "react-router-dom";
-import { FiMoon, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText, FiClipboard, FiDownload, FiCalendar, FiList, FiPaperclip, FiSettings, FiTruck, FiShoppingBag, FiMenu } from "react-icons/fi";
+import { FiMoon, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText, FiClipboard, FiDownload, FiCalendar, FiList, FiPaperclip, FiSettings, FiTruck, FiShoppingBag, FiMenu, FiSidebar, FiTable } from "react-icons/fi";
 import { AuthContext } from "../../contexts/auth";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import salvaLucroLogoBranco from '../../assets/LogoTopo.png';
@@ -7,28 +7,15 @@ import './header.scss';
 import '../../index.scss';
 import Cookies from "js-cookie";
 import Relogio from "../Componente_Relogio";
+import SideBar from "../Componente_SideBar";
 
 const Header = () => {
-    const { logout, isDarkTheme, setIsDarkTheme, isCheckedCalendar, setIsCheckedCalendar,} = useContext(AuthContext)
+    const { logout, isCheckedCalendar, setIsCheckedCalendar } = useContext(AuthContext)
 
-    const [isChecked, setIsChecked] = useState(localStorage.getItem('isChecked') === 'true')
+    const [isChecked, setIsChecked] = useState(localStorage.getItem('isChecked') ? false : true )
     
     const [showRelatoriosDropdown, setShowRelatoriosDropdown] = useState(false)
     const [showExportacoesDropdown, setShowExportacoesDropdown] = useState(false)
-
-    const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth <= 1231);
-
-    useEffect(() => {
-        const handleResize = () => {
-            setIsSmallScreen(window.innerWidth <= 1231);
-        };
-
-        window.addEventListener("resize", handleResize);
-
-        return () => {
-            window.removeEventListener("resize", handleResize);
-        };
-    }, []);
 
     const handleCheckboxChangeCalendar = () => {
 		setIsCheckedCalendar(!isCheckedCalendar); // Toggle the state
@@ -54,10 +41,8 @@ const Header = () => {
     const handleCheckboxChange = () => {
         const updatedChecked = !isChecked;
         setIsChecked(updatedChecked);
-        setIsDarkTheme(updatedChecked);
         localStorage.setItem('isChecked', updatedChecked);
-        localStorage.setItem('isDark', updatedChecked);
-
+      
         if (localStorage.getItem('localUsers') !== null) {
             let localUsersTemp = JSON.parse(localStorage.getItem('localUsers'));
             localUsersTemp.map(user => {
@@ -75,9 +60,51 @@ const Header = () => {
     }
 
     useEffect(() => {
-        setIsDarkTheme(JSON.parse(localStorage.getItem('isDark')));
+        setIsChecked(JSON.parse(localStorage.getItem('isChecked')));
     }, []);
 
+    useEffect(()=>{
+                // Update CSS custom properties based on the theme
+                const root = document.documentElement;
+                if (isChecked) {
+                  root.style.setProperty('--primary-color', 'var(--primary-color-dark)')
+                  root.style.setProperty('--secondary-color', 'var(--secondary-color-dark)')
+                  root.style.setProperty('--background-color', 'var(--background-color-dark)')
+                  root.style.setProperty('--font-color', 'var(--font-color-dark)')
+                  root.style.setProperty('--table-background', 'var(--table-background-dark)')
+                  root.style.setProperty('--header-text-color', 'var(--header-text-color-dark)')
+                  root.style.setProperty('--modalidades-border', 'var(--modalidades-border-dark)')
+                  root.style.setProperty('--table-row-hover-color', 'var(table-row-hover-color-dark)')
+                  root.style.setProperty('--table-row-hover-bg', 'var(--table-row-hover-bg-dark)')
+                  root.style.setProperty('--header-bg', 'var(--header-bg-dark)')
+                  root.style.setProperty('--calendar-cell-color', 'var(--calendar-cell-color-dark)')                  
+                  root.style.setProperty('--calendar-now-color', 'var(--calendar-now-color-dark)')
+                  root.style.setProperty('--calendar-neighbor-color', 'var(--calendar-neighbor-color-dark)')
+                  root.style.setProperty('--calendar-btn-navigation-color', 'var(--calendar-btn-navigation-color-dark)')
+                  root.style.setProperty('--calendar-neighbor-bg', 'var(--calendar-neighbor-bg-dark)')
+                  root.style.setProperty('--subtitle-color', 'var(--subtitle-dark)')
+                    
+                } else { 
+                  root.style.setProperty('--primary-color', 'var(--primary-color-light)')
+                  root.style.setProperty('--secondary-color', 'var(--secondary-color-light)')
+                  root.style.setProperty('--background-color', 'var(--background-color-light)')
+                  root.style.setProperty('--font-color', 'var(--font-color-light)')
+                  root.style.setProperty('--table-background', 'var(--table-background-light)')
+                  root.style.setProperty('--header-text-color', 'var(--header-text-color-light)')
+                  root.style.setProperty('--modadlidades-border', 'var(modalidades-border-light)')
+                  root.style.setProperty('--table-row-hover-color', 'var(table-row-hover-color-light)')
+                  root.style.setProperty('--table-row-hover-bg', 'var(--table-row-hover-bg-light)')
+                  root.style.setProperty('--header-bg', 'var(--header-bg-light)')
+                  root.style.setProperty('--calendar-cell-color', 'var(--calendar-cell-color-light)')                  
+                  root.style.setProperty('--calendar-now-color', 'var(--calendar-now-color-light)')
+                  root.style.setProperty('--calendar-neighbor-color', 'var(--calendar-neighbor-color-light)')
+                  root.style.setProperty('--calendar-btn-navigation-color', 'var(--calendar-btn-navigation-color-light)')
+                  root.style.setProperty('--calendar-neighbor-bg', 'var(--calendar-neighbor-bg-light)')
+                  root.style.setProperty('--subtitle-color', 'var(--subtitle-light)')
+
+                }
+    },[isChecked])
+    
     const [optionsWithIcons, setOptionsWithIcons] = useState([]);
 
     useEffect(() => {
@@ -94,6 +121,7 @@ const Header = () => {
             'FiSettings': FiSettings,
             'FiTruck': FiTruck,
             'FiShoppingBag': FiShoppingBag,
+            'FiTable': FiTable,
         };
 
         const orderedOptions = [
@@ -115,6 +143,7 @@ const Header = () => {
             { nome: 'Suporte', icone: icones['FiSettings'], rota: '/suporte'},
             { nome: 'Delivery', icone: icones['FiTruck'], rota: '/vendasdelivery'},
             { nome: 'Conciliacao', icone: icones['FiShoppingBag'], rota: '/conciliacao'},
+            { nome: 'Taxas', icone: icones['FiTable'], rota: '/taxas'}
         ];
 
         let arrayOpcoes = [];
@@ -137,89 +166,15 @@ const CustomCheckbox = ({ isChecked, handleCheckboxChange }) => {
         type="checkbox"
         checked={isChecked}
         onChange={handleCheckboxChange}
-        className={`checkbox-input ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}
+        className='checkbox-input'
       />
-      <span className={`checkbox-custom ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}></span> {/* This is for the custom checkbox appearance */}
-      <span className={`checkbox-icon ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
-        <FiCalendar className={`calendar-icon ${isDarkTheme ? 'dark-theme' : 'light-theme'} ${isCheckedCalendar ? 'isCheckedCalendar' : ''}`} size={20} />
+      <span className='checkbox-custom'></span> {/* This is for the custom checkbox appearance */}
+      <span className='checkbox-icon'>
+        <FiCalendar className={`calendar-icon ${isCheckedCalendar ? 'isCheckedCalendar' : ''}`} size={20} />
       </span>
     </label>
   );
 };
-
-const SideBar = () =>{
-    useEffect(() => {
-        function handleClickOutside(event) {
-            const sidebarButton = document.querySelector('.side-bar-container .btn-primary');
-            const collapseElement = document.getElementById('multiCollapseExample1');
-            
-            // Check if click occurred outside the collapsed sidebar and the sidebar button is not clicked
-            if (collapseElement && !collapseElement.contains(event.target) && event.target !== sidebarButton) {
-                const collapse = bootstrap.Collapse.getInstance(collapseElement);
-                if (collapse && !collapse._isTransitioning) {
-                    collapse.hide();
-                }
-            }
-        }
-
-        // Add event listener to detect clicks on document body
-        document.addEventListener('click', handleClickOutside);
-
-        return () => {
-            // Remove event listener when component unmounts
-            document.removeEventListener('click', handleClickOutside);
-        };
-    }, []);
-
-    return (
-        <div className='side-bar-container'>
-            <p className='p-side-bar'>
-                <a className={`btn btn-primary btn-global a-side-bar ${isDarkTheme ? 'dark-theme' : 'light-theme'}`} data-bs-toggle="collapse" href="#multiCollapseExample1" role="button" aria-expanded="false" aria-controls="multiCollapseExample1"><FiMenu size={30}/></a>
-            </p>
-            <div>
-                <div>
-                    <div className="collapse multi-collapse" id="multiCollapseExample1">
-                        <div>
-                            <ul className={`mobile ${isDarkTheme ? 'dark-theme' : 'light-theme' }`}>
-                                {optionsWithIcons.map((option, index) => (
-                                    <li className="li-sidebar" key={index}>
-                                        {option.children ? (
-                                            <div className="dropend">
-                                                <button className={`px-2 me-1 btn-mobile dropdown-toggle ${isDarkTheme ? 'dark-theme' : 'light-theme'}`} type="button" id={`dropdownMenuButton${index}`} data-bs-toggle="dropdown" aria-expanded="false">
-                                                    {option.icone && React.createElement(option.icone)}
-                                                    <span className="mb-auto mobile">{option.nome}</span>
-                                                </button>
-                                                <ul className="dropdown-menu dropdown-menu-mobile" aria-labelledby={`dropdownMenuButton${index}`} style={{left: 'auto', right: 0}}>
-                                                    {option.children.map((childOption, childIndex) => (
-                                                        <li className='li-side-bar' key={childIndex}>
-                                                            <Link to={childOption.rota} className={`dropdown-item ${isDarkTheme ? 'dark-theme' : 'light-theme' }`}>
-                                                                <button className={`px-2 btn-mobile ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
-                                                                    {childOption.icone && React.createElement(childOption.icone)}
-                                                                    <span className="mb-auto mobile">{childOption.nome}</span>
-                                                                </button>
-                                                            </Link>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        ) : (
-                                            <Link to={option.rota} className="nav-hover active text-shadow">
-                                                <button className={`px-2 me-1 btn-mobile ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
-                                                    {option.icone && React.createElement(option.icone)}
-                                                    <span className="mb-auto mobile">{option.nome}</span>
-                                                </button>
-                                            </Link>
-                                        )}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-    }
 
     const navigate = useNavigate()
 
@@ -230,7 +185,7 @@ const SideBar = () =>{
     return (
         <>
             <div className="header-bg-image">
-                <div className={`header-bg ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                <div className='header-bg'>
                     <div className='navbar-title'>
                         <img className='img-header' src={salvaLucroLogoBranco} alt='logo salva lucro' onClick={handleLogo}/>
                     </div>
@@ -244,12 +199,12 @@ const SideBar = () =>{
                     </div>
                 </div>
 
-                <SideBar/>
+                <SideBar options={ optionsWithIcons }/>
 
                 <div className='header-content'>
-                    <div className={`barra-header ${isDarkTheme ? 'dark-theme' : 'light-theme' }`}>
+                    <div className='barra-header'>
                         <div className="li-container px-3">
-                            <ul className={`navbar-nav pe-2 ${isDarkTheme ? 'dark-theme' : 'light-theme' }`}>
+                            <ul className='navbar-nav pe-2'>
                             {optionsWithIcons.length > 0 && optionsWithIcons.map((opcao, index) => (
                                 <li className="nav-item" key={index}>
                                     {opcao.children ? (
@@ -266,14 +221,14 @@ const SideBar = () =>{
                                                 setShowExportacoesDropdown(false);
                                             }
                                         }}>
-                                            <button className={`px-2 me-1 li-button-content nav-hover-button dropdown-button ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
+                                            <button className='px-2 me-1 li-button-content nav-hover-button dropdown-button'>
                                                 {opcao.icone && React.createElement(opcao.icone)}
-                                                <span className="ms-1 mt-2 mb-auto li-btn-text">{opcao.nome}</span>
+                                                <span className="ms-1 mt-2 mb-auto li-btn-text span-header">{opcao.nome}</span>
                                             </button>
-                                            <div className={`dropdown-menu-normal ${isDarkTheme ? 'dark-theme' : 'light-theme'} ${opcao.nome === 'Relatórios' ? (showRelatoriosDropdown ? 'show' : '') : (opcao.nome === 'Exportações' ? (showExportacoesDropdown ? 'show' : '') : '')}`} aria-labelledby="dropdownMenuButton" style={{ position: 'absolute', top: '100%', left: 0 }}>
+                                            <div className={`dropdown-menu-normal ${opcao.nome === 'Relatórios' ? (showRelatoriosDropdown ? 'show' : '') : (opcao.nome === 'Exportações' ? (showExportacoesDropdown ? 'show' : '') : '')}`} aria-labelledby="dropdownMenuButton" style={{ position: 'absolute', top: '100%', left: 0 }}>
                                                 {opcao.children.map((childOption, childIndex) => (
-                                                    <Link key={childIndex} to={childOption.rota} className={`dropdown-item ${isDarkTheme ? 'dark-theme' : 'light-theme'} relatorios-child`}>
-                                                        <button className={`px-2 me-1 li-button-content nav-hover-button dropdown-button ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
+                                                    <Link key={childIndex} to={childOption.rota} className='dropdown-item relatorios-child'>
+                                                        <button className='px-2 me-1 li-button-content nav-hover-button dropdown-button'>
                                                             <span className="ms-1 mt-2 mb-auto li-btn-text span-option">{childOption.nome}</span>
                                                         </button>
                                                     </Link>
@@ -282,7 +237,7 @@ const SideBar = () =>{
                                         </div>
                                     ) : (
                                         <Link to={opcao.rota} className="nav-hover active text-shadow">
-                                            <button className={`px-2 me-1 li-button-content nav-hover-button ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
+                                            <button className='px-2 me-1 li-button-content nav-hover-button' >
                                                 {opcao.icone && React.createElement(opcao.icone)}
                                                 <span className="ms-1 mt-2 mb-auto li-btn-text">{opcao.nome}</span>
                                             </button>

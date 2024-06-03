@@ -12,7 +12,6 @@ import base64PDFdownload from '../../components/Componente_Base64PDF';
 
 const Gerenciais = () =>{
     const location = useLocation();
-    const { isDarkTheme, loading, setLoading  } = useContext(AuthContext)
 
     const [dataBusca, setDataBusca] = useState([new Date, new Date])
     const [tipoRelatorio, setTipoRelatorio] = useState('selecione')
@@ -33,10 +32,6 @@ const Gerenciais = () =>{
         setFormatoRelatorio(selectedOption)
     }
 
-    const handleDateChange = date => {
-        setDataBusca(date)
-    }
-
     const [dataInicialExibicao, setDataInicialExibicao] = useState(new Date().toLocaleDateString('pt-BR'))
     const [dataFinalExibicao, setDataFinalExibicao] = useState(new Date().toLocaleDateString('pt-BR'))
 
@@ -49,25 +44,30 @@ const Gerenciais = () =>{
 
     function handleExport(e){
         e.preventDefault()
-        setLoading(true)
         base64PDFdownload()
-        setLoading(false)
+    }
+
+    function handleLoadData(){
+        console.log('loadData')
+    }
+
+    function handleDateRangeChange(){
+        console.log('handleDateRangeChange')
     }
 
   return(
-      <div className={`appPage ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-        <div className={`page-background-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-          <div className={`page-content-global page-content-exportacao ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-            <div className={`title-container-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-              <h1 className={`title-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Relatórios Gerenciais</h1>
+      <div className='appPage'>
+        <div className='page-background-global'>
+          <div className='page-content-global page-content-exportacao'>
+            <div className='title-container-global'>
+              <h1 className='title-global'>Relatórios Gerenciais</h1>
             </div>
-            <hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
             <div className='container-financeiro'>
-                <MyCalendar dataInicialExibicao={dataInicialExibicao} dataFinalExibicao={dataFinalExibicao} dataBusca={dataBusca} handleDateChange={handleDateChange} className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
+            <MyCalendar onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange}/>
                 <form className='form-container-relatorios'>
                     <div className='select-elements-container'>
                         <div className='container-select'>
-                            <span className={`span-picker ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Tipo de Relatório</span>
+                            <span className='span-picker'>Tipo de Relatório</span>
                             <Select 
                                 value={tipoRelatorio} 
                                 onChange={handleRelatorio}
@@ -77,7 +77,7 @@ const Gerenciais = () =>{
                             />
                         </div>
                         <div className='container-select'>
-                            <span className={`span-picker ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Formato</span>
+                            <span className='span-picker'>Formato</span>
                             <Select 
                                 value={formatoRelatorio} 
                                 onChange={handleFormato}
@@ -89,7 +89,7 @@ const Gerenciais = () =>{
                         </div>
                     </div>
                     <div className='btn-container-financeiro'>
-                        <button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleExport}>Exportar</button>
+                        <button className='btn btn-primary btn-global' onClick={handleExport}>Exportar</button>
                     </div>
                 </form>
             </div>

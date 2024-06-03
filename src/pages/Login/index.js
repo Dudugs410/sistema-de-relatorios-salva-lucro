@@ -15,38 +15,27 @@ import md5 from "md5"
 
 const Login = () => {
     const {
-        submitLogin,
-        loading,
+        loginApp,
         isSignedIn, 
-        setAccessToken, 
-        setIsDarkTheme,
     } = useContext(AuthContext)
     const navigate = useNavigate()
 
     const [login, setLogin] = useState('')
     const [password, setPassword] = useState('')
+    const [loading, setLoading] = useState(false)
 
     useEffect(()=>{
-        setIsDarkTheme(false)
-        if(sessionStorage.getItem('currentPath')){
-            navigate(sessionStorage.getItem('currentPath'))
-        }
-    },[])
-
-    useEffect(()=>{
-        if(isSignedIn){
+        if(isSignedIn === true){
             navigate('/Dashboard')
         }
-    },[isSignedIn, navigate])
+    },[isSignedIn])
 
     async function handleLogin(e){
         e.preventDefault()
-        if(login !== '' && password !== ''){
-            await submitLogin(login, password)
-            .then(()=>{
-                setAccessToken(Cookies.get('token'))
-            })
-        }
+        
+        setLoading(true)
+        await loginApp(login, password)
+        setLoading(false)
     }
 
     return(
@@ -63,7 +52,6 @@ const Login = () => {
                     </div>
                 </form>
             </div>
-
             { loading ? <LoadingModal/> : <></>}
         </div>
    

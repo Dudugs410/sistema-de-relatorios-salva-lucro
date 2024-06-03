@@ -1,0 +1,58 @@
+.table-taxas{
+    overflow-x: scroll;
+}
+
+.form-taxas{
+    width: 100%;
+    display: flex;
+    /* display: grid; */
+    justify-items: center;
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+    z-index: 1;
+}
+
+.tr-taxas{
+    border: solid var(--primary-color) 1px !important; 
+}
+
+.modal-new-tax-container{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
+
+.modal-container{
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-taxas{
+    border-radius: 20px;
+    border: solid var(--secondary-color) 2px;
+    width: 100%;
+    background-color: var(--background-color);
+    //height: 50%;
+    padding: 60px;
+}
+
+.custom-select .react-select__control {
+    background-color: red !important; /* Background color of the control */
+    color: green !important; /* Text color of the control */
+    /* Add more styles as needed */
+}
+
+.custom-select .react-select__menu {
+    background-color: purple !important; /* Background color of the dropdown menu */
+    color: yellow !important; /* Text color of the dropdown menu */
+    /* Add more styles as needed */
+}

@@ -11,13 +11,8 @@
 .page-background-global{
     display: flex;
     justify-content: center;
-    transition: all 2s;
-    &.light-theme{
-        background-color: $background-color-light;
-    }
-    &.dark-theme{
-        background-color: $background-color-dark;
-    }
+    transition: all .4s;
+    background-color: var(--background-color);
 }
 
 .page-content-global{
@@ -30,12 +25,7 @@
     padding: 10px;
     margin-top: 10px;
     margin-bottom: 54px;
-    &.light-theme{
-        background-color: $background-color-light;
-    }
-    &.dark-theme{
-        background-color: $background-color-dark;
-    }
+    background-color: var(--background-color);
 }
 
 
@@ -45,33 +35,67 @@
     width: 100%;
     border-radius: 20px;
     padding: 10px;
-    &.light-theme{
-        color: $primary-color-light;
-        background-color: $secondary-color-light;
-    }
-    &.dark-theme{
-        color:$font-color-dark;
-        background-color: $primary-color-dark;
-    }
+    color: var(--font-color);
+    background-color: var(--secondary-color);
 }
 
 .title-global{
     margin: 0;
-    &.light-theme{
-        color: $font-color-light;
-    }
-    &.dark-theme{
-        color: $font-color-dark;
-    }
+    color: var(--primary-color);
 }
 
-span{
-    &.light-theme{
-        color: $font-color-light;
-    }
-    &.dark-theme{
-        color: $font-color-dark;
-    }
+.container-global{
+    width: 100%;
+    padding: 1%;
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    border-radius: 20px;
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 54px;
+    transition: all .4s;
+}
+
+.css-13cymwt-control{
+    background-color: var(--background-color) !important;
+}
+
+.css-1dimb5e-singleValue{
+    color: var(--font-color) !important;
+}
+
+.css-t3ipsp-control {
+    color: var(--font-color) !important;
+    background-color: var(--background-color) !important;
+    border-color: var(--secondary-color) !important;
+    box-shadow: 0 0 0 1px var(--secondary-color) !important;
+}
+
+.css-t3ipsp-control:hover{
+    border-color: var(--secondary-color) !important;
+    box-shadow: 0 0 0 1px var(--secondary-color) !important;
+    background-color: var(--secondary-color) !important;
+}
+
+.css-qbdosj-Input {
+    visibility: visible;
+    -webkit-flex: 1 1 auto;
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+    display: inline-grid;
+    grid-area: 1 / 1 / 2 / 3;
+    grid-template-columns: 0 min-content;
+    margin: 2px;
+    padding-bottom: 2px;
+    padding-top: 2px;
+    color: var(--font-color) !important;
+    box-sizing: border-box;
+}
+
+.css-1nmdiq5-menu{
+    color: var(--font-color) !important;
+    background-color: var(--background-color) !important;
 }
 
 .hr-global{
@@ -80,12 +104,12 @@ span{
     border: 0;
     border-top: var(--bs-border-width) solid;
     opacity: .25;
-    &.light-theme{
-        color: $primary-color-light;
-    }
-    &.dark-theme{
-        color: $secondary-color-dark;
-    }
+    color: gray;
+
+}
+
+.subtitle{
+    color: var(--subtitle-color)
 }
 
 ///Botões
@@ -101,44 +125,26 @@ span{
     font-weight: 200;
     align-items: center;
 
-    background-color:aquamarine;
-    border-color: bisque;
+    border: solid var(--secondary-color) 1px;
+    background-color: var(--secondary-color);
+    color:var(--primary-color);
 
-    &.light-theme{
-        border: solid $secondary-color-light 1px;
-        background-color: $secondary-color-light;
-        color:$font-color-light;
-    }
-    &.dark-theme{
-        border: solid $secondary-color-dark 1px;
-        background-color: $secondary-color-dark;
-        color:$background-color-dark;
-    }
+}
+
+.btn-global .btn.disabled, .btn:disabled{
+    background-color: var(--secondary-color);
 }
 
 .btn-global:hover{
-    &.light-theme{
-        color: $secondary-color-light;
-        background-color: $primary-color-light;
-    }
-    &.dark-theme{
-        color: $secondary-color-dark;
-        background-color: $primary-color-dark;
-    }
+    color: var(--secondary-color);
+    background-color: var(--primary-color);
 }
 
 ///select
 
 .select-disabled-global{
-    &.light-theme-disabled{
-        background-color: $primary-color-light;
-        color: $secondary-color-light;
-    }
-
-    &.dark-theme-disabled{
-        background-color: $primary-color-dark;
-        color: $secondary-color-dark;
-    }  
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
 }
 
 .select-global {
@@ -148,15 +154,8 @@ span{
     text-align: center;
     width: 80%;
     font-style: italic;
-    &.light-theme-disabled{
-        background-color: $primary-color-light;
-        color: $secondary-color-light;
-    }
-
-    &.dark-theme-disabled{
-        background-color: $primary-color-dark;
-        color: $secondary-color-dark;
-    }  
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
 }
 
 ///tabela
@@ -174,59 +173,39 @@ span{
     --bs-table-striped-bg: rgba(var(--bs-emphasis-color-rgb), 0.05);
     --bs-table-active-color: var(--bs-emphasis-color);
     --bs-table-active-bg: rgba(var(--bs-emphasis-color-rgb), 0.1);
-    --bs-table-hover-color: var(--bs-emphasis-color);
-    --bs-table-hover-bg: rgba(var(--bs-emphasis-color-rgb), 0.075);
+    --bs-table-hover-color: var(--table-row-hover-color);
+    --bs-table-hover-bg: var(--table-row-hover-bg);
     
     height: auto;
     width: 100%;
     margin-bottom: 1rem;
     vertical-align: top;
 
-    &.light-theme{
-        --bs-table-color: $font-color-light;
-        --bs-table-bg: $background-color-light;
+    --bs-table-color: var(--font-color);
+    --bs-table-bg: var(--table-background);
 
-        --bs-table-striped-color: $font-color-light;
-        --bs-table-striped-bg: rgb(196, 200, 201);
+    --bs-table-striped-color: var(--font-color);
+    --bs-table-striped-bg: rgba(var(--primary-color), 0.05);
+}
 
-    }
-    &.dark-theme{
-        --bs-table-color: $font-color-dark;
-        --bs-table-bg: $primary-color-dark;
-
-        --bs-table-striped-color: $font-color-dark;
-        --bs-table-striped-bg: rgba(primary-color-dark, 0.05);
-
-    }
+.table-bordered>:not(caption)>* {
+    border-width: var(--bs-border-width) 0;
+    border-color: (var(--primary-color))
 }
 
 
 .thead-global{
-    &.light-theme{
-        background-color: $primary-color-light;
-    }
-    &.dark-theme{
-        background-color: $primary-color-dark;
-    }
+    background-color: var(--primary-color)
 }
     //Linhas e Background da tabela
 .det-table-global{
     min-height:30%;
-    &.light-theme{
-        color: $font-color-light;
-        --bs-table-striped-color: $font-color-light;
-        --bs-table-striped-bg: rgba(0, 0, 0, 0.09);
-        border: none;
-        background-color: $background-color-light;
-    }
-    &.dark-theme{
-        color: $font-color-dark;
-        --bs-table-striped-color: $font-color-dark;
-        --bs-table-striped-bg: rgba(0, 0, 0, 0.5);
-        border: none;
-        background-color: $primary-color-dark;
-        border-bottom: solid $primary-color-dark 1px;
-    }
+    --bs-table-striped-color: var(--font-color);
+    --bs-table-striped-bg: rgba(0, 0, 0, 0.2);
+    border: none;
+    background-color: var(--table-background);
+    border-bottom: solid var(--primary-color) 1px;
+    
 }
 
 .det-th-global{
@@ -246,26 +225,11 @@ span{
     padding: 10px;
 
     --bs-table-color: white;
-  
-    &.light-theme {
-        background-color: rgb(10,61,112);
-      --bs-table-bg: rgb(10,61,112);
-    }
-  
-    &.dark-theme {
-        background-color: black;
-      --bs-table-bg: $primary-color-dark;
-    }
+    --bs-table-bg: var(--primary-color);
 }
 
 .det-tr-global{
-    &.light-theme {
-        --bs-table-bg: $background-color-light;
-      }
-    
-      &.dark-theme {
-        --bs-table-bg: $background-color-dark;
-      }
+    --bs-table-bg: var(--table-background);
 }
 
 tr{
@@ -289,14 +253,7 @@ tr{
 }
 
 .green-global{
-    &.light-theme{
-        color: rgb(0, 204, 0);
-        font-weight: bold;
-        
-    }
-    &.dark-theme{
-        color: $secondary-color-light;
-    }
+    color: rgb(0, 204, 0);
 }
 
 .red-global{
@@ -345,7 +302,7 @@ tr{
     .page-background-global{
         display: flex;
         justify-content: center;
-        transition: all 2s;
+        transition: all .4s;
         
     }
 }

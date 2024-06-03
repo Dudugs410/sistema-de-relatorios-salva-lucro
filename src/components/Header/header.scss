@@ -52,33 +52,20 @@
     align-items: center;
     width: 100%;
     transition: all .4s;
-    &.light-theme{
-        color: white;
-        border: solid $secondary-color-light 1px;
-        background-color: #0a3d70e7;
-    }
-    &.dark-theme{
-        color: $font-color-dark;
-        border: solid $secondary-color-dark 1px;
-        background-color: #231f20f1;
-    }
+    color: white;
+    border: solid var(--secondary-color) 1px;
+    background-color: var(--primary-color);
+
 }
 
 .btn-mobile:hover{
-    &.light-theme{
-        color: $font-color-light;
-        border: solid $primary-color-light 1px;
-        background-color: $secondary-color-light;
-    }
-    &.dark-theme{
-        color: $primary-color-dark;
-        border: solid white 1px;
-        background-color: $secondary-color-dark;
-    }
+        color: var(--font-color);
+        border: solid var(--primary-color) 1px;
+        background-color: var(--secondary-color);
 }
 
 .transition-slide-down {
-    transition: all 0.3s ease-in-out; /* Adjust the duration and easing function as needed */
+    transition: all 0.3s ease-in-out; 
 }
 
 .header-bg{
@@ -86,17 +73,10 @@
     color:white;
     font-weight: bold;
     display: flex;
-    // height: 74.77px; subs por proporcional
     height: 5em;
-    // background-size: cover; sem efeito
     background-repeat: no-repeat;
     background-blend-mode: multiply;
-    &.light-theme{
-        background-color: #0a3d70e7;
-    }
-    &.dark-theme{
-        background-color: #231f20f1;
-    }
+    background-color: var(--header-bg);
 }
 
 .barra-header{
@@ -106,20 +86,13 @@
     align-items: center;
     justify-content: flex-start;
     flex-wrap: nowrap;
-
-    &.light-theme{
-        background-color: $primary-color-light;
-    }
-    &.dark-theme{
-        background-color: $primary-color-dark;
-    }
+    background-color: var(--primary-color);
 }
 
 .li-container{
     height: 40px;
     display: inline-flex;
     width: 100%;
-    /* padding: 10px;*/
 }
 
 .navbar-title{
@@ -136,10 +109,6 @@
     width: 260px;
     
 }
-
-// .nav-text{ 
-//     margin-left: 20px; sem efeito
-// }
 
 .header-info-wrapper{
     display: flex;
@@ -172,21 +141,6 @@
     justify-content: space-around;
 }
 
-// a.nav-text{
-//     margin: 0; sem efeito
-// }
-
-// .btn-exit{
-//     text-align: center;
-//     align-self: start;
-//     background-color: red;
-//     border-radius: 6px;
-//     border: solid white 2px;
-//     margin-top: 2px;
-//     margin-right: 2px;
-//     z-index: 9;
-// }
-
 .nav-item{
     width: fit-content;
     height: 100%;
@@ -195,10 +149,6 @@
     justify-content: center;
 }
 
-// .nav-item:not(:first-child){
-//     margin-left: 0; sem efeito
-// }
-
 .navbar-nav{
     display: inline-flex;
     flex-direction: row;
@@ -206,38 +156,21 @@
     align-items: center;
     justify-content: flex-start;
     flex-wrap: nowrap;
-    &.light-theme{
-        background-color: $primary-color-light;
-    }
-    &.dark-theme{
-        background-color: $primary-color-dark;
-    }
+    background-color: var(--primary-color);
 }
 
 .navbar-nav .dropdown-menu{
     position: relative;
     z-index: 9999;
-    &.light-theme{
-        background-color: $primary-color-light;
-        border: solid $secondary-color-light 1px;
-    }
-    &.dark-theme{
-        background-color: $primary-color-dark;
-        border: solid $secondary-color-dark 1px;
-    }
+    background-color: var(--primary-color);
+    border: solid var(--secondary-color) 1px;
 }
 
 .navbar-nav .dropdown-menu-normal{
     position: relative;
     z-index: 9999;
-    &.light-theme{
-        background-color: $primary-color-light;
-        border: solid $secondary-color-light 1px;
-    }
-    &.dark-theme{
-        background-color: $primary-color-dark;
-        border: solid $secondary-color-dark 1px;
-    }
+    background-color: var(--primary-color);
+    border: solid var(--secondary-color) 1px;
 }
 
 .btn-container{ // ??
@@ -262,36 +195,15 @@
     align-items: center;
     justify-content: center;
     border: none;
-
-    &.light-theme{
-        background-color: $primary-color-light;
-       
-    }
-
-    &.dark-theme{
-        background-color: $primary-color-dark;
-
-    }
+    background-color: var(--primary-color);
 }
 
 .li-button-content:hover{
     border-radius: 8px 0;
-    &.light-theme{
-        color: $primary-color-light;
-        background-color: $secondary-color-light;
-    }
-
-    &.dark-theme{
-        color: $primary-color-dark;
-        background-color: $secondary-color-dark;
-    }
-    
+    color: var(--primary-color);
+    background-color: var(--secondary-color);
     transition: all, 0.4s;
 }
-
-// .nav-item>a{
-//     height: 100%;
-// }
 
 .toggle-container {
     display: flex;
@@ -395,64 +307,34 @@
     transform: translate(202px, 0px) !important;
 }
 
-.dropdown-menu-mobile.show{
-    display: block !important;
-}
-  
-  /* Styles for dropdown menu items */
+    .dropdown-menu-mobile.show{
+        display: block !important;
+    }
+
   .dropdown-item {
     display: flex;
     height: 100%;
     width: 100%;
     color: inherit;
     text-decoration: none;
-    /* display: block; */
     padding: 0;
     position: relative;
     z-index: 1000;
     align-items: stretch;
     align-content: stretch;
-        &.light-theme{
-            color: white;
-            background-color: $primary-color-light;
-        
-        }
+    color: white;
+    background-color: var(--primary-color);
 
-        &.dark-theme{
-            color: white;
-            background-color: $primary-color-dark;
-
-        }
   }
 
   .dropdown-button:hover{
-
-    &.light-theme{
         color: white;
-        background-color: $secondary-color-light;
-       
-    }
-
-    &.dark-theme{
-        color: white;
-        background-color: $secondary-color-dark;
-
-    }
-    
+        background-color: var(--secondary-color);
   }
   
   .dropdown-item:hover {
-    &.light-theme{
-        color: $primary-color-light;
-        background-color: $primary-color-light;
-       
-    }
-
-    &.dark-theme{
-        color: $primary-color-dark;
-        background-color: $primary-color-dark;
-
-    }
+    color: var(--secondary-color);
+    background-color: var(--primary-color);
   }
 
     .navbar-nav .dropdown-menu .dropdown-item {
@@ -464,6 +346,7 @@
     }
 
     .ms-1 .mt-2 .mb-auto .li-btn-text{
+        color: white;
         text-decoration: none !important;
     } 
 
@@ -495,67 +378,35 @@
         border: 2px solid #ccc; /* Border color for unchecked state */
         border-radius: 4px;
         margin-right: 8px;
-        &.light-theme{
-            border-color: $primary-color-light;
-           
-        }
-    
-        &.dark-theme{
-            border-color: $primary-color-dark;
-    
-        }
+        border-color: var(--primary-color);
       }
       
-      .checkbox-input:checked + .checkbox-custom {
-        &.light-theme{
-            border-color: $secondary-color-light;
-            background-color: $secondary-color-light;
-           
-        }
+    .checkbox-input:checked + .checkbox-custom {
+        border-color: var(--secondary-color);
+        background-color: var(--secondary-color);
+    }
     
-        &.dark-theme{
-            border-color: $secondary-color-dark;
-            background-color: $secondary-color-dark;
+    .checkbox-icon {
+    margin-right: 8px;
+    }
     
-        }
-      }
-      
-      .checkbox-icon {
-        margin-right: 8px;
-      }
-      
-      .checkbox-label:hover .checkbox-custom {
-        border-color: #999; /* Change border color on hover */
-      }
-      
-      /* Animation example */
-      .checkbox-custom {
-        transition: background-color 0.3s, border-color 0.3s;
-      }
+    .checkbox-label:hover .checkbox-custom {
+    border-color: #999; /* Change border color on hover */
+    }
+    
+    /* Animation example */
+    .checkbox-custom {
+    transition: background-color 0.3s, border-color 0.3s;
+    }
 
-      .li-button-content{
-    
-        &.light-theme{
-            color: white;
-            background-color: $primary-color-light;
-        }
-    
-        &.dark-theme{
-            color: $font-color-dark;
-            background-color: $primary-color-dark;
-        }
+    .li-button-content{
+        color: white;
+        background-color: var(--primary-color);
     }
     
     .li-button-content:hover{
-        &.light-theme{
-            color: $font-color-light;
-            background-color: $secondary-color-light;
-        }
-    
-        &.dark-theme{
-            color: $primary-color-dark;
-            background-color: $secondary-color-dark;
-        }
+        color: var(--font-color);
+        background-color: var(--secondary-color);
         transition: all, 0.4s;
     }
 
@@ -563,22 +414,10 @@
         position: relative;
         right: 28px;
         top: -2px;
-        &.light-theme{
-            color: $secondary-color-light;
-        }
-    
-        &.dark-theme{
-            color: $secondary-color-dark;
-        }
+        color: var(--secondary-color);
 
         &.isCheckedCalendar{
-            &.light-theme{
-                color: $primary-color-light;
-            }
-        
-            &.dark-theme{
-                color: $primary-color-dark;
-            }
+            color: var(--primary-color);
         }
         transition: all, 0.4s;
     }
@@ -615,21 +454,12 @@
 
     .a-side-bar{
         width: 50px !important;
-        &.light-theme{
-            border: solid $primary-color-light 1px !important;
-        }
-        &.dark-theme{
-            border: solid $primary-color-dark 1px !important;
-        }
+        border-radius: 12px;
+        border: solid var(--primary-color) 2px !important;
     }
 
     .a-side-bar:hover{
-        &.light-theme{
-            border: solid $secondary-color-light 1px !important;
-        }
-        &.dark-theme{
-            border: solid $secondary-color-dark 1px !important;
-        }
+        border: solid var(--secondary-color) 1px !important;
     }
 
     .header-bg-image{
@@ -669,32 +499,17 @@
         margin-left: 0px;
     }
 
-
     .navbar-customer-wrapper{
         display: flex;
         flex-direction: column; // pro nome cair pra baixo do cnpj
         font-size: 0.8em;
-        // justify-content: space-around;
-        // margin-right: 10%;
     }
-    
-    // .navbar-customer{
-
-        // flex-direction: column;
-        // justify-content: space-evenly;
-        // text-align: start;
-        
-    // }
 
     .navbar-customer span {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
-    
-    // li>a{
-    //     color: #181c2e;
-    // }
 
     li{
         transition: all 0.4s;
@@ -711,22 +526,11 @@
     .nav-item{
         width: 100%;
         color: white;
-        // flex-direction: row;
-        // flex-wrap: wrap;
-        // align-items: center;
-        // justify-content: center;
     }
     
-    // .nav-item:not(:first-child){
-    //     // margin-left: 0;
-    // }
-    
     .navbar-nav{
-        // display: inline-flex;
-        // flex-direction: row;
-        // width: 100%;
         align-items: center;
-        background-color: rgba(0, 0, 0, 0.5);
+        //background-color: rgba(0, 0, 0, 0.5);
         flex-wrap: nowrap;
         justify-content: flex-start;
     }
@@ -746,28 +550,13 @@
         align-items: center;
         justify-content: center;
         border: none;
-    
-        &.light-theme{
-            color: white;
-            background-color: $primary-color-light;
-        }
-    
-        &.dark-theme{
-            color: $font-color-dark;
-            background-color: $primary-color-dark;
-        }
+        color: white;
+        background-color: var(--primary-color);
     }
     
     .li-button-content:hover{
-        &.light-theme{
-            color: $primary-color-light;
-            background-color: $secondary-color-light;
-        }
-    
-        &.dark-theme{
-            color: $primary-color-dark;
-            background-color: $secondary-color-dark;
-        }
+        color: var(--primary-color);
+        background-color: var(--secondary-color);
         transition: all, 0.4s;
     }
 
@@ -803,28 +592,13 @@
     }
 
     .li-button-content{
-    
-        &.light-theme{
-            color: white;
-            background-color: $primary-color-light;
-        }
-    
-        &.dark-theme{
-            color: $font-color-dark;
-            background-color: $primary-color-dark;
-        }
+        color: white;
+        background-color: var(--primary-color);
     }
     
     .li-button-content:hover{
-        &.light-theme{
-            color: $primary-color-light;
-            background-color: $secondary-color-light;
-        }
-    
-        &.dark-theme{
-            color: $primary-color-dark;
-            background-color: $secondary-color-dark;
-        }
+        color: var(--primary-color);
+        background-color: var(--secondary-color);
         transition: all, 0.4s;
     }
 }
@@ -855,28 +629,14 @@
     }
 
     .li-button-content{
-    
-        &.light-theme{
-            color: white;
-            background-color: $primary-color-light;
-        }
-    
-        &.dark-theme{
-            color: $font-color-dark;
-            background-color: $primary-color-dark;
-        }
+        color: white;
+        background-color: var(--primary-color);
+
     }
     
     .li-button-content:hover{
-        &.light-theme{
-            color: $primary-color-light;
-            background-color: $secondary-color-light;
-        }
-    
-        &.dark-theme{
-            color: $primary-color-dark;
-            background-color: $secondary-color-dark;
-        }
+        color: var(--primary-color);
+        background-color: var(--secondary-color);
         transition: all, 0.4s;
     }
   }

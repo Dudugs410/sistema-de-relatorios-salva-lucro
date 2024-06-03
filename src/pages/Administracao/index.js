@@ -11,17 +11,15 @@ import './administracao.scss'
 
 const Administracao = () =>{
     const location = useLocation();
-    const { isDarkTheme, setLoading } = useContext(AuthContext)
 
     const [dataBusca, setDataBusca] = useState([new Date, new Date])
-
 
     const [dataBuscaInicial, setDataBuscaInicial] = useState(new Date)
     const [dataBuscaFinal, setDataBuscaFinal] = useState(new Date)
 
     const [tipo, setTipo] = useState('')
     const radioOptions = [
-        {value: '0', label: 'Taxa Redecen'}, 
+        {value: '0', label: 'Taxa Redecen'},
         {value: '1', label: 'Taxa Padrão'},
         {value: '2', label: 'Taxa Personalizada'}
     ]
@@ -48,9 +46,7 @@ const Administracao = () =>{
 
     function handleExport(e){
         e.preventDefault()
-        setLoading(true)
         base64PDFdownload()
-        setLoading(false)
     }
 
     useEffect(()=>{
@@ -107,33 +103,40 @@ const Administracao = () =>{
         )
     }
 
+    function handleLoadData(){
+        console.log('loadData')
+    }
+
+    function handleDateRangeChange(){
+        console.log('handleDateRangeChange')
+    }
+
     return(
-      <div className={`appPage ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-        <div className={`page-background-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-          <div className={`page-content-global page-content-exportacao ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-            <div className={`title-container-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-              <h1 className={`title-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Análise Inicial</h1>
+      <div className='appPage'>
+        <div className='page-background-global'>
+          <div className='page-content-global page-content-exportacao'>
+            <div className='title-container-global'>
+              <h1 className='title-global'>Análise Inicial</h1>
             </div>
-            <hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
             <div className=''>
-            <MyCalendar dataInicialExibicao={dataInicialExibicao} dataFinalExibicao={dataFinalExibicao} dataBusca={dataBusca} handleDateChange={handleDateChange} className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
+                <MyCalendar onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange}/>
                 <div className=''>
                     <form className=''>
                         <div className='component-container'>
-                            <h5 className={`${isDarkTheme ? 'dark-theme' : 'light-theme'}`} style={{fontWeight: 'bold'}}>Tipo de Taxa</h5>
+                            <h5 style={{fontWeight: 'bold'}}>Tipo de Taxa</h5>
                             <br/>
                             <RadioSelect options={radioOptions} onSelect={(e) => {setTipo(e)}}/>
                             <br/>
                         </div>
                         <div className='component-container'>
                             <br/>
-                            <h5 className={`${isDarkTheme ? 'dark-theme' : 'light-theme'}`} style={{fontWeight: 'bold'}}>Cadastro de Taxas Comparativas</h5>
+                            <h5 style={{fontWeight: 'bold'}}>Cadastro de Taxas Comparativas</h5>
                             <br/>
-                            <PlaceHolder /> 
+                            <PlaceHolder />
                             <br/>
                         </div>
                         <div className='btn-container-financeiro'>
-                            <button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleExport}>Gerar PDF</button>
+                            <button className='btn btn-primary btn-global' onClick={handleExport}>Gerar PDF</button>
                         </div>
                     </form>
                 </div>

@@ -84,13 +84,7 @@
     width: 100%;
     border-radius: 20px;
     padding: 10px;
-
-    &.light-theme{
-        background-color: $primary-color-light;
-    }
-    &.dark-theme{
-        background-color: $primary-color-dark;
-    }
+    background-color: var(--primary-color);
 }
 
 .content-adq{
@@ -113,37 +107,22 @@
     width: 100%;
     border-radius: 20px;
     padding: 10px;
-    &.light-theme{
-        background-color: $primary-color-light;
-    }
-    &.dark-theme{
-        background-color: $primary-color-dark;
-    }
+    background-color: var(--primary-color);
+
 }
 
 .det-td--top{
     position: sticky;
     top: 0;
     color: white;
-    &.light-theme{
-        background-color: $primary-color-light;
-    }
-    &.dark-theme{
-        background-color: $primary-color-dark;
-    }
+    background-color: var(--primary-color);
+
 }
 
 .det-adm{
     background-color: white;
-    color: black;
-    &.light-theme{
-        color: $font-color-light;
-        background-color: $background-color-light;
-    }
-    &.dark-theme{
-        color: $font-color-dark;
-        background-color: $background-color-dark;
-    }
+    color: var(--font-color);
+    background-color: var(--background-color);
 }
 
 .content{
@@ -172,14 +151,8 @@
 }
 
 .span-table-servicos-green{
-    &.light-theme{
-        color: rgb(0, 204, 0);
-        font-weight: bold;
-        
-    }
-    &.dark-theme{
-        color: $secondary-color-light;
-    }
+    color: rgb(0, 204, 0);
+    font-weight: bold;
 }
 
 @media screen and (max-width: 869px){

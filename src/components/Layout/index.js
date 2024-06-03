@@ -1,6 +1,6 @@
 import Header from "../Header"
 import Footer from "../Footer"
-import SeletorClienteDev from "../SeletorCliente dev"
+import SeletorCliente from "../SeletorCliente"
 import { FiMail, FiPlusCircle } from "react-icons/fi"
 import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "../../contexts/auth"
@@ -8,7 +8,6 @@ import '../../styles/global.scss'
 import './layout.scss'
 
 function Layout({ children }){
-    const { isDarkTheme } = useContext(AuthContext)
 
     const [isModalOpen, setIsModalOpen] = useState(false);
         
@@ -76,11 +75,11 @@ function Layout({ children }){
     const FormContato = () => {
         return (
           <>
-          <h1 className={`title-chart title-form ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} style={{margin: 0}}><b>Contato</b></h1>
-          <hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
+          <h1 className='title-chart title-form' style={{margin: 0}}><b>Contato</b></h1>
+          <hr className='hr-global'/>
             <form className='form-contato-container' onSubmit={handleSubmit}>
               <div className='input-container input-container-contato'>
-                <h6 className={`form-input-title ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} htmlFor="nome"><b className='form-input-b'>Nome:</b> *</h6>
+                <h6 className='form-input-title' htmlFor="nome"><b className='form-input-b'>Nome:</b> *</h6>
                 <input
                   type="text"
                   value={nomeTemp}
@@ -90,7 +89,7 @@ function Layout({ children }){
                 />
               </div>
               <div className='input-container input-container-contato'>
-                <h6 className={`form-input-title ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} htmlFor="email"><b className='form-input-b'>E-mail:</b> *</h6>
+                <h6 className='form-input-title' htmlFor="email"><b className='form-input-b'>E-mail:</b> *</h6>
                 <input
                   type="email"
                   value={emailTemp}
@@ -100,7 +99,7 @@ function Layout({ children }){
                 />
               </div>
               <div className='input-container input-container-contato'>
-                <h6 className={`form-input-title ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} htmlFor="menssagem"><b className='form-input-b'>Mensagem:</b> *</h6>
+                <h6 className='form-input-title' htmlFor="menssagem"><b className='form-input-b'>Mensagem:</b> *</h6>
                 <textarea
                   value={mensagemTemp}
                   onChange={handleChangeMensagem}
@@ -108,8 +107,8 @@ function Layout({ children }){
                   required
                 />
               </div>
-              <hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
-              <button className={`btn btn-global ${isDarkTheme ? 'dark-theme' : 'light-theme'}`} type='submit' >Enviar</button>
+              <hr className='hr-global' />
+              <button className='btn btn-global' type='submit' >Enviar</button>
             </form>
             </>
           );
@@ -120,7 +119,7 @@ function Layout({ children }){
         
         return (
             <div className="modal-layout" onClick={onClose}>
-                <div className={`modal-layout-content ${isDarkTheme ? 'dark-theme' : 'light-theme'}`} onClick={(e) => e.stopPropagation()}>
+                <div className='modal-layout-content modal-layout-contato-content' onClick={(e) => e.stopPropagation()}>
                     {children}
                 </div>
             </div>
@@ -140,17 +139,17 @@ function Layout({ children }){
     };
 
     return(
-        <div className={`layout ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
+        <div className='layout'>
             <div className='appPage'>
                 <Header />
-                <SeletorClienteDev/>
+                <SeletorCliente/>
                 { children }
-                <div className={`btn-contato-container ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
-                    <button className={`btn-global btn-contato ${isDarkTheme ? 'dark-theme' : 'light-theme'}`} onClick={handleClick}>
+                <div className='btn-contato-container'>
+                    <button className='btn-global btn-contato' onClick={handleClick}>
                         <span><FiMail size={30}/></span>
                     </button>
                 </div>
-                <span className={`span-plus ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}><FiPlusCircle size={20}/></span>
+                <span className='span-plus' ><FiPlusCircle size={20}/></span>
                 {isModalOpen && (
                     <Contato />
                     )}

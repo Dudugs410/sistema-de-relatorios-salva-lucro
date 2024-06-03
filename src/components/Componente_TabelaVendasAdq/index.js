@@ -8,7 +8,7 @@ import '../../styles/global.scss'
 
 const TabelaVendasAdq = ({array}) =>{
 
-	const { dateConvert, tableData, gerarDados, totaisGlobal, setTotaisGlobal, TotaisGlobalVendas, setTotaisGlobalVendas, TotaisGlobalCreditos, setTotaisGlobalCreditos, isDarkTheme } = useContext(AuthContext)
+	const { dateConvert, tableData, totaisGlobal, setTotaisGlobal, TotaisGlobalVendas, setTotaisGlobalVendas, TotaisGlobalCreditos, setTotaisGlobalCreditos, isDarkTheme } = useContext(AuthContext)
 
 	const [vendasArray, setVendasArray] = useState([])
 
@@ -208,7 +208,6 @@ const TabelaVendasAdq = ({array}) =>{
 
 	useEffect(()=>{
 		if(vendasExibicao.length > 0){
-			gerarDados(vendasExibicao)
 			carregaTotais(vendasExibicao)
             
 		}
@@ -362,7 +361,7 @@ const TabelaVendasAdq = ({array}) =>{
 			<div className='vendas-adq-container'>
 				<div className='seletor-adq-container'>
 					<span className='seletor-adq-span'>Adquirente</span>
-					<select className={`seletor-adq-select ${isDarkTheme ? 'dark-theme' : 'light-theme'}`} id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}}>
+					<select className='seletor-adq-select' id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}}>
 						<option value='' selected>Todas</option>
 						{adquirentesExistentes.map((ADQ)=>(
 							<option key={ADQ} value={ADQ}>{ADQ}</option>
@@ -371,7 +370,7 @@ const TabelaVendasAdq = ({array}) =>{
 				</div>
 				<div className='seletor-adq-container'>
 					<span className='seletor-adq-span'>Bandeira</span>
-					<select  className={`seletor-adq-select ${isDarkTheme ? 'dark-theme' : 'light-theme'}`} id='bandeira' value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}}>
+					<select  className='seletor-adq-select' id='bandeira' value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}}>
 						<option value='' selected>Todas</option>
 						{bandeirasExistentes.map((BAN)=>(
 							<option key={BAN} value={BAN}>{BAN}</option>
@@ -381,9 +380,9 @@ const TabelaVendasAdq = ({array}) =>{
 			</div>
 			<div className='dropShadow vendas-view'>
 				<div className='table-wrapper'>
-					<table className={`table table-striped table-hover det-table-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+					<table className='table table-striped table-hover det-table-global' >
 						<thead>
-							<tr className={`det-tr-top-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+							<tr className='det-tr-top-global'>
 								<th className='det-th-global'scope="col">Adquirente</th>
 								<th className='det-th-global'scope="col">Bandeira</th>
 								<th className='det-th-global'scope="col">Produto</th>
@@ -402,12 +401,12 @@ const TabelaVendasAdq = ({array}) =>{
 						<tbody>
 							{vendasExibicao.length > 0 && vendasExibicao.map((venda, index)=>{
 								return(
-									<tr key={index} className={`det-tr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}  >
+									<tr key={index} className='det-tr-global'>
 										<td className='det-td-vendas-global'data-label="Adquirente">{venda.adquirente.nomeAdquirente}</td>
 										<td className='det-td-vendas-global'data-label="Bandeira">{venda.bandeira.descricaoBandeira}</td>
 										<td className='det-td-vendas-global'data-label="Subproduto">{venda.modalidade.descricaoModalidade}</td>
-										<td className='det-td-vendas-global'data-label="Valor Bruto"><span className={`green-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>{Number(venda.valorBruto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
-										<td className='det-td-vendas-global'data-label="Valor Líquido"><span className={`green-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>{Number(venda.valorLiquido).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
+										<td className='det-td-vendas-global'data-label="Valor Bruto"><span className='green-global'>{Number(venda.valorBruto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
+										<td className='det-td-vendas-global'data-label="Valor Líquido"><span className='green-global'>{Number(venda.valorLiquido).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
 										<td className='det-td-vendas-global'data-label="Valor Desconto"><span className='red-global'>{Number(venda.valorDesconto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
 										<td className='det-td-vendas-global'data-label="Produto">{venda.produto.descricaoProduto}</td>
 										<td className='det-td-vendas-global'data-label="Data da Venda">{dateConvert(venda.dataVenda)}</td>

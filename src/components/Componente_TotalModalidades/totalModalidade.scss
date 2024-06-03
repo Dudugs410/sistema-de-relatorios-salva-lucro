@@ -19,17 +19,10 @@
     flex-wrap: wrap;
     align-content: center;
     justify-content: center;
-    transition: all 2s;
-        &.light-theme{
-            color: $primary-color-light;
-            background-color: $background-color-light;
-            border: solid $primary-color-light 1px;
-        }
-        &.dark-theme{
-            color: $font-color-dark;
-            background-color: $primary-color-dark;
-            border: solid $primary-color-dark 1px;
-        }
+    transition: all .4s;
+    color: var(--font-color);
+    background-color: var(--background-color);
+    border: solid var(--modalidades-border) 1px;
 }
 
 .total-container-modalidade:first-of-type{
@@ -48,8 +41,8 @@
 }
 
 .total-container-modalidade>span{
-    color: $primary-color-light;
-    font-family: $default-font;
+    color: var(--primary-color);
+//  font-family: $default-font;
     font-size: 2em;
 }
 
@@ -62,19 +55,13 @@
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    transition: all 2s;
-    &.light-theme{
-        color: $font-color-light;
-    }
-
-    &.dark-theme{
-        color: $font-color-dark;
-    }
+    transition: all .4s;
+    color: var(--font-color);
 }
 
 .green-modalidade{
-    transition: all 2s;
-    color: $secondary-color-light;
+    transition: all .4s;
+    color: rgb(153, 204, 51);
     font-weight: bold;
 
 }

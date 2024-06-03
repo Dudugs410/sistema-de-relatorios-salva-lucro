@@ -7,8 +7,6 @@ const RadioSelect = ({ options, onSelect }) => {
   // State to hold the selected option
   const [selectedOption, setSelectedOption] = useState(null);
 
-  const { isDarkTheme } = useContext(AuthContext);
-
   // Function to handle option selection
   const handleOptionChange = (optionValue) => {
     setSelectedOption(optionValue);
@@ -16,11 +14,11 @@ const RadioSelect = ({ options, onSelect }) => {
   };
 
   return (
-    <div className={`radio-container-exportacao ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
+    <div className='radio-container-exportacao'>
       {options.map((option) => (
-        <div className={`radio ${isDarkTheme ? 'dark-theme' : 'light-theme'}`} key={option.value} onClick={() => handleOptionChange(option.value)}>
+        <div className='radio' key={option.value} onClick={() => handleOptionChange(option.value)}>
           <input
-            className={`input-r ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}
+            className='input-r'
             type="radio"
             id={option.value}
             name="radioSelect"
@@ -28,8 +26,8 @@ const RadioSelect = ({ options, onSelect }) => {
             checked={selectedOption === option.value}
             onChange={() => handleOptionChange(option.value)}
           />
-          <span className={`radio-indicator ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}></span>
-          <label className={`radio-label ${isDarkTheme ? 'dark-theme' : 'light-theme'}`} htmlFor={option.value}>{option.label}</label>
+          <span className='radio-indicator'></span>
+          <label className='radio-label' htmlFor={option.value}>{option.label}</label>
         </div>
       ))}
     </div>

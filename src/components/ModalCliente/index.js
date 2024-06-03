@@ -10,7 +10,6 @@ const ModalCliente = () => {
     const{grupos, 
         loadGrupos,
         setCnpj, 
-        loading, 
         setModalCliente,
         alerta,
         setGrupos, 
@@ -55,42 +54,39 @@ const ModalCliente = () => {
     
     return(
         <>
-            {loading ? <LoadingModal/> : 
-                <>
-                    <div className='modal-cliente'>
-                        <div className='modal-window'>
-                            <form className='form-modal-cliente' onSubmit={(e)=>handleSubmit(e)}>
-                                <div className='select-card-modal-cliente'>
-                                    <span>Grupo de Clientes</span>
-                                    <select id='grupo' value={gruSelecionado} onChange={(e) => {setGruSelecionado(e.target.value)}}>
-                                            <option defaultValue=''>selecione</option>
-                                            {grupos.map((GRU)=>(
-                                                <option key={GRU.CODIGOGRUPO} value={GRU.CODIGOGRUPO} >{GRU.NOMEGRUPO}</option>
-                                            ))}
-                                        </select>
-                                </div>
-
-                                <div className='select-card-modal-cliente'>
-                                    <span>Cliente</span>
-                                    { listaClientes.length > 0 ?
-                                    <select id='cliente' value={cliente} onChange={(e) => {setCliente(e.target.value)}}>
-                                        <option defaultValue=''>selecione</option>
-                                        { listaClientes.map((CLI)=>(
-                                                <option key={CLI.CODIGOCLIENTE} value={CLI.CNPJ}>{CLI.NOMECLIENTE}</option>
-                                            ))}
-                                    </select> : 
-                                    <select className='select-disabled' disabled>
-                                        <option defaultValue=''>Selecione o Grupo</option>
-                                    </select>}
-                                </div>
-                                
-                                <div className='btn-container-modal-cliente'>
-                                    <button className='btn btn-primary btn-modal' type='submit'>Selecionar</button>
-                                </div>
-                            </form>
+            <div className='modal-cliente'>
+                <div className='modal-window'>
+                    <form className='form-modal-cliente' onSubmit={(e)=>handleSubmit(e)}>
+                        <div className='select-card-modal-cliente'>
+                            <span>Grupo de Clientes</span>
+                            <select id='grupo' value={gruSelecionado} onChange={(e) => {setGruSelecionado(e.target.value)}}>
+                                    <option defaultValue=''>selecione</option>
+                                    {grupos.map((GRU)=>(
+                                        <option key={GRU.CODIGOGRUPO} value={GRU.CODIGOGRUPO} >{GRU.NOMEGRUPO}</option>
+                                    ))}
+                                </select>
                         </div>
-                    </div>
-                </>}
+
+                        <div className='select-card-modal-cliente'>
+                            <span>Cliente</span>
+                            { listaClientes.length > 0 ?
+                            <select id='cliente' value={cliente} onChange={(e) => {setCliente(e.target.value)}}>
+                                <option defaultValue=''>selecione</option>
+                                { listaClientes.map((CLI)=>(
+                                        <option key={CLI.CODIGOCLIENTE} value={CLI.CNPJ}>{CLI.NOMECLIENTE}</option>
+                                    ))}
+                            </select> : 
+                            <select className='select-disabled' disabled>
+                                <option defaultValue=''>Selecione o Grupo</option>
+                            </select>}
+                        </div>
+                        
+                        <div className='btn-container-modal-cliente'>
+                            <button className='btn btn-primary btn-modal' type='submit'>Selecionar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </>
     )
 }

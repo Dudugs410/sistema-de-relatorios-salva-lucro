@@ -16,16 +16,16 @@ const ConciliacaoBancaria = () => {
     };
 
     return(
-        <div className={`appPage ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-            <div className={`page-background-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                <div className={`page-content-global page-content-financeiro ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                    <div className={`title-container-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-                        <h1 className={`title-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Conciliação Bancária</h1>          
+        <div className='appPage'>
+            <div className='page-background-global'>
+                <div className='page-content-global page-content-financeiro'>
+                    <div className='title-container-global'>
+                        <h1 className='title-global'>Conciliação Bancária</h1>          
                     </div>
                     <hr className="hr-recebimentos"/>
-                    <div className={`container-cielo ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} >
+                    <div className='container-cielo'>
                         <div className=''>
-                            <h6 className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>{'Carregar Extrato (Cnab240)'}</h6>
+                            <h6>{'Carregar Extrato (Cnab240)'}</h6>
                             <input
                                 type="file"
                                 ref={fileInputRef}
@@ -36,10 +36,10 @@ const ConciliacaoBancaria = () => {
                                 }}
                             />
                             {/* Visible button to trigger file input */}
-                            <button className={`btn btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleButtonClick}><FiFilePlus /> &nbsp; Arquivo</button>
+                            <button className='btn btn-global' onClick={handleButtonClick}><FiFilePlus /> &nbsp; Arquivo</button>
                         </div>
                         <hr className='hr-global'/>
-                        <div className={`container-conciliacao ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+                        <div className='container-conciliacao'>
                         </div>
                     </div>
                 </div>

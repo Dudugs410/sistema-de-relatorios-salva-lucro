@@ -4,7 +4,6 @@ import { useState, useEffect, useContext } from 'react'
 import Select from 'react-select'
 
 import { AuthContext } from '../../contexts/auth'
-import { ToastContainer } from 'react-toastify'
 import Cookies from 'js-cookie'
 
 import 'react-toastify/dist/ReactToastify.css'
@@ -12,186 +11,137 @@ import './Seletor.scss'
 
 const SeletorCliente = () => {
 	const { 
-		gruSelecionado, 
-		setGruSelecionado, 
-		listaClientes, 
-		setListaClientes, 
-		setGrupos, 
-		resetaSomatorios, 
-		alerta, 
-		isDarkTheme,
-		grupos,
-		cnpj, 
-		setCnpj, 
-		setInicializouAux,
-		resetaDashboard,
-		buscou,
-		setBuscou,
-		setGrupoSelecionado,
-		setClienteSelecionado,
-		trocarHeader,
-		setTrocarHeader,
+		changedOption, setChangedOption,
+		setIsLoadedSalesDashboard, setIsLoadedCreditsDashboard, setIsLoadedServicesDashboard,
+		setExportName,
+		setSalesPageArray, setCreditsPageArray, setServicesPageArray,
 	} = useContext(AuthContext)
 
-	const [cliSelecionado, setCliSelecionado] = useState('')
-	const [selectedCliLabel, setSelectedCliLabel] = useState('Selecione')
-	const [codigoGrupo, setCodigoGrupo] = useState('')
-	const [podeBuscar, setPodeBuscar] = useState(true)
 
-	useEffect(()=>{
-		setCnpj(sessionStorage.getItem('cnpj'))
-		setGrupos(JSON.parse(sessionStorage.getItem('grupos')))
-		setPodeBuscar(Cookies.get('podeBuscar'))
+	// // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
+
+	const [selectorGroupList, setSelectorGroupList] = useState(JSON.parse(sessionStorage.getItem('groupsStorage')))
+
+	//array com as opções disponíveis
+	const [groupOptions, setGroupOptions] = useState([])
+	const [clientOptions, setClientOptions] = useState([])
+
+	//objeto da Opção Selecionada:
+	const [selectedGroup, setSelectedGroup] = useState({value: null, label: ''})
+	const [selectedClient, setSelectedClient] = useState({value: 'todos', label: 'TODOS'})
 	
-	},[])
-
-	useEffect(()=>{
-		const grupoObj = grupos.find(item => item.CODIGOGRUPO === Number(gruSelecionado.value))
-		let cli = grupoObj ? grupoObj.CLIENTES : []
-		setListaClientes(cli)
-		setListaCli([])
-		setSelectedCliLabel('Selecione')
-	},[gruSelecionado])
-
-	function handleCnpj(e){
-		e.preventDefault()
-		if((cliSelecionado === '') || (cliSelecionado ==='selecione') || (cliSelecionado.value === '')){
-			alerta('Selecione um cliente válido')
-			return
-		}
-		resetaDashboard()
-		//console.log(cliSelecionado.value)
-		if(podeBuscar){
-			resetaSomatorios()
-			setCnpj(cliSelecionado.value)
-			setInicializouAux(false)
-			sessionStorage.setItem('inicializou', false)
-			sessionStorage.setItem('codigoGrupo', gruSelecionado)
-			Cookies.set('cnpj', cliSelecionado.value)
-			setCodigoGrupo(gruSelecionado.value)
-			setBuscou(true)
-			setTrocarHeader(!trocarHeader)
-		}   
-	}
-
-	useEffect(()=>{
-		if(podeBuscar){
-			Cookies.set('buscou', false)
-		} else {
-			Cookies.set('buscou', true)
-		}
-	},[buscou])
+	// // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
 
 	/// React Select
 
 	// grupos
 
-	const listaGrupos = grupos.map((GRU) => ({
-		value: GRU.CODIGOGRUPO,
-		label: GRU.NOMEGRUPO,
-	}))
+	// Inicializa a Lista de grupos dentro do componente ReactSelect,
+	// Estruturado da forma correta, com o valor(código do grupo), 
+	// label(nome do grupo) e clients(array com os clientes pertencentes
+	// àquele grupo)
 
-	const [gruposFiltrado, setGruposFiltrado] = useState([])
-
-	useEffect(() => {
-		if (grupos && grupos.length > 0) {
-			const sortedOptions = grupos
+	const iniGroupsList = async () => {
+		if (selectorGroupList && selectorGroupList.length > 0) {
+			const sortedOptions = selectorGroupList
 				.map((GRU) => ({
 					value: GRU.CODIGOGRUPO,
 					label: GRU.NOMEGRUPO,
+					clients: GRU.CLIENTES
 				}))
 				.sort((a, b) => a.label.localeCompare(b.label)) // Sort options alphabetically by label
-			setGruposFiltrado(sortedOptions)
+			setGroupOptions(sortedOptions)
+			setSelectedGroup(sortedOptions[0])
+			setSelectedClient({label: 'TODOS', value: 'todos'})
+			Cookies.set('groupCode', sortedOptions[0].value)
+			Cookies.set('cnpj', 'todos')
+			Cookies.set('clientCode', '-')
+			
 		} else {
-			setGruposFiltrado([])
+			setGroupOptions([])
 		}
-	}, [grupos])
-    
-	const handleSelectChangeGrupo = (selected) => {
-
-		// Set value in sessionStorage
-		sessionStorage.setItem('codigoGrupo', selected.value)
-    
-		// Set value in Cookies
-		Cookies.set('codigoGrupo', selected.value)
-    
-		// Update state with selected value
-		setGruSelecionado(selected)
-		//Cookies.set('gruSelecionado', JSON.stringify(gruSelecionado))
-        
-		// Additional code if needed
-		setCliSelecionado('')
 	}
 
-	const handleSelectChangeCLI = (selected) => {
-		setCliSelecionado(selected) // Set cliSelecionado to selected value (CNPJ)
+	useEffect(()=>{
+		iniGroupsList()
+	},[])
+
+	useEffect(()=>{
+		if(selectedGroup){
+			const todosOption = { label: 'TODOS', value: 'todos' };
+			const clients = selectedGroup.clients
+			if (clients && clients.length > 0) {
+				const sortedOptions = clients
+					.map((CLI) => ({
+						value: CLI.CNPJ,
+						label: CLI.NOMECLIENTE,
+						cod: CLI.CODIGOCLIENTE,
+					}))
+					.sort((a, b) => a.label.localeCompare(b.label)); // Sort options alphabetically by label
+				setClientOptions([todosOption, ...sortedOptions]);
+				setSelectedClient(clientOptions[0]); // Update selected client
+				Cookies.set('cnpj', sortedOptions[0].value);
+				Cookies.set('clientCode', sortedOptions.CODIGOCLIENTE)
+				Cookies.set('clientOptions', JSON.stringify(sortedOptions))
+				Cookies.set('groupName', JSON.stringify(selectedGroup.label))
+				setChangedOption(!changedOption)
+			} else {
+				setClientOptions([]);
+			}
+		}
+	}, [selectedGroup]);
+
+	useEffect(()=>{
+		setSalesPageArray([])
+		setCreditsPageArray([])
+		setServicesPageArray([])
+		if(selectedClient && (selectedClient.label !== 'TODOS')){
+			Cookies.set('cnpj', selectedClient.value)
+			Cookies.set('clientCode', selectedClient.cod)
+			setExportName(selectedClient.label)
+		} else if (selectedClient){
+			Cookies.set('cnpj', selectedClient.value)
+			Cookies.set('clientCode', 'todos')
+			setExportName(selectedGroup.label + ' - Todas Filiais')
+		}
+	},[selectedClient])
+
+	////////////////////////////////////////////////////
+	//Funções dos Select:
+
+	//Ao Selecionar Grupo:
+	const handleGroupChange = (selected) => {
+		setIsLoadedSalesDashboard(false)
+		setIsLoadedCreditsDashboard(false)
+		setIsLoadedServicesDashboard(false)
+		setChangedOption(!changedOption)
+		setSelectedGroup(selected)
 	}
 
-	// clientes
-
-	const [listaCli, setListaCli] = useState([])
-
-	useEffect(() => {
-		if (listaClientes && listaClientes.length > 0) {
-			const sortedOptions = listaClientes
-				.map((CLI) => ({
-					value: CLI.CNPJ,
-					label: CLI.NOMECLIENTE,
-				}))
-				.sort((a, b) => a.label.localeCompare(b.label)) // Sort options alphabetically by label
-			let todos = {value: 'todos', label: 'TODOS'}
-			sortedOptions.unshift(todos)
-			setListaCli(sortedOptions)
-		} else {
-			setListaCli([])
-		}
-	}, [listaClientes])
-
-	useEffect(()=>{
-		if((cliSelecionado.value === cnpj) && (gruSelecionado.value === codigoGrupo)){
-			setPodeBuscar(false)
-			setBuscou(true)
-		} else {
-			setPodeBuscar(true)
-			setBuscou(false)
-		}
-		setGrupoSelecionado(gruSelecionado)
-		setClienteSelecionado(cliSelecionado)
-	},[cliSelecionado, cnpj, codigoGrupo, gruSelecionado])
-
-	useEffect(()=>{
-		Cookies.set('podeBuscar', podeBuscar)
-	},[podeBuscar])
-
+	//Ao Selecionar Cliente:
+	const handleClientChange = (selected) => {
+		setIsLoadedSalesDashboard(false)
+		setIsLoadedCreditsDashboard(false)
+		setIsLoadedServicesDashboard(false)
+		setChangedOption(!changedOption)
+		setSelectedClient(selected)
+		Cookies.set('clientName', JSON.stringify(selected.label))
+	}
 
 	return(
 		<>
-			{ grupos === null ? <></> : 
+			{ selectorGroupList === null ? <></> : 
 				<>
-					<ToastContainer
-						position="top-center"
-						autoClose={5000}
-						hideProgressBar
-						newestOnTop={false}
-						closeOnClick
-						rtl={false}
-						pauseOnFocusLoss
-						draggable
-						pauseOnHover
-						theme="light"
-					/>
 					<div className='search-bar-seletor'>
-						<form className={`date-container-seletor p-4 ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+						<form className='date-container-seletor p-4'>
 							<div className='cli-container'>
 								<div className='date-column-seletor'>
 									<div className='select-card-seletor'>
 										<span>Grupo</span>
 										<Select
-											className=""
-											options={gruposFiltrado}
-											onChange={handleSelectChangeGrupo}
-											value={gruposFiltrado.value}
-											placeholder="Selecione ou digite para filtrar"
+											options={groupOptions}
+											onChange={handleGroupChange}
+											value={selectedGroup}
 										/>
 									</div>
 								</div>
@@ -199,30 +149,23 @@ const SeletorCliente = () => {
 								<div className='date-column-seletor '>
 									<div className='select-card-seletor'>
 										<span>Cliente</span>
-										{listaClientes.length > 0 ? (
+										{clientOptions && clientOptions.length > 0 ? (
 											<Select
-												className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}
-												options={listaCli}
-												onChange={handleSelectChangeCLI}
-												value={listaCli.CNPJ}
-												placeholder="Selecione o Cliente"
-												defaultValue={selectedCliLabel}
-												key={gruSelecionado ? gruSelecionado.value : 'default'}
+												options={clientOptions}
+												placeholder="Selecione o Cliente / Filial"
+												onChange={handleClientChange}
+												value={selectedClient}
 											/>
 										) : (
 											<Select
-												className={`${isDarkTheme === true ? 'dark-theme-disabled' : 'light-theme-disabled'} select-disabled`}
 												options={[]}
 												isDisabled
 												placeholder="Selecione o Cliente / Filial"
-												key={gruSelecionado ? gruSelecionado.value : 'default'}
+												value={selectedClient}
 											/>
 										)}
 									</div>
 								</div>
-							</div>
-							<div className="select-btn-seletor">
-								<button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleCnpj} disabled={podeBuscar === false}>Selecionar</button>
 							</div>
 						</form>
 					</div>

@@ -3,12 +3,8 @@
 .vendas-view{
     width: 100%;
     overflow: scroll;
-    &.light-theme{
-        background-color: $background-color-light;
-    }
-    &.dark-theme{
-        background-color: $background-color-dark;
-    }}
+    background-color: var(--background-color);
+}
 
 .date-container{
     width: 100%;
@@ -17,37 +13,23 @@
     margin-left: 0;
     margin-right: 0;
     justify-content: center;
-    padding-bottom: 13px;
+    padding-bottom: 0;
+    flex-direction: column;
 }
 
 .span-str {
-    &.light-theme{
-        color: $primary-color-light;   
-    }
-    &.dark-theme{
-        color: $primary-color-dark;
-    }
+    color: var(--primary-color);   
 }
 
 .texto-paginacao{
-    &.light-theme{
-        color: $font-color-light;   
-    }
-    &.dark-theme{
-        color: $font-color-dark;
-    }
+    color: var(--font-color);   
 }
 
 .table-wrapper{
     height: auto;
     max-height: 400px;
-    /* padding-bottom: 10%;*/
-    &.light-theme{
-        background-color: $background-color-light;
-    }
-    &.dark-theme{
-        background-color: $background-color-dark;
-    }
+    background-color: var(--background-color);
+
 }
 
 .green{
@@ -100,14 +82,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: space-around;
-    font-family: $default-font;
-
-    &.light-theme{
-        color: $font-color-light;
-    }
-    &.dark-theme{
-        color: $font-color-dark;
-    }
+//  font-family: $default-font;
+    color: var(--font-color);
 }
 
 .titulo-grafico{

@@ -3,15 +3,8 @@
 .layout{
     height: 100%;
     width: 100%;
-    transition: all 2s;
-    &.light-theme{
-        background-color: $background-color-light;
-    }
-
-    &.dark-theme{
-        background-color: $background-color-dark;
-    }
-    
+    transition: all .4s;
+    background-color: var(--background-color);
 }
 
 .btn-contato-container{
@@ -19,15 +12,7 @@
     bottom: 41px;
     right: 6px;
     border-radius: 12px;
-
-    &.light-theme{
-        border: solid $primary-color-light 2px;
-    }
-
-    &.dark-theme{
-        border: solid $primary-color-dark 2px;
-    }
-
+    border: solid var(--secondary-color) 2px;
 }
 
 .span-plus{
@@ -36,18 +21,8 @@
     right: 0px;
     border-radius: 12px;
     line-height: normal;
-
-    &.light-theme{
-        background-color: white;
-        border: solid $primary-color-light 2px;
-    }
-
-    &.dark-theme{
-        background-color: white;
-        color: black;
-        border: solid $primary-color-dark 2px;
-    }
-
+    background-color: white;
+    border: solid var(--primary-color) 2px;
 }
 
 .btn-contato{
@@ -82,49 +57,35 @@
     align-content: center;
     flex-wrap: wrap;
     justify-content: center;
-
 }
 
 .modal-layout-content{
     display: flex;
     width: 50%;
-    height: 65%;
+    height: 60%;
     flex-direction: column;
     flex-wrap: wrap;
     align-content: center;
     justify-content: space-evenly;
     border-radius: 15px;
+    color: var(--font-color);
+    //background-color: var(--background-color);
+    //border: solid var(--secondary-color) 2px;
+}
 
-    &.light-theme{
-        color: $font-color-light;
-        background-color: $background-color-light;
-        border: solid $primary-color-light 2px;
-    }
-
-    &.dark-theme{
-        color: $font-color-dark;
-        background-color: $primary-color-dark;
-        border: solid $secondary-color-dark 2px;
-    }
-
+.modal-layout-contato-content{
+    background-color: var(--background-color);
+    border: solid var(--secondary-color) 2px;
 }
 
 .title-form{
-    &.dark-theme{
-        background-color: $background-color-dark;
-    }
+    background-color: var(--background-color);
 }
 
 .form-input-title{
     padding:5px;
     border-radius: 15px;
-    &.light-theme{
-        background-color: $secondary-color-light;
-    }
-
-    &.dark-theme{
-        background-color: $background-color-dark;
-    }
+    background-color: var(--background-color);
 }
 
 .form-input-b{
