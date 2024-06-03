@@ -10,16 +10,23 @@ import { FiFilePlus } from 'react-icons/fi'
 
 import './GerarRelatorio.scss'
 import { imgExport } from '../../contexts/images'
-import Cookies from 'js-cookie'
 import { AuthContext } from '../../contexts/auth'
 
-export default function GerarRelatorio({tableData, tipo}){
+export default function GerarRelatorio(){
 
-	const { dateConvert, textoExport, setTextoExport } = useContext(AuthContext)
+	const { 
+		dateConvert, exportName,
+		salesTableData, creditsTableData, servicesTableData,
+	 } = useContext(AuthContext)
+
 	const [tipoRelatorio, setTipoRelatorio] = useState('')
 	const [currentDateTime, setCurrentDateTime] = useState('')
+	const [tipo, setTipo] = useState('')
+	const [tableData, setTableData] = useState([])
 
 	useEffect(() => {
+		console.log('tableData? -> ', tableData)
+
 		const updateDateTime = () => {
 		  const now = new Date()
 
@@ -50,20 +57,29 @@ export default function GerarRelatorio({tableData, tipo}){
 	  }, [])
 
 	useEffect(()=>{
-		switch (tipo) {
-			case 'vendas':
+		switch (sessionStorage.getItem('currentPath')) {
+			case '/vendas':
 				setTipoRelatorio('Relatório de Vendas')
+				setTipo('vendas')
+				setTableData(salesTableData)
+				console.log('salesTableData: ', salesTableData)
 				break
-			case 'creditos':
+			case '/creditos':
 				setTipoRelatorio('Relatório de Créditos')
+				setTipo('creditos')
+				setTableData(creditsTableData)
+				console.log('creditsTableData: ', creditsTableData)
 				break
 
-			case 'servicos':
+			case '/servicos':
 				setTipoRelatorio('Relatório de Serviços')
+				setTipo('servicos')
+				setTableData(servicesTableData)
+				console.log('servicesTableData: ', servicesTableData)
 			default:
 				break
 		}
-	},[])
+	},[sessionStorage.getItem('currentPath')])
 
 	// EXCEL ////////////////////////////////////////////////////////////
 	
@@ -129,7 +145,7 @@ export default function GerarRelatorio({tableData, tipo}){
 			// Generate Excel file
 			workbook.xlsx.writeBuffer()
 				.then((buffer) => {
-					saveExcelFile(buffer, `${tipoRelatorio} - ${textoExport} - ${currentDateTime}.xlsx`)
+					saveExcelFile(buffer, `${tipoRelatorio} - ${exportName} - ${currentDateTime}.xlsx`)
 				})
 				.catch((error) => {
 					console.error('Erro ao gerar arquivo excel: ', error)
@@ -164,7 +180,7 @@ export default function GerarRelatorio({tableData, tipo}){
 			// Generate Excel file
 			workbook.xlsx.writeBuffer()
 			.then((buffer) => {
-				saveExcelFile(buffer, `${tipoRelatorio} - ${textoExport} - ${currentDateTime}.xlsx`)
+				saveExcelFile(buffer, `${tipoRelatorio} - ${exportName} - ${currentDateTime}.xlsx`)
 			})
 			.catch((error) => {
 				console.error('Erro ao gerar arquivo Excel: ', error)
@@ -196,7 +212,7 @@ export default function GerarRelatorio({tableData, tipo}){
 			// Generate Excel file
 			workbook.xlsx.writeBuffer()
 			.then((buffer) => {
-				saveExcelFile(buffer, `${tipoRelatorio} - ${textoExport} - ${currentDateTime}.xlsx`)
+				saveExcelFile(buffer, `${tipoRelatorio} - ${exportName} - ${currentDateTime}.xlsx`)
 			})
 			.catch((error) => {
 				console.error('Erro ao gerar arquivo Excel: ', error)
@@ -218,6 +234,7 @@ export default function GerarRelatorio({tableData, tipo}){
 	const generatePdf = () => {
 		if (!tableData || tableData.length === 0) {
 			alert('Sem dados para exportar')
+			console.log('tableData ->->-> ', tableData)
 			return
 		} else {
 			if(tipo === 'vendas'){
@@ -264,7 +281,7 @@ export default function GerarRelatorio({tableData, tipo}){
 						const positionX = 310
 						const positionY = 8
 		
-						const text = `${tipoRelatorio} ${textoExport} - ${currentDateTime.replace(/-/g, '/').replace(/\./g, ':')}`;
+						const text = `${tipoRelatorio} ${exportName} - ${currentDateTime.replace(/-/g, '/').replace(/\./g, ':')}`;
 						const textX = 14; // Adjust the X-coordinate as needed
 						const textY = 18; // Adjust the Y-coordinate as needed
 		
@@ -274,7 +291,7 @@ export default function GerarRelatorio({tableData, tipo}){
 					}
 				})
 			
-				doc.save(`${tipoRelatorio} - ${textoExport} - ${currentDateTime}.pdf`)
+				doc.save(`${tipoRelatorio} - ${exportName} - ${currentDateTime}.pdf`)
 			} else if(tipo === 'creditos'){
 				const columns = [ 'CNPJ', 'Adquirente', 'Bandeira', 'Produto', 'Subproduto', 'Data do Crédito', 'Data da Venda', 'ValorBruto', 'Valor Líquido', 'Taxa', 'Valor Desconto', 'NSU', 'Código Autorização', 'Parcela', 'QTD Parc']
 				const rows = tableData.map(rowData => [rowData.cnpj, rowData.adquirente, rowData.bandeira, rowData.produto, rowData.subproduto, dateConvert(rowData.dataCredito), dateConvert(rowData.dataVenda), `R$ ${rowData.valorBruto.toFixed(2)}`, `R$ ${rowData.valorLiquido.toFixed(2)}`, `${rowData.taxa.toFixed(2)}%`, `R$ ${rowData.valorDesconto.toFixed(2)}`, rowData.nsu, rowData.codigoAutorizacao, rowData.parcela, rowData.totalParcelas ])
@@ -319,7 +336,7 @@ export default function GerarRelatorio({tableData, tipo}){
 						const positionX = 310
 						const positionY = 8
 		
-						const text = `${tipoRelatorio} ${textoExport} - ${currentDateTime.replace(/-/g, '/').replace(/\./g, ':')}`;
+						const text = `${tipoRelatorio} ${exportName} - ${currentDateTime.replace(/-/g, '/').replace(/\./g, ':')}`;
 						const textX = 14; // Adjust the X-coordinate as needed
 						const textY = 18; // Adjust the Y-coordinate as needed
 		
@@ -329,7 +346,7 @@ export default function GerarRelatorio({tableData, tipo}){
 					}
 				})
 			
-				doc.save(`${tipoRelatorio} - ${textoExport} - ${currentDateTime}.pdf`)
+				doc.save(`${tipoRelatorio} - ${exportName} - ${currentDateTime}.pdf`)
 			} else if(tipo === 'servicos'){
 				const columns = [ 'CNPJ', 'Razão Social', 'Código do estabelecimento', 'Adquirente', 'Valor', 'Data', 'Descrição']
 				const rows = tableData.map(rowData => [
@@ -377,7 +394,7 @@ export default function GerarRelatorio({tableData, tipo}){
 						const positionX = 310
 						const positionY = 8
 		
-						const text = `${tipoRelatorio} ${textoExport} - ${currentDateTime.replace(/-/g, '/').replace(/\./g, ':')}`;
+						const text = `${tipoRelatorio} ${exportName} - ${currentDateTime.replace(/-/g, '/').replace(/\./g, ':')}`;
 						const textX = 14; // Adjust the X-coordinate as needed
 						const textY = 18; // Adjust the Y-coordinate as needed
 		
@@ -387,7 +404,7 @@ export default function GerarRelatorio({tableData, tipo}){
 					}
 				})
 			
-				doc.save(`${tipoRelatorio} - ${textoExport} - ${currentDateTime}.pdf`)
+				doc.save(`${tipoRelatorio} - ${exportName} - ${currentDateTime}.pdf`)
 			}
 		}
 	}

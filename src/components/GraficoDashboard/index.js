@@ -3,10 +3,10 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
 import Modal from '../Modal';
 import './grafico.scss'
-import TabelaVendasCreditos from '../Componente_TabelaVendasCreditos';
-import TabelaGenerica from '../Componente_TabelaGenerica';
 import { AuthContext } from '../../contexts/auth';
-import { CenturyView } from 'react-calendar';
+import TabelaVendasDashboard from '../Componente_TabelaVendasDashboard';
+import TabelaCreditosDashboard from '../Componente_TabelaCreditosDashboard';
+import TabelaServicosDashboard from '../Componente_TabelaServicosDashboard';
 
 
 
@@ -16,7 +16,7 @@ const PieChart = ({ data01, arrayAdm, tipo, dados } ) => {
 
   const { isDarkTheme } = useContext(AuthContext)
   const [selectedAdm, setSelectedAdm] = useState(null)
-  const [showAdmModal, setShowAdmModal] = useState(false)
+  const [showAdmModal, setShowAdmModal] = useState(null)
   const [dado, setDado] = useState('')
 
   useEffect(()=>{
@@ -37,13 +37,14 @@ const PieChart = ({ data01, arrayAdm, tipo, dados } ) => {
   },[])
 
   const handleChartClick = useCallback((event, elements) => {
-    //console.log('array adm grafico dashboard: ', arrayAdm)
     if (elements.length > 0) {
       const clickedElementIndex = elements[0].index;
       const selectedAdmData = arrayAdm[clickedElementIndex];
 
+      console.log('Fatia Clicada: ', selectedAdmData)
       setSelectedAdm(selectedAdmData);
       setShowAdmModal(true);
+      //sessionStorage.setItem('showModalDash', true)
 
       //console.log('Array da Fatia Clicada: ', arrayAdm[clickedElementIndex])
 
@@ -171,7 +172,7 @@ const PieChart = ({ data01, arrayAdm, tipo, dados } ) => {
                 return {
                   text: `${label}: ${formattedValue}`,
                   fillStyle: data.datasets[0].backgroundColor[index],
-                  fontColor: `${isDarkTheme ? '#fff' : 'rgb(10,61,112)'}`,
+                  fontColor: getComputedStyle(document.documentElement).getPropertyValue('--font-color'),
                   hidden:
                     isNaN(data.datasets[0].data[index]) ||
                     chart.getDatasetMeta(0).data[index].hidden,
@@ -210,13 +211,18 @@ styleTag.innerHTML = `
 `;
 document.head.appendChild(styleTag);
   
-
   return (
     <div className='chart-container' style={{ height: '290px', position: 'relative', maintainAspectRatio: false }}>
       <Pie data={chartData} options={chartOptions} />
       {showAdmModal && selectedAdm && (
         <Modal onClose={() => setShowAdmModal(false)}>
-          { tipo === '0' ? <TabelaVendasCreditos array={selectedAdm} tipo={dados} isDashboard={true} /> : <TabelaGenerica array = {selectedAdm}/>}
+        {tipo === '0' ? (<TabelaVendasDashboard array={selectedAdm} />) 
+        : 
+        tipo === '1' ? (<TabelaCreditosDashboard array={selectedAdm} />) 
+        : 
+        tipo === '2' ? (<TabelaServicosDashboard array={selectedAdm} />) 
+        :
+        null}
         </Modal>
       )}
     </div>

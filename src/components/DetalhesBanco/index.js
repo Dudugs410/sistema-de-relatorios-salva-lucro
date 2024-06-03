@@ -22,7 +22,7 @@ const DetalhesBanco = ({ array }) => {
 		<>
 			{array.length > 0 && (<div className='window-modal-banco'>
 				<div className='dropShadow vendas-view'>
-					<div className={`table-wrapper ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
+					<div className='table-wrapper'>
 						<table className="table table-striped det-table">
 							<thead>
 								<tr className='det-tr-top'>

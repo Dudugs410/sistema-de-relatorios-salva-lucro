@@ -12,23 +12,12 @@
     flex-wrap: wrap;
     justify-content: space-between;
     margin-bottom: 8px;
+    border-bottom: solid var(--font-color) 1px;
+    color: var(--font-color);
 
-    &.light-theme{
-        border-bottom: solid $primary-color-light 1px;
-        color: $font-color-light;
-    }
-
-    &.dark-theme{
-        border-bottom: solid $primary-color-dark 1px;
-        color: $font-color-dark;
-    }
 }
   
 .header {
     font-weight: bold;
     margin-right: 10px; /* Adjust space between header and value */
-}
-  
-.value {
-
 }

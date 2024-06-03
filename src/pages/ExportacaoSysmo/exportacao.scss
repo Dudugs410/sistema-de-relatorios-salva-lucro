@@ -16,3 +16,15 @@
     flex-direction: column;
     padding-top:1.5em;
 }
+
+.select-container{
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: column;
+}
+
+.select-component{
+    display: flex;
+    flex-direction: column;
+}

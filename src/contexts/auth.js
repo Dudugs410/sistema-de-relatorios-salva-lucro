@@ -7,7 +7,7 @@ import Cookies from 'js-cookie'
 import api, { config } from '../services/api'
 
 import md5 from 'md5'
-import { gruposStatic } from './static'
+
 
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
@@ -17,108 +17,42 @@ export const AuthContext = createContext({})
 
 function AuthProvider({ children }){
 	const [isSignedIn, setIsSignedIn] = useState(false)
-	const [loading, setLoading] = useState(null)
 	const [accessToken, setAccessToken] = useState(undefined)
-	const [refreshToken, setRefreshToken] = useState(undefined)
 
 	////////////////////////////////////////////////////////////////
 
-	const [dataInicial, setDataInicial] = useState(new Date())
-	const [dataFinal, setDataFinal] = useState(new Date())
-	const [cnpj, setCnpj] = useState('')
-
-	const [podeBuscar, setPodeBuscar] = useState(true)
-  
-	const [vendas, setVendas] = useState([])
-	const [creditos, setCreditos] = useState([])
-	const [ajustes, setAjustes] = useState([])
-
-	const [detalhes, setDetalhes] = useState(false)
-
-	const [vendasDash, setVendasDash] = useState([])
 	const [tableData, setTableData] = useState([])
+	const [salesTableData, setSalesTableData] = useState([])
+	const [creditsTableData, setCreditsTableData] = useState([])
+	const [servicesTableData, setServicesTableData] = useState([])
 
-	const [totaisGlobal, setTotaisGlobal] = useState({debito: 0, credito: 0, voucher: 0, liquido: 0})
-	const [totaisGlobalVendas, setTotaisGlobalVendas] = useState({debito: 0, credito: 0, voucher: 0, liquido: 0})
-	const [totaisGlobalCreditos, setTotaisGlobalCreditos] = useState({debito: 0, credito: 0, voucher: 0, liquido: 0})
-
-	const [recebimentos, setRecebimentos] = useState([])
-	const [recebimentosDash, setRecebimentosDash] = useState([])
-
-	const [vendaAtual, setVendaAtual] = useState([])
-	const [vendaDias, setVendaDias] = useState([])
-
-	const [bandeiras, setBandeiras] = useState([])
-	const [adquirentes, setAdquirentes] = useState([])
-	const [grupos, setGrupos] = useState([])
-	const [grupoSelecionado, setGrupoSelecionado] = useState({value: 0, label: '-'})
-	const [clientes, setClientes] = useState([])
-	const [clienteSelecionado, setClienteSelecionado] = useState({value: 0, label: '-'})
-
-	const [gruSelecionado, setGruSelecionado] = useState('')
-	const [listaClientes, setListaClientes] = useState('')
-	const [inicializouGruposAux, setInicializouGruposAux] = useState(false)
-
-	const [modalCliente, setModalCliente] = useState(true)
-	const [buscou, setBuscou] = useState(false)
-
-	const [isDarkTheme, setIsDarkTheme] = useState(false)
-
-	const [admVendasAux, setAdmVendasAux] = useState([])
-	const [somatorioVendasMesAux, setSomatorioVendasMesAux] = useState(0)
-	const [totalVendas4diasAux, setTotalVendas4diasAux] = useState(0)
-	const [graficoVendasAux, setGraficoVendasAux] = useState({data: [], labels: []})
-
-	const [admCreditosAux, setAdmCreditosAux] = useState([])
-	const [somatorioCreditosHojeAux, setSomatorioCreditosHojeAux] = useState(0)
-	const [totalCreditos5diasAux, setTotalCreditos5diasAux] = useState(0)
-	const [graficoCreditosAux, setGraficoCreditosAux] = useState({data: [], labels: []})
-
-	const [admServicosAux, setAdmServicosAux] = useState([])
-	const [totalServicosHojeAux, setTotalServicosHojeAux] = useState(0)
-	const [totalServicosMesAux, setTotalServicosMesAux] = useState(0)
-	const [graficoServicosAux, setGraficoServicosAux] = useState({data: [], labels: []})
-
-	const [inicializouAux, setInicializouAux] = useState(false)
-
-	const [showErrorMessage, setShowErrorMessage] = useState(false)
-	const [trocarHeader, setTrocarHeader] = useState(false)
-
-	const [textoExport, setTextoExport] = useState(Cookies.get('textoExport'))
-
+	const [exportName, setExportName] = useState('')
 	const [isCheckedCalendar, setIsCheckedCalendar] = useState(true);
+	const [changedOption, setChangedOption] = useState(false)
 
-	const [carregou, setCarregou] = useState(false)
+	//////////////////////////////////////////////////////////////////
 
+	// *** Usuário e Login *** //
 
-	const navigate = useNavigate()
+	// objeto que guardará dados do usuário, caso seja necessário acessar algo //
 
-	useEffect(() =>{
-		setDataInicial(new Date())
-		setAccessToken('')
-	},[])
+	const [loggedUserData, setLoggedUserData] = useState({})
 
-	/////Login do usuário
-	async function submitLogin(login, password) {
+	const [groupsList, setGroupsList] = useState([])
+	const [clientsList, setClientsList] = useState([])
+
+	// Função que loga o usuário e gerencia quaisquer dados relevantes à isso
+	const loginApp = async (login, password) => {
 		try {
-			setLoading(true)
-  
 			const response = await api.post('token', { client_id: login, client_secret: md5(password) })
 			const responseData = response.data
-  
 			Cookies.set('token', responseData.acess_token)
 			Cookies.set('refreshToken', responseData.refresh_token)
-			Cookies.set('buscou', false)
-			setAccessToken(responseData.acess_token)
-			setRefreshToken(responseData.refresh_token)
-      
 			const userId = jwtDecode(responseData.acess_token).id
 			Cookies.set('userID', userId)
-      
 			const loggedSuccessfully = JSON.parse(responseData.sucess)
+
 			if (loggedSuccessfully) {
-				console.log('>>> entrou <<<')
-				Cookies.set('mostrarModal', true)
 				let localUsers = []
 				if (localStorage.getItem('localUsers') !== null) {
 					localUsers = JSON.parse(localStorage.getItem('localUsers'))
@@ -133,7 +67,6 @@ function AuthProvider({ children }){
 					const updatedUsers = localUsers.map(user => {
 						if (user.id === userId) {
 							userTemp = {id: userId, theme: JSON.parse(user.theme)}
-							setIsDarkTheme(JSON.parse(user.theme))
 							localStorage.setItem('isDark', JSON.parse(user.theme))
 							localStorage.setItem('isChecked', JSON.parse(user.theme))
 							return { ...user, theme: user.theme } // Update the theme if needed
@@ -145,27 +78,19 @@ function AuthProvider({ children }){
 					// Add new user to localUsers
 					userTemp = { id: userId, theme: false, calendar: true}
 					localUsers.push(userTemp)
-					setIsDarkTheme(false)
 					localStorage.setItem('isDark', false)
 					localStorage.setItem('isChecked', false)
 					localStorage.setItem('calendar', true)
 					localStorage.setItem('localUsers', JSON.stringify(localUsers))
 				}
-				setCnpj('')
-				Cookies.set('cnpj', '')
 				const opt = await loadOptions()
 				sessionStorage.setItem('options', JSON.stringify(opt))
-				const gru = await loadGrupos()
-				sessionStorage.setItem('grupos', JSON.stringify(gru))
-				console.log('gru: ', gru)
-				if(gru.length === 1){
-					console.log('length = 1')
-					setGruSelecionado(gru[(gru.length - 1)])
-					setCnpj('todos')
-					Cookies.set('cnpj', 'todos')
-					Cookies.set('isCliente', 'true')
-					Cookies.set('ultimoGrupoSelecionado', 'nenhum')
-				}
+				
+				const gru = await loadGroupsList()
+
+				sessionStorage.setItem('groupsStorage', JSON.stringify(gru))
+				Cookies.set('groupCode', gru[0].CODIGOGRUPO)
+				Cookies.set('cnpj', 'todos')
 			}
   
 			const userResponse = await api.get('/usuario')
@@ -173,27 +98,1086 @@ function AuthProvider({ children }){
 			const userMatch = userList.find((user) => (user.LOGIN.toLowerCase() === login.toLowerCase()) && (user.SENHA === md5(password)))
   
 			if (userMatch) {
-				console.log('Usuário encontrado')
 				const userData = { NOME: userMatch.NOME, EMAIL: userMatch.EMAIL }
 				sessionStorage.setItem('isSignedIn', true)
 				sessionStorage.setItem('userData', JSON.stringify(userData))
 				localStorage.setItem('isSignedIn', true)
-  
-				const isDark = localStorage.getItem('isDark')
-				setIsDarkTheme(isDark ? isDark : false)
+				sessionStorage.setItem('isSignedIn', true)
 				setIsSignedIn(true)
 			} else {
 				console.log('Usuario não encontrado')
 			}
-			sessionStorage.setItem('teste', false)
-			sessionStorage.setItem('isSignedIn', true)
-			setLoading(false)
 		} catch (error) {
 			console.error(error)
 			alert(error.message)
-			setLoading(false)
+
 		}
 	}
+
+	// funções que retornam arrays com Grupos, Clientes, Bandeiras e Adquirentes, respectivamente //
+
+		const loadGroupsList = async () => {
+			try {
+				const response = await api.get('/grupo')
+				const gru = response.data
+				setGroupsList(gru)
+				setClientsList(gru[0].CLIENTES)
+				return gru
+			} catch (error) {
+				console.error(error)
+				throw new Error(error.message) // Re-throw the error for handling in the caller function
+			}
+		}
+
+	// *** funções API *** //
+
+		//controladores do disabled dos botões nas páginas com calendarios
+
+		const [btnDisabledSales, setBtnDisabledSales] = useState(false)
+		const [btnDisabledCredits, setBtnDisabledCredits] = useState(false)
+		const [btnDisabledServices, setBtnDisabledServices] = useState(false)
+		const [btnDisabledSysmo, setBtnDisabledSysmo] = useState(false)
+
+
+		// retorna array de vendas //
+		const loadSales = async (startDate, endDate) => {
+			try {
+				const apiCNPJ = Cookies.get('cnpj')
+				const apiGroupCode = Cookies.get('groupCode')
+				if(apiCNPJ === ('todos' || 'TODOS') && (apiGroupCode !== 'selecione')){
+					let params = {
+						datainicial: startDate,
+						datafinal: endDate,
+						codigoGrupo: apiGroupCode,
+					}
+	
+					let config = {
+						params: params
+					}
+
+					const response = await api.get('vendas', config)
+					return response.data.VENDAS
+
+				} else {
+					let params = {
+						datainicial: startDate,
+						datafinal: endDate,
+						cnpj: apiCNPJ,
+					}
+	
+					let config = {
+						params: params
+					}
+					const response = await api.get('vendas', config)
+					setBtnDisabledSales(false)
+					exportSales(response.data.VENDAS)
+					return response.data.VENDAS
+				}
+			} catch (error) {
+				setBtnDisabledSales(false)
+				console.error('Error fetching vendas:', error)
+				return []
+			}
+		}
+		// retorna array de créditos/recebimentos
+		const loadCredits = async (startDate, endDate) => {
+			try {
+				const apiCNPJ = Cookies.get('cnpj')
+				const apiGroupCode = Cookies.get('groupCode')
+				if(apiCNPJ === ('todos' || 'TODOS') && (apiGroupCode !== 'selecione')){
+					let params = {
+						dataInicial: startDate,
+						dataFinal: endDate,
+						codigoGrupo: apiGroupCode
+					}
+	  
+					let config = {
+						params: params
+					}
+					const response = await api.get('recebimentos', config)
+					return response.data
+	
+				} else {
+					let params = {
+						cnpj: apiCNPJ,
+						dataInicial: startDate,
+						dataFinal: endDate,
+					}
+	  
+					let config = {
+						params: params
+					}
+	  
+					const response = await api.get('recebimentos', config)
+					setBtnDisabledCredits(false)
+					return response.data
+				}
+			} catch (error) {
+				setBtnDisabledCredits(false)
+				console.error('Error fetching credits:', error)
+				return []
+			}
+		}
+		// retorna array de serviços/ajustes
+		const loadServices = async (startDate, endDate) => {
+			try {
+				const apiCNPJ = Cookies.get('cnpj')
+				const apiGroupCode = Cookies.get('groupCode')
+				if(apiCNPJ === ('todos' || 'TODOS') && (apiGroupCode !== 'selecione')){
+					let params = {
+						dataInicial: startDate,
+						dataFinal: endDate,
+						codigoGrupo: apiGroupCode
+					}
+		
+					let config = {
+						params: params
+					}
+					const response = await api.get('ajustes', config)
+					return response.data
+				} else {
+					const params = {
+						cnpj: apiCNPJ,
+						dataInicial: startDate,
+						dataFinal: endDate,
+					}
+		
+					let config = {
+						params,
+					}
+					const response = await api.get('ajustes', config)
+					setBtnDisabledServices(false)
+					return response.data
+				}
+			} catch (error) {
+				setBtnDisabledServices(false)
+				console.log(error)
+			}
+		}
+		// retorna Objeto de Taxas
+		const loadTaxes = async () => {
+			try {
+				const apiClientCode = Cookies.get('clientCode')
+				//const apiClientCode = '215'
+				if(apiClientCode !== ('todos' || 'TODOS')){
+					let params = {
+						codigo: apiClientCode
+					}
+	
+					let config = {
+						params: params
+					}
+
+					const response = await api.get('taxas', config)
+					return response.data
+				} else {
+					console.log('codigo do cliente invalido: ', apiClientCode)
+					return []
+				}
+			} catch (error) {
+				console.error('Error fetching vendas:', error)
+				return []
+			}
+		}
+		//Adiciona nova Taxa
+		const addTax = async (tax) => {
+			setIsLoadingTaxes(true)
+			try {
+				const apiClientCode = Cookies.get('clientCode')
+				//const apiClientCode = '215'
+				if(apiClientCode !== ('todos' || 'TODOS' || undefined)){
+					let body = tax
+					api.post('taxas', body)
+					.then(response =>{
+						console.log('response: ', response)
+					})
+					.catch(error =>{
+						console.log('error: ', error)
+					})
+				} else {
+					console.log('else')
+					return []
+				}
+				setIsLoadingTaxes(false)
+			} catch (error) {
+				console.error('Error fetching vendas:', error)
+				setIsLoadingTaxes(false)
+				return
+			}
+		}
+		// retorna array de bandeiras
+		const loadBanners = async () => {
+			try {
+				const response = await api.get('bandeira')
+				return response.data
+			} catch (error) {
+				console.log(error)
+			}
+		}
+		// retorna array de administradoras
+		const loadAdmins = async () => {
+			try {
+				const response = await api.get('adquirente')
+				//await refreshSession()
+				return response.data
+			} catch (error) {
+				console.log(error)
+			}
+		}
+		// retorna array de modalidades e seus respectivos códigos
+		const loadMods = async () => {
+			try {
+				const response = await api.get('Modalidade')
+				//await refreshSession()
+				return response.data
+			} catch (error) {
+				console.log(error)
+			}
+		}
+		// retorna string do arquivo SYSMO
+		const loadSysmo = async (obj) => {
+			console.log('obj: ', obj)
+			setBtnDisabledSysmo(true)
+			try {
+				let params = {
+					tipo: obj.TIPO,
+					bandeira: obj.Bandeira,
+					adquirente: obj.Adquirente,
+					data: obj.Data
+				}
+
+				let config = {
+					params: params
+				}
+
+				const response = await api.get('Sysmo', config)
+				//await refreshSession()
+				console.log(response)
+				return response.data
+			} catch (error) {
+				setBtnDisabledSysmo(false)
+				console.log(error)
+			}
+		} 
+		// renova o access token/sessão do usuário
+		const refreshSession = async () =>{
+			console.log('refreshSession()')
+			try {
+					let refreshToken = Cookies.get('refreshToken')
+					console.log('refresh token: ', refreshToken)
+					const encodedRefreshToken = encodeURIComponent(refreshToken);
+					console.log('Encoded: ', encodedRefreshToken)
+					const response = await api.post('token/refresh/' + encodedRefreshToken);
+					console.log('refresh response: ', response)
+					Cookies.set('token', response.data.acess_token)
+					Cookies.set('refreshToken', response.data.refresh_token)
+			} catch (error) {
+				console.log(error)
+			}	
+		}
+	// >>> Dashboard <<< //
+
+		// *** Definição de consts / useStates *** 
+
+		// const que controla que define se os dados a serem apresentados na
+		// página 'Dashboard' foram carregados ou não. caso seja 'false', será
+		// feita a consulta a API, carregando os dados e seu valor será setado 
+		// para 'true' ao final, evitando que os dados sejam carregados novamente
+		// sem necessidade.
+
+		const [isLoadedDashboard, setIsLoadedDashboard] = useState(false) // //
+
+		const [isLoadedSalesDashboard, setIsLoadedSalesDashboard] = useState(false)
+		const [isLoadedCreditsDashboard, setIsLoadedCreditsDashboard] = useState(false)
+		const [isLoadedServicesDashboard, setIsLoadedServicesDashboard] = useState(false)
+				// consts que guardarão os objetos referentes à cada grupo de dados no Dashboard
+
+				const [salesDashboard, setSalesDashboard] = useState({
+					sales: [], 		// ->	Array com as vendas do Mês 		//
+					totalLast4: 0, 	// ->	Total dos últimos 4 dias 		//
+					totalMonth: 0, 	// ->	Total do mês 					//
+					chart: { 		// ->	Dados referentes ao gráfico 	//
+						data: [], 	// ->	Valores (por administradora) 	//
+						labels: [] 	// ->	Nomes (por administradora) 		//
+					}
+				})
+		
+				const [creditsDashboard, setCreditsDashboard] = useState({
+					credits: [],
+					predictToday: 0,
+					predictNext5: 0,
+					chart: {
+						data: [],
+						labels: []
+					}
+				})
+		
+				const [servicesDashboard, setServicesDashboard] = useState({
+					services: [],
+					totalToday: 0,
+					totalMonth: 0,
+					chart: {
+						data: [],
+						labels: []
+					}
+				})
+
+
+		// consts que guardarão as informações do Gráfico (react-chartjs-2)
+
+		const [chartSales, setChartSales] = useState({data: [], labels: []})
+		const [chartCredits, setChartCredits] = useState({data: [], labels: []})
+		const [chartServices, setChartServices] = useState({data: [], labels: []})
+
+		// funções que gerenciarão o carregamento dos dados referente à cada grupo de dados (vendas, créditos, serviços/ajustes)
+
+		// ---------------------------------------------------------------------------- //
+
+		// ************** //
+		//  >> Vendas <<  //
+		// ************** //
+		const loadSalesGroup = async ()=> {
+			let salesMonth
+			let salesLast4
+			
+			let salesByAdmin
+			let tempAdmin
+
+			let totalSalesMonth
+			let totalSalesLast4
+			
+			const loadSalesMonth = async () => {
+				let salesTemp = []
+		
+				function getFirstDayOfMonth() {
+					const currentDate = new Date();
+					const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+					return firstDayOfMonth;
+				}
+			
+				function getLastDayOfMonth(){
+					const currentDate = new Date();
+					const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+					return lastDayOfMonth;
+				}
+			
+				const firstDay = getFirstDayOfMonth();
+				const lastDay = getLastDayOfMonth();
+			  
+				try {
+					salesTemp = await loadSales(firstDay, lastDay)
+				} catch (error) {
+					console.error('Erro: ', error)
+				}
+				salesMonth = salesTemp
+			}
+
+			const loadLast4 = async () =>{
+				let startDate = new Date()
+				let endDate = new Date()
+		
+				startDate.setDate(startDate.getDate() - 4)
+				startDate = converteData(startDate)
+		
+				endDate.setDate(endDate.getDate() -1)
+				endDate = converteData(endDate)
+		
+				const salesTemp = await loadSales(startDate, endDate)
+				
+				salesLast4 = salesTemp
+			}
+
+			function loadChart(array){
+				let label = []
+				let data = []
+				
+				array.forEach((index) => {
+					const sum = index.total
+					const adminName = index.adminName
+					let temp = sum
+					label.push(adminName)
+					data.push(Number(temp))
+				})
+				const obj = {labels: label, data: data}
+				return obj
+			}
+
+			function separateAdmin(array) {
+				let sums = {
+					total: 0
+				};
+				
+				let tempSales = []
+				let separatedByAdquirente = [];
+
+					array.forEach((sale) => {
+						sums.total += sale.valorBruto;
+						tempSales.push(sale);
+					
+						// Find or create entry in separatedByAdquirente
+						let entry = separatedByAdquirente.find(adquirente => adquirente.adminName === sale.adquirente.nomeAdquirente);
+						if (!entry) {
+							entry = {
+								id: separatedByAdquirente.length,
+								adminName: sale.adquirente.nomeAdquirente,
+								total: 0,
+								sales: [] // Initialize vendas array
+							};
+							separatedByAdquirente.push(entry);
+						}
+					
+						// Push the current venda into the vendas array of the entry
+						entry.sales.push(sale);
+					
+						// Update total for this adquirente
+						entry.total += sale.valorBruto;
+					});
+				return separatedByAdquirente;
+			}
+
+			try {
+				await Promise.all([
+					loadSalesMonth(),
+					loadLast4()
+				]).then(() => {
+					tempAdmin = separateAdmin(salesMonth);
+					salesByAdmin = sortArray(tempAdmin);
+					const chartData = loadChart(salesByAdmin);
+					setChartSales(chartData);
+			
+					// Move the code that depends on chartSales here
+					totalSalesLast4 = salesLast4.reduce((total, obj) => total + obj.valorBruto, 0);
+					totalSalesMonth = salesMonth.reduce((total, obj) => total + obj.valorBruto, 0);
+			
+					setSalesDashboard({
+						sales: salesMonth,
+						salesByAdmin: salesByAdmin,
+						totalLast4: Number(totalSalesLast4),
+						totalMonth: Number(totalSalesMonth),
+						chart: chartData
+					});
+					setIsLoadedSalesDashboard(true)
+				});
+			} catch (error) {
+				console.log('Erro: ', error);
+			}
+		}
+		// ************** //
+		// >> Créditos << //
+		// ************** //
+		const loadCreditsGroup = async ()=> {
+			let creditsMonth
+			
+			let creditsByAdmin
+			let tempAdmin
+
+			let totalCreditsToday
+			let totalCreditsNext5
+			
+			const loadCreditsMonth = async () => {
+				let creditsTemp = []
+		
+				function getFirstDayOfMonth() {
+					const currentDate = new Date();
+					const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+					return firstDayOfMonth;
+				}
+			
+				function getLastDayOfMonth(){
+					const currentDate = new Date();
+					const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+					return lastDayOfMonth;
+				}
+			
+				const firstDay = getFirstDayOfMonth();
+				const lastDay = getLastDayOfMonth();
+			  
+				try {
+					creditsTemp = await loadCredits(firstDay, lastDay)
+				} catch (error) {
+					console.error('Erro: ', error)
+				}
+				creditsMonth = creditsTemp
+			}
+
+			function loadChart(array){
+				let label = []
+				let data = []
+
+				array.forEach((index) => {
+					const sum = index.total
+					const adminName = index.adminName
+					let temp = sum
+					label.push(adminName)
+					data.push(Number(temp))
+				})
+				const obj = {labels: label, data: data}
+				return obj
+			}
+
+			function separateAdmin(array) {
+				let sums = {
+					total: 0
+				};
+				
+				let tempSales = []
+				let separatedByAdquirente = [];
+			
+					array.forEach((sale) => {
+						sums.total += sale.valorLiquido;
+						tempSales.push(sale);
+					
+						// Find or create entry in separatedByAdquirente
+						let entry = separatedByAdquirente.find(adquirente => adquirente.adminName === sale.adquirente.nomeAdquirente);
+						if (!entry) {
+							entry = {
+								id: separatedByAdquirente.length,
+								adminName: sale.adquirente.nomeAdquirente,
+								total: 0,
+								sales: [] // Initialize vendas array
+							};
+							separatedByAdquirente.push(entry);
+						}
+					
+						// Push the current venda into the vendas array of the entry
+						entry.sales.push(sale);
+					
+						// Update total for this adquirente
+						entry.total += sale.valorLiquido;
+					});
+				return separatedByAdquirente;
+			}
+
+			try {
+
+				await Promise.all([
+					loadCreditsMonth(),
+					//loadNext5()
+				]).then(() => {
+					tempAdmin = separateAdmin(creditsMonth);
+					creditsByAdmin = sortArray(tempAdmin);
+					const chartData = loadChart(creditsByAdmin);
+					setChartCredits(chartData);
+			
+					let todayTemp = new Date()
+		
+					todayTemp = converteData(todayTemp)
+					totalCreditsToday = 0
+					totalCreditsNext5 = 0
+					creditsMonth.forEach((venda) => {
+						if(venda.dataCredito === todayTemp){
+							totalCreditsToday += venda.valorLiquido
+						}
+					})
+			
+					creditsMonth.forEach((venda) => {
+						for (let i = 1; i <= 5; i++) {
+							let nextDate = new Date(todayTemp);
+							nextDate.setDate(nextDate.getDate() + i);
+							let nextDateFormatted = nextDate.toISOString().split('T')[0]; // Format as "YYYY-MM-DD"
+							if (venda.dataCredito === nextDateFormatted) {
+								totalCreditsNext5 += venda.valorLiquido;
+							}
+						}
+					});
+			
+					setCreditsDashboard({
+						credits: creditsMonth,
+						creditsByAdmin: creditsByAdmin,
+						totalCreditsNext5: Number(totalCreditsNext5),
+						totalCreditsToday: Number(totalCreditsToday),
+						chart: chartData
+					});
+					setIsLoadedCreditsDashboard(true)
+				});
+			} catch (error) {
+				console.log('Erro: ', error);
+			}
+		}
+		// ************** //
+		// >> Serviços << //
+		// ************** //
+		const loadServicesGroup = async ()=> {
+
+			let servicesMonth
+
+			let totalServicesToday = 0
+			let totalServicesMonth = 0
+
+			const loadServicesMonth = async () => {
+				function firstDay() {
+					const today = new Date()
+					const firstDay = new Date(today.getFullYear(), today.getMonth(), 1)
+					
+					return firstDay
+				}
+		
+				function lastDay() {
+					const today = new Date()
+					const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0)
+					
+					return lastDay
+				}
+
+				const servicesTemp = await loadServices(firstDay(), lastDay())
+				servicesMonth = servicesTemp
+			}
+
+			function loadChart(array){
+				let label = []
+				let data = []
+
+				array.forEach((index) => {
+					const sum = index.total
+					const adminName = index.adminName
+					let temp = sum
+					label.push(adminName)
+					data.push(Number(temp))
+				})
+				const obj = {labels: label, data: data}
+				return obj
+			}
+
+			function separateAdmin(array) {
+				let sums = {
+					total: 0
+				};
+				
+				let tempSales = []
+				let separatedByAdquirente = [];
+			
+					array.forEach((sale) => {
+						sums.total += sale.valor;
+						tempSales.push(sale);
+					
+						// Find or create entry in separatedByAdquirente
+						let entry = separatedByAdquirente.find(adquirente => adquirente.adminName === sale.nome_adquirente);
+						if (!entry) {
+							entry = {
+								id: separatedByAdquirente.length,
+								adminName: sale.nome_adquirente,
+								total: 0,
+								sales: [] // Initialize vendas array
+							};
+							separatedByAdquirente.push(entry);
+						}
+					
+						// Push the current venda into the vendas array of the entry
+						entry.sales.push(sale);
+					
+						// Update total for this adquirente
+						entry.total += sale.valor;
+					});
+				return separatedByAdquirente;
+			}
+
+			try {
+				await Promise.all([
+					loadServicesMonth()
+				]).then(() => {
+					let temp = []
+					let objAdq = {}
+					servicesMonth.map((service) => {
+						if(temp.length === 0){
+							objAdq = {
+								adminName: service.nome_adquirente,
+								total: service.valor,
+								id: 0,
+								sales: [service]
+							}
+							temp.push(objAdq)
+		
+						} else {
+							const existingObject = temp.find(obj => obj.nomeAdquirente === service.nome_adquirente)
+							if (existingObject) {
+								existingObject.total = (existingObject.total || 0) + service.valor;
+								existingObject.total = parseFloat(existingObject.total.toFixed(2)); // Round to 2 decimal places
+								existingObject.vendas.push(service);
+							} else {
+								temp.push({
+									adminName: service.nome_adquirente,
+									total: service.valor,
+									id: temp.length,
+									sales: [service]
+								})
+							}
+						}})
+
+					let tempAdmin = separateAdmin(servicesMonth)
+					const servicesByAdmin = (sortArray(tempAdmin))        
+					const chartData = loadChart(servicesByAdmin);
+
+					setChartServices(chartData);
+
+					const totalMesTemp = servicesMonth.reduce((total, obj) => total + obj.valor, 0)
+					totalServicesMonth = totalMesTemp
+
+					let today = new Date
+					today = converteData(today)
+					servicesMonth.forEach((service) => {
+						if(service.data === today){
+							totalServicesToday += service.valor
+						}
+					})
+					
+					setServicesDashboard({
+						services: servicesMonth,
+						servicesByAdmin: servicesByAdmin,
+						totalServicesMonth: Number(totalServicesMonth),
+						totalServicesToday: Number(totalServicesToday),
+						chart: chartData
+					});
+					setIsLoadedServicesDashboard(true)
+				})
+			} catch (error) {
+				console.log('Erro: ', error)
+			}
+		}
+
+		// ----------------------------------------------------------------------------- //
+
+		// função que gerencia o carregamento de tudo que será visto no Dashboard
+
+		const loadDashboard = async () => {	
+			try {
+				Promise.all([
+					loadSalesGroup(),
+					loadCreditsGroup(),
+					loadServicesGroup()
+				]).then(()=>{
+					console.log('.then()')
+					setIsLoadedDashboard(true)
+				})
+			} catch (error) {
+				console.log('erro: ', error)
+			}
+		}
+
+		// >>> Página de Vendas <<< //
+		const [salesPageArray, setSalesPageArray] = useState([])
+		const [salesPageAdminArray, setSalesPageAdminArray] =  useState([])
+		const [salesTotal, setSalesTotal] = useState({
+			debit: 0,
+			credit: 0,
+			voucher: 0,
+			total: 0,
+		})
+		const [salesDateRange, setSalesDateRange] = useState([new Date(), new Date()])
+
+		// >>> Página de Créditos <<< //
+		const [creditsPageArray, setCreditsPageArray] = useState([])
+		const [creditsPageAdminArray, setCreditsPageAdminArray] = useState([])
+		const [creditsTotal, setCreditsTotal] = useState({
+			debit: 0,
+			credit: 0,
+			voucher: 0,
+			total: 0,
+		})
+		const [creditsDateRange, setCreditsDateRange] = useState([new Date(), new Date()])
+
+		// >>> Página de Serviços <<< //
+		const [servicesPageArray, setServicesPageArray] = useState([])
+		const [servicesPageAdminArray, setServicesPageAdminArray] = useState([])
+		const [servicesDateRange, setServicesDateRange] = useState([new Date(), new Date()])
+
+		// >>> Página de Taxas <<< //
+		const [isLoadingTaxes, setIsLoadingTaxes] = useState(false)
+	////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
+	
+	// *** > Outras Funções Auxiliares < *** //
+
+	////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
+
+	// Retorna novo array com os dados agrupados por adquirente (Vendas e Créditos)
+	function groupByAdmin(array) {
+
+		let sums = {
+			total: 0
+		};
+		
+		let tempSales = []
+		let separatedByAdquirente = [];
+
+			array.forEach((sale) => {
+				sums.total += sale.valorBruto;
+				tempSales.push(sale);
+			
+				// Find or create entry in separatedByAdquirente
+				let entry = separatedByAdquirente.find(adquirente => adquirente.adminName === sale.adquirente.nomeAdquirente);
+				if (!entry) {
+					entry = {
+						id: separatedByAdquirente.length,
+						adminName: sale.adquirente.nomeAdquirente,
+						total: 0,
+						sales: [] // Initialize vendas array
+					};
+					separatedByAdquirente.push(entry);
+				}
+			
+				// Push the current venda into the vendas array of the entry
+				entry.sales.push(sale);
+			
+				// Update total for this adquirente
+				entry.total += sale.valorBruto;
+			});
+		return separatedByAdquirente;
+	}
+
+	function groupServicesByAdmin(array) {
+
+		let sums = {
+			total: 0
+		};
+		
+		let tempSales = []
+		let separatedByAdquirente = [];
+
+			array.forEach((sale) => {
+				sums.total += sale.valor;
+				tempSales.push(sale);
+			
+				// Find or create entry in separatedByAdquirente
+				let entry = separatedByAdquirente.find(adquirente => adquirente.adminName === sale.nome_adquirente);
+				if (!entry) {
+					entry = {
+						id: separatedByAdquirente.length,
+						adminName: sale.nome_adquirente,
+						total: 0,
+						sales: [] // Initialize vendas array
+					};
+					separatedByAdquirente.push(entry);
+				}
+			
+				// Push the current venda into the vendas array of the entry
+				entry.sales.push(sale);
+			
+				// Update total for this adquirente
+				entry.total += sale.valor;
+			});
+		return separatedByAdquirente;
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////
+
+	function loadTotalSales(array){
+		if(array.length > 0){
+			let temp = []
+			let totalCreditTemp = 0
+			let totalDebitTemp = 0
+			let totalVoucherTemp = 0
+			let total = 0
+	
+			array.forEach((venda)=>{
+				if(temp.length === 0){
+				let newObj = {
+					adminName: venda.adquirente.nomeAdquirente,
+					total: venda.valorBruto,
+					id: 0,
+					sales: []
+				}
+				temp.push(newObj)
+				}else{
+				let newObj = {
+					adminName: venda.adquirente.nomeAdquirente,
+					total: venda.valorBruto,
+					id: 0,
+					sales: []
+				}
+	
+				if(!(temp.find((objeto) => objeto.adminName === venda.adquirente.nomeAdquirente && objeto !== ( undefined || [] )))){
+					newObj.id = (temp.length)
+					temp.push(newObj)
+				}
+	
+				else{
+					for(let i = 0; i < temp.length; i++){
+						if(temp[i].adminName === venda.adquirente.nomeAdquirente){
+							temp[i].total += venda.valorBruto
+						}
+					}
+				}
+				}
+				// eslint-disable-next-line default-case
+				switch(venda.produto.descricaoProduto){
+				case 'Crédito':
+					totalCreditTemp += venda.valorBruto
+					break;
+	
+				case 'Débito':
+					totalDebitTemp += venda.valorBruto
+					break;
+	
+				case 'Voucher':
+					totalVoucherTemp += venda.valorBruto
+					break;
+				}
+				total += venda.valorBruto
+			})
+				temp.forEach((adq) => {
+					let salesTemp = []
+					salesTemp.length = 0
+					array.forEach((vendasDia) => {
+						if(vendasDia.length > 0){
+							vendasDia.forEach((venda) => {
+								if(venda.adquirente.nomeAdquirente === adq.adminName){
+									salesTemp.push(venda)
+								}
+								adq.sales = salesTemp
+							})
+						}
+					})
+				})
+				let totalTemp = {debit: Number(totalDebitTemp), credit: Number(totalCreditTemp), voucher: Number(totalVoucherTemp), total: Number(total)}
+				
+				setSalesTotal(totalTemp)
+			}
+	}
+
+	function loadTotalCredits(array){
+		if(array.length > 0){
+			let temp = []
+			let totalCreditTemp = 0
+			let totalDebitTemp = 0
+			let totalVoucherTemp = 0
+			let total = 0
+	
+			array.forEach((venda)=>{
+				if(temp.length === 0){
+				let newObj = {
+					adminName: venda.adquirente.nomeAdquirente,
+					total: venda.valorLiquido,
+					id: 0,
+					sales: []
+				}
+				temp.push(newObj)
+				} else {
+				let newObj = {
+					adminName: venda.adquirente.nomeAdquirente,
+					total: venda.valorLiquido,
+					id: 0,
+					sales: []
+				}
+	
+				if(!(temp.find((objeto) => objeto.adminName === venda.adquirente.nomeAdquirente && objeto !== ( undefined || [] )))){
+					newObj.id = (temp.length)
+					temp.push(newObj)
+				}
+	
+				else{
+					for(let i = 0; i < temp.length; i++){
+						if(temp[i].adminName === venda.adquirente.nomeAdquirente){
+							temp[i].total += venda.valorLiquido
+						}
+					}
+				}
+				}
+				// eslint-disable-next-line default-case
+				switch(venda.produto.descricaoProduto){
+				case 'Crédito':
+					totalCreditTemp += venda.valorLiquido
+					break;
+	
+				case 'Débito':
+					totalDebitTemp += venda.valorLiquido
+					break;
+	
+				case 'Voucher':
+					totalVoucherTemp += venda.valorLiquido
+					break;
+				}
+				total += venda.valorLiquido
+			})
+				temp.forEach((adq) => {
+					let salesTemp = []
+					salesTemp.length = 0
+					array.forEach((vendasDia) => {
+						if(vendasDia.length > 0){
+							vendasDia.forEach((venda) => {
+								if(venda.adquirente.nomeAdquirente === adq.adminName){
+									salesTemp.push(venda)
+								}
+								adq.sales = salesTemp
+							})
+						}
+					})
+				})
+				let totalTemp = {debito: Number(totalDebitTemp), credito: Number(totalCreditTemp), voucher: Number(totalVoucherTemp), total: Number(total)}
+				setCreditsTotal(totalTemp)
+			}
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////
+
+	const resetAppValues = () => {
+		setIsLoadedDashboard(false)
+		setIsLoadedSalesDashboard(false)
+		setIsLoadedCreditsDashboard(false)
+		setIsLoadedServicesDashboard(false)
+		setSalesPageArray([])
+		setSalesPageAdminArray([])
+		setSalesTotal({
+			debit: 0,
+			credit: 0,
+			voucher: 0,
+			total: 0,
+		})
+		setSalesDateRange([new Date(), new Date()])
+		setCreditsPageArray([])
+		setCreditsPageAdminArray([])
+		setCreditsTotal({
+			debit: 0,
+			credit: 0,
+			voucher: 0,
+			total: 0,
+		})
+		setCreditsDateRange([new Date(), new Date()])
+		setServicesPageArray([])
+		setServicesPageAdminArray([])
+		setServicesDateRange([new Date(), new Date()])
+		setSalesDashboard({
+			sales: [],
+			totalLast4: 0,
+			totalMonth: 0,
+			chart: {
+				data: [],
+				labels: []
+			}
+		})
+		setCreditsDashboard({
+			credits: [],
+			predictToday: 0,
+			predictNext5: 0,
+			chart: {
+				data: [],
+				labels: []
+			}
+		})
+		setServicesDashboard({
+			services: [],
+			totalToday: 0,
+			totalMonth: 0,
+			chart: {
+				data: [],
+				labels: []
+			}
+		})
+		setChartSales({data: [], labels: []})
+		setChartCredits({data: [], labels: []})
+		setChartServices({data: [], labels: []})
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
+
+
+	// // // // // // // // // // // // // // // // // // // // // // // // // 
+
+	const navigate = useNavigate()
 
 	async function loadOptions() {
 		try {
@@ -202,10 +1186,6 @@ function AuthProvider({ children }){
 			}
   
 			let config = {
-				headers: {
-					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${Cookies.get('token')}`
-				},
 				params: params
 			}
   
@@ -216,10 +1196,11 @@ function AuthProvider({ children }){
 			return null // or handle the error as needed
 		}
 	}
-  
-	/////Reseta valores globais
-	function resetaValores(){
-    
+
+	/////desloga usuário
+	function logout(e){
+		e.preventDefault()
+		sessionStorage.clear()
 		const clearAllCookies = () => {
 			const cookies = Cookies.get()
 			for (const cookie in cookies) {
@@ -228,533 +1209,16 @@ function AuthProvider({ children }){
 				}
 			}
 		}
-
-		localStorage.removeItem('isDark')
-		localStorage.removeItem('isChecked')
+		resetAppValues()
 		clearAllCookies()
-		sessionStorage.clear()
 		setIsSignedIn(false)
-
-		setVendas([])
-		setCreditos([])
-		setRecebimentos([])
-		setDataInicial(new Date())
-		setDataFinal(new Date())
-		setCnpj('')
-		setGrupoSelecionado({value: '-', label: '-'})
-		setClienteSelecionado({value: '-', label: '-'})
-		setVendas([])
-		setVendasDash([])
-		setTableData([])
-		setTotaisGlobal({debito: 0, credito: 0, voucher: 0, liquido: 0})
-		setTotaisGlobalVendas({debito: 0, credito: 0, voucher: 0, liquido: 0})
-		setTotaisGlobalCreditos({debito: 0, credito: 0, voucher: 0, liquido: 0})
-  
-		setRecebimentos([])
-		setRecebimentosDash([])
-  
-		setVendaAtual([])
-		setVendaDias([])
-  
-		setBandeiras([])
-		setGrupos([]) 
-		setClientes([])
-		setAdquirentes([])
-  
-		setGruSelecionado('')
-		setListaClientes('')
-		setInicializouGruposAux(false)
-  
-		setModalCliente(true)
-		setBuscou(false)
-  
-		setIsDarkTheme(false)
-  
-		setAdmVendasAux([])
-		setAdmCreditosAux([])
-		setAdmServicosAux([])
-		setSomatorioCreditosHojeAux(0)
-		setTotalCreditos5diasAux(0)
-		setSomatorioVendasMesAux(0)
-		setTotalVendas4diasAux(0)
-		setTotalServicosHojeAux(0)
-		setTotalServicosMesAux(0)
-		setGraficoVendasAux({data: [], labels: []})
-		setGraficoCreditosAux({data: [], labels: []})
-		setGraficoServicosAux({data: [], labels: []})
-		setInicializouAux(false)
-
-		resetaSomatorios()
-
-		console.log('<<< * Valores Resetados * >>>')
-	}
-
-	/////reseta somatorios globais dos valores de vendas/créditos
-
-	function resetaSomatorios(){
-		setTotaisGlobal({debito: 0, credito: 0, voucher: 0, liquido: 0})
-		setTotaisGlobalVendas({debito: 0, credito: 0, voucher: 0, liquido: 0})
-		setTotaisGlobalCreditos({debito: 0, credito: 0, voucher: 0, liquido: 0})
-		setSomatorioCreditosHojeAux(0)
-		setTotalCreditos5diasAux(0)
-		setSomatorioVendasMesAux(0)
-		setTotalVendas4diasAux(0)
-	}
-
-	function resetaDashboard(){
-		setVendas([])
-		setCreditos([])
-		setAjustes([]) // adicionando aqui, reseta para o calendário quando troca o cliente.
-		setRecebimentos([])
-		setVendas([])
-		setVendasDash([])
-		setTotaisGlobal({debito: 0, credito: 0, voucher: 0, liquido: 0})
-		setTotaisGlobalVendas({debito: 0, credito: 0, voucher: 0, liquido: 0})
-		setTotaisGlobalCreditos({debito: 0, credito: 0, voucher: 0, liquido: 0})
-		setRecebimentos([])
-		setRecebimentosDash([])
-		setVendaAtual([])
-		setVendaDias([])
-		setAdmVendasAux([])
-		setAdmCreditosAux([])
-		setSomatorioCreditosHojeAux(0)
-		setTotalCreditos5diasAux(0)
-		setSomatorioVendasMesAux(0)
-		setTotalVendas4diasAux(0)
-		setGraficoVendasAux({data: [], labels: []})
-		setGraficoCreditosAux({data: [], labels: []})
-		setInicializouAux(false)
-		resetaSomatorios()
-	}
-
-	/////desloga usuário
-	function logout(){
-		setLoading(true)
-		resetaValores()
-		setLoading(false)
-		navigate('/')
-	}
-
-	function expired(){
-		if(Cookies.get('expired') === true){
-			alert('Sessão expirada. Faça o Login novamente')
-		}
-		logout()
+		sessionStorage.setItem('isSignedIn', false)
 		navigate('/')
 	}
 
 	//////////////////////////////////////////////////////////////////
 
-	//Vendas**********************************************************
-
-
-	//Bandeiras
-    
-	async function loadBandeiras(){
-		setLoading(true)
-		await api.get('/bandeira')
-			.then( response => {
-				setBandeiras(response.data)
-				setLoading(false)
-			})
-			.catch(error =>{
-				console.log(error)
-				setLoading(false)
-			})
-	}
-
-	//Grupo de Clientes
-
-	async function loadGrupos() {
-		try {
-			if (!inicializouGruposAux) {
-				const response = await api.get('/grupo')
-				const gru = response.data
-    
-				setGrupos(gru)
-				sessionStorage.setItem('grupos', JSON.stringify(gru))
-				setInicializouGruposAux(true)
-				setLoading(false)
-    
-				return gru
-			} else if (inicializouGruposAux) {
-				setGrupos(JSON.parse(sessionStorage.getItem('grupos')))
-				return JSON.parse(sessionStorage.getItem('grupos'))
-			} else {
-				setGrupos(gruposStatic)
-				return gruposStatic
-			}
-		} catch (error) {
-			console.error(error)
-			throw new Error(error.message) // Re-throw the error for handling in the caller function
-		}
-	}
-
-	async function loadAdquirentes(){
-      
-		setLoading(true)
-		await api.get('/adquirente')
-			.then( response => {
-				console.log(response)
-				setAdquirentes(response.data)
-				setLoading(false)
-			})
-			.catch(() =>{
-				setLoading(false)
-			})
-	}
-  
-	//loadVendas melhorias
-
-	// retorna as vendas da data e cliente específicos.
-
-	async function loadVendas(dataInicial, dataFinal, cnpj){
-		if((dataInicial === '' || undefined) || (cnpj === '' || undefined)){
-			return 0
-		}
-		setLoading(true)
-		try {
-			if(cnpj === ('todos' || 'TODOS')){
-				let params = {
-					datainicial: dataInicial,
-					datafinal: dataFinal,
-					codigoGrupo: Cookies.get('codigoGrupo')
-				}
-          
-				let config = {
-					headers: { 
-						'Content-Type': 'application/json', 
-						'Authorization': `Bearer ${Cookies.get('token')}`
-					},
-					params: params
-				}
-  
-				await api.get('vendas', config)
-					.then((response) => {
-						setVendas(response.data.VENDAS)
-						setLoading(false)
-						setBuscou(false)
-						return response.data.VENDAS
-					})
-			} else { 
-				let params = {
-					datainicial: dataInicial,
-					datafinal: dataFinal,
-					cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-				}
-          
-				let config = {
-					headers: { 
-						'Content-Type': 'application/json', 
-						'Authorization': `Bearer ${Cookies.get('token')}`
-					},
-					params: params
-				}
-
-				await api.get('vendas', config)
-					.then((response) => {
-						setVendas(response.data.VENDAS)
-						setLoading(false)
-						setBuscou(false)
-						return response.data.VENDAS
-					})
-			}
-		} catch (error) {
-			setLoading(false)
-			console.log(error)
-		}
-	}
-
-	//Consulta de vendas, com intervalo de datas
-
-	async function loadPeriodo(datainicial, datafinal, cnpj, adquirente, bandeira){
-      
-		setLoading(true)
-		let params = {
-			dataInicial: dateConvert(datainicial),
-			dataFinal: dateConvert(datafinal),
-			cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-			adquirente: adquirente,
-			bandeira: bandeira,
-		}
-
-		let config = {
-			headers: { 
-				'Content-Type': 'application/json', 
-				'Authorization': `Bearer ${Cookies.get('token')}`
-			},
-			params: params
-		}
-
-		try {
-			const response = await api.get('vendas', config)
-			const vendasData = response.data.VENDAS
-			setVendasDash(vendasData)
-			setLoading(false)
-		} catch (error) {
-			console.log(error)
-			setLoading(false)
-		}
-	}
-    
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	async function loadCreditos(cnpj, dataInicial, dataFinal) {
-		setLoading(true)
-
-		console.log('parametros: ', cnpj, dataInicial, dataFinal)
-
-		try {
-			if(cnpj === ('todos' || 'TODOS')){
-				const params = {
-					dataInicial: dataInicial,
-					dataFinal: dataFinal,
-					codigoGrupo: Cookies.get('codigoGrupo')
-				}
-      
-				const config = {
-					headers: {
-						'Content-Type': 'application/json',
-						'Authorization': `Bearer ${Cookies.get('token')}`,
-					},
-					params,
-				}
-
-				const response = await api.get('recebimentos', config)
-				const recebimentosData = response.data
-
-				setCreditos(recebimentosData)
-				setRecebimentosDash(recebimentosData)
-				setLoading(false)
-				return
-
-			} else {
-				const params = {
-					cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-					dataInicial: dataInicial,
-					dataFinal: dataFinal,
-				}
-      
-				const config = {
-					headers: {
-						'Content-Type': 'application/json',
-						'Authorization': `Bearer ${Cookies.get('token')}`,
-					},
-					params,
-				}
-
-				const response = await api.get('recebimentos', config)
-				const recebimentosData = response.data
-    
-				setCreditos(recebimentosData)
-				setRecebimentosDash(recebimentosData)
-				setLoading(false)
-				return
-			}
-		} catch (error) {
-			console.error('Error loading creditos:', error)
-			if(error.response.status === 401){
-				logout()
-				alert('Sessão Expirada')
-			}
-			setLoading(false)
-			// Handle specific errors here, e.g., display a message to the user
-		}
-	}
-
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	//Consulta de vendas, com intervalo de datas
-
-	async function retornaVendasPeriodo(datainicial, datafinal, cnpj, adquirente, bandeira){
-		setLoading(true)
-		if((dataInicial === '' || undefined) || (cnpj === '' || undefined)){
-			return 0
-		}
-
-		setLoading(true)
-		let params = {}
-
-		if(((adquirente !== '') && (bandeira !== '')) && (buscou === false)){
-			params = {
-				datainicial: datainicial,
-				datafinal: datafinal,
-				cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-				adquirente: adquirente,
-				bandeira: bandeira,
-			}
-			setBuscou(true)
-		}
-
-		else if(((adquirente !== '') && (bandeira === '')) && (buscou === false)){
-			params = {
-				datainicial: datainicial,
-				datafinal: datafinal,
-				cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-				adquirente: adquirente,
-			}
-			setBuscou(true)
-		}
-
-		else if(((bandeira !== '') && (adquirente === '')) && (buscou === false)){
-			params = {
-				datainicial: datainicial,
-				datafinal: datafinal,
-				cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-				bandeira: bandeira,
-			}
-			setBuscou(true)
-		}
-
-		else{
-			params = {
-				datainicial: datainicial,
-				datafinal: datafinal,
-				cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-			}
-		}
-      
-		let config = {
-			headers: { 
-				'Content-Type': 'application/json', 
-				'Authorization': `Bearer ${Cookies.get('token')}`
-			},
-			params: params
-		}
-
-		await api.get('vendas', config)
-			.then((response) => {
-				setLoading(false)
-				setBuscou(false)
-				return(response.data.VENDAS)
-			})
-			.catch((error) => {
-				setLoading(false)
-				if(error.response.status === 401){
-					logout()
-					alert('Sessão Expirada')
-				}
-				console.log(error)
-			})
-	}
-
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	async function retornaRecebimentos(cnpj, datainicial, datafinal){
-		setLoading(true)
-		let params = {
-			cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-			dataInicial: dateConvert(datainicial),
-			dataFinal: dateConvert(datafinal),
-		}
-
-		let config = {
-			headers: { 
-				'Content-Type': 'application/json', 
-				'Authorization': `Bearer ${Cookies.get('token')}`
-			},
-			params: params
-		}
-
-		try {
-			const response = await api.get('recebimentos', config)
-			const recebimentosData = response.data
-			setLoading(false)
-			return recebimentosData
-		} catch (error) {
-			console.log(error)
-			if(error.response.status === 401){
-				logout()
-				alert('Sessão Expirada')
-			}
-			setLoading(false)
-		}
-	}
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	//Ajustes
-
-	async function loadAjustes(cnpj, dataInicial, dataFinal){
-		if((dataInicial === '' || undefined) || (cnpj === '' || undefined)){
-			return 0
-		}
-		setLoading(true)
-		try {
-			if(cnpj === ('todos' || 'TODOS')){
-				let params = {
-					dataInicial: (dataInicial.toLocaleString('pt-BR')),
-					dataFinal: (dataFinal.toLocaleString('pt-BR')),
-					codigoGrupo: Cookies.get('codigoGrupo')
-				}
-    
-				let config = {
-					headers: { 
-						'Content-Type': 'application/json', 
-						'Authorization': `Bearer ${Cookies.get('token')}`
-					},
-					params: params
-				}
-
-				const response = await api.get('ajustes', config)
-				const recebimentosData = response.data
-				//console.log('response data ajustes', response.data)
-				setAjustes(response.data)
-				setLoading(false)
-				setBuscou(false)
-				return response.data
-
-			} else {
-				const params = {
-					cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-					dataInicial: dataInicial.toLocaleString('pt-BR'),
-					dataFinal: dataFinal.toLocaleString('pt-BR'),
-				}
-    
-				const config = {
-					headers: {
-						'Content-Type': 'application/json',
-						'Authorization': `Bearer ${Cookies.get('token')}`,
-					},
-					params,
-				}
-				const response = await api.get('ajustes', config)
-				setAjustes(response.data)
-				// const recebimentosData = response.data
-				setLoading(false)
-				setBuscou(false)
-				return response.data
-			}
-		} catch (error) {
-			console.log(error)
-			if(error.response.status === 401){
-				logout()
-				alert('Sessão Expirada')
-			}
-			setBuscou(false)
-			setLoading(false)
-		}
-	}
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	//refresh
-
-	async function refresh(){
-		await api.post('/token/refresh/' + Cookies.get('refreshToken'), config(accessToken))
-			.then((response) => {
-				setAccessToken(response.acessToken)
-				Cookies.set('token', accessToken)
-				setRefreshToken(response.refreshToken)
-				Cookies.set('refreshToken', refreshToken)        
-			}).catch(error => {
-				console.log(error)
-				if(error.response.status === 401){
-					logout()
-					alert('Sessão Expirada')
-				}
-			})
-	}
+	// funções de Manipulação de formato de Data
 
 	function dateConvert(date) {
 		let parts = date.split('-')
@@ -793,9 +1257,6 @@ function AuthProvider({ children }){
 	function dateConvertYYYYMMDD(date){
 		return date.toISOString().split('T')[0]
 	}
-	/////////////////////////////////////////////////////////////////////////////////
-	/////////////////////////////////////////////////////////////////////////////////
-	/////////////////////////////////////////////////////////////////////////////////
 
 	function converteData(data){
 		const ano = data.getFullYear()
@@ -804,328 +1265,11 @@ function AuthProvider({ children }){
 		return `${ano}-${mes}-${dia}`
 	}
 
-	async function returnVendas(datainicial, datafinal, cnpj) {
-		try {
-			setLoading(true)
-			console.log('Código Grupo: ', Cookies.get('codigoGrupo'))
-
-			if(cnpj === ('todos' || 'TODOS') && (Cookies.get('codigoGrupo') !== 'selecione')){
-				let params = {
-					datainicial: datainicial,
-					datafinal: datafinal,
-					codigoGrupo: Cookies.get('codigoGrupo')
-				}
-  
-				let config = {
-					headers: {
-						'Content-Type': 'application/json',
-						'Authorization': `Bearer ${Cookies.get('token')}`
-					},
-					params: params
-				}
-
-				const response = await api.get('vendas', config)
-				setLoading(false)
-				setBuscou(false)
-				if(response.data.VENDAS === null){
-					alert(`${response.data.MENSAGEM}`)
-					logout()
-					return
-				}
-				return response.data.VENDAS
-
-			} else {
-				let params = {
-					datainicial: datainicial,
-					datafinal: datafinal,
-					cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-				}
-  
-				let config = {
-					headers: {
-						'Content-Type': 'application/json',
-						'Authorization': `Bearer ${Cookies.get('token')}`
-					},
-					params: params
-				}
-				const response = await api.get('vendas', config)
-				setLoading(false)
-				setBuscou(false)
-				if(response.data.VENDAS === null){
-					alert(`${response.data.MENSAGEM}`)
-					logout()
-					return
-				}
-				return response.data.VENDAS
-			}
-		} catch (error) {
-			console.error('Error fetching vendas:', error)
-			setShowErrorMessage(true)
-			if(error.response.status === 401){
-				logout()
-				alert('Sessão Expirada')
-			}
-			setLoading(false)
-			return []
-		}
-	}
-
-	async function returnVendasPorPeriodo(datainicial, dataFinal, cnpj) {
-		try {
-			setLoading(true)
-
-			if(cnpj === ('todos' || 'TODOS')){
-				let params = {
-					datainicial: datainicial,
-					datafinal: dataFinal,
-					codigoGrupo: Cookies.get('codigoGrupo')
-				}
-
-				let config = {
-					headers: {
-						'Content-Type': 'application/json',
-						'Authorization': `Bearer ${Cookies.get('token')}`
-					},
-					params: params
-				}
-
-				const response = await api.get('vendas', config)
-				setLoading(false)
-				setBuscou(false)
-				if(response.data.VENDAS === null){
-					alert(`${response.data.MENSAGEM}`)
-					logout()
-					return
-				}
-				return response.data.VENDAS
-      
-			} else {
-				let params = {
-					datainicial: datainicial,
-					datafinal: dataFinal,
-					cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-				}
-
-				let config = {
-					headers: {
-						'Content-Type': 'application/json',
-						'Authorization': `Bearer ${Cookies.get('token')}`
-					},
-					params: params
-				}
-				const response = await api.get('vendas', config)
-				setLoading(false)
-				setBuscou(false)
-				if(response.data.VENDAS === null){
-					alert(`${response.data.MENSAGEM}`)
-					logout()
-					return
-				}
-				return response.data.VENDAS
-			}
-		} catch (error) {
-			console.error('Error fetching vendas:', error)
-			setShowErrorMessage(true)
-			if(error.response.status === 401){
-				logout()
-				alert('Sessão Expirada')
-			}
-			setLoading(false)
-			return []
-		}
-	}
-
-	async function returnCreditos(cnpj, dataInicial, dataFinal) {
-		if(cnpj === ''){
-			alerta('Erro no cliente selecionado. Selecione um cliente válido ou atualize a página e tente novamente')
-			return
-		}
-		try {
-			setLoading(true)
-
-			if(cnpj === ('todos' || 'TODOS')){
-				let params = {
-					dataInicial: dataInicial,
-					dataFinal: dataFinal,
-					codigoGrupo: Cookies.get('codigoGrupo')
-				}
-  
-				let config = {
-					headers: {
-						'Content-Type': 'application/json',
-						'Authorization': `Bearer ${Cookies.get('token')}`
-					},
-					params: params
-				}
-  
-				const response = await api.get('recebimentos', config)
-				setLoading(false)
-				setRecebimentos(response.data)
-				return response.data
-
-			} else {
-				let params = {
-					cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-					dataInicial: dataInicial,
-					dataFinal: dataFinal,
-				}
-  
-				let config = {
-					headers: {
-						'Content-Type': 'application/json',
-						'Authorization': `Bearer ${Cookies.get('token')}`
-					},
-					params: params
-				}
-  
-				const response = await api.get('recebimentos', config)
-				setLoading(false)
-				setRecebimentos(response.data)
-				return response.data
-			}
-		} catch (error) {
-			console.error('Error fetching creditos:', error)
-			setShowErrorMessage(true)
-			if(error.response.status === 401){
-				logout()
-				alert('Sessão Expirada')
-			} else {
-				alert('erro ', error.response.status)
-				logout()
-			}
-			setLoading(false)
-			return []
-		}
-	}
-
-	async function returnTotalDia(cnpj, data) {
-		setLoading(true)
-		try {
-			if(cnpj === ('todos' || 'TODOS')){
-
-				let params = {
-					codigoGrupo: Cookies.get('codigoGrupo'),
-					data: data,
-				}
-    
-				let config = {
-					headers: {
-						'Content-Type': 'application/json',
-						'Authorization': `Bearer ${Cookies.get('token')}`,
-					},
-					params: params,
-				}
-
-				const response = await api.get('vendastotais', config)
-				setLoading(false)
-				return response.data
-
-			} else {
-				let params = {
-					cnpj: cnpj,
-					data: data,
-				}
-    
-				let config = {
-					headers: {
-						'Content-Type': 'application/json',
-						'Authorization': `Bearer ${Cookies.get('token')}`,
-					},
-					params: params,
-				}
-
-				const response = await api.get('vendastotais', config)
-				setLoading(false)
-				return response.data
-			}
-		} catch (error) {
-			setLoading(false)
-		}
-	}
-
-	async function returnTotalMes(cnpj) {
-		const currentDate = new Date()
-		const currentYear = currentDate.getFullYear()
-		const currentMonth = currentDate.getMonth()
-		const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate()
-		let mes = []
-		setLoading(true)
-  
-		try {
-			const promises = Array.from({ length: lastDayOfMonth }, (_, day) => {
-				const data = new Date(currentYear, currentMonth, day + 1)
-				return returnTotalDia(cnpj, data).catch(error => {
-					console.log(error)
-					return null
-				})
-			})
-
-			const results = await Promise.all(promises)
-			mes = results.filter(result => result !== null)
-		} catch (error) {
-			console.error(error)
-		}
-
-		setLoading(false)
-		return mes
-	}
-
-	async function returnCreditosBanco(cnpj, dataInicial, dataFinal, codigoBanco){
-		setLoading(true)
-
-		if((dataInicial === '' || undefined) || (cnpj === '' || undefined)){
-			setLoading(false)
-			return 0
-		}
-
-		setLoading(true)
-		let params = {}
-
-		if(((codigoBanco !== '' || undefined))){
-			params = {
-				cnpj: cnpj.replace(/[^a-zA-Z0-9 ]/g, ''),
-				dataInicial: dataInicial,
-				dataFinal: dataFinal,
-				codigoBanco: codigoBanco,
-			}
-		}else{
-			let objTemp = [
-				{
-					'Banco': 'ITAÚ UNIBANCO S.A',
-					'Conta': '341/6321/996438',
-					'DataPrevista': '23/08/2023',
-					'ValorBruto': 18185.83,
-					'ValorTaxa': 236.57,
-					'ValorLiquido': 17949.26
-				}
-			]
-			return objTemp
-		}
-
-		let config = {
-			headers: { 
-				'Content-Type': 'application/json', 
-				'Authorization': `Bearer ${Cookies.get('token')}`
-			},
-			params: params
-		}
-
-		try {
-			const response = await api.get('recebimentos', config)
-			const creditosBanco = response.data
-			setLoading(false)
-			setBuscou(false)
-			return creditosBanco
-		} catch (error) {
-			console.log(error)
-			setLoading(false)
-		}
-	}
+	//////////////////////////////////////////////////////////////////	
 
 	function alerta(text){
-		console.log('função alerta')
 		toast.info(text, {
-			position: 'top-center',
+			position: 'bottom-right',
 			autoClose: 5000,
 			hideProgressBar: true,
 			closeOnClick: true,
@@ -1136,13 +1280,20 @@ function AuthProvider({ children }){
 		})
 	}
 
+	//Funções que organizam os Dados para as funções de exportação em PDF e EXCEL
+
+	/*
 	function gerarDados(array){
-		const tipoTemp = Cookies.get('tipo')
-		tableData.length = 0
+		if(array.length === 0){
+			return
+		}
+		const tipoTemp = sessionStorage.getItem('currentPath')
+		salesTableData.length = 0
+		creditsTableData.length = 0
 		if (array.length > 0) {
-			if(tipoTemp === 'vendas'){
+			if(tipoTemp === '/vendas'){
 				array.map((venda) => {
-					tableData.push({
+					salesTableData.push({
 						cnpj: venda.cnpj,
 						adquirente: venda.adquirente.nomeAdquirente,
 						bandeira: venda.bandeira.descricaoBandeira,
@@ -1163,10 +1314,11 @@ function AuthProvider({ children }){
 						tid: venda.tid,
 					})
 				})
-				console.log(`${tipoTemp} ao gerar dados: `, tableData)
-			} else if(tipoTemp === 'creditos'){
+				console.log(`${tipoTemp} ao gerar dados: `, salesTableData)
+				return salesTableData
+			} else if(tipoTemp === '/creditos'){
 				array.map((venda) => {
-					tableData.push({
+					creditsTableData.push({
 						cnpj: venda.cnpj,
 						adquirente: venda.adquirente.nomeAdquirente,
 						bandeira: venda.bandeira.descricaoBandeira,
@@ -1189,148 +1341,201 @@ function AuthProvider({ children }){
 						tid: venda.tid,
 					})
 				})
-			} else if(tipoTemp === 'servicos'){
-				array.map((venda) => {
-					tableData.push({
-						cnpj: venda.cnpj,
-						razao_social: venda.razao_social,
-						codigo_estabelecimento: venda.codigo_estabelecimento,
-						adquirente: venda.nome_adquirente,
-						valor: venda.valor,
-						data: venda.data,
-						descricao: venda.descricao,
-					})
-				})
-				console.log(`${tipoTemp} ao gerar dados: `, tableData)
+				return creditsTableData
 			}
 		} 
-		return tableData
+	} */
+
+	function exportSales(array){
+		console.log('exportSales')
+		if(array.length === 0){
+			return
+		}
+		setSalesTableData([])
+		if (array.length > 0) {
+			array.map((venda) => {
+				salesTableData.push({
+					cnpj: venda.cnpj,
+					adquirente: venda.adquirente.nomeAdquirente,
+					bandeira: venda.bandeira.descricaoBandeira,
+					produto: venda.produto.descricaoProduto,
+					subproduto: venda.modalidade.descricaoModalidade,
+					valorBruto: venda.valorBruto.toFixed(2),
+					valorLiquido: venda.valorLiquido.toFixed(2),
+					taxa: venda.taxa.toFixed(2),
+					valorDesconto: venda.valorDesconto.toFixed(2),
+					nsu: venda.nsu,
+					dataVenda: venda.dataVenda,
+					horaVenda: timeConvert(venda.horaVenda),
+					dataCredito: venda.dataCredito,
+					numeroPV: venda.numeroPV,
+					cartao: venda.cartao,
+					codigoAutorizacao: venda.codigoAutorizacao,
+					quantidadeParcelas: venda.quantidadeParcelas,
+					tid: venda.tid,
+				})
+			})
+			console.log('salesTableData ao gerar dados: ', salesTableData)
+		} 
 	}
 
-	async function getCli(){
-		jwtDecode(Cookies.get('token'))
-
-		let params = {
-			codigo: JSON.parse(Cookies.get('cliCodigo'))
+	function exportCredits(array){
+		console.log('exportCredits')
+		if(array.length === 0){
+			return
 		}
-
-		let config = {
-			headers: { 
-				'Content-Type': 'application/json', 
-				'Authorization': `Bearer ${Cookies.get('token')}`
-			},
-			params: params
-		}
-
-		try{
-			const response = await api.get('Cliente', config)
-			return response
-		} catch (error) {
-			setLoading(false)
-			console.log(error)
-		}
+		setCreditsTableData([])
+		if (array.length > 0) {
+			array.map((venda) => {
+				creditsTableData.push({
+					cnpj: venda.cnpj,
+					adquirente: venda.adquirente.nomeAdquirente,
+					bandeira: venda.bandeira.descricaoBandeira,
+					produto: venda.produto.descricaoProduto,
+					subproduto: venda.modalidade.descricaoModalidade,
+					dataCredito: venda.dataCredito,
+					dataVenda: venda.dataVenda,
+					valorBruto: venda.valorBruto,
+					valorLiquido: venda.valorLiquido,
+					taxa: venda.taxa,
+					valorDesconto: venda.valorDesconto,
+					nsu: venda.nsu,
+					cartao: venda.cartao,
+					codigoAutorizacao: venda.codigoAutorizacao,
+					parcela: venda.parcela,
+					totalParcelas: venda.totalParcelas,
+					banco: venda.banco,
+					agencia: venda.agencia,
+					conta: venda.conta,
+					tid: venda.tid,
+				})
+			})
+			console.log('creditsTableData ao gerar dados: ', creditsTableData)
+		} 
 	}
 
-	async function loadDashboard(){
-		let params = {
-			cnpj: cnpj
+	function exportServices(array){
+		console.log('exportServices')
+		servicesTableData.length = 0
+		if(array.length === 0){
+			return
 		}
-		let config = {
-			headers: {
-				'Content-Type': 'application/json', 
-				'Authorization': `Bearer ${Cookies.get('token')}`
-			},
-			params: params
+		servicesTableData.length = 0
+		if (array.length > 0) {
+			array.map((venda) => {
+				servicesTableData.push({
+					cnpj: venda.cnpj,
+					razao_social: venda.razao_social,
+					codigo_estabelecimento: venda.codigo_estabelecimento,
+					adquirente: venda.nome_adquirente,
+					valor: venda.valor,
+					data: venda.data,
+					descricao: venda.descricao,
+				})
+			})
 		}
-		try{
-			const response = await api.get('dashboard', config)
-			return response.data
-		} catch (error) {
-			setLoading(false)
-			console.log(error)
-		}
+		console.log('servicesTableData ao gerar dados: ', servicesTableData)
+		return servicesTableData
 	}
-  
+
+	// Função que organiza array em ordem alfabética
+
+	const sortArray = (arrayAdq) => {
+		const sortedArray = [...arrayAdq].sort((a, b) => {
+			const nameA = a.adminName.toUpperCase()
+			const nameB = b.adminName.toUpperCase()
+			if (nameA < nameB) {
+				return -1
+			}
+			if (nameA > nameB) {
+				return 1
+			}
+			return 0
+		})
+		return sortedArray
+	}
 
 	return(
 		<AuthContext.Provider
 			value={{
 				alerta,
 				isSignedIn, setIsSignedIn,
-				loading, setLoading,
-				submitLogin, logout,
+				logout,
 				accessToken, setAccessToken,
-				refreshToken, setRefreshToken,
-				expired,
-				dateConvert,
-				dateConvertSearch,
-				dateConvertYYYYMMDD,
-				refresh,
+
 				////////////////
-				dataInicial, setDataInicial,
-				dataFinal, setDataFinal,
-				cnpj, setCnpj,
-				podeBuscar, setPodeBuscar,
-				vendas, setVendas,
-				creditos, setCreditos,
-				vendasDash, setVendasDash,
-				recebimentos, recebimentosDash, setRecebimentosDash,
-				loadCreditos,
-				bandeiras, setBandeiras, loadBandeiras,
-				grupos, setGrupos, loadGrupos,
-				inicializouGruposAux, setInicializouGruposAux,
-				clientes, setClientes,
-				loadVendas,
-				adquirentes, setAdquirentes, loadAdquirentes,
-				vendaAtual, setVendaAtual,
-				vendaDias, setVendaDias,
-				buscou, setBuscou,
-				loadPeriodo,
-				modalCliente, setModalCliente,
-				retornaVendasPeriodo,
-				retornaRecebimentos,
-				returnTotalDia,
-				gruSelecionado, setGruSelecionado,
-				listaClientes, setListaClientes,
-				returnVendas,
-				returnCreditos,
-				converteData,
-				returnTotalMes,
-				returnCreditosBanco,
-				loadAjustes, ajustes, setAjustes,
-				isDarkTheme, setIsDarkTheme,
-				admVendasAux, setAdmVendasAux,
-				admCreditosAux, setAdmCreditosAux,
-				somatorioCreditosHojeAux, setSomatorioCreditosHojeAux,
-				totalCreditos5diasAux, setTotalCreditos5diasAux,
-				somatorioVendasMesAux, setSomatorioVendasMesAux,
-				totalVendas4diasAux, setTotalVendas4diasAux,
-				graficoVendasAux, setGraficoVendasAux,
-				graficoCreditosAux, setGraficoCreditosAux,
-				inicializouAux, setInicializouAux,
-				tableData, setTableData,
-				gerarDados,
-				totaisGlobal, setTotaisGlobal,
-				totaisGlobalVendas, setTotaisGlobalVendas,
-				totaisGlobalCreditos, setTotaisGlobalCreditos,
-				resetaSomatorios,
-				getCli,
-				showErrorMessage,
-				setShowErrorMessage,
-				resetaDashboard,
-				admServicosAux, setAdmServicosAux,
-				totalServicosHojeAux, setTotalServicosHojeAux,
-				totalServicosMesAux, setTotalServicosMesAux,
-				graficoServicosAux, setGraficoServicosAux,
-				loadDashboard,
-				returnVendasPorPeriodo,
-				grupoSelecionado, setGrupoSelecionado,
-				clienteSelecionado, setClienteSelecionado,
-				trocarHeader, setTrocarHeader,
-				detalhes, setDetalhes,
-				textoExport, setTextoExport,
+
+				//****************************************************//
+				//****************************************************//
+				//****************************************************//
+
+								// *** REFATORAÇÃO *** //
+
+				//****************************************************//
+				//****************************************************//
+				//****************************************************//
+
+				// Dashboard //
+				
+				loadDashboard, isLoadedDashboard, setIsLoadedDashboard,
+				salesDashboard, isLoadedSalesDashboard, setIsLoadedSalesDashboard, loadSalesGroup,
+				creditsDashboard, isLoadedCreditsDashboard, setIsLoadedCreditsDashboard, loadCreditsGroup,
+				servicesDashboard, isLoadedServicesDashboard, setIsLoadedServicesDashboard, loadServicesGroup,
+				
+				// Vendas //
+
+				loadSales, loadTotalSales,
+				salesDateRange, setSalesDateRange,
+				salesPageArray, setSalesPageArray,
+				salesPageAdminArray, setSalesPageAdminArray,
+				salesTotal, setSalesTotal,
+				btnDisabledSales, setBtnDisabledSales,
+				salesTableData, setSalesTableData,
+				exportSales,
+
+				// Creditos //
+
+				loadCredits, loadTotalCredits,
+				creditsPageArray, setCreditsPageArray,
+				creditsPageAdminArray, setCreditsPageAdminArray,
+				creditsDateRange, setCreditsDateRange,
+				creditsTotal, setCreditsTotal,
+				btnDisabledCredits, setBtnDisabledCredits,
+				creditsTableData, setCreditsTableData,
+				exportCredits,
+
+				// Serviços //
+
+				loadServices,
+				servicesPageArray, setServicesPageArray,
+				servicesPageAdminArray, setServicesPageAdminArray,
+				servicesDateRange, setServicesDateRange,
+				btnDisabledServices, setBtnDisabledServices,
+				servicesTableData, setServicesTableData,
+				exportServices,
+
+				// Taxas
+
+				loadTaxes, addTax, isLoadingTaxes,
+
+				// Sysmo
+
+				loadSysmo,
+				btnDisabledSysmo, setBtnDisabledSysmo,
+
+				// outros / compartilhados //
+
+				loginApp, 
+				loadBanners, loadAdmins, loadMods,
+				groupByAdmin, groupServicesByAdmin,
+				exportName, setExportName,
 				isCheckedCalendar, setIsCheckedCalendar,
-				carregou, setCarregou
+				converteData, dateConvert, dateConvertSearch, dateConvertYYYYMMDD,
+
+				groupsList, clientsList,
+				loadGroupsList, setGroupsList,
+
+				changedOption, setChangedOption,
 			}}
 		>
 			{children}

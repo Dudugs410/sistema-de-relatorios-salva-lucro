@@ -7,28 +7,31 @@ import './exportacao.scss'
 import MyCalendar from '../../components/Componente_Calendario';
 import base64PDFdownload from '../../components/Componente_Base64PDF';
 import RadioSelect from '../../components/Componente_RadioSelect';
+import Cookies from 'js-cookie'
 
 const ExportacaoSysmo = () =>{
     const location = useLocation();
-    const { isDarkTheme, setLoading, bandeiras, loadBandeiras, adquirentes, loadAdquirentes } = useContext(AuthContext)
+    const { loadBanners, loadAdmins, loadSysmo, btnDisabledSysmo, setBtnDisabledSysmo } = useContext(AuthContext)
 
     const [dataBusca, setDataBusca] = useState([new Date, new Date])
-    const [tipoRelatorio, setTipoRelatorio] = useState(null)
-    const [formatoRelatorio, setFormatoRelatorio] = useState(null)
 
     const [dataBuscaInicial, setDataBuscaInicial] = useState(new Date)
-    const [dataBuscaFinal, setDataBuscaFinal] = useState(new Date)
 
-    const [listaBan, setListaBan] = useState([])
-    const [listaAdq, setListaAdq] = useState([])
+    const [bannersList, setBannersList] = useState([])
+    const [adminsList, setAdminsList] = useState([])
 
-    const [banSelecionada, setBanSelecionada] = useState('Selecione')
-    const [adqSelecionada, setAdqSelecionada] = useState('Selecione')
+    const [banOptions, setBanOptions] = useState([])
+    const [admOptions, setAdmOptions] = useState([])
 
-    const [tipo, setTipo] = useState('')
+    const [selectedBan, setSelectedBan] = useState('Selecione')
+    const [selectedAdm, setSelectedAdm] = useState('Selecione')
+
+    const [obj, setObj] = useState({})
+
+    const [type, setType] = useState('')
     const radioOptions = [
         {value: 'Vendas', label: 'Vendas'}, 
-        {value: 'Creditos', label: 'Créditos'}
+        {value: 'Recebimentos', label: 'Créditos'}
     ]
 
     useEffect(() => {
@@ -36,35 +39,36 @@ const ExportacaoSysmo = () =>{
     }, [location]);
 
     useEffect(()=>{
-        async function inicializar(){
-          if(bandeiras.length === 0){
-            await loadBandeiras()
+        async function inicialize(){
+          if(bannersList.length === 0){
+            const response = await loadBanners()
+            setBannersList(response)
           }
           
-          if(adquirentes.length === 0){
-            await loadAdquirentes()
+          if(adminsList.length === 0){
+            const response = await loadAdmins()
+            setAdminsList(response)
           }
         }
-        inicializar()
+        inicialize()
       },[])
 
-      useEffect(() => {
-        if (bandeiras.length > 0) {
-            const listaBanOptions = bandeiras.map(bandeira => ({ value: bandeira.codigoBandeira, label: bandeira.descricaoBandeira }));
-            setListaBan(listaBanOptions);
+    useEffect(() => {
+        if(bannersList && bannersList.length > 0){
+            const bannersListOptions = bannersList.map(banner => ({ value: banner.codigoBandeira, label: banner.descricaoBandeira }));
+            bannersListOptions.unshift({label: "TODOS", value: 0}); // Add the new option as the first object
+            setBanOptions(bannersListOptions);
         }
-    }, [bandeiras]);
+    }, [bannersList]);
+    
 
     useEffect(() => {
-        if (adquirentes.length > 0) {
-            const listaAdqOptions = adquirentes.map(adquirente => ({ value: adquirente.codigoAdquirente, label: adquirente.nomeAdquirente }));
-            setListaAdq(listaAdqOptions);
+        if (adminsList && adminsList.length > 0) {
+            const adminsListOptions = adminsList.map(admin => ({ value: admin.codigoAdquirente, label: admin.nomeAdquirente }));
+            adminsListOptions.unshift({label: "TODOS", value: 0}); // Add the new option as the first object
+            setAdmOptions(adminsListOptions);
         }
-    }, [adquirentes]);
-
-    const handleDateChange = date => {
-        setDataBusca(date)
-    }
+    }, [adminsList]);
 
     const [dataInicialExibicao, setDataInicialExibicao] = useState(new Date().toLocaleDateString('pt-BR'))
     const [dataFinalExibicao, setDataFinalExibicao] = useState(new Date().toLocaleDateString('pt-BR'))
@@ -80,69 +84,86 @@ const ExportacaoSysmo = () =>{
 
     function handleExport(e){
         e.preventDefault()
-        setLoading(true)
+        console.log('handleExport...')
+        loadSysmo(obj)
         base64PDFdownload()
-        setLoading(false)
+        setBtnDisabledSysmo(false)
     }
 
     function handleBan(e){
-        setBanSelecionada(e)
+        setSelectedBan(e)
     }
 
     function handleAdq(e){
-        setAdqSelecionada(e)
+        setSelectedAdm(e)
     }
 
     useEffect(()=>{
-        console.log('Parâmetros Selecionados: ',
-        'Tipo: ', tipo,
-        'Bandeira: ', banSelecionada,
-        'Adquirente: ', adqSelecionada,
-        'Data: ', dataBusca)
-    },[tipo])
+        /*if(type === 'Vendas'){
+            setType('Venda')
+        } else if(type === 'Creditos'){
+            setType('Credito')
+        }*/
+
+        setObj({
+            TIPO: type,
+            Bandeira: selectedBan.value,
+            Adquirente: selectedAdm.value,
+            Data: dataBusca[0].toLocaleDateString('pt-BR'),  
+        })
+    },[type, selectedBan, selectedAdm, dataBusca])
+
+    useEffect(()=>{
+        console.log('obj : ', obj)
+    },[obj])
+
+    function handleLoadData(){
+        console.log('loadData')
+    }
+
+    function handleDateRangeChange(){
+        console.log('handleDateRangeChange')
+    }
 
     return(
-      <div className={`appPage ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-        <div className={`page-background-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-          <div className={`page-content-global page-content-exportacao ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-            <div className={`title-container-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>
-              <h1 className={`title-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Exportação Sysmo</h1>
-            </div>
-            <hr className={`hr-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
-            <div className=''>
-            <MyCalendar dataInicialExibicao={dataInicialExibicao} dataFinalExibicao={dataFinalExibicao} dataBusca={dataBusca} handleDateChange={handleDateChange} className={`${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}/>
-                <div className=''>
-                    <form className=''>
-                        <div className='component-container'>
-                            <RadioSelect options={radioOptions} onSelect={(e) => {setTipo(e)}}/>
-                            <div className=''>
-                                <span className={`span-picker ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Bandeira</span>
+    <div className='appPage'>
+        <div className='page-background-global'>
+            <div className='page-content-global page-content-exportacao'>
+                <div className='title-container-global'>
+                    <h1 className='title-global'>Exportação Sysmo</h1>
+                </div>
+                <MyCalendar onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange} btnDisabled={btnDisabledSysmo}/>
+                <form>
+                    <div className='component-container'>
+                        <RadioSelect options={radioOptions} onSelect={(e) => {setType(e)}}/>
+                        <div className='select-container'>
+                            <div className='select-component'>
+                                <span className='span-picker'>Bandeira</span>
                                 <Select
-                                    value={banSelecionada} 
+                                    value={selectedBan} 
                                     onChange={handleBan}
                                     placeholder="Selecione"
-                                    options={listaBan}
+                                    options={banOptions}
                                 />
                             </div>
-                            <div className=''>
-                                <span className={`span-picker ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`}>Adquirente</span>
+                            <div className='select-component'>
+                                <span className='span-picker'>Adquirente</span>
                                 <Select 
-                                    value={adqSelecionada} 
+                                    value={selectedAdm} 
                                     onChange={handleAdq}
                                     placeholder="Selecione"
-                                    options={listaAdq}
+                                    options={admOptions}
                                 />
                             </div>
                         </div>
-                        <div className='btn-container-financeiro'>
-                            <button className={`btn btn-primary btn-global ${isDarkTheme === true ? 'dark-theme' : 'light-theme'}`} onClick={handleExport}>Gerar Arquivo</button>
-                        </div>
-                    </form>
-                </div>
+                    </div>
+                    <div className='btn-container-financeiro'>
+                        <button className='btn btn-primary btn-global' onClick={handleExport} disabled={btnDisabledSysmo}>Gerar Arquivo</button>
+                    </div>
+                </form>
             </div>
-          </div>
         </div>
-      </div>
+    </div>
     )
 }
 

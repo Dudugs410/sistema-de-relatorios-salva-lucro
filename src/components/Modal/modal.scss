@@ -19,7 +19,7 @@
 .modal-window-content{
     width: 80%;
     border-radius: 20px;
-    background-color: $primary-color-light;
+    background-color: var(--primary-color);
     padding: 16px;
     z-index: 9;
     
@@ -45,18 +45,8 @@
 }
 
 .modal-window-content{
-
-    border: solid gray 1px;
-
-    &.light-theme{
-        background-color: $background-color-light;
-        border: solid $secondary-color-light 2px;
-    }
-
-    &.dark-theme{
-        background-color: $background-color-dark;
-        border: solid $secondary-color-dark 1px;
-    }
+    background-color: var(--background-color);
+    border: solid var(--secondary-color) 2px;
 }
 
 .modal-background{
@@ -74,14 +64,7 @@
         border-radius: 20px;
         padding: 16px;
         z-index: 9;
-
-        &.light-theme{
-            background-color: $background-color-light;
-        }
-
-        &.dark-theme{
-            background-color: $background-color-dark;
-        }
+        background-color: var(--background-color);
     }
 }
 

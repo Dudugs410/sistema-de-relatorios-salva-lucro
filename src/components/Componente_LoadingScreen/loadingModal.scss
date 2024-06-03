@@ -27,8 +27,8 @@
   
   /* Spinner */
   .spinner {
-    border: 16px solid $background-color-light; /* Light grey */
-    border-top: 2px solid $secondary-color-light; /* Blue */
+    border: 16px solid white; /* Light grey */
+    border-top: 2px solid yellowgreen; /* Blue */
     border-radius: 50%;
     width: 40px;
     height: 40px;
@@ -59,7 +59,7 @@
   }
 
   .spinner-container{
-    background-color: $primary-color-light;
+    background-color: var(--primary-color);
     width: 100px;
     height: 100px;
     display: flex;
@@ -71,6 +71,6 @@
 
   .modal-text{
     padding-top: 0.5em;
-    color: $secondary-color-light;
+    color: var(--secondary-color);
     
   }
