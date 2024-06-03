@@ -7,7 +7,7 @@ import { FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward } from 'react-
 
 const TabelaServicos = ({ array }) => {  
 	const { 
-		isDarkTheme, dateConvert, gerarDadosServicos,
+		isDarkTheme, dateConvert,
 		servicesDateRange,
 	} = useContext(AuthContext)
 
@@ -85,42 +85,41 @@ const TabelaServicos = ({ array }) => {
 	useEffect(()=>{
 		if(vendasExibicao.length > 0){
 			console.log(vendasExibicao, 'eeeeeeeeeee')
-			gerarDadosServicos(vendasExibicao)
 			setCurrentPage(1)   
 		}
 	},[vendasExibicao])
 
 	useEffect(()=>{
-		console.log('vendasTeste antes do erro', vendasTeste)
+		if(sessionStorage.getItem('currentPath') === '/servicos'){
+			setVendasExibicao(vendasTeste)
 
-		setVendasExibicao(vendasTeste)
-
-		const bandeirasTemp = []
-		const uniqueStringsSet = new Set()
-        
-		vendasTeste.forEach(item => {
-			if (!uniqueStringsSet.has(item.descricao)) {
-				uniqueStringsSet.add(item.descricao)
-				bandeirasTemp.push(item.descricao)
-			}
-		})
-
-		const adquirentesTemp = []
-		const otherUniqueStringsSet = new Set()
-        
-		vendasTeste.forEach(item => {
-			if (!otherUniqueStringsSet.has(item.nome_adquirente)) {
-				otherUniqueStringsSet.add(item.nome_adquirente)
-				adquirentesTemp.push(item.nome_adquirente)
-			}
-		})
-
-		setBandeirasExistentes(bandeirasTemp)
-		setTodasBandeiras(bandeirasTemp)
-
-		setAdquirentesExistentes(adquirentesTemp)
-		setTodasAdquirentes(adquirentesTemp)
-
+			const bandeirasTemp = []
+			const uniqueStringsSet = new Set()
+			
+			vendasTeste.forEach(item => {
+				if (!uniqueStringsSet.has(item.descricao)) {
+					uniqueStringsSet.add(item.descricao)
+					bandeirasTemp.push(item.descricao)
+				}
+			})
+	
+			const adquirentesTemp = []
+			const otherUniqueStringsSet = new Set()
+			
+			vendasTeste.forEach(item => {
+				if (!otherUniqueStringsSet.has(item.nome_adquirente)) {
+					otherUniqueStringsSet.add(item.nome_adquirente)
+					adquirentesTemp.push(item.nome_adquirente)
+				}
+			})
+	
+			setBandeirasExistentes(bandeirasTemp)
+			setTodasBandeiras(bandeirasTemp)
+	
+			setAdquirentesExistentes(adquirentesTemp)
+			setTodasAdquirentes(adquirentesTemp)
+	
+		}
 	},[vendasTeste])
 
 	// função que altera lista de adquirentes de acordo com a bandeira/adq selecionada, para que o usuário só tenha opções existentes

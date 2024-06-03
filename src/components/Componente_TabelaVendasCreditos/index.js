@@ -17,7 +17,6 @@ const TabelaVendasCreditos = ({array, tipo, isDashboard}) =>{
 	//console.log('array dentro da tabela do gráfico: ', array)
 
 	const { dateConvert,
-			gerarDados, 
 			setTotaisGlobalVendas, 
 			setTotaisGlobalCreditos, 
 			isDarkTheme,
@@ -251,7 +250,6 @@ const TabelaVendasCreditos = ({array, tipo, isDashboard}) =>{
 
 	useEffect(()=>{
 		if(vendasExibicao.length > 0){
-			gerarDados(vendasExibicao)
 			carregaTotais(vendasExibicao)
 			setCurrentPage(1)
             

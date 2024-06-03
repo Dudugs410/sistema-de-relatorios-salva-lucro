@@ -141,7 +141,6 @@ function AuthProvider({ children }){
 
 		// retorna array de vendas //
 		const loadSales = async (startDate, endDate) => {
-			setBtnDisabledSales(true)
 			try {
 				const apiCNPJ = Cookies.get('cnpj')
 				const apiGroupCode = Cookies.get('groupCode')
@@ -170,16 +169,18 @@ function AuthProvider({ children }){
 						params: params
 					}
 					const response = await api.get('vendas', config)
+					setBtnDisabledSales(false)
+					exportSales(response.data.VENDAS)
 					return response.data.VENDAS
 				}
 			} catch (error) {
+				setBtnDisabledSales(false)
 				console.error('Error fetching vendas:', error)
 				return []
 			}
 		}
 		// retorna array de créditos/recebimentos
 		const loadCredits = async (startDate, endDate) => {
-			setBtnDisabledCredits(true)
 			try {
 				const apiCNPJ = Cookies.get('cnpj')
 				const apiGroupCode = Cookies.get('groupCode')
@@ -208,16 +209,17 @@ function AuthProvider({ children }){
 					}
 	  
 					const response = await api.get('recebimentos', config)
+					setBtnDisabledCredits(false)
 					return response.data
 				}
 			} catch (error) {
+				setBtnDisabledCredits(false)
 				console.error('Error fetching credits:', error)
 				return []
 			}
 		}
 		// retorna array de serviços/ajustes
 		const loadServices = async (startDate, endDate) => {
-			setBtnDisabledServices(true)
 			try {
 				const apiCNPJ = Cookies.get('cnpj')
 				const apiGroupCode = Cookies.get('groupCode')
@@ -244,9 +246,11 @@ function AuthProvider({ children }){
 						params,
 					}
 					const response = await api.get('ajustes', config)
+					setBtnDisabledServices(false)
 					return response.data
 				}
 			} catch (error) {
+				setBtnDisabledServices(false)
 				console.log(error)
 			}
 		}
@@ -351,6 +355,7 @@ function AuthProvider({ children }){
 				console.log(response)
 				return response.data
 			} catch (error) {
+				setBtnDisabledSysmo(false)
 				console.log(error)
 			}
 		} 
@@ -1277,6 +1282,7 @@ function AuthProvider({ children }){
 
 	//Funções que organizam os Dados para as funções de exportação em PDF e EXCEL
 
+	/*
 	function gerarDados(array){
 		if(array.length === 0){
 			return
@@ -1338,11 +1344,79 @@ function AuthProvider({ children }){
 				return creditsTableData
 			}
 		} 
+	} */
+
+	function exportSales(array){
+		console.log('exportSales')
+		if(array.length === 0){
+			return
+		}
+		setSalesTableData([])
+		if (array.length > 0) {
+			array.map((venda) => {
+				salesTableData.push({
+					cnpj: venda.cnpj,
+					adquirente: venda.adquirente.nomeAdquirente,
+					bandeira: venda.bandeira.descricaoBandeira,
+					produto: venda.produto.descricaoProduto,
+					subproduto: venda.modalidade.descricaoModalidade,
+					valorBruto: venda.valorBruto.toFixed(2),
+					valorLiquido: venda.valorLiquido.toFixed(2),
+					taxa: venda.taxa.toFixed(2),
+					valorDesconto: venda.valorDesconto.toFixed(2),
+					nsu: venda.nsu,
+					dataVenda: venda.dataVenda,
+					horaVenda: timeConvert(venda.horaVenda),
+					dataCredito: venda.dataCredito,
+					numeroPV: venda.numeroPV,
+					cartao: venda.cartao,
+					codigoAutorizacao: venda.codigoAutorizacao,
+					quantidadeParcelas: venda.quantidadeParcelas,
+					tid: venda.tid,
+				})
+			})
+			console.log('salesTableData ao gerar dados: ', salesTableData)
+		} 
 	}
 
-	function gerarDadosServicos(array){
+	function exportCredits(array){
+		console.log('exportCredits')
+		if(array.length === 0){
+			return
+		}
+		setCreditsTableData([])
+		if (array.length > 0) {
+			array.map((venda) => {
+				creditsTableData.push({
+					cnpj: venda.cnpj,
+					adquirente: venda.adquirente.nomeAdquirente,
+					bandeira: venda.bandeira.descricaoBandeira,
+					produto: venda.produto.descricaoProduto,
+					subproduto: venda.modalidade.descricaoModalidade,
+					dataCredito: venda.dataCredito,
+					dataVenda: venda.dataVenda,
+					valorBruto: venda.valorBruto,
+					valorLiquido: venda.valorLiquido,
+					taxa: venda.taxa,
+					valorDesconto: venda.valorDesconto,
+					nsu: venda.nsu,
+					cartao: venda.cartao,
+					codigoAutorizacao: venda.codigoAutorizacao,
+					parcela: venda.parcela,
+					totalParcelas: venda.totalParcelas,
+					banco: venda.banco,
+					agencia: venda.agencia,
+					conta: venda.conta,
+					tid: venda.tid,
+				})
+			})
+			console.log('creditsTableData ao gerar dados: ', creditsTableData)
+		} 
+	}
+
+	function exportServices(array){
+		console.log('exportServices')
 		servicesTableData.length = 0
-		console.log('gerarDados array:', array)
 		if(array.length === 0){
 			return
 		}
@@ -1359,7 +1433,8 @@ function AuthProvider({ children }){
 					descricao: venda.descricao,
 				})
 			})
-		} 
+		}
+		console.log('servicesTableData ao gerar dados: ', servicesTableData)
 		return servicesTableData
 	}
 
@@ -1416,6 +1491,7 @@ function AuthProvider({ children }){
 				salesTotal, setSalesTotal,
 				btnDisabledSales, setBtnDisabledSales,
 				salesTableData, setSalesTableData,
+				exportSales,
 
 				// Creditos //
 
@@ -1426,6 +1502,7 @@ function AuthProvider({ children }){
 				creditsTotal, setCreditsTotal,
 				btnDisabledCredits, setBtnDisabledCredits,
 				creditsTableData, setCreditsTableData,
+				exportCredits,
 
 				// Serviços //
 
@@ -1435,6 +1512,7 @@ function AuthProvider({ children }){
 				servicesDateRange, setServicesDateRange,
 				btnDisabledServices, setBtnDisabledServices,
 				servicesTableData, setServicesTableData,
+				exportServices,
 
 				// Taxas
 
@@ -1450,8 +1528,6 @@ function AuthProvider({ children }){
 				loginApp, 
 				loadBanners, loadAdmins, loadMods,
 				groupByAdmin, groupServicesByAdmin,
-				gerarDados, gerarDadosServicos,
-				tableData, setTableData,
 				exportName, setExportName,
 				isCheckedCalendar, setIsCheckedCalendar,
 				converteData, dateConvert, dateConvertSearch, dateConvertYYYYMMDD,

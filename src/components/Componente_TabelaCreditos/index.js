@@ -8,7 +8,7 @@ import { FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward } from 'react-
 
 const TabelaCreditos = ({array}) =>{
 
-	const { isDarkTheme, dateConvert, gerarDados, 
+	const { isDarkTheme, dateConvert,
 			creditsDateRange, setCreditsTotal,
 	} = useContext(AuthContext)
 
@@ -153,7 +153,6 @@ const TabelaCreditos = ({array}) =>{
 
 	useEffect(()=>{
 		if(vendasExibicao.length > 0){
-			gerarDados(vendasExibicao)
 			loadTotals(vendasExibicao)
 			setCurrentPage(1)
             
@@ -161,35 +160,35 @@ const TabelaCreditos = ({array}) =>{
 	},[vendasExibicao])
 
 	useEffect(()=>{
+		if(sessionStorage.getItem('currentPath') === '/creditos'){
+			setVendasExibicao(vendasTeste)
 
-		setVendasExibicao(vendasTeste)
-
-		const bandeirasTemp = []
-		const uniqueStringsSet = new Set()
-        
-		vendasTeste.forEach(item => {
-			if (!uniqueStringsSet.has(item.bandeira.descricaoBandeira)) {
-				uniqueStringsSet.add(item.bandeira.descricaoBandeira)
-				bandeirasTemp.push(item.bandeira.descricaoBandeira)
-			}
-		})
-
-		const adquirentesTemp = []
-		const otherUniqueStringsSet = new Set()
-        
-		vendasTeste.forEach(item => {
-			if (!otherUniqueStringsSet.has(item.adquirente.nomeAdquirente)) {
-				otherUniqueStringsSet.add(item.adquirente.nomeAdquirente)
-				adquirentesTemp.push(item.adquirente.nomeAdquirente)
-			}
-		})
-
-		setBandeirasExistentes(bandeirasTemp)
-		setTodasBandeiras(bandeirasTemp)
-
-		setAdquirentesExistentes(adquirentesTemp)
-		setTodasAdquirentes(adquirentesTemp)
-
+			const bandeirasTemp = []
+			const uniqueStringsSet = new Set()
+			
+			vendasTeste.forEach(item => {
+				if (!uniqueStringsSet.has(item.bandeira.descricaoBandeira)) {
+					uniqueStringsSet.add(item.bandeira.descricaoBandeira)
+					bandeirasTemp.push(item.bandeira.descricaoBandeira)
+				}
+			})
+	
+			const adquirentesTemp = []
+			const otherUniqueStringsSet = new Set()
+			
+			vendasTeste.forEach(item => {
+				if (!otherUniqueStringsSet.has(item.adquirente.nomeAdquirente)) {
+					otherUniqueStringsSet.add(item.adquirente.nomeAdquirente)
+					adquirentesTemp.push(item.adquirente.nomeAdquirente)
+				}
+			})
+	
+			setBandeirasExistentes(bandeirasTemp)
+			setTodasBandeiras(bandeirasTemp)
+	
+			setAdquirentesExistentes(adquirentesTemp)
+			setTodasAdquirentes(adquirentesTemp)
+		}
 	},[vendasTeste])
 
 	useEffect(() => {

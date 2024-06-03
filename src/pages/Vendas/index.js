@@ -28,6 +28,7 @@ const Vendas = () =>{
     loadSales, loadTotalSales, salesTotal, setSalesTotal, salesTableData,
     btnDisabledSales, setBtnDisabledSales,
     groupByAdmin,
+    exportSales,
   } = useContext(AuthContext)
 
   useEffect(()=>{
@@ -53,12 +54,15 @@ const Vendas = () =>{
   async function handleLoadData(e) {
     e.preventDefault();
     try {
+      setBtnDisabledSales(true)
       await toast.promise(loadData(), {
         pending: 'Carregando...',
         success: 'Carregado com Sucesso',
         error: 'Ocorreu um Erro',
       });
+      setBtnDisabledSales(false)
     } catch (error) {
+      setBtnDisabledSales(false)
       console.error('Error handling busca:', error);
     }
   }
@@ -73,6 +77,12 @@ const Vendas = () =>{
     }
   }
 
+  useEffect(()=>{
+    if(salesPageArray.length > 0){
+      exportSales(salesPageArray)
+    }
+  },[salesPageArray, sessionStorage.getItem('currentPath')])
+
   const handleDateRangeChange = (dateRange) => {
     setSalesDateRange(dateRange)
   }
@@ -86,7 +96,7 @@ const Vendas = () =>{
             </div>
             <div className='component-container-vendas'>
               { salesPageArray.length > 0 ? 
-                <DisplayData dataArray={salesPageArray} adminDataArray={salesPageAdminArray} totals={salesTotal} tableData={salesTableData} onGoBack={resetValues}/>
+                <DisplayData dataArray={salesPageArray} adminDataArray={salesPageAdminArray} totals={salesTotal} onGoBack={resetValues}/>
                 :
                 <MyCalendar onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange} btnDisabled={btnDisabledSales}/> 
               }

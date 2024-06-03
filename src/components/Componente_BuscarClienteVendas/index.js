@@ -27,7 +27,6 @@ const BuscarClienteVendas = () => {
 		setTotaisGlobal,
 		isDarkTheme,
 		vendas,
-		gerarDados,
 		detalhes,
 		setDetalhes,
 		setTotaisGlobalVendas,
@@ -58,8 +57,6 @@ const BuscarClienteVendas = () => {
 			error: 'Ocorreu um Erro',
 		})
 		setClicouPesquisar(true)
-		await gerarDados(vendas)
-	
 		setDetalhes(true)
 	}
 

@@ -27,7 +27,8 @@ const Creditos = () =>{
 	  creditsDateRange, setCreditsDateRange,
 	  loadCredits, loadTotalCredits, creditsTotal, setCreditsTotal, tableData,
 	  groupByAdmin, 
-    btnDisabledCredits, setBtnDisabledCredits
+    btnDisabledCredits, setBtnDisabledCredits,
+    exportCredits, creditsTableData
 
 	} = useContext(AuthContext)
   
@@ -49,19 +50,22 @@ const Creditos = () =>{
       voucher: 0,
       total: 0
     })
-    tableData.length = 0
+    creditsTableData.length = 0
   }
 
   async function handleLoadData(e) {
     e.preventDefault();
     try {
+      setBtnDisabledCredits(true)
       await toast.promise(loadData(), {
         pending: 'Carregando...',
         success: 'Carregado com Sucesso',
         error: 'Ocorreu um Erro',
       });
+      setBtnDisabledCredits(false)
     } catch (error) {
       console.error('Error handling busca:', error);
+      setBtnDisabledCredits(false)
     }
   }
   
@@ -74,6 +78,12 @@ const Creditos = () =>{
       throw error;
     }
   }
+
+  useEffect(()=>{
+    if(creditsPageArray.length > 0){
+      exportCredits(creditsPageArray)
+    }
+  },[creditsPageArray, sessionStorage.getItem('currentPath')])
 
   const handleDateRangeChange = (dateRange) => {
     setCreditsDateRange(dateRange)
@@ -92,7 +102,7 @@ const Creditos = () =>{
 			  </div>
 			  <div className='component-container-vendas'>
 				{ creditsPageArray.length > 0 ? 
-          <DisplayData dataArray={creditsPageArray} adminDataArray={creditsPageAdminArray} totals={creditsTotal} tableData={tableData} onGoBack={resetValues}/>
+          <DisplayData dataArray={creditsPageArray} adminDataArray={creditsPageAdminArray} totals={creditsTotal} onGoBack={resetValues}/>
           : 
           <MyCalendar onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange} btnDisabled={btnDisabledCredits}/> }
 			  </div>

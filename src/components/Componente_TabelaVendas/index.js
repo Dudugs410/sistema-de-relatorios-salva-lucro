@@ -7,7 +7,7 @@ import { FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward } from 'react-
 
 const TabelaVendas = ({array}) =>{
 
-	const { isDarkTheme, dateConvert, gerarDados, 
+	const { isDarkTheme, dateConvert, 
 			salesDateRange, setSalesTotal,
 		 } = useContext(AuthContext)
 
@@ -155,7 +155,6 @@ const TabelaVendas = ({array}) =>{
 
 	useEffect(()=>{
 		if(vendasExibicao.length > 0){
-			gerarDados(vendasExibicao)
 			loadTotals(vendasExibicao)
 			setCurrentPage(1)
             
@@ -163,35 +162,35 @@ const TabelaVendas = ({array}) =>{
 	},[vendasExibicao])
 
 	useEffect(()=>{
+		if(sessionStorage.getItem('currentPath') === '/vendas'){
+			setVendasExibicao(vendasTeste)
 
-		setVendasExibicao(vendasTeste)
+			const bandeirasTemp = []
+			const uniqueStringsSet = new Set()
 
-		const bandeirasTemp = []
-		const uniqueStringsSet = new Set()
+			vendasTeste.forEach(item => {
+				if (!uniqueStringsSet.has(item.bandeira.descricaoBandeira)) {
+					uniqueStringsSet.add(item.bandeira.descricaoBandeira)
+					bandeirasTemp.push(item.bandeira.descricaoBandeira)
+				}
+			})
 
-		vendasTeste.forEach(item => {
-			if (!uniqueStringsSet.has(item.bandeira.descricaoBandeira)) {
-				uniqueStringsSet.add(item.bandeira.descricaoBandeira)
-				bandeirasTemp.push(item.bandeira.descricaoBandeira)
-			}
-		})
+			const adquirentesTemp = []
+			const otherUniqueStringsSet = new Set()
+			
+			vendasTeste.forEach(item => {
+				if (!otherUniqueStringsSet.has(item.adquirente.nomeAdquirente)) {
+					otherUniqueStringsSet.add(item.adquirente.nomeAdquirente)
+					adquirentesTemp.push(item.adquirente.nomeAdquirente)
+				}
+			})
 
-		const adquirentesTemp = []
-		const otherUniqueStringsSet = new Set()
-        
-		vendasTeste.forEach(item => {
-			if (!otherUniqueStringsSet.has(item.adquirente.nomeAdquirente)) {
-				otherUniqueStringsSet.add(item.adquirente.nomeAdquirente)
-				adquirentesTemp.push(item.adquirente.nomeAdquirente)
-			}
-		})
+			setBandeirasExistentes(bandeirasTemp)
+			setTodasBandeiras(bandeirasTemp)
 
-		setBandeirasExistentes(bandeirasTemp)
-		setTodasBandeiras(bandeirasTemp)
-
-		setAdquirentesExistentes(adquirentesTemp)
-		setTodasAdquirentes(adquirentesTemp)
-
+			setAdquirentesExistentes(adquirentesTemp)
+			setTodasAdquirentes(adquirentesTemp)
+		}
 	},[vendasTeste])
 
 	useEffect(() => {
@@ -320,6 +319,7 @@ const TabelaVendas = ({array}) =>{
 				<hr className='hr-global'/>
 				<div className='container-busca'>
 						<span className='span-busca'>
+							{console.log('salesDateRange: ', salesDateRange[0].toLocaleDateString('pt-BR'), salesDateRange[1].toLocaleDateString('pt-BR'))}
 							{salesDateRange[0].toLocaleDateString('pt-BR') !== salesDateRange[1].toLocaleDateString('pt-BR') ? 
 								<span dangerouslySetInnerHTML={{__html: `Exibindo Vendas do dia <strong>${salesDateRange[0].toLocaleDateString('pt-BR')}</strong> ao dia <strong>${salesDateRange[1].toLocaleDateString('pt-BR')}</strong>`}} /> : 
 								<span dangerouslySetInnerHTML={{__html: `Exibindo Vendas do dia <strong>${salesDateRange[0].toLocaleDateString('pt-BR')}</strong>`}} />

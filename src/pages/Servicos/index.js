@@ -29,6 +29,7 @@ const Servicos = () =>{
 	  loadServices, servicesTableData,
     btnDisabledServices, setBtnDisabledServices,
     groupServicesByAdmin,
+    exportServices,
 
 	  alerta,
 	} = useContext(AuthContext)
@@ -49,13 +50,16 @@ const Servicos = () =>{
   async function handleLoadData(e) {
     e.preventDefault();
     try {
+      setBtnDisabledServices(true)
       await toast.promise(loadData(), {
         pending: 'Carregando...',
         success: 'Carregado com Sucesso',
         error: 'Ocorreu um Erro',
       });
+      setBtnDisabledServices(false)
     } catch (error) {
       console.error('Error handling busca:', error);
+      setBtnDisabledServices(false)
     }
   }
   
@@ -68,6 +72,12 @@ const Servicos = () =>{
       throw error;
     }
   }
+
+  useEffect(()=>{
+    if(servicesPageArray.length > 0){
+      exportServices(servicesPageArray)
+    }
+  },[servicesPageArray, sessionStorage.getItem('currentPath')])
 
   const handleDateRangeChange = (dateRange) => {
     setServicesDateRange(dateRange)
@@ -82,7 +92,7 @@ const Servicos = () =>{
 			  </div>
 			  <div className='component-container-vendas'>
 				{ servicesPageArray.length > 0 ? 
-          <DisplayData dataArray={servicesPageArray} adminDataArray={servicesPageAdminArray} totals={null} tableData={servicesTableData} onGoBack={resetValues}/>
+          <DisplayData dataArray={servicesPageArray} adminDataArray={servicesPageAdminArray} totals={null} onGoBack={resetValues}/>
           : 
           <MyCalendar onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange} btnDisabled={btnDisabledServices}/> }
 			  </div>

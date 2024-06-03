@@ -8,7 +8,7 @@ import '../../styles/global.scss'
 
 const TabelaVendasAdq = ({array}) =>{
 
-	const { dateConvert, tableData, gerarDados, totaisGlobal, setTotaisGlobal, TotaisGlobalVendas, setTotaisGlobalVendas, TotaisGlobalCreditos, setTotaisGlobalCreditos, isDarkTheme } = useContext(AuthContext)
+	const { dateConvert, tableData, totaisGlobal, setTotaisGlobal, TotaisGlobalVendas, setTotaisGlobalVendas, TotaisGlobalCreditos, setTotaisGlobalCreditos, isDarkTheme } = useContext(AuthContext)
 
 	const [vendasArray, setVendasArray] = useState([])
 
@@ -208,7 +208,6 @@ const TabelaVendasAdq = ({array}) =>{
 
 	useEffect(()=>{
 		if(vendasExibicao.length > 0){
-			gerarDados(vendasExibicao)
 			carregaTotais(vendasExibicao)
             
 		}

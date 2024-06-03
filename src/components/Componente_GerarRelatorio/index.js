@@ -12,12 +12,17 @@ import './GerarRelatorio.scss'
 import { imgExport } from '../../contexts/images'
 import { AuthContext } from '../../contexts/auth'
 
-export default function GerarRelatorio({tableData}){
+export default function GerarRelatorio(){
 
-	const { dateConvert, exportName } = useContext(AuthContext)
+	const { 
+		dateConvert, exportName,
+		salesTableData, creditsTableData, servicesTableData,
+	 } = useContext(AuthContext)
+
 	const [tipoRelatorio, setTipoRelatorio] = useState('')
 	const [currentDateTime, setCurrentDateTime] = useState('')
 	const [tipo, setTipo] = useState('')
+	const [tableData, setTableData] = useState([])
 
 	useEffect(() => {
 		console.log('tableData? -> ', tableData)
@@ -56,19 +61,25 @@ export default function GerarRelatorio({tableData}){
 			case '/vendas':
 				setTipoRelatorio('Relatório de Vendas')
 				setTipo('vendas')
+				setTableData(salesTableData)
+				console.log('salesTableData: ', salesTableData)
 				break
 			case '/creditos':
 				setTipoRelatorio('Relatório de Créditos')
 				setTipo('creditos')
+				setTableData(creditsTableData)
+				console.log('creditsTableData: ', creditsTableData)
 				break
 
 			case '/servicos':
 				setTipoRelatorio('Relatório de Serviços')
 				setTipo('servicos')
+				setTableData(servicesTableData)
+				console.log('servicesTableData: ', servicesTableData)
 			default:
 				break
 		}
-	},[])
+	},[sessionStorage.getItem('currentPath')])
 
 	// EXCEL ////////////////////////////////////////////////////////////
 	

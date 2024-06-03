@@ -30,7 +30,6 @@ const BuscarClienteServicos = () => {
 		ajustes,
 		detalhes,
 		setDetalhes,
-		gerarDados,
 		alerta,
 		dataBuscaServicos, setDataBuscaServicos, 
 		cnpjBuscaServicos, setCnpjBuscaServicos,
@@ -56,7 +55,6 @@ const BuscarClienteServicos = () => {
 		})
 		e.preventDefault()
 		setClicouPesquisar(true)
-		await gerarDados(ajustes)
 		setDetalhes(true)
 	}
 	
