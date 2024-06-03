@@ -149,7 +149,7 @@ const Taxas = () =>{
                 </thead>
             <thead>
                 <tr>
-                    <th scope="col"></th>
+                    <th scope="col" style={{width: '2%'}}></th>
                     <th scope="col">Bandeira</th>
                     <th scope="col">Adquirente</th>
                     <th scope="col">Modalidade</th>

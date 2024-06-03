@@ -7,7 +7,7 @@ import './Calendar.scss'
 import '../../styles/global.scss'
 import { useLocation } from "react-router-dom";
 
-const MyCalendar = ({ onLoadData, getCalendarDate, btnDisabled}) => {
+const MyCalendar = ({ onLoadData, getCalendarDate, btnDisabled }) => {
     const { isCheckedCalendar } = useContext(AuthContext)
 
     const location = useLocation();
@@ -133,7 +133,7 @@ const MyCalendar = ({ onLoadData, getCalendarDate, btnDisabled}) => {
           <hr className='hr-global'/>
           <div className='container-busca'>
             <span className='span-busca'>
-                <span dangerouslySetInnerHTML={{__html: `Executar busca do dia <strong>${dateSysmo.toLocaleDateString('pt-BR')}</strong>`}} />
+                <span dangerouslySetInnerHTML={{__html: `Executar Exportação do dia <strong>${dateSysmo.toLocaleDateString('pt-BR')}</strong>`}} />
             </span>
           </div>
           <hr className='hr-global'/>

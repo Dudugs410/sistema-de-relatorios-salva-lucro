@@ -114,7 +114,7 @@ const ExportacaoMetaSapiranga = () =>{
         <div className='page-background-global'>
             <div className='page-content-global page-content-exportacao'>
                 <div className='title-container-global'>
-                    <h1 className='title-global'>Exportação Meta</h1>
+                    <h1 className='title-global'>Exportação Meta Sapiranga</h1>
                 </div>
                 <MyCalendar onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange}/>
                 <form>
