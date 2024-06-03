@@ -64,6 +64,7 @@ export default function GerarRelatorio(){
 				setTableData(salesTableData)
 				console.log('salesTableData: ', salesTableData)
 				break
+				
 			case '/creditos':
 				setTipoRelatorio('Relatório de Créditos')
 				setTipo('creditos')
