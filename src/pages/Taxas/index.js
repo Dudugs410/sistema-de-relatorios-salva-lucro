@@ -144,7 +144,7 @@ const Taxas = () =>{
             <table className="table table-striped table-hover table-bordered table-taxas">
                 <thead>
                     <tr>
-                        <th colSpan="6"><button className='btn btn-primary btn-global' onClick={()=>{setIsModalOpen(true)}}><FiPlus className='icon' />Adicionar</button></th>
+                        <th colSpan="7"><button className='btn btn-primary btn-global' style={{width: '10%'}} onClick={()=>{setIsModalOpen(true)}}><FiPlus className='icon' />Adicionar</button></th>
                     </tr>
                 </thead>
             <thead>
@@ -155,7 +155,7 @@ const Taxas = () =>{
                     <th scope="col" style={{'text-align': 'center'}}>Modalidade</th>
                     <th scope="col" style={{'text-align': 'center'}}>Tipo Taxa</th>
                     <th scope="col" style={{'text-align': 'center'}}>% Taxa</th>
-                    {/*<th scope="col"></th>*/}
+                    <th scope="col" style={{width: '2%'}}></th>
                 </tr>
             </thead>
             <tbody>
@@ -168,6 +168,7 @@ const Taxas = () =>{
                             <td className='det-td-vendas-global'data-label="MODDESCRICAO">{object.MODDESCRICAO}</td>
                             <td className='det-td-vendas-global'data-label="TIPOTAXA">{object.TIPOTAXA}</td>
                             <td className='det-td-vendas-global'data-label="TAXAPERCENTUAL">{object.TAXAPERCENTUAL} %</td>
+                        <th scope='row' onClick={()=>{handleEdit(object)}}><FiTrash className='icon' /></th>
                             {/*<td className='det-td-vendas-global'data-label="botao"><FiTrash className='icon'/></td>*/}
                         </tr>
                     )

@@ -18,7 +18,7 @@ const MyCalendar = ({ onLoadData, getCalendarDate, btnDisabled }) => {
     const [showPesquisar, setShowPesquisar] = useState(true)
 
     useEffect(()=>{
-      if(location.pathname === '/sysmo'){
+      if(location.pathname === ('/sysmo') || location.pathname === '/metasapiranga' || location.pathname === '/meta'){
         setAllowRange(false)
         setShowPesquisar(false)
       } else {
