@@ -45,6 +45,19 @@
     padding: 60px;
 }
 
+.btn-modal-close{
+    position: relative;
+    top: -10px;
+    left: 795px;
+}
+
+.container-title-close{
+    width: 100%;
+    display: inline-flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .custom-select .react-select__control {
     background-color: red !important; /* Background color of the control */
     color: green !important; /* Text color of the control */

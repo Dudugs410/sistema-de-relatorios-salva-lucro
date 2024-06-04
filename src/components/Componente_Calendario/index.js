@@ -124,7 +124,6 @@ const MyCalendar = ({ onLoadData, getCalendarDate, btnDisabled }) => {
             onChange={ handleDateChangeSysmo }
             value={ dateSysmo }
           />
-   
           </>
           : 
           <>
@@ -145,10 +144,10 @@ const MyCalendar = ({ onLoadData, getCalendarDate, btnDisabled }) => {
 
     return(
       <>
-        { 
-          allowRange === true ? 
-            <CalendarDefault/> 
-            : 
+        {
+          allowRange === true ?
+            <CalendarDefault/>
+            :
             <CalendarSysmo/>
         }
       </>
