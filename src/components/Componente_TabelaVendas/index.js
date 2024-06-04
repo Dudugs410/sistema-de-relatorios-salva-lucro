@@ -320,7 +320,7 @@ const TabelaVendas = ({array}) =>{
 				<div className='container-busca'>
 						<span className='span-busca'>
 							{console.log('salesDateRange: ', salesDateRange[0].toLocaleDateString('pt-BR'), salesDateRange[1].toLocaleDateString('pt-BR'))}
-							{salesDateRange[0].toLocaleDateString('pt-BR') !== salesDateRange[1].toLocaleDateString('pt-BR') ? 
+							{salesDateRange[0].toLocaleDateString('pt-BR') !== salesDateRange[1].toLocaleDateString('pt-BR') ?
 								<span dangerouslySetInnerHTML={{__html: `Exibindo Vendas do dia <strong>${salesDateRange[0].toLocaleDateString('pt-BR')}</strong> ao dia <strong>${salesDateRange[1].toLocaleDateString('pt-BR')}</strong>`}} /> : 
 								<span dangerouslySetInnerHTML={{__html: `Exibindo Vendas do dia <strong>${salesDateRange[0].toLocaleDateString('pt-BR')}</strong>`}} />
 							}
