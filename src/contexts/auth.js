@@ -8,7 +8,6 @@ import api, { config } from '../services/api'
 
 import md5 from 'md5'
 
-
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import jwtDecode from 'jwt-decode'
@@ -21,7 +20,6 @@ function AuthProvider({ children }){
 
 	////////////////////////////////////////////////////////////////
 
-	const [tableData, setTableData] = useState([])
 	const [salesTableData, setSalesTableData] = useState([])
 	const [creditsTableData, setCreditsTableData] = useState([])
 	const [servicesTableData, setServicesTableData] = useState([])
@@ -35,8 +33,6 @@ function AuthProvider({ children }){
 	// *** Usuário e Login *** //
 
 	// objeto que guardará dados do usuário, caso seja necessário acessar algo //
-
-	const [loggedUserData, setLoggedUserData] = useState({})
 
 	const [groupsList, setGroupsList] = useState([])
 	const [clientsList, setClientsList] = useState([])
@@ -110,7 +106,6 @@ function AuthProvider({ children }){
 		} catch (error) {
 			console.error(error)
 			alert(error.message)
-
 		}
 	}
 

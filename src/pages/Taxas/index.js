@@ -1,16 +1,16 @@
 import { useEffect, useContext, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { AuthContext } from '../../contexts/auth';
+import { AuthContext } from '../../contexts/auth'
 import Cookies from 'js-cookie'
 import '../../styles/global.scss'
 import './taxas.scss'
-import Select from 'react-select';
-import { FiEdit, FiPlus, FiTrash } from 'react-icons/fi';
-import { parse } from 'date-fns';
+import Select from 'react-select'
+import { FiEdit, FiPlus, FiTrash, FiX } from 'react-icons/fi'
+import { parse } from 'date-fns'
 import { toast } from 'react-toastify'
 
 const Taxas = () =>{
-    const location = useLocation();
+    const location = useLocation()
     const { 
         loadBanners, 
         loadAdmins,
@@ -150,11 +150,11 @@ const Taxas = () =>{
             <thead>
                 <tr>
                     <th scope="col" style={{width: '2%'}}></th>
-                    <th scope="col">Bandeira</th>
-                    <th scope="col">Adquirente</th>
-                    <th scope="col">Modalidade</th>
-                    <th scope="col">Tipo Taxa</th>
-                    <th scope="col">% Taxa</th>
+                    <th scope="col" style={{'text-align': 'center'}}>Bandeira</th>
+                    <th scope="col" style={{'text-align': 'center'}}>Adquirente</th>
+                    <th scope="col" style={{'text-align': 'center'}}>Modalidade</th>
+                    <th scope="col" style={{'text-align': 'center'}}>Tipo Taxa</th>
+                    <th scope="col" style={{'text-align': 'center'}}>% Taxa</th>
                     {/*<th scope="col"></th>*/}
                 </tr>
             </thead>
@@ -188,6 +188,14 @@ const Taxas = () =>{
         setIsModalOpen(false)
         setIsModalEditOpen(false)
     };
+
+    const BtnClose = () => {
+        return(
+            <button className="btn btn-danger" onClick={closeModal}>
+                <FiX />
+            </button>
+        )
+    }
 
     const ModalNewTax = () => {
 
@@ -279,7 +287,10 @@ const Taxas = () =>{
         return(
             <div className='modal-taxas'>
                 <div className='modal-taxas-content'>
-                <h3 className='subtitle'>Adicionar Taxa:</h3>
+                <div className='container-title-close'>
+                    <h3 className='subtitle'>Adicionar Taxa:</h3>
+                    <BtnClose/>
+                </div>
                 <hr className='hr-global'/>
                     <form className='form-taxas' onSubmit={handleSubmit}>
                         <div className='select-container'>
@@ -440,7 +451,10 @@ const Taxas = () =>{
         return(
             <div className='modal-taxas'>
                 <div className='modal-taxas-content'>
+                <div className='container-title-close'>
                     <h3 className='subtitle'>Editar Taxa:</h3>
+                    <BtnClose/>
+                </div>
                     <hr className='hr-global'/>
                     <form className='form-taxas' onSubmit={handleSubmit}>
                         <div className='select-container'>

@@ -64,7 +64,7 @@ const Header = () => {
     }, []);
 
     useEffect(()=>{
-                // Update CSS custom properties based on the theme
+                // atualiza _variables.scss com as propriedades do tema selecionado
                 const root = document.documentElement;
                 if (isChecked) {
                   root.style.setProperty('--primary-color', 'var(--primary-color-dark)')
