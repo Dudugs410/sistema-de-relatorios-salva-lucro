@@ -1,0 +1,15 @@
+.export-container-delivery{
+    display: inline-flex;
+    align-content: center;
+    justify-content: space-evenly;
+    width: 100%;
+    flex-direction: row;
+}
+
+.export-container-delivery-child{
+    display: inline-flex;
+    width: 50%;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+}
