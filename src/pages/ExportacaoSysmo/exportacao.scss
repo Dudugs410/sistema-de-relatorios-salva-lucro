@@ -21,11 +21,17 @@
     width: 100%;
     display: flex;
     justify-content: space-evenly;
-    flex-direction: column;
+    flex-direction: row;
 }
 
 .select-component{
     /* display: flex; */
     /* flex-direction: column; */
     width: 48%;
+}
+
+.component-container-sysmo{
+    display: inline-flex;
+    width: 100%;
+    align-items: center;
 }
