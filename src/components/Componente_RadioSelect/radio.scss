@@ -2,9 +2,10 @@
 
 .radio-container-exportacao {
     display: inline-flex;
-    width: 100%;
-    justify-content: flex-start;
-    flex-direction: row;
+    /* width: 100%; */
+    justify-content: space-around;
+    /* flex-direction: column; */
+    width: 48%;
 }
 
 .radio-container-exportacao-sysmo{
