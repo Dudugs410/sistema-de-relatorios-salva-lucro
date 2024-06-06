@@ -11,7 +11,7 @@ import './Seletor.scss'
 
 const SeletorCliente = () => {
 	const { 
-		changedOption, setChangedOption,
+		setChangedOption,
 		setIsLoadedSalesDashboard, setIsLoadedCreditsDashboard, setIsLoadedServicesDashboard,
 		setExportName,
 		setSalesPageArray, setCreditsPageArray, setServicesPageArray,
@@ -84,7 +84,7 @@ const SeletorCliente = () => {
 				Cookies.set('clientCode', sortedOptions.CODIGOCLIENTE)
 				Cookies.set('clientOptions', JSON.stringify(sortedOptions))
 				Cookies.set('groupName', JSON.stringify(selectedGroup.label))
-				setChangedOption(!changedOption)
+				setChangedOption(true)
 			} else {
 				setClientOptions([]);
 			}
@@ -114,7 +114,7 @@ const SeletorCliente = () => {
 		setIsLoadedSalesDashboard(false)
 		setIsLoadedCreditsDashboard(false)
 		setIsLoadedServicesDashboard(false)
-		setChangedOption(!changedOption)
+		setChangedOption(true)
 		setSelectedGroup(selected)
 	}
 
@@ -123,7 +123,7 @@ const SeletorCliente = () => {
 		setIsLoadedSalesDashboard(false)
 		setIsLoadedCreditsDashboard(false)
 		setIsLoadedServicesDashboard(false)
-		setChangedOption(!changedOption)
+		setChangedOption(true)
 		setSelectedClient(selected)
 		Cookies.set('clientName', JSON.stringify(selected.label))
 	}
