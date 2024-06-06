@@ -834,14 +834,17 @@ function AuthProvider({ children }){
 		// função que gerencia o carregamento de tudo que será visto no Dashboard
 
 		const loadDashboard = async () => {	
+			console.log('***** loadDashboard *****')
+			console.log('changedOption? ', changedOption)
+			console.log('isLoadedDashboard? ', isLoadedDashboard)
 			try {
 				Promise.all([
 					loadSalesGroup(),
 					loadCreditsGroup(),
 					loadServicesGroup()
 				]).then(()=>{
-					console.log('.then()')
 					setIsLoadedDashboard(true)
+					setChangedOption(false)
 				})
 			} catch (error) {
 				console.log('erro: ', error)

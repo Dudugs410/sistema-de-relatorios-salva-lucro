@@ -6,6 +6,7 @@ import Select from 'react-select'
 
 import '../Financeiro/financeiro.scss'
 import '../../styles/global.scss'
+import './vendasDelivery.scss'
 
 
 const VendasDelivery = () => {
@@ -54,29 +55,32 @@ const VendasDelivery = () => {
           <div className='page-background-global'>
             <div className='page-content-global page-content-financeiro'>
                 <div className='title-container-global'>
-                    <h1 className='title-global'>Vendas Delivery</h1>          
+                    <h1 className='title-global'>Vendas Delivery</h1>       
                 </div>
-                <hr className="hr-recebimentos"/>
+                <hr className='hr-global'/>
                 <div className='container-cielo'>
                     <div>
                         <div>
                             <h5>Relatório Detalhado de Vendas</h5>
                         </div>
-                        <div className=''>
+                        <div>
                             <div className='input-block-cli-adq'>
                             <MyCalendar onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange}/>        
-                                <hr className='hr-global'/>
-                                <h6><b>Aplicativo</b></h6>
-                                <Select
-                                    options={appOptions}
-                                    onChange={handleAppChange}
-                                    value={appSelecionado}
-                                />
-                            </div>
-                            <br/>
-                            <div className=''>
-                                <h6><b>Gerar</b></h6>
-                                <button className='btn btn-global'><FiFilePlus /> &nbsp; Excel</button>
+                            <div className='export-container-delivery'>
+                                <div className='export-container-delivery-child'>
+                                    <h6><b>Aplicativo: </b></h6>
+                                    <Select
+                                        styles={{'min-width': '250px'}}
+                                        options={appOptions}
+                                        onChange={handleAppChange}
+                                        value={appSelecionado}
+                                    />
+                                </div>
+                                <div className='export-container-delivery-child'>
+                                    {/*<h6><b>Gerar: </b></h6>*/}
+                                    <button className='btn btn-global'><FiFilePlus /> &nbsp; Excel</button>
+                                </div>
+                                </div>
                             </div>
                         </div>
                     </div>
