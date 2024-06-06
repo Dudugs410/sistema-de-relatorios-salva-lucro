@@ -136,8 +136,8 @@ const MyCalendar = ({ onLoadData, getCalendarDate, btnDisabled }) => {
             </span>
           </div>
           <hr className='hr-global'/>
-          { showPesquisar === true ? <button className='btn btn-primary btn-global btn-pesquisar' onClick={ onLoadData } disabled={btnDisabled}>Pesquisar</button> : <></> }
-          { showPesquisar === true ? <hr className='hr-global'/> : <></> }
+          <button className='btn btn-primary btn-global btn-pesquisar' onClick={ onLoadData } disabled={btnDisabled}>Pesquisar</button>
+          <hr className='hr-global'/>
         </div>
       )
     }
