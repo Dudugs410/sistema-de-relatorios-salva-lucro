@@ -21,10 +21,12 @@
 }
 
 .dash-table-container{
+  height: -webkit-fill-available;
   padding: 10px;
   display: flex;
   flex-direction: column;
   border-bottom: var(--primary-color);
+  justify-content: center;
   
 }
 

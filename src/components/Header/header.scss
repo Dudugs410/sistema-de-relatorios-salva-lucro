@@ -375,10 +375,11 @@
         display: inline-block;
         width: 20px;
         height: 20px;
-        border: 2px solid #ccc; /* Border color for unchecked state */
+        border: 2px solid #ccc;
         border-radius: 4px;
-        margin-right: 8px;
+        margin-right: 6px;
         border-color: var(--primary-color);
+    
       }
       
     .checkbox-input:checked + .checkbox-custom {

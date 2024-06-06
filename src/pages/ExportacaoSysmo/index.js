@@ -8,6 +8,7 @@ import MyCalendar from '../../components/Componente_Calendario';
 import base64PDFdownload from '../../components/Componente_Base64PDF';
 import RadioSelect from '../../components/Componente_RadioSelect';
 import Cookies from 'js-cookie'
+import { toast } from 'react-toastify'
 
 const ExportacaoSysmo = () =>{
     const location = useLocation();
@@ -82,14 +83,6 @@ const ExportacaoSysmo = () =>{
         }
     },[dataBusca])
 
-    function handleExport(e){
-        e.preventDefault()
-        console.log('handleExport...')
-        loadSysmo(obj)
-        base64PDFdownload()
-        setBtnDisabledSysmo(false)
-    }
-
     function handleBan(e){
         setSelectedBan(e)
     }
@@ -117,9 +110,31 @@ const ExportacaoSysmo = () =>{
         console.log('obj : ', obj)
     },[obj])
 
-    function handleLoadData(){
-        console.log('loadData')
+    async function handleLoadData(e) {
+        e.preventDefault();
+        try {
+          setBtnDisabledSysmo(true)
+          await toast.promise(loadData(), {
+            pending: 'Carregando...',
+            success: 'arquivo gerado com sucesso',
+            error: 'Ocorreu um Erro',
+          });
+          setBtnDisabledSysmo(false)
+        } catch (error) {
+          setBtnDisabledSysmo(false)
+          console.error('Error handling busca:', error);
+        }
     }
+
+    async function loadData() {
+        console.log('função buscar');
+        try {
+          await loadSysmo(obj);
+        } catch (error) {
+          console.error('Error fetching sales data:', error);
+          throw error;
+        }
+      }
 
     function handleDateRangeChange(){
         console.log('handleDateRangeChange')
@@ -132,10 +147,10 @@ const ExportacaoSysmo = () =>{
                 <div className='title-container-global'>
                     <h1 className='title-global'>Exportação Sysmo</h1>
                 </div>
-                <MyCalendar onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange} btnDisabled={btnDisabledSysmo}/>
-                <form>
-                    <div className='component-container'>
-                        <RadioSelect options={radioOptions} onSelect={(e) => {setType(e)}}/>
+                <hr className='hr-global'/>
+                <form style={{width: '-webkit-fill-available'}}>
+                    <div className='component-container-sysmo'>
+                        <RadioSelect className='radio-container-expotacao-sysmo' options={radioOptions} onSelect={(e) => {setType(e)}}/>
                         <div className='select-container'>
                             <div className='select-component'>
                                 <span className='span-picker'>Bandeira</span>
@@ -157,10 +172,8 @@ const ExportacaoSysmo = () =>{
                             </div>
                         </div>
                     </div>
-                    <div className='btn-container-financeiro'>
-                        <button className='btn btn-primary btn-global' onClick={handleExport} disabled={btnDisabledSysmo}>Gerar Arquivo</button>
-                    </div>
                 </form>
+                <MyCalendar onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange} btnDisabled={btnDisabledSysmo}/>
             </div>
         </div>
     </div>
