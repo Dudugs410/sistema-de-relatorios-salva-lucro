@@ -17,6 +17,9 @@ const Header = () => {
     const [showRelatoriosDropdown, setShowRelatoriosDropdown] = useState(false)
     const [showExportacoesDropdown, setShowExportacoesDropdown] = useState(false)
 
+    // const usada para setar as opções de navagação as quais o usuario logado terá acesso
+    const [clientOptions, setClientOptions] = useState([])
+
     const handleCheckboxChangeCalendar = () => {
 		setIsCheckedCalendar(!isCheckedCalendar); // Toggle the state
 	  };
@@ -168,7 +171,7 @@ const CustomCheckbox = ({ isChecked, handleCheckboxChange }) => {
         onChange={handleCheckboxChange}
         className='checkbox-input'
       />
-      <span className='checkbox-custom'></span> {/* This is for the custom checkbox appearance */}
+      <span className='checkbox-custom'></span> {/* aparencia da checkbox-custom */}
       <span className='checkbox-icon'>
         <FiCalendar className={`calendar-icon ${isCheckedCalendar ? 'isCheckedCalendar' : ''}`} size={20} />
       </span>

@@ -17,7 +17,6 @@ const SeletorCliente = () => {
 		setSalesPageArray, setCreditsPageArray, setServicesPageArray,
 	} = useContext(AuthContext)
 
-
 	// // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
 
 	const [selectorGroupList, setSelectorGroupList] = useState(JSON.parse(sessionStorage.getItem('groupsStorage')))
