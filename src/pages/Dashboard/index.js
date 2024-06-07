@@ -23,9 +23,9 @@ const Dashboard = () => {
 
 	const {  
 		loadDashboard, isLoadedDashboard,
-		salesDashboard, isLoadedSalesDashboard,
-		creditsDashboard, isLoadedCreditsDashboard,
-		servicesDashboard, isLoadedServicesDashboard,
+		salesDashboard, isLoadedSalesDashboard, errorSales,
+		creditsDashboard, isLoadedCreditsDashboard, errorCredits,
+		servicesDashboard, isLoadedServicesDashboard, errorServices,
 		changedOption,
 	} = useContext(AuthContext);
 
@@ -45,10 +45,6 @@ const Dashboard = () => {
 	const chartDataExists = (array) => array.length > 0;
 
 	const DisplaySales = () => {
-		useEffect(() => {
-			console.log('salesDashboard: ', salesDashboard);
-		}, [salesDashboard]);
-
 		return (
 			<div className='graph-data'>
 				<h1 className='title-chart'>Vendas:</h1>
@@ -59,9 +55,13 @@ const Dashboard = () => {
 							<TabelaHorizontal header='Total Últimos 4 dias' valor={salesDashboard.totalLast4} />
 							<TabelaHorizontal header='Total do Mês' valor={salesDashboard.totalMonth} /> 
 						</>
-					: 
+						: 
 						<div style={{'align-self': 'center'}}>
-							<h3 className='title-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>
+							{ errorSales ? 
+								<h3 className='title-global'>Ocorreu um erro</h3>
+								:
+								<h3 className='title-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>
+							}
 						</div>
 					}
 				</div>
@@ -70,10 +70,6 @@ const Dashboard = () => {
 	};
 
 	const DisplayCredits = () => {
-		useEffect(() => {
-			console.log('creditsDashboard: ', creditsDashboard);
-		}, [creditsDashboard]);
-
 		return (
 			<div className='graph-data'>
 				<h1 className='title-chart'>Créditos:</h1>
@@ -86,7 +82,11 @@ const Dashboard = () => {
 						</>
 					: 
 						<div style={{'align-self': 'center'}}>
-							<h3 className='title-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>
+							{ errorCredits ? 
+								<h3 className='title-global'>Ocorreu um erro</h3>
+								:
+								<h3 className='title-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>
+							}
 						</div>
 					}
 				</div>
@@ -95,10 +95,6 @@ const Dashboard = () => {
 	};
 
 	const DisplayServices = () => {
-		useEffect(() => {
-			console.log('servicesDashboard: ', servicesDashboard);
-		}, [servicesDashboard]);
-		
 		return (
 			<div className='graph-data'>
 				<h1 className='title-chart'>Serviços:</h1>
@@ -111,7 +107,11 @@ const Dashboard = () => {
 						</>
 					: 
 						<div style={{'align-self': 'center'}}>
-							<h3 className='title-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>
+							{ errorServices ? 
+								<h3 className='title-global'>Ocorreu um erro</h3>
+								:
+								<h3 className='title-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>
+							}
 						</div>
 					}
 				</div>
