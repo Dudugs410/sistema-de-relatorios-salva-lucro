@@ -22,10 +22,12 @@
 
 .dash-table-container{
   height: -webkit-fill-available;
+  width: -webkit-fill-available;
+  position: absolute;
   padding: 10px;
   display: flex;
-  flex-direction: column;
   border-bottom: var(--primary-color);
+  flex-direction: column;
   justify-content: center;
   
 }

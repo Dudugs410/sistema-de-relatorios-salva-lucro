@@ -1,177 +1,196 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/react-in-jsx-scope */
-import { useState, useEffect, useContext } from 'react'
-import Select from 'react-select'
+import { useState, useEffect, useContext } from 'react';
+import Select from 'react-select';
 
-import { AuthContext } from '../../contexts/auth'
-import Cookies from 'js-cookie'
+import { AuthContext } from '../../contexts/auth';
+import Cookies from 'js-cookie';
 
-import 'react-toastify/dist/ReactToastify.css'
-import './Seletor.scss'
+import 'react-toastify/dist/ReactToastify.css';
+import './Seletor.scss';
 
 const SeletorCliente = () => {
-	const { 
-		setChangedOption,
-		setIsLoadedSalesDashboard, setIsLoadedCreditsDashboard, setIsLoadedServicesDashboard,
-		setExportName,
-		setSalesPageArray, setCreditsPageArray, setServicesPageArray,
-	} = useContext(AuthContext)
+  const {
+    setChangedOption,
+    setIsLoadedSalesDashboard,
+    setIsLoadedCreditsDashboard,
+    setIsLoadedServicesDashboard,
+    setExportName,
+    setSalesPageArray,
+    setCreditsPageArray,
+    setServicesPageArray,
+  } = useContext(AuthContext);
 
-	// // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
+  const [selectorGroupList, setSelectorGroupList] = useState(
+    JSON.parse(sessionStorage.getItem('groupsStorage'))
+  );
 
-	const [selectorGroupList, setSelectorGroupList] = useState(JSON.parse(sessionStorage.getItem('groupsStorage')))
+  const [groupOptions, setGroupOptions] = useState([]);
+  const [clientOptions, setClientOptions] = useState(() => {
+    const storedClientOptions = Cookies.get('clientOptions');
+    return storedClientOptions ? JSON.parse(storedClientOptions) : [];
+  });
 
-	//array com as opções disponíveis
-	const [groupOptions, setGroupOptions] = useState([])
-	const [clientOptions, setClientOptions] = useState([])
+  const [selectedGroup, setSelectedGroup] = useState(() => {
+    const groupCode = Cookies.get('groupCode');
+    const groupName = Cookies.get('groupName');
+	const groupClients = Cookies.get('groupClients')
+    return groupCode && groupName ? { value: groupCode, label: groupName, clients: groupClients } : null;
+  });
 
-	//objeto da Opção Selecionada:
-	const [selectedGroup, setSelectedGroup] = useState({value: null, label: ''})
-	const [selectedClient, setSelectedClient] = useState({value: 'todos', label: 'TODOS'})
-	
-	// // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
+  const [selectedClient, setSelectedClient] = useState(() => {
+    const cnpj = Cookies.get('cnpj');
+    const clientName = Cookies.get('clientName');
+    return cnpj && clientName ? { value: cnpj, label: clientName } : { value: 'todos', label: 'TODOS' };
+  });
 
-	/// React Select
+  useEffect(() => {
+    const iniGroupsList = () => {
+      if (selectorGroupList && selectorGroupList.length > 0) {
+        const sortedOptions = selectorGroupList
+          .map((GRU) => ({
+            value: GRU.CODIGOGRUPO,
+            label: GRU.NOMEGRUPO,
+            clients: GRU.CLIENTES,
+          }))
+          .sort((a, b) => a.label.localeCompare(b.label)); // Sort options alphabetically by label
+        setGroupOptions(sortedOptions);
 
-	// grupos
+        if (!selectedGroup) {
+          const firstGroup = sortedOptions[0];
+          setSelectedGroup(firstGroup);
+          const clientOpts = getClientOptions(firstGroup);
+          setClientOptions(clientOpts);
+          setSelectedClient({ value: 'todos', label: 'TODOS' });
+          Cookies.set('groupCode', firstGroup.value);
+          Cookies.set('groupName', firstGroup.label);
+		  Cookies.set('groupClients', firstGroup.clients)
+          Cookies.set('cnpj', 'todos');
+          Cookies.set('clientCode', '-');
+          Cookies.set('clientOptions', JSON.stringify(clientOpts));
+        } else {
+          const savedGroup = sortedOptions.find((group) => group.value === selectedGroup.value);
+          if (savedGroup) {
+            const options = getClientOptions(savedGroup);
+            setClientOptions(options);
+            Cookies.set('clientOptions', JSON.stringify(options));
+          }
+        }
+      } else {
+        setGroupOptions([]);
+      }
+    };
 
-	// Inicializa a Lista de grupos dentro do componente ReactSelect,
-	// Estruturado da forma correta, com o valor(código do grupo), 
-	// label(nome do grupo) e clients(array com os clientes pertencentes
-	// àquele grupo)
+    iniGroupsList();
+  }, [selectorGroupList]);
 
-	const iniGroupsList = async () => {
-		if (selectorGroupList && selectorGroupList.length > 0) {
-			const sortedOptions = selectorGroupList
-				.map((GRU) => ({
-					value: GRU.CODIGOGRUPO,
-					label: GRU.NOMEGRUPO,
-					clients: GRU.CLIENTES
-				}))
-				.sort((a, b) => a.label.localeCompare(b.label)) // Sort options alphabetically by label
-			setGroupOptions(sortedOptions)
-			setSelectedGroup(sortedOptions[0])
-			setSelectedClient({label: 'TODOS', value: 'todos'})
-			Cookies.set('groupCode', sortedOptions[0].value)
-			Cookies.set('cnpj', 'todos')
-			Cookies.set('clientCode', '-')
-			
-		} else {
-			setGroupOptions([])
-		}
-	}
+  useEffect(() => {
+    if (selectedGroup) {
+      const options = getClientOptions(selectedGroup);
+      setClientOptions(options);
+      Cookies.set('clientOptions', JSON.stringify(options));
+      setSelectedClient({ value: 'todos', label: 'TODOS' });
+      Cookies.set('groupName', selectedGroup.label);
+	  Cookies.set('groupClients', selectedGroup.clients);
+      setChangedOption(true);
+    }
+  }, [selectedGroup]);
 
-	useEffect(()=>{
-		iniGroupsList()
-	},[])
+  useEffect(() => {
+    setSalesPageArray([]);
+    setCreditsPageArray([]);
+    setServicesPageArray([]);
+    if (selectedClient && selectedClient.label !== 'TODOS') {
+      Cookies.set('cnpj', selectedClient.value);
+      Cookies.set('clientCode', selectedClient.cod);
+      setExportName(selectedClient.label);
+    } else if (selectedClient) {
+      Cookies.set('cnpj', selectedClient.value);
+      Cookies.set('clientCode', 'todos');
+      setExportName(selectedGroup ? selectedGroup.label + ' - Todas Filiais' : '');
+    }
+  }, [selectedClient]);
 
-	useEffect(()=>{
-		if(selectedGroup){
-			const todosOption = { label: 'TODOS', value: 'todos' };
-			const clients = selectedGroup.clients
-			if (clients && clients.length > 0) {
-				const sortedOptions = clients
-					.map((CLI) => ({
-						value: CLI.CNPJ,
-						label: CLI.NOMECLIENTE,
-						cod: CLI.CODIGOCLIENTE,
-					}))
-					.sort((a, b) => a.label.localeCompare(b.label)); // Sort options alphabetically by label
-				setClientOptions([todosOption, ...sortedOptions]);
-				setSelectedClient(clientOptions[0]); // Update selected client
-				Cookies.set('cnpj', sortedOptions[0].value);
-				Cookies.set('clientCode', sortedOptions.CODIGOCLIENTE)
-				Cookies.set('clientOptions', JSON.stringify(sortedOptions))
-				Cookies.set('groupName', JSON.stringify(selectedGroup.label))
-				setChangedOption(true)
-			} else {
-				setClientOptions([]);
-			}
-		}
-	}, [selectedGroup]);
+  const handleGroupChange = (selected) => {
+    setIsLoadedSalesDashboard(false);
+    setIsLoadedCreditsDashboard(false);
+    setIsLoadedServicesDashboard(false);
+    setChangedOption(true);
+    setSelectedGroup(selected);
+    Cookies.set('groupCode', selected.value);
+    Cookies.set('groupName', selected.label);
+	Cookies.set('groupClients', selected.clients);
+    const options = getClientOptions(selected);
+    setClientOptions(options);
+    Cookies.set('clientOptions', JSON.stringify(options));
+  };
 
-	useEffect(()=>{
-		setSalesPageArray([])
-		setCreditsPageArray([])
-		setServicesPageArray([])
-		if(selectedClient && (selectedClient.label !== 'TODOS')){
-			Cookies.set('cnpj', selectedClient.value)
-			Cookies.set('clientCode', selectedClient.cod)
-			setExportName(selectedClient.label)
-		} else if (selectedClient){
-			Cookies.set('cnpj', selectedClient.value)
-			Cookies.set('clientCode', 'todos')
-			setExportName(selectedGroup.label + ' - Todas Filiais')
-		}
-	},[selectedClient])
+  const handleClientChange = (selected) => {
+    setIsLoadedSalesDashboard(false);
+    setIsLoadedCreditsDashboard(false);
+    setIsLoadedServicesDashboard(false);
+    setChangedOption(true);
+    setSelectedClient(selected);
+    Cookies.set('cnpj', selected.value);
+    Cookies.set('clientCode', selected.cod);
+    Cookies.set('clientName', selected.label);
+  };
 
-	////////////////////////////////////////////////////
-	//Funções dos Select:
+  const getClientOptions = (group) => {
+    const todosOption = { label: 'TODOS', value: 'todos' };
+    const foundGroup = groupOptions.find((option) => option.value === group.value);
+    if (foundGroup) {
+      const sortedClientOptions = foundGroup.clients
+        .map((CLI) => ({
+          value: CLI.CNPJ,
+          label: CLI.NOMECLIENTE,
+          cod: CLI.CODIGOCLIENTE,
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label)); // Sort options alphabetically by label
+      return [todosOption, ...sortedClientOptions];
+    }
+    return [todosOption];
+  };
 
-	//Ao Selecionar Grupo:
-	const handleGroupChange = (selected) => {
-		setIsLoadedSalesDashboard(false)
-		setIsLoadedCreditsDashboard(false)
-		setIsLoadedServicesDashboard(false)
-		setChangedOption(true)
-		setSelectedGroup(selected)
-	}
+  return (
+    <>
+      {selectorGroupList === null ? (
+        <></>
+      ) : (
+        <>
+          <div className='search-bar-seletor'>
+            <form className='date-container-seletor p-4'>
+              <div className='cli-container'>
+                <div className='date-column-seletor'>
+                  <div className='select-card-seletor'>
+                    <span>Grupo</span>
+                    <Select
+                      options={groupOptions}
+                      onChange={handleGroupChange}
+                      value={selectedGroup}
+                    />
+                  </div>
+                </div>
 
-	//Ao Selecionar Cliente:
-	const handleClientChange = (selected) => {
-		setIsLoadedSalesDashboard(false)
-		setIsLoadedCreditsDashboard(false)
-		setIsLoadedServicesDashboard(false)
-		setChangedOption(true)
-		setSelectedClient(selected)
-		Cookies.set('clientName', JSON.stringify(selected.label))
-	}
+                <div className='date-column-seletor '>
+                  <div className='select-card-seletor'>
+                    <span>Cliente</span>
+                    <Select
+                      options={clientOptions}
+                      placeholder='Selecione o Cliente / Filial'
+                      onChange={handleClientChange}
+                      value={selectedClient}
+                      isDisabled={!selectedGroup}
+                    />
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </>
+      )}
+    </>
+  );
+};
 
-	return(
-		<>
-			{ selectorGroupList === null ? <></> : 
-				<>
-					<div className='search-bar-seletor'>
-						<form className='date-container-seletor p-4'>
-							<div className='cli-container'>
-								<div className='date-column-seletor'>
-									<div className='select-card-seletor'>
-										<span>Grupo</span>
-										<Select
-											options={groupOptions}
-											onChange={handleGroupChange}
-											value={selectedGroup}
-										/>
-									</div>
-								</div>
-                            
-								<div className='date-column-seletor '>
-									<div className='select-card-seletor'>
-										<span>Cliente</span>
-										{clientOptions && clientOptions.length > 0 ? (
-											<Select
-												options={clientOptions}
-												placeholder="Selecione o Cliente / Filial"
-												onChange={handleClientChange}
-												value={selectedClient}
-											/>
-										) : (
-											<Select
-												options={[]}
-												isDisabled
-												placeholder="Selecione o Cliente / Filial"
-												value={selectedClient}
-											/>
-										)}
-									</div>
-								</div>
-							</div>
-						</form>
-					</div>
-				</>
-			}
-		</>
-	)
-}
-
-export default SeletorCliente
+export default SeletorCliente;

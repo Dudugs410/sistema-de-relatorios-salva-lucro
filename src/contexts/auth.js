@@ -28,6 +28,10 @@ function AuthProvider({ children }){
 	const [isCheckedCalendar, setIsCheckedCalendar] = useState(true);
 	const [changedOption, setChangedOption] = useState(false)
 
+	const [errorSales, setErrorSales] = useState(false)
+	const [errorCredits, setErrorCredits] = useState(false)
+	const [errorServices, setErrorServices] = useState(false)
+
 	//////////////////////////////////////////////////////////////////
 
 	// *** Usuário e Login *** //
@@ -137,6 +141,7 @@ function AuthProvider({ children }){
 		// retorna array de vendas //
 		const loadSales = async (startDate, endDate) => {
 			try {
+				setErrorSales(false)
 				const apiCNPJ = Cookies.get('cnpj')
 				const apiGroupCode = Cookies.get('groupCode')
 				if(apiCNPJ === ('todos' || 'TODOS') && (apiGroupCode !== 'selecione')){
@@ -171,12 +176,14 @@ function AuthProvider({ children }){
 			} catch (error) {
 				setBtnDisabledSales(false)
 				console.error('Error fetching vendas:', error)
+				setErrorSales(true)
 				return []
 			}
 		}
 		// retorna array de créditos/recebimentos
 		const loadCredits = async (startDate, endDate) => {
 			try {
+				setErrorCredits(false)
 				const apiCNPJ = Cookies.get('cnpj')
 				const apiGroupCode = Cookies.get('groupCode')
 				if(apiCNPJ === ('todos' || 'TODOS') && (apiGroupCode !== 'selecione')){
@@ -210,12 +217,14 @@ function AuthProvider({ children }){
 			} catch (error) {
 				setBtnDisabledCredits(false)
 				console.error('Error fetching credits:', error)
+				setErrorCredits(true)
 				return []
 			}
 		}
 		// retorna array de serviços/ajustes
 		const loadServices = async (startDate, endDate) => {
 			try {
+				setErrorServices(false)
 				const apiCNPJ = Cookies.get('cnpj')
 				const apiGroupCode = Cookies.get('groupCode')
 				if(apiCNPJ === ('todos' || 'TODOS') && (apiGroupCode !== 'selecione')){
@@ -247,6 +256,8 @@ function AuthProvider({ children }){
 			} catch (error) {
 				setBtnDisabledServices(false)
 				console.log(error)
+				setErrorServices(true)
+				return []
 			}
 		}
 		// retorna Objeto de Taxas
@@ -1489,7 +1500,7 @@ function AuthProvider({ children }){
 				salesTotal, setSalesTotal,
 				btnDisabledSales, setBtnDisabledSales,
 				salesTableData, setSalesTableData,
-				exportSales,
+				exportSales, errorSales,
 
 				// Creditos //
 
@@ -1500,7 +1511,7 @@ function AuthProvider({ children }){
 				creditsTotal, setCreditsTotal,
 				btnDisabledCredits, setBtnDisabledCredits,
 				creditsTableData, setCreditsTableData,
-				exportCredits,
+				exportCredits, errorCredits,
 
 				// Serviços //
 
@@ -1510,7 +1521,7 @@ function AuthProvider({ children }){
 				servicesDateRange, setServicesDateRange,
 				btnDisabledServices, setBtnDisabledServices,
 				servicesTableData, setServicesTableData,
-				exportServices,
+				exportServices, errorServices,
 
 				// Taxas
 
