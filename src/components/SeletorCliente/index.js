@@ -44,21 +44,22 @@ const SeletorCliente = () => {
         if (sortedOptions.length > 0) {
           const initialGroup = sortedOptions[0];
           const initialClientOptions = getClientOptions(initialGroup);
-          
+
           setSelectedGroup(initialGroup);
           setClientOptions(initialClientOptions);
           setSelectedClient(initialClientOptions[0]);
-          
+
           Cookies.set('selectedGroup', JSON.stringify(initialGroup));
           Cookies.set('clientOptions', JSON.stringify(initialClientOptions));
           Cookies.set('selectedClient', JSON.stringify(initialClientOptions[0]));
+          Cookies.set('groupCode', initialGroup.value);
           sessionStorage.setItem('isSelected', 'true');
         }
       } else {
         const savedGroup = Cookies.get('selectedGroup');
         const savedClientOptions = Cookies.get('clientOptions');
         const savedClient = Cookies.get('selectedClient');
-        
+
         if (savedGroup) setSelectedGroup(JSON.parse(savedGroup));
         if (savedClientOptions) setClientOptions(JSON.parse(savedClientOptions));
         if (savedClient) setSelectedClient(JSON.parse(savedClient));
@@ -67,9 +68,6 @@ const SeletorCliente = () => {
   }, [selectorGroupList]);
 
   useEffect(() => {
-    setIsLoadedCreditsDashboard(false)
-    setIsLoadedSalesDashboard(false)
-    setIsLoadedServicesDashboard(false)
     if (selectedGroup) {
       const options = getClientOptions(selectedGroup);
       setClientOptions(options);
@@ -78,12 +76,12 @@ const SeletorCliente = () => {
         setSelectedClient(options[0]);
         Cookies.set('selectedClient', JSON.stringify(options[0]));
       }
-      
+
       Cookies.set('clientOptions', JSON.stringify(options));
       Cookies.set('groupName', selectedGroup.label);
       Cookies.set('groupClients', JSON.stringify(selectedGroup.clients));
       Cookies.set('selectedGroup', JSON.stringify(selectedGroup));
-      Cookies.set('groupCode', JSON.stringify(selectedGroup.value))
+      Cookies.set('groupCode', selectedGroup.value);
       setChangedOption(true);
     }
   }, [selectedGroup]);
@@ -109,6 +107,17 @@ const SeletorCliente = () => {
     setIsLoadedCreditsDashboard(false);
     setIsLoadedServicesDashboard(false);
     setSelectedGroup(selected);
+
+    // Reset selected client to the first option
+    const options = getClientOptions(selected);
+    setClientOptions(options);
+    setSelectedClient(options[0]);
+
+    // Update cookies
+    Cookies.set('selectedGroup', JSON.stringify(selected));
+    Cookies.set('groupCode', selected.value);
+    Cookies.set('clientOptions', JSON.stringify(options));
+    Cookies.set('selectedClient', JSON.stringify(options[0]));
   };
 
   const handleClientChange = (selected) => {
