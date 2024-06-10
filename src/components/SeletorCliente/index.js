@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable react/react-in-jsx-scope */
 import { useState, useEffect, useContext } from 'react';
 import Select from 'react-select';
 import Cookies from 'js-cookie';
@@ -25,77 +23,76 @@ const SeletorCliente = () => {
     JSON.parse(sessionStorage.getItem('groupsStorage'))
   );
 
-  const [groupOptions, setGroupOptions] = useState(() => {
-    const storedGroupOptions = Cookies.get('groupOptions');
-    return storedGroupOptions ? JSON.parse(storedGroupOptions) : [];
-  });
-
-  const [clientOptions, setClientOptions] = useState(() => {
-    const storedClientOptions = Cookies.get('clientOptions');
-    return storedClientOptions ? JSON.parse(storedClientOptions) : [{ label: 'TODOS', value: 'todos' }];
-  });
-
-  const [selectedGroup, setSelectedGroup] = useState(() => {
-    const selected = Cookies.get('selectedGroup');
-    if (selected) {
-      try {
-        const parsedSelected = JSON.parse(selected);
-        Cookies.set('groupCode', parsedSelected.value);
-        return parsedSelected;
-      } catch (error) {
-        console.error('Error parsing selectedGroup from cookies:', error);
-        return null;
-      }
-    }
-    return null;
-  });
-
-  const [selectedClient, setSelectedClient] = useState(() => {
-    const cnpj = Cookies.get('cnpj');
-    const clientName = Cookies.get('clientName');
-    return cnpj && clientName ? { value: cnpj, label: clientName } : { value: 'todos', label: 'TODOS' };
-  });
+  const [groupOptions, setGroupOptions] = useState([]);
+  const [clientOptions, setClientOptions] = useState([]);
+  const [selectedGroup, setSelectedGroup] = useState(null);
+  const [selectedClient, setSelectedClient] = useState(null);
 
   useEffect(() => {
-    const iniGroupsList = () => {
-      if (selectorGroupList && selectorGroupList.length > 0) {
-        const sortedOptions = selectorGroupList
-          .map((GRU) => ({
-            value: GRU.CODIGOGRUPO,
-            label: GRU.NOMEGRUPO,
-            clients: GRU.CLIENTES,
-          }))
-          .sort((a, b) => a.label.localeCompare(b.label));
-        setGroupOptions(sortedOptions);
-        Cookies.set('groupOptions', JSON.stringify(sortedOptions));
-        sessionStorage.setItem('isSelected', 'true');
-      } else {
-        const storedGroupOptions = Cookies.get('groupOptions');
-        if (storedGroupOptions) {
-          setGroupOptions(JSON.parse(storedGroupOptions));
-        }
-      }
-    };
+    if (selectorGroupList) {
+      const sortedOptions = selectorGroupList
+        .map((GRU) => ({
+          value: GRU.CODIGOGRUPO,
+          label: GRU.NOMEGRUPO,
+          clients: GRU.CLIENTES,
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label));
+      setGroupOptions(sortedOptions);
 
-    iniGroupsList();
+      const isFirstLoad = sessionStorage.getItem('isSelected') !== 'true';
+      if (isFirstLoad) {
+        if (sortedOptions.length > 0) {
+          const initialGroup = sortedOptions[0];
+          const initialClientOptions = getClientOptions(initialGroup);
+          
+          setSelectedGroup(initialGroup);
+          setClientOptions(initialClientOptions);
+          setSelectedClient(initialClientOptions[0]);
+          
+          Cookies.set('selectedGroup', JSON.stringify(initialGroup));
+          Cookies.set('clientOptions', JSON.stringify(initialClientOptions));
+          Cookies.set('selectedClient', JSON.stringify(initialClientOptions[0]));
+          sessionStorage.setItem('isSelected', 'true');
+        }
+      } else {
+        const savedGroup = Cookies.get('selectedGroup');
+        const savedClientOptions = Cookies.get('clientOptions');
+        const savedClient = Cookies.get('selectedClient');
+        
+        if (savedGroup) setSelectedGroup(JSON.parse(savedGroup));
+        if (savedClientOptions) setClientOptions(JSON.parse(savedClientOptions));
+        if (savedClient) setSelectedClient(JSON.parse(savedClient));
+      }
+    }
   }, [selectorGroupList]);
 
   useEffect(() => {
-    if (selectedGroup && groupOptions.length > 0) {
+    setIsLoadedCreditsDashboard(false)
+    setIsLoadedSalesDashboard(false)
+    setIsLoadedServicesDashboard(false)
+    if (selectedGroup) {
       const options = getClientOptions(selectedGroup);
       setClientOptions(options);
+
+      if (!Cookies.get('selectedClient')) {
+        setSelectedClient(options[0]);
+        Cookies.set('selectedClient', JSON.stringify(options[0]));
+      }
+      
       Cookies.set('clientOptions', JSON.stringify(options));
       Cookies.set('groupName', selectedGroup.label);
       Cookies.set('groupClients', JSON.stringify(selectedGroup.clients));
       Cookies.set('selectedGroup', JSON.stringify(selectedGroup));
+      Cookies.set('groupCode', JSON.stringify(selectedGroup.value))
       setChangedOption(true);
     }
-  }, [selectedGroup, groupOptions]);
+  }, [selectedGroup]);
 
   useEffect(() => {
     setSalesPageArray([]);
     setCreditsPageArray([]);
     setServicesPageArray([]);
+
     if (selectedClient && selectedClient.label !== 'TODOS') {
       Cookies.set('cnpj', selectedClient.value);
       Cookies.set('clientCode', selectedClient.cod);
@@ -111,25 +108,15 @@ const SeletorCliente = () => {
     setIsLoadedSalesDashboard(false);
     setIsLoadedCreditsDashboard(false);
     setIsLoadedServicesDashboard(false);
-    setChangedOption(true);
     setSelectedGroup(selected);
-    Cookies.set('groupCode', selected.value);
-    Cookies.set('selectedGroup', JSON.stringify(selected));
-    const options = getClientOptions(selected);
-    setClientOptions(options);
-    setSelectedClient({ value: 'todos', label: 'TODOS' });
-    Cookies.set('clientOptions', JSON.stringify(options));
   };
 
   const handleClientChange = (selected) => {
     setIsLoadedSalesDashboard(false);
     setIsLoadedCreditsDashboard(false);
     setIsLoadedServicesDashboard(false);
-    setChangedOption(true);
     setSelectedClient(selected);
-    Cookies.set('cnpj', selected.value);
-    Cookies.set('clientCode', selected.cod);
-    Cookies.set('clientName', selected.label);
+    Cookies.set('selectedClient', JSON.stringify(selected));
   };
 
   const getClientOptions = (group) => {
