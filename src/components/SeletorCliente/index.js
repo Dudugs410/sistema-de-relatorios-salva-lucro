@@ -2,9 +2,9 @@
 /* eslint-disable react/react-in-jsx-scope */
 import { useState, useEffect, useContext } from 'react';
 import Select from 'react-select';
+import Cookies from 'js-cookie';
 
 import { AuthContext } from '../../contexts/auth';
-import Cookies from 'js-cookie';
 
 import 'react-toastify/dist/ReactToastify.css';
 import './Seletor.scss';
@@ -25,17 +25,29 @@ const SeletorCliente = () => {
     JSON.parse(sessionStorage.getItem('groupsStorage'))
   );
 
-  const [groupOptions, setGroupOptions] = useState([]);
+  const [groupOptions, setGroupOptions] = useState(() => {
+    const storedGroupOptions = Cookies.get('groupOptions');
+    return storedGroupOptions ? JSON.parse(storedGroupOptions) : [];
+  });
+
   const [clientOptions, setClientOptions] = useState(() => {
     const storedClientOptions = Cookies.get('clientOptions');
-    return storedClientOptions ? JSON.parse(storedClientOptions) : [];
+    return storedClientOptions ? JSON.parse(storedClientOptions) : [{ label: 'TODOS', value: 'todos' }];
   });
 
   const [selectedGroup, setSelectedGroup] = useState(() => {
-    const groupCode = Cookies.get('groupCode');
-    const groupName = Cookies.get('groupName');
-	const groupClients = Cookies.get('groupClients')
-    return groupCode && groupName ? { value: groupCode, label: groupName, clients: groupClients } : null;
+    const selected = Cookies.get('selectedGroup');
+    if (selected) {
+      try {
+        const parsedSelected = JSON.parse(selected);
+        Cookies.set('groupCode', parsedSelected.value);
+        return parsedSelected;
+      } catch (error) {
+        console.error('Error parsing selectedGroup from cookies:', error);
+        return null;
+      }
+    }
+    return null;
   });
 
   const [selectedClient, setSelectedClient] = useState(() => {
@@ -53,31 +65,15 @@ const SeletorCliente = () => {
             label: GRU.NOMEGRUPO,
             clients: GRU.CLIENTES,
           }))
-          .sort((a, b) => a.label.localeCompare(b.label)); // Sort options alphabetically by label
+          .sort((a, b) => a.label.localeCompare(b.label));
         setGroupOptions(sortedOptions);
-
-        if (!selectedGroup) {
-          const firstGroup = sortedOptions[0];
-          setSelectedGroup(firstGroup);
-          const clientOpts = getClientOptions(firstGroup);
-          setClientOptions(clientOpts);
-          setSelectedClient({ value: 'todos', label: 'TODOS' });
-          Cookies.set('groupCode', firstGroup.value);
-          Cookies.set('groupName', firstGroup.label);
-		  Cookies.set('groupClients', firstGroup.clients)
-          Cookies.set('cnpj', 'todos');
-          Cookies.set('clientCode', '-');
-          Cookies.set('clientOptions', JSON.stringify(clientOpts));
-        } else {
-          const savedGroup = sortedOptions.find((group) => group.value === selectedGroup.value);
-          if (savedGroup) {
-            const options = getClientOptions(savedGroup);
-            setClientOptions(options);
-            Cookies.set('clientOptions', JSON.stringify(options));
-          }
-        }
+        Cookies.set('groupOptions', JSON.stringify(sortedOptions));
+        sessionStorage.setItem('isSelected', 'true');
       } else {
-        setGroupOptions([]);
+        const storedGroupOptions = Cookies.get('groupOptions');
+        if (storedGroupOptions) {
+          setGroupOptions(JSON.parse(storedGroupOptions));
+        }
       }
     };
 
@@ -85,16 +81,16 @@ const SeletorCliente = () => {
   }, [selectorGroupList]);
 
   useEffect(() => {
-    if (selectedGroup) {
+    if (selectedGroup && groupOptions.length > 0) {
       const options = getClientOptions(selectedGroup);
       setClientOptions(options);
       Cookies.set('clientOptions', JSON.stringify(options));
-      setSelectedClient({ value: 'todos', label: 'TODOS' });
       Cookies.set('groupName', selectedGroup.label);
-	  Cookies.set('groupClients', selectedGroup.clients);
+      Cookies.set('groupClients', JSON.stringify(selectedGroup.clients));
+      Cookies.set('selectedGroup', JSON.stringify(selectedGroup));
       setChangedOption(true);
     }
-  }, [selectedGroup]);
+  }, [selectedGroup, groupOptions]);
 
   useEffect(() => {
     setSalesPageArray([]);
@@ -107,9 +103,9 @@ const SeletorCliente = () => {
     } else if (selectedClient) {
       Cookies.set('cnpj', selectedClient.value);
       Cookies.set('clientCode', 'todos');
-      setExportName(selectedGroup ? selectedGroup.label + ' - Todas Filiais' : '');
+      setExportName(selectedGroup ? `${selectedGroup.label} - Todas Filiais` : '');
     }
-  }, [selectedClient]);
+  }, [selectedClient, selectedGroup]);
 
   const handleGroupChange = (selected) => {
     setIsLoadedSalesDashboard(false);
@@ -118,10 +114,10 @@ const SeletorCliente = () => {
     setChangedOption(true);
     setSelectedGroup(selected);
     Cookies.set('groupCode', selected.value);
-    Cookies.set('groupName', selected.label);
-	Cookies.set('groupClients', selected.clients);
+    Cookies.set('selectedGroup', JSON.stringify(selected));
     const options = getClientOptions(selected);
     setClientOptions(options);
+    setSelectedClient({ value: 'todos', label: 'TODOS' });
     Cookies.set('clientOptions', JSON.stringify(options));
   };
 
@@ -146,50 +142,41 @@ const SeletorCliente = () => {
           label: CLI.NOMECLIENTE,
           cod: CLI.CODIGOCLIENTE,
         }))
-        .sort((a, b) => a.label.localeCompare(b.label)); // Sort options alphabetically by label
+        .sort((a, b) => a.label.localeCompare(b.label));
       return [todosOption, ...sortedClientOptions];
     }
     return [todosOption];
   };
 
   return (
-    <>
-      {selectorGroupList === null ? (
-        <></>
-      ) : (
-        <>
-          <div className='search-bar-seletor'>
-            <form className='date-container-seletor p-4'>
-              <div className='cli-container'>
-                <div className='date-column-seletor'>
-                  <div className='select-card-seletor'>
-                    <span>Grupo</span>
-                    <Select
-                      options={groupOptions}
-                      onChange={handleGroupChange}
-                      value={selectedGroup}
-                    />
-                  </div>
-                </div>
-
-                <div className='date-column-seletor '>
-                  <div className='select-card-seletor'>
-                    <span>Cliente</span>
-                    <Select
-                      options={clientOptions}
-                      placeholder='Selecione o Cliente / Filial'
-                      onChange={handleClientChange}
-                      value={selectedClient}
-                      isDisabled={!selectedGroup}
-                    />
-                  </div>
-                </div>
-              </div>
-            </form>
+    <div className="search-bar-seletor">
+      <form className="date-container-seletor p-4">
+        <div className="cli-container">
+          <div className="date-column-seletor">
+            <div className="select-card-seletor">
+              <span>Grupo</span>
+              <Select
+                options={groupOptions}
+                onChange={handleGroupChange}
+                value={selectedGroup}
+              />
+            </div>
           </div>
-        </>
-      )}
-    </>
+          <div className="date-column-seletor">
+            <div className="select-card-seletor">
+              <span>Cliente</span>
+              <Select
+                options={clientOptions}
+                placeholder="Selecione o Cliente / Filial"
+                onChange={handleClientChange}
+                value={selectedClient}
+                isDisabled={!selectedGroup}
+              />
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
   );
 };
 
