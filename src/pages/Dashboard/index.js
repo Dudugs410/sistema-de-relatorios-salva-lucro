@@ -56,7 +56,7 @@ const Dashboard = () => {
 							<TabelaHorizontal header='Total do Mês' valor={salesDashboard.totalMonth} /> 
 						</>
 						: 
-						<div style={{'align-self': 'center'}}>
+						<div style={{'alignSelf': 'center'}}>
 							{ errorSales ? 
 								<h3 className='title-global'>Ocorreu um erro</h3>
 								:
@@ -81,7 +81,7 @@ const Dashboard = () => {
 							<TabelaHorizontal header='Previsão Próx 5 Dias' valor={creditsDashboard.totalCreditsNext5} /> 
 						</>
 					: 
-						<div style={{'align-self': 'center'}}>
+						<div style={{'alignSelf': 'center'}}>
 							{ errorCredits ? 
 								<h3 className='title-global'>Ocorreu um erro</h3>
 								:
@@ -106,7 +106,7 @@ const Dashboard = () => {
 							<TabelaHorizontal header='Total do Mês' valor={servicesDashboard.totalServicesMonth} /> 
 						</>
 					: 
-						<div style={{'align-self': 'center'}}>
+						<div style={{'alignSelf': 'center'}}>
 							{ errorServices ? 
 								<h3 className='title-global'>Ocorreu um erro</h3>
 								:
