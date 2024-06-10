@@ -1,10 +1,8 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable react/react-in-jsx-scope */
 import { useState, useEffect, useContext } from 'react';
 import Select from 'react-select';
+import Cookies from 'js-cookie';
 
 import { AuthContext } from '../../contexts/auth';
-import Cookies from 'js-cookie';
 
 import 'react-toastify/dist/ReactToastify.css';
 import './Seletor.scss';
@@ -26,72 +24,64 @@ const SeletorCliente = () => {
   );
 
   const [groupOptions, setGroupOptions] = useState([]);
-  const [clientOptions, setClientOptions] = useState(() => {
-    const storedClientOptions = Cookies.get('clientOptions');
-    return storedClientOptions ? JSON.parse(storedClientOptions) : [];
-  });
-
-  const [selectedGroup, setSelectedGroup] = useState(() => {
-    const groupCode = Cookies.get('groupCode');
-    const groupName = Cookies.get('groupName');
-	const groupClients = Cookies.get('groupClients')
-    return groupCode && groupName ? { value: groupCode, label: groupName, clients: groupClients } : null;
-  });
-
-  const [selectedClient, setSelectedClient] = useState(() => {
-    const cnpj = Cookies.get('cnpj');
-    const clientName = Cookies.get('clientName');
-    return cnpj && clientName ? { value: cnpj, label: clientName } : { value: 'todos', label: 'TODOS' };
-  });
+  const [clientOptions, setClientOptions] = useState([]);
+  const [selectedGroup, setSelectedGroup] = useState(null);
+  const [selectedClient, setSelectedClient] = useState(null);
 
   useEffect(() => {
-    const iniGroupsList = () => {
-      if (selectorGroupList && selectorGroupList.length > 0) {
-        const sortedOptions = selectorGroupList
-          .map((GRU) => ({
-            value: GRU.CODIGOGRUPO,
-            label: GRU.NOMEGRUPO,
-            clients: GRU.CLIENTES,
-          }))
-          .sort((a, b) => a.label.localeCompare(b.label)); // Sort options alphabetically by label
-        setGroupOptions(sortedOptions);
+    if (selectorGroupList) {
+      const sortedOptions = selectorGroupList
+        .map((GRU) => ({
+          value: GRU.CODIGOGRUPO,
+          label: GRU.NOMEGRUPO,
+          clients: GRU.CLIENTES,
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label));
+      setGroupOptions(sortedOptions);
 
-        if (!selectedGroup) {
-          const firstGroup = sortedOptions[0];
-          setSelectedGroup(firstGroup);
-          const clientOpts = getClientOptions(firstGroup);
-          setClientOptions(clientOpts);
-          setSelectedClient({ value: 'todos', label: 'TODOS' });
-          Cookies.set('groupCode', firstGroup.value);
-          Cookies.set('groupName', firstGroup.label);
-		  Cookies.set('groupClients', firstGroup.clients)
-          Cookies.set('cnpj', 'todos');
-          Cookies.set('clientCode', '-');
-          Cookies.set('clientOptions', JSON.stringify(clientOpts));
-        } else {
-          const savedGroup = sortedOptions.find((group) => group.value === selectedGroup.value);
-          if (savedGroup) {
-            const options = getClientOptions(savedGroup);
-            setClientOptions(options);
-            Cookies.set('clientOptions', JSON.stringify(options));
-          }
+      const isFirstLoad = sessionStorage.getItem('isSelected') !== 'true';
+      if (isFirstLoad) {
+        if (sortedOptions.length > 0) {
+          const initialGroup = sortedOptions[0];
+          const initialClientOptions = getClientOptions(initialGroup);
+
+          setSelectedGroup(initialGroup);
+          setClientOptions(initialClientOptions);
+          setSelectedClient(initialClientOptions[0]);
+
+          Cookies.set('selectedGroup', JSON.stringify(initialGroup));
+          Cookies.set('clientOptions', JSON.stringify(initialClientOptions));
+          Cookies.set('selectedClient', JSON.stringify(initialClientOptions[0]));
+          Cookies.set('groupCode', initialGroup.value);
+          sessionStorage.setItem('isSelected', 'true');
         }
       } else {
-        setGroupOptions([]);
-      }
-    };
+        const savedGroup = Cookies.get('selectedGroup');
+        const savedClientOptions = Cookies.get('clientOptions');
+        const savedClient = Cookies.get('selectedClient');
 
-    iniGroupsList();
+        if (savedGroup) setSelectedGroup(JSON.parse(savedGroup));
+        if (savedClientOptions) setClientOptions(JSON.parse(savedClientOptions));
+        if (savedClient) setSelectedClient(JSON.parse(savedClient));
+      }
+    }
   }, [selectorGroupList]);
 
   useEffect(() => {
     if (selectedGroup) {
       const options = getClientOptions(selectedGroup);
       setClientOptions(options);
+
+      if (!Cookies.get('selectedClient')) {
+        setSelectedClient(options[0]);
+        Cookies.set('selectedClient', JSON.stringify(options[0]));
+      }
+
       Cookies.set('clientOptions', JSON.stringify(options));
-      setSelectedClient({ value: 'todos', label: 'TODOS' });
       Cookies.set('groupName', selectedGroup.label);
-	  Cookies.set('groupClients', selectedGroup.clients);
+      Cookies.set('groupClients', JSON.stringify(selectedGroup.clients));
+      Cookies.set('selectedGroup', JSON.stringify(selectedGroup));
+      Cookies.set('groupCode', selectedGroup.value);
       setChangedOption(true);
     }
   }, [selectedGroup]);
@@ -100,6 +90,7 @@ const SeletorCliente = () => {
     setSalesPageArray([]);
     setCreditsPageArray([]);
     setServicesPageArray([]);
+
     if (selectedClient && selectedClient.label !== 'TODOS') {
       Cookies.set('cnpj', selectedClient.value);
       Cookies.set('clientCode', selectedClient.cod);
@@ -107,33 +98,34 @@ const SeletorCliente = () => {
     } else if (selectedClient) {
       Cookies.set('cnpj', selectedClient.value);
       Cookies.set('clientCode', 'todos');
-      setExportName(selectedGroup ? selectedGroup.label + ' - Todas Filiais' : '');
+      setExportName(selectedGroup ? `${selectedGroup.label} - Todas Filiais` : '');
     }
-  }, [selectedClient]);
+  }, [selectedClient, selectedGroup]);
 
   const handleGroupChange = (selected) => {
     setIsLoadedSalesDashboard(false);
     setIsLoadedCreditsDashboard(false);
     setIsLoadedServicesDashboard(false);
-    setChangedOption(true);
     setSelectedGroup(selected);
-    Cookies.set('groupCode', selected.value);
-    Cookies.set('groupName', selected.label);
-	Cookies.set('groupClients', selected.clients);
+
+    // Reset selected client to the first option
     const options = getClientOptions(selected);
     setClientOptions(options);
+    setSelectedClient(options[0]);
+
+    // Update cookies
+    Cookies.set('selectedGroup', JSON.stringify(selected));
+    Cookies.set('groupCode', selected.value);
     Cookies.set('clientOptions', JSON.stringify(options));
+    Cookies.set('selectedClient', JSON.stringify(options[0]));
   };
 
   const handleClientChange = (selected) => {
     setIsLoadedSalesDashboard(false);
     setIsLoadedCreditsDashboard(false);
     setIsLoadedServicesDashboard(false);
-    setChangedOption(true);
     setSelectedClient(selected);
-    Cookies.set('cnpj', selected.value);
-    Cookies.set('clientCode', selected.cod);
-    Cookies.set('clientName', selected.label);
+    Cookies.set('selectedClient', JSON.stringify(selected));
   };
 
   const getClientOptions = (group) => {
@@ -146,50 +138,41 @@ const SeletorCliente = () => {
           label: CLI.NOMECLIENTE,
           cod: CLI.CODIGOCLIENTE,
         }))
-        .sort((a, b) => a.label.localeCompare(b.label)); // Sort options alphabetically by label
+        .sort((a, b) => a.label.localeCompare(b.label));
       return [todosOption, ...sortedClientOptions];
     }
     return [todosOption];
   };
 
   return (
-    <>
-      {selectorGroupList === null ? (
-        <></>
-      ) : (
-        <>
-          <div className='search-bar-seletor'>
-            <form className='date-container-seletor p-4'>
-              <div className='cli-container'>
-                <div className='date-column-seletor'>
-                  <div className='select-card-seletor'>
-                    <span>Grupo</span>
-                    <Select
-                      options={groupOptions}
-                      onChange={handleGroupChange}
-                      value={selectedGroup}
-                    />
-                  </div>
-                </div>
-
-                <div className='date-column-seletor '>
-                  <div className='select-card-seletor'>
-                    <span>Cliente</span>
-                    <Select
-                      options={clientOptions}
-                      placeholder='Selecione o Cliente / Filial'
-                      onChange={handleClientChange}
-                      value={selectedClient}
-                      isDisabled={!selectedGroup}
-                    />
-                  </div>
-                </div>
-              </div>
-            </form>
+    <div className="search-bar-seletor">
+      <form className="date-container-seletor p-4">
+        <div className="cli-container">
+          <div className="date-column-seletor">
+            <div className="select-card-seletor">
+              <span>Grupo</span>
+              <Select
+                options={groupOptions}
+                onChange={handleGroupChange}
+                value={selectedGroup}
+              />
+            </div>
           </div>
-        </>
-      )}
-    </>
+          <div className="date-column-seletor">
+            <div className="select-card-seletor">
+              <span>Cliente</span>
+              <Select
+                options={clientOptions}
+                placeholder="Selecione o Cliente / Filial"
+                onChange={handleClientChange}
+                value={selectedClient}
+                isDisabled={!selectedGroup}
+              />
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
   );
 };
 
