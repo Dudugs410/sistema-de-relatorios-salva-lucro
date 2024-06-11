@@ -138,7 +138,7 @@ const OutrosRelatorios = () =>{
 
     const incluir = (e) => {
         e.preventDefault()
-        console.log('botão bombando')
+        console.log('botão incluir')
     }
 
     const [opcoesApresentacao, setOpcoesApresentacao] = useState ([
@@ -165,10 +165,6 @@ const OutrosRelatorios = () =>{
     const handleSelectApresentacao = (selecionado) =>{
         setApresentacao(selecionado)
     }
-
-    useEffect(()=>{
-        console.log('apresentacao: ', apresentacao)
-    },[apresentacao])
 
     const handleSelectErro = (selecionado) =>{
         setErro(selecionado)

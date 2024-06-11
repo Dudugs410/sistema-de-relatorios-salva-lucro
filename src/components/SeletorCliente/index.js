@@ -18,6 +18,7 @@ const SeletorCliente = () => {
     setSalesPageArray,
     setCreditsPageArray,
     setServicesPageArray,
+    fetchingData,
   } = useContext(AuthContext);
 
   const [selectorGroupList, setSelectorGroupList] = useState(
@@ -170,6 +171,7 @@ const SeletorCliente = () => {
                 options={groupOptions}
                 onChange={handleGroupChange}
                 value={selectedGroup}
+                isDisabled={fetchingData}
               />
             </div>
           </div>
@@ -181,7 +183,7 @@ const SeletorCliente = () => {
                 placeholder="Selecione o Cliente / Filial"
                 onChange={handleClientChange}
                 value={selectedClient}
-                isDisabled={!selectedGroup}
+                isDisabled={(!selectedGroup || fetchingData)}
               />
             </div>
           </div>

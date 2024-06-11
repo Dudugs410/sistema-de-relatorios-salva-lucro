@@ -1,14 +1,10 @@
 import { useContext, useRef } from 'react'
-import { AuthContext } from '../../contexts/auth'
 import { FiFilePlus } from 'react-icons/fi'
 import '../Financeiro/financeiro.scss'
 import '../../styles/global.scss'
 import './conciliacao.scss'
 
 const ConciliacaoBancaria = () => {
-
-    const { isDarkTheme } = useContext(AuthContext)
-
     const fileInputRef = useRef(null);
 
     const handleButtonClick = () => {

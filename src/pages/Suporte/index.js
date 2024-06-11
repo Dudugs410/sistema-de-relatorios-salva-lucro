@@ -24,7 +24,6 @@ const Suporte = () =>{
 
     useEffect(() => {
         async function inicializar() {
-            console.log('inicializar');
             try {
                 const response = await loadAdmins();
                 setAdminsList(response); // Update state with the API response
@@ -513,13 +512,7 @@ const Suporte = () =>{
         {value: 7, label: 'Clientes por Adquirente', componente: RelatorioCliAdq},
     ]
     const [tipoOpcao, setTipoOpcao] = useState(null)
-    useEffect(()=>{
-        if(tipoOpcao){
-            console.log('tipoOpcao: ', tipoOpcao)
-        }
-    },[tipoOpcao])
     
-
     const handleTipoOpcao = selectedOption =>{
         setTipoOpcao(selectedOption)
     }

@@ -29,10 +29,6 @@ const TabelaServicos = ({ array }) => {
 	const [currentPage, setCurrentPage] = useState(1)
 	const [itemsPerPage] = useState(15) // Number of items per page
 
-	useEffect(()=>{
-		console.log('array tabela serviços: ', array)
-	},[])
-
 	useEffect(() => {
 		setCurrentPage(1) // Reset page to 1 when data changes
 	}, [array])
@@ -67,15 +63,12 @@ const TabelaServicos = ({ array }) => {
 	////////////////////////////////////////////////////
 	
 	useEffect(()=>{
-		console.log('tranqueira: ', array)
-		console.log('não é dashboard')
 		if(array.length > 0){
 			setVendasArray(array)
 		}
 	},[])
 
 	useEffect(()=>{
-		console.log(vendasArray)
 		async function init(){
 			setVendasTeste(vendasArray)
 		}
@@ -84,7 +77,6 @@ const TabelaServicos = ({ array }) => {
 
 	useEffect(()=>{
 		if(vendasExibicao.length > 0){
-			console.log(vendasExibicao, 'eeeeeeeeeee')
 			setCurrentPage(1)   
 		}
 	},[vendasExibicao])
@@ -222,30 +214,30 @@ const TabelaServicos = ({ array }) => {
 	return(
 		<>
 		<div className='date-container'>
-			<div className='date-picker-container'>
-				<div className='date-column'>
-					<div className='select-card select-align select-align-filtro'>
-						<span className='span-str'>Adquirente</span>
-						<select id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}} >
-							<option value='' selected>Todas</option>
-							{adquirentesExistentes.map((ADQ)=>(
-								<option key={ADQ} value={ADQ}>{ADQ}</option>
-							))}
-						</select>
+		<div className='container'>
+						<div className='export-column'>
+							<div className='select-card select-align select-align-filtro'>
+								<span className='span-str'>Adquirente</span>
+								<select className='select-filtro' id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}}>
+									<option value=''>Todas</option>
+									{adquirentesExistentes.map((ADQ)=>(
+										<option className='select-filtro' key={ADQ} value={ADQ}>{ADQ}</option>
+									))}
+								</select>
+							</div>
+						</div>
+						<div className='export-column'>
+							<div className='select-card select-align select-align-filtro'>
+								<span className='span-str'>Bandeira</span>
+								<select className='select-filtro' id='bandeira' value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}}>
+									<option value='' defaultValue={'Todas'}>Todas</option>
+									{bandeirasExistentes.map((BAN)=>(
+										<option key={BAN} value={BAN}>{BAN}</option>
+									))}
+								</select>
+							</div>
+						</div>
 					</div>
-				</div>
-				<div className='date-column'>
-					<div className='select-card select-align select-align-filtro'>
-						<span className='span-str'>Serviço</span>
-						<select id='bandeira' value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}} >
-							<option value='' selected>Todas</option>
-							{bandeirasExistentes.map((BAN)=>(
-								<option key={BAN} value={BAN}>{BAN}</option>
-							))}
-						</select>
-					</div>
-				</div>
-			</div>
 			<hr className='hr-global'/>
 			<div className='container-busca'>
 				<span className='span-busca'>
@@ -304,7 +296,7 @@ const TabelaServicos = ({ array }) => {
 							<FiSkipBack />
 						</button>
 						<button
-							className='btn btn-primary btn-global btn-navigate `}
+							className='btn btn-primary btn-global btn-navigate'
 							onClick={goToPrevPage}
 							disabled={currentPage === 1} // Disable if it's the first page
 						>

@@ -20,7 +20,6 @@ function Layout({ children }){
     };
 
     const handleClick = () => {
-        console.log('handleClick')
         openModal()
     }
 
@@ -36,24 +35,20 @@ function Layout({ children }){
       let mensagemTemp
     
       const handleChangeNome = (e) => {
-        console.log(e.target.value)
         nomeTemp = e.target.value
       };
 
       const handleChangeEmail = (e) => {
-        console.log(e.target.value)
         emailTemp = e.target.value
       };
 
       const handleChangeMensagem = (e) => {
-        console.log(e.target.value)
         mensagemTemp = e.target.value
       };
 
       const [enviar, setEnviar] = useState(false)
     
       const handleSubmit = (e) => {
-        console.log(nomeTemp, emailTemp, mensagemTemp)
         let objTemp = {nome: nomeTemp, email: emailTemp, mensagem: mensagemTemp}
         setFormData(objTemp)
         setEnviar(true)

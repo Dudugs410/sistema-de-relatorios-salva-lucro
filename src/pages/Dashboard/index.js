@@ -23,9 +23,9 @@ const Dashboard = () => {
 
 	const {  
 		loadDashboard, isLoadedDashboard,
-		salesDashboard, isLoadedSalesDashboard, errorSales,
-		creditsDashboard, isLoadedCreditsDashboard, errorCredits,
-		servicesDashboard, isLoadedServicesDashboard, errorServices,
+		salesDashboard, isLoadedSalesDashboard, loadSalesGroup, errorSales,
+		creditsDashboard, isLoadedCreditsDashboard, loadCreditsGroup, errorCredits,
+		servicesDashboard, isLoadedServicesDashboard, loadServicesGroup, errorServices,
 		changedOption,
 	} = useContext(AuthContext);
 
@@ -44,10 +44,21 @@ const Dashboard = () => {
 
 	const chartDataExists = (array) => array.length > 0;
 
+	const reloadSales = () => {
+		loadSalesGroup()
+	}
+
+	const reloadCredits = () => {
+		loadCreditsGroup()
+	}
+
+	const reloadServices = () => {
+		loadServicesGroup()
+	}
+
 	const DisplaySales = () => {
 		return (
 			<div className='graph-data'>
-				<h1 className='title-chart'>Vendas:</h1>
 				<div className='dash-table-container'>
 					{ chartDataExists(salesDashboard.sales) ? 
 						<>
@@ -58,10 +69,13 @@ const Dashboard = () => {
 						: 
 						<div style={{'alignSelf': 'center'}}>
 							{ errorSales ? 
-								<h3 className='title-global'>Ocorreu um erro</h3>
+								<div className='dashboard-error-container'>
+									<h3 className='title-global'>Ocorreu um erro</h3>
+									<button className='btn btn-global btn-danger  btn-dash-error' onClick={reloadSales}>Recarregar</button>
+								</div>
 								:
-								<h3 className='title-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>
-							}
+								<h3 className='title-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>						
+								}
 						</div>
 					}
 				</div>
@@ -72,7 +86,6 @@ const Dashboard = () => {
 	const DisplayCredits = () => {
 		return (
 			<div className='graph-data'>
-				<h1 className='title-chart'>Créditos:</h1>
 				<div className='dash-table-container'>
 					{ chartDataExists(creditsDashboard.credits) ? 
 						<>
@@ -83,7 +96,10 @@ const Dashboard = () => {
 					: 
 						<div style={{'alignSelf': 'center'}}>
 							{ errorCredits ? 
-								<h3 className='title-global'>Ocorreu um erro</h3>
+								<div className='dashboard-error-container'>
+									<h3 className='title-global'>Ocorreu um erro</h3>
+									<button className='btn btn-global btn-danger  btn-dash-error' onClick={reloadCredits}>Recarregar</button>
+								</div>
 								:
 								<h3 className='title-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>
 							}
@@ -97,7 +113,6 @@ const Dashboard = () => {
 	const DisplayServices = () => {
 		return (
 			<div className='graph-data'>
-				<h1 className='title-chart'>Serviços:</h1>
 				<div className='dash-table-container'>
 					{ chartDataExists(servicesDashboard.services) ? 
 						<>
@@ -108,7 +123,10 @@ const Dashboard = () => {
 					: 
 						<div style={{'alignSelf': 'center'}}>
 							{ errorServices ? 
-								<h3 className='title-global'>Ocorreu um erro</h3>
+								<div className='dashboard-error-container'>
+									<h3 className='title-global'>Ocorreu um erro</h3>
+									<button className='btn btn-global btn-danger btn-dash-error' onClick={reloadServices}>Recarregar</button>
+								</div>
 								:
 								<h3 className='title-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>
 							}
@@ -124,6 +142,7 @@ const Dashboard = () => {
 			<div className='appPage'>
 				<div className='content-area dash'>
 					<div className='data-group-area'>
+						<h1 className='title-chart'>Vendas:</h1>
 						{isLoadedSalesDashboard === false ? 
 							<LazyLoader /> 
 						: 
@@ -131,7 +150,8 @@ const Dashboard = () => {
 						}
 					</div>
 
-					<div className='data-group-area'>				
+					<div className='data-group-area'>
+						<h1 className='title-chart'>Créditos:</h1>			
 						{ isLoadedCreditsDashboard === false ? 
 							<LazyLoader /> 
 						: 
@@ -140,6 +160,7 @@ const Dashboard = () => {
 					</div>
 
 					<div className='data-group-area'>
+						<h1 className='title-chart'>Serviços:</h1>
 						{ isLoadedServicesDashboard === false ? 
 							<LazyLoader />
 						: 

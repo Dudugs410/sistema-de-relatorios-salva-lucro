@@ -21,7 +21,6 @@ const ApiCalls = () => {
         return response.data
         })
         .catch(error =>{
-        console.log(error)
         setLoading(false)
         })
     }
@@ -34,7 +33,6 @@ const ApiCalls = () => {
           return response.data
         })
         .catch(error =>{
-          console.log(error)
           setLoading(false)
         })
       }
@@ -47,7 +45,6 @@ const ApiCalls = () => {
           return response.data
         })
         .catch(error =>{
-          console.log(error)
           setLoading(false)
         })
       }
@@ -66,7 +63,6 @@ const ApiCalls = () => {
         let params = {}
     
         if(((adquirente !== '') && (bandeira !== '')) && (buscou === false)){
-          console.log('adquirente e bandeira')
           params = {
             datainicial: datainicial,
             datafinal: datafinal,
@@ -78,7 +74,6 @@ const ApiCalls = () => {
         }
     
         else if(((adquirente !== '') && (bandeira === '')) && (buscou === false)){
-          console.log('adquirente sem bandeira')
           params = {
             datainicial: datainicial,
             datafinal: datafinal,
@@ -89,7 +84,6 @@ const ApiCalls = () => {
         }
     
         else if(((bandeira !== '') && (adquirente === '')) && (buscou === false)){
-          console.log('bandeira sem adquirente')
           params = {
             datainicial: datainicial,
             datafinal: datafinal,
@@ -123,8 +117,6 @@ const ApiCalls = () => {
             })
             .catch((error) => {
             setLoading(false)
-            console.log('config: ',config)
-            console.log(error)
             })
     }
 
@@ -150,7 +142,6 @@ const ApiCalls = () => {
           setLoading(false)
             return recebimentosData
         } catch (error) {
-          console.log(error)
           setLoading(false)
         }
     }

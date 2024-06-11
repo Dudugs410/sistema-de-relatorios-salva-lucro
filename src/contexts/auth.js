@@ -32,6 +32,8 @@ function AuthProvider({ children }){
 	const [errorCredits, setErrorCredits] = useState(false)
 	const [errorServices, setErrorServices] = useState(false)
 
+	const [fetchingData, setFetchingData] = useState(false)
+
 	//////////////////////////////////////////////////////////////////
 
 	// *** Usuário e Login *** //
@@ -301,7 +303,6 @@ function AuthProvider({ children }){
 						console.log('error: ', error)
 					})
 				} else {
-					console.log('else')
 					return []
 				}
 				setIsLoadingTaxes(false)
@@ -342,7 +343,6 @@ function AuthProvider({ children }){
 		}
 		// retorna string do arquivo SYSMO
 		const loadSysmo = async (obj) => {
-			console.log('obj: ', obj)
 			setBtnDisabledSysmo(true)
 			try {
 				let params = {
@@ -358,7 +358,6 @@ function AuthProvider({ children }){
 
 				const response = await api.get('Sysmo', config)
 				//await refreshSession()
-				console.log(response)
 				return response.data
 			} catch (error) {
 				setBtnDisabledSysmo(false)
@@ -367,14 +366,10 @@ function AuthProvider({ children }){
 		} 
 		// renova o access token/sessão do usuário
 		const refreshSession = async () =>{
-			console.log('refreshSession()')
 			try {
 					let refreshToken = Cookies.get('refreshToken')
-					console.log('refresh token: ', refreshToken)
 					const encodedRefreshToken = encodeURIComponent(refreshToken);
-					console.log('Encoded: ', encodedRefreshToken)
 					const response = await api.post('token/refresh/' + encodedRefreshToken);
-					console.log('refresh response: ', response)
 					Cookies.set('token', response.data.acess_token)
 					Cookies.set('refreshToken', response.data.refresh_token)
 			} catch (error) {
@@ -845,10 +840,8 @@ function AuthProvider({ children }){
 		// função que gerencia o carregamento de tudo que será visto no Dashboard
 
 		const loadDashboard = async () => {	
-			console.log('***** loadDashboard *****')
-			console.log('changedOption? ', changedOption)
-			console.log('isLoadedDashboard? ', isLoadedDashboard)
 			try {
+				setFetchingData(true)
 				Promise.all([
 					loadSalesGroup(),
 					loadCreditsGroup(),
@@ -861,6 +854,12 @@ function AuthProvider({ children }){
 				console.log('erro: ', error)
 			}
 		}
+
+		useEffect(()=>{
+			if(isLoadedSalesDashboard && isLoadedCreditsDashboard && isLoadedServicesDashboard){
+				setFetchingData(false)
+			}
+		},[isLoadedSalesDashboard, isLoadedCreditsDashboard, isLoadedServicesDashboard])
 
 		// >>> Página de Vendas <<< //
 		const [salesPageArray, setSalesPageArray] = useState([])
@@ -1289,74 +1288,7 @@ function AuthProvider({ children }){
 		})
 	}
 
-	//Funções que organizam os Dados para as funções de exportação em PDF e EXCEL
-
-	/*
-	function gerarDados(array){
-		if(array.length === 0){
-			return
-		}
-		const tipoTemp = sessionStorage.getItem('currentPath')
-		salesTableData.length = 0
-		creditsTableData.length = 0
-		if (array.length > 0) {
-			if(tipoTemp === '/vendas'){
-				array.map((venda) => {
-					salesTableData.push({
-						cnpj: venda.cnpj,
-						adquirente: venda.adquirente.nomeAdquirente,
-						bandeira: venda.bandeira.descricaoBandeira,
-						produto: venda.produto.descricaoProduto,
-						subproduto: venda.modalidade.descricaoModalidade,
-						valorBruto: venda.valorBruto.toFixed(2),
-						valorLiquido: venda.valorLiquido.toFixed(2),
-						taxa: venda.taxa.toFixed(2),
-						valorDesconto: venda.valorDesconto.toFixed(2),
-						nsu: venda.nsu,
-						dataVenda: venda.dataVenda,
-						horaVenda: timeConvert(venda.horaVenda),
-						dataCredito: venda.dataCredito,
-						numeroPV: venda.numeroPV,
-						cartao: venda.cartao,
-						codigoAutorizacao: venda.codigoAutorizacao,
-						quantidadeParcelas: venda.quantidadeParcelas,
-						tid: venda.tid,
-					})
-				})
-				console.log(`${tipoTemp} ao gerar dados: `, salesTableData)
-				return salesTableData
-			} else if(tipoTemp === '/creditos'){
-				array.map((venda) => {
-					creditsTableData.push({
-						cnpj: venda.cnpj,
-						adquirente: venda.adquirente.nomeAdquirente,
-						bandeira: venda.bandeira.descricaoBandeira,
-						produto: venda.produto.descricaoProduto,
-						subproduto: venda.modalidade.descricaoModalidade,
-						dataCredito: venda.dataCredito,
-						dataVenda: venda.dataVenda,
-						valorBruto: venda.valorBruto,
-						valorLiquido: venda.valorLiquido,
-						taxa: venda.taxa,
-						valorDesconto: venda.valorDesconto,
-						nsu: venda.nsu,
-						cartao: venda.cartao,
-						codigoAutorizacao: venda.codigoAutorizacao,
-						parcela: venda.parcela,
-						totalParcelas: venda.totalParcelas,
-						banco: venda.banco,
-						agencia: venda.agencia,
-						conta: venda.conta,
-						tid: venda.tid,
-					})
-				})
-				return creditsTableData
-			}
-		} 
-	} */
-
 	function exportSales(array){
-		console.log('exportSales')
 		if(array.length === 0){
 			return
 		}
@@ -1384,12 +1316,10 @@ function AuthProvider({ children }){
 					tid: venda.tid,
 				})
 			})
-			console.log('salesTableData ao gerar dados: ', salesTableData)
 		} 
 	}
 
 	function exportCredits(array){
-		console.log('exportCredits')
 		if(array.length === 0){
 			return
 		}
@@ -1419,12 +1349,10 @@ function AuthProvider({ children }){
 					tid: venda.tid,
 				})
 			})
-			console.log('creditsTableData ao gerar dados: ', creditsTableData)
 		} 
 	}
 
 	function exportServices(array){
-		console.log('exportServices')
 		servicesTableData.length = 0
 		if(array.length === 0){
 			return
@@ -1443,7 +1371,6 @@ function AuthProvider({ children }){
 				})
 			})
 		}
-		console.log('servicesTableData ao gerar dados: ', servicesTableData)
 		return servicesTableData
 	}
 
@@ -1493,7 +1420,7 @@ function AuthProvider({ children }){
 				
 				// Vendas //
 
-				loadSales, loadTotalSales,
+				loadSales, loadTotalSales, loadSalesGroup,
 				salesDateRange, setSalesDateRange,
 				salesPageArray, setSalesPageArray,
 				salesPageAdminArray, setSalesPageAdminArray,
@@ -1504,7 +1431,7 @@ function AuthProvider({ children }){
 
 				// Creditos //
 
-				loadCredits, loadTotalCredits,
+				loadCredits, loadTotalCredits, loadCreditsGroup,
 				creditsPageArray, setCreditsPageArray,
 				creditsPageAdminArray, setCreditsPageAdminArray,
 				creditsDateRange, setCreditsDateRange,
@@ -1515,7 +1442,7 @@ function AuthProvider({ children }){
 
 				// Serviços //
 
-				loadServices,
+				loadServices, loadServicesGroup,
 				servicesPageArray, setServicesPageArray,
 				servicesPageAdminArray, setServicesPageAdminArray,
 				servicesDateRange, setServicesDateRange,
@@ -1540,6 +1467,8 @@ function AuthProvider({ children }){
 				exportName, setExportName,
 				isCheckedCalendar, setIsCheckedCalendar,
 				converteData, dateConvert, dateConvertSearch, dateConvertYYYYMMDD,
+
+				fetchingData,
 
 				groupsList, clientsList,
 				loadGroupsList, setGroupsList,

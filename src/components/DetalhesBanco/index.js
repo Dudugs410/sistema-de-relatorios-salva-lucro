@@ -6,17 +6,6 @@ import { AuthContext } from '../../contexts/auth'
 import './detalhesBanco.scss'
 
 const DetalhesBanco = ({ array }) => {
-	const { isDarkTheme } = useContext(AuthContext)
-    
-	useEffect(() => {
-		if(array.length > 0){
-			console.log(array)
-
-		} else {
-			alert('ocorreu um erro')
-			return
-		}
-	}, [])
 
 	return (
 		<>
