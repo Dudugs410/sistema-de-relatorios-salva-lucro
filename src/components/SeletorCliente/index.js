@@ -1,6 +1,7 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useRef } from 'react';
 import Select from 'react-select';
 import Cookies from 'js-cookie';
+import axios from 'axios';
 
 import { AuthContext } from '../../contexts/auth';
 
@@ -27,6 +28,8 @@ const SeletorCliente = () => {
   const [clientOptions, setClientOptions] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [selectedClient, setSelectedClient] = useState(null);
+
+  const cancelSourceRef = useRef(axios.CancelToken.source());
 
   useEffect(() => {
     if (selectorGroupList) {
@@ -108,6 +111,12 @@ const SeletorCliente = () => {
     setIsLoadedServicesDashboard(false);
     setSelectedGroup(selected);
 
+    // Cancel ongoing Axios requests
+    if (cancelSourceRef.current) {
+      cancelSourceRef.current.cancel('Operation canceled due to new selection.');
+    }
+    cancelSourceRef.current = axios.CancelToken.source();
+
     // Reset selected client to the first option
     const options = getClientOptions(selected);
     setClientOptions(options);
@@ -126,6 +135,12 @@ const SeletorCliente = () => {
     setIsLoadedServicesDashboard(false);
     setSelectedClient(selected);
     Cookies.set('selectedClient', JSON.stringify(selected));
+
+    // Cancel ongoing Axios requests
+    if (cancelSourceRef.current) {
+      cancelSourceRef.current.cancel('Operation canceled due to new selection.');
+    }
+    cancelSourceRef.current = axios.CancelToken.source();
   };
 
   const getClientOptions = (group) => {
