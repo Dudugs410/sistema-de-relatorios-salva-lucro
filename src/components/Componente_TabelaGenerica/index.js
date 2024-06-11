@@ -8,13 +8,8 @@ import '../Componente_TabelaVendasCreditos/detalhesCredito.scss'
 import '../../styles/global.scss'
 
 const TabelaGenerica = ({ array }) => {  
-
-	useEffect(()=>{
-		console.log('ARRAY SERVIÇOS: ', array)
-	},[])
-
 	const { dateConvert } = useContext(AuthContext)
-
+	
 	const [nomeAdquirente, setNomeAdquirente] = useState('')
 	const [total, setTotal] = useState(0)
 

@@ -26,27 +26,18 @@ const TabelaVendasAdq = ({array}) =>{
 
 	useEffect(()=>{
 		if(array.length > 0){
-			console.log(array)
 			setVendasArray(array)
 		}
 	},[])
 
 	useEffect(()=>{
 		async function init(){
-			console.log(vendasArray)
 			setVendasTeste(vendasArray)
 		}
 		init()
 	},[vendasArray])
 
-	useEffect(()=>{
-		console.log('vendasTeste RECEBIMENTOS: ', vendasTeste)
-
-	},[vendasTeste])
-
 	function carregaTotais(array){
-		console.log('array: ', array)
-
 		//totais líquido:
 
 		if(array.length > 0){
@@ -117,11 +108,8 @@ const TabelaVendasAdq = ({array}) =>{
 				})
 			})
             
-			console.log('TEPM: ', temp)
-            
 			let totalTemp = {debito: totalDebitoTemp, credito: totalCreditoTemp, voucher: totalVoucherTemp, liquido: totalLiquidoTemp}
     
-			console.log('totalTemp:', totalTemp)
 			setTotaisGlobal(totalTemp)
 			setTotaisGlobalCreditos(totalTemp)
 		}
@@ -196,11 +184,8 @@ const TabelaVendasAdq = ({array}) =>{
 				})
 			})
             
-			console.log('TEPM: ', temp)
-            
 			let totalTemp = {debito: totalDebitoTemp, credito: totalCreditoTemp, voucher: totalVoucherTemp, liquido: totalLiquidoTemp}
     
-			console.log('totalTemp:', totalTemp)
 			setTotaisGlobal(totalTemp)
 			setTotaisGlobalVendas(totalTemp)
 		}
@@ -214,20 +199,6 @@ const TabelaVendasAdq = ({array}) =>{
 	},[vendasExibicao])
 
 	useEffect(()=>{
-		console.log('totaisGlobal: ', totaisGlobal)
-		console.log('totaisGlobalVendas:', totaisGlobalVenda)
-		console.log('totaisGlobalCreditos:', totaisGlobalCreditos)
-
-	},[totaisGlobal])
-
-	useEffect(()=>{
-		console.log('dados a serem exportados: ', tableData)
-
-	},[tableData])
-
-	useEffect(()=>{
-		console.log('vendasTeste: ', vendasTeste)
-
 		setVendasExibicao(vendasTeste)
 
 		const bandeirasTemp = []
@@ -249,9 +220,6 @@ const TabelaVendasAdq = ({array}) =>{
 				adquirentesTemp.push(item.adquirente.nomeAdquirente)
 			}
 		})
-		console.log('bandeirasTemp: ', bandeirasTemp)
-		console.log('adquirentesTemp: ',adquirentesTemp)
-
 		setBandeirasExistentes(bandeirasTemp)
 		setTodasBandeiras(bandeirasTemp)
 
@@ -296,9 +264,7 @@ const TabelaVendasAdq = ({array}) =>{
 	}
 
 	useEffect(()=>{
-		console.log('mudou a bandeira selecionada')
 		if(adquirentesExistentes.length > 0 && bandeirasExistentes.length > 0){
-			console.log('**** adquirentes e bandeiras > 0 ****')
 			atualizaADQ()
 		}
 
@@ -324,7 +290,6 @@ const TabelaVendasAdq = ({array}) =>{
 	},[banSelecionada])
 
 	useEffect(()=>{
-		console.log('mudou a adquirente selecionada')
 		if(adquirentesExistentes.length > 0 && bandeirasExistentes.length > 0){
 			atualizaBAN()
 		}
@@ -348,25 +313,21 @@ const TabelaVendasAdq = ({array}) =>{
 
 	},[adqSelecionada])
 
-	useEffect(()=>{
-		console.log('bandeiras existentes na consulta: ', bandeirasExistentes)
-	},[bandeirasExistentes])
-
-	useEffect(()=>{
-		console.log('adquirentes existentes na consulta: ', adquirentesExistentes)
-	},[adquirentesExistentes])
+	const handleAdqSelecionada = (selected) => {
+		setAdqSelecionada(selected)
+	}
 
 	return(
 		<>
 			<div className='vendas-adq-container'>
 				<div className='seletor-adq-container'>
-					<span className='seletor-adq-span'>Adquirente</span>
-					<select className='seletor-adq-select' id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}}>
-						<option value='' selected>Todas</option>
-						{adquirentesExistentes.map((ADQ)=>(
-							<option key={ADQ} value={ADQ}>{ADQ}</option>
-						))}
-					</select>
+					<span className='seletor-adq-span'>Adquirsssssssente</span>
+					<Select className='seletor-adq-select' id='adquirente'
+						options={adquirentesExistentes}
+						onChange={handleAdqSelecionada}
+						value={adqSelecionada}
+						
+					/>
 				</div>
 				<div className='seletor-adq-container'>
 					<span className='seletor-adq-span'>Bandeira</span>

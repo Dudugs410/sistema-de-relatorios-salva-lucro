@@ -18,7 +18,7 @@
 }
 
 .span-str {
-    color: var(--primary-color);   
+    color: var(--font-color);   
 }
 
 .texto-paginacao{
@@ -73,6 +73,20 @@
 
 .select-align-filtro{
     align-content: center !important;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.select-filtro{
+    padding: 7px;
+    width: 80%;
+    border-radius: 10px;
+    border: solid var(--primary-color) 1px;
+    color: var(--font-color);
+    background-color: var(--background-color);
 }
 
 .header-tabela-grafico{

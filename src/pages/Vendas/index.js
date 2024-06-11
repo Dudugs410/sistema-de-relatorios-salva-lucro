@@ -1,13 +1,6 @@
 import { useEffect, useContext, createContext, useState } from 'react'
-import Calendar from 'react-calendar'
-import BuscarClienteVendas from '../../components/Componente_BuscarClienteVendas'
-import TabelaGenericaAdm from '../../components/Componente_TabelaAdm'
-import TotalModalidadesComp from '../../components/Componente_TotalModalidades'
-import GerarRelatorio from "../../components/Componente_GerarRelatorio"
 import './vendas.scss'
 import { AuthContext } from '../../contexts/auth'
-import Cookies from 'js-cookie'
-import TabelaVendas from '../../components/Componente_TabelaVendas'
 import { useLocation } from 'react-router-dom'
 import '../../index.scss'
 import MyCalendar from '../../components/Componente_Calendario'
@@ -66,9 +59,8 @@ const Vendas = () =>{
       console.error('Error handling busca:', error);
     }
   }
-  
+
   async function loadData() {
-    console.log('função buscar');
     try {
       setSalesPageArray(await loadSales(salesDateRange[0].toLocaleDateString('pt-BR'), salesDateRange[1].toLocaleDateString('pt-BR')));
     } catch (error) {

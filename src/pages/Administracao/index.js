@@ -1,6 +1,5 @@
 import { useEffect, useContext, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { AuthContext } from '../../contexts/auth'
 import '../../styles/global.scss'
 import '../ExportacaoSysmo'
 import MyCalendar from '../../components/Componente_Calendario'
@@ -10,8 +9,7 @@ import { FiEdit, FiPlus, FiTrash } from 'react-icons/fi'
 import './administracao.scss'
 
 const Administracao = () =>{
-    const location = useLocation();
-
+    const location = useLocation()
     const [dataBusca, setDataBusca] = useState([new Date, new Date])
 
     const [dataBuscaInicial, setDataBuscaInicial] = useState(new Date)
@@ -48,12 +46,6 @@ const Administracao = () =>{
         e.preventDefault()
         base64PDFdownload()
     }
-
-    useEffect(()=>{
-        console.log('Parâmetros Selecionados: ',
-        'Tipo: ', tipo,
-        'Data: ', dataBusca)
-    },[tipo])
 
     const PlaceHolder = () =>{
         return(

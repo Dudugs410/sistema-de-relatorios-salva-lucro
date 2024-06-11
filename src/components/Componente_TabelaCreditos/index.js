@@ -293,23 +293,23 @@ const TabelaCreditos = ({array}) =>{
 	return(
 		<>
 			<div className='date-container'>
-				<div className='date-picker-container'>
-					<div className='date-column'>
+				<div className='container'>
+					<div className='export-column'>
 						<div className='select-card select-align select-align-filtro'>
-						<span className='span-str'>Adquirente</span>
-							<select id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}}>
+							<span className='span-str'>Adquirente</span>
+							<select className='select-filtro' id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}}>
 								<option value=''>Todas</option>
 								{adquirentesExistentes.map((ADQ)=>(
-									<option key={ADQ} value={ADQ}>{ADQ}</option>
+									<option className='select-filtro' key={ADQ} value={ADQ}>{ADQ}</option>
 								))}
 							</select>
 						</div>
 					</div>
-					<div className='date-column'>
+					<div className='export-column'>
 						<div className='select-card select-align select-align-filtro'>
-							<span >Bandeira</span>
-							<select id='bandeira' value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}}>
-								<option value=''>Todas</option>
+							<span className='span-str'>Bandeira</span>
+							<select className='select-filtro' id='bandeira' value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}}>
+								<option value='' defaultValue={'Todas'}>Todas</option>
 								{bandeirasExistentes.map((BAN)=>(
 									<option key={BAN} value={BAN}>{BAN}</option>
 								))}
