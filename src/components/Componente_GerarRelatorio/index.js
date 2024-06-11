@@ -25,8 +25,6 @@ export default function GerarRelatorio(){
 	const [tableData, setTableData] = useState([])
 
 	useEffect(() => {
-		console.log('tableData? -> ', tableData)
-
 		const updateDateTime = () => {
 		  const now = new Date()
 
@@ -62,21 +60,18 @@ export default function GerarRelatorio(){
 				setTipoRelatorio('Relatório de Vendas')
 				setTipo('vendas')
 				setTableData(salesTableData)
-				console.log('salesTableData: ', salesTableData)
 				break
 				
 			case '/creditos':
 				setTipoRelatorio('Relatório de Créditos')
 				setTipo('creditos')
 				setTableData(creditsTableData)
-				console.log('creditsTableData: ', creditsTableData)
 				break
 
 			case '/servicos':
 				setTipoRelatorio('Relatório de Serviços')
 				setTipo('servicos')
 				setTableData(servicesTableData)
-				console.log('servicesTableData: ', servicesTableData)
 			default:
 				break
 		}
@@ -235,7 +230,6 @@ export default function GerarRelatorio(){
 	const generatePdf = () => {
 		if (!tableData || tableData.length === 0) {
 			alert('Sem dados para exportar')
-			console.log('tableData ->->-> ', tableData)
 			return
 		} else {
 			if(tipo === 'vendas'){

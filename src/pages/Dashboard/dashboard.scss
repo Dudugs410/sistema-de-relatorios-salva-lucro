@@ -32,21 +32,32 @@
   
 }
 
+.dashboard-error-container{
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.btn-dash-error{
+  margin-top: 50px;
+  width: 80%;
+}
+
 .title-chart{
-  width: 95%;
+  /* width: 95%; */
   display: block;
   text-align: center;
   font-family: sans-serif;
   font-size: 1.5em;
   margin-top: 8px;
-  margin-left: 2.5%;
+  /* margin-left: 2.5%; */
   align-self: center;
   padding: 5px;
   border-radius: 20px;
-  transition: all .4s;
+  transition: all 0.4s;
   color: var(--primary-color);
   background-color: var(--secondary-color);
-
 }
 
 .data-group-area{
@@ -104,6 +115,8 @@
     flex-direction: column;
     flex-wrap: wrap;
     align-content: stretch;
+    width: 100%;
+    border-radius: 0px;
   }
 
   .data-group-area{
@@ -119,4 +132,9 @@
   .content-area{
     padding: 0 0 9%;
   }
+
+  .graph-data{
+    border-radius: 0px;
+  }
+
 }

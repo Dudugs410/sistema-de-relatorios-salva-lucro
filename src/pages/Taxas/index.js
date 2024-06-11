@@ -101,14 +101,10 @@ const Taxas = () =>{
     },[changedOption])
 
     useEffect(()=>{
-        const loadTax = async () => {
-            console.log(taxesList)
-            
+        const loadTax = async () => { 
             if((clientCode === 'todos') || (clientCode === 'TODOS')){
-                console.log('clientCode TODOS: ', clientCode)
                 setTaxesList([])
             } else {
-                console.log('clientCode: ', clientCode)
                 const response = await loadTaxes()
                 setTaxesList(response)
             }
@@ -119,7 +115,6 @@ const Taxas = () =>{
     const [editableTax, setEditableTax] = useState()
 
     const handleEdit = (object) => {
-        console.log('handleEdit object: ', object)
         setEditableTax({
             ban: object.BADDESCRICAO,
             adm: object.ADQUIRENTE.nomeAdquirente,
@@ -216,7 +211,6 @@ const Taxas = () =>{
         }
         
         const isObjectFullyPopulated = (obj) => {
-            console.log('verificando objeto: ', obj)
             for (const key in obj) {
                 if (obj.hasOwnProperty(key)) {
                     if (obj[key] === undefined || obj[key] === 0 || obj[key] === null || obj[key] === ('selecione' || 'Selecione') || tax === '') {
@@ -243,7 +237,6 @@ const Taxas = () =>{
                       success: 'Carregado com Sucesso',
                       error: 'Ocorreu um Erro',
                     })
-                    console.log('resetando form...')
                     resetValues()
                   } catch (error) {
                     console.error('Error handling busca:', error);
@@ -372,9 +365,6 @@ const Taxas = () =>{
     }
 
     const ModalEditTax = () => {
-
-        console.log('ModalEditTax obj:', editableTax)
-        
         const [banner, setBanner] = useState({label: editableTax.ban, value: null})
         const [admin, setAdmin] = useState({label: editableTax.adm, value: null})
         const [modality, setModality] = useState({label: editableTax.mod, value: null})
@@ -382,7 +372,6 @@ const Taxas = () =>{
         const [taxValue, setTaxValue] = useState(editableTax.tax)
 
         const isObjectFullyPopulated = (obj) => {
-            console.log('verificando objeto: ', obj)
             for (const key in obj) {
                 if (obj.hasOwnProperty(key)) {
                     if (obj[key] === undefined || obj[key] === 0 || obj[key] === null || obj[key] === ('selecione' || 'Selecione') || tax === '') {

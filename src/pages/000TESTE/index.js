@@ -10,7 +10,6 @@ export default function PageTeste() {
   const [grupi, setGrupi] = useState([]);
 
   useEffect(() => {
-    console.log('carregou? ', carregou)
     if (carregou === false) {
       const fetchData = async () => {
         try {
@@ -28,7 +27,6 @@ export default function PageTeste() {
   useEffect(() => {
     if (grupi.length > 0) {
       Carregated();
-      console.log(grupi);
     }
   }, [grupi]);
 

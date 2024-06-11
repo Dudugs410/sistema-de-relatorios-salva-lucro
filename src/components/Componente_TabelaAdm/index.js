@@ -1,13 +1,10 @@
 /* eslint-disable react/prop-types */
 import React from 'react'
 import './tabelaGenerica.scss'
-import { useContext } from 'react'
-import { AuthContext } from '../../contexts/auth'
 
 import '../../styles/global.scss'
 
 export default function TabelaGenericaAdm({Array, textColor}) {
-	const { isDarkTheme } = useContext(AuthContext)
 	return (
 		<div>
 			{ 

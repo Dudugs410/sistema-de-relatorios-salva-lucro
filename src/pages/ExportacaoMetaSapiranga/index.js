@@ -93,14 +93,6 @@ const ExportacaoMetaSapiranga = () =>{
         setSelectedAdm(e)
     }
 
-    useEffect(()=>{
-        console.log('Parâmetros Selecionados: ',
-        'Type: ', type,
-        'Bandeira: ', selectedBan,
-        'Adquirente: ', selectedAdm,
-        'Data: ', dataBusca)
-    },[type])
-
     function handleLoadData(){
         console.log('loadData')
     }

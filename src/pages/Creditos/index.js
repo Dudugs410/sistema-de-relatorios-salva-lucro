@@ -1,13 +1,6 @@
-import { useEffect, useContext, createContext, useState } from 'react'
-import Calendar from 'react-calendar'
-import BuscarClienteVendas from '../../components/Componente_BuscarClienteVendas'
-import TabelaGenericaAdm from '../../components/Componente_TabelaAdm'
-import TotalModalidadesComp from '../../components/Componente_TotalModalidades'
-import GerarRelatorio from "../../components/Componente_GerarRelatorio"
+import { useEffect, useContext } from 'react'
 import '../Vendas/vendas.scss'
 import { AuthContext } from '../../contexts/auth'
-import Cookies from 'js-cookie'
-import TabelaCreditos from '../../components/Componente_TabelaCreditos'
 import { useLocation } from 'react-router-dom'
 import '../../index.scss'
 import MyCalendar from '../../components/Componente_Calendario'
@@ -53,31 +46,33 @@ const Creditos = () =>{
     creditsTableData.length = 0
   }
 
-  async function handleLoadData(e) {
-    e.preventDefault();
-    try {
-      setBtnDisabledCredits(true)
-      await toast.promise(loadData(), {
-        pending: 'Carregando...',
-        success: 'Carregado com Sucesso',
-        error: 'Ocorreu um Erro',
-      });
-      setBtnDisabledCredits(false)
-    } catch (error) {
-      console.error('Error handling busca:', error);
-      setBtnDisabledCredits(false)
-    }
+async function handleLoadData(e) {
+  e.preventDefault();
+  try {
+    setBtnDisabledCredits(true);
+    await toast.promise(loadData(), {
+      pending: 'Carregando...',
+      success: 'Carregado com Sucesso',
+      error: 'Ocorreu um Erro',
+    });
+    setBtnDisabledCredits(false);
+  } catch (error) {
+    console.error('Error handling busca:', error);
+    toast.error('Ocorreu um Erro');
+    setBtnDisabledCredits(false);
   }
-  
-  async function loadData() {
-    try {
-      setCreditsPageArray(await loadCredits(creditsDateRange[0].toLocaleDateString('pt-BR'), creditsDateRange[1].toLocaleDateString('pt-BR')));
-    } catch (error) {
-      console.error('Error fetching sales data:', error);
-      toast.error(error)
-      throw error;
-    }
+}
+
+async function loadData() {
+  try {
+    const creditsData = await loadCredits(creditsDateRange[0].toLocaleDateString('pt-BR'), creditsDateRange[1].toLocaleDateString('pt-BR'));
+    setCreditsPageArray(creditsData);
+    return creditsData; // Resolve the promise with data if successful
+  } catch (error) {
+    console.error('Error fetching credits data:', error);
+    throw error; // Throw error to be caught by toast.promise
   }
+}
 
   useEffect(()=>{
     if(creditsPageArray.length > 0){

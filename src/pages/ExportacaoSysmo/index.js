@@ -106,10 +106,6 @@ const ExportacaoSysmo = () =>{
         })
     },[type, selectedBan, selectedAdm, dataBusca])
 
-    useEffect(()=>{
-        console.log('obj : ', obj)
-    },[obj])
-
     async function handleLoadData(e) {
         e.preventDefault();
         try {
@@ -127,7 +123,6 @@ const ExportacaoSysmo = () =>{
     }
 
     async function loadData() {
-        console.log('função buscar');
         try {
           await loadSysmo(obj);
         } catch (error) {

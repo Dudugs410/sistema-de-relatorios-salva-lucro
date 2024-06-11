@@ -67,7 +67,6 @@ const BuscarClienteVendas = () => {
 	},[detalhes])
 
 	async function buscar() {
-		console.log('função buscar')
 		if(cnpjBuscaVendas === '' || cnpjBuscaVendas === 'Selecione' || cnpjBuscaVendas === undefined){
 			return
 		}
@@ -77,11 +76,9 @@ const BuscarClienteVendas = () => {
 				//adiciono .toLocaleDateString('pt-BR') às datas para que possamos comparar apenas o dia, mes e ano, sem levar em consideração a hora, minuto e segundos
 				if(buscou !== true){
 					if(dataBuscaVendas[0].toLocaleDateString('pt-BR') === dataBuscaVendas[1].toLocaleDateString('pt-BR')){
-						console.log('mostrou alerta vendas')
 						alerta(`executou a busca do dia ${dataBuscaVendas[0].toLocaleDateString('pt-BR')}`);
 						setBuscou(true)
 					} else if (dataBuscaVendas[0].toLocaleDateString('pt-BR') !== dataBuscaVendas[1].toLocaleDateString('pt-BR')){
-						console.log('mostrou alerta vendas')
 						alerta(`executou a busca do dia ${dataBuscaVendas[0].toLocaleDateString('pt-BR')} ao dia ${dataBuscaVendas[1].toLocaleDateString('pt-BR')}`);
 						setBuscou(true)
 					}

@@ -10,12 +10,6 @@ import './detalhesCredito.scss'
 
 const TabelaVendasCreditos = ({array, tipo, isDashboard}) =>{
 
-	useEffect(()=>{
-		console.log('ARRAY VENDASCREDITO: ', array)
-	},[])
-
-	//console.log('array dentro da tabela do gráfico: ', array)
-
 	const { dateConvert,
 			setTotaisGlobalVendas, 
 			setTotaisGlobalCreditos, 
@@ -83,15 +77,12 @@ const TabelaVendasCreditos = ({array, tipo, isDashboard}) =>{
 	// // // // // // // // // // // // // // // // // // // // // // // // // // //
 
 	useEffect(()=>{
-		console.log('tranqueira: ', array)
-		console.log('não é dashboard')
 		if(array.length > 0){
 			setVendasArray(array)
 		}
 	},[array])
 
 	useEffect(()=>{
-		//console.log('vendasArray: ', vendasArray)
 		async function init(){
 			setVendasTeste(vendasArray)
 		}
@@ -304,20 +295,6 @@ const TabelaVendasCreditos = ({array, tipo, isDashboard}) =>{
 
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////
-
-	//useEffects que mostram o array de bandeiras/adquirentes atualizado, após o filtro.
-
-	/*
-	useEffect(() => {
-		console.log('adquirentes: ', adquirentesExistentes)
-
-	}, [adquirentesExistentes])
-
-	useEffect(() => {
-		console.log('bandeiras: ', bandeirasExistentes)
-
-	}, [bandeirasExistentes])
-	*/
 
 	// função que altera lista de adquirentes de acordo com a bandeira/adq selecionada, para que o usuário só tenha opções existentes
 	function atualizaADQ(){

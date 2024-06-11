@@ -41,13 +41,8 @@ const PieChart = ({ data01, arrayAdm, tipo, dados } ) => {
       const clickedElementIndex = elements[0].index;
       const selectedAdmData = arrayAdm[clickedElementIndex];
 
-      console.log('Fatia Clicada: ', selectedAdmData)
       setSelectedAdm(selectedAdmData);
       setShowAdmModal(true);
-      //sessionStorage.setItem('showModalDash', true)
-
-      //console.log('Array da Fatia Clicada: ', arrayAdm[clickedElementIndex])
-
     }
   }, [arrayAdm]);
 
