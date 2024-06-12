@@ -62,7 +62,7 @@
 .modal-layout-content{
     display: flex;
     width: 50%;
-    height: 60%;
+    height: 80%;
     flex-direction: column;
     flex-wrap: wrap;
     align-content: center;
@@ -79,6 +79,7 @@
 }
 
 .title-form{
+    width: 95%;
     background-color: var(--background-color);
 }
 
@@ -121,7 +122,8 @@ form>.input-container{
 }
 
 @media screen and (max-width: 869px){
-    .modal-layout-content{
-        width: 80%;
+
+    .input-container-contato{
+        width: 90%;
     }
 }

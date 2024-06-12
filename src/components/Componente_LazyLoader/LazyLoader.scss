@@ -40,6 +40,13 @@
     transition: all 0.3s ease-in-out; /* Smooth transition */
     border-top: 4px solid var(--secondary-color); /* Blue color for spinner */
   }
+
+
+  @media screen and (max-width: 869px){
+    .lazy-loader{
+      border-radius: 0px;
+    }
+  }
   
   @keyframes spin {
     0% { transform: rotate(0deg); }
