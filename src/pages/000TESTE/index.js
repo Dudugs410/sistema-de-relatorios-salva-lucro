@@ -2,6 +2,7 @@ import React, { useEffect, useState, Suspense, lazy, useContext } from 'react';
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { AuthContext } from '../../contexts/auth.js';
+import ImageUpload from '../../components/Componente_ImageUpload/index.js';
 
 export default function PageTeste() {
   const [showPreview, setShowPreview] = useState(false);
@@ -61,6 +62,7 @@ export default function PageTeste() {
         Show preview
       </label>
       <hr />
+      <ImageUpload />
       {showPreview && (
         <Suspense fallback={<Loading />}>
           <h2>Preview</h2>
