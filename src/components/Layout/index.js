@@ -6,10 +6,12 @@ import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "../../contexts/auth"
 import '../../styles/global.scss'
 import './layout.scss'
+import ImageUpload from "../Componente_ImageUpload"
 
 function Layout({ children }){
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [uploadedImages, setUploadedImages] = useState([]);
         
     const openModal = () => {
         setIsModalOpen(true);
@@ -22,6 +24,10 @@ function Layout({ children }){
     const handleClick = () => {
         openModal()
     }
+
+    const handleUpload = (images) => {
+      setUploadedImages(images);
+    };
 
 
     const [formData, setFormData] = useState({
@@ -62,7 +68,7 @@ function Layout({ children }){
             setFormData({
                 nome: '',
                 email: '',
-                menssagem: ''
+                mensagem: ''
               })
         }
       },[enviar])
@@ -94,7 +100,7 @@ function Layout({ children }){
                 />
               </div>
               <div className='input-container input-container-contato'>
-                <h6 className='form-input-title' htmlFor="menssagem"><b className='form-input-b'>Mensagem:</b> *</h6>
+                <h6 className='form-input-title' htmlFor="mensagem"><b className='form-input-b'>Mensagem:</b> *</h6>
                 <textarea
                   value={mensagemTemp}
                   onChange={handleChangeMensagem}
@@ -102,6 +108,7 @@ function Layout({ children }){
                   required
                 />
               </div>
+              <ImageUpload onUpload={handleUpload} />
               <hr className='hr-global' />
               <button className='btn btn-global' type='submit' >Enviar</button>
             </form>
