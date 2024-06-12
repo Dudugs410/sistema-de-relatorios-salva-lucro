@@ -10,7 +10,7 @@ import './Seletor.scss';
 
 const SeletorCliente = () => {
   const {
-    setChangedOption,
+    changedOption, setChangedOption,
     setIsLoadedSalesDashboard,
     setIsLoadedCreditsDashboard,
     setIsLoadedServicesDashboard,
@@ -86,7 +86,7 @@ const SeletorCliente = () => {
       Cookies.set('groupClients', JSON.stringify(selectedGroup.clients));
       Cookies.set('selectedGroup', JSON.stringify(selectedGroup));
       Cookies.set('groupCode', selectedGroup.value);
-      setChangedOption(true);
+      setChangedOption(!changedOption);
     }
   }, [selectedGroup]);
 
@@ -94,7 +94,6 @@ const SeletorCliente = () => {
     setSalesPageArray([]);
     setCreditsPageArray([]);
     setServicesPageArray([]);
-
     if (selectedClient && selectedClient.label !== 'TODOS') {
       Cookies.set('cnpj', selectedClient.value);
       Cookies.set('clientCode', selectedClient.cod);
@@ -104,6 +103,7 @@ const SeletorCliente = () => {
       Cookies.set('clientCode', 'todos');
       setExportName(selectedGroup ? `${selectedGroup.label} - Todas Filiais` : '');
     }
+    setChangedOption(!changedOption);
   }, [selectedClient, selectedGroup]);
 
   const handleGroupChange = (selected) => {

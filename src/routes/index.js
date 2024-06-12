@@ -8,6 +8,7 @@ import Dashboard from '../pages/Dashboard'
 import Vendas from "../pages/Vendas";
 import Recebiveis from "../pages/Creditos";
 import Servicos from "../pages/Servicos";
+import CadastroDeBancos from "../pages/CadastroDeBancos";
 import Financeiro from "../pages/Financeiro";
 import Gerenciais from "../pages/Gerenciais";
 import PageTeste from "../pages/000TESTE";
@@ -29,6 +30,7 @@ function RoutesApp(){
         <Route path='/vendas' element = { <Private><Vendas/></Private> }/>
         <Route path='/creditos' element = { <Private><Recebiveis/></Private> }/>
         <Route path='/servicos' element = { <Private><Servicos/></Private> }/>
+        <Route path='/cadastrodebancos' element = { <Private><CadastroDeBancos/></Private> }/>
         <Route path='/financeiro' element = { <Private><Financeiro/></Private> }/>
         <Route path='/gerenciais' element = { <Private><Gerenciais/></Private> }/>
         <Route path='/outrosrelatorios' element = { <Private><OutrosRelatorios/></Private> }/>

@@ -95,12 +95,17 @@ const Taxas = () =>{
         }
     }, [modsList]);
 
+    const [selectedClient, setSelectedClient] = useState(JSON.parse(Cookies.get('selectedClient')))
+
     useEffect(()=>{
+        console.log('changedOption ? ', changedOption)
         setClientCode(Cookies.get('clientCode'))
         setTaxesList([])
+        setSelectedClient(JSON.parse(Cookies.get('selectedClient')))
     },[changedOption])
 
     useEffect(()=>{
+        console.log('clientCode: ', clientCode)
         const loadTax = async () => { 
             if((clientCode === 'todos') || (clientCode === 'TODOS')){
                 setTaxesList([])
@@ -569,10 +574,10 @@ const Taxas = () =>{
               <h1 className='title-global'>Taxas</h1>
             </div>
             <hr className='hr-global'/>
-            <div className='container-global'>
+            <div className='container-taxas'>
                 { ((taxesList && taxesList.length > 0) && (clientCode !== ('todos' || undefined))) && 
                 <>    
-                    <h3 className='subtitle'>Cliente: {JSON.parse(Cookies.get('clientName'))}</h3>
+                    <h3 className='subtitle'>Cliente: {selectedClient.label}</h3>
                     <hr className='hr-global'/>
                     <TaxesTable />
                 </>
