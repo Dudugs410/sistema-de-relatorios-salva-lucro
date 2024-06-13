@@ -312,6 +312,18 @@ function AuthProvider({ children }){
 				return
 			}
 		}
+		//Bancos
+
+		const [isLoadingBanks, setIsLoadingBanks] = useState(false)
+
+		const loadBanks = async () => {
+			console.log('loadBanks')
+		}
+
+		const addBank = async (bank) => {
+			console.log('addBank')
+		}
+
 		// retorna array de bandeiras
 		const loadBanners = async () => {
 			try {
@@ -1453,6 +1465,10 @@ function AuthProvider({ children }){
 				// Taxas
 
 				loadTaxes, addTax, isLoadingTaxes,
+
+				// Bancos
+
+				loadBanks, addBank, isLoadingBanks,
 
 				// Sysmo
 

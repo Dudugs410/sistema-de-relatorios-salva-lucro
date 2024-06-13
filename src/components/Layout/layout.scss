@@ -76,6 +76,9 @@
 .modal-layout-contato-content{
     background-color: var(--background-color);
     border: solid var(--secondary-color) 2px;
+    padding-top: 1%;
+    margin-bottom: 5%;
+    overflow-y: scroll;
 }
 
 .title-form{
@@ -122,6 +125,9 @@ form>.input-container{
 }
 
 @media screen and (max-width: 869px){
+    .modal-layout-contato-content{
+        width: 90%
+    }
 
     .input-container-contato{
         width: 90%;

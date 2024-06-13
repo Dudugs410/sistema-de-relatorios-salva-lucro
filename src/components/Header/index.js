@@ -1,5 +1,5 @@
 import { Link, Navigate, useNavigate } from "react-router-dom";
-import { FiMoon, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText, FiClipboard, FiDownload, FiCalendar, FiList, FiPaperclip, FiSettings, FiTruck, FiShoppingBag, FiMenu, FiSidebar, FiTable } from "react-icons/fi";
+import { FiMoon, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText, FiClipboard, FiDownload, FiCalendar, FiList, FiPaperclip, FiSettings, FiTruck, FiShoppingBag, FiMenu, FiSidebar, FiTable, FiLink } from "react-icons/fi";
 import { AuthContext } from "../../contexts/auth";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import salvaLucroLogoBranco from '../../assets/LogoTopo.png';
@@ -125,13 +125,15 @@ const Header = () => {
             'FiTruck': FiTruck,
             'FiShoppingBag': FiShoppingBag,
             'FiTable': FiTable,
+            'FiLink': FiLink,
         };
 
         const orderedOptions = [
-            { nome: 'Início', icone: icones['FiHome'], rota: '/dashboard'},
-            { nome: 'Vendas', icone: icones['FiDollarSign'], rota: '/vendas'},
-            { nome: 'Créditos', icone: icones['FiCreditCard'], rota: '/creditos'},
-            { nome: 'Serviços', icone: icones['FiTool'], rota: '/servicos'},
+            { nome: 'Início', icone: icones['FiHome'], rota: '/dashboard' },
+            { nome: 'Vendas', icone: icones['FiDollarSign'], rota: '/vendas' },
+            { nome: 'Créditos', icone: icones['FiCreditCard'], rota: '/creditos' },
+            { nome: 'Serviços', icone: icones['FiTool'], rota: '/servicos' },
+            { nome: 'Cadastro de Bancos', icone: icones['FiLink'], rota: '/cadastrodebancos' },
             { nome: 'Relatórios', icone: icones['FiFileText'], children: [
                 { nome: 'Financeiro', rota: '/financeiro' },
                 { nome: 'Gerenciais', rota: '/gerenciais' },

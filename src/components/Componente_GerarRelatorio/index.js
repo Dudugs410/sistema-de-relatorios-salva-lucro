@@ -229,181 +229,161 @@ export default function GerarRelatorio(){
 
 	const generatePdf = () => {
 		if (!tableData || tableData.length === 0) {
-			alert('Sem dados para exportar')
-			return
+			alert('Sem dados para exportar');
+			return;
 		} else {
-			if(tipo === 'vendas'){
-				const columns = ['CNPJ', 'Adquirente', 'Bandeira', 'Produto', 'Subproduto', 'Valor Bruto', 'Valor Líquido', 'Taxa', 'Valor Desconto', 'NSU', 'Data Venda', 'Hora Venda', 'Data Crédito', 'Código Autorização', 'QTD PARC']
-				const rows = tableData.map(rowData => [rowData.cnpj, rowData.adquirente, rowData.bandeira, rowData.produto, rowData.subproduto, `R$ ${rowData.valorBruto}`, `R$ ${rowData.valorLiquido}`, `${rowData.taxa}%`, `R$ ${rowData.valorDesconto}`, rowData.nsu, dateConvert(rowData.dataVenda), rowData.horaVenda, dateConvert(rowData.dataCredito), rowData.codigoAutorizacao, rowData.quantidadeParcelas ])
-		
-				const columnStyles = {};
-		
-				for (let i = 0; i < columns.length; i++) {
-					columnStyles[i] = { 
-					align: 'center',
-					valign: 'middle',
-					halign : 'center', };
-				}
-		
-				const doc = new jsPDF({
-					orientation: 'landscape',
-					unit: 'mm',
-					format: 'a3',
-				})
-		
-				const styles = {
-					cellPadding: 2, // Adjust the padding as needed
-					align: 'center', // Set the text alignment to center
-				  };
-		
-				var myImg = imgExport
-		
-				doc.autoTable({
-					head: [columns],
-					body: rows,
-					margin: {top: 30},
-					headStyles : {
-						fillColor : [10, 61, 112],
-						valign: 'middle',
-						halign : 'center',
-					},
-					styles: styles,
-					columnStyles: columnStyles,
-					didDrawPage: function (data) {
-						// Add an image to each page in the top right corner
-						const imageWidth = 80 // Adjust width as needed
-						const imageHeight = 13 // Adjust height as needed
-						const positionX = 310
-						const positionY = 8
-		
-						const text = `${tipoRelatorio} ${exportName} - ${currentDateTime.replace(/-/g, '/').replace(/\./g, ':')}`;
-						const textX = 14; // Adjust the X-coordinate as needed
-						const textY = 18; // Adjust the Y-coordinate as needed
-		
-						doc.text(text, textX, textY);
-		
-						doc.addImage(myImg, 'PNG', positionX, positionY, imageWidth, imageHeight)
-					}
-				})
-			
-				doc.save(`${tipoRelatorio} - ${exportName} - ${currentDateTime}.pdf`)
-			} else if(tipo === 'creditos'){
-				const columns = [ 'CNPJ', 'Adquirente', 'Bandeira', 'Produto', 'Subproduto', 'Data do Crédito', 'Data da Venda', 'ValorBruto', 'Valor Líquido', 'Taxa', 'Valor Desconto', 'NSU', 'Código Autorização', 'Parcela', 'QTD Parc']
-				const rows = tableData.map(rowData => [rowData.cnpj, rowData.adquirente, rowData.bandeira, rowData.produto, rowData.subproduto, dateConvert(rowData.dataCredito), dateConvert(rowData.dataVenda), `R$ ${rowData.valorBruto.toFixed(2)}`, `R$ ${rowData.valorLiquido.toFixed(2)}`, `${rowData.taxa.toFixed(2)}%`, `R$ ${rowData.valorDesconto.toFixed(2)}`, rowData.nsu, rowData.codigoAutorizacao, rowData.parcela, rowData.totalParcelas ])
-		
-				const columnStyles = {};
-		
-				for (let i = 0; i < columns.length; i++) {
-					columnStyles[i] = { 
-					align: 'center',
-					valign: 'middle',
-					halign : 'center', };
-				}
-		
-				const doc = new jsPDF({
-					orientation: 'landscape',
-					unit: 'mm',
-					format: 'a3',
-				})
-		
-				const styles = {
-					cellPadding: 2, // Adjust the padding as needed
-					align: 'center', // Set the text alignment to center
-				  };
-		
-				var myImg = imgExport
-		
-				doc.autoTable({
-					head: [columns],
-					body: rows,
-					margin: {top: 30},
-					headStyles : {
-						fillColor : [10, 61, 112],
-						valign: 'middle',
-						halign : 'center',
-					},
-					styles: styles,
-					columnStyles: columnStyles,
-					didDrawPage: function (data) {
-						// Add an image to each page in the top right corner
-						const imageWidth = 80 // Adjust width as needed
-						const imageHeight = 13 // Adjust height as needed
-						const positionX = 310
-						const positionY = 8
-		
-						const text = `${tipoRelatorio} ${exportName} - ${currentDateTime.replace(/-/g, '/').replace(/\./g, ':')}`;
-						const textX = 14; // Adjust the X-coordinate as needed
-						const textY = 18; // Adjust the Y-coordinate as needed
-		
-						doc.text(text, textX, textY);
-		
-						doc.addImage(myImg, 'PNG', positionX, positionY, imageWidth, imageHeight)
-					}
-				})
-			
-				doc.save(`${tipoRelatorio} - ${exportName} - ${currentDateTime}.pdf`)
-			} else if(tipo === 'servicos'){
-				const columns = [ 'CNPJ', 'Razão Social', 'Código do estabelecimento', 'Adquirente', 'Valor', 'Data', 'Descrição']
-				const rows = tableData.map(rowData => [
-					rowData.cnpj, rowData.razao_social, rowData.codigo_estabelecimento, 
-					rowData.adquirente, `R$ ${rowData.valor.toFixed(2)}`, dateConvert(rowData.data), rowData.descricao
-				])
-		
-				const columnStyles = {};
-		
-				for (let i = 0; i < columns.length; i++) {
-					columnStyles[i] = { 
-					align: 'center',
-					valign: 'middle',
-					halign : 'center', };
-				}
-		
-				const doc = new jsPDF({
-					orientation: 'landscape',
-					unit: 'mm',
-					format: 'a3',
-				})
-		
-				const styles = {
-					cellPadding: 2, // Adjust the padding as needed
-					align: 'center', // Set the text alignment to center
-				  };
-		
-				var myImg = imgExport
-		
-				doc.autoTable({
-					head: [columns],
-					body: rows,
-					margin: {top: 30},
-					headStyles : {
-						fillColor : [10, 61, 112],
-						valign: 'middle',
-						halign : 'center',
-					},
-					styles: styles,
-					columnStyles: columnStyles,
-					didDrawPage: function (data) {
-						// Add an image to each page in the top right corner
-						const imageWidth = 80 // Adjust width as needed
-						const imageHeight = 13 // Adjust height as needed
-						const positionX = 310
-						const positionY = 8
-		
-						const text = `${tipoRelatorio} ${exportName} - ${currentDateTime.replace(/-/g, '/').replace(/\./g, ':')}`;
-						const textX = 14; // Adjust the X-coordinate as needed
-						const textY = 18; // Adjust the Y-coordinate as needed
-		
-						doc.text(text, textX, textY);
-		
-						doc.addImage(myImg, 'PNG', positionX, positionY, imageWidth, imageHeight)
-					}
-				})
-			
-				doc.save(`${tipoRelatorio} - ${exportName} - ${currentDateTime}.pdf`)
+			const doc = new jsPDF({
+				orientation: 'landscape',
+				unit: 'mm',
+				format: 'a3',
+			});
+	
+			var myImg = imgExport;
+	
+			let columns = [];
+			let rows = [];
+			let totalBruto = 0;
+			let totalDesconto = 0;
+			let totalLiquido = 0;
+			let totalServicos = 0;
+	
+			if (tipo === 'vendas') {
+				columns = ['CNPJ', 'Adquirente', 'Bandeira', 'Produto', 'Subproduto', 'Valor Bruto', 'Valor Líquido', 'Taxa', 'Valor Desconto', 'NSU', 'Data Venda', 'Hora Venda', 'Data Crédito', 'Código Autorização', 'QTD PARC'];
+				rows = tableData.map(rowData => {
+					const valorBruto = Number(rowData.valorBruto);
+					const valorLiquido = Number(rowData.valorLiquido);
+					const valorDesconto = Number(rowData.valorDesconto);
+	
+					totalBruto += valorBruto;
+					totalLiquido += valorLiquido;
+					totalDesconto += valorDesconto;
+	
+					return [
+						rowData.cnpj, rowData.adquirente, rowData.bandeira, rowData.produto, rowData.subproduto,
+						`R$ ${valorBruto.toFixed(2)}`, `R$ ${valorLiquido.toFixed(2)}`, `${Number(rowData.taxa).toFixed(2)}%`, `R$ ${valorDesconto.toFixed(2)}`,
+						rowData.nsu, dateConvert(rowData.dataVenda), rowData.horaVenda, dateConvert(rowData.dataCredito), rowData.codigoAutorizacao, rowData.quantidadeParcelas
+					];
+				});
+			} else if (tipo === 'creditos') {
+				columns = ['CNPJ', 'Adquirente', 'Bandeira', 'Produto', 'Subproduto', 'Data do Crédito', 'Data da Venda', 'Valor Bruto', 'Valor Líquido', 'Taxa', 'Valor Desconto', 'NSU', 'Código Autorização', 'Parcela', 'QTD Parc'];
+				rows = tableData.map(rowData => {
+					const valorBruto = Number(rowData.valorBruto);
+					const valorLiquido = Number(rowData.valorLiquido);
+					const valorDesconto = Number(rowData.valorDesconto);
+	
+					totalBruto += valorBruto;
+					totalLiquido += valorLiquido;
+					totalDesconto += valorDesconto;
+	
+					return [
+						rowData.cnpj, rowData.adquirente, rowData.bandeira, rowData.produto, rowData.subproduto,
+						dateConvert(rowData.dataCredito), dateConvert(rowData.dataVenda),
+						`R$ ${valorBruto.toFixed(2)}`, `R$ ${valorLiquido.toFixed(2)}`, `${Number(rowData.taxa).toFixed(2)}%`, `R$ ${valorDesconto.toFixed(2)}`,
+						rowData.nsu, rowData.codigoAutorizacao, rowData.parcela, rowData.totalParcelas
+					];
+				});
+			} else if (tipo === 'servicos') {
+				columns = ['CNPJ', 'Razão Social', 'Código do estabelecimento', 'Adquirente', 'Valor', 'Data', 'Descrição'];
+				rows = tableData.map(rowData => {
+					const valor = Number(rowData.valor);
+					totalServicos += valor;
+					return [
+						rowData.cnpj, rowData.razao_social, rowData.codigo_estabelecimento, rowData.adquirente,
+						`R$ ${valor.toFixed(2)}`, dateConvert(rowData.data), rowData.descricao
+					];
+				});
 			}
+	
+			const columnStyles = {};
+			for (let i = 0; i < columns.length; i++) {
+				columnStyles[i] = {
+					align: 'center',
+					valign: 'middle',
+					halign: 'center',
+				};
+			}
+	
+			const styles = {
+				cellPadding: 2,
+				align: 'center',
+			};
+	
+			doc.autoTable({
+				head: [columns],
+				body: rows,
+				margin: { top: 30 },
+				headStyles: {
+					fillColor: [10, 61, 112],
+					valign: 'middle',
+					halign: 'center',
+				},
+				styles: styles,
+				columnStyles: columnStyles,
+				didDrawPage: function (data) {
+					const imageWidth = 80;
+					const imageHeight = 13;
+					const positionX = 310;
+					const positionY = 8;
+	
+					const text = `${tipoRelatorio} ${exportName} - ${currentDateTime.replace(/-/g, '/').replace(/\./g, ':')}`;
+					const textX = 14;
+					const textY = 18;
+	
+					doc.text(text, textX, textY);
+					doc.addImage(myImg, 'PNG', positionX, positionY, imageWidth, imageHeight);
+				}
+			});
+	
+			// Add totals to the last page
+			doc.addPage();
+			doc.setFontSize(12);
+	
+			// Draw horizontal line further down
+			doc.setLineWidth(0.5);
+			const pageWidth = doc.internal.pageSize.getWidth();
+			const margin = 10;
+			doc.line(margin, 30, pageWidth - margin, 30);
+	
+			// Add some spacing for totals
+			const totals = [];
+			if(tipo !== 'servicos'){
+				totals.push(['Total Bruto', `R$ ${totalBruto.toFixed(2)}`]);
+				totals.push(['Total Desconto', `R$ ${totalDesconto.toFixed(2)}`]);
+				totals.push(['Total Líquido', `R$ ${totalLiquido.toFixed(2)}`]);
+			} else {
+				totals.push(['Total', `R$ ${totalServicos.toFixed(2)}`]);
+			}
+	
+			// Draw totals without header
+			doc.autoTable({
+				body: totals,
+				startY: 35,  // Adjusted Y coordinate for the table start position
+				styles: {
+					cellPadding: 2,
+					align: 'center',
+				},
+				columnStyles: {
+					0: { halign: 'left' },
+					1: { halign: 'right' }
+				},
+				didDrawPage: function (data) {
+					const imageWidth = 80;
+					const imageHeight = 13;
+					const positionX = 310;
+					const positionY = 8;
+	
+					const text = `${tipoRelatorio} ${exportName} - ${currentDateTime.replace(/-/g, '/').replace(/\./g, ':')}`;
+					const textX = 14;
+					const textY = 18;
+	
+					doc.text(text, textX, textY);
+					doc.addImage(myImg, 'PNG', positionX, positionY, imageWidth, imageHeight);
+				}
+			});
+	
+			doc.save(`${tipoRelatorio} - ${exportName} - ${currentDateTime}.pdf`);
 		}
-	}
-    
+	};
 
 	return(
 		<>

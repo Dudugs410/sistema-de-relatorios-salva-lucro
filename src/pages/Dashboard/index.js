@@ -23,9 +23,9 @@ const Dashboard = () => {
 
 	const {  
 		loadDashboard, isLoadedDashboard,
-		salesDashboard, isLoadedSalesDashboard, loadSalesGroup, errorSales,
-		creditsDashboard, isLoadedCreditsDashboard, loadCreditsGroup, errorCredits,
-		servicesDashboard, isLoadedServicesDashboard, loadServicesGroup, errorServices,
+		salesDashboard, isLoadedSalesDashboard, setIsLoadedSalesDashboard, loadSalesGroup, errorSales,
+		creditsDashboard, isLoadedCreditsDashboard, setIsLoadedCreditsDashboard, loadCreditsGroup, errorCredits,
+		servicesDashboard, isLoadedServicesDashboard, setIsLoadedServicesDashboard, loadServicesGroup, errorServices,
 		changedOption,
 	} = useContext(AuthContext);
 
@@ -45,14 +45,17 @@ const Dashboard = () => {
 	const chartDataExists = (array) => array.length > 0;
 
 	const reloadSales = () => {
+		setIsLoadedSalesDashboard(false)
 		loadSalesGroup()
 	}
 
 	const reloadCredits = () => {
+		setIsLoadedCreditsDashboard(false)
 		loadCreditsGroup()
 	}
 
 	const reloadServices = () => {
+		setIsLoadedServicesDashboard(false)
 		loadServicesGroup()
 	}
 
