@@ -73,9 +73,9 @@ function Layout({ children }){
         }
       },[enviar])
 
-    const FormContato = () => {
+      const FormContato = () => {
         return (
-          <>
+          <div style={{ display: 'contents', position: 'relative', overflow: 'hidden' }}>
           <h1 className='title-chart title-form' style={{margin: 0}}><b>Contato</b></h1>
           <hr className='hr-global'/>
             <form className='form-contato-container' onSubmit={handleSubmit}>
@@ -112,7 +112,7 @@ function Layout({ children }){
               <hr className='hr-global' />
               <button className='btn btn-global' type='submit' >Enviar</button>
             </form>
-            </>
+            </div>
           );
     }
 
