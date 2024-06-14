@@ -113,7 +113,7 @@ const CadastroDeBancos = () =>{
 
     },[clientCode])
 
-    const [editableBank, setEditableBank] = useState()
+    const [editableBank, setEditableBank] = useState({bank: '', accountNbr: '', agencyNbr: ''})
 
     const handleEdit = (object) => {
         //setEditableBank(object)
@@ -136,12 +136,19 @@ const CadastroDeBancos = () =>{
 
     const BanksTable = () =>{
         return(
-            <table className="table table-striped table-hover table-bordered table-taxas">
+            <table className="table table-striped table-hover table-bordered">
             <thead>
                 <tr>
                     <th scope="col" style={{width: '2%'}}><button className='btn btn-primary btn-global' style={{width: '100%'}} onClick={()=>{setIsModalOpen(true)}}><FiPlus className='icon' /></button></th>
-                    <th scope="col" style={{'text-align': 'center'}}>Cliente</th>
+                    <th scope="col" style={{'text-align': 'center'}}>Cód Estabelecimento</th>
+                    <th scope="col" style={{'text-align': 'center'}}>Cód Cliente na Adquirente</th>
                     <th scope="col" style={{'text-align': 'center'}}>Banco</th>
+                    <th scope="col" style={{'text-align': 'center'}}>Agência</th>
+                    <th scope="col" style={{'text-align': 'center'}}>Conta</th>
+                    <th scope="col" style={{'text-align': 'center'}}>Adquirente</th>
+                    <th scope="col" style={{'text-align': 'center'}}>Produto</th>
+                    <th scope="col" style={{'text-align': 'center'}}>Subproduto</th>
+                    <th scope="col" style={{'text-align': 'center'}}>Bandeira</th>
                     <th scope="col" style={{width: '2%'}}></th>
                 </tr>
             </thead>
@@ -150,8 +157,15 @@ const CadastroDeBancos = () =>{
                     return(
                         <tr key={index} className='det-tr-global tr-taxas'>
                         <th scope='row' onClick={()=>{handleEdit(object)}}><FiEdit className='icon' /></th>
-                            <td className='det-td-vendas-global'data-label="BADDESCRICAO">{object.client}</td>
-                            <td className='det-td-vendas-global'data-label="nomeAdquirente">{object.bank}</td>
+                            <td className='det-td-vendas-global'>{object.clientCode}</td>
+                            <td className='det-td-vendas-global'>{object.clientAdminCode}</td>
+                            <td className='det-td-vendas-global'>{object.bank}</td>
+                            <td className='det-td-vendas-global'>{object.agency}</td>
+                            <td className='det-td-vendas-global'>{object.accountNbr}</td>
+                            <td className='det-td-vendas-global'>{object.bankAdmin}</td>
+                            <td className='det-td-vendas-global'>{object.bankProduct}</td>
+                            <td className='det-td-vendas-global'>{object.bankSubProduct}</td>
+                            <td className='det-td-vendas-global'>{object.bankBanner}</td>
                             <th scope='row' onClick={()=>{handleEdit(object)}}><FiTrash className='icon' /></th>
                         </tr>
                     )
@@ -186,8 +200,11 @@ const CadastroDeBancos = () =>{
         const [selectedCli, setSelectedCli] = useState({label: 'Selecione', value: 0})
         const [selectedBan, setSelectedBan] = useState({label: 'Selecione', value: 0})
         const [selectedAdm, setSelectedAdm] = useState({label: 'Selecione', value: 0})
-        const [selectedMod, setSelectedMod] = useState({label: 'Selecione', value: 0})
-        const [bank, setBank] = useState('');
+        const [selectedProd, setSelectedProd] = useState({label: 'Selecione', value: 0})
+        const [selectedSubProd, setSelectedSubProd] = useState({label: 'Selecione', value: 0})
+        const [newBank, setNewBank] = useState('');
+        const [newAgency, setNewAgency] = useState('');
+        const [newAccount, setNewAccount] = useState('');
 
         const resetValues = () => {
             setSelectedCli({label: 'Selecione', value: 0})
@@ -211,16 +228,22 @@ const CadastroDeBancos = () =>{
 
         const handleSubmit = async (e) => {
             e.preventDefault();
-            /*const newTaxObj = {
-                ADQCODIGO: selectedAdm.value,
-                BADCODIGO: selectedBan.value,
-                CLICODIGO: clientCode,
-                MODCODIGO: selectedMod.value,
-                TAXAPERCENTUAL: parseFloat(tax)
+            const newBankObj = {
+
+                CodigoEstabecimento: Cookies.get('cnpj'),
+                CodigoClienteAdquirente: '',
+                CodigoCliente: '',
+                Adquirente: '',
+                Produto: '',
+                Bandeira: '',
+                Subproduto: '',
+                Banco: '',
+                Agencia: '',
+                Conta: '',
             };
-            if(isObjectFullyPopulated(newTaxObj) === true){
+            if(isObjectFullyPopulated(newBankObj) === true){
                 try {
-                    await toast.promise(addBank(newTaxObj), {
+                    await toast.promise(addBank(newBankObj), {
                       pending: 'Carregando...',
                       success: 'Carregado com Sucesso',
                       error: 'Ocorreu um Erro',
@@ -231,7 +254,7 @@ const CadastroDeBancos = () =>{
                   }
             } else {
                 alert('Todos os Campos devem ser preenchidos')
-            }*/
+            }
         };
 
         const handleCli = (selected) => {
@@ -246,8 +269,12 @@ const CadastroDeBancos = () =>{
             setSelectedAdm(selected)
         }
     
-        const handleMod = (selected) => {
-            setSelectedMod(selected)
+        const handleProd = (selected) => {
+            setSelectedProd(selected)
+        }
+
+        const handleSubProd = (selected) => {
+            setSelectedProd(selected)
         }
 
         const customStyles = {
@@ -310,7 +337,17 @@ const CadastroDeBancos = () =>{
                             </div>
                             <br/>
                             <div className='select-component'>
-                                <span className='span-picker'>Modalidade</span>
+                                <span className='span-picker'>Produto</span>
+                                <Select
+                                    styles={customStyles}
+                                    value={selectedProduct} 
+                                    onChange={handleSelected}
+                                    placeholder="Selecione"
+                                    options={modOptions}
+                                />
+                            </div>
+                            <div className='select-component'>
+                                <span className='span-picker'>Subproduto</span>
                                 <Select
                                     styles={customStyles}
                                     value={selectedMod} 
@@ -342,9 +379,15 @@ const CadastroDeBancos = () =>{
     }
 
     const ModalEditBank = () => {
-        const [banner, setBanner] = useState({label: editableBank.ban, value: null})
-        const [admin, setAdmin] = useState({label: editableBank.adm, value: null})
-        const [bankName, setBankName] = useState(editableBank.bankName)
+        const [clientCode, setClientCode] = useState(editableBank.clientCode)
+        const [clientAdminCode, setAdminCode] = useState(editableBank.clientAdminCode)
+        const [bankName, setBankName] = useState(editableBank.bank)
+        const [agency, setAgency] = useState(editableBank.agency)
+        const [accountNbr, setAccountNbr] = useState(editableBank.accountNbr)
+        const [bankAdmin, setBankAdmin] = useState({label: editableBank.adm, value: null})
+        const [bankProduct, setBankProduct] = useState({label: editableBank.product, value: null})
+        const [bankSubProduct, setBankSubProduct] = useState({label: editableBank.subProduct, value: null})
+        const [bankBanner, setBankBanner] = useState({label: editableBank.bank, value: null})
 
         const isObjectFullyPopulated = (obj) => {
             for (const key in obj) {
@@ -391,7 +434,7 @@ const CadastroDeBancos = () =>{
 
     const Modal = ({ isOpen, onClose, children }) => {
         if (!isOpen) return null;
-        
+
         return (
             <div className="modal-layout" onClick={onClose}>
                 <div className='modal-layout-content' onClick={(e) => e.stopPropagation()}>
@@ -438,21 +481,21 @@ const CadastroDeBancos = () =>{
             <div className='container-global' style={{alignItems: 'center'}}>
                 { ((banksList && banksList.length > 0) && (clientCode !== ('todos' || undefined))) && 
                 <>    
-                    <h3 className='subtitle'>Cliente: CrélensCred{/*JSON.parse(Cookies.get('clientName'))*/}</h3>
+                    <h3 className='subtitle'>Cliente: {JSON.parse(Cookies.get('selectedClient')).label}</h3>
                     <hr className='hr-global'/>
                     <BanksTable />
                 </>
                 }
                 { ((banksList && banksList.length === 0) && (clientCode !== ('todos' || undefined))) && 
                 <>  
-                    <span>Sem Taxas Cadastradas</span>
+                    <span>Sem Bancos Cadastrados</span>
                     <br/> 
                     <button className='btn btn-primary btn-global' onClick={()=>{setIsModalOpen(true)}}><FiPlus className='icon' />Adicionar Taxa</button>
                 </>
                 }
                 {
                     clientCode === ('todos' || undefined) ?
-                        <span>PlaceHolder</span>
+                        <span>{'Selecione um Cliente (não pode ser "TODOS")'}</span>
                         :
                         <></>
                 }

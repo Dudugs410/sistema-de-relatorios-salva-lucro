@@ -133,21 +133,21 @@ const Header = () => {
             { nome: 'Vendas', icone: icones['FiDollarSign'], rota: '/vendas' },
             { nome: 'Créditos', icone: icones['FiCreditCard'], rota: '/creditos' },
             { nome: 'Serviços', icone: icones['FiTool'], rota: '/servicos' },
-            { nome: 'Cadastro de Bancos', icone: icones['FiLink'], rota: '/cadastrodebancos' },
-            { nome: 'Relatórios', icone: icones['FiFileText'], children: [
-                { nome: 'Financeiro', rota: '/financeiro' },
-                { nome: 'Gerenciais', rota: '/gerenciais' },
-                { nome: 'Outros', rota: '/outrosrelatorios'},
-            ]},
+            //{ nome: 'Cadastro de Bancos', icone: icones['FiLink'], rota: '/cadastrodebancos' },
+            //{ nome: 'Relatórios', icone: icones['FiFileText'], children: [
+            //    { nome: 'Financeiro', rota: '/financeiro' },
+            //    { nome: 'Gerenciais', rota: '/gerenciais' },
+            //    { nome: 'Outros', rota: '/outrosrelatorios'},
+            //]},
             { nome: 'Exportações', icone: icones['FiDownload'], children: [
                 { nome: 'Sysmo', rota: '/sysmo' },
-                { nome: 'Meta', rota: '/meta' },
-                { nome: 'Meta Sapiranga', rota: '/metasapiranga' },
+                //{ nome: 'Meta', rota: '/meta' },
+                //{ nome: 'Meta Sapiranga', rota: '/metasapiranga' },
             ]},
-            { nome: 'Administração', icone: icones['FiPaperClip'], rota: '/administracao'},
-            { nome: 'Suporte', icone: icones['FiSettings'], rota: '/suporte'},
-            { nome: 'Delivery', icone: icones['FiTruck'], rota: '/vendasdelivery'},
-            { nome: 'Conciliacao', icone: icones['FiShoppingBag'], rota: '/conciliacao'},
+            //{ nome: 'Administração', icone: icones['FiPaperClip'], rota: '/administracao'},
+            //{ nome: 'Suporte', icone: icones['FiSettings'], rota: '/suporte'},
+            //{ nome: 'Delivery', icone: icones['FiTruck'], rota: '/vendasdelivery'},
+            //{ nome: 'Conciliacao', icone: icones['FiShoppingBag'], rota: '/conciliacao'},
             { nome: 'Taxas', icone: icones['FiTable'], rota: '/taxas'}
         ];
 
