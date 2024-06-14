@@ -312,6 +312,67 @@ function AuthProvider({ children }){
 				return
 			}
 		}
+
+		//Edita Taxa
+
+		const editTax = async (tax) => {
+			setIsLoadingTaxes(true)
+			try {
+				const apiClientCode = Cookies.get('clientCode')
+				//const apiClientCode = '215'
+				if(apiClientCode !== ('todos' || 'TODOS' || undefined)){
+					let body = tax
+					api.put('taxas', body)
+					.then(response =>{
+						console.log('response: ', response)
+						alert('Taxa alterada com sucesso!')
+					})
+					.catch(error =>{
+						console.log('error: ', error)
+						alert('Erro ao alterar taxa!')
+					})
+				} else {
+					return []
+				}
+				setIsLoadingTaxes(false)
+			} catch (error) {
+				console.error('Error fetching vendas:', error)
+				setIsLoadingTaxes(false)
+				return
+			}
+		}
+
+		//Deleta Taxa
+
+		const deleteTax = async (tax) => {
+			setIsLoadingTaxes(true)
+			try {
+				const apiClientCode = Cookies.get('clientCode')
+				//const apiClientCode = '215'
+				if(apiClientCode !== ('todos' || 'TODOS' || undefined)){
+					console.log('tax: ', tax, )
+					let body = tax
+					api.delete('taxas', body)
+					.then(response =>{
+						console.log('response: ', response)
+						alert('Taxa alterada com sucesso!')
+					})
+					.catch(error =>{
+						console.log('error: ', error)
+						alert('Erro ao alterar taxa!')
+					})
+				} else {
+					return []
+				}
+				setIsLoadingTaxes(false)
+			} catch (error) {
+				console.error('Error fetching vendas:', error)
+				setIsLoadingTaxes(false)
+				return
+			}
+		}
+
+
 		//Bancos
 
 		const [isLoadingBanks, setIsLoadingBanks] = useState(false)
@@ -321,7 +382,7 @@ function AuthProvider({ children }){
 		}
 
 		const addBank = async (bank) => {
-			console.log('addBank')
+			console.log('addBank: ', bank)
 		}
 
 		// retorna array de bandeiras
@@ -1464,7 +1525,8 @@ function AuthProvider({ children }){
 
 				// Taxas
 
-				loadTaxes, addTax, isLoadingTaxes,
+				loadTaxes, isLoadingTaxes,
+				addTax, editTax, deleteTax,
 
 				// Bancos
 
