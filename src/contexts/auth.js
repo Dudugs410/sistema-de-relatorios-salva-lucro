@@ -101,6 +101,7 @@ function AuthProvider({ children }){
   
 			if (userMatch) {
 				const userData = { NOME: userMatch.NOME, EMAIL: userMatch.EMAIL }
+				Cookies.set('GRUCODIGO', userMatch.GRUCODIGO)
 				sessionStorage.setItem('isSignedIn', true)
 				sessionStorage.setItem('userData', JSON.stringify(userData))
 				localStorage.setItem('isSignedIn', true)
@@ -290,6 +291,7 @@ function AuthProvider({ children }){
 		//Adiciona nova Taxa
 		const addTax = async (tax) => {
 			setIsLoadingTaxes(true)
+			console.log(tax)
 			try {
 				const apiClientCode = Cookies.get('clientCode')
 				//const apiClientCode = '215'
@@ -316,41 +318,37 @@ function AuthProvider({ children }){
 		//Edita Taxa
 
 		const editTax = async (tax) => {
-			setIsLoadingTaxes(true)
+			setIsLoadingTaxes(true);
 			try {
-				const apiClientCode = Cookies.get('clientCode')
-				//const apiClientCode = '215'
-				if(apiClientCode !== ('todos' || 'TODOS' || undefined)){
-					let body = tax
-					api.put('taxas', body)
-					.then(response =>{
-						console.log('response: ', response)
-						alert('Taxa alterada com sucesso!')
-					})
-					.catch(error =>{
-						console.log('error: ', error)
-						alert('Erro ao alterar taxa!')
-					})
+				const apiClientCode = Cookies.get('clientCode');
+				if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
+					let body = tax;
+					try {
+						const response = await api.put('taxas', body);
+						console.log('response:', response);
+						alert('Taxa alterada com sucesso!');
+					} catch (error) {
+						console.log('error:', error);
+						alert('Erro ao alterar taxa!');
+					}
 				} else {
-					return []
+					console.log('Invalid client code');
 				}
-				setIsLoadingTaxes(false)
 			} catch (error) {
-				console.error('Error fetching vendas:', error)
-				setIsLoadingTaxes(false)
-				return
+				console.error('Error fetching vendas:', error);
+			} finally {
+				setIsLoadingTaxes(false);
 			}
-		}
+		};
 
 		//Deleta Taxa
 
 		const deleteTax = async (tax) => {
 			setIsLoadingTaxes(true)
+			console.log(tax)
 			try {
 				const apiClientCode = Cookies.get('clientCode')
-				//const apiClientCode = '215'
 				if(apiClientCode !== ('todos' || 'TODOS' || undefined)){
-					console.log('tax: ', tax, )
 					let body = tax
 					api.delete('taxas', body)
 					.then(response =>{

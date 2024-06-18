@@ -13,7 +13,7 @@ const Header = () => {
     const { logout, isCheckedCalendar, setIsCheckedCalendar } = useContext(AuthContext)
 
     const [isChecked, setIsChecked] = useState(localStorage.getItem('isChecked') ? false : true )
-    
+
     const [showRelatoriosDropdown, setShowRelatoriosDropdown] = useState(false)
     const [showExportacoesDropdown, setShowExportacoesDropdown] = useState(false)
 
