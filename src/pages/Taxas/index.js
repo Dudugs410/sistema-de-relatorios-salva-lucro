@@ -1,337 +1,640 @@
-import { useEffect, useContext, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useEffect, useContext, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { AuthContext } from '../../contexts/auth';
-import Cookies from 'js-cookie';
-import '../../styles/global.scss';
-import './taxas.scss';
+import Cookies from 'js-cookie'
+import '../../styles/global.scss'
+import './taxas.scss'
 import Select from 'react-select';
-import { FiEdit, FiPlus, FiTrash, FiX } from 'react-icons/fi';
-import { toast } from 'react-toastify';
+import { FiEdit, FiPlus, FiTrash } from 'react-icons/fi';
+import { parse } from 'date-fns';
+import { toast } from 'react-toastify'
 
-const Taxas = () => {
-  const location = useLocation();
-  const {
-    loadBanners,
-    loadAdmins,
-    loadMods,
-    loadTaxes,
-    addTax,
-    editTax,
-    deleteTax,
-    changedOption,
-    isLoadingTaxes,
-  } = useContext(AuthContext);
+const Taxas = () =>{
+    const location = useLocation();
+    const { 
+        loadBanners, 
+        loadAdmins,
+        loadMods, 
+        loadTaxes, 
+        addTax, editTax, deleteTax,
+        changedOption, 
+        isLoadingTaxes
+    } = useContext(AuthContext)
 
-  const [bannersList, setBannersList] = useState([]);
-  const [adminsList, setAdminsList] = useState([]);
-  const [modsList, setModsList] = useState([]);
-  const cliOptions = JSON.parse(Cookies.get('clientOptions'));
-  const [banOptions, setBanOptions] = useState([]);
-  const [admOptions, setAdmOptions] = useState([]);
-  const [modOptions, setModOptions] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isModalEditOpen, setIsModalEditOpen] = useState(false);
-  const [clientCode, setClientCode] = useState(Cookies.get('clientCode'));
-  const [taxesList, setTaxesList] = useState([]);
-  const [selectedClient, setSelectedClient] = useState(JSON.parse(Cookies.get('selectedClient')));
-  const [editableTax, setEditableTax] = useState(null);
-  const [deletableTax, setDeletableTax] = useState(null);
+    const [bannersList, setBannersList] = useState([])
+    const [adminsList, setAdminsList] = useState([])
+    const [modsList, setModsList] = useState([])
 
-  useEffect(() => {
-    sessionStorage.setItem('currentPath', location.pathname);
-  }, [location.pathname]);
+    const cliOptions = JSON.parse(Cookies.get('clientOptions'))
+    
+    const [banOptions, setBanOptions] = useState([])
+    const [admOptions, setAdmOptions] = useState([])
+    const [modOptions, setModOptions] = useState([])
 
-  useEffect(() => {
-    const initialize = async () => {
-      if (bannersList.length === 0) {
-        const response = await loadBanners();
-        setBannersList(response);
-      }
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [isModalEditOpen, setIsModalEditOpen] = useState(false)
 
-      if (adminsList.length === 0) {
-        const response = await loadAdmins();
-        setAdminsList(response);
-      }
+    // Codigo do Cliente, Proveniente do SeletorCliente
+    const [clientCode, setClientCode] = useState(Cookies.get('clientCode'))
+    // Array de Objetos a Serem Mostrados na Tabela
+    const [taxesList, setTaxesList] = useState([])
 
-      if (modsList.length === 0) {
-        const response = await loadMods();
-        setModsList(response);
-      }
+    useEffect(()=>{
+        sessionStorage.setItem('currentPath', location.pathname)
+    },[])
 
-      if (clientCode !== 'todos') {
-        const response = await loadTaxes();
-        setTaxesList(response);
-      }
-    };
-    initialize();
-  }, [bannersList, adminsList, modsList, clientCode, loadBanners, loadAdmins, loadMods, loadTaxes]);
+    useEffect(()=>{
+        async function inicialize(){
+          if(bannersList.length === 0){
+            const response = await loadBanners()
+            setBannersList(response)
+          }
+          
+          if(adminsList.length === 0){
+            const response = await loadAdmins()
+            setAdminsList(response)
+          }
 
-  useEffect(() => {
-    if (bannersList.length > 0) {
-      const bannersListOptions = bannersList.map((banner) => ({
-        value: banner.codigoBandeira,
-        label: banner.descricaoBandeira,
-      }));
-      setBanOptions(bannersListOptions);
-    }
-  }, [bannersList]);
+          if(modsList.length === 0){
+            const response = await loadMods()
+            setModsList(response)
+          }
 
-  useEffect(() => {
-    if (adminsList.length > 0) {
-      const adminsListOptions = adminsList.map((admin) => ({
-        value: admin.codigoAdquirente,
-        label: admin.nomeAdquirente,
-      }));
-      setAdmOptions(adminsListOptions);
-    }
-  }, [adminsList]);
-
-  useEffect(() => {
-    if (modsList.length > 0) {
-      const modsListOptions = modsList.map((mod) => ({
-        value: mod.codigoModalidade,
-        label: mod.descricaoModalidade,
-      }));
-      setModOptions(modsListOptions);
-    }
-  }, [modsList]);
-
-  useEffect(() => {
-    setClientCode(Cookies.get('clientCode'));
-    setSelectedClient(JSON.parse(Cookies.get('selectedClient')));
-  }, [changedOption]);
-
-  useEffect(() => {
-    const loadTax = async () => {
-      if (clientCode === 'todos') {
-        setTaxesList([]);
-      } else {
-        const response = await loadTaxes();
-        setTaxesList(response);
-      }
-    };
-    loadTax();
-  }, [clientCode, loadTaxes]);
-
-  const handleEdit = (object) => {
-    setEditableTax({
-      CODIGO: object.CODIGO,
-      BADCODIGO: object.BADCODIGO,
-      ADQCODIGO: object.ADQUIRENTE.codigoAdquirente,
-      CLICODIGO: selectedClient.codigoCliente,
-      MODCODIGO: object.MODCODIGO,
-      TAXAPERCENTUAL: parseFloat(object.TAXAPERCENTUAL),
-    });
-    setIsModalEditOpen(true);
-  };
-
-  const handleDelete = async (object) => {
-    setDeletableTax({
-        CODIGO: object.CODIGO,
-        BADCODIGO: object.BADCODIGO,
-        ADQCODIGO: object.ADQUIRENTE.codigoAdquirente,
-        CLICODIGO: selectedClient.codigoCliente,
-        MODCODIGO: object.MODCODIGO,
-        TAXAPERCENTUAL: parseFloat(object.TAXAPERCENTUAL),
-      });
-    try {
-      await deleteTax(deletableTax);
-      setTaxesList(taxesList.filter((t) => t.CODIGO !== tax.CODIGO));
-      toast.success('Taxa deletada com sucesso');
-    } catch (error) {
-      toast.error('Erro ao deletar a taxa');
-    }
-  };
-
-  const resetValues = () => {
-    setEditableTax(null);
-    setIsModalOpen(false);
-    setIsModalEditOpen(false);
-  };
-
-  const handleCancel = () => {
-    resetValues();
-  };
-
-  const handleModalSubmit = async (newTaxObj, isEdit) => {
-    try {
-      if (isEdit) {
-        await editTax(newTaxObj);
-      } else {
-        await addTax(newTaxObj);
-      }
-      setIsModalOpen(false);
-      setIsModalEditOpen(false);
-      const response = await loadTaxes();
-      setTaxesList(response);
-      toast.success('Taxa salva com sucesso');
-    } catch (error) {
-      toast.error('Erro ao salvar a taxa');
-    }
-  };
-
-  const TaxesTable = () => (
-    <table className="table table-striped table-hover table-bordered table-taxas">
-      <thead>
-        <tr>
-          <th scope="col" style={{ width: '2%' }}><button className="btn btn-primary btn-global" style={{ width: '10%' }} onClick={() => {setIsModalOpen(true);}}><FiPlus className="icon" /></button></th>
-          <th scope="col" style={{ textAlign: 'center' }}>Bandeira</th>
-          <th scope="col" style={{ textAlign: 'center' }}>Adquirente</th>
-          <th scope="col" style={{ textAlign: 'center' }}>Modalidade</th>
-          <th scope="col" style={{ textAlign: 'center' }}>Tipo Taxa</th>
-          <th scope="col" style={{ textAlign: 'center' }}>% Taxa</th>
-          <th scope="col" style={{ width: '2%' }}></th>
-        </tr>
-      </thead>
-      <tbody>
-        {taxesList.length > 0 &&
-          taxesList.map((object, index) => (
-            <tr key={index} className="det-tr-global tr-taxas">
-              <th scope="row" onClick={() => handleEdit(object)}>
-                <FiEdit className="icon" />
-              </th>
-              <td className="det-td-vendas-global" data-label="BADDESCRICAO">{object.BADDESCRICAO}</td>
-              <td className="det-td-vendas-global" data-label="nomeAdquirente">{object.ADQUIRENTE.nomeAdquirente}</td>
-              <td className="det-td-vendas-global" data-label="MODDESCRICAO">{object.MODDESCRICAO}</td>
-              <td className="det-td-vendas-global" data-label="TIPOTAXA">{object.TIPOTAXA}</td>
-              <td className="det-td-vendas-global" data-label="TAXAPERCENTUAL">{object.TAXAPERCENTUAL} %</td>
-              <th scope="row" onClick={() => handleDelete(object)}>
-                <FiTrash className="icon" />
-              </th>
-            </tr>
-          ))}
-      </tbody>
-    </table>
-  );
-
-  const Modal = ({ isOpen, onClose, children }) => {
-    if (!isOpen) return null;
-    return (
-      <div className="modal-layout" onClick={onClose}>
-        <div className="modal-layout-content" onClick={(e) => e.stopPropagation()}>
-          {children}
-        </div>
-      </div>
-    );
-  };
-
-  const TaxModal = ({ isOpen, onClose, onSubmit, initialData }) => {
-    const [selectedBan, setSelectedBan] = useState(initialData?.BADCODIGO || { label: 'Selecione', value: 0 });
-    const [selectedAdm, setSelectedAdm] = useState(initialData?.ADQCODIGO || { label: 'Selecione', value: 0 });
-    const [selectedMod, setSelectedMod] = useState(initialData?.MODCODIGO || { label: 'Selecione', value: 0 });
-    const [selectedType, setSelectedType] = useState(initialData?.TIPOTAXA || { label: 'Selecione', value: 0 });
-    const [tax, setTax] = useState(initialData?.TAXAPERCENTUAL || '');
+          if(Cookies.get('clientCode' !== ('todos'))){
+            const response = await loadTaxes()
+            setTaxesList(response)
+          }
+        }
+        inicialize()
+      },[])
 
     useEffect(() => {
-      if (initialData) {
-        setSelectedBan({ label: initialData.BADDESCRICAO, value: initialData.BADCODIGO });
-        setSelectedAdm({ label: initialData.ADQUIRENTE.nomeAdquirente, value: initialData.ADQUIRENTE.codigoAdquirente });
-        setSelectedMod({ label: initialData.MODDESCRICAO, value: initialData.MODCODIGO });
-        setSelectedType({ label: initialData.TIPOTAXA, value: initialData.TIPOTAXA });
-        setTax(initialData.TAXAPERCENTUAL);
-      }
-    }, [initialData]);
+        if(bannersList){
+            if (bannersList.length > 0) {
+                const bannersListOptions = bannersList.map(banner => ({ value: banner.codigoBandeira, label: banner.descricaoBandeira }));
+                setBanOptions(bannersListOptions);
+            }
+        }
+    }, [bannersList]);
 
-    const handleSubmit = () => {
-      const newTaxObj = {
-        CODIGO: initialData?.CODIGO,
-        CLICODIGO: Cookies.get('clientCode'),
-        BADCODIGO: selectedBan.value,
-        ADQCODIGO: selectedAdm.value,
-        MODCODIGO: selectedMod.value,
-        TIPOTAXA: selectedType.value,
-        TAXAPERCENTUAL: parseFloat(tax),
-      };
-      onSubmit(newTaxObj, !!initialData);
+    useEffect(() => {
+        if(adminsList){
+            if (adminsList.length > 0) {
+                const adminsListOptions = adminsList.map(admin => ({ value: admin.codigoAdquirente, label: admin.nomeAdquirente }));
+                setAdmOptions(adminsListOptions);
+            }
+        }
+    }, [adminsList]);
+
+    useEffect(() => {
+        if(modsList){
+            if (modsList.length > 0) {
+                const modsListOptions = modsList.map(mod => ({ value: mod.codigoModalidade, label: mod.descricaoModalidade }));
+                setModOptions(modsListOptions);
+            }
+        }
+    }, [modsList]);
+
+    useEffect(()=>{
+        setClientCode(Cookies.get('clientCode'))
+        setTaxesList([])
+    },[changedOption])
+
+    useEffect(()=>{
+        const loadTax = async () => {
+            console.log(taxesList)
+            
+            if((clientCode === 'todos') || (clientCode === 'TODOS')){
+                console.log('clientCode TODOS: ', clientCode)
+                setTaxesList([])
+            } else {
+                console.log('clientCode: ', clientCode)
+                const response = await loadTaxes()
+                setTaxesList(response)
+            }
+        }
+        loadTax()
+    },[clientCode])
+
+    const [editableTax, setEditableTax] = useState()
+
+    const handleEdit = (object) => {
+        console.log('handleEdit object: ', object)
+        setEditableTax({
+          CODIGO: object.CODIGO,
+          BANDEIRA: {label: object.BADDESCRICAO, value: object.BADCODIGO},
+          ADQUIRENTE: {label: object.ADQUIRENTE.nomeAdquirente, value: object.ADQCODIGO},
+          CLICODIGO: object.CLICODIGO,
+          MODALIDADE: {label: object.MODDESCRICAO, value: object.MODCODIGO},
+          TAXAPERCENTUAL: parseFloat(object.TAXAPERCENTUAL),
+        })
+        setIsModalEditOpen(true)
+    }
+
+    const resetValues = () =>{
+        setEditableTax({})
+    }
+
+    const handleDelete = async (object) => {
+      console.log('deletando objeto: ', object)
+      const toBeDeleted = { 
+        CODIGO: object.CODIGO,
+        BADCODIGO: object.BADCODIGO,
+        ADQCODIGO: object.ADQCODIGO,
+        CLICODIGO: object.CLICODIGO,
+        MODCODIGO: object.MODCODIGO,
+        TAXAPERCENTUAL: object.TAXAPERCENTUAL 
+      }
+      console.log('objeto a ser deletado: ', toBeDeleted)
+
+      try {
+        await toast.promise(deleteTax(toBeDeleted), {
+            pending: 'Carregando...',
+            success: 'Carregado com Sucesso',
+            error: 'Ocorreu um Erro',
+        })
+        .then(async () => {
+          const response = await loadTaxes()
+          setTaxesList(response)
+      })
+        resetValues();
+    } catch (error) {
+        console.error('Error handling busca:', error);
+    }
+    }
+
+    const handleCancel = () => {
+        resetValues()
+        setIsModalEditOpen(false)
+    }
+
+    const TaxesTable = () =>{
+        return(
+          <div className='table-wrapper'>
+          <table className="table table-striped table-hover table-bordered table-taxas">
+            <thead>
+              <tr>
+                <th scope="col" style={{ width: '2%', textAlign: 'center' }}>
+                  <button className="btn btn-primary btn-global" style={{ width: '100%' }} onClick={()=>{setIsModalOpen(true)}}>
+                    <FiPlus size={25} className="icon" />
+                  </button>
+                </th>
+                <th scope="col" style={{ textAlign: 'center' }}>Bandeira</th>
+                <th scope="col" style={{ textAlign: 'center' }}>Adquirente</th>
+                <th scope="col" style={{ textAlign: 'center' }}>Modalidade</th>
+                <th scope="col" style={{ textAlign: 'center' }}>Tipo Taxa</th>
+                <th scope="col" style={{ textAlign: 'center' }}>% Taxa</th>
+                <th scope="col" style={{ width: '2%', textAlign: 'center' }}></th>
+              </tr>
+            </thead>
+            <tbody>
+              {taxesList.length > 0 &&
+                taxesList.map((object, index) => (
+                  <tr key={index} className="det-tr-global tr-taxas">
+                    <th scope="row" style={{ textAlign: 'center' }} onClick={()=>{handleEdit(object)}}>
+                      <FiEdit className="icon" />
+                    </th>
+                    <td className="det-td-vendas-global" data-label="BADDESCRICAO">{object.BADDESCRICAO}</td>
+                    <td className="det-td-vendas-global" data-label="nomeAdquirente">{object.ADQUIRENTE.nomeAdquirente}</td>
+                    <td className="det-td-vendas-global" data-label="MODDESCRICAO">{object.MODDESCRICAO}</td>
+                    <td className="det-td-vendas-global" data-label="TIPOTAXA">{object.TIPOTAXA}</td>
+                    <td className="det-td-vendas-global" data-label="TAXAPERCENTUAL">{object.TAXAPERCENTUAL} %</td>
+                    <th scope="row" style={{ textAlign: 'center' }} onClick={() => handleDelete(object)}>
+                      <FiTrash className="icon" />
+                    </th>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
+        )
+    }
+
+
+    //Monitorando o objeto da nova taxa a ser adicionada, e Salvando-o nos Cookies
+
+    //Lógica do Modal de Adição de nova taxa, permitindo também fechá-lo
+    //ao clicar fora da janela do Modal
+    /////////////////////////////////////////////////////////////////////
+    
+    const closeModal = () => {
+        setIsModalOpen(false)
+        setIsModalEditOpen(false)
     };
 
-    return (
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <form className="form-modal-taxes">
-          <div className="modal-header">
-            <FiX size={25} className="close-icon" onClick={onClose} />
-          </div>
-          <label className="label-input">Bandeira:</label>
-          <Select
-            options={banOptions}
-            value={selectedBan}
-            onChange={setSelectedBan}
-            className="select-component"
-          />
-          <label className="label-input">Adquirente:</label>
-          <Select
-            options={admOptions}
-            value={selectedAdm}
-            onChange={setSelectedAdm}
-            className="select-component"
-          />
-          <label className="label-input">Modalidade:</label>
-          <Select
-            options={modOptions}
-            value={selectedMod}
-            onChange={setSelectedMod}
-            className="select-component"
-          />
-          <label className="label-input">Tipo Taxa:</label>
-          <Select
-            options={[
-              { label: 'Crédito', value: 'C' },
-              { label: 'Débito', value: 'D' },
-            ]}
-            value={selectedType}
-            onChange={setSelectedType}
-            className="select-component"
-          />
-          <label className="label-input">% Taxa:</label>
-          <input
-            type="number"
-            value={tax}
-            onChange={(e) => setTax(e.target.value)}
-            className="input-component"
-          />
-          <button
-            type="button"
-            className="btn btn-success btn-global"
-            onClick={handleSubmit}
-          >
-            Salvar
-          </button>
-        </form>
-      </Modal>
-    );
-  };
+    const ModalNewTax = () => {
 
-  return (
-    <div className="container-taxas">
-      {clientCode !== 'todos' ? (
-        <>
-          {isLoadingTaxes ? (
-            <p>Carregando...</p>
-          ) : (
-            <div className="table-responsive">
-              <TaxesTable />
+        const [selectedCli, setSelectedCli] = useState({label: 'Selecione', value: 0})
+        const [selectedBan, setSelectedBan] = useState({label: 'Selecione', value: 0})
+        const [selectedAdm, setSelectedAdm] = useState({label: 'Selecione', value: 0})
+        const [selectedMod, setSelectedMod] = useState({label: 'Selecione', value: 0})
+        const [tax, setTax] = useState('');
+
+        const resetValues = () => {
+            setSelectedCli({label: 'Selecione', value: 0})
+            setSelectedBan({label: 'Selecione', value: 0})
+            setSelectedAdm({label: 'Selecione', value: 0})
+            setSelectedMod({label: 'Selecione', value: 0})
+            setTax('')
+            setIsModalOpen(false)
+        }
+        
+        const isObjectFullyPopulated = (obj) => {
+            console.log('verificando objeto: ', obj)
+            for (const key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                    if (obj[key] === undefined || obj[key] === 0 || obj[key] === null || obj[key] === ('selecione' || 'Selecione') || tax === '') {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        };
+
+        const handleSubmit = async (e) => {
+          e.preventDefault();
+          const newTaxObj = {
+              ADQCODIGO: selectedAdm.value,
+              BADCODIGO: selectedBan.value,
+              CLICODIGO: clientCode,
+              MODCODIGO: selectedMod.value,
+              TAXAPERCENTUAL: parseFloat(tax)
+          };
+          if (isObjectFullyPopulated(newTaxObj) === true) {
+              try {
+                  await toast.promise(addTax(newTaxObj), {
+                      pending: 'Carregando...',
+                      success: 'Carregado com Sucesso',
+                      error: 'Ocorreu um Erro',
+                  })
+                  .then(async () => {
+                    const response = await loadTaxes()
+                    setTaxesList(response)
+                })
+                  resetValues();
+              } catch (error) {
+                  console.error('Error handling busca:', error);
+              }
+          } else {
+              alert('Todos os Campos devem ser preenchidos')
+          }
+      };
+
+        const handleCli = (selected) => {
+            setSelectedCli(selected)
+        }
+    
+        const handleBan = (selected) => {
+            setSelectedBan(selected)
+        }
+    
+        const handleAdq = (selected) => {
+            setSelectedAdm(selected)
+        }
+    
+        const handleMod = (selected) => {
+            setSelectedMod(selected)
+        }
+
+        const customStyles = {
+            control: (provided, state) => ({
+                ...provided,
+                background: 'white', // Background color of the control
+                color: 'black', // Text color of the control
+                // You can add more styles here as needed
+            }),
+            menu: (provided, state) => ({
+                ...provided,
+                background: 'white', // Background color of the dropdown menu
+                color: 'black', // Text color of the dropdown menu
+                // You can add more styles here as needed
+            }),
+            // Add more styles for other components as needed
+        };
+
+        return(
+            <div className='modal-taxas'>
+                <h3 className='subtitle'>Adicionar Taxa:</h3>
+                <hr className='hr-global'/>
+                <form className='form-taxas' onSubmit={handleSubmit}>
+                    <div className='select-container'>
+                    <div className='select-component'>
+                            <span className='span-picker'>Cliente</span>
+                            <Select
+                                styles={customStyles}
+                                value={selectedCli} 
+                                onChange={handleCli}
+                                placeholder="Selecione"
+                                options={cliOptions}
+                            />
+                        </div>
+                        <br/>
+                        <div className='select-component'>
+                            <span className='span-picker'>Bandeira</span>
+                            <Select
+                                styles={customStyles}
+                                value={selectedBan} 
+                                onChange={handleBan}
+                                placeholder="Selecione"
+                                options={banOptions}
+                            />
+                        </div>
+                        <br/>
+                        <div className='select-component'>
+                            <span className='span-picker'>Adquirente</span>
+                            <Select 
+                                styles={customStyles}
+                                value={selectedAdm} 
+                                onChange={handleAdq}
+                                placeholder="Selecione"
+                                options={admOptions}
+                            />
+                        </div>
+                        <br/>
+                        <div className='select-component'>
+                            <span className='span-picker'>Modalidade</span>
+                            <Select
+                                styles={customStyles}
+                                value={selectedMod} 
+                                onChange={handleMod}
+                                placeholder="Selecione"
+                                options={modOptions}
+                            />
+                        </div>
+                        <br/>
+                        <div className='select-component'>
+                            <span className='span-picker'>Taxa</span>
+                            <input
+                                type="text"
+                                value={tax}
+                                onChange={(e) => {
+                                    const inputValue = e.target.value;
+                                    let formattedValue = inputValue.replace(/[^\d.]/g, ''); // Remove any non-digit characters except period
+                                    if (formattedValue.length === 3 && !formattedValue.includes('.')) {
+                                        // Insert a period after the first two digits
+                                        formattedValue = formattedValue.slice(0, 2) + '.' + formattedValue.slice(2);
+                                    }
+                                    if (formattedValue.length > 5) {
+                                        // Allow only one digit after the period
+                                        formattedValue = formattedValue.slice(0, 4);
+                                    }
+                                    setTax(formattedValue);
+                                }}
+                                maxLength={5} // Maximum length including the decimal point
+                            />
+                        </div>
+                        <div className='select-component'>
+                            <hr className='hr-global'/>
+                            <button className='btn-global' disabled={isLoadingTaxes}>Adicionar</button>
+                        </div>
+                    </div>
+                </form>
             </div>
-          )}
-        </>
-      ) : (
-        <h2 style={{ textAlign: 'center', marginTop: '20px' }}>
-          Não é possível mostrar os dados para todos os clientes
-        </h2>
-      )}
-      <TaxModal
-        isOpen={isModalOpen}
-        onClose={handleCancel}
-        onSubmit={handleModalSubmit}
-        initialData={null}
-      />
-      <TaxModal
-        isOpen={isModalEditOpen}
-        onClose={handleCancel}
-        onSubmit={handleModalSubmit}
-        initialData={editableTax}
-      />
-    </div>
-  );
-};
+        )
+    }
+
+    const ModalEditTax = () => {
+
+        console.log('ModalEditTax obj:', editableTax)
+        
+        const [banner, setBanner] = useState(editableTax.BANDEIRA)
+        const [admin, setAdmin] = useState(editableTax.ADQUIRENTE)
+        const [modality, setModality] = useState(editableTax.MODALIDADE)
+        const [cliCode, setCliCode] = useState(editableTax.CLICODIGO)
+        const [taxValue, setTaxValue] = useState(editableTax.TAXAPERCENTUAL)
+        const [taxCode, setTaxCode] = useState(editableTax.CODIGO)
+
+        const isObjectFullyPopulated = (obj) => {
+            console.log('verificando objeto: ', obj)
+            for (const key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                    if (obj[key] === undefined || obj[key] === 0 || obj[key] === null || obj[key] === ('selecione' || 'Selecione')) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        };
+
+        const handleSubmit = async (e) => {
+            e.preventDefault();
+            const newTaxObj = {
+                ADQCODIGO: admin.value,
+                BADCODIGO: banner.value,
+                CODIGO: taxCode,
+                CLICODIGO: cliCode,
+                MODCODIGO: modality.value,
+                TAXAPERCENTUAL: parseFloat(taxValue)
+            };
+            if(isObjectFullyPopulated(newTaxObj) === true){
+                try {
+                    console.log('objeto atualizado: ', newTaxObj)
+                    await toast.promise(editTax(newTaxObj), {
+                      pending: 'Carregando...',
+                      success: 'Carregado com Sucesso',
+                      error: 'Ocorreu um Erro',
+                    })
+                    console.log('resetando form...')
+                    resetValues()
+                  } catch (error) {
+                    console.error('Error handling busca:', error);
+                  }
+            } else {
+                alert('Todos os Campos devem ser preenchidos')
+            }
+        };
+    
+        const handleBan = (selected) => {
+            setBanner(selected)
+        }
+    
+        const handleAdq = (selected) => {
+            setAdmin(selected)
+        }
+    
+        const handleMod = (selected) => {
+            setModality(selected)
+        }
+
+        const customStyles = {
+            control: (provided, state) => ({
+                ...provided,
+                background: 'white', // Background color of the control
+                color: 'black', // Text color of the control
+                // You can add more styles here as needed
+            }),
+            menu: (provided, state) => ({
+                ...provided,
+                background: 'white', // Background color of the dropdown menu
+                color: 'black', // Text color of the dropdown menu
+                // You can add more styles here as needed
+            }),
+            // Add more styles for other components as needed
+        };
+
+        return(
+            <div className='modal-taxas'>
+                <h3 className='subtitle'>Editar Taxa:</h3>
+                <hr className='hr-global'/>
+                <form className='form-taxas' onSubmit={handleSubmit}>
+                    <div className='select-container'>
+                        <br/>
+                        <div className='select-component'>
+                            <span className='span-picker'>Bandeira</span>
+                            <Select
+                                styles={customStyles}
+                                value={banner} 
+                                onChange={handleBan}
+                                placeholder="Selecione"
+                                options={banOptions}
+                            />
+                        </div>
+                        <br/>
+                        <div className='select-component'>
+                            <span className='span-picker'>Adquirente</span>
+                            <Select 
+                                styles={customStyles}
+                                value={admin} 
+                                onChange={handleAdq}
+                                placeholder="Selecione"
+                                options={admOptions}
+                            />
+                        </div>
+                        <br/>
+                        <div className='select-component'>
+                            <span className='span-picker'>Modalidade</span>
+                            <Select
+                                styles={customStyles}
+                                value={modality} 
+                                onChange={handleMod}
+                                placeholder="Selecione"
+                                options={modOptions}
+                            />
+                        </div>
+                        <br/>
+                        {/*<div className='select-component'>
+                            <span className='span-picker'>Tipo Taxa</span>
+                            <input
+                                type="text"
+                                value={taxType}
+                                disabled
+                        </div>/>*/}
+                        <br/>
+                        <div className='select-component'>
+                            <span className='span-picker'>Taxa</span>
+                            <input
+                                type="text"
+                                value={taxValue}
+                                onChange={(e) => {
+                                    const inputValue = e.target.value;
+                                    let formattedValue = inputValue.replace(/[^\d.]/g, ''); // Remove any non-digit characters except period
+                                    if (formattedValue.length === 3 && !formattedValue.includes('.')) {
+                                        // Insert a period after the first two digits
+                                        formattedValue = formattedValue.slice(0, 2) + '.' + formattedValue.slice(2);
+                                    }
+                                    if (formattedValue.length > 5) {
+                                        // Allow only one digit after the period
+                                        formattedValue = formattedValue.slice(0, 4);
+                                    }
+                                    setTaxValue(formattedValue);
+                                }}
+                                maxLength={5} // Maximum length including the decimal point
+                            />
+                        </div>
+                        <div className='select-component'>
+                            <hr className='hr-global'/>
+                            <button className='btn-global' disabled={isLoadingTaxes}>Atualizar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        )
+    }
+
+    const Modal = ({ isOpen, onClose, children }) => {
+        if (!isOpen) return null;
+        
+        return (
+            <div className="modal-layout" onClick={onClose}>
+                <div className='modal-layout-content' onClick={(e) => e.stopPropagation()}>
+                    {children}
+                </div>
+            </div>
+        );
+    };
+
+    const AddTaxModal = () => { 
+        return (
+            <div>
+                <Modal isOpen={isModalOpen} onClose={closeModal}>
+                    <div className='modal-layout-body'>
+                        <ModalNewTax />
+                    </div>
+                </Modal>
+            </div>
+        );
+    };
+
+    const EditTaxModal = () => {
+        return (
+            <div>
+                <Modal isOpen={isModalEditOpen} onClose={closeModal}>
+                    <div className='modal-layout-body'>
+                        <ModalEditTax/>
+                    </div>
+                </Modal>
+            </div>
+        );
+    }
+    /////////////////////////////////////////////////////////////////////
+
+
+    return(
+      <div className='appPage'>
+        <div className='page-background-global'>
+          <div className='page-content-global page-content-exportacao'>
+            <div className='title-container-global'>
+              <h1 className='title-global'>Taxas</h1>
+            </div>
+            <hr className='hr-global'/>
+            <div className='container-global'>
+                { ((taxesList && taxesList.length > 0) && (clientCode !== ('todos' || undefined))) && 
+                <>    
+                    <h3 className='subtitle'>Cliente: {JSON.parse(Cookies.get('selectedClient')).label}</h3>
+                    <hr className='hr-global'/>
+                    <TaxesTable />
+                </>
+                }
+                { ((taxesList && taxesList.length === 0) && (clientCode !== ('todos' || undefined))) && 
+                <>  
+                    <span>Sem Taxas Cadastradas</span>
+                    <br/> 
+                    <button className='btn btn-primary btn-global' onClick={()=>{setIsModalOpen(true)}}><FiPlus className='icon' />Adicionar Taxa</button>
+                </>
+                }
+                {
+                    clientCode === ('todos' || undefined) ?
+                        <span>Selecione um cliente para exibir as taxas cadastradas</span>
+                        : 
+                        <></>
+                }
+            </div>
+            <hr className='hr-global'/>
+          </div>
+        </div>
+        {isModalOpen && (
+            <div className='modal-container'>
+                <AddTaxModal />
+            </div>
+        )}
+        
+        {isModalEditOpen && (
+            <div className='modal-container'>
+                <EditTaxModal />
+            </div>
+        )}
+      </div>
+    )
+}
 
 export default Taxas;
