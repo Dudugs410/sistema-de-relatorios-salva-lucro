@@ -146,7 +146,7 @@ const ExportacaoSysmo = () =>{
                 <form style={{width: '-webkit-fill-available'}}>
                     <div className='component-container-sysmo'>
                         <RadioSelect className='radio-container-expotacao-sysmo' options={radioOptions} onSelect={(e) => {setType(e)}}/>
-                        <div className='select-container'>
+                        <div className='select-container select-exportacao'>
                             <div className='select-component'>
                                 <span className='span-picker'>Bandeira</span>
                                 <Select
