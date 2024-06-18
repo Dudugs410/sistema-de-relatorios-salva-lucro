@@ -2,6 +2,13 @@
     overflow-x: scroll;
 }
 
+.page-content-taxas{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-content: center;
+}
+
 .form-taxas{
     width: 100%;
     display: flex;
@@ -56,3 +63,20 @@
     color: yellow !important; /* Text color of the dropdown menu */
     /* Add more styles as needed */
 }
+
+.form-group-taxas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .group-element-taxas {
+    flex: 1;
+    min-width: 200px; /* Adjust as needed */
+  }
+
+  .group-input-taxa{
+    display: flex;
+    flex-direction: column;
+  }

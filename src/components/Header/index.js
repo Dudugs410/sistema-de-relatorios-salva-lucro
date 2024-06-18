@@ -139,11 +139,11 @@ const Header = () => {
             //    { nome: 'Gerenciais', rota: '/gerenciais' },
             //    { nome: 'Outros', rota: '/outrosrelatorios'},
             //]},
-            { nome: 'Exportações', icone: icones['FiDownload'], children: [
-                { nome: 'Sysmo', rota: '/sysmo' },
+            //{ nome: 'Exportações', icone: icones['FiDownload'], children: [
+                //{ nome: 'Sysmo', rota: '/sysmo' },
                 //{ nome: 'Meta', rota: '/meta' },
                 //{ nome: 'Meta Sapiranga', rota: '/metasapiranga' },
-            ]},
+            //]},
             //{ nome: 'Administração', icone: icones['FiPaperClip'], rota: '/administracao'},
             //{ nome: 'Suporte', icone: icones['FiSettings'], rota: '/suporte'},
             //{ nome: 'Delivery', icone: icones['FiTruck'], rota: '/vendasdelivery'},

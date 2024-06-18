@@ -314,79 +314,82 @@ const Taxas = () =>{
 
         return(
             <div className='modal-taxas'>
-                <h3 className='subtitle'>Adicionar Taxa:</h3>
+                <div className='title-container-global'>
+                  <h3 className='subtitle' style={{margin: '0'}}>Cadastrar Taxa:</h3>
+                </div>
                 <hr className='hr-global'/>
-                <form className='form-taxas' onSubmit={handleSubmit}>
-                    <div className='select-container'>
+                <form className='select-container-taxa' onSubmit={handleSubmit}>
+                    <div className='form-group-taxas'>
+                      <div className='group-element-taxas'>
+                        <span className='span-picker'>Cliente</span>
+                        <Select
+                            styles={customStyles}
+                            value={selectedCli} 
+                            onChange={handleCli}
+                            placeholder="Selecione"
+                            options={cliOptions}
+                        />
+                      </div>
+                      <div className='group-element-taxas'>
+                        <span className='span-picker'>Modalidade</span>
+                        <Select
+                            styles={customStyles}
+                            value={selectedMod} 
+                            onChange={handleMod}
+                            placeholder="Selecione"
+                            options={modOptions}
+                        />
+                      </div>
+                    </div>
+                    <div className='form-group-taxas'>
+                      <div className='group-element-taxas'>
+                        <span className='span-picker'>Bandeira</span>
+                        <Select
+                            styles={customStyles}
+                            value={selectedBan} 
+                            onChange={handleBan}
+                            placeholder="Selecione"
+                            options={banOptions}
+                        />
+                      </div>
+                      <div className='group-element-taxas'>
+                        <span className='span-picker'>Adquirente</span>
+                        <Select 
+                            styles={customStyles}
+                            value={selectedAdm} 
+                            onChange={handleAdq}
+                            placeholder="Selecione"
+                            options={admOptions}
+                        />
+                      </div>
+                    </div>
+                    <br/>
+                    <div className='form-group-taxas'>
+                      <div className='group-input-taxa'>
+                          <span className='span-picker'>Taxa</span>
+                          <input
+                              type="text"
+                              value={tax}
+                              onChange={(e) => {
+                                  const inputValue = e.target.value;
+                                  let formattedValue = inputValue.replace(/[^\d.]/g, ''); // Remove any non-digit characters except period
+                                  if (formattedValue.length === 3 && !formattedValue.includes('.')) {
+                                      // Insert a period after the first two digits
+                                      formattedValue = formattedValue.slice(0, 2) + '.' + formattedValue.slice(2);
+                                  }
+                                  if (formattedValue.length > 5) {
+                                      // Allow only one digit after the period
+                                      formattedValue = formattedValue.slice(0, 4);
+                                  }
+                                  setTax(formattedValue);
+                              }}
+                              maxLength={5} // Maximum length including the decimal point
+                          />
+                      </div>
+                    </div>
                     <div className='select-component'>
-                            <span className='span-picker'>Cliente</span>
-                            <Select
-                                styles={customStyles}
-                                value={selectedCli} 
-                                onChange={handleCli}
-                                placeholder="Selecione"
-                                options={cliOptions}
-                            />
-                        </div>
-                        <br/>
-                        <div className='select-component'>
-                            <span className='span-picker'>Bandeira</span>
-                            <Select
-                                styles={customStyles}
-                                value={selectedBan} 
-                                onChange={handleBan}
-                                placeholder="Selecione"
-                                options={banOptions}
-                            />
-                        </div>
-                        <br/>
-                        <div className='select-component'>
-                            <span className='span-picker'>Adquirente</span>
-                            <Select 
-                                styles={customStyles}
-                                value={selectedAdm} 
-                                onChange={handleAdq}
-                                placeholder="Selecione"
-                                options={admOptions}
-                            />
-                        </div>
-                        <br/>
-                        <div className='select-component'>
-                            <span className='span-picker'>Modalidade</span>
-                            <Select
-                                styles={customStyles}
-                                value={selectedMod} 
-                                onChange={handleMod}
-                                placeholder="Selecione"
-                                options={modOptions}
-                            />
-                        </div>
-                        <br/>
-                        <div className='select-component'>
-                            <span className='span-picker'>Taxa</span>
-                            <input
-                                type="text"
-                                value={tax}
-                                onChange={(e) => {
-                                    const inputValue = e.target.value;
-                                    let formattedValue = inputValue.replace(/[^\d.]/g, ''); // Remove any non-digit characters except period
-                                    if (formattedValue.length === 3 && !formattedValue.includes('.')) {
-                                        // Insert a period after the first two digits
-                                        formattedValue = formattedValue.slice(0, 2) + '.' + formattedValue.slice(2);
-                                    }
-                                    if (formattedValue.length > 5) {
-                                        // Allow only one digit after the period
-                                        formattedValue = formattedValue.slice(0, 4);
-                                    }
-                                    setTax(formattedValue);
-                                }}
-                                maxLength={5} // Maximum length including the decimal point
-                            />
-                        </div>
-                        <div className='select-component'>
-                            <hr className='hr-global'/>
-                            <button className='btn-global' disabled={isLoadingTaxes}>Adicionar</button>
-                        </div>
+                        <hr className='hr-global'/>
+                        <button className='btn-global' disabled={isLoadingTaxes}>Adicionar</button>
                     </div>
                 </form>
             </div>
@@ -474,13 +477,14 @@ const Taxas = () =>{
 
         return(
             <div className='modal-taxas'>
-                <h3 className='subtitle'>Editar Taxa:</h3>
+                <div className='title-container-global'>
+                  <h3 className='subtitle' style={{margin: '0'}}>Editar Taxa:</h3>
+                </div>
                 <hr className='hr-global'/>
-                <form className='form-taxas' onSubmit={handleSubmit}>
-                    <div className='select-container'>
-                        <br/>
-                        <div className='select-component'>
-                            <span className='span-picker'>Bandeira</span>
+                <form className='select-container-taxa' onSubmit={handleSubmit}>
+                    <div className='form-group-taxas'>
+                      <div className='group-element-taxas'>
+                      <span className='span-picker'>Bandeira</span>
                             <Select
                                 styles={customStyles}
                                 value={banner} 
@@ -488,10 +492,9 @@ const Taxas = () =>{
                                 placeholder="Selecione"
                                 options={banOptions}
                             />
-                        </div>
-                        <br/>
-                        <div className='select-component'>
-                            <span className='span-picker'>Adquirente</span>
+                      </div>
+                      <div className='group-element-taxas'>
+                      <span className='span-picker'>Adquirente</span>
                             <Select 
                                 styles={customStyles}
                                 value={admin} 
@@ -499,10 +502,11 @@ const Taxas = () =>{
                                 placeholder="Selecione"
                                 options={admOptions}
                             />
-                        </div>
-                        <br/>
-                        <div className='select-component'>
-                            <span className='span-picker'>Modalidade</span>
+                      </div>
+                    </div>
+                    <div className='form-group-taxas'>
+                      <div className='group-element-taxas'>
+                      <span className='span-picker'>Modalidade</span>
                             <Select
                                 styles={customStyles}
                                 value={modality} 
@@ -510,41 +514,36 @@ const Taxas = () =>{
                                 placeholder="Selecione"
                                 options={modOptions}
                             />
+                      </div>
+                      <div className='group-element-taxas'>
+                        <div className='group-input-taxa'>
+                          <span className='span-picker'>Taxa</span>
+                          <input
+                              type="text"
+                              value={taxValue}
+                              onChange={(e) => {
+                                  const inputValue = e.target.value;
+                                  let formattedValue = inputValue.replace(/[^\d.]/g, ''); // Remove any non-digit characters except period
+                                  if (formattedValue.length === 3 && !formattedValue.includes('.')) {
+                                      // Insert a period after the first two digits
+                                      formattedValue = formattedValue.slice(0, 2) + '.' + formattedValue.slice(2);
+                                  }
+                                  if (formattedValue.length > 5) {
+                                      // Allow only one digit after the period
+                                      formattedValue = formattedValue.slice(0, 4);
+                                  }
+                                  setTaxValue(formattedValue);
+                              }}
+                              maxLength={5} // Maximum length including the decimal point
+                          />                      
                         </div>
-                        <br/>
-                        {/*<div className='select-component'>
-                            <span className='span-picker'>Tipo Taxa</span>
-                            <input
-                                type="text"
-                                value={taxType}
-                                disabled
-                        </div>/>*/}
-                        <br/>
-                        <div className='select-component'>
-                            <span className='span-picker'>Taxa</span>
-                            <input
-                                type="text"
-                                value={taxValue}
-                                onChange={(e) => {
-                                    const inputValue = e.target.value;
-                                    let formattedValue = inputValue.replace(/[^\d.]/g, ''); // Remove any non-digit characters except period
-                                    if (formattedValue.length === 3 && !formattedValue.includes('.')) {
-                                        // Insert a period after the first two digits
-                                        formattedValue = formattedValue.slice(0, 2) + '.' + formattedValue.slice(2);
-                                    }
-                                    if (formattedValue.length > 5) {
-                                        // Allow only one digit after the period
-                                        formattedValue = formattedValue.slice(0, 4);
-                                    }
-                                    setTaxValue(formattedValue);
-                                }}
-                                maxLength={5} // Maximum length including the decimal point
-                            />
-                        </div>
-                        <div className='select-component'>
-                            <hr className='hr-global'/>
-                            <button className='btn-global' disabled={isLoadingTaxes}>Atualizar</button>
-                        </div>
+                      </div>
+
+                    </div>
+                    <br/>
+                    <div className='select-component'>
+                        <hr className='hr-global'/>
+                        <button className='btn-global' disabled={isLoadingTaxes}>Adicionar</button>
                     </div>
                 </form>
             </div>
@@ -592,34 +591,36 @@ const Taxas = () =>{
     return(
       <div className='appPage'>
         <div className='page-background-global'>
-          <div className='page-content-global page-content-exportacao'>
-            <div className='title-container-global'>
-              <h1 className='title-global'>Taxas</h1>
-            </div>
+          <div className='page-content-global'>
+            <div className='page-content-taxas'>
+              <div className='title-container-global'>
+                <h1 className='title-global'>Taxas</h1>
+              </div>
+              <hr className='hr-global'/>
+              <div className='container-global'>
+                  { ((taxesList && taxesList.length > 0) && (clientCode !== ('todos' || undefined))) && 
+                  <>    
+                      <h3 className='subtitle'>Cliente: {JSON.parse(Cookies.get('selectedClient')).label}</h3>
+                      <hr className='hr-global'/>
+                      <TaxesTable />
+                  </>
+                  }
+                  { ((taxesList && taxesList.length === 0) && (clientCode !== ('todos' || undefined))) && 
+                  <>  
+                      <span>Sem Taxas Cadastradas</span>
+                      <br/> 
+                      <button className='btn btn-primary btn-global' onClick={()=>{setIsModalOpen(true)}}><FiPlus className='icon' />Adicionar Taxa</button>
+                  </>
+                  }
+                  {
+                      clientCode === ('todos' || undefined) ?
+                          <span>Selecione um cliente para exibir as taxas cadastradas</span>
+                          : 
+                          <></>
+                  }
+              </div>
             <hr className='hr-global'/>
-            <div className='container-global'>
-                { ((taxesList && taxesList.length > 0) && (clientCode !== ('todos' || undefined))) && 
-                <>    
-                    <h3 className='subtitle'>Cliente: {JSON.parse(Cookies.get('selectedClient')).label}</h3>
-                    <hr className='hr-global'/>
-                    <TaxesTable />
-                </>
-                }
-                { ((taxesList && taxesList.length === 0) && (clientCode !== ('todos' || undefined))) && 
-                <>  
-                    <span>Sem Taxas Cadastradas</span>
-                    <br/> 
-                    <button className='btn btn-primary btn-global' onClick={()=>{setIsModalOpen(true)}}><FiPlus className='icon' />Adicionar Taxa</button>
-                </>
-                }
-                {
-                    clientCode === ('todos' || undefined) ?
-                        <span>Selecione um cliente para exibir as taxas cadastradas</span>
-                        : 
-                        <></>
-                }
             </div>
-            <hr className='hr-global'/>
           </div>
         </div>
         {isModalOpen && (
