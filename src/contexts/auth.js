@@ -319,57 +319,69 @@ function AuthProvider({ children }){
 
 		const editTax = async (tax) => {
 			setIsLoadingTaxes(true);
+			console.log(tax);
 			try {
 				const apiClientCode = Cookies.get('clientCode');
-				if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
+				if(apiClientCode !== 'todos' && apiClientCode !== 'TODOS' && apiClientCode !== undefined) {
 					let body = tax;
-					try {
-						const response = await api.put('taxas', body);
-						console.log('response:', response);
+					api.put('taxas', {
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						data: body
+					})
+					.then(response => {
+						console.log('response: ', response);
 						alert('Taxa alterada com sucesso!');
-					} catch (error) {
-						console.log('error:', error);
+					})
+					.catch(error => {
+						console.log('error: ', error);
 						alert('Erro ao alterar taxa!');
-					}
+					});
 				} else {
-					console.log('Invalid client code');
+					return [];
 				}
+				setIsLoadingTaxes(false);
 			} catch (error) {
 				console.error('Error fetching vendas:', error);
-			} finally {
 				setIsLoadingTaxes(false);
+				return;
 			}
 		};
 
 		//Deleta Taxa
 
 		const deleteTax = async (tax) => {
-			setIsLoadingTaxes(true)
-			console.log(tax)
+			setIsLoadingTaxes(true);
+			console.log(tax);
 			try {
-				const apiClientCode = Cookies.get('clientCode')
-				if(apiClientCode !== ('todos' || 'TODOS' || undefined)){
-					let body = tax
-					api.delete('taxas', body)
-					.then(response =>{
-						console.log('response: ', response)
-						alert('Taxa alterada com sucesso!')
+				const apiClientCode = Cookies.get('clientCode');
+				if(apiClientCode !== 'todos' && apiClientCode !== 'TODOS' && apiClientCode !== undefined) {
+					let body = tax;
+					api.delete('taxas', {
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						data: body
 					})
-					.catch(error =>{
-						console.log('error: ', error)
-						alert('Erro ao alterar taxa!')
+					.then(response => {
+						console.log('response: ', response);
+						alert('Taxa deletada com sucesso!');
 					})
+					.catch(error => {
+						console.log('error: ', error);
+						alert('Erro ao deletar taxa!');
+					});
 				} else {
-					return []
+					return [];
 				}
-				setIsLoadingTaxes(false)
+				setIsLoadingTaxes(false);
 			} catch (error) {
-				console.error('Error fetching vendas:', error)
-				setIsLoadingTaxes(false)
-				return
+				console.error('Error fetching vendas:', error);
+				setIsLoadingTaxes(false);
+				return;
 			}
-		}
-
+		};
 
 		//Bancos
 
