@@ -30,12 +30,12 @@ function RoutesApp(){
         <Route path='/vendas' element = { <Private><Vendas/></Private> }/>
         <Route path='/creditos' element = { <Private><Recebiveis/></Private> }/>
         <Route path='/servicos' element = { <Private><Servicos/></Private> }/>
-{/*     <Route path='/cadastrodebancos' element = { <Private><CadastroDeBancos/></Private> }/>
-        <Route path='/financeiro' element = { <Private><Financeiro/></Private> }/>
+        <Route path='/cadastrodebancos' element = { <Private><CadastroDeBancos/></Private> }/>
+{/*     <Route path='/financeiro' element = { <Private><Financeiro/></Private> }/>
         <Route path='/gerenciais' element = { <Private><Gerenciais/></Private> }/>
         <Route path='/outrosrelatorios' element = { <Private><OutrosRelatorios/></Private> }/> */}
-        <Route path='/sysmo' element = { <Private><ExportacaoSysmo/></Private> }/>
-{/*     <Route path='/meta' element = { <Private><ExportacaoMeta/></Private> }/>
+{/*     <Route path='/sysmo' element = { <Private><ExportacaoSysmo/></Private> }/>
+        <Route path='/meta' element = { <Private><ExportacaoMeta/></Private> }/>
         <Route path='/metasapiranga' element = { <Private><ExportacaoMetaSapiranga/></Private> }/>
         <Route path='/administracao' element = { <Private><Administracao/></Private> }/>
         <Route path='/suporte' element = { <Private><Suporte/></Private> }/>

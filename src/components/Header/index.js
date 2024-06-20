@@ -133,7 +133,7 @@ const Header = () => {
             { nome: 'Vendas', icone: icones['FiDollarSign'], rota: '/vendas' },
             { nome: 'Créditos', icone: icones['FiCreditCard'], rota: '/creditos' },
             { nome: 'Serviços', icone: icones['FiTool'], rota: '/servicos' },
-            //{ nome: 'Cadastro de Bancos', icone: icones['FiLink'], rota: '/cadastrodebancos' },
+            { nome: 'Cadastro de Bancos', icone: icones['FiLink'], rota: '/cadastrodebancos' },
             //{ nome: 'Relatórios', icone: icones['FiFileText'], children: [
             //    { nome: 'Financeiro', rota: '/financeiro' },
             //    { nome: 'Gerenciais', rota: '/gerenciais' },

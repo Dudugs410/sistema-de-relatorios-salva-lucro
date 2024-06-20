@@ -512,7 +512,6 @@ const Taxas = () => {
                 </div>
             </div>
         </div>
-        
     )
 }
 
