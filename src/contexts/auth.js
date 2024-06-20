@@ -266,88 +266,86 @@ function AuthProvider({ children }){
 		// retorna Objeto de Taxas
 		const loadTaxes = async () => {
 			try {
-				const apiClientCode = Cookies.get('clientCode')
-				//const apiClientCode = '215'
-				if(apiClientCode !== ('todos' || 'TODOS')){
+				const apiClientCode = Cookies.get('clientCode');
+				if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
 					let params = {
 						codigo: apiClientCode
-					}
-	
+					};
+		
 					let config = {
 						params: params
-					}
-
-					const response = await api.get('taxas', config)
-					return response.data
+					};
+		
+					const response = await api.get('taxas', config);
+					return response.data;
 				} else {
-					console.log('codigo do cliente invalido: ', apiClientCode)
-					return []
+					console.log('Invalid client code:', apiClientCode);
+					return [];
 				}
 			} catch (error) {
-				console.error('Error fetching vendas:', error)
-				return []
+				console.error('Error fetching taxas:', error);
+				return [];
 			}
-		}
+		};
+		
 		//Adiciona nova Taxa
 		const addTax = async (tax) => {
-			setIsLoadingTaxes(true)
-			console.log(tax)
+			setIsLoadingTaxes(true);
 			try {
-				const apiClientCode = Cookies.get('clientCode')
-				//const apiClientCode = '215'
-				if(apiClientCode !== ('todos' || 'TODOS' || undefined)){
-					let body = tax
-					api.post('taxas', body)
-					.then(response =>{
-						console.log('response: ', response)
-					})
-					.catch(error =>{
-						console.log('error: ', error)
-					})
+				const apiClientCode = Cookies.get('clientCode');
+				if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
+					let body = tax;
+					const response = await api.post('taxas', body);
+					console.log('response:', response);
 				} else {
-					return []
+					console.log('Invalid client code:', apiClientCode);
 				}
-				setIsLoadingTaxes(false)
 			} catch (error) {
-				console.error('Error fetching vendas:', error)
-				setIsLoadingTaxes(false)
-				return
+				console.error('Error adding tax:', error);
+			} finally {
+				setIsLoadingTaxes(false);
 			}
-		}
+		};
 
 		//Edita Taxa
 
 		const editTax = async (tax) => {
 			setIsLoadingTaxes(true);
-			console.log(tax);
+			console.log('editTax: ', tax);
+		  
 			try {
-				const apiClientCode = Cookies.get('clientCode');
-				if(apiClientCode !== 'todos' && apiClientCode !== 'TODOS' && apiClientCode !== undefined) {
-					let body = tax;
-					api.put('taxas', {
-						headers: {
-							'Content-Type': 'application/json'
-						},
-						data: body
-					})
-					.then(response => {
-						console.log('response: ', response);
-						alert('Taxa alterada com sucesso!');
-					})
-					.catch(error => {
-						console.log('error: ', error);
-						alert('Erro ao alterar taxa!');
-					});
+			  const apiClientCode = tax.CLICODIGO;
+			  if (apiClientCode !== 'todos' && apiClientCode !== 'TODOS' && apiClientCode !== undefined) {
+				let body = JSON.stringify(tax);
+		  
+				const response = await fetch('https://app.salvalucro.com.br/api/v1/taxas', {
+				  method: 'PUT',
+				  headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${Cookies.get('token')}`
+				  },
+				  body: body,
+				});
+		  
+				const responseData = await response.json();
+				console.log('response: ', responseData);
+		  
+				if (response.ok) {
+				  toast.success('Taxa alterada com sucesso!');
 				} else {
-					return [];
+				  toast.error('Erro ao alterar taxa!');
 				}
-				setIsLoadingTaxes(false);
+			  } else {
+				return [];
+			  }
 			} catch (error) {
-				console.error('Error fetching vendas:', error);
-				setIsLoadingTaxes(false);
-				return;
+			  console.error('Error updating tax:', error);
+			  toast.error('Erro ao alterar taxa!');
+			} finally {
+			  setIsLoadingTaxes(false);
 			}
-		};
+		  };
+		  
 
 		//Deleta Taxa
 
@@ -366,11 +364,11 @@ function AuthProvider({ children }){
 					})
 					.then(response => {
 						console.log('response: ', response);
-						alert('Taxa deletada com sucesso!');
+						toast.success('Taxa deletada com sucesso!');
 					})
 					.catch(error => {
 						console.log('error: ', error);
-						alert('Erro ao deletar taxa!');
+						toast.error('Erro ao deletar taxa!');
 					});
 				} else {
 					return [];
