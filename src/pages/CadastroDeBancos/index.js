@@ -1,521 +1,390 @@
-import { useEffect, useContext, useState } from 'react'
-import { useLocation } from 'react-router-dom'
-import { AuthContext } from '../../contexts/auth'
-import Cookies from 'js-cookie'
-import '../../styles/global.scss'
-//import './Bancos.scss'
-import '../Taxas/taxas.scss'
-import Select from 'react-select'
-import { FiEdit, FiPlus, FiTrash, FiX } from 'react-icons/fi'
-import { parse } from 'date-fns'
-import { toast } from 'react-toastify'
+import React, { useState, useEffect } from 'react';
+import Select from 'react-select';
+import { toast } from 'react-toastify';
+import { FiX, FiPlus } from 'react-icons/fi';
+import Cookies from 'js-cookie';
 
-const CadastroDeBancos = () =>{
-    const location = useLocation()
-    const { 
-        loadBanners, 
-        loadAdmins,
-        loadMods,
-        loadBanks, 
-        addBank, 
-        changedOption, 
-        isLoadingBanks
-    } = useContext(AuthContext)
+const CadastroDeBancos = ({ cliOptions, banOptions, admOptions, modOptions, addBank, editBank }) => {
+    const [banksList, setBanksList] = useState([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isModalEditOpen, setIsModalEditOpen] = useState(false);
+    const [editableBank, setEditableBank] = useState(null);
 
-    const [bannersList, setBannersList] = useState([])
-    const [adminsList, setAdminsList] = useState([])
-    const [modsList, setModsList] = useState([])
-
-    const cliOptions = JSON.parse(Cookies.get('clientOptions'))
-    
-    const [banOptions, setBanOptions] = useState([])
-    const [admOptions, setAdmOptions] = useState([])
-    const [modOptions, setModOptions] = useState([])
-
-    const [isModalOpen, setIsModalOpen] = useState(false)
-    const [isModalEditOpen, setIsModalEditOpen] = useState(false)
-
-    // Codigo do Cliente, Proveniente do SeletorCliente
-    const [clientCode, setClientCode] = useState(Cookies.get('clientCode'))
-    // Array de Objetos a Serem Mostrados na Tabela
-    const [banksList, setbanksList] = useState([])
-
-    useEffect(()=>{
-        sessionStorage.setItem('currentPath', location.pathname)
-    },[])
-
-    useEffect(()=>{
-        async function inicialize(){
-          if(bannersList.length === 0){
-            const response = await loadBanners()
-            setBannersList(response)
-          }
-          
-          if(adminsList.length === 0){
-            const response = await loadAdmins()
-            setAdminsList(response)
-          }
-
-          if(modsList.length === 0){
-            const response = await loadMods()
-            setModsList(response)
-          }
-
-          if(Cookies.get('clientCode' !== ('todos'))){
-            const response = await loadBanks()
-            //setbanksList(response)
-          }
-        }
-        inicialize()
-        let temp1 = {client: 1, bank: 'Rélens'}
-        let temp2 = {client: 2, bank: 'Crélens'}
-        let temp3 = {client: 3, bank: 'Ispiper'}
-        let temp4 = {client: 4, bank: 'Piper'}
-        
-        setbanksList([temp1, temp2, temp3, temp4])
-      },[])
-
-    useEffect(() => {
-        if(bannersList){
-            if (bannersList.length > 0) {
-                const bannersListOptions = bannersList.map(banner => ({ value: banner.codigoBandeira, label: banner.descricaoBandeira }));
-                setBanOptions(bannersListOptions);
+    const isObjectFullyPopulated = (obj) => {
+        return Object.values(obj).every(value => {
+            if (typeof value === 'object' && value !== null) {
+                return value.value !== 0;
             }
-        }
-    }, [bannersList]);
-
-    useEffect(() => {
-        if(adminsList){
-            console.log('adminsList', adminsList)
-            if (adminsList.length > 0) {
-                const adminsListOptions = adminsList.map(admin => ({ value: admin.codigoAdquirente, label: admin.nomeAdquirente }));
-                setAdmOptions(adminsListOptions);
-            }
-        }
-    }, [adminsList]);
-
-    useEffect(() => {
-        if(modsList){
-            if (modsList.length > 0) {
-                const modsListOptions = modsList.map(mod => ({ value: mod.codigoModalidade, label: mod.descricaoModalidade }));
-                setModOptions(modsListOptions);
-            }
-        }
-    }, [modsList]);
-
-    useEffect(()=>{
-        setClientCode(Cookies.get('clientCode'))
-        //setbanksList([])
-    },[changedOption])
-
-    useEffect(()=>{
-        //loadBanks()
-
-    },[clientCode])
-
-    const [editableBank, setEditableBank] = useState({bank: '', accountNbr: '', agencyNbr: ''})
-
-    const handleEdit = (object) => {
-        //setEditableBank(object)
-        setIsModalEditOpen(true)
-    }
-
-    const resetValues = () =>{
-        /*setEditableBank({})
-        seteditableBank({})*/
-    }
-
-    const handleCancel = () => {
-        resetValues()
-        setIsModalEditOpen(false)
-    }
-
-    useEffect(()=>{
-        console.log('banksList', banksList)
-    },[banksList])
-
-    const BanksTable = () =>{
-        return(
-            <table className="table table-striped table-hover table-bordered">
-            <thead>
-                <tr>
-                    <th scope="col" style={{width: '2%'}}><button className='btn btn-primary btn-global' style={{width: '100%'}} onClick={()=>{setIsModalOpen(true)}}><FiPlus className='icon' /></button></th>
-                    <th scope="col" style={{'text-align': 'center'}}>Cód Estabelecimento</th>
-                    <th scope="col" style={{'text-align': 'center'}}>Cód Cliente na Adquirente</th>
-                    <th scope="col" style={{'text-align': 'center'}}>Banco</th>
-                    <th scope="col" style={{'text-align': 'center'}}>Agência</th>
-                    <th scope="col" style={{'text-align': 'center'}}>Conta</th>
-                    <th scope="col" style={{'text-align': 'center'}}>Adquirente</th>
-                    <th scope="col" style={{'text-align': 'center'}}>Produto</th>
-                    <th scope="col" style={{'text-align': 'center'}}>Subproduto</th>
-                    <th scope="col" style={{'text-align': 'center'}}>Bandeira</th>
-                    <th scope="col" style={{width: '2%'}}></th>
-                </tr>
-            </thead>
-            <tbody>
-            {banksList.length > 0 && banksList.map((object, index)=>{
-                    return(
-                        <tr key={index} className='det-tr-global tr-taxas'>
-                        <th scope='row' onClick={()=>{handleEdit(object)}}><FiEdit className='icon' /></th>
-                            <td className='det-td-vendas-global'>{object.clientCode}</td>
-                            <td className='det-td-vendas-global'>{object.clientAdminCode}</td>
-                            <td className='det-td-vendas-global'>{object.bank}</td>
-                            <td className='det-td-vendas-global'>{object.agency}</td>
-                            <td className='det-td-vendas-global'>{object.accountNbr}</td>
-                            <td className='det-td-vendas-global'>{object.bankAdmin}</td>
-                            <td className='det-td-vendas-global'>{object.bankProduct}</td>
-                            <td className='det-td-vendas-global'>{object.bankSubProduct}</td>
-                            <td className='det-td-vendas-global'>{object.bankBanner}</td>
-                            <th scope='row' onClick={()=>{handleEdit(object)}}><FiTrash className='icon' /></th>
-                        </tr>
-                    )
-                })}
-            </tbody>
-        </table>
-        )
-    }
-
-
-    //Monitorando o objeto da nova taxa a ser adicionada, e Salvando-o nos Cookies
-
-    //Lógica do Modal de Adição de nova taxa, permitindo também fechá-lo
-    //ao clicar fora da janela do Modal
-    /////////////////////////////////////////////////////////////////////
-    
-    const closeModal = () => {
-        setIsModalOpen(false)
-        setIsModalEditOpen(false)
+            return value !== '' && value !== null && value !== undefined;
+        });
     };
 
-    const BtnClose = () => {
-        return(
-            <button className="btn btn-danger" onClick={closeModal}>
-                <FiX />
-            </button>
-        )
-    }
+    const BanksTable = () => {
+        return (
+            <table className="table">
+                <thead>
+                    <tr>
+                        <th>Cliente</th>
+                        <th>Bandeira</th>
+                        <th>Adquirente</th>
+                        <th>Produto</th>
+                        <th>Subproduto</th>
+                        <th>Banco</th>
+                        <th>Agência</th>
+                        <th>Conta</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {banksList.length > 0 ? (
+                        banksList.map((bank, index) => (
+                            <tr key={index}>
+                                <td>{bank.CodigoCliente}</td>
+                                <td>{bank.Bandeira.label}</td>
+                                <td>{bank.Adquirente}</td>
+                                <td>{bank.Produto.label}</td>
+                                <td>{bank.Subproduto.label}</td>
+                                <td>{bank.Banco}</td>
+                                <td>{bank.Agencia}</td>
+                                <td>{bank.Conta}</td>
+                                <td>
+                                    <button onClick={() => openEditModal(bank)}>Editar</button>
+                                </td>
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan="9">No data available</td>
+                        </tr>
+                    )}
+                </tbody>
+            </table>
+        );
+    };
+
+    const openEditModal = (bank) => {
+        setEditableBank(bank);
+        setIsModalEditOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setIsModalEditOpen(false);
+    };
 
     const ModalNewBank = () => {
-
-        const [selectedCli, setSelectedCli] = useState({label: 'Selecione', value: 0})
-        const [selectedBan, setSelectedBan] = useState({label: 'Selecione', value: 0})
-        const [selectedAdm, setSelectedAdm] = useState({label: 'Selecione', value: 0})
-        const [selectedProd, setSelectedProd] = useState({label: 'Selecione', value: 0})
-        const [selectedSubProd, setSelectedSubProd] = useState({label: 'Selecione', value: 0})
-        const [newBank, setNewBank] = useState('');
-        const [newAgency, setNewAgency] = useState('');
-        const [newAccount, setNewAccount] = useState('');
+        const [selectedCli, setSelectedCli] = useState({ label: 'Selecione', value: 0 });
+        const [selectedBan, setSelectedBan] = useState({ label: 'Selecione', value: 0 });
+        const [selectedAdm, setSelectedAdm] = useState({ label: 'Selecione', value: 0 });
+        const [selectedProd, setSelectedProd] = useState({ label: 'Selecione', value: 0 });
+        const [selectedSubProd, setSelectedSubProd] = useState({ label: 'Selecione', value: 0 });
+        const [bank, setBank] = useState('');
+        const [agencia, setAgencia] = useState('');
+        const [conta, setConta] = useState('');
 
         const resetValues = () => {
-            setSelectedCli({label: 'Selecione', value: 0})
-            setSelectedBan({label: 'Selecione', value: 0})
-            setSelectedAdm({label: 'Selecione', value: 0})
-            setSelectedMod({label: 'Selecione', value: 0})
-            setBank('')
-            setIsModalOpen(false)
-        }
-        
-        const isObjectFullyPopulated = (obj) => {
-            for (const key in obj) {
-                if (obj.hasOwnProperty(key)) {
-                    if (obj[key] === undefined || obj[key] === 0 || obj[key] === null || obj[key] === ('selecione' || 'Selecione') || tax === '') {
-                        return false;
-                    }
-                }
-            }
-            return true;
+            setSelectedCli({ label: 'Selecione', value: 0 });
+            setSelectedBan({ label: 'Selecione', value: 0 });
+            setSelectedAdm({ label: 'Selecione', value: 0 });
+            setSelectedProd({ label: 'Selecione', value: 0 });
+            setSelectedSubProd({ label: 'Selecione', value: 0 });
+            setBank('');
+            setAgencia('');
+            setConta('');
+            setIsModalOpen(false);
         };
 
         const handleSubmit = async (e) => {
             e.preventDefault();
-            const newBankObj = {
 
-                CodigoEstabecimento: Cookies.get('cnpj'),
-                CodigoClienteAdquirente: '',
-                CodigoCliente: '',
-                Adquirente: '',
-                Produto: '',
-                Bandeira: '',
-                Subproduto: '',
-                Banco: '',
-                Agencia: '',
-                Conta: '',
+            const bankObject = {
+                CodigoEstabecimento: 'someCode', // this should be dynamically set or fetched
+                CodigoClienteAdquirente: selectedAdm.value,
+                CodigoCliente: selectedCli.value,
+                Adquirente: selectedAdm.value,
+                Produto: selectedProd,
+                Bandeira: selectedBan,
+                Subproduto: selectedSubProd,
+                Banco: bank,
+                Agencia: agencia,
+                Conta: conta,
             };
-            if(isObjectFullyPopulated(newBankObj) === true){
+
+            if (isObjectFullyPopulated(bankObject)) {
                 try {
-                    await toast.promise(addBank(newBankObj), {
-                      pending: 'Carregando...',
-                      success: 'Carregado com Sucesso',
-                      error: 'Ocorreu um Erro',
-                    })
-                    resetValues()
-                  } catch (error) {
-                    console.error('Error handling busca:', error);
-                  }
+                    await toast.promise(addBank(bankObject), {
+                        pending: 'Carregando...',
+                        error: 'Ocorreu um Erro',
+                    });
+
+                    setBanksList((prevBanksList) => [...prevBanksList, bankObject]);
+
+                    resetValues();
+                } catch (error) {
+                    console.error('Error handling submit:', error);
+                }
             } else {
-                alert('Todos os Campos devem ser preenchidos')
+                toast.error('Preencha todos os campos obrigatórios!');
             }
         };
 
-        const handleCli = (selected) => {
-            setSelectedCli(selected)
-        }
-    
-        const handleBan = (selected) => {
-            setSelectedBan(selected)
-        }
-    
-        const handleAdq = (selected) => {
-            setSelectedAdm(selected)
-        }
-    
-        const handleProd = (selected) => {
-            setSelectedProd(selected)
-        }
-
-        const handleSubProd = (selected) => {
-            setSelectedProd(selected)
-        }
-
-        const customStyles = {
-            control: (provided, state) => ({
-                ...provided,
-                background: 'white', // Background color of the control
-                color: 'black', // Text color of the control
-                // You can add more styles here as needed
-            }),
-            menu: (provided, state) => ({
-                ...provided,
-                background: 'white', // Background color of the dropdown menu
-                color: 'black', // Text color of the dropdown menu
-                // You can add more styles here as needed
-            }),
-            // Add more styles for other components as needed
-        };
-
-        return(
-            <div className='modal-taxas'>
-                <div className='modal-taxas-content'>
-                <div className='container-title-close'>
-                    <h3 className='subtitle'>Adicionar Banco:</h3>
-                    <BtnClose/>
-                </div>
-                <hr className='hr-global'/>
-                    <form className='form-taxas' onSubmit={handleSubmit}>
-                        <div className='select-container'>
-                        <div className='select-component'>
-                                <span className='span-picker'>Cliente</span>
-                                <Select
-                                    styles={customStyles}
-                                    value={selectedCli} 
-                                    onChange={handleCli}
-                                    placeholder="Selecione"
-                                    options={cliOptions}
-                                />
+        return (
+            <div className={`modal-container ${isModalOpen ? 'modal-container-visible' : ''}`}>
+                <div className="modal-content modal-content-banks">
+                    <div className="modal-header">
+                        <h4>Adicionar Banco</h4>
+                        <button className="close-button" onClick={closeModal}>
+                            <FiX />
+                        </button>
+                    </div>
+                    <div className="modal-body">
+                        <form onSubmit={handleSubmit}>
+                            <div className="row">
+                                <div className="col-md-6">
+                                    <label className="form-label">Cliente</label>
+                                    <Select options={cliOptions} value={selectedCli} onChange={setSelectedCli} />
+                                </div>
+                                <div className="col-md-6">
+                                    <label className="form-label">Bandeira</label>
+                                    <Select options={banOptions} value={selectedBan} onChange={setSelectedBan} />
+                                </div>
+                                <div className="col-md-6">
+                                    <label className="form-label">Adquirente</label>
+                                    <Select options={admOptions} value={selectedAdm} onChange={setSelectedAdm} />
+                                </div>
+                                <div className="col-md-6">
+                                    <label className="form-label">Produto</label>
+                                    <Select options={modOptions} value={selectedProd} onChange={setSelectedProd} />
+                                </div>
+                                <div className="col-md-6">
+                                    <label className="form-label">Subproduto</label>
+                                    <Select options={modOptions} value={selectedSubProd} onChange={setSelectedSubProd} />
+                                </div>
+                                <div className="col-md-6">
+                                    <label className="form-label">Banco</label>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        value={bank}
+                                        onChange={(e) => setBank(e.target.value)}
+                                    />
+                                </div>
+                                <div className="col-md-6">
+                                    <label className="form-label">Agência</label>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        value={agencia}
+                                        onChange={(e) => setAgencia(e.target.value)}
+                                    />
+                                </div>
+                                <div className="col-md-6">
+                                    <label className="form-label">Conta</label>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        value={conta}
+                                        onChange={(e) => setConta(e.target.value)}
+                                    />
+                                </div>
+                                <div className="col-md-12">
+                                    <button type="submit" className="btn btn-primary btn-global">Salvar</button>
+                                </div>
                             </div>
-                            <br/>
-                            <div className='select-component'>
-                                <span className='span-picker'>Bandeira</span>
-                                <Select
-                                    styles={customStyles}
-                                    value={selectedBan} 
-                                    onChange={handleBan}
-                                    placeholder="Selecione"
-                                    options={banOptions}
-                                />
-                            </div>
-                            <br/>
-                            <div className='select-component'>
-                                <span className='span-picker'>Adquirente</span>
-                                <Select 
-                                    styles={customStyles}
-                                    value={selectedAdm} 
-                                    onChange={handleAdq}
-                                    placeholder="Selecione"
-                                    options={admOptions}
-                                />
-                            </div>
-                            <br/>
-                            <div className='select-component'>
-                                <span className='span-picker'>Produto</span>
-                                <Select
-                                    styles={customStyles}
-                                    value={selectedProduct} 
-                                    onChange={handleSelected}
-                                    placeholder="Selecione"
-                                    options={modOptions}
-                                />
-                            </div>
-                            <div className='select-component'>
-                                <span className='span-picker'>Subproduto</span>
-                                <Select
-                                    styles={customStyles}
-                                    value={selectedMod} 
-                                    onChange={handleMod}
-                                    placeholder="Selecione"
-                                    options={modOptions}
-                                />
-                            </div>
-                            <br/>
-                            <div className='select-component'>
-                                <span className='span-picker'>Banco</span>
-                                <input
-                                    type="text"
-                                    value={bank}
-                                    onChange={(e) => {
-                                        setBank(e.target.value);
-                                    }}
-                                />
-                            </div>
-                            <div className='select-component'>
-                                <hr className='hr-global'/>
-                                <button className='btn-global' disabled={isLoadingBanks}>Adicionar</button>
-                            </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
-        )
-    }
+        );
+    };
 
     const ModalEditBank = () => {
-        const [clientCode, setClientCode] = useState(editableBank.clientCode)
-        const [clientAdminCode, setAdminCode] = useState(editableBank.clientAdminCode)
-        const [bankName, setBankName] = useState(editableBank.bank)
-        const [agency, setAgency] = useState(editableBank.agency)
-        const [accountNbr, setAccountNbr] = useState(editableBank.accountNbr)
-        const [bankAdmin, setBankAdmin] = useState({label: editableBank.adm, value: null})
-        const [bankProduct, setBankProduct] = useState({label: editableBank.product, value: null})
-        const [bankSubProduct, setBankSubProduct] = useState({label: editableBank.subProduct, value: null})
-        const [bankBanner, setBankBanner] = useState({label: editableBank.bank, value: null})
+        const [selectedCli, setSelectedCli] = useState({ label: 'Selecione', value: 0 });
+        const [selectedBan, setSelectedBan] = useState({ label: 'Selecione', value: 0 });
+        const [selectedAdm, setSelectedAdm] = useState({ label: 'Selecione', value: 0 });
+        const [selectedProd, setSelectedProd] = useState({ label: 'Selecione', value: 0 });
+        const [selectedSubProd, setSelectedSubProd] = useState({ label: 'Selecione', value: 0 });
+        const [bank, setBank] = useState('');
+        const [agencia, setAgencia] = useState('');
+        const [conta, setConta] = useState('');
 
-        const isObjectFullyPopulated = (obj) => {
-            for (const key in obj) {
-                if (obj.hasOwnProperty(key)) {
-                    if (obj[key] === undefined || obj[key] === 0 || obj[key] === null || obj[key] === ('selecione' || 'Selecione') || bank === '') {
-                        return false;
-                    }
-                }
+        useEffect(() => {
+            if (editableBank) {
+                setSelectedCli({ label: 'Selecione', value: editableBank.CodigoCliente });
+                setSelectedBan(editableBank.Bandeira);
+                setSelectedAdm(editableBank.Adquirente);
+                setSelectedProd(editableBank.Produto);
+                setSelectedSubProd(editableBank.Subproduto);
+                setBank(editableBank.Banco);
+                setAgencia(editableBank.Agencia);
+                setConta(editableBank.Conta);
             }
-            return true;
+        }, [editableBank]);
+
+        const resetValues = () => {
+            setSelectedCli({ label: 'Selecione', value: 0 });
+            setSelectedBan({ label: 'Selecione', value: 0 });
+            setSelectedAdm({ label: 'Selecione', value: 0 });
+            setSelectedProd({ label: 'Selecione', value: 0 });
+            setSelectedSubProd({ label: 'Selecione', value: 0 });
+            setBank('');
+            setAgencia('');
+            setConta('');
+            setIsModalEditOpen(false);
         };
 
-        const customStyles = {
-            control: (provided, state) => ({
-                ...provided,
-                background: 'white', // Background color of the control
-                color: 'black', // Text color of the control
-                // You can add more styles here as needed
-            }),
-            menu: (provided, state) => ({
-                ...provided,
-                background: 'white', // Background color of the dropdown menu
-                color: 'black', // Text color of the dropdown menu
-                // You can add more styles here as needed
-            }),
-            // Add more styles for other components as needed
+        const handleSubmit = async (e) => {
+            e.preventDefault();
+
+            const updatedBankObject = {
+                ...editableBank,
+                CodigoClienteAdquirente: selectedAdm.value,
+                CodigoCliente: selectedCli.value,
+                Adquirente: selectedAdm.value,
+                Produto: selectedProd,
+                Bandeira: selectedBan,
+                Subproduto: selectedSubProd,
+                Banco: bank,
+                Agencia: agencia,
+                Conta: conta,
+            };
+
+            if (isObjectFullyPopulated(updatedBankObject)) {
+                try {
+                    await toast.promise(editBank(updatedBankObject), {
+                        pending: 'Carregando...',
+                        error: 'Ocorreu um Erro',
+                    });
+
+                    setBanksList((prevBanksList) =>
+                        prevBanksList.map((b) => (b.CodigoEstabecimento === editableBank.CodigoEstabecimento ? updatedBankObject : b))
+                    );
+
+                    resetValues();
+                } catch (error) {
+                    console.error('Error handling submit:', error);
+                }
+            } else {
+                toast.error('Preencha todos os campos obrigatórios!');
+            }
         };
-
-        return(
-            <div className='modal-taxas'>
-                <div className='modal-taxas-content'>
-                <div className='container-title-close'>
-                    <h3 className='subtitle'>Editar Banco:</h3>
-                    <BtnClose/>
-                </div>
-                    <hr className='hr-global'/>
-                    <form className='form-taxas' onSubmit={()=>{console.log('onSubmit')}}>
-                        
-                    </form>
-                </div>
-            </div>
-        )
-    }
-
-    const Modal = ({ isOpen, onClose, children }) => {
-        if (!isOpen) return null;
 
         return (
-            <div className="modal-layout" onClick={onClose}>
-                <div className='modal-layout-content' onClick={(e) => e.stopPropagation()}>
-                    {children}
+            <div className={`modal-container ${isModalEditOpen ? 'modal-container-visible' : ''}`}>
+                <div className="modal-content modal-content-banks">
+                    <div className="modal-header">
+                        <h4>Editar Banco</h4>
+                        <button className="close-button" onClick={closeModal}>
+                            <FiX />
+                        </button>
+                    </div>
+                    <div className="modal-body">
+                        <form onSubmit={handleSubmit}>
+                            <div className="row">
+                                <div className="col-md-6">
+                                    <label className="form-label">Cliente</label>
+                                    <Select options={cliOptions} value={selectedCli} onChange={setSelectedCli} />
+                                </div>
+                                <div className="col-md-6">
+                                    <label className="form-label">Bandeira</label>
+                                    <Select options={banOptions} value={selectedBan} onChange={setSelectedBan} />
+                                </div>
+                                <div className="col-md-6">
+                                    <label className="form-label">Adquirente</label>
+                                    <Select options={admOptions} value={selectedAdm} onChange={setSelectedAdm} />
+                                </div>
+                                <div className="col-md-6">
+                                    <label className="form-label">Produto</label>
+                                    <Select options={modOptions} value={selectedProd} onChange={setSelectedProd} />
+                                </div>
+                                <div className="col-md-6">
+                                    <label className="form-label">Subproduto</label>
+                                    <Select options={modOptions} value={selectedSubProd} onChange={setSelectedSubProd} />
+                                </div>
+                                <div className="col-md-6">
+                                    <label className="form-label">Banco</label>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        value={bank}
+                                        onChange={(e) => setBank(e.target.value)}
+                                    />
+                                </div>
+                                <div className="col-md-6">
+                                    <label className="form-label">Agência</label>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        value={agencia}
+                                        onChange={(e) => setAgencia(e.target.value)}
+                                    />
+                                </div>
+                                <div className="col-md-6">
+                                    <label className="form-label">Conta</label>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        value={conta}
+                                        onChange={(e) => setConta(e.target.value)}
+                                    />
+                                </div>
+                                <div className="col-md-12">
+                                    <button type="submit" className="btn btn-primary btn-global">Salvar</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         );
     };
-
-    const AddBankModal = () => { 
-        return (
-            <div>
-                <Modal isOpen={isModalOpen} onClose={closeModal}>
-                    <div className='modal-layout-body'>
-                        <ModalNewBank />
-                    </div>
-                </Modal>
-            </div>
-        );
-    };
-
-    const EditBankModal = () => {
-        return (
-            <div>
-                <Modal isOpen={isModalEditOpen} onClose={closeModal}>
-                    <div className='modal-layout-body'>
-                        <ModalEditBank />
-                    </div>
-                </Modal>
-            </div>
-        );
-    }
-    /////////////////////////////////////////////////////////////////////
-
 
     return(
-      <div className='appPage'>
-        <div className='page-background-global'>
-          <div className='page-content-global page-content-exportacao'>
-            <div className='title-container-global'>
-              <h1 className='title-global'>Cadastramento de Bancos</h1>
+        <div className='appPage'>
+          <div className='page-background-global'>
+            <div className='page-content-global page-content-exportacao'>
+              <div className='title-container-global'>
+                <h1 className='title-global'>Cadastramento de Bancos</h1>
+              </div>
+              <hr className='hr-global'/>
+              <div className='container-global' style={{alignItems: 'center'}}>
+                  { (banksList && banksList.length > 0) && 
+                  <>    
+                      <h3 className='subtitle'>Cliente: {JSON.parse(Cookies.get('selectedClient')).label}</h3>
+                      <hr className='hr-global'/>
+                      <BanksTable />
+                  </>
+                  }
+                  { (banksList && banksList.length === 0) && 
+                  <>  
+                      <span>Sem Bancos Cadastrados</span>
+                      <br/> 
+                      <button className='btn btn-primary btn-global' onClick={()=>{setIsModalOpen(true)}}><FiPlus className='icon' />Cadastrar Banco</button>
+                  </>
+                  }
+                  {
+                      Cookies.get('selectedClient') === ('todos' || undefined) ?
+                          <span>{'Selecione um Cliente (não pode ser "TODOS")'}</span>
+                          :
+                          <></>
+                  }
+              </div>
+              <hr className='hr-global'/>
             </div>
-            <hr className='hr-global'/>
-            <div className='container-global' style={{alignItems: 'center'}}>
-                { ((banksList && banksList.length > 0) && (clientCode !== ('todos' || undefined))) && 
-                <>    
-                    <h3 className='subtitle'>Cliente: {JSON.parse(Cookies.get('selectedClient')).label}</h3>
-                    <hr className='hr-global'/>
-                    <BanksTable />
-                </>
-                }
-                { ((banksList && banksList.length === 0) && (clientCode !== ('todos' || undefined))) && 
-                <>  
-                    <span>Sem Bancos Cadastrados</span>
-                    <br/> 
-                    <button className='btn btn-primary btn-global' onClick={()=>{setIsModalOpen(true)}}><FiPlus className='icon' />Adicionar Taxa</button>
-                </>
-                }
-                {
-                    clientCode === ('todos' || undefined) ?
-                        <span>{'Selecione um Cliente (não pode ser "TODOS")'}</span>
-                        :
-                        <></>
-                }
-            </div>
-            <hr className='hr-global'/>
           </div>
+          {isModalOpen && (
+              <div className='modal-container'>
+                  <ModalNewBank />
+              </div>
+          )}
+          
+          {isModalEditOpen && (
+              <div className='modal-container'>
+                  <ModalEditBank />
+              </div>
+          )}
         </div>
-        {isModalOpen && (
-            <div className='modal-container'>
-                <AddBankModal />
-            </div>
-        )}
-        
-        {isModalEditOpen && (
-            <div className='modal-container'>
-                <EditBankModal />
-            </div>
-        )}
-      </div>
-    )
-}
+      )
+};
 
 export default CadastroDeBancos;
