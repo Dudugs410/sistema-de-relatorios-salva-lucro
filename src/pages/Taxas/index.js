@@ -144,7 +144,6 @@ const Taxas = () => {
         try {
             await toast.promise(deleteTax(toBeDeleted), {
                 pending: 'Carregando...',
-                success: 'Carregado com Sucesso',
                 error: 'Ocorreu um Erro',
             })
             setTaxesList(prevTaxesList => prevTaxesList.filter(tax => tax.CODIGO !== object.CODIGO))
@@ -251,8 +250,7 @@ const Taxas = () => {
                 try {
                     await toast.promise(addTax(newTaxObj), {
                         pending: 'Carregando...',
-                        success: 'Carregado com Sucesso',
-                        error: 'Ocorreu um Erro',
+                        error: 'Erro ao adicionar Taxa',
                     });
         
                     const updatedTaxes = await loadTaxes()
@@ -262,7 +260,7 @@ const Taxas = () => {
                     console.error('Error handling submit:', error)
                 }
             } else {
-                alert('Todos os Campos devem ser preenchidos')
+                toast.warning('Todos os Campos devem ser preenchidos')
             }
         };
         
@@ -279,7 +277,7 @@ const Taxas = () => {
                 <form className='select-container-taxas' onSubmit={handleSubmit}>
                     <div className='form-group-taxas'>
                         <div className='group-element-taxas'>
-                            <label className='span-picker' htmlFor="cliSelect">Cliente</label>
+                            <label className='span-picker'>Cliente</label>
                             <Select
                                 id="cliSelect"
                                 options={cliOptions}
@@ -288,7 +286,7 @@ const Taxas = () => {
                             />
                         </div>
                         <div className='group-element-taxas'>
-                            <label className='span-picker' htmlFor="admSelect">Adquirente</label>
+                            <label className='span-picker'>Adquirente</label>
                             <Select
                                 id="admSelect"
                                 options={admOptions}
@@ -299,7 +297,7 @@ const Taxas = () => {
                     </div>
                     <div className='form-group-taxas'>
                         <div className='group-element-taxas'>
-                            <label className='span-picker' htmlFor="banSelect">Bandeira</label>
+                            <label className='span-picker'>Bandeira</label>
                             <Select
                                 id="banSelect"
                                 options={banOptions}
@@ -308,7 +306,7 @@ const Taxas = () => {
                             />
                         </div>
                         <div className='group-element-taxas'>
-                            <label className='span-picker' htmlFor="modSelect">Modalidade</label>
+                            <label className='span-picker'>Modalidade</label>
                             <Select
                                 id="modSelect"
                                 options={modOptions}
@@ -318,7 +316,7 @@ const Taxas = () => {
                         </div>
                     </div>
                     <div className='group-input-taxa'>
-                        <label className='span-picker' htmlFor="taxInput">Taxa (%)</label>
+                        <label className='span-picker'>Taxa (%)</label>
                         <input
                             style={{height: '100%'}}
                             type="text"
@@ -373,7 +371,7 @@ const Taxas = () => {
                     ADQCODIGO: selectedAdm.value,
                     CLICODIGO: editableTax.CLICODIGO,
                     MODCODIGO: selectedMod.value,
-                    TAXAPERCENTUAL: parseFloat(tax.replace(',', '.'))
+                    TAXAPERCENTUAL: parseFloat(tax)
                 };
     
                 try {
@@ -413,7 +411,7 @@ const Taxas = () => {
                 <form className='select-container-taxas' onSubmit={handleEditTax}>
                     <div className='form-group-taxas'>
                         <div className='group-element-taxas'>
-                            <label className='span-picker' htmlFor="admSelectEdit">Adquirente</label>
+                            <label className='span-picker'>Adquirente</label>
                             <Select
                                 id="admSelectEdit"
                                 options={admOptions}
@@ -422,7 +420,7 @@ const Taxas = () => {
                             />
                         </div>
                         <div className='group-element-taxas'>
-                            <label className='span-picker' htmlFor="banSelectEdit">Bandeira</label>
+                            <label className='span-picker'>Bandeira</label>
                             <Select
                                 id="banSelectEdit"
                                 options={banOptions}
@@ -433,7 +431,7 @@ const Taxas = () => {
                     </div>
                     <div className='form-group-taxas'>
                         <div className='group-element-taxas'>
-                            <label className='span-picker' htmlFor="modSelectEdit">Modalidade</label>
+                            <label className='span-picker'>Modalidade</label>
                             <Select
                                 id="modSelectEdit"
                                 options={modOptions}
@@ -442,7 +440,7 @@ const Taxas = () => {
                             />
                         </div>
                         <div className='group-input-taxa'>
-                            <label className='span-picker' htmlFor="taxInput">Taxa (%)</label>
+                            <label className='span-picker'>Taxa (%)</label>
                             <input
                                 style={{height: '100%'}}
                                 type="text"
@@ -484,7 +482,7 @@ const Taxas = () => {
                             <h1 className='title-global'>Taxas</h1>
                         </div>
                         <hr className='hr-global'/>
-                        <div className='container-global' style={{margin: '0', flexDirection: 'column'}}>
+                        <div className='container-global' style={{margin: '0', flexDirection: 'column', alignItems: 'center'}}>
                             { ((taxesList && taxesList.length > 0) && (clientCode !== ('todos' || undefined))) && 
                             <div>    
                                 <h3 className='subtitle' style={{width: '100%', display: 'flex', flexDirection: 'column', alignContent: 'center', textAlign: 'center'}}>Cliente: {JSON.parse(Cookies.get('selectedClient')).label}</h3>
@@ -506,7 +504,7 @@ const Taxas = () => {
                             }
                         </div>
                     </div>
-                    { taxesList.length > 0 && isObjectFullyPopulated(taxesList[taxesList.length - 1]) ? <TaxesTable /> : <></>}
+                    { taxesList.length > 0 ? <TaxesTable /> : <></>}
                     <div className='modal-container' style={{ display: (isModalOpen || isModalEditOpen) ? 'block' : 'none' }}>
                         <ModalNewTax />
                         <ModalEditTax />

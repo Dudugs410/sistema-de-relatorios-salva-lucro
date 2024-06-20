@@ -364,11 +364,11 @@ function AuthProvider({ children }){
 					})
 					.then(response => {
 						console.log('response: ', response);
-						alert('Taxa deletada com sucesso!');
+						toast.success('Taxa deletada com sucesso!');
 					})
 					.catch(error => {
 						console.log('error: ', error);
-						alert('Erro ao deletar taxa!');
+						toast.error('Erro ao deletar taxa!');
 					});
 				} else {
 					return [];
