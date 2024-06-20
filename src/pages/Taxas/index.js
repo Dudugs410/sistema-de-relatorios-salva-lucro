@@ -60,7 +60,7 @@ const Taxas = () => {
                 setModsList(response)
             }
 
-            if (Cookies.get('clientCode' !== ('todos'))) {
+            if (clientCode !== 'todos') {
                 const response = await loadTaxes()
                 setTaxesList(response)
             }
@@ -162,7 +162,7 @@ const Taxas = () => {
     const TaxesTable = () => {
         console.log('taxArray: ', taxesList)
         return (
-            <div className='table-wrapper'>
+            <div className='table-wrapper table-wrapper-taxes'>
                 <table className="table table-striped table-hover table-bordered table-taxas">
                     <thead>
                         <tr>
@@ -222,176 +222,140 @@ const Taxas = () => {
     }
 
     const ModalNewTax = () => {
-        const [selectedCli, setSelectedCli] = useState({ label: 'Selecione', value: 0 })
-        const [selectedBan, setSelectedBan] = useState({ label: 'Selecione', value: 0 })
-        const [selectedAdm, setSelectedAdm] = useState({ label: 'Selecione', value: 0 })
-        const [selectedMod, setSelectedMod] = useState({ label: 'Selecione', value: 0 })
+        const [selectedCli, setSelectedCli] = useState({ label: 'Selecione', value: 0 });
+        const [selectedBan, setSelectedBan] = useState({ label: 'Selecione', value: 0 });
+        const [selectedAdm, setSelectedAdm] = useState({ label: 'Selecione', value: 0 });
+        const [selectedMod, setSelectedMod] = useState({ label: 'Selecione', value: 0 });
         const [tax, setTax] = useState('');
-
+    
         const resetValues = () => {
-            setSelectedCli({ label: 'Selecione', value: 0 })
-            setSelectedBan({ label: 'Selecione', value: 0 })
-            setSelectedAdm({ label: 'Selecione', value: 0 })
-            setSelectedMod({ label: 'Selecione', value: 0 })
-            setTax('')
-            setIsModalOpen(false)
+            setSelectedCli({ label: 'Selecione', value: 0 });
+            setSelectedBan({ label: 'Selecione', value: 0 });
+            setSelectedAdm({ label: 'Selecione', value: 0 });
+            setSelectedMod({ label: 'Selecione', value: 0 });
+            setTax('');
+            setIsModalOpen(false);
         }
-
+    
         const handleSubmit = async (e) => {
-            e.preventDefault();
+            e.preventDefault()
             const newTaxObj = {
                 ADQCODIGO: selectedAdm.value,
                 BADCODIGO: selectedBan.value,
                 CLICODIGO: clientCode,
                 MODCODIGO: selectedMod.value,
                 TAXAPERCENTUAL: parseFloat(tax)
-            };
-            if (isObjectFullyPopulated(newTaxObj) === true) {
+            }
+        
+            if (isObjectFullyPopulated(newTaxObj)) {
                 try {
                     await toast.promise(addTax(newTaxObj), {
                         pending: 'Carregando...',
                         success: 'Carregado com Sucesso',
                         error: 'Ocorreu um Erro',
-                    })
-                    .then(async () => {
-                      const response = await loadTaxes()
-                      setTaxesList(response)
-                    })
-                    //setTaxesTemp(prevTaxesList => [...prevTaxesList, newTax]);
-                    resetValues();
+                    });
+        
+                    const updatedTaxes = await loadTaxes()
+                    setTaxesList(updatedTaxes)
+                    resetValues()
                 } catch (error) {
-                    console.error('Error handling busca:', error);
+                    console.error('Error handling submit:', error)
                 }
             } else {
                 alert('Todos os Campos devem ser preenchidos')
             }
         };
-
-        const handleCli = (selected) => {
-            setSelectedCli(selected)
-        }
+        
     
-        const handleBan = (selected) => {
-            setSelectedBan(selected)
-        }
-    
-        const handleAdq = (selected) => {
-            setSelectedAdm(selected)
-        }
-    
-        const handleMod = (selected) => {
-            setSelectedMod(selected)
-        }
-
-        const customStyles = {
-            control: (provided, state) => ({
-                ...provided,
-                background: 'white', // Background color of the control
-                color: 'black', // Text color of the control
-                // You can add more styles here as needed
-            }),
-            menu: (provided, state) => ({
-                ...provided,
-                background: 'white', // Background color of the dropdown menu
-                color: 'black', // Text color of the dropdown menu
-                // You can add more styles here as needed
-            }),
-            // Add more styles for other components as needed
-        };
-
         return (
             <div className={`modal-taxas modal ${isModalOpen ? 'modal-open' : ''}`} style={{ display: isModalOpen ? 'block' : 'none' }}>
                 <div className='header-container-taxa'>
                     <div className='title-container-global'>
-                        <h3 className='subtitle' style={{margin: '0'}}>Cadastrar Taxa:</h3>
+                        <h3 className='subtitle' style={{margin: '0'}}>Cadastrar Nova Taxa:</h3>
                     </div>
                     <button className='btn btn-danger close-modal' onClick={closeModal} style={{marginLeft: '5px'}}><FiX size={25}/></button>
                 </div>
                 <hr className='hr-global'/>
-                <form className='select-container-taxa' onSubmit={handleSubmit}>
+                <form className='select-container-taxas' onSubmit={handleSubmit}>
                     <div className='form-group-taxas'>
-                      <div className='group-element-taxas'>
-                        <span className='span-picker'>Cliente</span>
-                        <Select
-                            styles={customStyles}
-                            value={selectedCli} 
-                            onChange={handleCli}
-                            placeholder="Selecione"
-                            options={cliOptions}
-                        />
-                      </div>
-                      <div className='group-element-taxas'>
-                        <span className='span-picker'>Modalidade</span>
-                        <Select
-                            styles={customStyles}
-                            value={selectedMod} 
-                            onChange={handleMod}
-                            placeholder="Selecione"
-                            options={modOptions}
-                        />
-                      </div>
+                        <div className='group-element-taxas'>
+                            <label className='span-picker' htmlFor="cliSelect">Cliente</label>
+                            <Select
+                                id="cliSelect"
+                                options={cliOptions}
+                                value={selectedCli}
+                                onChange={(selected) => setSelectedCli(selected)}
+                            />
+                        </div>
+                        <div className='group-element-taxas'>
+                            <label className='span-picker' htmlFor="admSelect">Adquirente</label>
+                            <Select
+                                id="admSelect"
+                                options={admOptions}
+                                value={selectedAdm}
+                                onChange={(selected) => setSelectedAdm(selected)}
+                            />
+                        </div>
                     </div>
                     <div className='form-group-taxas'>
-                      <div className='group-element-taxas'>
-                        <span className='span-picker'>Bandeira</span>
-                        <Select
-                            styles={customStyles}
-                            value={selectedBan} 
-                            onChange={handleBan}
-                            placeholder="Selecione"
-                            options={banOptions}
-                        />
-                      </div>
-                      <div className='group-element-taxas'>
-                        <span className='span-picker'>Adquirente</span>
-                        <Select 
-                            styles={customStyles}
-                            value={selectedAdm} 
-                            onChange={handleAdq}
-                            placeholder="Selecione"
-                            options={admOptions}
-                        />
-                      </div>
+                        <div className='group-element-taxas'>
+                            <label className='span-picker' htmlFor="banSelect">Bandeira</label>
+                            <Select
+                                id="banSelect"
+                                options={banOptions}
+                                value={selectedBan}
+                                onChange={(selected) => setSelectedBan(selected)}
+                            />
+                        </div>
+                        <div className='group-element-taxas'>
+                            <label className='span-picker' htmlFor="modSelect">Modalidade</label>
+                            <Select
+                                id="modSelect"
+                                options={modOptions}
+                                value={selectedMod}
+                                onChange={(selected) => setSelectedMod(selected)}
+                            />
+                        </div>
                     </div>
-                    <br/>
-                    <div className='form-group-taxas'>
-                      <div className='group-input-taxa'>
-                          <span className='span-picker'>Taxa</span>
-                          <input
-                              type="text"
-                              value={tax}
-                              onChange={(e) => {
-                                  const inputValue = e.target.value;
-                                  let formattedValue = inputValue.replace(/[^\d.]/g, ''); // Remove any non-digit characters except period
-                                  if (formattedValue.length === 3 && !formattedValue.includes('.')) {
-                                      // Insert a period after the first two digits
-                                      formattedValue = formattedValue.slice(0, 2) + '.' + formattedValue.slice(2);
-                                  }
-                                  if (formattedValue.length > 5) {
-                                      // Allow only one digit after the period
-                                      formattedValue = formattedValue.slice(0, 4);
-                                  }
-                                  setTax(formattedValue);
-                              }}
-                              maxLength={5} // Maximum length including the decimal point
-                          />
-                      </div>
+                    <div className='group-input-taxa'>
+                        <label className='span-picker' htmlFor="taxInput">Taxa (%)</label>
+                        <input
+                            style={{height: '100%'}}
+                            type="text"
+                            id="taxInput"
+                            value={tax}
+                            onChange={(e) => {
+                                const inputValue = e.target.value;
+                                let formattedValue = inputValue.replace(/[^\d.]/g, ''); // Remove any non-digit characters except period
+                                if (formattedValue.length === 3 && !formattedValue.includes('.')) {
+                                    // Insert a period after the first two digits
+                                    formattedValue = formattedValue.slice(0, 2) + '.' + formattedValue.slice(2);
+                                }
+                                if (formattedValue.length > 5) {
+                                    // Allow only one digit after the period
+                                    formattedValue = formattedValue.slice(0, 4);
+                                }
+                                setTax(formattedValue);
+                            }}
+                            maxLength={5} // Maximum length including the decimal point
+                        />
                     </div>
-                    <div className='select-component'>
+                    <div className='group-element-taxas'>
                         <hr className='hr-global'/>
-                        <button className='btn-global' disabled={isLoadingTaxes}>Adicionar</button>
+                        <button className='btn-global' disabled={isLoadingTaxes}>Cadastrar Taxa</button>
                     </div>
                 </form>
             </div>
-        )
-    }
+        );
+    };
+    
 
     const ModalEditTax = () => {
         const [selectedBan, setSelectedBan] = useState(editableTax?.BANDEIRA || { label: 'Selecione', value: 0 });
         const [selectedAdm, setSelectedAdm] = useState(editableTax?.ADQUIRENTE || { label: 'Selecione', value: 0 });
         const [selectedMod, setSelectedMod] = useState(editableTax?.MODALIDADE || { label: 'Selecione', value: 0 });
         const [tax, setTax] = useState(editableTax?.TAXAPERCENTUAL || '');
-
+    
         const resetValues = () => {
             setSelectedBan({ label: 'Selecione', value: 0 });
             setSelectedAdm({ label: 'Selecione', value: 0 });
@@ -399,9 +363,9 @@ const Taxas = () => {
             setTax('');
             setIsModalEditOpen(false);
         }
-
+    
         const handleEditTax = async (e) => {
-            e.preventDefault()
+            e.preventDefault();
             if (isObjectFullyPopulated({ selectedBan, selectedAdm, selectedMod, tax })) {
                 const updatedTax = {
                     CODIGO: editableTax.CODIGO,
@@ -411,10 +375,11 @@ const Taxas = () => {
                     MODCODIGO: selectedMod.value,
                     TAXAPERCENTUAL: parseFloat(tax.replace(',', '.'))
                 };
-
+    
                 try {
-                    console.log('updatedTax: ',updatedTax)
-                    await editTax(updatedTax)
+                    await editTax(updatedTax);
+                    const response = await loadTaxes();
+                    setTaxesList(response);
                     resetValues();
                 } catch (error) {
                     console.error('Erro ao editar taxa:', error);
@@ -423,7 +388,7 @@ const Taxas = () => {
                 toast.error('Preencha todos os campos obrigatórios');
             }
         }
-
+    
         const handleBan = (selected) => {
             setSelectedBan(selected)
         }
@@ -435,7 +400,7 @@ const Taxas = () => {
         const handleMod = (selected) => {
             setSelectedMod(selected)
         }
-
+    
         return (
             <div className={`modal-taxas modal ${isModalEditOpen ? 'modal-open' : ''}`} style={{ display: isModalEditOpen ? 'block' : 'none' }}>
                 <div className='header-container-taxa'>
@@ -453,7 +418,7 @@ const Taxas = () => {
                                 id="admSelectEdit"
                                 options={admOptions}
                                 value={selectedAdm}
-                                onChange={()=>{handleAdq}}
+                                onChange={handleAdq}
                             />
                         </div>
                         <div className='group-element-taxas'>
@@ -462,7 +427,7 @@ const Taxas = () => {
                                 id="banSelectEdit"
                                 options={banOptions}
                                 value={selectedBan}
-                                onChange={()=>{handleBan}}
+                                onChange={handleBan}
                             />
                         </div>
                     </div>
@@ -473,7 +438,7 @@ const Taxas = () => {
                                 id="modSelectEdit"
                                 options={modOptions}
                                 value={selectedMod}
-                                onChange={()=>{handleMod}}
+                                onChange={handleMod}
                             />
                         </div>
                         <div className='group-input-taxa'>
@@ -508,6 +473,7 @@ const Taxas = () => {
             </div>
         )
     }
+    
 
     return (
         <div className='appPage'>
@@ -520,10 +486,10 @@ const Taxas = () => {
                         <hr className='hr-global'/>
                         <div className='container-global' style={{margin: '0', flexDirection: 'column'}}>
                             { ((taxesList && taxesList.length > 0) && (clientCode !== ('todos' || undefined))) && 
-                            <>    
-                                <h3 className='subtitle'>Cliente: {JSON.parse(Cookies.get('selectedClient')).label}</h3>
+                            <div>    
+                                <h3 className='subtitle' style={{width: '100%', display: 'flex', flexDirection: 'column', alignContent: 'center', textAlign: 'center'}}>Cliente: {JSON.parse(Cookies.get('selectedClient')).label}</h3>
                                 <hr className='hr-global'/>
-                            </>
+                            </div>
                             }
                             { ((taxesList && taxesList.length === 0) && (clientCode !== ('todos' || undefined))) && 
                             <>  

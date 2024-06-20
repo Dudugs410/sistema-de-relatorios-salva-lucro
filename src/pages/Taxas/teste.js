@@ -588,6 +588,7 @@ const Taxas = () =>{
     /////////////////////////////////////////////////////////////////////
 
 
+
     return(
       <div className='appPage'>
         <div className='page-background-global'>
@@ -603,6 +604,7 @@ const Taxas = () =>{
                       <h3 className='subtitle'>Cliente: {JSON.parse(Cookies.get('selectedClient')).label}</h3>
                       <hr className='hr-global'/>
                       <TaxesTable />
+                      
                   </>
                   }
                   { ((taxesList && taxesList.length === 0) && (clientCode !== ('todos' || undefined))) && 
@@ -634,6 +636,7 @@ const Taxas = () =>{
                 <EditTaxModal />
             </div>
         )}
+        
       </div>
     )
 }

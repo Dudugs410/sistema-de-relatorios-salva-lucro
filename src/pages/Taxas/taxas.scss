@@ -57,6 +57,10 @@
     margin-top: 10%;
 }
 
+.table-wrapper-taxes{
+    overflow-x: scroll;
+}
+
 .custom-select .react-select__control {
     background-color: red !important; /* Background color of the control */
     color: green !important; /* Text color of the control */
