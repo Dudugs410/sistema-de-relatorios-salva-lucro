@@ -12,6 +12,9 @@ import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import jwtDecode from 'jwt-decode'
 
+import _ from 'lodash'
+import isEqual from 'lodash/isEqual'
+
 export const AuthContext = createContext({})
 
 function AuthProvider({ children }){
@@ -385,12 +388,99 @@ function AuthProvider({ children }){
 
 		const [isLoadingBanks, setIsLoadingBanks] = useState(false)
 
+		//
+
+		// retorna array de bancos
 		const loadBanks = async () => {
 			console.log('loadBanks')
+			if(localStorage.getItem('bancos')){
+				return JSON.parse(localStorage.getItem('bancos'))
+			} else {
+				return []
+			}
 		}
 
+		// adiciona novo banco
 		const addBank = async (bank) => {
-			console.log('addBank: ', bank)
+			console.log('addBank: ', bank);
+			
+			// Retrieve the existing bancos array from local storage
+			let bancos = JSON.parse(localStorage.getItem('bancos'));
+		
+			// If the bancos array doesn't exist, create a new one
+			if (!bancos) {
+				bancos = [];
+			}
+		
+			// Add the new bank to the array
+			bancos.push(bank);
+		
+			// Save the updated array back to local storage
+			localStorage.setItem('bancos', JSON.stringify(bancos));
+			
+			console.log('Bank added successfully!');
+		};
+
+		// edita banco
+		const editBank = async (editedBank) => {
+			console.log('editedBank: ', editedBank)
+			try {
+				// Step 1: Retrieve banks from local storage
+				const storedBanks = JSON.parse(localStorage.getItem('bancos')) || [];
+				
+				// Step 2: Find the index of the bank to delete
+				const indexToEdit = storedBanks.findIndex(bank => isEqual(bank, editedBank));
+				console.log('index: ', indexToEdit)
+				if (indexToEdit !== -1) {
+					// Step 3: Remove the bank object from the array
+					storedBanks[indexToEdit ] = editedBank;
+					
+					// Step 4: Update local storage with the modified array
+					localStorage.setItem('bancos', JSON.stringify(storedBanks));					
+				} else {
+					console.warn('Bank to edit not found in stored data.');
+				}
+			} catch (error) {
+				console.error('Error editing bank:', error);
+				// Handle error if needed, e.g., show an error toast
+				toast.error('Erro ao editar banco.');
+			}
+		}
+
+		// deleta banco
+		const deleteBank = async (bankToDelete) => {
+			console.log('deleteBank: ', bankToDelete)
+			try {
+				// Step 1: Retrieve banks from local storage
+				const storedBanks = JSON.parse(localStorage.getItem('bancos')) || [];
+				
+				// Step 2: Find the index of the bank to delete
+				const indexToDelete = storedBanks.findIndex(bank => isEqual(bank, bankToDelete));
+				
+				if (indexToDelete !== -1) {
+					// Step 3: Remove the bank object from the array
+					storedBanks.splice(indexToDelete, 1);
+					
+					// Step 4: Update local storage with the modified array
+					localStorage.setItem('bancos', JSON.stringify(storedBanks));					
+				} else {
+					console.warn('Bank to delete not found in stored data.');
+				}
+			} catch (error) {
+				console.error('Error deleting bank:', error);
+				// Handle error if needed, e.g., show an error toast
+				toast.error('Erro ao excluir banco.');
+			}
+		};
+		
+		const loadProducts = async () => {
+			console.log('loadProducts')
+			return ([{label: 'Produto 1', value: '1'}, {label: 'Produto 2', value: '2'}, {label: 'Produto 3', value: '3'}])
+		}
+
+		const loadSubproducts = async () => {
+			console.log('loadSubproducts')
+			return ([{label: 'Subproduto 1', value: '1'}, {label: 'Subproduto 2', value: '2'}, {label: 'Subproduto 3', value: '3'}])
 		}
 
 		// retorna array de bandeiras
@@ -402,6 +492,7 @@ function AuthProvider({ children }){
 				console.log(error)
 			}
 		}
+
 		// retorna array de administradoras
 		const loadAdmins = async () => {
 			try {
@@ -412,6 +503,7 @@ function AuthProvider({ children }){
 				console.log(error)
 			}
 		}
+
 		// retorna array de modalidades e seus respectivos códigos
 		const loadMods = async () => {
 			try {
@@ -422,6 +514,7 @@ function AuthProvider({ children }){
 				console.log(error)
 			}
 		}
+
 		// retorna string do arquivo SYSMO
 		const loadSysmo = async (obj) => {
 			setBtnDisabledSysmo(true)
@@ -445,6 +538,7 @@ function AuthProvider({ children }){
 				console.log(error)
 			}
 		} 
+
 		// renova o access token/sessão do usuário
 		const refreshSession = async () =>{
 			try {
@@ -457,6 +551,7 @@ function AuthProvider({ children }){
 				console.log(error)
 			}	
 		}
+
 	// >>> Dashboard <<< //
 
 		// *** Definição de consts / useStates *** 
@@ -1538,7 +1633,8 @@ function AuthProvider({ children }){
 
 				// Bancos
 
-				loadBanks, addBank, isLoadingBanks,
+				loadBanks, isLoadingBanks,
+				addBank, editBank, deleteBank,
 
 				// Sysmo
 
@@ -1548,7 +1644,7 @@ function AuthProvider({ children }){
 				// outros / compartilhados //
 
 				loginApp, 
-				loadBanners, loadAdmins, loadMods,
+				loadBanners, loadAdmins, loadMods, loadProducts, loadSubproducts,
 				groupByAdmin, groupServicesByAdmin,
 				exportName, setExportName,
 				isCheckedCalendar, setIsCheckedCalendar,
