@@ -220,9 +220,9 @@ const CadastroDeBancos = () => {
                             <th scope="col" style={{ textAlign: 'center' }}>Bandeira</th>
                             <th scope="col" style={{ textAlign: 'center' }}>Produto</th>
                             <th scope="col" style={{ textAlign: 'center' }}>Subproduto</th>
-                            <th scope="col" style={{ textAlign: 'center' }}>Codigo Estabelecimento</th>
-                            <th scope="col" style={{ textAlign: 'center' }}>Cod Cliente</th>
-                            <th scope="col" style={{ textAlign: 'center' }}>Cod Cliente Adquirente</th>
+                            <th scope="col" style={{ textAlign: 'center' }}>Cod Estab.</th>
+                            <th scope="col" style={{ textAlign: 'center' }}>Cod Cli</th>
+                            <th scope="col" style={{ textAlign: 'center' }}>Cod Cli Adq</th>
                             <th className='fixed-col' scope="col" style={{ width: '2%', textAlign: 'center' }}></th>
                         </tr>
                     </thead>
