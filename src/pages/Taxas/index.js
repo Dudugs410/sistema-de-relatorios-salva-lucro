@@ -1,12 +1,11 @@
 import { useEffect, useContext, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { AuthContext } from '../../contexts/auth';
+import { AuthContext } from '../../contexts/auth'
 import Cookies from 'js-cookie'
 import '../../styles/global.scss'
 import './taxas.scss'
-import Select from 'react-select';
-import { FiEdit, FiPlus, FiTrash, FiX } from 'react-icons/fi';
-import { parse } from 'date-fns';
+import Select from 'react-select'
+import { FiEdit, FiPlus, FiTrash, FiX } from 'react-icons/fi'
 import { toast } from 'react-toastify'
 
 const Taxas = () => {
@@ -20,7 +19,7 @@ const Taxas = () => {
         editTax,
         deleteTax,
         changedOption,
-        isLoadingTaxes
+        isLoadingTaxes,
     } = useContext(AuthContext)
 
     const [bannersList, setBannersList] = useState([])
@@ -165,7 +164,7 @@ const Taxas = () => {
                 <table className="table table-striped table-hover table-bordered table-taxas">
                     <thead>
                         <tr>
-                            <th scope="col" style={{ width: '2%', textAlign: 'center' }}>
+                            <th className='fixed-col' scope="col" style={{ width: '2%', textAlign: 'center' }}>
                                 <button className="btn btn-primary btn-global" style={{ width: '100%' }} onClick={() => { setIsModalOpen(true) }}>
                                     <FiPlus size={25} className="icon" />
                                 </button>
@@ -175,14 +174,14 @@ const Taxas = () => {
                             <th scope="col" style={{ textAlign: 'center' }}>Modalidade</th>
                             <th scope="col" style={{ textAlign: 'center' }}>Tipo Taxa</th>
                             <th scope="col" style={{ textAlign: 'center' }}>% Taxa</th>
-                            <th scope="col" style={{ width: '2%', textAlign: 'center' }}></th>
+                            <th  className='fixed-col' scope="col" style={{ width: '2%', textAlign: 'center' }}></th>
                         </tr>
                     </thead>
                     <tbody>
                         {taxesList.length > 0 &&
                             taxesList.map((object, index) => (
                                 <tr key={index} className="det-tr-global tr-taxas">
-                                    <th scope="row" style={{ textAlign: 'center' }} onClick={() => { handleEdit(object) }}>
+                                    <th className='fixed-col'  scope="row" style={{ textAlign: 'center' }} onClick={() => { handleEdit(object) }}>
                                         <FiEdit className="icon" />
                                     </th>
                                     {console.log(object)}
@@ -191,7 +190,7 @@ const Taxas = () => {
                                     <td className="det-td-vendas-global" data-label="MODDESCRICAO">{object.MODDESCRICAO}</td>
                                     <td className="det-td-vendas-global" data-label="TIPOTAXA">{object.TIPOTAXA}</td>
                                     <td className="det-td-vendas-global" data-label="TAXAPERCENTUAL">{object.TAXAPERCENTUAL} %</td>
-                                    <th scope="row" style={{ textAlign: 'center' }} onClick={() => handleDelete(object)}>
+                                    <th className='fixed-col'  scope="row" style={{ textAlign: 'center' }} onClick={() => handleDelete(object)}>
                                         <FiTrash className="icon" />
                                     </th>
                                 </tr>
@@ -269,7 +268,7 @@ const Taxas = () => {
             <div className={`modal-taxas modal ${isModalOpen ? 'modal-open' : ''}`} style={{ display: isModalOpen ? 'block' : 'none' }}>
                 <div className='header-container-taxa'>
                     <div className='title-container-global'>
-                        <h3 className='subtitle' style={{margin: '0'}}>Cadastrar Nova Taxa:</h3>
+                        <h3 className='title-global' style={{margin: '0'}}>Cadastrar Nova Taxa:</h3>
                     </div>
                     <button className='btn btn-danger close-modal' onClick={closeModal} style={{marginLeft: '5px'}}><FiX size={25}/></button>
                 </div>
@@ -340,7 +339,7 @@ const Taxas = () => {
                     </div>
                     <div className='group-element-taxas'>
                         <hr className='hr-global'/>
-                        <button className='btn-global' disabled={isLoadingTaxes}>Cadastrar Taxa</button>
+                        <button className='btn-global btn-taxas' disabled={isLoadingTaxes}>Cadastrar Taxa</button>
                     </div>
                 </form>
             </div>
@@ -373,7 +372,6 @@ const Taxas = () => {
                     MODCODIGO: selectedMod.value,
                     TAXAPERCENTUAL: parseFloat(tax)
                 };
-    
                 try {
                     await editTax(updatedTax);
                     const response = await loadTaxes();
@@ -403,7 +401,7 @@ const Taxas = () => {
             <div className={`modal-taxas modal ${isModalEditOpen ? 'modal-open' : ''}`} style={{ display: isModalEditOpen ? 'block' : 'none' }}>
                 <div className='header-container-taxa'>
                     <div className='title-container-global'>
-                        <h3 className='subtitle' style={{margin: '0'}}>Editar Taxa:</h3>
+                        <h3 className='title-global' style={{margin: '0'}}>Editar Taxa:</h3>
                     </div>
                     <button className='btn btn-danger close-modal' onClick={closeModal} style={{marginLeft: '5px'}}><FiX size={25}/></button>
                 </div>
@@ -465,14 +463,13 @@ const Taxas = () => {
                     </div>
                     <div className='group-element-taxas'>
                         <hr className='hr-global'/>
-                        <button className='btn-global' disabled={isLoadingTaxes}>Atualizar Taxa</button>
+                        <button className='btn-global btn-taxas' disabled={isLoadingTaxes}>Atualizar Taxa</button>
                     </div>
                 </form>
             </div>
         )
     }
     
-
     return (
         <div className='appPage'>
             <div className='page-background-global'>
@@ -491,14 +488,14 @@ const Taxas = () => {
                             }
                             { ((taxesList && taxesList.length === 0) && (clientCode !== ('todos' || undefined))) && 
                             <>  
-                                <span>Sem Taxas Cadastradas</span>
+                                <span className='subtitle'>Sem Taxas Cadastradas</span>
                                 <br/> 
                                 <button className='btn btn-primary btn-global' onClick={()=>{setIsModalOpen(true)}}><FiPlus className='icon' />Adicionar Taxa</button>
                             </>
                             }
                             {
                                 clientCode === ('todos' || undefined) ?
-                                    <span>Selecione um cliente para exibir as taxas cadastradas</span>
+                                    <span className='subtitle'>Selecione um cliente para exibir suas taxas cadastradas</span>
                                     : 
                                     <></>
                             }
