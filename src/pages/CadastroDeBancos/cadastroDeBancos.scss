@@ -57,8 +57,27 @@
     margin-top: 10%;
 }
 
+.btn-bancos{
+    min-width: 191px;
+}
+
 .table-wrapper-bancos{
     overflow-x: scroll;
+}
+
+.fixed-col {
+    position: sticky;
+    border: solid var(--primary-color) 1px !important;
+    background: var(--background-color); /* Ensure the background matches the table's background */
+    z-index: 1; /* Ensure it stays on top */
+}
+
+.fixed-col:first-child {
+    left: 0;
+}
+
+.fixed-col:last-child {
+    right: 0;
 }
 
 .custom-select .react-select__control {
