@@ -97,7 +97,6 @@ const CadastroDeBancos = () => {
     }, [adminsList]);
 
     useEffect(() => {
-        console.log('productList: ', productList)
         if (productList) {
             if (productList.length > 0) {
                 const productListOptions = productList.map(prod => ({ value: prod.value, label: prod.label }));
@@ -107,7 +106,6 @@ const CadastroDeBancos = () => {
     }, [productList])
 
     useEffect(() => {
-        console.log('subproductList: ', subproductList)
         if (subproductList) {
             if (subproductList.length > 0) {
                 const subproductListOptions = subproductList.map(sub => ({ value: sub.value, label: sub.label }));
@@ -136,7 +134,10 @@ const CadastroDeBancos = () => {
 
     const [editableBank, setEditableBank] = useState()
 
-    const handleEdit = (object) => {
+    const handleEdit = (object, index) => {
+        console.log('object: ', object)
+        console.log('index: ', index)
+        localStorage.setItem('editIndex', index)
         setEditableBank({
             codigoEstabelecimento: object.codigoEstabelecimento,
             codigoCliente: object.codigoCliente,
@@ -154,7 +155,18 @@ const CadastroDeBancos = () => {
     }
 
     const resetValues = () => {
-        setEditableBank({})
+        setEditableBank({            
+            codigoEstabelecimento: '',
+            codigoCliente: '',
+            codigoClienteAdquirente: '',
+            bandeira: { label: 'Selecione', value: 0 },
+            administradora: { label: 'Selecione', value: 0 },
+            produto: { label: 'Selecione', value: 0 },
+            subproduto: { label: 'Selecione', value: 0 },
+            banco: '',
+            agencia: '',
+            conta: '',})
+        setIsModalEditOpen(false)
     }
 
     const handleDelete = async (object) => {
@@ -196,7 +208,7 @@ const CadastroDeBancos = () => {
                 <table className="table table-striped table-hover table-bordered table-bancos">
                     <thead>
                         <tr>
-                            <th scope="col" style={{ width: '2%', textAlign: 'center' }}>
+                            <th className='fixed-col' scope="col" style={{ width: '2%', textAlign: 'center' }}>
                                 <button className="btn btn-primary btn-global" style={{ width: '100%' }} onClick={() => { setIsModalOpen(true) }}>
                                     <FiPlus size={25} className="icon" />
                                 </button>
@@ -211,14 +223,14 @@ const CadastroDeBancos = () => {
                             <th scope="col" style={{ textAlign: 'center' }}>Codigo Estabelecimento</th>
                             <th scope="col" style={{ textAlign: 'center' }}>Cod Cliente</th>
                             <th scope="col" style={{ textAlign: 'center' }}>Cod Cliente Adquirente</th>
-                            <th scope="col" style={{ width: '2%', textAlign: 'center' }}></th>
+                            <th className='fixed-col' scope="col" style={{ width: '2%', textAlign: 'center' }}></th>
                         </tr>
                     </thead>
                     <tbody>
                         {banksList.length > 0 &&
                             banksList.map((object, index) => (
                                 <tr key={index} className="det-tr-global tr-bancos">
-                                    <th scope="row" style={{ textAlign: 'center' }} onClick={() => { handleEdit(object) }}>
+                                    <th className='fixed-col' scope="row" style={{ textAlign: 'center' }} onClick={() => { handleEdit(object, index) }}>
                                         <FiEdit className="icon" />
                                     </th>
                                     <td className="det-td-vendas-global" data-label="banco">{object.banco}</td>
@@ -231,7 +243,7 @@ const CadastroDeBancos = () => {
                                     <td className="det-td-vendas-global" data-label="codigoEstabelecimento">{object.codigoEstabelecimento}</td>
                                     <td className="det-td-vendas-global" data-label="codigoCliente">{object.codigoCliente}</td>
                                     <td className="det-td-vendas-global" data-label="codigoClienteAdquirente">{object.codigoClienteAdquirente}</td>
-                                    <th scope="row" style={{ textAlign: 'center' }} onClick={() => handleDelete(object)}>
+                                    <th className='fixed-col' scope="row" style={{ textAlign: 'center' }} onClick={() => handleDelete(object)}>
                                         <FiTrash className="icon" />
                                     </th>
                                 </tr>
@@ -276,6 +288,7 @@ const CadastroDeBancos = () => {
             setSelectedAccount('');
 
             setIsModalOpen(false);
+            setIsModalEditOpen(false);
         }
     
         const handleSubmit = async (e) => {
@@ -417,18 +430,19 @@ const CadastroDeBancos = () => {
         const [selectedAccount, setSelectedAccount] = useState(editableBank?.conta || '');
     
         const resetValues = () => {
-            setSelectedCode('');
+            setSelectedCode('')
             setSelectedClientCode('')
             setSelectedClientAdminCode('')
-            setSelectedBan({ label: 'Selecione', value: 0 });
-            setSelectedAdm({ label: 'Selecione', value: 0 });
-            setSelectedProduct({ label: 'Selecione', value: 0 });
-            setSelectedSubproduct({ label: 'Selecione', value: 0 });
-            setSelectedBank('');
-            setSelectedAgency('');
-            setSelectedAccount('');
+            setSelectedBan({ label: 'Selecione', value: 0 })
+            setSelectedAdm({ label: 'Selecione', value: 0 })
+            setSelectedProduct({ label: 'Selecione', value: 0 })
+            setSelectedSubproduct({ label: 'Selecione', value: 0 })
+            setSelectedBank('')
+            setSelectedAgency('')
+            setSelectedAccount('')
 
-            setIsModalOpen(false);
+            setIsModalOpen(false)
+            setIsModalEditOpen(false)
         }
     
         const handleSubmit = async (e) => {

@@ -392,7 +392,6 @@ function AuthProvider({ children }){
 
 		// retorna array de bancos
 		const loadBanks = async () => {
-			console.log('loadBanks')
 			if(localStorage.getItem('bancos')){
 				return JSON.parse(localStorage.getItem('bancos'))
 			} else {
@@ -423,29 +422,35 @@ function AuthProvider({ children }){
 
 		// edita banco
 		const editBank = async (editedBank) => {
-			console.log('editedBank: ', editedBank)
 			try {
+				console.log('editBank:', editedBank);
+		
 				// Step 1: Retrieve banks from local storage
 				const storedBanks = JSON.parse(localStorage.getItem('bancos')) || [];
-				
-				// Step 2: Find the index of the bank to delete
-				const indexToEdit = storedBanks.findIndex(bank => isEqual(bank, editedBank));
-				console.log('index: ', indexToEdit)
-				if (indexToEdit !== -1) {
-					// Step 3: Remove the bank object from the array
-					storedBanks[indexToEdit ] = editedBank;
-					
-					// Step 4: Update local storage with the modified array
-					localStorage.setItem('bancos', JSON.stringify(storedBanks));					
+		
+				// Retrieve the index from local storage
+				const index = parseInt(localStorage.getItem('editIndex'), 10);
+		
+				// Ensure the index is valid
+				if (index >= 0 && index < storedBanks.length) {
+					// Step 2: Replace the bank object at the specific index with the edited bank object
+					storedBanks[index] = editedBank;
+		
+					console.log('storedBanks:', storedBanks);
+		
+					// Step 3: Update local storage with the modified array
+					localStorage.setItem('bancos', JSON.stringify(storedBanks));
+		
+					return storedBanks;
 				} else {
-					console.warn('Bank to edit not found in stored data.');
+					throw new Error('Invalid index');
 				}
 			} catch (error) {
 				console.error('Error editing bank:', error);
 				// Handle error if needed, e.g., show an error toast
 				toast.error('Erro ao editar banco.');
 			}
-		}
+		};
 
 		// deleta banco
 		const deleteBank = async (bankToDelete) => {
@@ -474,12 +479,10 @@ function AuthProvider({ children }){
 		};
 		
 		const loadProducts = async () => {
-			console.log('loadProducts')
 			return ([{label: 'Produto 1', value: '1'}, {label: 'Produto 2', value: '2'}, {label: 'Produto 3', value: '3'}])
 		}
 
 		const loadSubproducts = async () => {
-			console.log('loadSubproducts')
 			return ([{label: 'Subproduto 1', value: '1'}, {label: 'Subproduto 2', value: '2'}, {label: 'Subproduto 3', value: '3'}])
 		}
 

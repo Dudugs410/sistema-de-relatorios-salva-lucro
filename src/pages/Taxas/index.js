@@ -164,7 +164,7 @@ const Taxas = () => {
                 <table className="table table-striped table-hover table-bordered table-taxas">
                     <thead>
                         <tr>
-                            <th scope="col" style={{ width: '2%', textAlign: 'center' }}>
+                            <th className='fixed-col' scope="col" style={{ width: '2%', textAlign: 'center' }}>
                                 <button className="btn btn-primary btn-global" style={{ width: '100%' }} onClick={() => { setIsModalOpen(true) }}>
                                     <FiPlus size={25} className="icon" />
                                 </button>
@@ -174,14 +174,14 @@ const Taxas = () => {
                             <th scope="col" style={{ textAlign: 'center' }}>Modalidade</th>
                             <th scope="col" style={{ textAlign: 'center' }}>Tipo Taxa</th>
                             <th scope="col" style={{ textAlign: 'center' }}>% Taxa</th>
-                            <th scope="col" style={{ width: '2%', textAlign: 'center' }}></th>
+                            <th  className='fixed-col' scope="col" style={{ width: '2%', textAlign: 'center' }}></th>
                         </tr>
                     </thead>
                     <tbody>
                         {taxesList.length > 0 &&
                             taxesList.map((object, index) => (
                                 <tr key={index} className="det-tr-global tr-taxas">
-                                    <th scope="row" style={{ textAlign: 'center' }} onClick={() => { handleEdit(object) }}>
+                                    <th className='fixed-col'  scope="row" style={{ textAlign: 'center' }} onClick={() => { handleEdit(object) }}>
                                         <FiEdit className="icon" />
                                     </th>
                                     {console.log(object)}
@@ -190,7 +190,7 @@ const Taxas = () => {
                                     <td className="det-td-vendas-global" data-label="MODDESCRICAO">{object.MODDESCRICAO}</td>
                                     <td className="det-td-vendas-global" data-label="TIPOTAXA">{object.TIPOTAXA}</td>
                                     <td className="det-td-vendas-global" data-label="TAXAPERCENTUAL">{object.TAXAPERCENTUAL} %</td>
-                                    <th scope="row" style={{ textAlign: 'center' }} onClick={() => handleDelete(object)}>
+                                    <th className='fixed-col'  scope="row" style={{ textAlign: 'center' }} onClick={() => handleDelete(object)}>
                                         <FiTrash className="icon" />
                                     </th>
                                 </tr>
