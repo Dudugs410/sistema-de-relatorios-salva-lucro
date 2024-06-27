@@ -213,16 +213,16 @@ const CadastroDeBancos = () => {
                                     <FiPlus size={25} className="icon" />
                                 </button>
                             </th>
-                            <th scope="col" style={{ textAlign: 'center' }}>Banco</th>
-                            <th scope="col" style={{ textAlign: 'center' }}>Agencia</th>
-                            <th scope="col" style={{ textAlign: 'center' }}>Conta</th>
-                            <th scope="col" style={{ textAlign: 'center' }}>Adquirente</th>
-                            <th scope="col" style={{ textAlign: 'center' }}>Bandeira</th>
-                            <th scope="col" style={{ textAlign: 'center' }}>Produto</th>
-                            <th scope="col" style={{ textAlign: 'center' }}>Subproduto</th>
-                            <th scope="col" style={{ textAlign: 'center' }}>Codigo Estabelecimento</th>
-                            <th scope="col" style={{ textAlign: 'center' }}>Cod Cliente</th>
-                            <th scope="col" style={{ textAlign: 'center' }}>Cod Cliente Adquirente</th>
+                            <th scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Banco</th>
+                            <th scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Agencia</th>
+                            <th scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Conta</th>
+                            <th scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Adquirente</th>
+                            <th scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Bandeira</th>
+                            <th scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Produto</th>
+                            <th scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Subproduto</th>
+                            <th scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Cod Estab.</th>
+                            <th scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Cod Cli</th>
+                            <th scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Cod Cli Adq</th>
                             <th className='fixed-col' scope="col" style={{ width: '2%', textAlign: 'center' }}></th>
                         </tr>
                     </thead>
