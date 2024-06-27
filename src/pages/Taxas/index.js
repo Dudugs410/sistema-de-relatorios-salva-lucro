@@ -169,11 +169,11 @@ const Taxas = () => {
                                     <FiPlus size={25} className="icon" />
                                 </button>
                             </th>
-                            <th scope="col" style={{ textAlign: 'center' }}>Bandeira</th>
-                            <th scope="col" style={{ textAlign: 'center' }}>Adquirente</th>
-                            <th scope="col" style={{ textAlign: 'center' }}>Modalidade</th>
-                            <th scope="col" style={{ textAlign: 'center' }}>Tipo Taxa</th>
-                            <th scope="col" style={{ textAlign: 'center' }}>% Taxa</th>
+                            <th scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Bandeira</th>
+                            <th scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Adquirente</th>
+                            <th scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Modalidade</th>
+                            <th scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Tipo Taxa</th>
+                            <th scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>% Taxa</th>
                             <th  className='fixed-col' scope="col" style={{ width: '2%', textAlign: 'center' }}></th>
                         </tr>
                     </thead>
