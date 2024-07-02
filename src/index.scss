@@ -8,9 +8,11 @@ html, body, .app, #root, .appPage, .app-page{
   height: 100%;
   width: 100%;
   overflow-x: hidden;
+  overflow-y: overlay;
   display: contents;
   transition: all .4s;
   background-color: var(--background-color);
+  
 }
 
 h5{
@@ -52,7 +54,6 @@ td, th{
   max-width: 100%;
   filter: drop-shadow(5px 5px 10px #000);
 }
-
 
 ::-webkit-scrollbar-track {
   background-color: red;

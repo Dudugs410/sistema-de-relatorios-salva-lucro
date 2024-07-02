@@ -76,7 +76,7 @@
     border: solid var(--secondary-color) 2px;
     padding-top: 1%;
     margin-bottom: 5%;
-    overflow-y: scroll;
+    overflow-y: overlay;
 }
 
 .title-form{
@@ -129,5 +129,13 @@ form>.input-container{
 
     .input-container-contato{
         width: 90%;
+    }
+
+    .btn-contato-container{
+        display: none;
+    }
+
+    .span-plus{
+        display: none;
     }
 }
