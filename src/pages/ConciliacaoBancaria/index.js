@@ -18,9 +18,9 @@ const ConciliacaoBancaria = () => {
                     <div className='title-container-global'>
                         <h1 className='title-global'>Conciliação Bancária</h1>          
                     </div>
-                    <hr className="hr-recebimentos"/>
-                    <div className='container-cielo'>
-                        <div className=''>
+                    <hr className="hr-global"/>
+                    <div className='body-conciliacao'>
+                        <div className='container-extrato-cnab'>
                             <h6>{'Carregar Extrato (Cnab240)'}</h6>
                             <input
                                 type="file"
