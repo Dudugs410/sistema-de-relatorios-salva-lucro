@@ -101,7 +101,6 @@ const Taxas = () => {
 
     useEffect(() => {
         const loadTax = async () => {
-            console.log('loadTax, clientCode: ', clientCode)
             if ((clientCode === 'todos') || (clientCode === 'TODOS')) {
                 setTaxesList([])
             } else {
@@ -158,7 +157,6 @@ const Taxas = () => {
     }
 
     const TaxesTable = () => {
-        console.log('taxArray: ', taxesList)
         return (
             <div className='table-wrapper table-wrapper-taxes'>
                 <table className="table table-striped table-hover table-bordered table-taxas">
@@ -184,7 +182,6 @@ const Taxas = () => {
                                     <th className='fixed-col'  scope="row" style={{ textAlign: 'center' }} onClick={() => { handleEdit(object) }}>
                                         <FiEdit className="icon" />
                                     </th>
-                                    {console.log(object)}
                                     <td className="det-td-vendas-global" data-label="BADDESCRICAO">{object.BADDESCRICAO}</td>
                                     <td className="det-td-vendas-global" data-label="nomeAdquirente">{object.ADQUIRENTE.nomeAdquirente}</td>
                                     <td className="det-td-vendas-global" data-label="MODDESCRICAO">{object.MODDESCRICAO}</td>
@@ -209,14 +206,13 @@ const Taxas = () => {
     const [taxesTemp, setTaxesTemp] = useState([])
 
     useEffect(()=>{
-        console.log('taxesTemp: ', taxesTemp)
         if(taxesTemp.length > 0){
             setTaxesList(prevTaxesList => [taxesTemp])
         }
     },[taxesTemp])
 
     const isObjectFullyPopulated = (obj) => {
-        return obj && Object.values(obj).every(value => value !== null && value !== 0);
+        return obj && Object.values(obj).every(value => value !== null && value !== 0 && value !== '' && value !== 'Selecione');
     }
 
     const ModalNewTax = () => {

@@ -61,7 +61,7 @@ const VendasDelivery = () => {
                 <div className='container-cielo'>
                     <div>
                         <div>
-                            <h5>Relatório Detalhado de Vendas</h5>
+                            <h5 style={{textAlign: 'center'}}>Relatório Detalhado de Vendas</h5>
                         </div>
                         <div>
                             <div className='input-block-cli-adq'>

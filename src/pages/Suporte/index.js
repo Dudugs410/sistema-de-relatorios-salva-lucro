@@ -403,7 +403,7 @@ const Suporte = () =>{
         return(
             <div className='container-cielo' >
                 <div>
-                    <p>Realiza a correção dos cruzamentos entre Clientes x adminsList cadastrados incorretamente.</p>
+                    <p>Realiza a correção dos cruzamentos entre Clientes x Adquirentes cadastrados incorretamente.</p>
                     <br/><br/>
                 </div>
                 <div className='input-suporte-correcao'>
@@ -489,6 +489,7 @@ const Suporte = () =>{
                                 options={adqfiltradas}
                                 onChange={handleAdqChange}
                                 value={adqSelecionada}
+                                placeholder="Selecione"
                             />
                         ) : <></>}
                     </div>

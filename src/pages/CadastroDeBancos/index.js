@@ -6,7 +6,6 @@ import '../../styles/global.scss'
 import './cadastroDeBancos.scss'
 import Select from 'react-select';
 import { FiEdit, FiPlus, FiTrash, FiX } from 'react-icons/fi';
-import { parse, sub } from 'date-fns';
 import { toast } from 'react-toastify'
 
 const CadastroDeBancos = () => {
@@ -30,16 +29,11 @@ const CadastroDeBancos = () => {
     const [subproductList, setSubproductList] = useState([])
     const [banksList, setBanksList] = useState([])
 
-    const [code, setCode] = useState('')
     const [clientCode, setClientCode] = useState(Cookies.get('clientCode'))
-    const [adminClientCode, setAdminClientCode] = useState('todos')
     const [banOptions, setBanOptions] = useState([])
     const [admOptions, setAdmOptions] = useState([])
     const [productOptions, setProductOptions] = useState([])
     const [subproductOptions, setSubproductOptions] = useState([])
-    const [bank, setBank] = useState('')
-    const [agency, setAgency] = useState('')
-    const [account, setAccount] = useState('')
 
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isModalEditOpen, setIsModalEditOpen] = useState(false)
@@ -121,7 +115,6 @@ const CadastroDeBancos = () => {
 
     useEffect(() => {
         const loadbank = async () => {
-            console.log('loadBank, clientCode: ', clientCode)
             if ((clientCode === 'todos') || (clientCode === 'TODOS')) {
                 setBanksList([])
             } else {
@@ -135,8 +128,6 @@ const CadastroDeBancos = () => {
     const [editableBank, setEditableBank] = useState()
 
     const handleEdit = (object, index) => {
-        console.log('object: ', object)
-        console.log('index: ', index)
         localStorage.setItem('editIndex', index)
         setEditableBank({
             codigoEstabelecimento: object.codigoEstabelecimento,
@@ -150,7 +141,6 @@ const CadastroDeBancos = () => {
             agencia: object.agencia,
             conta: object.conta,
         })
-        console.log(Cookies.get('clientCode'))
         setIsModalEditOpen(true)
     }
 
@@ -202,7 +192,6 @@ const CadastroDeBancos = () => {
     }
 
     const BanksTable = () => {
-        console.log('BanksList: ', banksList)
         return (
             <div className='table-wrapper table-wrapper-taxes'>
                 <table className="table table-striped table-hover table-bordered table-bancos">
@@ -260,7 +249,7 @@ const CadastroDeBancos = () => {
     };
 
     const isObjectFullyPopulated = (obj) => {
-        return obj && Object.values(obj).every(value => value !== null && value !== 0);
+        return obj && Object.values(obj).every(value => value !== null && value !== 0 && value !== '' && value.label !== 'Selecione');
     }
 
     const ModalNewBank = () => {
@@ -286,7 +275,6 @@ const CadastroDeBancos = () => {
             setSelectedBank('');
             setSelectedAgency('');
             setSelectedAccount('');
-
             setIsModalOpen(false);
             setIsModalEditOpen(false);
         }
@@ -307,6 +295,7 @@ const CadastroDeBancos = () => {
             }
         
             if (isObjectFullyPopulated(newBankObj)) {
+                console.log('newBankObject: ', newBankObj)
                 try {
                     await toast.promise(addBank(newBankObj), {
                         pending: 'Carregando...',
@@ -339,7 +328,7 @@ const CadastroDeBancos = () => {
                         <div className='group-element-bancos'>
                             <label className='span-picker'>Produto</label>
                             <Select
-                                id="cliSelect"
+                                id="productSelect"
                                 options={productOptions}
                                 value={selectedProduct}
                                 onChange={(selected) => setSelectedProduct(selected)}
@@ -348,7 +337,7 @@ const CadastroDeBancos = () => {
                         <div className='group-element-bancos'>
                             <label className='span-picker'>Subproduto</label>
                             <Select
-                                id="admSelect"
+                                id="subproductSelect"
                                 options={subproductOptions}
                                 value={selectedSubproduct}
                                 onChange={(selected) => setSelectedSubproduct(selected)}
@@ -381,7 +370,7 @@ const CadastroDeBancos = () => {
                             <input
                                 style={{height: '100%'}}
                                 type="text"
-                                id="taxInput"
+                                id="bankInput"
                                 value={selectedBank}
                                 onChange={(e) => setSelectedBank(e.target.value)}
                             />
@@ -391,7 +380,7 @@ const CadastroDeBancos = () => {
                             <input
                             style={{height: '100%'}}
                             type="text"
-                            id="taxInput"
+                            id="agencyInput"
                                 value={selectedAgency}
                                 onChange={(e) => setSelectedAgency(e.target.value)}
                             />
@@ -401,7 +390,7 @@ const CadastroDeBancos = () => {
                             <input
                                 style={{height: '100%'}}
                                 type="text"
-                                id="taxInput"
+                                id="accountInput"
                                 value={selectedAccount}
                                 onChange={(e) => setSelectedAccount(e.target.value)}
                             />
@@ -508,7 +497,7 @@ const CadastroDeBancos = () => {
                         <div className='group-element-bancos'>
                             <label className='span-picker'>Produto</label>
                             <Select
-                                id="cliSelectEdit"
+                                id="productSelect"
                                 options={productOptions}
                                 value={selectedProduct}
                                 onChange={handleProduct}
@@ -518,7 +507,7 @@ const CadastroDeBancos = () => {
                         <div className='group-element-bancos'>
                             <label className='span-picker'>Subproduto</label>
                             <Select
-                                id="admSelectEdit"
+                                id="subproductSelect"
                                 options={subproductOptions}
                                 value={selectedSubproduct}
                                 onChange={handleSubproduct}
@@ -530,7 +519,7 @@ const CadastroDeBancos = () => {
                         <div className='group-element-bancos'>
                             <label className='span-picker'>Adquirente</label>
                             <Select
-                                id="banSelect"
+                                id="admSelect"
                                 options={admOptions}
                                 value={selectedAdm}
                                 onChange={handleAdm}
@@ -554,7 +543,7 @@ const CadastroDeBancos = () => {
                             <input
                                 style={{height: '100%'}}
                                 type="text"
-                                id="taxInput"
+                                id="bankInput"
                                 value={selectedBank}
                                 onChange={(selected) => setSelectedBank(selected.target.value)}
                             />
@@ -564,7 +553,7 @@ const CadastroDeBancos = () => {
                             <input
                             style={{height: '100%'}}
                             type="text"
-                            id="taxInput"
+                            id="agencyInput"
                                 value={selectedAgency}
                                 onChange={(selected) => setSelectedAgency(selected.target.value)}
                             />
@@ -574,7 +563,7 @@ const CadastroDeBancos = () => {
                             <input
                                 style={{height: '100%'}}
                                 type="text"
-                                id="taxInput"
+                                id="accountInput"
                                 value={selectedAccount}
                                 onChange={(selected) => setSelectedAccount(selected.target.value)}
                             />

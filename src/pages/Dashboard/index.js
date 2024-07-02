@@ -6,10 +6,8 @@ import './dashboard.scss';
 
 import { useContext, useEffect } from 'react';
 import { AuthContext } from '../../contexts/auth';
-import ModalCliente from '../../components/ModalCliente';
 import TabelaHorizontal from '../../components/Componente_TabelaHorizontal';
 import PieChart from '../../components/GraficoDashboard';
-import Cookies from 'js-cookie';
 import { useLocation } from 'react-router-dom';
 import '../../index.scss';
 import LazyLoader from '../../components/Componente_LazyLoader/index.js';
@@ -73,11 +71,11 @@ const Dashboard = () => {
 						<div style={{'alignSelf': 'center'}}>
 							{ errorSales ? 
 								<div className='dashboard-error-container'>
-									<h3 className='title-global'>Ocorreu um erro</h3>
+									<h3 className='subtitle-global'>Ocorreu um erro</h3>
 									<button className='btn btn-global btn-danger  btn-dash-error' onClick={reloadSales}>Recarregar</button>
 								</div>
 								:
-								<h3 className='title-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>						
+								<h3 className='subtitle-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>						
 								}
 						</div>
 					}
@@ -100,11 +98,11 @@ const Dashboard = () => {
 						<div style={{'alignSelf': 'center'}}>
 							{ errorCredits ? 
 								<div className='dashboard-error-container'>
-									<h3 className='title-global'>Ocorreu um erro</h3>
+									<h3 className='subtitle-global'>Ocorreu um erro</h3>
 									<button className='btn btn-global btn-danger  btn-dash-error' onClick={reloadCredits}>Recarregar</button>
 								</div>
 								:
-								<h3 className='title-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>
+								<h3 className='subtitle-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>
 							}
 						</div>
 					}
@@ -127,11 +125,11 @@ const Dashboard = () => {
 						<div style={{'alignSelf': 'center'}}>
 							{ errorServices ? 
 								<div className='dashboard-error-container'>
-									<h3 className='title-global'>Ocorreu um erro</h3>
+									<h3 className='subtitle-global'>Ocorreu um erro</h3>
 									<button className='btn btn-global btn-danger btn-dash-error' onClick={reloadServices}>Recarregar</button>
 								</div>
 								:
-								<h3 className='title-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>
+								<h3 className='subtitle-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>
 							}
 						</div>
 					}
