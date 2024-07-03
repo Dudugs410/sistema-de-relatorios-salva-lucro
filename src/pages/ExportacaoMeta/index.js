@@ -4,6 +4,7 @@ import { AuthContext } from '../../contexts/auth';
 import '../../styles/global.scss'
 import Select from 'react-select'
 import '../ExportacaoSysmo/exportacao.scss'
+import './meta.scss'
 import MyCalendar from '../../components/Componente_Calendario';
 import base64PDFdownload from '../../components/Componente_Base64PDF';
 import RadioSelect from '../../components/Componente_RadioSelect';
@@ -110,27 +111,25 @@ const ExportacaoMeta = () =>{
                 </div>
                 <MyCalendar onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange}/>
                 <form>
-                    <div className='component-container'>
+                    <div className='select-container-meta'>
                         <RadioSelect options={radioOptions} onSelect={(e) => {setType(e)}}/>
-                        <div className='select-container'>
-                            <div className='select-component'>
-                                <span className='span-picker'>Bandeira</span>
-                                <Select
-                                    value={selectedBan} 
-                                    onChange={handleBan}
-                                    placeholder="Selecione"
-                                    options={banOptions}
-                                />
-                            </div>
-                            <div className='select-component'>
-                                <span className='span-picker'>Adquirente</span>
-                                <Select 
-                                    value={selectedAdm} 
-                                    onChange={handleAdq}
-                                    placeholder="Selecione"
-                                    options={admOptions}
-                                />
-                            </div>
+                        <div className='select-component'>
+                            <span className='span-picker'>Bandeira</span>
+                            <Select
+                                value={selectedBan}
+                                onChange={handleBan}
+                                placeholder="Selecione"
+                                options={banOptions}
+                            />
+                        </div>
+                        <div className='select-component'>
+                            <span className='span-picker'>Adquirente</span>
+                            <Select 
+                                value={selectedAdm} 
+                                onChange={handleAdq}
+                                placeholder="Selecione"
+                                options={admOptions}
+                            />
                         </div>
                     </div>
                     <div className='btn-container-financeiro'>

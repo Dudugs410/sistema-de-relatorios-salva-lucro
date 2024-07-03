@@ -93,7 +93,7 @@ const CadastroDeBancos = () => {
     useEffect(() => {
         if (productList) {
             if (productList.length > 0) {
-                const productListOptions = productList.map(prod => ({ value: prod.value, label: prod.label }));
+                const productListOptions = productList.map(prod => ({ value: prod.codigoProduto, label: prod.descricaoProduto }));
                 setProductOptions(productListOptions);
             }
         }
@@ -102,7 +102,7 @@ const CadastroDeBancos = () => {
     useEffect(() => {
         if (subproductList) {
             if (subproductList.length > 0) {
-                const subproductListOptions = subproductList.map(sub => ({ value: sub.value, label: sub.label }));
+                const subproductListOptions = subproductList.map(sub => ({ value: sub.codigoModalidade, label: sub.descricaoModalidade }));
                 setSubproductOptions(subproductListOptions);
             }
         }

@@ -6,9 +6,11 @@
     flex-direction: row;
 }
 
-.export-container-delivery-child{
+.export-container-delivery-child1{
     display: inline-flex;
-    width: 50%;
+    width: 100%;
+    min-width: 300px;
+    max-width: 500px;
     flex-direction: row;
     justify-content: space-evenly;
     align-items: center;

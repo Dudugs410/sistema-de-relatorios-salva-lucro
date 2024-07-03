@@ -67,18 +67,19 @@ const VendasDelivery = () => {
                             <div className='input-block-cli-adq'>
                             <MyCalendar onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange}/>        
                             <div className='export-container-delivery'>
-                                <div className='export-container-delivery-child'>
+                                <div className='export-container-delivery-child1'>
                                     <h6><b>Aplicativo: </b></h6>
                                     <Select
                                         styles={{'min-width': '250px'}}
                                         options={appOptions}
                                         onChange={handleAppChange}
                                         value={appSelecionado}
+                                        placeholder='Selecione'
                                     />
                                 </div>
-                                <div className='export-container-delivery-child'>
+                                <div className='export-container-delivery-child2'>
                                     {/*<h6><b>Gerar: </b></h6>*/}
-                                    <button className='btn btn-global'><FiFilePlus /> &nbsp; Excel</button>
+                                    <button className='btn btn-global' style={{minWidth: '150px'}}><FiFilePlus /> &nbsp; Excel</button>
                                 </div>
                                 </div>
                             </div>

@@ -479,11 +479,22 @@ function AuthProvider({ children }){
 		};
 		
 		const loadProducts = async () => {
-			return ([{label: 'Produto 1', value: '1'}, {label: 'Produto 2', value: '2'}, {label: 'Produto 3', value: '3'}])
+			try {
+				const response = await api.get('produto')
+				return response.data
+			} catch (error) {
+				console.log(error)
+			}
 		}
 
 		const loadSubproducts = async () => {
-			return ([{label: 'Subproduto 1', value: '1'}, {label: 'Subproduto 2', value: '2'}, {label: 'Subproduto 3', value: '3'}])
+			try {
+				const response = await api.get('Modalidade')
+				//await refreshSession()
+				return response.data
+			} catch (error) {
+				console.log(error)
+			}
 		}
 
 		// retorna array de bandeiras
@@ -622,7 +633,7 @@ function AuthProvider({ children }){
 			
 			let salesByAdmin
 			let tempAdmin
-
+			
 			let totalSalesMonth
 			let totalSalesLast4
 			
