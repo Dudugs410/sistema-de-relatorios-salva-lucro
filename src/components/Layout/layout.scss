@@ -132,10 +132,29 @@ form>.input-container{
     }
 
     .btn-contato-container{
-        display: none;
+        display: block;
+        position: fixed;
+        width: 40px !important;
+        border: none;
+        top: 19px;
+        right: 19px;
+        z-index: 10;
+    }
+
+    .btn-contato{
+        max-width: 40px !important;
+        bottom: 0;
+        right: 0;
+        transition: all 0.4s;
+
+        
     }
 
     .span-plus{
         display: none;
+        position: fixed;
+        width: 40px !important;
+        top: 19px;
+        right: 19px;
     }
 }

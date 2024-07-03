@@ -34,7 +34,7 @@ const Relogio = () => {
     return (
       <div>
         {currentTime ? (
-          <div>Horário Atual: {currentTime.toLocaleString('pt-BR')}</div>
+          <div>{currentTime.toLocaleString('pt-BR')}</div>
         ) : (
           <div>Loading...</div>
         )}

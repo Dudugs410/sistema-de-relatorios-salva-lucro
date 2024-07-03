@@ -2,10 +2,8 @@
 
 .radio-container-exportacao {
     display: inline-flex;
-    /* width: 100%; */
-    justify-content: space-around;
-    /* flex-direction: column; */
     width: 48%;
+    justify-content: space-around;
 }
 
 .radio-container-exportacao-sysmo{
@@ -37,12 +35,13 @@
 }
 
 .radio-indicator {
-    position: relative; /* Make position relative for absolute positioning */
+    position: relative;
     height: 12px;
     width: 12px;
     border-radius: 50%;
-    margin-right: 5px; /* Adjust spacing between indicator and label */
-    background-color: lightgray; /* Default color */
+    margin-right: 5px; /* espaço entre a 'bolinha' e o texto */
+    background-color: lightgray; /* Cor do background da 'bolinha' do radio-select */
+
 }
 
 .radio-indicator:hover {
@@ -57,7 +56,7 @@
 }
 
 .radio-label {
-    color: inherit; /* Inherit color from parent */
+    color: var(--font-color); /* Cor do texto do radio-select */
     margin-right: 10px;
 }
 
@@ -67,4 +66,10 @@
 
 .dark-theme .radio-label {
     color: #fff; /* Dark theme color */
+}
+
+@media screen and (max-width: 869px){
+    .radio-container-exportacao{
+        width: 100%;
+    }
 }
