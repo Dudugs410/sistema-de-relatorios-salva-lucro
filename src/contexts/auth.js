@@ -392,10 +392,26 @@ function AuthProvider({ children }){
 
 		// retorna array de bancos
 		const loadBanks = async () => {
-			if(localStorage.getItem('bancos')){
-				return JSON.parse(localStorage.getItem('bancos'))
-			} else {
-				return []
+			try {
+				const apiClientCode = Cookies.get('clientCode');
+				if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
+					let params = {
+						codigo: apiClientCode
+					};
+		
+					let config = {
+						params: params
+					};
+		
+					const response = await api.get('banco', config);
+					return response.data;
+				} else {
+					console.log('Invalid client code:', apiClientCode);
+					return [];
+				}
+			} catch (error) {
+				console.error('Error fetching banco:', error);
+				return [];
 			}
 		}
 
@@ -501,6 +517,7 @@ function AuthProvider({ children }){
 		const loadBanners = async () => {
 			try {
 				const response = await api.get('bandeira')
+				console.log('bandeiras: ', response.data)
 				return response.data
 			} catch (error) {
 				console.log(error)
@@ -512,6 +529,7 @@ function AuthProvider({ children }){
 			try {
 				const response = await api.get('adquirente')
 				//await refreshSession()
+				console.log('adquirentes: ', response.data)
 				return response.data
 			} catch (error) {
 				console.log(error)
