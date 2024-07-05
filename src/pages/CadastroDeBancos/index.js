@@ -1,16 +1,16 @@
 import { useEffect, useContext, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { AuthContext } from '../../contexts/auth';
+import { AuthContext } from '../../contexts/auth'
 import Cookies from 'js-cookie'
 import '../../styles/global.scss'
 import './cadastroDeBancos.scss'
-import Select from 'react-select';
-import { FiEdit, FiPlus, FiTrash, FiX } from 'react-icons/fi';
+import Select from 'react-select'
+import { FiEdit, FiPlus, FiTrash, FiX } from 'react-icons/fi'
 import { toast } from 'react-toastify'
 import { FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward } from 'react-icons/fi'
 
 const CadastroDeBancos = () => {
-    const location = useLocation();
+    const location = useLocation()
     const {
         loadBanners,
         loadAdmins,
@@ -44,7 +44,7 @@ const CadastroDeBancos = () => {
     }, [])
 
     function removeSpecialCharacters(str) {
-        return str.replace(/[^0-9]/g, '');
+        return str.replace(/[^0-9]/g, '')
     }
 
     useEffect(() => {
@@ -80,26 +80,26 @@ const CadastroDeBancos = () => {
     useEffect(() => {
         if (bannersList) {
             if (bannersList.length > 0) {
-                const bannersListOptions = bannersList.map(banner => ({ value: banner.codigoBandeira, label: banner.descricaoBandeira }));
-                setBanOptions(bannersListOptions);
+                const bannersListOptions = bannersList.map(banner => ({ value: banner.codigoBandeira, label: banner.descricaoBandeira }))
+                setBanOptions(bannersListOptions)
             }
         }
-    }, [bannersList]);
+    }, [bannersList])
 
     useEffect(() => {
         if (adminsList) {
             if (adminsList.length > 0) {
-                const adminsListOptions = adminsList.map(admin => ({ value: admin.codigoAdquirente, label: admin.nomeAdquirente }));
-                setAdmOptions(adminsListOptions);
+                const adminsListOptions = adminsList.map(admin => ({ value: admin.codigoAdquirente, label: admin.nomeAdquirente }))
+                setAdmOptions(adminsListOptions)
             }
         }
-    }, [adminsList]);
+    }, [adminsList])
 
     useEffect(() => {
         if (productList) {
             if (productList.length > 0) {
-                const productListOptions = productList.map(prod => ({ value: prod.codigoProduto, label: prod.descricaoProduto }));
-                setProductOptions(productListOptions);
+                const productListOptions = productList.map(prod => ({ value: prod.codigoProduto, label: prod.descricaoProduto }))
+                setProductOptions(productListOptions)
             }
         }
     }, [productList])
@@ -107,8 +107,8 @@ const CadastroDeBancos = () => {
     useEffect(() => {
         if (subproductList) {
             if (subproductList.length > 0) {
-                const subproductListOptions = subproductList.map(sub => ({ value: sub.codigoModalidade, label: sub.descricaoModalidade }));
-                setSubproductOptions(subproductListOptions);
+                const subproductListOptions = subproductList.map(sub => ({ value: sub.codigoModalidade, label: sub.descricaoModalidade }))
+                setSubproductOptions(subproductListOptions)
             }
         }
     }, [subproductList])
@@ -185,9 +185,9 @@ const CadastroDeBancos = () => {
             })
             //setBanksList(prevTaxesList => prevTaxesList.filter(bank => bank.CODIGO !== object.CODIGO))
             setBanksList(await loadBanks())
-            resetValues();
+            resetValues()
         } catch (error) {
-            console.error('Error handling busca:', error);
+            console.error('Error handling busca:', error)
         }
     }
 
@@ -197,59 +197,59 @@ const CadastroDeBancos = () => {
     }
 
     const getAdminName = (adqCodigo, adminsList) => {
-        const admin = adminsList.find(admin => admin.codigoAdquirente === adqCodigo);
-        return admin ? admin.nomeAdquirente : 'Desconhecido';
-    };
+        const admin = adminsList.find(admin => admin.codigoAdquirente === adqCodigo)
+        return admin ? admin.nomeAdquirente : 'Desconhecido'
+    }
 
     const getBannerName = (banCodigo, bannersList) => {
-        const banner = bannersList.find(banner => banner.codigoBandeira === banCodigo);
-        return banner ? banner.descricaoBandeira : 'Desconhecido';
-    };
+        const banner = bannersList.find(banner => banner.codigoBandeira === banCodigo)
+        return banner ? banner.descricaoBandeira : 'Desconhecido'
+    }
 
     const getProductDescription = (prodCodigo, productList) => {
-        const product = productList.find(product => product.codigoProduto === prodCodigo);
-        return product ? product.descricaoProduto : 'Desconhecido';
-    };
+        const product = productList.find(product => product.codigoProduto === prodCodigo)
+        return product ? product.descricaoProduto : 'Desconhecido'
+    }
 
     const getSubproductDescription = (subprodCodigo, subproductList) => {
-        const subproduct = subproductList.find(subproduct => subproduct.codigoModalidade === subprodCodigo);
-        return subproduct ? subproduct.descricaoModalidade : 'Desconhecido';
-    };
+        const subproduct = subproductList.find(subproduct => subproduct.codigoModalidade === subprodCodigo)
+        return subproduct ? subproduct.descricaoModalidade : 'Desconhecido'
+    }
 
     //adicionando páginas à tabela:
 
-    const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(15); // Number of items per page
+    const [currentPage, setCurrentPage] = useState(1)
+    const [itemsPerPage] = useState(15) // Number of items per page
 
     useEffect(() => {
-        setCurrentPage(1); // Reset page to 1 when data changes
-    }, [banksList]);
+        setCurrentPage(1) // Reset page to 1 when data changes
+    }, [banksList])
 
     // Change page functions
     const goToPrevPage = () => {
-        setCurrentPage((prevPage) => Math.max(prevPage - 1, 1)); // Decrease page by 1, minimum page is 1
-    };
+        setCurrentPage((prevPage) => Math.max(prevPage - 1, 1)) // Decrease page by 1, minimum page is 1
+    }
 
     const goToNextPage = () => {
-        setCurrentPage((prevPage) => Math.min(prevPage + 1, Math.ceil(banksList.length / itemsPerPage))); // Increase page by 1, maximum page is calculated based on array length
-    };
+        setCurrentPage((prevPage) => Math.min(prevPage + 1, Math.ceil(banksList.length / itemsPerPage))) // Increase page by 1, maximum page is calculated based on array length
+    }
 
     const goToFirstPage = () => {
-        setCurrentPage(1); // Go to the first page
-    };
+        setCurrentPage(1) // Go to the first page
+    }
 
     const goToLastPage = () => {
-        setCurrentPage(Math.ceil(banksList.length / itemsPerPage)); // Go to the last page
-    };
+        setCurrentPage(Math.ceil(banksList.length / itemsPerPage)) // Go to the last page
+    }
 
     // Calculate indexes for pagination
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = banksList.slice(indexOfFirstItem, indexOfLastItem);
+    const indexOfLastItem = currentPage * itemsPerPage
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage
+    const currentItems = banksList.slice(indexOfFirstItem, indexOfLastItem)
 
     const BanksTable = () => {
-        const [filter, setFilter] = useState('');
-        const [filteredItems, setFilteredItems] = useState(currentItems);
+        const [filter, setFilter] = useState('')
+        const [filteredItems, setFilteredItems] = useState(currentItems)
     
         useEffect(() => {
             if(filter === ''){
@@ -372,43 +372,43 @@ const CadastroDeBancos = () => {
                 )}
                 { banksList.length > itemsPerPage ? (<hr className='hr-global'/>) : (<></>)}
             </>
-        );
-    };
+        )
+    }
 
     const closeModal = () => {
         setIsModalOpen(false)
         setIsModalEditOpen(false)
-    };
+    }
 
     const isObjectFullyPopulated = (obj) => {
-        return obj && Object.values(obj).every(value => value !== null && value !== 0 && value !== '' && value.label !== 'Selecione');
+        return obj && Object.values(obj).every(value => value !== null && value !== 0 && value !== '' && value.label !== 'Selecione')
     }
 
     const ModalNewBank = () => {
-        const [selectedCode, setSelectedCode] = useState(removeSpecialCharacters(Cookies.get('cnpj')));
-        const [selectedClientCode, setSelectedClientCode] = useState(Cookies.get('clientCode'));
-        const [selectedClientAdminCode, setSelectedClientAdminCode] = useState('1');
-        const [selectedBan, setSelectedBan] = useState({ label: 'Selecione', value: 0 });
-        const [selectedAdm, setSelectedAdm] = useState({ label: 'Selecione', value: 0 });
-        const [selectedProduct, setSelectedProduct] = useState({ label: 'Selecione', value: 0 });
-        const [selectedSubproduct, setSelectedSubproduct] = useState({ label: 'Selecione', value: 0 });
-        const [selectedBank, setSelectedBank] = useState('');
-        const [selectedAgency, setSelectedAgency] = useState('');
-        const [selectedAccount, setSelectedAccount] = useState('');
+        const [selectedCode, setSelectedCode] = useState(removeSpecialCharacters(Cookies.get('cnpj')))
+        const [selectedClientCode, setSelectedClientCode] = useState(Cookies.get('clientCode'))
+        const [selectedClientAdminCode, setSelectedClientAdminCode] = useState('1')
+        const [selectedBan, setSelectedBan] = useState({ label: 'Selecione', value: 0 })
+        const [selectedAdm, setSelectedAdm] = useState({ label: 'Selecione', value: 0 })
+        const [selectedProduct, setSelectedProduct] = useState({ label: 'Selecione', value: 0 })
+        const [selectedSubproduct, setSelectedSubproduct] = useState({ label: 'Selecione', value: 0 })
+        const [selectedBank, setSelectedBank] = useState('')
+        const [selectedAgency, setSelectedAgency] = useState('')
+        const [selectedAccount, setSelectedAccount] = useState('')
     
         const resetValues = () => {
-            setSelectedCode('');
+            setSelectedCode('')
             setSelectedClientCode('')
             setSelectedClientAdminCode('')
-            setSelectedBan({ label: 'Selecione', value: 0 });
-            setSelectedAdm({ label: 'Selecione', value: 0 });
-            setSelectedProduct({ label: 'Selecione', value: 0 });
-            setSelectedSubproduct({ label: 'Selecione', value: 0 });
-            setSelectedBank('');
-            setSelectedAgency('');
-            setSelectedAccount('');
-            setIsModalOpen(false);
-            setIsModalEditOpen(false);
+            setSelectedBan({ label: 'Selecione', value: 0 })
+            setSelectedAdm({ label: 'Selecione', value: 0 })
+            setSelectedProduct({ label: 'Selecione', value: 0 })
+            setSelectedSubproduct({ label: 'Selecione', value: 0 })
+            setSelectedBank('')
+            setSelectedAgency('')
+            setSelectedAccount('')
+            setIsModalOpen(false)
+            setIsModalEditOpen(false)
         }
     
         const handleSubmit = async (e) => {
@@ -433,7 +433,7 @@ const CadastroDeBancos = () => {
                     await toast.promise(addBank(newBankObj), {
                         pending: 'Carregando...',
                         error: 'Erro ao adicionar Taxa',
-                    });
+                    })
         
                     const updatedBanks = await loadBanks()
                     setBanksList(updatedBanks)
@@ -444,9 +444,8 @@ const CadastroDeBancos = () => {
             } else {
                 toast.warning('Todos os Campos devem ser preenchidos')
             }
-        };
+        }
         
-    
         return (
             <div className={`modal-bancos modal ${isModalOpen ? 'modal-open' : ''}`} style={{ display: isModalOpen ? 'block' : 'none' }}>
                 <div className='header-container-taxa'>
@@ -535,20 +534,20 @@ const CadastroDeBancos = () => {
                     </div>
                 </form>
             </div>
-        );
-    };
+        )
+    }
 
     const ModalEditBank = () => {
-        const [selectedCode, setSelectedCode] = useState(editableBank?.codigoEstabelecimento || '' );
-        const [selectedClientCode, setSelectedClientCode] = useState(editableBank?.codigoCliente || '' );
-        const [selectedClientAdminCode, setSelectedClientAdminCode] = useState(editableBank?.codigoClienteAdquirente || '' );
-        const [selectedBan, setSelectedBan] = useState(editableBank?.bandeira || { label: 'Selecione', value: 0 });
-        const [selectedAdm, setSelectedAdm] = useState(editableBank?.adquirente || { label: 'Selecione', value: 0 });
-        const [selectedProduct, setSelectedProduct] = useState(editableBank?.produto || { label: 'Selecione', value: 0 });
-        const [selectedSubproduct, setSelectedSubproduct] = useState(editableBank?.subproduto || { label: 'Selecione', value: 0 });
-        const [selectedBank, setSelectedBank] = useState(editableBank?.banco || '');
-        const [selectedAgency, setSelectedAgency] = useState(editableBank?.agencia || '');
-        const [selectedAccount, setSelectedAccount] = useState(editableBank?.conta || '');
+        const [selectedCode, setSelectedCode] = useState(editableBank?.codigoEstabelecimento || '' )
+        const [selectedClientCode, setSelectedClientCode] = useState(editableBank?.codigoCliente || '' )
+        const [selectedClientAdminCode, setSelectedClientAdminCode] = useState(editableBank?.codigoClienteAdquirente || '' )
+        const [selectedBan, setSelectedBan] = useState(editableBank?.bandeira || { label: 'Selecione', value: 0 })
+        const [selectedAdm, setSelectedAdm] = useState(editableBank?.adquirente || { label: 'Selecione', value: 0 })
+        const [selectedProduct, setSelectedProduct] = useState(editableBank?.produto || { label: 'Selecione', value: 0 })
+        const [selectedSubproduct, setSelectedSubproduct] = useState(editableBank?.subproduto || { label: 'Selecione', value: 0 })
+        const [selectedBank, setSelectedBank] = useState(editableBank?.banco || '')
+        const [selectedAgency, setSelectedAgency] = useState(editableBank?.agencia || '')
+        const [selectedAccount, setSelectedAccount] = useState(editableBank?.conta || '')
     
         const resetValues = () => {
             setSelectedCode('')
@@ -586,7 +585,7 @@ const CadastroDeBancos = () => {
                     await toast.promise(editBank(newBankObj), {
                         pending: 'Carregando...',
                         error: 'Erro ao adicionar Taxa',
-                    });
+                    })
         
                     const updatedBanks = await loadBanks()
                     setBanksList(updatedBanks)
@@ -597,7 +596,7 @@ const CadastroDeBancos = () => {
             } else {
                 toast.warning('Todos os Campos devem ser preenchidos')
             }
-        };
+        }
 
         const handleProduct = (selected) => {
             setSelectedProduct(selected)
@@ -614,35 +613,6 @@ const CadastroDeBancos = () => {
         const handleBan = (selected) => {
             setSelectedBan(selected)
         }
-
-        const formatInput = (value, length) => {
-            // Remove all non-alphanumeric characters except the last character
-            value = value.replace(/[^a-zA-Z0-9-]/g, '');
-    
-            if (length === 6) {
-                // Enforce the "XXXX-X" format
-                if (value.length > 5) {
-                    value = value.slice(0, 4) + '-' + value.slice(5, 6);
-                }
-            } else if (length === 7) {
-                // Enforce the "XXXXX-X" format
-                if (value.length > 6) {
-                    value = value.slice(0, 5) + '-' + value.slice(6, 7);
-                }
-            }
-    
-            return value;
-        };
-    
-        const handleAgencyChange = (event) => {
-            const formattedValue = formatInput(event.target.value, 6);
-            setSelectedAgency(formattedValue);
-        };
-    
-        const handleAccountChange = (event) => {
-            const formattedValue = formatInput(event.target.value, 7);
-            setSelectedAccount(formattedValue);
-        };
     
         return (
             <div className={`modal-bancos modal ${isModalEditOpen ? 'modal-open' : ''}`} style={{ display: isModalEditOpen ? 'block' : 'none' }}>
@@ -736,8 +706,8 @@ const CadastroDeBancos = () => {
                     </div>
                 </form>
             </div>
-        );
-    };
+        )
+    }
 
     return (
         <div className='appPage'>
@@ -750,17 +720,17 @@ const CadastroDeBancos = () => {
                         <hr className='hr-global'/>
                       <div className='container-global' style={{margin: '0', flexDirection: 'column', alignItems: 'center'}}>
                             { ((banksList && banksList.length > 0) && (clientCode !== ('todos' || undefined))) && 
-                            <div>    
-                                <h3 className='subtitle' style={{width: '100%', display: 'flex', flexDirection: 'column', alignContent: 'center', textAlign: 'center'}}>Cliente: {JSON.parse(Cookies.get('selectedClient')).label}</h3>
-                                <hr className='hr-global'/>
-                            </div>
+                                <div>    
+                                    <h3 className='subtitle' style={{width: '100%', display: 'flex', flexDirection: 'column', alignContent: 'center', textAlign: 'center'}}>Cliente: {JSON.parse(Cookies.get('selectedClient')).label}</h3>
+                                    <hr className='hr-global'/>
+                                </div>
                             }
                             { ((banksList && banksList.length === 0) && (clientCode !== ('todos' || undefined))) && 
-                            <>
-                                <span className='subtitle'>Sem Bancos Cadastrados</span>
-                                <br/>
-                                <button className='btn btn-primary btn-global' onClick={()=>{setIsModalOpen(true)}}><FiPlus className='icon' />Adicionar Banco</button>
-                            </>
+                                <>
+                                    <span className='subtitle'>Sem Bancos Cadastrados</span>
+                                    <br/>
+                                    <button className='btn btn-primary btn-global' onClick={()=>{setIsModalOpen(true)}}><FiPlus className='icon' />Adicionar Banco</button>
+                                </>
                             }
                             {
                                 clientCode === ('todos' || undefined) ?
@@ -781,4 +751,4 @@ const CadastroDeBancos = () => {
     )
 }
 
-export default CadastroDeBancos;
+export default CadastroDeBancos

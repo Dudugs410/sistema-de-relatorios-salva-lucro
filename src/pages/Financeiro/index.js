@@ -1,14 +1,14 @@
 import { useEffect, useContext, createContext, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { AuthContext } from '../../contexts/auth';
+import { AuthContext } from '../../contexts/auth'
 import '../../styles/global.scss'
 import Select from 'react-select'
 import './financeiro.scss'
-import MyCalendar from '../../components/Componente_Calendario';
-import base64PDFdownload from '../../components/Componente_Base64PDF';
+import MyCalendar from '../../components/Componente_Calendario'
+import base64PDFdownload from '../../components/Componente_Base64PDF'
 
 const Financeiro = () =>{
-    const location = useLocation();
+    const location = useLocation()
 
     const [dataBusca, setDataBusca] = useState([new Date, new Date])
     const [tipoRelatorio, setTipoRelatorio] = useState(null)
@@ -18,8 +18,8 @@ const Financeiro = () =>{
     const [dataBuscaFinal, setDataBuscaFinal] = useState(new Date)
 
     useEffect(() => {
-        sessionStorage.setItem('currentPath', location.pathname);
-    }, [location]);
+        sessionStorage.setItem('currentPath', location.pathname)
+    }, [location])
 
     const opcoesRelatorio = [{value: 0, label:'Previsão de Recebimento'}, {value: 1, label:'Créditos por Data e Banco'}, {value: 2, label: 'Antecipações'}, {value:3, label: 'Gravame/Cessão'}, {value:4, label:'Posição Contábil'}]
     const opcoesFormato = [{value: 0 , label: 'PDF' }, {value: 1 , label: 'Excel' } ]

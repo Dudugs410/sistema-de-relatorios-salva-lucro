@@ -16,11 +16,11 @@ import DisplayData from '../../components/Componente_DisplayData'
 
 
 const Servicos = () =>{
-  const location = useLocation();
+  const location = useLocation()
 
   useEffect(() => {
-      sessionStorage.setItem('currentPath', location.pathname);
-  }, [location]);
+      sessionStorage.setItem('currentPath', location.pathname)
+  }, [location])
 
 	const {
 	  servicesPageArray, setServicesPageArray,
@@ -36,7 +36,7 @@ const Servicos = () =>{
 
   useEffect(()=>{
     if(servicesPageArray.length>0){
-      setServicesPageAdminArray(groupServicesByAdmin(servicesPageArray));
+      setServicesPageAdminArray(groupServicesByAdmin(servicesPageArray))
     }
   },[servicesPageArray])
 
@@ -48,28 +48,28 @@ const Servicos = () =>{
   }
 
   async function handleLoadData(e) {
-    e.preventDefault();
+    e.preventDefault()
     try {
       setBtnDisabledServices(true)
       await toast.promise(loadData(), {
         pending: 'Carregando...',
         success: 'Carregado com Sucesso',
         error: 'Ocorreu um Erro',
-      });
+      })
       setBtnDisabledServices(false)
     } catch (error) {
-      console.error('Error handling busca:', error);
+      console.error('Error handling busca:', error)
       setBtnDisabledServices(false)
     }
   }
   
   async function loadData() {
     try {
-      setServicesPageArray(await loadServices(servicesDateRange[0].toLocaleDateString('pt-BR'), servicesDateRange[1].toLocaleDateString('pt-BR')));
+      setServicesPageArray(await loadServices(servicesDateRange[0].toLocaleDateString('pt-BR'), servicesDateRange[1].toLocaleDateString('pt-BR')))
     } catch (error) {
-      console.error('Error fetching sales data:', error);
+      console.error('Error fetching sales data:', error)
       toast.error(error)
-      throw error;
+      throw error
     }
   }
 

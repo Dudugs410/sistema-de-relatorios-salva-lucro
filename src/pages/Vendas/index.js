@@ -8,11 +8,11 @@ import DisplayData from '../../components/Componente_DisplayData'
 import { toast } from 'react-toastify'
 
 const Vendas = () =>{
-  const location = useLocation();
+  const location = useLocation()
 
   useEffect(() => {
-      sessionStorage.setItem('currentPath', location.pathname);
-  }, [location]);
+      sessionStorage.setItem('currentPath', location.pathname)
+  }, [location])
 
   const {
     salesPageArray, setSalesPageArray,
@@ -26,7 +26,7 @@ const Vendas = () =>{
 
   useEffect(()=>{
     if(salesPageArray.length>0){
-      setSalesPageAdminArray(groupByAdmin(salesPageArray));
+      setSalesPageAdminArray(groupByAdmin(salesPageArray))
       loadTotalSales(salesPageArray)
     }
   },[salesPageArray])
@@ -45,27 +45,27 @@ const Vendas = () =>{
   }
 
   async function handleLoadData(e) {
-    e.preventDefault();
+    e.preventDefault()
     try {
       setBtnDisabledSales(true)
       await toast.promise(loadData(), {
         pending: 'Carregando...',
         success: 'Carregado com Sucesso',
         error: 'Ocorreu um Erro',
-      });
+      })
       setBtnDisabledSales(false)
     } catch (error) {
       setBtnDisabledSales(false)
-      console.error('Error handling busca:', error);
+      console.error('Error handling busca:', error)
     }
   }
 
   async function loadData() {
     try {
-      setSalesPageArray(await loadSales(salesDateRange[0].toLocaleDateString('pt-BR'), salesDateRange[1].toLocaleDateString('pt-BR')));
+      setSalesPageArray(await loadSales(salesDateRange[0].toLocaleDateString('pt-BR'), salesDateRange[1].toLocaleDateString('pt-BR')))
     } catch (error) {
-      console.error('Error fetching sales data:', error);
-      throw error;
+      console.error('Error fetching sales data:', error)
+      throw error
     }
   }
 
