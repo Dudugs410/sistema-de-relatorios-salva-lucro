@@ -216,7 +216,6 @@ const CadastroDeBancos = () => {
         return subproduct ? subproduct.descricaoModalidade : 'Desconhecido';
     };
 
-
     //adicionando páginas à tabela:
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -249,8 +248,38 @@ const CadastroDeBancos = () => {
     const currentItems = banksList.slice(indexOfFirstItem, indexOfLastItem);
 
     const BanksTable = () => {
+        const [filter, setFilter] = useState('');
+        const [filteredItems, setFilteredItems] = useState(currentItems);
+    
+        useEffect(() => {
+            setFilteredItems(
+                banksList.filter(item =>
+                    item.BANCO.toLowerCase().includes(filter.toLowerCase()) ||
+                    item.AGENCIA.toLowerCase().includes(filter.toLowerCase()) ||
+                    item.CONTA.toLowerCase().includes(filter.toLowerCase()) ||
+                    getAdminName(item.ADQCODIGO, adminsList).toLowerCase().includes(filter.toLowerCase()) ||
+                    getBannerName(item.BADCODIGO, bannersList).toLowerCase().includes(filter.toLowerCase()) ||
+                    getProductDescription(item.PROCODIGO, productList).toLowerCase().includes(filter.toLowerCase()) ||
+                    item.SUPCODIGO.toString().toLowerCase().includes(filter.toLowerCase()) ||
+                    item.CODIGOESTABELECIMENTO.toString().toLowerCase().includes(filter.toLowerCase()) ||
+                    item.CLICODIGO.toString().toLowerCase().includes(filter.toLowerCase()) ||
+                    item.CLDCODIGO.toString().toLowerCase().includes(filter.toLowerCase()) ||
+                    item.CODIGO.toString().toLowerCase().includes(filter.toLowerCase())
+                )
+            )
+        }, [filter, currentItems])
+    
         return (
             <>
+                <div>
+                    <input
+                        type="text"
+                        placeholder="Filter..."
+                        value={filter}
+                        onChange={(e) => setFilter(e.target.value)}
+                        style={{ marginBottom: '10px' }}
+                    />
+                </div>
                 <div className='table-wrapper table-wrapper-taxes'>
                     <table className="table table-striped table-hover table-bordered table-bancos det-table-global">
                         <thead>
@@ -270,6 +299,7 @@ const CadastroDeBancos = () => {
                                 <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Cod Estab.</th>
                                 <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Cod Cli</th>
                                 <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Cod Cli Adq</th>
+                                <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>ID</th>
                                 <th className='det-th-global' scope="col" style={{ width: '2%', textAlign: 'center' }}></th>
                             </tr>
                         </thead>
@@ -290,6 +320,7 @@ const CadastroDeBancos = () => {
                                         <td className="det-td-vendas-global" data-label="codigoEstabelecimento">{object.CODIGOESTABELECIMENTO}</td>
                                         <td className="det-td-vendas-global" data-label="codigoCliente">{object.CLICODIGO}</td>
                                         <td className="det-td-vendas-global" data-label="codigoClienteAdquirente">{object.CLDCODIGO}</td>
+                                        <td className="det-td-vendas-global" data-label="ID">{object.CODIGO}</td>
                                         <th scope="row" style={{ textAlign: 'center' }} onClick={() => handleDelete(object)}>
                                             <FiTrash className="icon" />
                                         </th>
@@ -299,7 +330,7 @@ const CadastroDeBancos = () => {
                     </table>
                 </div>
                 <hr className='hr-global'/>
-                {banksList.length > itemsPerPage && (
+                {filteredItems.length > itemsPerPage && (
                     <div className="container-btn-pagina">
                         <button
                             className='btn btn-primary btn-global btn-skip'
@@ -335,10 +366,10 @@ const CadastroDeBancos = () => {
                         </button>
                     </div>
                 )}
-                <hr className='hr-global'/>
+                { banksList.length > itemsPerPage ? (<hr className='hr-global'/>) : (<></>)}
             </>
-        )
-    }
+        );
+    };
 
     const closeModal = () => {
         setIsModalOpen(false)
@@ -502,11 +533,8 @@ const CadastroDeBancos = () => {
             </div>
         );
     };
-    
 
     const ModalEditBank = () => {
-        console.log('editableBank: ', editableBank)
-
         const [selectedCode, setSelectedCode] = useState(editableBank?.codigoEstabelecimento || '' );
         const [selectedClientCode, setSelectedClientCode] = useState(editableBank?.codigoCliente || '' );
         const [selectedClientAdminCode, setSelectedClientAdminCode] = useState(editableBank?.codigoClienteAdquirente || '' );
@@ -533,7 +561,7 @@ const CadastroDeBancos = () => {
             setIsModalOpen(false)
             setIsModalEditOpen(false)
         }
-    
+
         const handleSubmit = async (e) => {
             e.preventDefault()
             const newBankObj = {
@@ -548,7 +576,7 @@ const CadastroDeBancos = () => {
                 Agencia: selectedAgency,
                 Conta: selectedAccount,
             }
-        
+
             if (isObjectFullyPopulated(newBankObj)) {
                 try {
                     await toast.promise(editBank(newBankObj), {
