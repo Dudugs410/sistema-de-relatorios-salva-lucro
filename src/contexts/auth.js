@@ -517,7 +517,6 @@ function AuthProvider({ children }){
 		const loadBanners = async () => {
 			try {
 				const response = await api.get('bandeira')
-				console.log('bandeiras: ', response.data)
 				return response.data
 			} catch (error) {
 				console.log(error)
@@ -529,7 +528,6 @@ function AuthProvider({ children }){
 			try {
 				const response = await api.get('adquirente')
 				//await refreshSession()
-				console.log('adquirentes: ', response.data)
 				return response.data
 			} catch (error) {
 				console.log(error)
@@ -1660,12 +1658,12 @@ function AuthProvider({ children }){
 
 				// Taxas
 
-				loadTaxes, isLoadingTaxes,
+				loadTaxes, isLoadingTaxes, setIsLoadingTaxes,
 				addTax, editTax, deleteTax,
 
 				// Bancos
 
-				loadBanks, isLoadingBanks,
+				loadBanks, isLoadingBanks, setIsLoadingBanks,
 				addBank, editBank, deleteBank,
 
 				// Sysmo
