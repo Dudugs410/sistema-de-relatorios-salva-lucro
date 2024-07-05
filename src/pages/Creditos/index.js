@@ -8,11 +8,11 @@ import DisplayData from '../../components/Componente_DisplayData'
 import { toast } from 'react-toastify'
 
 const Creditos = () =>{
-	const location = useLocation();
+	const location = useLocation()
 
 	useEffect(() => {
-		sessionStorage.setItem('currentPath', location.pathname);
-	}, [location]);
+		sessionStorage.setItem('currentPath', location.pathname)
+	}, [location])
   
 	const {
 	  creditsPageArray, setCreditsPageArray,
@@ -28,7 +28,7 @@ const Creditos = () =>{
 
 	useEffect(()=>{
 		if(creditsPageArray.length>0){
-		  setCreditsPageAdminArray(groupByAdmin(creditsPageArray));
+		  setCreditsPageAdminArray(groupByAdmin(creditsPageArray))
 		  loadTotalCredits(creditsPageArray)
 		}
 	  },[creditsPageArray])
@@ -47,30 +47,30 @@ const Creditos = () =>{
   }
 
 async function handleLoadData(e) {
-  e.preventDefault();
+  e.preventDefault()
   try {
-    setBtnDisabledCredits(true);
+    setBtnDisabledCredits(true)
     await toast.promise(loadData(), {
       pending: 'Carregando...',
       success: 'Carregado com Sucesso',
       error: 'Ocorreu um Erro',
-    });
-    setBtnDisabledCredits(false);
+    })
+    setBtnDisabledCredits(false)
   } catch (error) {
-    console.error('Error handling busca:', error);
-    toast.error('Ocorreu um Erro');
-    setBtnDisabledCredits(false);
+    console.error('Error handling busca:', error)
+    toast.error('Ocorreu um Erro')
+    setBtnDisabledCredits(false)
   }
 }
 
 async function loadData() {
   try {
-    const creditsData = await loadCredits(creditsDateRange[0].toLocaleDateString('pt-BR'), creditsDateRange[1].toLocaleDateString('pt-BR'));
-    setCreditsPageArray(creditsData);
-    return creditsData; // Resolve the promise with data if successful
+    const creditsData = await loadCredits(creditsDateRange[0].toLocaleDateString('pt-BR'), creditsDateRange[1].toLocaleDateString('pt-BR'))
+    setCreditsPageArray(creditsData)
+    return creditsData // Resolve the promise with data if successful
   } catch (error) {
-    console.error('Error fetching credits data:', error);
-    throw error; // Throw error to be caught by toast.promise
+    console.error('Error fetching credits data:', error)
+    throw error // Throw error to be caught by toast.promise
   }
 }
 

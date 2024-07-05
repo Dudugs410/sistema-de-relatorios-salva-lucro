@@ -5,11 +5,11 @@ import '../../styles/global.scss'
 import './conciliacao.scss'
 
 const ConciliacaoBancaria = () => {
-    const fileInputRef = useRef(null);
+    const fileInputRef = useRef(null)
 
     const handleButtonClick = () => {
-      fileInputRef.current.click();
-    };
+      fileInputRef.current.click()
+    }
 
     return(
         <div className='appPage'>
@@ -28,7 +28,7 @@ const ConciliacaoBancaria = () => {
                                 style={{ display: 'none' }}
                                 onChange={(e) => {
                                 // Handle file selection if needed
-                                console.log(e.target.files[0]);
+                                console.log(e.target.files[0])
                                 }}
                             />
                             {/* Visible button to trigger file input */}

@@ -1,30 +1,30 @@
 import { useEffect, useContext, createContext, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { AuthContext } from '../../contexts/auth';
+import { AuthContext } from '../../contexts/auth'
 import '../../styles/global.scss'
 import Select from 'react-select'
 import '../Financeiro/financeiro.scss'
 import '../Suporte/suporte.scss'
 import './outrosRelatorios.scss'
-import MyCalendar from '../../components/Componente_Calendario';
-import base64PDFdownload from '../../components/Componente_Base64PDF';
-import { FiFilePlus, FiPlus, FiTrash2 } from 'react-icons/fi';
+import MyCalendar from '../../components/Componente_Calendario'
+import base64PDFdownload from '../../components/Componente_Base64PDF'
+import { FiFilePlus, FiPlus, FiTrash2 } from 'react-icons/fi'
 
 const OutrosRelatorios = () =>{
-    const location = useLocation();
+    const location = useLocation()
     const { isDarkTheme } = useContext(AuthContext)
 
     const [dataBusca, setDataBusca] = useState([new Date, new Date])
     const [tipoRelatorio, setTipoRelatorio] = useState(null)
     const [formatoRelatorio, setFormatoRelatorio] = useState(null)
-    const [clickCount, setClickCount] = useState(0);
+    const [clickCount, setClickCount] = useState(0)
 
     const [dataBuscaInicial, setDataBuscaInicial] = useState(new Date)
     const [dataBuscaFinal, setDataBuscaFinal] = useState(new Date)
 
     useEffect(() => {
-        sessionStorage.setItem('currentPath', location.pathname);
-    }, [location]);
+        sessionStorage.setItem('currentPath', location.pathname)
+    }, [location])
 
     const opcoesRelatorio = [{value: 0, label:'Previsão de Recebimento'}, {value: 1, label:'Créditos por Data e Banco'}, {value: 2, label: 'Antecipações'}, {value:3, label: 'Gravame/Cessão'}, {value:4, label:'Posição Contábil'}]
     const opcoesFormato = [{value: 0 , label: 'PDF' }, {value: 1 , label: 'Excel' } ]
@@ -249,4 +249,4 @@ const OutrosRelatorios = () =>{
     )
 }
 
-export default OutrosRelatorios;
+export default OutrosRelatorios

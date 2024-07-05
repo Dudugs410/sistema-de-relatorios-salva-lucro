@@ -10,7 +10,7 @@ import { toast } from 'react-toastify'
 import { FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward } from 'react-icons/fi'
 
 const Taxas = () => {
-    const location = useLocation();
+    const location = useLocation()
     const {
         loadBanners,
         loadAdmins,
@@ -71,29 +71,29 @@ const Taxas = () => {
     useEffect(() => {
         if (bannersList) {
             if (bannersList.length > 0) {
-                const bannersListOptions = bannersList.map(banner => ({ value: banner.codigoBandeira, label: banner.descricaoBandeira }));
-                setBanOptions(bannersListOptions);
+                const bannersListOptions = bannersList.map(banner => ({ value: banner.codigoBandeira, label: banner.descricaoBandeira }))
+                setBanOptions(bannersListOptions)
             }
         }
-    }, [bannersList]);
+    }, [bannersList])
 
     useEffect(() => {
         if (adminsList) {
             if (adminsList.length > 0) {
-                const adminsListOptions = adminsList.map(admin => ({ value: admin.codigoAdquirente, label: admin.nomeAdquirente }));
-                setAdmOptions(adminsListOptions);
+                const adminsListOptions = adminsList.map(admin => ({ value: admin.codigoAdquirente, label: admin.nomeAdquirente }))
+                setAdmOptions(adminsListOptions)
             }
         }
-    }, [adminsList]);
+    }, [adminsList])
 
     useEffect(() => {
         if (modsList) {
             if (modsList.length > 0) {
-                const modsListOptions = modsList.map(mod => ({ value: mod.codigoModalidade, label: mod.descricaoModalidade }));
-                setModOptions(modsListOptions);
+                const modsListOptions = modsList.map(mod => ({ value: mod.codigoModalidade, label: mod.descricaoModalidade }))
+                setModOptions(modsListOptions)
             }
         }
-    }, [modsList]);
+    }, [modsList])
 
     useEffect(() => {
         setClientCode(Cookies.get('clientCode'))
@@ -146,9 +146,9 @@ const Taxas = () => {
                 error: 'Ocorreu um Erro',
             })
             setTaxesList(prevTaxesList => prevTaxesList.filter(tax => tax.CODIGO !== object.CODIGO))
-            resetValues();
+            resetValues()
         } catch (error) {
-            console.error('Error handling busca:', error);
+            console.error('Error handling busca:', error)
         }
     }
 
@@ -159,50 +159,54 @@ const Taxas = () => {
 
         //adicionando páginas à tabela:
 
-        const [currentPage, setCurrentPage] = useState(1);
-        const [itemsPerPage] = useState(15); // Number of items per page
+        const [currentPage, setCurrentPage] = useState(1)
+        const [itemsPerPage] = useState(15) // Number of items per page
     
         useEffect(() => {
-            setCurrentPage(1); // Reset page to 1 when data changes
-        }, [taxesList]);
+            setCurrentPage(1) // Reset page to 1 when data changes
+        }, [taxesList])
     
         // Change page functions
         const goToPrevPage = () => {
-            setCurrentPage((prevPage) => Math.max(prevPage - 1, 1)); // Decrease page by 1, minimum page is 1
-        };
+            setCurrentPage((prevPage) => Math.max(prevPage - 1, 1)) // Decrease page by 1, minimum page is 1
+        }
     
         const goToNextPage = () => {
-            setCurrentPage((prevPage) => Math.min(prevPage + 1, Math.ceil(taxesList.length / itemsPerPage))); // Increase page by 1, maximum page is calculated based on array length
-        };
+            setCurrentPage((prevPage) => Math.min(prevPage + 1, Math.ceil(taxesList.length / itemsPerPage))) // Increase page by 1, maximum page is calculated based on array length
+        }
     
         const goToFirstPage = () => {
-            setCurrentPage(1); // Go to the first page
-        };
+            setCurrentPage(1) // Go to the first page
+        }
     
         const goToLastPage = () => {
-            setCurrentPage(Math.ceil(taxesList.length / itemsPerPage)); // Go to the last page
-        };
+            setCurrentPage(Math.ceil(taxesList.length / itemsPerPage)) // Go to the last page
+        }
     
         // Calculate indexes for pagination
-        const indexOfLastItem = currentPage * itemsPerPage;
-        const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-        const currentItems = taxesList.slice(indexOfFirstItem, indexOfLastItem);
+        const indexOfLastItem = currentPage * itemsPerPage
+        const indexOfFirstItem = indexOfLastItem - itemsPerPage
+        const currentItems = taxesList.slice(indexOfFirstItem, indexOfLastItem)
 
     const TaxesTable = () => {
 
-        const [filter, setFilter] = useState('');
+        const [filter, setFilter] = useState('')
         const [filteredItems, setFilteredItems] = useState(currentItems)
     
         useEffect(() => {
-            setFilteredItems(
-                currentItems.filter(item =>
-                    item.BADDESCRICAO.toLowerCase().includes(filter.toLowerCase()) ||
-                    item.ADQUIRENTE.nomeAdquirente.toLowerCase().includes(filter.toLowerCase()) ||
-                    item.MODDESCRICAO.toLowerCase().includes(filter.toLowerCase()) ||
-                    item.TIPOTAXA.toString().toLowerCase().includes(filter.toLowerCase()) ||
-                    item.TAXAPERCENTUAL.toString().toLowerCase().includes(filter.toLowerCase())
+            if(filter === ''){
+                setFilteredItems(currentItems)
+            } else {
+                setFilteredItems(
+                    currentItems.filter(item =>
+                        item.BADDESCRICAO.toLowerCase().includes(filter.toLowerCase()) ||
+                        item.ADQUIRENTE.nomeAdquirente.toLowerCase().includes(filter.toLowerCase()) ||
+                        item.MODDESCRICAO.toLowerCase().includes(filter.toLowerCase()) ||
+                        item.TIPOTAXA.toString().toLowerCase().includes(filter.toLowerCase()) ||
+                        item.TAXAPERCENTUAL.toString().toLowerCase().includes(filter.toLowerCase())
+                    )
                 )
-            )
+            }
         }, [filter, currentItems])
 
         return (
@@ -298,7 +302,7 @@ const Taxas = () => {
     const closeModal = () => {
         setIsModalOpen(false)
         setIsModalEditOpen(false)
-    };
+    }
 
     const [taxesTemp, setTaxesTemp] = useState([])
 
@@ -309,26 +313,26 @@ const Taxas = () => {
     },[taxesTemp])
 
     const isObjectFullyPopulated = (obj) => {
-        return obj && Object.values(obj).every(value => value !== null && value !== 0 && value !== '' && value !== 'Selecione');
+        return obj && Object.values(obj).every(value => value !== null && value !== 0 && value !== '' && value !== 'Selecione')
     }
 
     const ModalNewTax = () => {
         const [selectedCli, setSelectedCli] = useState(() => {
-            const cookieValue = Cookies.get('selectedClient');
-            return cookieValue ? JSON.parse(cookieValue) : { label: 'Selecione', value: 0 };
-        });
-        const [selectedBan, setSelectedBan] = useState({ label: 'Selecione', value: 0 });
-        const [selectedAdm, setSelectedAdm] = useState({ label: 'Selecione', value: 0 });
-        const [selectedMod, setSelectedMod] = useState({ label: 'Selecione', value: 0 });
-        const [tax, setTax] = useState('');
+            const cookieValue = Cookies.get('selectedClient')
+            return cookieValue ? JSON.parse(cookieValue) : { label: 'Selecione', value: 0 }
+        })
+        const [selectedBan, setSelectedBan] = useState({ label: 'Selecione', value: 0 })
+        const [selectedAdm, setSelectedAdm] = useState({ label: 'Selecione', value: 0 })
+        const [selectedMod, setSelectedMod] = useState({ label: 'Selecione', value: 0 })
+        const [tax, setTax] = useState('')
     
         const resetValues = () => {
-            setSelectedCli({ label: 'Selecione', value: 0 });
-            setSelectedBan({ label: 'Selecione', value: 0 });
-            setSelectedAdm({ label: 'Selecione', value: 0 });
-            setSelectedMod({ label: 'Selecione', value: 0 });
-            setTax('');
-            setIsModalOpen(false);
+            setSelectedCli({ label: 'Selecione', value: 0 })
+            setSelectedBan({ label: 'Selecione', value: 0 })
+            setSelectedAdm({ label: 'Selecione', value: 0 })
+            setSelectedMod({ label: 'Selecione', value: 0 })
+            setTax('')
+            setIsModalOpen(false)
         }
     
         const handleSubmit = async (e) => {
@@ -346,7 +350,7 @@ const Taxas = () => {
                     await toast.promise(addTax(newTaxObj), {
                         pending: 'Carregando...',
                         error: 'Erro ao adicionar Taxa',
-                    });
+                    })
         
                     const updatedTaxes = await loadTaxes()
                     setTaxesList(updatedTaxes)
@@ -357,7 +361,7 @@ const Taxas = () => {
             } else {
                 toast.warning('Todos os Campos devem ser preenchidos')
             }
-        };
+        }
     
         return (
             <div className={`modal-taxas modal ${isModalOpen ? 'modal-open' : ''}`} style={{ display: isModalOpen ? 'block' : 'none' }}>
@@ -418,17 +422,17 @@ const Taxas = () => {
                             id="taxInput"
                             value={tax}
                             onChange={(e) => {
-                                const inputValue = e.target.value;
-                                let formattedValue = inputValue.replace(/[^\d.]/g, ''); // Remove any non-digit characters except period
+                                const inputValue = e.target.value
+                                let formattedValue = inputValue.replace(/[^\d.]/g, '') // Remove any non-digit characters except period
                                 if (formattedValue.length === 3 && !formattedValue.includes('.')) {
                                     // Insert a period after the first two digits
-                                    formattedValue = formattedValue.slice(0, 2) + '.' + formattedValue.slice(2);
+                                    formattedValue = formattedValue.slice(0, 2) + '.' + formattedValue.slice(2)
                                 }
                                 if (formattedValue.length > 5) {
                                     // Allow only one digit after the period
-                                    formattedValue = formattedValue.slice(0, 4);
+                                    formattedValue = formattedValue.slice(0, 4)
                                 }
-                                setTax(formattedValue);
+                                setTax(formattedValue)
                             }}
                             maxLength={5} // Maximum length including the decimal point
                         />
@@ -439,26 +443,26 @@ const Taxas = () => {
                     </div>
                 </form>
             </div>
-        );
-    };
+        )
+    }
     
 
     const ModalEditTax = () => {
-        const [selectedBan, setSelectedBan] = useState(editableTax?.BANDEIRA || { label: 'Selecione', value: 0 });
-        const [selectedAdm, setSelectedAdm] = useState(editableTax?.ADQUIRENTE || { label: 'Selecione', value: 0 });
-        const [selectedMod, setSelectedMod] = useState(editableTax?.MODALIDADE || { label: 'Selecione', value: 0 });
-        const [tax, setTax] = useState(editableTax?.TAXAPERCENTUAL || '');
+        const [selectedBan, setSelectedBan] = useState(editableTax?.BANDEIRA || { label: 'Selecione', value: 0 })
+        const [selectedAdm, setSelectedAdm] = useState(editableTax?.ADQUIRENTE || { label: 'Selecione', value: 0 })
+        const [selectedMod, setSelectedMod] = useState(editableTax?.MODALIDADE || { label: 'Selecione', value: 0 })
+        const [tax, setTax] = useState(editableTax?.TAXAPERCENTUAL || '')
     
         const resetValues = () => {
-            setSelectedBan({ label: 'Selecione', value: 0 });
-            setSelectedAdm({ label: 'Selecione', value: 0 });
-            setSelectedMod({ label: 'Selecione', value: 0 });
-            setTax('');
-            setIsModalEditOpen(false);
+            setSelectedBan({ label: 'Selecione', value: 0 })
+            setSelectedAdm({ label: 'Selecione', value: 0 })
+            setSelectedMod({ label: 'Selecione', value: 0 })
+            setTax('')
+            setIsModalEditOpen(false)
         }
     
         const handleEditTax = async (e) => {
-            e.preventDefault();
+            e.preventDefault()
             if (isObjectFullyPopulated({ selectedBan, selectedAdm, selectedMod, tax })) {
                 const updatedTax = {
                     CODIGO: editableTax.CODIGO,
@@ -467,17 +471,17 @@ const Taxas = () => {
                     CLICODIGO: editableTax.CLICODIGO,
                     MODCODIGO: selectedMod.value,
                     TAXAPERCENTUAL: parseFloat(tax)
-                };
+                }
                 try {
-                    await editTax(updatedTax);
-                    const response = await loadTaxes();
-                    setTaxesList(response);
-                    resetValues();
+                    await editTax(updatedTax)
+                    const response = await loadTaxes()
+                    setTaxesList(response)
+                    resetValues()
                 } catch (error) {
-                    console.error('Erro ao editar taxa:', error);
+                    console.error('Erro ao editar taxa:', error)
                 }
             } else {
-                toast.error('Preencha todos os campos obrigatórios');
+                toast.error('Preencha todos os campos obrigatórios')
             }
         }
     
@@ -541,17 +545,17 @@ const Taxas = () => {
                                 id="taxInput"
                                 value={tax}
                                 onChange={(e) => {
-                                const inputValue = e.target.value;
-                                let formattedValue = inputValue.replace(/[^\d.]/g, ''); // Remove any non-digit characters except period
+                                const inputValue = e.target.value
+                                let formattedValue = inputValue.replace(/[^\d.]/g, '') // Remove any non-digit characters except period
                                 if (formattedValue.length === 3 && !formattedValue.includes('.')) {
                                     // Insert a period after the first two digits
-                                    formattedValue = formattedValue.slice(0, 2) + '.' + formattedValue.slice(2);
+                                    formattedValue = formattedValue.slice(0, 2) + '.' + formattedValue.slice(2)
                                 }
                                 if (formattedValue.length > 5) {
                                     // Allow only one digit after the period
-                                    formattedValue = formattedValue.slice(0, 4);
+                                    formattedValue = formattedValue.slice(0, 4)
                                 }
-                                setTax(formattedValue);
+                                setTax(formattedValue)
                             }}
                             maxLength={5} // Maximum length including the decimal point
                             />
@@ -608,4 +612,4 @@ const Taxas = () => {
     )
 }
 
-export default Taxas;
+export default Taxas

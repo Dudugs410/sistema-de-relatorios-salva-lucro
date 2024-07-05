@@ -23,8 +23,8 @@ const Administracao = () =>{
     ]
 
     useEffect(() => {
-        sessionStorage.setItem('currentPath', location.pathname);
-    }, [location]);
+        sessionStorage.setItem('currentPath', location.pathname)
+    }, [location])
 
     const handleDateChange = date => {
         setDataBusca(date)
