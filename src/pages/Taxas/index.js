@@ -7,6 +7,7 @@ import './taxas.scss'
 import Select from 'react-select'
 import { FiEdit, FiPlus, FiTrash, FiX } from 'react-icons/fi'
 import { toast } from 'react-toastify'
+import { FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward } from 'react-icons/fi'
 
 const Taxas = () => {
     const location = useLocation();
@@ -156,30 +157,87 @@ const Taxas = () => {
         setIsModalEditOpen(false)
     }
 
+        //adicionando páginas à tabela:
+
+        const [currentPage, setCurrentPage] = useState(1);
+        const [itemsPerPage] = useState(15); // Number of items per page
+    
+        useEffect(() => {
+            setCurrentPage(1); // Reset page to 1 when data changes
+        }, [taxesList]);
+    
+        // Change page functions
+        const goToPrevPage = () => {
+            setCurrentPage((prevPage) => Math.max(prevPage - 1, 1)); // Decrease page by 1, minimum page is 1
+        };
+    
+        const goToNextPage = () => {
+            setCurrentPage((prevPage) => Math.min(prevPage + 1, Math.ceil(taxesList.length / itemsPerPage))); // Increase page by 1, maximum page is calculated based on array length
+        };
+    
+        const goToFirstPage = () => {
+            setCurrentPage(1); // Go to the first page
+        };
+    
+        const goToLastPage = () => {
+            setCurrentPage(Math.ceil(taxesList.length / itemsPerPage)); // Go to the last page
+        };
+    
+        // Calculate indexes for pagination
+        const indexOfLastItem = currentPage * itemsPerPage;
+        const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+        const currentItems = taxesList.slice(indexOfFirstItem, indexOfLastItem);
+
     const TaxesTable = () => {
+
+        const [filter, setFilter] = useState('');
+        const [filteredItems, setFilteredItems] = useState(currentItems)
+    
+        useEffect(() => {
+            setFilteredItems(
+                currentItems.filter(item =>
+                    item.BADDESCRICAO.toLowerCase().includes(filter.toLowerCase()) ||
+                    item.ADQUIRENTE.nomeAdquirente.toLowerCase().includes(filter.toLowerCase()) ||
+                    item.MODDESCRICAO.toLowerCase().includes(filter.toLowerCase()) ||
+                    item.TIPOTAXA.toString().toLowerCase().includes(filter.toLowerCase()) ||
+                    item.TAXAPERCENTUAL.toString().toLowerCase().includes(filter.toLowerCase())
+                )
+            )
+        }, [filter, currentItems])
+
         return (
+            <>
+            <div>
+                <input
+                    type="text"
+                    placeholder="Digite para Filtrar..."
+                    value={filter}
+                    onChange={(e) => setFilter(e.target.value)}
+                    style={{ marginBottom: '10px' }}
+                />
+            </div>
             <div className='table-wrapper table-wrapper-taxes'>
-                <table className="table table-striped table-hover table-bordered table-taxas">
+                <table className="table table-striped table-hover table-bordered table-bancos det-table-global">
                     <thead>
-                        <tr>
-                            <th className='fixed-col' scope="col" style={{ width: '2%', textAlign: 'center' }}>
+                        <tr className='det-tr-top-global'>
+                            <th className='det-th-global' scope="col" style={{ width: '2%', textAlign: 'center' }}>
                                 <button className="btn btn-primary btn-global" style={{ width: '100%' }} onClick={() => { setIsModalOpen(true) }}>
                                     <FiPlus size={25} className="icon" />
                                 </button>
                             </th>
-                            <th scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Bandeira</th>
-                            <th scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Adquirente</th>
-                            <th scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Modalidade</th>
-                            <th scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Tipo Taxa</th>
-                            <th scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>% Taxa</th>
-                            <th  className='fixed-col' scope="col" style={{ width: '2%', textAlign: 'center' }}></th>
+                            <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Bandeira</th>
+                            <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Adquirente</th>
+                            <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Modalidade</th>
+                            <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Tipo Taxa</th>
+                            <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>% Taxa</th>
+                            <th className='det-th-global' scope="col" style={{ width: '2%', textAlign: 'center' }}></th>
                         </tr>
                     </thead>
                     <tbody>
-                        {taxesList.length > 0 &&
-                            taxesList.map((object, index) => (
+                        {filteredItems.length > 0 &&
+                            filteredItems.map((object, index) => (
                                 <tr key={index} className="det-tr-global tr-taxas">
-                                    <th className='fixed-col'  scope="row" style={{ textAlign: 'center' }} onClick={() => { handleEdit(object) }}>
+                                    <th scope="row" style={{ textAlign: 'center' }} onClick={() => { handleEdit(object) }}>
                                         <FiEdit className="icon" />
                                     </th>
                                     <td className="det-td-vendas-global" data-label="BADDESCRICAO">{object.BADDESCRICAO}</td>
@@ -187,7 +245,7 @@ const Taxas = () => {
                                     <td className="det-td-vendas-global" data-label="MODDESCRICAO">{object.MODDESCRICAO}</td>
                                     <td className="det-td-vendas-global" data-label="TIPOTAXA">{object.TIPOTAXA}</td>
                                     <td className="det-td-vendas-global" data-label="TAXAPERCENTUAL">{object.TAXAPERCENTUAL} %</td>
-                                    <th className='fixed-col'  scope="row" style={{ textAlign: 'center' }} onClick={() => handleDelete(object)}>
+                                    <th scope="row" style={{ textAlign: 'center' }} onClick={() => handleDelete(object)}>
                                         <FiTrash className="icon" />
                                     </th>
                                 </tr>
@@ -195,6 +253,45 @@ const Taxas = () => {
                     </tbody>
                 </table>
             </div>
+            <hr className='hr-global'/>
+            { taxesList.length > itemsPerPage && (
+                <div className="container-btn-pagina">
+                    <button
+                        className='btn btn-primary btn-global btn-skip'
+                        onClick={goToFirstPage}
+                        disabled={currentPage === 1} // Disable if already on the first page
+                    >
+                        <FiSkipBack />
+                    </button>
+                    <button
+                        className='btn btn-primary btn-global btn-navigate'
+                        onClick={goToPrevPage}
+                        disabled={currentPage === 1} // Disable if it's the first page
+                    >
+                        <FiChevronLeft/> {/* Left arrow */}
+                    </button>
+                    <div className='pagina-atual'>
+                        <span className='texto-paginacao'>Página </span>
+                        <span className='texto-paginacao'>{currentPage}</span>
+                    </div>
+                    <button
+                        className='btn btn-primary btn-global btn-navigate'
+                        onClick={goToNextPage}
+                        disabled={currentPage === Math.ceil(taxesList.length / itemsPerPage)} // Disable if it's the last page
+                    >
+                        <FiChevronRight/> {/* Right arrow */}
+                    </button>
+                    <button
+                        className='btn btn-primary btn-global btn-skip'
+                        onClick={goToLastPage}
+                        disabled={currentPage === Math.ceil(taxesList.length / itemsPerPage)} // Disable if already on the last page
+                    >
+                        <FiSkipForward />
+                    </button>
+                </div>
+            )}
+            { taxesList.length > itemsPerPage ? (<hr className='hr-global'/>) : (<></>)}
+        </>
         )
     }
 
@@ -216,7 +313,10 @@ const Taxas = () => {
     }
 
     const ModalNewTax = () => {
-        const [selectedCli, setSelectedCli] = useState({ label: 'Selecione', value: 0 });
+        const [selectedCli, setSelectedCli] = useState(() => {
+            const cookieValue = Cookies.get('selectedClient');
+            return cookieValue ? JSON.parse(cookieValue) : { label: 'Selecione', value: 0 };
+        });
         const [selectedBan, setSelectedBan] = useState({ label: 'Selecione', value: 0 });
         const [selectedAdm, setSelectedAdm] = useState({ label: 'Selecione', value: 0 });
         const [selectedMod, setSelectedMod] = useState({ label: 'Selecione', value: 0 });
@@ -258,7 +358,6 @@ const Taxas = () => {
                 toast.warning('Todos os Campos devem ser preenchidos')
             }
         };
-        
     
         return (
             <div className={`modal-taxas modal ${isModalOpen ? 'modal-open' : ''}`} style={{ display: isModalOpen ? 'block' : 'none' }}>
@@ -278,6 +377,7 @@ const Taxas = () => {
                                 options={cliOptions}
                                 value={selectedCli}
                                 onChange={(selected) => setSelectedCli(selected)}
+                                isDisabled={true}
                             />
                         </div>
                         <div className='group-element-taxas'>
