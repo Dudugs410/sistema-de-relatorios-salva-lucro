@@ -2,22 +2,22 @@
 /* eslint-disable react/react-in-jsx-scope */
 /* eslint-disable default-case */
 
-import './dashboard.scss';
+import './dashboard.scss'
 
-import { useContext, useEffect } from 'react';
-import { AuthContext } from '../../contexts/auth';
-import TabelaHorizontal from '../../components/Componente_TabelaHorizontal';
-import PieChart from '../../components/GraficoDashboard';
-import { useLocation } from 'react-router-dom';
-import '../../index.scss';
-import LazyLoader from '../../components/Componente_LazyLoader/index.js';
+import { useContext, useEffect } from 'react'
+import { AuthContext } from '../../contexts/auth'
+import TabelaHorizontal from '../../components/Componente_TabelaHorizontal'
+import PieChart from '../../components/GraficoDashboard'
+import { useLocation } from 'react-router-dom'
+import '../../index.scss'
+import LazyLoader from '../../components/Componente_LazyLoader/index.js'
 
 const Dashboard = () => {
-	const location = useLocation();
+	const location = useLocation()
 
 	useEffect(() => {
-		sessionStorage.setItem('currentPath', location.pathname);
-	}, [location]);
+		sessionStorage.setItem('currentPath', location.pathname)
+	}, [location])
 
 	const {  
 		loadDashboard, isLoadedDashboard,
@@ -25,7 +25,7 @@ const Dashboard = () => {
 		creditsDashboard, isLoadedCreditsDashboard, setIsLoadedCreditsDashboard, loadCreditsGroup, errorCredits,
 		servicesDashboard, isLoadedServicesDashboard, setIsLoadedServicesDashboard, loadServicesGroup, errorServices,
 		changedOption,
-	} = useContext(AuthContext);
+	} = useContext(AuthContext)
 
 	// Run loadDashboard only once when the component mounts
 	useEffect(() => {
@@ -40,7 +40,7 @@ const Dashboard = () => {
 		}
 	},[changedOption])
 
-	const chartDataExists = (array) => array.length > 0;
+	const chartDataExists = (array) => array.length > 0
 
 	const reloadSales = () => {
 		setIsLoadedSalesDashboard(false)
@@ -81,8 +81,8 @@ const Dashboard = () => {
 					}
 				</div>
 			</div>
-		);
-	};
+		)
+	}
 
 	const DisplayCredits = () => {
 		return (
@@ -108,8 +108,8 @@ const Dashboard = () => {
 					}
 				</div>
 			</div>
-		);
-	};
+		)
+	}
 
 	const DisplayServices = () => {
 		return (
@@ -135,8 +135,8 @@ const Dashboard = () => {
 					}
 				</div>
 			</div>
-		);
-	};
+		)
+	}
 
 	return (
 		<>
@@ -171,7 +171,7 @@ const Dashboard = () => {
 				</div>		
 			</div>
 		</>  
-	);
-};
+	)
+}
 
-export default Dashboard;
+export default Dashboard

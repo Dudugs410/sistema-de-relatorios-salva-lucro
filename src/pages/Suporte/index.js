@@ -11,7 +11,7 @@ import './suporte.scss'
 import RadioSelect from '../../components/Componente_RadioSelect'
 
 const Suporte = () =>{
-    const location = useLocation();
+    const location = useLocation()
     const { loadAdmins} = useContext(AuthContext)
 
     const [adminsList, setAdminsList] = useState([])
@@ -19,20 +19,20 @@ const Suporte = () =>{
     const [dataBuscaInicial, setDataBuscaInicial] = useState(new Date)
 
     useEffect(() => {
-        sessionStorage.setItem('currentPath', location.pathname);
-    }, [location]);
+        sessionStorage.setItem('currentPath', location.pathname)
+    }, [location])
 
     useEffect(() => {
         async function inicializar() {
             try {
-                const response = await loadAdmins();
-                setAdminsList(response); // Update state with the API response
+                const response = await loadAdmins()
+                setAdminsList(response) // Update state with the API response
             } catch (error) {
-                console.error('Error loading admins:', error); // Log any errors
+                console.error('Error loading admins:', error) // Log any errors
             }
         }
-        inicializar();
-    }, []);
+        inicializar()
+    }, [])
 
     const [dataInicialExibicao, setDataInicialExibicao] = useState(new Date().toLocaleDateString('pt-BR'))
     const [dataFinalExibicao, setDataFinalExibicao] = useState(new Date().toLocaleDateString('pt-BR'))
