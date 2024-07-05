@@ -252,21 +252,25 @@ const CadastroDeBancos = () => {
         const [filteredItems, setFilteredItems] = useState(currentItems);
     
         useEffect(() => {
-            setFilteredItems(
-                banksList.filter(item =>
-                    item.BANCO.toLowerCase().includes(filter.toLowerCase()) ||
-                    item.AGENCIA.toLowerCase().includes(filter.toLowerCase()) ||
-                    item.CONTA.toLowerCase().includes(filter.toLowerCase()) ||
-                    getAdminName(item.ADQCODIGO, adminsList).toLowerCase().includes(filter.toLowerCase()) ||
-                    getBannerName(item.BADCODIGO, bannersList).toLowerCase().includes(filter.toLowerCase()) ||
-                    getProductDescription(item.PROCODIGO, productList).toLowerCase().includes(filter.toLowerCase()) ||
-                    item.SUPCODIGO.toString().toLowerCase().includes(filter.toLowerCase()) ||
-                    item.CODIGOESTABELECIMENTO.toString().toLowerCase().includes(filter.toLowerCase()) ||
-                    item.CLICODIGO.toString().toLowerCase().includes(filter.toLowerCase()) ||
-                    item.CLDCODIGO.toString().toLowerCase().includes(filter.toLowerCase()) ||
-                    item.CODIGO.toString().toLowerCase().includes(filter.toLowerCase())
+            if(filter === ''){
+                setFilteredItems(currentItems)
+            } else {
+                setFilteredItems(
+                    banksList.filter(item =>
+                        item.BANCO.toLowerCase().includes(filter.toLowerCase()) ||
+                        item.AGENCIA.toLowerCase().includes(filter.toLowerCase()) ||
+                        item.CONTA.toLowerCase().includes(filter.toLowerCase()) ||
+                        getAdminName(item.ADQCODIGO, adminsList).toLowerCase().includes(filter.toLowerCase()) ||
+                        getBannerName(item.BADCODIGO, bannersList).toLowerCase().includes(filter.toLowerCase()) ||
+                        getProductDescription(item.PROCODIGO, productList).toLowerCase().includes(filter.toLowerCase()) ||
+                        item.SUPCODIGO.toString().toLowerCase().includes(filter.toLowerCase()) ||
+                        item.CODIGOESTABELECIMENTO.toString().toLowerCase().includes(filter.toLowerCase()) ||
+                        item.CLICODIGO.toString().toLowerCase().includes(filter.toLowerCase()) ||
+                        item.CLDCODIGO.toString().toLowerCase().includes(filter.toLowerCase()) ||
+                        item.CODIGO.toString().toLowerCase().includes(filter.toLowerCase())
+                    )
                 )
-            )
+            }
         }, [filter, currentItems])
     
         return (
@@ -304,8 +308,8 @@ const CadastroDeBancos = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {currentItems.length > 0 &&
-                                currentItems.map((object, index) => (
+                            {filteredItems.length > 0 &&
+                                filteredItems.map((object, index) => (
                                     <tr key={index} className="det-tr-global tr-bancos">
                                         <th scope="row" style={{ textAlign: 'center' }} onClick={() => { handleEdit(object, index) }}>
                                             <FiEdit className="icon" />
@@ -330,7 +334,7 @@ const CadastroDeBancos = () => {
                     </table>
                 </div>
                 <hr className='hr-global'/>
-                {filteredItems.length > itemsPerPage && (
+                {banksList.length > itemsPerPage && (
                     <div className="container-btn-pagina">
                         <button
                             className='btn btn-primary btn-global btn-skip'

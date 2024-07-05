@@ -194,15 +194,19 @@ const Taxas = () => {
         const [filteredItems, setFilteredItems] = useState(currentItems)
     
         useEffect(() => {
-            setFilteredItems(
-                currentItems.filter(item =>
-                    item.BADDESCRICAO.toLowerCase().includes(filter.toLowerCase()) ||
-                    item.ADQUIRENTE.nomeAdquirente.toLowerCase().includes(filter.toLowerCase()) ||
-                    item.MODDESCRICAO.toLowerCase().includes(filter.toLowerCase()) ||
-                    item.TIPOTAXA.toString().toLowerCase().includes(filter.toLowerCase()) ||
-                    item.TAXAPERCENTUAL.toString().toLowerCase().includes(filter.toLowerCase())
+            if(filter === ''){
+                setFilteredItems(currentItems)
+            } else {
+                setFilteredItems(
+                    currentItems.filter(item =>
+                        item.BADDESCRICAO.toLowerCase().includes(filter.toLowerCase()) ||
+                        item.ADQUIRENTE.nomeAdquirente.toLowerCase().includes(filter.toLowerCase()) ||
+                        item.MODDESCRICAO.toLowerCase().includes(filter.toLowerCase()) ||
+                        item.TIPOTAXA.toString().toLowerCase().includes(filter.toLowerCase()) ||
+                        item.TAXAPERCENTUAL.toString().toLowerCase().includes(filter.toLowerCase())
+                    )
                 )
-            )
+            }
         }, [filter, currentItems])
 
         return (
