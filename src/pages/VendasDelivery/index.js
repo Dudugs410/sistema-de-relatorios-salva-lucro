@@ -75,6 +75,8 @@ const VendasDelivery = () => {
                                         onChange={handleAppChange}
                                         value={appSelecionado}
                                         placeholder='Selecione'
+                                        menuPortalTarget={document.body}
+                                        menuPosition="fixed"
                                     />
                                 </div>
                                 <div className='export-container-delivery-child2'>

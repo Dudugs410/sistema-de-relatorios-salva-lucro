@@ -50,6 +50,7 @@ async function handleLoadData(e) {
   e.preventDefault()
   try {
     setBtnDisabledCredits(true)
+    toast.dismiss()
     await toast.promise(loadData(), {
       pending: 'Carregando...',
       success: 'Carregado com Sucesso',
@@ -58,6 +59,7 @@ async function handleLoadData(e) {
     setBtnDisabledCredits(false)
   } catch (error) {
     console.error('Error handling busca:', error)
+    toast.dismiss()
     toast.error('Ocorreu um Erro')
     setBtnDisabledCredits(false)
   }

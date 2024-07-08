@@ -179,6 +179,7 @@ const CadastroDeBancos = () => {
         }
 
         try {
+            toast.dismiss()
             await toast.promise(deleteBank(toBeDeleted), {
                 pending: 'Carregando...',
                 error: 'Ocorreu um Erro',
@@ -430,6 +431,7 @@ const CadastroDeBancos = () => {
             if (isObjectFullyPopulated(newBankObj)) {
                 console.log('newBankObject: ', newBankObj)
                 try {
+                    toast.dismiss()
                     await toast.promise(addBank(newBankObj), {
                         pending: 'Carregando...',
                         error: 'Erro ao adicionar Taxa',
@@ -442,6 +444,7 @@ const CadastroDeBancos = () => {
                     console.error('Error handling submit:', error)
                 }
             } else {
+                toast.dismiss()
                 toast.warning('Todos os Campos devem ser preenchidos')
             }
         }
@@ -464,6 +467,8 @@ const CadastroDeBancos = () => {
                                 options={productOptions}
                                 value={selectedProduct}
                                 onChange={(selected) => setSelectedProduct(selected)}
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
                             />
                         </div>
                         <div className='group-element-bancos'>
@@ -473,6 +478,8 @@ const CadastroDeBancos = () => {
                                 options={subproductOptions}
                                 value={selectedSubproduct}
                                 onChange={(selected) => setSelectedSubproduct(selected)}
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
                             />
                         </div>
                     </div>
@@ -484,6 +491,8 @@ const CadastroDeBancos = () => {
                                 options={admOptions}
                                 value={selectedAdm}
                                 onChange={(selected) => setSelectedAdm(selected)}
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
                             />
                         </div>
                         <div className='group-element-bancos'>
@@ -493,6 +502,8 @@ const CadastroDeBancos = () => {
                                 options={banOptions}
                                 value={selectedBan}
                                 onChange={(selected) => setSelectedBan(selected)}
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
                             />
                         </div>
                     </div>
@@ -582,6 +593,7 @@ const CadastroDeBancos = () => {
 
             if (isObjectFullyPopulated(newBankObj)) {
                 try {
+                    toast.dismiss()
                     await toast.promise(editBank(newBankObj), {
                         pending: 'Carregando...',
                         error: 'Erro ao adicionar Taxa',
@@ -594,6 +606,7 @@ const CadastroDeBancos = () => {
                     console.error('Error handling submit:', error)
                 }
             } else {
+                toast.dismiss()
                 toast.warning('Todos os Campos devem ser preenchidos')
             }
         }
@@ -633,6 +646,8 @@ const CadastroDeBancos = () => {
                                 value={selectedProduct}
                                 onChange={handleProduct}
                                 placeholder='Selecione'
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
                             />
                         </div>
                         <div className='group-element-bancos'>
@@ -643,6 +658,8 @@ const CadastroDeBancos = () => {
                                 value={selectedSubproduct}
                                 onChange={handleSubproduct}
                                 placeholder='Selecione'
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
                             />
                         </div>
                     </div>
@@ -655,6 +672,8 @@ const CadastroDeBancos = () => {
                                 value={selectedAdm}
                                 onChange={handleAdm}
                                 placeholder='Selecione'
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
                             />
                         </div>
                         <div className='group-element-bancos'>
@@ -665,6 +684,8 @@ const CadastroDeBancos = () => {
                                 value={selectedBan}
                                 onChange={handleBan}
                                 placeholder='Selecione'
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
                             />
                         </div>
                     </div>

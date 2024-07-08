@@ -141,6 +141,7 @@ const Taxas = () => {
         }
 
         try {
+            toast.dismiss()
             await toast.promise(deleteTax(toBeDeleted), {
                 pending: 'Carregando...',
                 error: 'Ocorreu um Erro',
@@ -347,6 +348,7 @@ const Taxas = () => {
         
             if (isObjectFullyPopulated(newTaxObj)) {
                 try {
+                    toast.dismiss()
                     await toast.promise(addTax(newTaxObj), {
                         pending: 'Carregando...',
                         error: 'Erro ao adicionar Taxa',
@@ -359,6 +361,7 @@ const Taxas = () => {
                     console.error('Error handling submit:', error)
                 }
             } else {
+                toast.dismiss()
                 toast.warning('Todos os Campos devem ser preenchidos')
             }
         }
@@ -382,6 +385,8 @@ const Taxas = () => {
                                 value={selectedCli}
                                 onChange={(selected) => setSelectedCli(selected)}
                                 isDisabled={true}
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
                             />
                         </div>
                         <div className='group-element-taxas'>
@@ -391,6 +396,8 @@ const Taxas = () => {
                                 options={admOptions}
                                 value={selectedAdm}
                                 onChange={(selected) => setSelectedAdm(selected)}
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
                             />
                         </div>
                     </div>
@@ -402,6 +409,8 @@ const Taxas = () => {
                                 options={banOptions}
                                 value={selectedBan}
                                 onChange={(selected) => setSelectedBan(selected)}
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
                             />
                         </div>
                         <div className='group-element-taxas'>
@@ -411,6 +420,8 @@ const Taxas = () => {
                                 options={modOptions}
                                 value={selectedMod}
                                 onChange={(selected) => setSelectedMod(selected)}
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
                             />
                         </div>
                     </div>
@@ -481,6 +492,7 @@ const Taxas = () => {
                     console.error('Erro ao editar taxa:', error)
                 }
             } else {
+                toast.dismiss()
                 toast.error('Preencha todos os campos obrigatórios')
             }
         }
@@ -515,6 +527,8 @@ const Taxas = () => {
                                 options={admOptions}
                                 value={selectedAdm}
                                 onChange={handleAdq}
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
                             />
                         </div>
                         <div className='group-element-taxas'>
@@ -524,6 +538,8 @@ const Taxas = () => {
                                 options={banOptions}
                                 value={selectedBan}
                                 onChange={handleBan}
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
                             />
                         </div>
                     </div>
@@ -535,6 +551,8 @@ const Taxas = () => {
                                 options={modOptions}
                                 value={selectedMod}
                                 onChange={handleMod}
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
                             />
                         </div>
                         <div className='group-input-taxa'>

@@ -243,6 +243,7 @@ const CadastroDeBancos = () =>{
             };
             if(isObjectFullyPopulated(newBankObj) === true){
                 try {
+                    toast.dismiss()
                     await toast.promise(addBank(newBankObj), {
                       pending: 'Carregando...',
                       success: 'Carregado com Sucesso',
@@ -311,6 +312,8 @@ const CadastroDeBancos = () =>{
                                     onChange={handleCli}
                                     placeholder="Selecione"
                                     options={cliOptions}
+                                    menuPortalTarget={document.body}
+                                    menuPosition="fixed"
                                 />
                             </div>
                             <br/>
@@ -322,6 +325,8 @@ const CadastroDeBancos = () =>{
                                     onChange={handleBan}
                                     placeholder="Selecione"
                                     options={banOptions}
+                                    menuPortalTarget={document.body}
+                                    menuPosition="fixed"
                                 />
                             </div>
                             <br/>
@@ -333,6 +338,8 @@ const CadastroDeBancos = () =>{
                                     onChange={handleAdq}
                                     placeholder="Selecione"
                                     options={admOptions}
+                                    menuPortalTarget={document.body}
+                                    menuPosition="fixed"
                                 />
                             </div>
                             <br/>
@@ -344,6 +351,8 @@ const CadastroDeBancos = () =>{
                                     onChange={handleSelected}
                                     placeholder="Selecione"
                                     options={modOptions}
+                                    menuPortalTarget={document.body}
+                                    menuPosition="fixed"
                                 />
                             </div>
                             <div className='select-component'>
@@ -354,6 +363,8 @@ const CadastroDeBancos = () =>{
                                     onChange={handleMod}
                                     placeholder="Selecione"
                                     options={modOptions}
+                                    menuPortalTarget={document.body}
+                                    menuPosition="fixed"
                                 />
                             </div>
                             <br/>
