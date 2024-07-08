@@ -51,6 +51,7 @@ const BuscarClienteVendas = () => {
 	async function handleBusca(e) {
 
 		e.preventDefault()
+		toast.dismiss()
 		toast.promise(buscar, {
 			pending: 'Carregando...',
 			success: 'Carregado com Sucesso',
@@ -95,6 +96,7 @@ const BuscarClienteVendas = () => {
 		}
 		if(buscou === true){
 			if((vendas === null) || (vendas.length === 0)){
+				toast.dismiss()
 				toast.error('não existem vendas para a data selecionada')
 				setBuscou(false)
 				setDetalhes(false)

@@ -172,6 +172,8 @@ const SeletorCliente = () => {
                 onChange={handleGroupChange}
                 value={selectedGroup}
                 isDisabled={fetchingData}
+                menuPortalTarget={document.body}
+                menuPosition="fixed"
               />
             </div>
           </div>
@@ -184,6 +186,8 @@ const SeletorCliente = () => {
                 onChange={handleClientChange}
                 value={selectedClient}
                 isDisabled={(!selectedGroup || fetchingData)}
+                menuPortalTarget={document.body}
+                menuPosition="fixed"
               />
             </div>
           </div>

@@ -11,8 +11,6 @@ import './vendasDelivery.scss'
 
 const VendasDelivery = () => {
 
-    const { isDarkTheme } = useContext(AuthContext)
-
     const handleDateChange = date => {
         setDataBusca(date)
     }
@@ -75,6 +73,8 @@ const VendasDelivery = () => {
                                         onChange={handleAppChange}
                                         value={appSelecionado}
                                         placeholder='Selecione'
+                                        menuPortalTarget={document.body}
+                                        menuPosition="fixed"
                                     />
                                 </div>
                                 <div className='export-container-delivery-child2'>

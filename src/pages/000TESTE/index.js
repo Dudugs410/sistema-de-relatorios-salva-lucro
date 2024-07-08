@@ -32,6 +32,7 @@ export default function PageTeste() {
   }, [grupi]);
 
   const Carregated = () => {
+    toast.dismiss()
     toast.success("Success Notification !", {
       position: toast.POSITION.BOTTOM_RIGHT,
     });

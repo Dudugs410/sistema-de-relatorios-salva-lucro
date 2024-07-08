@@ -110,6 +110,7 @@ const ExportacaoSysmo = () =>{
         e.preventDefault()
         try {
           setBtnDisabledSysmo(true)
+          toast.dismiss()
           await toast.promise(loadData(), {
             pending: 'Carregando...',
             success: 'arquivo gerado com sucesso',
@@ -154,6 +155,8 @@ const ExportacaoSysmo = () =>{
                                     onChange={handleBan}
                                     placeholder="Selecione"
                                     options={banOptions}
+                                    menuPortalTarget={document.body}
+                                    menuPosition="fixed"
                                 />
                             </div>
                             <div className='select-component'>
@@ -163,6 +166,8 @@ const ExportacaoSysmo = () =>{
                                     onChange={handleAdq}
                                     placeholder="Selecione"
                                     options={admOptions}
+                                    menuPortalTarget={document.body}
+                                    menuPosition="fixed"
                                 />
                             </div>
                         </div>

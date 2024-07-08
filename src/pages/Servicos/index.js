@@ -51,6 +51,7 @@ const Servicos = () =>{
     e.preventDefault()
     try {
       setBtnDisabledServices(true)
+      toast.dismiss()
       await toast.promise(loadData(), {
         pending: 'Carregando...',
         success: 'Carregado com Sucesso',
@@ -68,6 +69,7 @@ const Servicos = () =>{
       setServicesPageArray(await loadServices(servicesDateRange[0].toLocaleDateString('pt-BR'), servicesDateRange[1].toLocaleDateString('pt-BR')))
     } catch (error) {
       console.error('Error fetching sales data:', error)
+      toast.dismiss()
       toast.error(error)
       throw error
     }

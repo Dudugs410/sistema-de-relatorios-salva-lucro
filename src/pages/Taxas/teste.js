@@ -148,6 +148,7 @@ const Taxas = () =>{
       console.log('objeto a ser deletado: ', toBeDeleted)
 
       try {
+        toast.dismiss()
         await toast.promise(deleteTax(toBeDeleted), {
             pending: 'Carregando...',
             success: 'Carregado com Sucesso',
@@ -262,6 +263,7 @@ const Taxas = () =>{
           };
           if (isObjectFullyPopulated(newTaxObj) === true) {
               try {
+                toast.dismiss()
                   await toast.promise(addTax(newTaxObj), {
                       pending: 'Carregando...',
                       success: 'Carregado com Sucesso',
@@ -432,6 +434,7 @@ const Taxas = () =>{
             if(isObjectFullyPopulated(newTaxObj) === true){
                 try {
                     console.log('objeto atualizado: ', newTaxObj)
+                    toast.dismiss()
                     await toast.promise(editTax(newTaxObj), {
                       pending: 'Carregando...',
                       success: 'Carregado com Sucesso',

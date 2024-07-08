@@ -49,6 +49,7 @@ const BuscarClienteServicos = () => {
 	},[])*/
     
 	async function handleBusca(e){
+		toast.dismiss()
 		toast.promise(buscar, {
 			pending: 'Carregando...',
 			error: 'Ocorreu um Erro',
@@ -66,6 +67,7 @@ const BuscarClienteServicos = () => {
 			} else {
 				//adiciono .toLocaleDateString('pt-BR') às datas para que possamos comparar apenas o dia, mes e ano, sem levar em consideração a hora, minuto e segundos
 				if(buscou !== true){
+					toast.dismiss()
 					toast.success(dataBuscaServicos[0].toLocaleDateString('pt-BR') === dataBuscaServicos[1].toLocaleDateString('pt-BR') ? `executou a busca do dia ${dataBuscaServicos[0].toLocaleDateString('pt-BR')}` : `executou a busca do dia ${dataBuscaServicos[0].toLocaleDateString('pt-BR')} ao dia ${dataBuscaServicos[1].toLocaleDateString('pt-BR')}`)
 					setBuscou(true);	
 				}
@@ -86,6 +88,7 @@ const BuscarClienteServicos = () => {
 		}
 		if(buscou === true){
 			if((ajustes === null) || (ajustes.length === 0)){
+				toast.dismiss()
 				toast.error('não existem ajustes para a data selecionada')
 				setBuscou(false)
 				setDetalhes(false)

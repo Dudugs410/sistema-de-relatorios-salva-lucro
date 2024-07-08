@@ -48,6 +48,7 @@ const Vendas = () =>{
     e.preventDefault()
     try {
       setBtnDisabledSales(true)
+      toast.dismiss()
       await toast.promise(loadData(), {
         pending: 'Carregando...',
         success: 'Carregado com Sucesso',

@@ -120,6 +120,8 @@ const ExportacaoMeta = () =>{
                                 onChange={handleBan}
                                 placeholder="Selecione"
                                 options={banOptions}
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
                             />
                         </div>
                         <div className='select-component'>
@@ -129,6 +131,8 @@ const ExportacaoMeta = () =>{
                                 onChange={handleAdq}
                                 placeholder="Selecione"
                                 options={admOptions}
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
                             />
                         </div>
                     </div>
