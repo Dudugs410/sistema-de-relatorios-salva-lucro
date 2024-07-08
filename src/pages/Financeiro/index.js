@@ -76,16 +76,20 @@ const Financeiro = () =>{
                                     placeholder="Selecione"
                                     options={opcoesRelatorio}
                                     isSearchable={false}
+                                    menuPortalTarget={document.body}
+                                    menuPosition="fixed"
                                 />
                             </div>
                             <div className='container-select'>
                                 <span className='span-picker'>Formato</span>
                                 <Select 
-                                    value={formatoRelatorio} 
+                                    value={formatoRelatorio}
                                     onChange={handleFormato}
                                     placeholder="Selecione"
                                     options={opcoesFormato}
                                     isSearchable={false}
+                                    menuPortalTarget={document.body}
+                                    menuPosition="fixed"
                                 />
                             </div>
                         </div>
