@@ -473,6 +473,9 @@ const CadastroDeBancos = () => {
                                 onChange={(selected) => setSelectedProduct(selected)}
                                 menuPortalTarget={document.body}
                                 menuPosition="fixed"
+                                styles={{
+                                    menuPortal: base => ({ ...base, zIndex: 9999 })
+                                }}
                             />
                         </div>
                         <div className='group-element-bancos'>
@@ -484,6 +487,9 @@ const CadastroDeBancos = () => {
                                 onChange={(selected) => setSelectedSubproduct(selected)}
                                 menuPortalTarget={document.body}
                                 menuPosition="fixed"
+                                styles={{
+                                    menuPortal: base => ({ ...base, zIndex: 9999 })
+                                }}
                             />
                         </div>
                     </div>
@@ -497,6 +503,9 @@ const CadastroDeBancos = () => {
                                 onChange={(selected) => setSelectedAdm(selected)}
                                 menuPortalTarget={document.body}
                                 menuPosition="fixed"
+                                styles={{
+                                    menuPortal: base => ({ ...base, zIndex: 9999 })
+                                }}
                             />
                         </div>
                         <div className='group-element-bancos'>
@@ -508,6 +517,9 @@ const CadastroDeBancos = () => {
                                 onChange={(selected) => setSelectedBan(selected)}
                                 menuPortalTarget={document.body}
                                 menuPosition="fixed"
+                                styles={{
+                                    menuPortal: base => ({ ...base, zIndex: 9999 })
+                                }}
                             />
                         </div>
                     </div>
@@ -652,6 +664,9 @@ const CadastroDeBancos = () => {
                                 placeholder='Selecione'
                                 menuPortalTarget={document.body}
                                 menuPosition="fixed"
+                                styles={{
+                                    menuPortal: base => ({ ...base, zIndex: 9999 })
+                                }}
                             />
                         </div>
                         <div className='group-element-bancos'>
@@ -664,6 +679,9 @@ const CadastroDeBancos = () => {
                                 placeholder='Selecione'
                                 menuPortalTarget={document.body}
                                 menuPosition="fixed"
+                                styles={{
+                                    menuPortal: base => ({ ...base, zIndex: 9999 })
+                                }}
                             />
                         </div>
                     </div>
@@ -678,6 +696,9 @@ const CadastroDeBancos = () => {
                                 placeholder='Selecione'
                                 menuPortalTarget={document.body}
                                 menuPosition="fixed"
+                                styles={{
+                                    menuPortal: base => ({ ...base, zIndex: 9999 })
+                                }}
                             />
                         </div>
                         <div className='group-element-bancos'>
@@ -690,6 +711,9 @@ const CadastroDeBancos = () => {
                                 placeholder='Selecione'
                                 menuPortalTarget={document.body}
                                 menuPosition="fixed"
+                                styles={{
+                                    menuPortal: base => ({ ...base, zIndex: 9999 })
+                                }}
                             />
                         </div>
                     </div>

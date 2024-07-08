@@ -17,6 +17,13 @@
     padding-top:1.5em;
 }
 
+.select-component-container{
+    width: 100%;
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
 .select-container{
     width: 100%;
     display: flex;
