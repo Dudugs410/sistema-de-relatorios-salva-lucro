@@ -141,6 +141,7 @@ const Taxas = () => {
         }
 
         try {
+            toast.dismiss()
             await toast.promise(deleteTax(toBeDeleted), {
                 pending: 'Carregando...',
                 error: 'Ocorreu um Erro',
@@ -191,23 +192,54 @@ const Taxas = () => {
     const TaxesTable = () => {
 
         const [filter, setFilter] = useState('')
-        const [filteredItems, setFilteredItems] = useState(currentItems)
+        const [filteredItems, setFilteredItems] = useState([])
+        const [currentPage, setCurrentPage] = useState(1)
+        const [itemsPerPage] = useState(15) // Number of items per page
     
         useEffect(() => {
+            setFilteredItems(taxesList); // Initialize with all items
+        }, [taxesList]);
+    
+        useEffect(() => {
+            setCurrentPage(1); // Reset page to 1 when filter changes
+            filterItems();
+        }, [filter]);
+
+        // Change page functions
+        const goToPrevPage = () => {
+            setCurrentPage((prevPage) => Math.max(prevPage - 1, 1)) // Decrease page by 1, minimum page is 1
+        }
+
+        const goToNextPage = () => {
+            setCurrentPage((prevPage) => Math.min(prevPage + 1, Math.ceil(banksList.length / itemsPerPage))) // Increase page by 1, maximum page is calculated based on array length
+        }
+
+        const goToFirstPage = () => {
+            setCurrentPage(1) // Go to the first page
+        }
+
+        const goToLastPage = () => {
+            setCurrentPage(Math.ceil(filteredItems.length / itemsPerPage)) // Go to the last page
+        }
+
+        const indexOfLastItem = currentPage * itemsPerPage
+        const indexOfFirstItem = indexOfLastItem - itemsPerPage
+        const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem)
+
+       const filterItems = () => {
             if(filter === ''){
-                setFilteredItems(currentItems)
+                setFilteredItems(taxesList)
             } else {
-                setFilteredItems(
-                    currentItems.filter(item =>
-                        item.BADDESCRICAO.toLowerCase().includes(filter.toLowerCase()) ||
-                        item.ADQUIRENTE.nomeAdquirente.toLowerCase().includes(filter.toLowerCase()) ||
-                        item.MODDESCRICAO.toLowerCase().includes(filter.toLowerCase()) ||
-                        item.TIPOTAXA.toString().toLowerCase().includes(filter.toLowerCase()) ||
-                        item.TAXAPERCENTUAL.toString().toLowerCase().includes(filter.toLowerCase())
-                    )
+                const filtered = taxesList.filter(item =>
+                    item.BADDESCRICAO.toLowerCase().includes(filter.toLowerCase()) ||
+                    item.ADQUIRENTE.nomeAdquirente.toLowerCase().includes(filter.toLowerCase()) ||
+                    item.MODDESCRICAO.toLowerCase().includes(filter.toLowerCase()) ||
+                    item.TIPOTAXA.toString().toLowerCase().includes(filter.toLowerCase()) ||
+                    item.TAXAPERCENTUAL.toString().toLowerCase().includes(filter.toLowerCase())
                 )
+                setFilteredItems(filtered)
             }
-        }, [filter, currentItems])
+        }
 
         return (
             <>
@@ -238,8 +270,8 @@ const Taxas = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredItems.length > 0 &&
-                            filteredItems.map((object, index) => (
+                        {currentItems.length > 0 &&
+                            currentItems.map((object, index) => (
                                 <tr key={index} className="det-tr-global tr-taxas">
                                     <th scope="row" style={{ textAlign: 'center' }} onClick={() => { handleEdit(object) }}>
                                         <FiEdit className="icon" />
@@ -258,7 +290,7 @@ const Taxas = () => {
                 </table>
             </div>
             <hr className='hr-global'/>
-            { taxesList.length > itemsPerPage && (
+            { filteredItems.length > itemsPerPage && (
                 <div className="container-btn-pagina">
                     <button
                         className='btn btn-primary btn-global btn-skip'
@@ -347,6 +379,7 @@ const Taxas = () => {
         
             if (isObjectFullyPopulated(newTaxObj)) {
                 try {
+                    toast.dismiss()
                     await toast.promise(addTax(newTaxObj), {
                         pending: 'Carregando...',
                         error: 'Erro ao adicionar Taxa',
@@ -359,6 +392,7 @@ const Taxas = () => {
                     console.error('Error handling submit:', error)
                 }
             } else {
+                toast.dismiss()
                 toast.warning('Todos os Campos devem ser preenchidos')
             }
         }
@@ -391,6 +425,11 @@ const Taxas = () => {
                                 options={admOptions}
                                 value={selectedAdm}
                                 onChange={(selected) => setSelectedAdm(selected)}
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
+                                styles={{
+                                    menuPortal: base => ({ ...base, zIndex: 9999 })
+                                }}
                             />
                         </div>
                     </div>
@@ -402,6 +441,11 @@ const Taxas = () => {
                                 options={banOptions}
                                 value={selectedBan}
                                 onChange={(selected) => setSelectedBan(selected)}
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
+                                styles={{
+                                    menuPortal: base => ({ ...base, zIndex: 9999 })
+                                }}
                             />
                         </div>
                         <div className='group-element-taxas'>
@@ -411,6 +455,11 @@ const Taxas = () => {
                                 options={modOptions}
                                 value={selectedMod}
                                 onChange={(selected) => setSelectedMod(selected)}
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
+                                styles={{
+                                    menuPortal: base => ({ ...base, zIndex: 9999 })
+                                }}
                             />
                         </div>
                     </div>
@@ -481,6 +530,7 @@ const Taxas = () => {
                     console.error('Erro ao editar taxa:', error)
                 }
             } else {
+                toast.dismiss()
                 toast.error('Preencha todos os campos obrigatórios')
             }
         }
@@ -515,6 +565,8 @@ const Taxas = () => {
                                 options={admOptions}
                                 value={selectedAdm}
                                 onChange={handleAdq}
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
                             />
                         </div>
                         <div className='group-element-taxas'>
@@ -524,6 +576,8 @@ const Taxas = () => {
                                 options={banOptions}
                                 value={selectedBan}
                                 onChange={handleBan}
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
                             />
                         </div>
                     </div>
@@ -535,6 +589,8 @@ const Taxas = () => {
                                 options={modOptions}
                                 value={selectedMod}
                                 onChange={handleMod}
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
                             />
                         </div>
                         <div className='group-input-taxa'>

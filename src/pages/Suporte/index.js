@@ -486,6 +486,7 @@ const Suporte = () =>{
                         <h6><b>Adquirente *</b></h6>
                         {adqfiltradas.length > 0 ? (
                             <Select
+                                styles={{ maxWidth: '500px'}}
                                 options={adqfiltradas}
                                 onChange={handleAdqChange}
                                 value={adqSelecionada}

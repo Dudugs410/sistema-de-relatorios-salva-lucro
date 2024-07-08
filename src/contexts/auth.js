@@ -334,15 +334,18 @@ function AuthProvider({ children }){
 				console.log('response: ', responseData);
 		  
 				if (response.ok) {
-				  toast.success('Taxa alterada com sucesso!');
+					toast.dismiss()
+				  	toast.success('Taxa alterada com sucesso!');
 				} else {
-				  toast.error('Erro ao alterar taxa!');
+					toast.dismiss()
+				  	toast.error('Erro ao alterar taxa!');
 				}
 			  } else {
 				return [];
 			  }
 			} catch (error) {
 			  console.error('Error updating tax:', error);
+			  toast.dismiss()
 			  toast.error('Erro ao alterar taxa!');
 			} finally {
 			  setIsLoadingTaxes(false);
@@ -367,10 +370,12 @@ function AuthProvider({ children }){
 					})
 					.then(response => {
 						console.log('response: ', response);
+						toast.dismiss()
 						toast.success('Taxa deletada com sucesso!');
 					})
 					.catch(error => {
 						console.log('error: ', error);
+						toast.dismiss()
 						toast.error('Erro ao deletar taxa!');
 					});
 				} else {
@@ -464,6 +469,7 @@ function AuthProvider({ children }){
 			} catch (error) {
 				console.error('Error editing bank:', error);
 				// Handle error if needed, e.g., show an error toast
+				toast.dismiss()
 				toast.error('Erro ao editar banco.');
 			}
 		};
@@ -490,6 +496,7 @@ function AuthProvider({ children }){
 			} catch (error) {
 				console.error('Error deleting bank:', error);
 				// Handle error if needed, e.g., show an error toast
+				toast.dismiss()
 				toast.error('Erro ao excluir banco.');
 			}
 		};

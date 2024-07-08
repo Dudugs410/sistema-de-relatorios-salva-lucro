@@ -321,12 +321,13 @@ const TabelaVendasAdq = ({array}) =>{
 		<>
 			<div className='vendas-adq-container'>
 				<div className='seletor-adq-container'>
-					<span className='seletor-adq-span'>Adquirsssssssente</span>
+					<span className='seletor-adq-span'>Adquirente</span>
 					<Select className='seletor-adq-select' id='adquirente'
 						options={adquirentesExistentes}
 						onChange={handleAdqSelecionada}
 						value={adqSelecionada}
-						
+						menuPortalTarget={document.body}
+                        menuPosition="fixed"
 					/>
 				</div>
 				<div className='seletor-adq-container'>
