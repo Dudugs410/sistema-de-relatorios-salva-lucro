@@ -113,27 +113,29 @@ const ExportacaoMeta = () =>{
                 <form>
                     <div className='select-container-meta'>
                         <RadioSelect options={radioOptions} onSelect={(e) => {setType(e)}}/>
-                        <div className='select-component'>
-                            <span className='span-picker'>Bandeira</span>
-                            <Select
-                                value={selectedBan}
-                                onChange={handleBan}
-                                placeholder="Selecione"
-                                options={banOptions}
-                                menuPortalTarget={document.body}
-                                menuPosition="fixed"
-                            />
-                        </div>
-                        <div className='select-component'>
-                            <span className='span-picker'>Adquirente</span>
-                            <Select 
-                                value={selectedAdm} 
-                                onChange={handleAdq}
-                                placeholder="Selecione"
-                                options={admOptions}
-                                menuPortalTarget={document.body}
-                                menuPosition="fixed"
-                            />
+                        <div className='select-component-container'>
+                            <div className='select-component'>
+                                <span className='span-picker'>Bandeira</span>
+                                <Select
+                                    value={selectedBan}
+                                    onChange={handleBan}
+                                    placeholder="Selecione"
+                                    options={banOptions}
+                                    menuPortalTarget={document.body}
+                                    menuPosition="fixed"
+                                />
+                            </div>
+                            <div className='select-component'>
+                                <span className='span-picker'>Adquirente</span>
+                                <Select 
+                                    value={selectedAdm} 
+                                    onChange={handleAdq}
+                                    placeholder="Selecione"
+                                    options={admOptions}
+                                    menuPortalTarget={document.body}
+                                    menuPosition="fixed"
+                                />
+                            </div>
                         </div>
                     </div>
                     <div className='btn-container-financeiro'>

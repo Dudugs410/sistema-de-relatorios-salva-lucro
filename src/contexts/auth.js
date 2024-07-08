@@ -130,6 +130,10 @@ function AuthProvider({ children }){
 				return gru
 			} catch (error) {
 				console.error(error)
+				if (error.response.status === 401) {
+					logout()
+					alert('Sessão expirada. Faça login novamente.')
+				}
 				throw new Error(error.message) // Re-throw the error for handling in the caller function
 			}
 		}
@@ -183,6 +187,11 @@ function AuthProvider({ children }){
 				setBtnDisabledSales(false)
 				console.error('Error fetching vendas:', error)
 				setErrorSales(true)
+				if (error.response.status === 401) {
+					logout()
+					alert('Sessão expirada. Faça login novamente.')
+					return
+				}
 				return []
 			}
 		}
@@ -263,6 +272,11 @@ function AuthProvider({ children }){
 				setBtnDisabledServices(false)
 				console.log(error)
 				setErrorServices(true)
+				if (error.response.status === 401) {
+					logout()
+					alert('Sessão expirada. Faça login novamente.')
+					return
+				}
 				return []
 			}
 		}
@@ -287,6 +301,11 @@ function AuthProvider({ children }){
 				}
 			} catch (error) {
 				console.error('Error fetching taxas:', error);
+				if (error.response.status === 401) {
+					logout()
+					alert('Sessão expirada. Faça login novamente.')
+					return
+				}
 				return [];
 			}
 		};
@@ -305,6 +324,11 @@ function AuthProvider({ children }){
 				}
 			} catch (error) {
 				console.error('Error adding tax:', error);
+				if (error.response.status === 401) {
+					logout()
+					alert('Sessão expirada. Faça login novamente.')
+					return
+				}
 			} finally {
 				setIsLoadingTaxes(false);
 			}
@@ -347,6 +371,11 @@ function AuthProvider({ children }){
 			  console.error('Error updating tax:', error);
 			  toast.dismiss()
 			  toast.error('Erro ao alterar taxa!');
+			  if (error.response.status === 401) {
+				logout()
+				alert('Sessão expirada. Faça login novamente.')
+				return
+			}
 			} finally {
 			  setIsLoadingTaxes(false);
 			}
@@ -385,6 +414,11 @@ function AuthProvider({ children }){
 			} catch (error) {
 				console.error('Error fetching vendas:', error);
 				setIsLoadingTaxes(false);
+				if (error.response.status === 401) {
+					logout()
+					alert('Sessão expirada. Faça login novamente.')
+					return
+				}
 				return;
 			}
 		};
@@ -416,6 +450,11 @@ function AuthProvider({ children }){
 				}
 			} catch (error) {
 				console.error('Error fetching banco:', error);
+				if (error.response.status === 401) {
+					logout()
+					alert('Sessão expirada. Faça login novamente.')
+					return
+				}
 				return [];
 			}
 		}
@@ -471,6 +510,11 @@ function AuthProvider({ children }){
 				// Handle error if needed, e.g., show an error toast
 				toast.dismiss()
 				toast.error('Erro ao editar banco.');
+				if (error.response.status === 401) {
+					logout()
+					alert('Sessão expirada. Faça login novamente.')
+					return
+				}
 			}
 		};
 
@@ -498,6 +542,11 @@ function AuthProvider({ children }){
 				// Handle error if needed, e.g., show an error toast
 				toast.dismiss()
 				toast.error('Erro ao excluir banco.');
+				if (error.response.status === 401) {
+					logout()
+					alert('Sessão expirada. Faça login novamente.')
+					return
+				}
 			}
 		};
 		
@@ -507,6 +556,11 @@ function AuthProvider({ children }){
 				return response.data
 			} catch (error) {
 				console.log(error)
+				if (error.response.status === 401) {
+					logout()
+					alert('Sessão expirada. Faça login novamente.')
+					return
+				}
 			}
 		}
 
@@ -517,6 +571,11 @@ function AuthProvider({ children }){
 				return response.data
 			} catch (error) {
 				console.log(error)
+				if (error.response.status === 401) {
+					logout()
+					alert('Sessão expirada. Faça login novamente.')
+					return
+				}
 			}
 		}
 
@@ -538,6 +597,11 @@ function AuthProvider({ children }){
 				return response.data
 			} catch (error) {
 				console.log(error)
+				if (error.response.status === 401) {
+					logout()
+					alert('Sessão expirada. Faça login novamente.')
+					return
+				}
 			}
 		}
 
@@ -549,6 +613,11 @@ function AuthProvider({ children }){
 				return response.data
 			} catch (error) {
 				console.log(error)
+				if (error.response.status === 401) {
+					logout()
+					alert('Sessão expirada. Faça login novamente.')
+					return
+				}
 			}
 		}
 
@@ -573,6 +642,11 @@ function AuthProvider({ children }){
 			} catch (error) {
 				setBtnDisabledSysmo(false)
 				console.log(error)
+				if (error.response.status === 401) {
+					logout()
+					alert('Sessão expirada. Faça login novamente.')
+					return
+				}
 			}
 		} 
 
@@ -586,6 +660,11 @@ function AuthProvider({ children }){
 					Cookies.set('refreshToken', response.data.refresh_token)
 			} catch (error) {
 				console.log(error)
+				if (error.response.status === 401) {
+					logout()
+					alert('Sessão expirada. Faça login novamente.')
+					return
+				}
 			}	
 		}
 
@@ -682,6 +761,11 @@ function AuthProvider({ children }){
 					salesTemp = await loadSales(firstDay, lastDay)
 				} catch (error) {
 					console.error('Erro: ', error)
+					if (error.response.status === 401) {
+						logout()
+						alert('Sessão expirada. Faça login novamente.')
+						return
+					}
 				}
 				salesMonth = salesTemp
 			}
@@ -773,7 +857,12 @@ function AuthProvider({ children }){
 					setIsLoadedSalesDashboard(true)
 				});
 			} catch (error) {
-				console.log('Erro: ', error);
+				console.log('Erro: ', error)
+				if (error.response.status === 401) {
+					logout()
+					alert('Sessão expirada. Faça login novamente.')
+					return
+				}
 			}
 		}
 		// ************** //
@@ -810,6 +899,11 @@ function AuthProvider({ children }){
 					creditsTemp = await loadCredits(firstDay, lastDay)
 				} catch (error) {
 					console.error('Erro: ', error)
+					if (error.response.status === 401) {
+						logout()
+						alert('Sessão expirada. Faça login novamente.')
+						return
+					}
 				}
 				creditsMonth = creditsTemp
 			}
@@ -905,7 +999,12 @@ function AuthProvider({ children }){
 					setIsLoadedCreditsDashboard(true)
 				});
 			} catch (error) {
-				console.log('Erro: ', error);
+				console.log('Erro: ', error)
+				if (error.response.status === 401) {
+					logout()
+					alert('Sessão expirada. Faça login novamente.')
+					return
+				}
 			}
 		}
 		// ************** //
@@ -1045,6 +1144,11 @@ function AuthProvider({ children }){
 				})
 			} catch (error) {
 				console.log('Erro: ', error)
+				if (error.response.status === 401) {
+					logout()
+					alert('Sessão expirada. Faça login novamente.')
+					return
+				}
 			}
 		}
 
@@ -1065,6 +1169,11 @@ function AuthProvider({ children }){
 				})
 			} catch (error) {
 				console.log('erro: ', error)
+				if (error.response.status === 401) {
+					logout()
+					alert('Sessão expirada. Faça login novamente.')
+					return
+				}
 			}
 		}
 
@@ -1414,6 +1523,11 @@ function AuthProvider({ children }){
 			return response.data
 		} catch (error) {
 			console.error(error)
+			if (error.response.status === 401) {
+				logout()
+				alert('Sessão expirada. Faça login novamente.')
+				return
+			}
 			return null // or handle the error as needed
 		}
 	}

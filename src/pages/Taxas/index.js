@@ -326,7 +326,7 @@ const Taxas = () => {
                     </button>
                 </div>
             )}
-            { taxesList.length > itemsPerPage ? (<hr className='hr-global'/>) : (<></>)}
+            { taxesList.length > itemsPerPage ? (<hr className='hr-global'/>) : (<></>) }
         </>
         )
     }
@@ -567,6 +567,9 @@ const Taxas = () => {
                                 onChange={handleAdq}
                                 menuPortalTarget={document.body}
                                 menuPosition="fixed"
+                                styles={{
+                                    menuPortal: base => ({ ...base, zIndex: 9999 })
+                                }}
                             />
                         </div>
                         <div className='group-element-taxas'>
@@ -578,6 +581,9 @@ const Taxas = () => {
                                 onChange={handleBan}
                                 menuPortalTarget={document.body}
                                 menuPosition="fixed"
+                                styles={{
+                                    menuPortal: base => ({ ...base, zIndex: 9999 })
+                                }}
                             />
                         </div>
                     </div>
@@ -591,6 +597,9 @@ const Taxas = () => {
                                 onChange={handleMod}
                                 menuPortalTarget={document.body}
                                 menuPosition="fixed"
+                                styles={{
+                                    menuPortal: base => ({ ...base, zIndex: 9999 })
+                                }}
                             />
                         </div>
                         <div className='group-input-taxa'>
