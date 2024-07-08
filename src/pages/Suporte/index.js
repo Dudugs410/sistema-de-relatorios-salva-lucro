@@ -490,6 +490,8 @@ const Suporte = () =>{
                                 onChange={handleAdqChange}
                                 value={adqSelecionada}
                                 placeholder="Selecione"
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
                             />
                         ) : <></>}
                     </div>
@@ -536,6 +538,8 @@ const Suporte = () =>{
                             placeholder="Selecione"
                             options={opcoes}
                             isSearchable={false}
+                            menuPortalTarget={document.body}
+                            menuPosition="fixed"
                         />
                     </form>
                     <hr className='hr-global'/>

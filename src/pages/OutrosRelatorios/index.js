@@ -222,6 +222,8 @@ const OutrosRelatorios = () =>{
                                 onChange={handleSelectApresentacao}
                                 value={opcoesApresentacao.value}
                                 placeholder="Selecione ou digite para filtrar"
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
                             />
                             <br/>
                         </div>
@@ -233,6 +235,8 @@ const OutrosRelatorios = () =>{
                                 onChange={handleSelectErro}
                                 value={opcoesErro.value}
                                 placeholder="Selecione ou digite para filtrar"
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
                             />
                             <br/>
                         </div>

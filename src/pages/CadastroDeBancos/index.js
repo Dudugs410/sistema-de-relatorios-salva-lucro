@@ -278,7 +278,7 @@ const CadastroDeBancos = () => {
                 <div>
                     <input
                         type="text"
-                        placeholder="Filter..."
+                        placeholder="Digite para Filtrar..."
                         value={filter}
                         onChange={(e) => setFilter(e.target.value)}
                         style={{ marginBottom: '10px' }}

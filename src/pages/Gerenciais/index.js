@@ -74,6 +74,8 @@ const Gerenciais = () =>{
                                 placeholder="Selecione"
                                 options={opcoesRelatorio}
                                 isSearchable={false}
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
                             />
                         </div>
                         <div className='container-select'>
@@ -85,6 +87,8 @@ const Gerenciais = () =>{
                                 placeholder={'PDF'}
                                 isSearchable={false}
                                 isDisabled={true}
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
                             />
                         </div>
                     </div>
