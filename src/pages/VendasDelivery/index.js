@@ -11,8 +11,6 @@ import './vendasDelivery.scss'
 
 const VendasDelivery = () => {
 
-    const { isDarkTheme } = useContext(AuthContext)
-
     const handleDateChange = date => {
         setDataBusca(date)
     }

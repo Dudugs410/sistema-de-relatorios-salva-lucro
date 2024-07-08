@@ -217,14 +217,23 @@ const CadastroDeBancos = () => {
         return subproduct ? subproduct.descricaoModalidade : 'Desconhecido'
     }
 
+    const BanksTable = () => {
+
     //adicionando páginas à tabela:
 
+    const [filter, setFilter] = useState('')
+    const [filteredItems, setFilteredItems] = useState([])
     const [currentPage, setCurrentPage] = useState(1)
     const [itemsPerPage] = useState(15) // Number of items per page
 
     useEffect(() => {
-        setCurrentPage(1) // Reset page to 1 when data changes
-    }, [banksList])
+        setFilteredItems(banksList); // Initialize with all items
+    }, [banksList]);
+
+    useEffect(() => {
+        setCurrentPage(1); // Reset page to 1 when filter changes
+        filterItems();
+    }, [filter]);
 
     // Change page functions
     const goToPrevPage = () => {
@@ -240,39 +249,34 @@ const CadastroDeBancos = () => {
     }
 
     const goToLastPage = () => {
-        setCurrentPage(Math.ceil(banksList.length / itemsPerPage)) // Go to the last page
+        setCurrentPage(Math.ceil(filteredItems.length / itemsPerPage)) // Go to the last page
     }
 
     // Calculate indexes for pagination
     const indexOfLastItem = currentPage * itemsPerPage
     const indexOfFirstItem = indexOfLastItem - itemsPerPage
-    const currentItems = banksList.slice(indexOfFirstItem, indexOfLastItem)
-
-    const BanksTable = () => {
-        const [filter, setFilter] = useState('')
-        const [filteredItems, setFilteredItems] = useState(currentItems)
+    const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem)
     
-        useEffect(() => {
-            if(filter === ''){
-                setFilteredItems(currentItems)
+        const filterItems = () => {
+            if (filter === '') {
+                setFilteredItems(banksList);
             } else {
-                setFilteredItems(
-                    banksList.filter(item =>
-                        item.BANCO.toLowerCase().includes(filter.toLowerCase()) ||
-                        item.AGENCIA.toLowerCase().includes(filter.toLowerCase()) ||
-                        item.CONTA.toLowerCase().includes(filter.toLowerCase()) ||
-                        getAdminName(item.ADQCODIGO, adminsList).toLowerCase().includes(filter.toLowerCase()) ||
-                        getBannerName(item.BADCODIGO, bannersList).toLowerCase().includes(filter.toLowerCase()) ||
-                        getProductDescription(item.PROCODIGO, productList).toLowerCase().includes(filter.toLowerCase()) ||
-                        item.SUPCODIGO.toString().toLowerCase().includes(filter.toLowerCase()) ||
-                        item.CODIGOESTABELECIMENTO.toString().toLowerCase().includes(filter.toLowerCase()) ||
-                        item.CLICODIGO.toString().toLowerCase().includes(filter.toLowerCase()) ||
-                        item.CLDCODIGO.toString().toLowerCase().includes(filter.toLowerCase()) ||
-                        item.CODIGO.toString().toLowerCase().includes(filter.toLowerCase())
-                    )
-                )
+                const filtered = banksList.filter(item =>
+                    item.BANCO.toLowerCase().includes(filter.toLowerCase()) ||
+                    item.AGENCIA.toLowerCase().includes(filter.toLowerCase()) ||
+                    item.CONTA.toLowerCase().includes(filter.toLowerCase()) ||
+                    getAdminName(item.ADQCODIGO, adminsList).toLowerCase().includes(filter.toLowerCase()) ||
+                    getBannerName(item.BADCODIGO, bannersList).toLowerCase().includes(filter.toLowerCase()) ||
+                    getProductDescription(item.PROCODIGO, productList).toLowerCase().includes(filter.toLowerCase()) ||
+                    item.SUPCODIGO.toString().toLowerCase().includes(filter.toLowerCase()) ||
+                    item.CODIGOESTABELECIMENTO.toString().toLowerCase().includes(filter.toLowerCase()) ||
+                    item.CLICODIGO.toString().toLowerCase().includes(filter.toLowerCase()) ||
+                    item.CLDCODIGO.toString().toLowerCase().includes(filter.toLowerCase()) ||
+                    item.CODIGO.toString().toLowerCase().includes(filter.toLowerCase())
+                );
+                setFilteredItems(filtered);
             }
-        }, [filter, currentItems])
+        };
     
         return (
             <>
@@ -309,8 +313,8 @@ const CadastroDeBancos = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredItems.length > 0 &&
-                                filteredItems.map((object, index) => (
+                            {currentItems.length > 0 &&
+                                currentItems.map((object, index) => (
                                     <tr key={index} className="det-tr-global tr-bancos">
                                         <th scope="row" style={{ textAlign: 'center' }} onClick={() => { handleEdit(object, index) }}>
                                             <FiEdit className="icon" />
@@ -335,7 +339,7 @@ const CadastroDeBancos = () => {
                     </table>
                 </div>
                 <hr className='hr-global'/>
-                {banksList.length > itemsPerPage && (
+                {filteredItems.length > itemsPerPage && (
                     <div className="container-btn-pagina">
                         <button
                             className='btn btn-primary btn-global btn-skip'
@@ -371,7 +375,7 @@ const CadastroDeBancos = () => {
                         </button>
                     </div>
                 )}
-                { banksList.length > itemsPerPage ? (<hr className='hr-global'/>) : (<></>)}
+                { filteredItems.length > itemsPerPage ? (<hr className='hr-global'/>) : (<></>)}
             </>
         )
     }
