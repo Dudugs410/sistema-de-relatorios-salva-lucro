@@ -461,23 +461,27 @@ function AuthProvider({ children }){
 
 		// adiciona novo banco
 		const addBank = async (bank) => {
-			console.log('addBank: ', bank);
-			
-			// Retrieve the existing bancos array from local storage
-			let bancos = JSON.parse(localStorage.getItem('bancos'));
-		
-			// If the bancos array doesn't exist, create a new one
-			if (!bancos) {
-				bancos = [];
+			console.log('addBank: ', bank)
+			setIsLoadingBanks(true)
+			try {
+				const apiClientCode = Cookies.get('clientCode')
+				if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
+					let body = bank;
+					const response = await api.post('banco', body);
+					console.log('response:', response);
+				} else {
+					console.log('Invalid client code:', apiClientCode);
+				}
+			} catch (error) {
+				console.error('Error adding banco:', error);
+				if (error.response.status === 401) {
+					logout()
+					alert('Sessão expirada. Faça login novamente.')
+					return
+				}
+			} finally {
+				setIsLoadingBanks(false);
 			}
-		
-			// Add the new bank to the array
-			bancos.push(bank);
-		
-			// Save the updated array back to local storage
-			localStorage.setItem('bancos', JSON.stringify(bancos));
-			
-			console.log('Bank added successfully!');
 		};
 
 		// edita banco
@@ -548,7 +552,25 @@ function AuthProvider({ children }){
 					return
 				}
 			}
-		};
+		}
+
+		const loadCliAdq = async () => {
+			try {
+				let params = {
+					codigoCliente: Cookies.get('clientCode'),
+					codigoAdquirente: Cookies.get('admCode')
+				}
+
+				let config = {
+					params: params
+				}
+
+				const response = await api.get('clienteAdquirente', config)
+				return response.data
+			} catch (error) {
+				console.log(error)
+			}
+		}
 		
 		const loadProducts = async () => {
 			try {
@@ -566,7 +588,14 @@ function AuthProvider({ children }){
 
 		const loadSubproducts = async () => {
 			try {
-				const response = await api.get('Modalidade')
+				let params = {
+					codigoAdquirente: Cookies.get('admCode')
+				}
+
+				let config = {
+					params: params
+				}
+				const response = await api.get('Subproduto', config)
 				//await refreshSession()
 				return response.data
 			} catch (error) {
@@ -858,11 +887,6 @@ function AuthProvider({ children }){
 				});
 			} catch (error) {
 				console.log('Erro: ', error)
-				if (error.response.status === 401) {
-					logout()
-					alert('Sessão expirada. Faça login novamente.')
-					return
-				}
 			}
 		}
 		// ************** //
@@ -1533,8 +1557,7 @@ function AuthProvider({ children }){
 	}
 
 	/////desloga usuário
-	function logout(e){
-		e.preventDefault()
+	function logout(){
 		sessionStorage.clear()
 		const clearAllCookies = () => {
 			const cookies = Cookies.get()
@@ -1786,6 +1809,7 @@ function AuthProvider({ children }){
 
 				loadBanks, isLoadingBanks, setIsLoadingBanks,
 				addBank, editBank, deleteBank,
+				loadCliAdq,
 
 				// Sysmo
 
