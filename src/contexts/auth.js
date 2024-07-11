@@ -488,37 +488,8 @@ function AuthProvider({ children }){
 		const editBank = async (editedBank) => {
 			try {
 				console.log('editBank:', editedBank);
-		
-				// Step 1: Retrieve banks from local storage
-				const storedBanks = JSON.parse(localStorage.getItem('bancos')) || [];
-		
-				// Retrieve the index from local storage
-				const index = parseInt(localStorage.getItem('editIndex'), 10);
-		
-				// Ensure the index is valid
-				if (index >= 0 && index < storedBanks.length) {
-					// Step 2: Replace the bank object at the specific index with the edited bank object
-					storedBanks[index] = editedBank;
-		
-					console.log('storedBanks:', storedBanks);
-		
-					// Step 3: Update local storage with the modified array
-					localStorage.setItem('bancos', JSON.stringify(storedBanks));
-		
-					return storedBanks;
-				} else {
-					throw new Error('Invalid index');
-				}
 			} catch (error) {
-				console.error('Error editing bank:', error);
-				// Handle error if needed, e.g., show an error toast
-				toast.dismiss()
-				toast.error('Erro ao editar banco.');
-				if (error.response.status === 401) {
-					logout()
-					alert('Sessão expirada. Faça login novamente.')
-					return
-				}
+				console.log('Error editing bank:', error);
 			}
 		};
 

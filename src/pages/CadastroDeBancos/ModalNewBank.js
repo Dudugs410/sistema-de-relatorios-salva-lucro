@@ -50,7 +50,7 @@ const ModalNewBank = ({ onClose, cliAdqOptions, setIsSelected, cliOptions, admOp
     const handleSubmit = async (e) => {
         e.preventDefault()
         const newBankObj = {
-            CodigoBancoCliente: '0',
+            Codigo: 0,
             CodigoEstabelecimento: selectedCliAdm.label,
             CodigoClienteAdquirente: selectedCliAdm.value,
             CodigoCliente: selectedClientCode,

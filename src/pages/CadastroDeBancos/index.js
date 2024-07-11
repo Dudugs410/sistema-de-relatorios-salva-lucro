@@ -150,6 +150,8 @@ const CadastroDeBancos = () => {
             console.log('cliAdqList: ', cliAdqList);
             const cliAdqListOptions = cliAdqList.map(sub => ({ value: sub.codigoClienteAdquirente, label: sub.codigoEstabelecimento }));
             setCliAdqOptions(cliAdqListOptions);
+        } else {
+            setCliAdqOptions([]);
         }
     }, [cliAdqList]);
 
@@ -158,6 +160,8 @@ const CadastroDeBancos = () => {
             console.log('subproductList: ', subproductList);
             const subproductListOptions = subproductList.map(sub => ({ value: sub.codigoSubProduto, label: sub.Modalidade.descricaoModalidade }))
             setSubproductOptions(subproductListOptions)
+        } else {
+            setSubproductOptions([])
         }
     }, [subproductList])
 
@@ -205,24 +209,37 @@ const CadastroDeBancos = () => {
         fetchSubProductList()
     }, [isSelected])
 
-    const [editableBank, setEditableBank] = useState()
-
-    const handleEdit = (object, index) => {
-        localStorage.setItem('editIndex', index)
+    const fetchSUPname = async (SUPCODIGO) => {
+        try {
+            const subProducts = await loadSubproducts();
+            const subProductName = getSubproductDescription(SUPCODIGO, subProducts);
+            console.log('subProductName: ', subProductName);
+            return subProductName;
+        } catch (error) {
+            console.error('Error fetching subproductList:', error);
+        }
+    };
+    
+    const [editableBank, setEditableBank] = useState();
+    
+    const handleEdit = async (object, index) => {
+        //setIsSelected(true);
+        localStorage.setItem('editIndex', index);
+        const SUPlabel = await fetchSUPname(object.SUPCODIGO); // Wait for SUPlabel to be defined
+    
         setEditableBank({
-            codigoEstabelecimento: object.CODIGOESTABELECIMENTO,
+            cliAdq: { label: object.CODIGOESTABELECIMENTO, value: object.CLDCODIGO },
             codigoCliente: object.CLICODIGO,
-            codigoClienteAdquirente: object.CLDCODIGO,
-            bandeira: {label: getBannerName(object.BADCODIGO, bannersList), value: object.BADCODIGO},
-            adquirente: {label: getAdminName(object.ADQCODIGO, adminsList), value: object.ADQCODIGO},
-            produto: {label: getProductDescription(object.PROCODIGO, productList), value: object.PROCODIGO},
-            subproduto: object.SUPCODIGO,
+            bandeira: { label: getBannerName(object.BADCODIGO, bannersList), value: object.BADCODIGO },
+            adquirente: { label: getAdminName(object.ADQCODIGO, adminsList), value: object.ADQCODIGO },
+            produto: { label: getProductDescription(object.PROCODIGO, productList), value: object.PROCODIGO },
+            subproduto: { label: SUPlabel, value: object.SUPCODIGO },
             banco: object.BANCO,
             agencia: object.AGENCIA,
             conta: object.CONTA,
-        })
-        setIsModalEditOpen(true)
-    }
+        });
+        setIsModalEditOpen(true);
+    };
 
     const resetValues = () => {
         setEditableBank({            
@@ -288,8 +305,9 @@ const CadastroDeBancos = () => {
     }
 
     const getSubproductDescription = (subprodCodigo, subproductList) => {
-        const subproduct = subproductList.find(subproduct => subproduct.codigoModalidade === subprodCodigo)
-        return subproduct ? subproduct.descricaoModalidade : 'Desconhecido'
+        console.log('subprodCodigo: ', subprodCodigo, 'subprodList: ', subproductList)
+        const subproduct = subproductList.find(subproduct => subproduct.codigoSubProduto === subprodCodigo)
+        return subproduct ? subproduct.Modalidade.descricaoModalidade : 'Desconhecido'
     }
 
     const BanksTable = () => {
@@ -512,6 +530,16 @@ const CadastroDeBancos = () => {
                             <ModalEditBank 
                                 editableBank={editableBank}
                                 onClose={closeModal}
+                                setIsSelected={setIsSelected}
+                                cliAdqOptions={cliAdqOptions}
+                                cliOptions={cliOptions}
+                                admOptions={admOptions}
+                                banOptions={banOptions}
+                                productOptions={productOptions}
+                                subproductOptions={subproductOptions}
+                                editBank={editBank}
+                                loadBanks={loadBanks}
+                                setBanksList={setBanksList}
                             />
                         )}
                     </div>
