@@ -1,56 +1,56 @@
-import { useEffect, useState } from 'react'
-import { AuthContext } from '../../contexts/auth'
-import Cookies from 'js-cookie'
-import '../../styles/global.scss'
-import './cadastroDeBancos.scss'
-import Select from 'react-select'
-import { FiX } from 'react-icons/fi'
-import { toast } from 'react-toastify'
-import { sub } from 'date-fns'
+import { useEffect, useState } from 'react';
+import { AuthContext } from '../../contexts/auth';
+import Cookies from 'js-cookie';
+import '../../styles/global.scss';
+import './cadastroDeBancos.scss';
+import Select from 'react-select';
+import { FiX } from 'react-icons/fi';
+import { toast } from 'react-toastify';
+import { sub } from 'date-fns';
 
 const ModalNewBank = ({ onClose, cliAdqOptions, setIsSelected, cliOptions, admOptions, banOptions, productOptions, subproductOptions, addBank, loadBanks, setBanksList }) => {
 
     useEffect(()=>{
         console.log('Render Modal New Bank')
-    },[])
+    },[]);
 
     const [selectedCli, setSelectedCli] = useState(() => {
-        const cookieValue = Cookies.get('selectedClient')
-        return cookieValue ? JSON.parse(cookieValue) : { label: 'Selecione', value: 0 }
-    })
+        const cookieValue = Cookies.get('selectedClient');
+        return cookieValue ? JSON.parse(cookieValue) : { label: 'Selecione', value: 0 };
+    });
 
-    const [codeBankCli, setCodeBankCli] = useState(0)
-    const [selectedClientCode, setSelectedClientCode] = useState(parseInt(Cookies.get('clientCode')))
-    const [selectedCliAdm, setSelectedCliAdm] = useState({ label: 'Selecione', value: 0 })
-    const [selectedBan, setSelectedBan] = useState({ label: 'Selecione', value: 0 })
-    const [selectedAdm, setSelectedAdm] = useState({ label: 'Selecione', value: 0 })
-    const [selectedProduct, setSelectedProduct] = useState({ label: 'Selecione', value: 0 })
-    const [selectedSubproduct, setSelectedSubproduct] = useState({ label: 'Selecione', value: 0 })
-    const [selectedBank, setSelectedBank] = useState('')
-    const [selectedAgency, setSelectedAgency] = useState('')
-    const [selectedAccount, setSelectedAccount] = useState('')
-    const [isLoadingBanks, setIsLoadingBanks] = useState(false)
+    const [codeBankCli, setCodeBankCli] = useState(0);
+    const [selectedClientCode, setSelectedClientCode] = useState(parseInt(Cookies.get('clientCode')));
+    const [selectedCliAdm, setSelectedCliAdm] = useState({ label: 'Selecione', value: 0 });
+    const [selectedBan, setSelectedBan] = useState({ label: 'Selecione', value: 0 });
+    const [selectedAdm, setSelectedAdm] = useState({ label: 'Selecione', value: 0 });
+    const [selectedProduct, setSelectedProduct] = useState({ label: 'Selecione', value: 0 });
+    const [selectedSubproduct, setSelectedSubproduct] = useState({ label: 'Selecione', value: 0 });
+    const [selectedBank, setSelectedBank] = useState('');
+    const [selectedAgency, setSelectedAgency] = useState('');
+    const [selectedAccount, setSelectedAccount] = useState('');
+    const [isLoadingBanks, setIsLoadingBanks] = useState(false);
 
     const isObjectFullyPopulated = (obj) => {
-        return obj && Object.values(obj).every(value => value !== null && value !== '' && value.label !== 'Selecione')
-    }
+        return obj && Object.values(obj).every(value => value !== null && value !== '' && value.label !== 'Selecione');
+    };
 
     const resetValues = () => {
-        setCodeBankCli(0)
-        setSelectedCliAdm({ label: 'Selecione', value: 0 })
-        setSelectedBan({ label: 'Selecione', value: 0 })
-        setSelectedAdm({ label: 'Selecione', value: 0 })
-        setSelectedProduct({ label: 'Selecione', value: 0 })
-        setSelectedSubproduct({ label: 'Selecione', value: 0 })
-        setSelectedBank('')
-        setSelectedAgency('')
-        setSelectedAccount('')
+        setCodeBankCli(0);
+        setSelectedCliAdm({ label: 'Selecione', value: 0 });
+        setSelectedBan({ label: 'Selecione', value: 0 });
+        setSelectedAdm({ label: 'Selecione', value: 0 });
+        setSelectedProduct({ label: 'Selecione', value: 0 });
+        setSelectedSubproduct({ label: 'Selecione', value: 0 });
+        setSelectedBank('');
+        setSelectedAgency('');
+        setSelectedAccount('');
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault()
+        e.preventDefault();
         const newBankObj = {
-            CodigoBancoCliente: '0',
+            Codigo: 0,
             CodigoEstabelecimento: selectedCliAdm.label,
             CodigoClienteAdquirente: selectedCliAdm.value,
             CodigoCliente: selectedClientCode,
@@ -61,9 +61,9 @@ const ModalNewBank = ({ onClose, cliAdqOptions, setIsSelected, cliOptions, admOp
             Banco: selectedBank,
             Agencia: selectedAgency,
             Conta: selectedAccount,
-        }
+        };
 
-        console.log('newBankObject: ', newBankObj)
+        console.log('newBankObject: ', newBankObj);
 
         if (isObjectFullyPopulated(newBankObj)) {
             console.log('newBankObject: ', newBankObj)
@@ -74,23 +74,28 @@ const ModalNewBank = ({ onClose, cliAdqOptions, setIsSelected, cliOptions, admOp
                     error: 'Erro ao adicionar Taxa',
                 });
 
-                const updatedBanks = await loadBanks();
-                setBanksList(updatedBanks);
-                resetValues();
+                const updatedBanks = await loadBanks()
+                setBanksList(updatedBanks)
+                resetValues()
+                onClose()
             } catch (error) {
                 console.error('Error handling submit:', error)
             }
         } else {
-            toast.dismiss();
+            toast.dismiss()
             toast.warning('Todos os Campos devem ser preenchidos')
         }
-    };
+    }
 
     const handleAdmin = (selected) => {
         Cookies.set('admCode', selected.value)
         setSelectedAdm(selected)
         setIsSelected(true)
-    };
+    }
+
+    useEffect(() => {
+        setSelectedCliAdm(cliAdqOptions.length > 0 ? cliAdqOptions[0] : { label: 'Sem Estabelecimentos', value: 0 });
+    }, [selectedAdm, cliAdqOptions]);
 
     return (
         <div className='modal-bancos modal'>
@@ -228,7 +233,7 @@ const ModalNewBank = ({ onClose, cliAdqOptions, setIsSelected, cliOptions, admOp
                 </div>
             </form>
         </div>
-    )
-}
+    );
+};
 
-export default ModalNewBank
+export default ModalNewBank;
