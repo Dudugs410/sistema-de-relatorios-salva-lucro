@@ -66,10 +66,6 @@ const ModalEditBank = ({ editableBank, onClose, cliAdqOptions, setIsSelected, cl
             CodigoBancoCliente:editableBank.codigoBancoCliente
         }
 
-        console.log('Objeto a ser Editado (submit) : ', editableBank)
-
-        console.log('Objeto Atualizado: ', newBankObj)
-
         if (isObjectFullyPopulated(newBankObj)) {
             try {
                 toast.dismiss()
@@ -98,10 +94,6 @@ const ModalEditBank = ({ editableBank, onClose, cliAdqOptions, setIsSelected, cl
         setIsSelected(true)
         setSelectedCliAdm(cliAdqOptions.length > 0 ? cliAdqOptions[0] : { label: 'Sem Estabelecimentos', value: 0 })
     }
-
-    useEffect(()=>{
-        console.log('cliAdqOptions: ', cliAdqOptions)
-    },[])
 
     return (
         <div className='modal-bancos modal'>
