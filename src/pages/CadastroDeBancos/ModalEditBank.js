@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AuthContext } from '../../contexts/auth'
 import Cookies from 'js-cookie'
 import '../../styles/global.scss'
@@ -6,14 +6,15 @@ import './cadastroDeBancos.scss'
 import Select from 'react-select'
 import { FiX } from 'react-icons/fi'
 import { toast } from 'react-toastify'
+import { set } from 'lodash'
 
 
-const ModalEditBank = ({editableBank}) => {
+const ModalEditBank = ({ editableBank, onClose, cliAdqOptions, setIsSelected, cliOptions, admOptions, banOptions, productOptions, subproductOptions, editBank, loadBanks, setBanksList }) => {
     const [selectedCli, setSelectedCli] = useState(() => {
         const cookieValue = Cookies.get('selectedClient')
         return cookieValue ? JSON.parse(cookieValue) : { label: 'Selecione', value: 0 }
     })
-    const [selectedCode, setSelectedCode] = useState(editableBank?.codigoEstabelecimento || '' )
+    const [selectedCliAdm, setSelectedCliAdm] = useState(editableBank?.cliAdq || { label: 'Selecione', value: 0 })
     const [selectedClientCode, setSelectedClientCode] = useState(editableBank?.codigoCliente || '' )
     const [selectedClientAdminCode, setSelectedClientAdminCode] = useState(editableBank?.codigoClienteAdquirente || '' )
     const [selectedBan, setSelectedBan] = useState(editableBank?.bandeira || { label: 'Selecione', value: 0 })
@@ -23,14 +24,21 @@ const ModalEditBank = ({editableBank}) => {
     const [selectedBank, setSelectedBank] = useState(editableBank?.banco || '')
     const [selectedAgency, setSelectedAgency] = useState(editableBank?.agencia || '')
     const [selectedAccount, setSelectedAccount] = useState(editableBank?.conta || '')
+    const [isLoadingBanks, setIsLoadingBanks] = useState(false)
+
+    useEffect(()=>{
+        if(cliAdqOptions.length === 0){
+            setSelectedCliAdm({ label: 'Sem Estabelecimentos', value: 0 })
+        } else {
+            setSelectedCliAdm(cliAdqOptions[0])
+        }
+    },[cliAdqOptions])
 
     const isObjectFullyPopulated = (obj) => {
         return obj && Object.values(obj).every(value => value !== null && value !== 0 && value !== '' && value.label !== 'Selecione')
     }
 
-
     const resetValues = () => {
-        setSelectedCode('')
         setSelectedClientCode('')
         setSelectedClientAdminCode('')
         setSelectedBan({ label: 'Selecione', value: 0 })
@@ -40,17 +48,13 @@ const ModalEditBank = ({editableBank}) => {
         setSelectedBank('')
         setSelectedAgency('')
         setSelectedAccount('')
-
-        setIsModalOpen(false)
-        setIsModalEditOpen(false)
     }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-
         const newBankObj = {
-            CodigoEstabelecimento: selectedCode,
-            CodigoClienteAdquirente: selectedClientAdminCode,
+            CodigoEstabelecimento: selectedCliAdm.label,
+            CodigoClienteAdquirente: selectedCliAdm.value,
             CodigoCliente: selectedClientCode,
             Adquirente: selectedAdm.value,
             Produto: selectedProduct.value,
@@ -59,12 +63,18 @@ const ModalEditBank = ({editableBank}) => {
             Banco: selectedBank,
             Agencia: selectedAgency,
             Conta: selectedAccount,
+            CodigoBancoCliente:editableBank.codigoBancoCliente
         }
+
+        console.log('Objeto a ser Editado (submit) : ', editableBank)
+
+        console.log('Objeto Atualizado: ', newBankObj)
 
         if (isObjectFullyPopulated(newBankObj)) {
             try {
                 toast.dismiss()
-                await toast.promise(editBank(newBankObj), {
+                    await toast.promise(editBank(newBankObj), {
+                    success: 'Banco Alterado com Sucesso',
                     pending: 'Carregando...',
                     error: 'Erro ao adicionar Taxa',
                 })
@@ -72,6 +82,7 @@ const ModalEditBank = ({editableBank}) => {
                 const updatedBanks = await loadBanks()
                 setBanksList(updatedBanks)
                 resetValues()
+                onClose()
             } catch (error) {
                 console.error('Error handling submit:', error)
             }
@@ -81,33 +92,28 @@ const ModalEditBank = ({editableBank}) => {
         }
     }
 
-    const handleProduct = (selected) => {
-        setSelectedProduct(selected)
-    }
-
-    const handleSubproduct = (selected) => {
-        setSelectedSubproduct(selected)
-    }
-
-    const handleAdm = (selected) => {
+    const handleAdmin = (selected) => {
+        Cookies.set('admCode', selected.value)
         setSelectedAdm(selected)
+        setIsSelected(true)
+        setSelectedCliAdm(cliAdqOptions.length > 0 ? cliAdqOptions[0] : { label: 'Sem Estabelecimentos', value: 0 })
     }
 
-    const handleBan = (selected) => {
-        setSelectedBan(selected)
-    }
+    useEffect(()=>{
+        console.log('cliAdqOptions: ', cliAdqOptions)
+    },[])
 
     return (
-        <div className={`modal-bancos modal ${isModalEditOpen ? 'modal-open' : ''}`} style={{ display: isModalEditOpen ? 'block' : 'none' }}>
+        <div className='modal-bancos modal'>
             <div className='header-container-taxa'>
                 <div className='title-container-global'>
                     <h3 className='title-global' style={{margin: '0'}}>Editar Banco</h3>
                 </div>
-                <button className='btn btn-danger close-modal' onClick={closeModal} style={{marginLeft: '5px'}}><FiX size={25}/></button>
+                <button className='btn btn-danger close-modal' onClick={onClose} style={{marginLeft: '5px'}}><FiX size={25}/></button>
             </div>
             <hr className='hr-global'/>
             <form className='select-container-bancos' onSubmit={handleSubmit}>
-                <div className='form-group-bancos'>
+            <div className='form-group-bancos'>
                     <div className='group-element-bancos'>
                         <label className='span-picker'>Cliente</label>
                         <Select
@@ -124,7 +130,7 @@ const ModalEditBank = ({editableBank}) => {
                             id="admSelect"
                             options={admOptions}
                             value={selectedAdm}
-                            onChange={(selected) => setSelectedAdm(selected)}
+                            onChange={handleAdmin}
                             menuPortalTarget={document.body}
                             menuPosition="fixed"
                             styles={{
@@ -137,10 +143,11 @@ const ModalEditBank = ({editableBank}) => {
                     <div className='group-element-bancos'>
                         <label className='span-picker'>Código do Estabelecimento</label>
                         <Select
-                            id="productSelect"
-                            options={productOptions}
-                            value={selectedProduct}
-                            onChange={(selected) => setSelectedProduct(selected)}
+                            isDisabled={cliAdqOptions.length === 0}
+                            id="cliAdmSelect"
+                            options={cliAdqOptions}
+                            value={selectedCliAdm}
+                            onChange={(selected) => setSelectedCliAdm(selected)}
                             menuPortalTarget={document.body}
                             menuPosition="fixed"
                             styles={{
@@ -181,6 +188,7 @@ const ModalEditBank = ({editableBank}) => {
                     <div className='group-element-bancos'>
                         <label className='span-picker'>Subproduto</label>
                         <Select
+                            isDisabled={subproductOptions.length === 0}
                             id="subproductSelect"
                             options={subproductOptions}
                             value={selectedSubproduct}
@@ -194,37 +202,38 @@ const ModalEditBank = ({editableBank}) => {
                     </div>
                 </div>
                 <div className='form-group-bancos'>
-                    <div className='group-element-bancos' style={{display: 'inline-flex', flexDirection: 'column'}}>
+                    <div className='group-element-bancos' style={{ display: 'inline-flex', flexDirection: 'column' }}>
                         <label className='span-picker'>Banco</label>
                         <input
-                            style={{height: '100%'}}
+                            style={{ height: '100%' }}
                             type="text"
                             id="bankInput"
                             value={selectedBank}
                             onChange={(e) => setSelectedBank(e.target.value)}
                         />
                     </div>
-                    <div className='group-element-bancos' style={{display: 'inline-flex', flexDirection: 'column'}}>
+                    <div className='group-element-bancos' style={{ display: 'inline-flex', flexDirection: 'column' }}>
                         <label className='span-picker'>Agência</label>
                         <input
-                        style={{height: '100%'}}
-                        type="text"
-                        id="agencyInput"
+                            style={{ height: '100%' }}
+                            type="text"
+                            id="agencyInput"
                             value={selectedAgency}
                             onChange={(e) => setSelectedAgency(e.target.value)}
                         />
                     </div>
-                    <div className='group-element-bancos' style={{display: 'inline-flex', flexDirection: 'column'}}>
+                    <div className='group-element-bancos' style={{ display: 'inline-flex', flexDirection: 'column' }}>
                         <label className='span-picker'>Conta</label>
                         <input
-                            style={{height: '100%'}}
+                            style={{ height: '100%' }}
                             type="text"
                             id="accountInput"
                             value={selectedAccount}
                             onChange={(e) => setSelectedAccount(e.target.value)}
                         />
                     </div>
-                </div>                    <div className='group-element-bancos'>
+                </div>                 
+                <div className='group-element-bancos'>
                     <hr className='hr-global'/>
                     <button className='btn-global btn-bancos' disabled={isLoadingBanks}>Aplicar Modificações</button>
                 </div>

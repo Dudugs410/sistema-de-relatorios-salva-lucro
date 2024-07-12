@@ -436,11 +436,11 @@ function AuthProvider({ children }){
 				if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
 					let params = {
 						codigo: apiClientCode
-					};
+					}
 		
 					let config = {
 						params: params
-					};
+					}
 		
 					const response = await api.get('banco', config);
 					return response.data;
@@ -486,71 +486,78 @@ function AuthProvider({ children }){
 
 		// edita banco
 		const editBank = async (editedBank) => {
+			console.log('editBank:', editedBank)
+			setIsLoadingBanks(true)
 			try {
-				console.log('editBank:', editedBank);
-		
-				// Step 1: Retrieve banks from local storage
-				const storedBanks = JSON.parse(localStorage.getItem('bancos')) || [];
-		
-				// Retrieve the index from local storage
-				const index = parseInt(localStorage.getItem('editIndex'), 10);
-		
-				// Ensure the index is valid
-				if (index >= 0 && index < storedBanks.length) {
-					// Step 2: Replace the bank object at the specific index with the edited bank object
-					storedBanks[index] = editedBank;
-		
-					console.log('storedBanks:', storedBanks);
-		
-					// Step 3: Update local storage with the modified array
-					localStorage.setItem('bancos', JSON.stringify(storedBanks));
-		
-					return storedBanks;
-				} else {
-					throw new Error('Invalid index');
-				}
+					console.log('entrou no if')
+					let body = JSON.stringify(editedBank)
+					const response = await fetch('https://app.salvalucro.com.br/api/v1/banco', {
+					method: 'PUT',
+					headers: {
+						'Content-Type': 'application/json',
+						'Authorization': `Bearer ${Cookies.get('token')}`
+					},
+					body: body,
+					});
+
+					console.log(response)
+			
+					const responseData = await response.json();
+					console.log('response: ', responseData);
+			
+					if (response.ok) {
+						toast.dismiss()
+						toast.success('Banco alterado com sucesso!')
+					} else {
+						toast.dismiss()
+						toast.error('Erro ao alterar Banco!')
+					}
 			} catch (error) {
-				console.error('Error editing bank:', error);
-				// Handle error if needed, e.g., show an error toast
+				console.error('Erro ao Alterar Banco:', error)
 				toast.dismiss()
-				toast.error('Erro ao editar banco.');
+				toast.error('Erro ao alterar banco!')
 				if (error.response.status === 401) {
 					logout()
 					alert('Sessão expirada. Faça login novamente.')
 					return
 				}
-			}
+			} finally {
+				setIsLoadingBanks(false);
+			}	 
 		};
 
 		// deleta banco
 		const deleteBank = async (bankToDelete) => {
 			console.log('deleteBank: ', bankToDelete)
+			setIsLoadingBanks(true)
 			try {
-				// Step 1: Retrieve banks from local storage
-				const storedBanks = JSON.parse(localStorage.getItem('bancos')) || [];
-				
-				// Step 2: Find the index of the bank to delete
-				const indexToDelete = storedBanks.findIndex(bank => isEqual(bank, bankToDelete));
-				
-				if (indexToDelete !== -1) {
-					// Step 3: Remove the bank object from the array
-					storedBanks.splice(indexToDelete, 1);
-					
-					// Step 4: Update local storage with the modified array
-					localStorage.setItem('bancos', JSON.stringify(storedBanks));					
-				} else {
-					console.warn('Bank to delete not found in stored data.');
-				}
+				let body = bankToDelete
+				api.delete('banco', {
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					data: body
+				})
+				.then(response => {
+					console.log('response: ', response)
+					toast.dismiss()
+					toast.success('Banco deletado com sucesso!')
+				})
+				.catch(error => {
+					console.log('error: ', error)
+					toast.dismiss()
+					toast.error('Erro ao deletar taxa!')
+				})
+				setIsLoadingBanks(false)
 			} catch (error) {
-				console.error('Error deleting bank:', error);
-				// Handle error if needed, e.g., show an error toast
-				toast.dismiss()
-				toast.error('Erro ao excluir banco.');
+				console.error('Error fetching vendas:', error)
+				setIsLoadingBanks(false)
 				if (error.response.status === 401) {
 					logout()
 					alert('Sessão expirada. Faça login novamente.')
 					return
 				}
+				return;
 			}
 		}
 
