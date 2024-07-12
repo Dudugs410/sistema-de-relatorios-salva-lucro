@@ -289,19 +289,18 @@ const CadastroDeBancos = () => {
             Conta: object.CONTA,
             CodigoBancoCliente: object.CODIGO,
         }
-
+    
         try {
             toast.dismiss()
             await toast.promise(deleteBank(toBeDeleted), {
                 pending: 'Carregando...',
                 error: 'Ocorreu um Erro',
             })
-            //setBanksList(prevTaxesList => prevTaxesList.filter(bank => bank.CODIGO !== object.CODIGO))
-            const response = await loadBanks()
-            setBanksList(response)
-            resetValues()
+            // Optimistically update state
+            setBanksList(prevBanksList => prevBanksList.filter(bank => bank.CODIGO !== object.CODIGO))
+            handleCancel()
         } catch (error) {
-            console.error('Error handling busca:', error)
+            console.error('Error handling delete:', error)
         }
     }
 

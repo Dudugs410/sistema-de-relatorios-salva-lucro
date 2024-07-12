@@ -82,6 +82,7 @@ const ModalEditBank = ({ editableBank, onClose, cliAdqOptions, setIsSelected, cl
                 const updatedBanks = await loadBanks()
                 setBanksList(updatedBanks)
                 resetValues()
+                onClose()
             } catch (error) {
                 console.error('Error handling submit:', error)
             }

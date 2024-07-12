@@ -66,7 +66,7 @@ const ModalNewBank = ({ onClose, cliAdqOptions, setIsSelected, cliOptions, admOp
         console.log('newBankObject: ', newBankObj);
 
         if (isObjectFullyPopulated(newBankObj)) {
-            console.log('newBankObject: ', newBankObj);
+            console.log('newBankObject: ', newBankObj)
             try {
                 toast.dismiss();
                 await toast.promise(addBank(newBankObj), {
@@ -74,23 +74,24 @@ const ModalNewBank = ({ onClose, cliAdqOptions, setIsSelected, cliOptions, admOp
                     error: 'Erro ao adicionar Taxa',
                 });
 
-                const updatedBanks = await loadBanks();
-                setBanksList(updatedBanks);
-                resetValues();
+                const updatedBanks = await loadBanks()
+                setBanksList(updatedBanks)
+                resetValues()
+                onClose()
             } catch (error) {
-                console.error('Error handling submit:', error);
+                console.error('Error handling submit:', error)
             }
         } else {
-            toast.dismiss();
-            toast.warning('Todos os Campos devem ser preenchidos');
+            toast.dismiss()
+            toast.warning('Todos os Campos devem ser preenchidos')
         }
-    };
+    }
 
     const handleAdmin = (selected) => {
-        Cookies.set('admCode', selected.value);
-        setSelectedAdm(selected);
-        setIsSelected(true);
-    };
+        Cookies.set('admCode', selected.value)
+        setSelectedAdm(selected)
+        setIsSelected(true)
+    }
 
     useEffect(() => {
         setSelectedCliAdm(cliAdqOptions.length > 0 ? cliAdqOptions[0] : { label: 'Sem Estabelecimentos', value: 0 });
