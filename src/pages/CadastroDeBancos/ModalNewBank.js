@@ -63,10 +63,7 @@ const ModalNewBank = ({ onClose, cliAdqOptions, setIsSelected, cliOptions, admOp
             Conta: selectedAccount,
         };
 
-        console.log('newBankObject: ', newBankObj);
-
         if (isObjectFullyPopulated(newBankObj)) {
-            console.log('newBankObject: ', newBankObj)
             try {
                 toast.dismiss();
                 await toast.promise(addBank(newBankObj), {
