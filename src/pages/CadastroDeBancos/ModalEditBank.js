@@ -52,7 +52,6 @@ const ModalEditBank = ({ editableBank, onClose, cliAdqOptions, setIsSelected, cl
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-
         const newBankObj = {
             CodigoEstabelecimento: selectedCliAdm.label,
             CodigoClienteAdquirente: selectedCliAdm.value,
@@ -64,12 +63,18 @@ const ModalEditBank = ({ editableBank, onClose, cliAdqOptions, setIsSelected, cl
             Banco: selectedBank,
             Agencia: selectedAgency,
             Conta: selectedAccount,
+            CodigoBancoCliente:editableBank.codigoBancoCliente
         }
+
+        console.log('Objeto a ser Editado (submit) : ', editableBank)
+
+        console.log('Objeto Atualizado: ', newBankObj)
 
         if (isObjectFullyPopulated(newBankObj)) {
             try {
                 toast.dismiss()
-                await toast.promise(editBank(newBankObj), {
+                    await toast.promise(editBank(newBankObj), {
+                    success: 'Banco Alterado com Sucesso',
                     pending: 'Carregando...',
                     error: 'Erro ao adicionar Taxa',
                 })
@@ -85,11 +90,17 @@ const ModalEditBank = ({ editableBank, onClose, cliAdqOptions, setIsSelected, cl
             toast.warning('Todos os Campos devem ser preenchidos')
         }
     }
+
     const handleAdmin = (selected) => {
         Cookies.set('admCode', selected.value)
         setSelectedAdm(selected)
         setIsSelected(true)
-    };
+        setSelectedCliAdm(cliAdqOptions.length > 0 ? cliAdqOptions[0] : { label: 'Sem Estabelecimentos', value: 0 })
+    }
+
+    useEffect(()=>{
+        console.log('cliAdqOptions: ', cliAdqOptions)
+    },[])
 
     return (
         <div className='modal-bancos modal'>
@@ -220,7 +231,7 @@ const ModalEditBank = ({ editableBank, onClose, cliAdqOptions, setIsSelected, cl
                             onChange={(e) => setSelectedAccount(e.target.value)}
                         />
                     </div>
-                </div>                    
+                </div>                 
                 <div className='group-element-bancos'>
                     <hr className='hr-global'/>
                     <button className='btn-global btn-bancos' disabled={isLoadingBanks}>Aplicar Modificações</button>
