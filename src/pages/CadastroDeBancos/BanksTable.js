@@ -27,12 +27,6 @@ const BanksTable = ({banksList, adminsList, bannersList, productList, onAdd, onE
         return product ? product.descricaoProduto : 'Desconhecido'
     }
 
-    const getSubproductDescription = (subprodCodigo, subproductList) => {
-        console.log('subprodCodigo: ', subprodCodigo, 'subprodList: ', subproductList)
-        const subproduct = subproductList.find(subproduct => subproduct.codigoSubProduto === subprodCodigo)
-        return subproduct ? subproduct.Modalidade.descricaoModalidade : 'Desconhecido'
-    }
-
     useEffect(() => {
         setFilteredItems(banksList); // Initialize with all items
     }, [banksList]);
@@ -62,7 +56,6 @@ const BanksTable = ({banksList, adminsList, bannersList, productList, onAdd, onE
     // Calculate indexes for pagination
     const indexOfLastItem = currentPage * itemsPerPage
     const indexOfFirstItem = indexOfLastItem - itemsPerPage
-    console.log('filteredItems', filteredItems)
     const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem)
     
         const filterItems = () => {

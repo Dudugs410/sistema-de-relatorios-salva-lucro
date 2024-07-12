@@ -148,7 +148,6 @@ const CadastroDeBancos = () => {
     // Update cliAdqOptions when cliAdqList changes
     useEffect(() => {
         if (cliAdqList.length > 0) {
-            console.log('cliAdqList: ', cliAdqList);
             const cliAdqListOptions = cliAdqList.map(sub => ({ value: sub.codigoClienteAdquirente, label: sub.codigoEstabelecimento }));
             setCliAdqOptions(cliAdqListOptions);
         } else {
@@ -158,7 +157,6 @@ const CadastroDeBancos = () => {
 
     useEffect(() => {
         if (subproductList.length > 0) {
-            console.log('subproductList: ', subproductList);
             const subproductListOptions = subproductList.map(sub => ({ value: sub.codigoSubProduto, label: sub.Modalidade.descricaoModalidade }))
             setSubproductOptions(subproductListOptions)
         } else {
@@ -214,7 +212,6 @@ const CadastroDeBancos = () => {
         try {
             const subProducts = await loadSubproducts();
             const subProductName = getSubproductDescription(SUPCODIGO, subProducts);
-            console.log('subProductName: ', subProductName);
             return subProductName;
         } catch (error) {
             console.error('Error fetching subproductList:', error);
@@ -230,8 +227,6 @@ const CadastroDeBancos = () => {
     const [editableBank, setEditableBank] = useState();
     
     const handleEdit = async (object, index) => {
-        //setIsSelected(true);
-        console.log('objeto a ser editado: ', object)
         Cookies.set('admCode', object.ADQCODIGO)
 
         localStorage.setItem('editIndex', index)
@@ -274,8 +269,6 @@ const CadastroDeBancos = () => {
     }
 
     const handleDelete = async (object) => {
-        console.log('objeto a ser deletado: ', object)
-        
         const toBeDeleted = {
             CodigoEstabelecimento: object.CODIGOESTABELECIMENTO,
             CodigoCliente: object.CLICODIGO,
@@ -325,7 +318,6 @@ const CadastroDeBancos = () => {
     }
 
     const getSubproductDescription = (subprodCodigo, subproductList) => {
-        console.log('subprodCodigo: ', subprodCodigo, 'subprodList: ', subproductList)
         const subproduct = subproductList.find(subproduct => subproduct.codigoSubProduto === subprodCodigo)
         return subproduct ? subproduct.Modalidade.descricaoModalidade : 'Desconhecido'
     }
