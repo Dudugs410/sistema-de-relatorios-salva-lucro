@@ -32,7 +32,7 @@ const ModalNewBank = ({ onClose, cliAdqOptions, setIsSelected, cliOptions, admOp
     const [isLoadingBanks, setIsLoadingBanks] = useState(false);
 
     const isObjectFullyPopulated = (obj) => {
-        return obj && Object.values(obj).every(value => value !== null && value !== '' && value.label !== 'Selecione');
+        return obj && Object.values(obj).every(value => value !== null && value !== '' && value.label !== 'Selecione' && value !== 'Sem Estabelecimentos');
     };
 
     const resetValues = () => {
@@ -67,8 +67,8 @@ const ModalNewBank = ({ onClose, cliAdqOptions, setIsSelected, cliOptions, admOp
             try {
                 toast.dismiss();
                 await toast.promise(addBank(newBankObj), {
+                    success: 'Cadastrado com sucesso!',
                     pending: 'Carregando...',
-                    error: 'Erro ao adicionar Taxa',
                 });
 
                 const updatedBanks = await loadBanks()

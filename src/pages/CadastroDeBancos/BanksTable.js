@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { FiEdit, FiTrash, FiPlus, FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward } from 'react-icons/fi'
 
 const BanksTable = ({banksList, adminsList, bannersList, productList, onAdd, onEdit, onDelete}) => {
-
-    console.log('render BanksTable')
     
     //adicionando páginas à tabela:
 

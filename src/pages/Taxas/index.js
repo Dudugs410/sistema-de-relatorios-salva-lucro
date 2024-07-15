@@ -8,6 +8,7 @@ import Select from 'react-select'
 import { FiEdit, FiPlus, FiTrash, FiX } from 'react-icons/fi'
 import { toast } from 'react-toastify'
 import { FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward } from 'react-icons/fi'
+import ConfirmDelete from '../../components/Componente_ConfirmDelete'
 
 const Taxas = () => {
     const location = useLocation()
@@ -131,26 +132,46 @@ const Taxas = () => {
     }
 
     const handleDelete = async (object) => {
-        const toBeDeleted = {
-            CODIGO: object.CODIGO,
-            BADCODIGO: object.BADCODIGO,
-            ADQCODIGO: object.ADQCODIGO,
-            CLICODIGO: object.CLICODIGO,
-            MODCODIGO: object.MODCODIGO,
-            TAXAPERCENTUAL: object.TAXAPERCENTUAL
-        }
+        const onConfirm = async() => {
+            // Perform the delete operation here
 
-        try {
-            toast.dismiss()
-            await toast.promise(deleteTax(toBeDeleted), {
-                pending: 'Carregando...',
-                error: 'Ocorreu um Erro',
-            })
-            setTaxesList(prevTaxesList => prevTaxesList.filter(tax => tax.CODIGO !== object.CODIGO))
-            resetValues()
-        } catch (error) {
-            console.error('Error handling busca:', error)
-        }
+            const toBeDeleted = {
+                CODIGO: object.CODIGO,
+                BADCODIGO: object.BADCODIGO,
+                ADQCODIGO: object.ADQCODIGO,
+                CLICODIGO: object.CLICODIGO,
+                MODCODIGO: object.MODCODIGO,
+                TAXAPERCENTUAL: object.TAXAPERCENTUAL
+            }
+    
+            try {
+                toast.dismiss()
+                await toast.promise(deleteTax(toBeDeleted), {
+                    pending: 'Carregando...',
+                    error: 'Ocorreu um Erro',
+                })
+                setTaxesList(prevTaxesList => prevTaxesList.filter(tax => tax.CODIGO !== object.CODIGO))
+                resetValues()
+            } catch (error) {
+                console.error('Error handling busca:', error)
+            }
+            toast.dismiss();
+        };
+
+        const onCancel = () => {
+            toast.dismiss();
+        };
+
+        toast(
+            <ConfirmDelete onConfirm={onConfirm} onCancel={onCancel} />,
+            {
+                position: "top-center",
+                autoClose: false,
+                closeOnClick: false,
+                closeButton: false,
+                draggable: false,
+            }
+        );
     }
 
     const handleCancel = () => {
@@ -374,7 +395,7 @@ const Taxas = () => {
                 BADCODIGO: selectedBan.value,
                 CLICODIGO: clientCode,
                 MODCODIGO: selectedMod.value,
-                TAXAPERCENTUAL: parseFloat(tax)
+                TAXAPERCENTUAL: parseFloat(tax),
             }
         
             if (isObjectFullyPopulated(newTaxObj)) {
@@ -384,7 +405,6 @@ const Taxas = () => {
                         pending: 'Carregando...',
                         error: 'Erro ao adicionar Taxa',
                     })
-        
                     const updatedTaxes = await loadTaxes()
                     setTaxesList(updatedTaxes)
                     resetValues()
@@ -396,7 +416,7 @@ const Taxas = () => {
                 toast.warning('Todos os Campos devem ser preenchidos')
             }
         }
-    
+
         return (
             <div className={`modal-taxas modal ${isModalOpen ? 'modal-open' : ''}`} style={{ display: isModalOpen ? 'block' : 'none' }}>
                 <div className='header-container-taxa'>

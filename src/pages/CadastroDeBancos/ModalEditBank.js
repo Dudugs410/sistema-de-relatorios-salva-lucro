@@ -35,7 +35,7 @@ const ModalEditBank = ({ editableBank, onClose, cliAdqOptions, setIsSelected, cl
     },[cliAdqOptions])
 
     const isObjectFullyPopulated = (obj) => {
-        return obj && Object.values(obj).every(value => value !== null && value !== 0 && value !== '' && value.label !== 'Selecione')
+        return obj && Object.values(obj).every(value => value !== null && value !== 0 && value !== '' && value.label !== 'Selecione' && value !== 'Sem Estabelecimentos')
     }
 
     const resetValues = () => {
