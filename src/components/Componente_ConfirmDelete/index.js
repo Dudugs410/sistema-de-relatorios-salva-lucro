@@ -7,8 +7,8 @@ const ConfirmDelete = ({ onConfirm, onCancel }) => (
     <div>
         <p>Tem certeza que deseja deletar este item?</p>
         <div className='confirm-delete'>
-            <button onClick={onConfirm} className="btn btn-danger">Yes</button>
-            <button onClick={onCancel} className="btn btn-secondary">No</button>
+            <button onClick={onConfirm} className="btn btn-danger">Sim</button>
+            <button onClick={onCancel} className="btn btn-secondary">Não</button>
         </div>
     </div>
 );
