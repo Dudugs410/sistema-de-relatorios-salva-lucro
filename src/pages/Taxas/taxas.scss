@@ -25,17 +25,18 @@
     border: solid var(--primary-color) 1px !important; 
 }
 
-.fixed-col {
+.sticky-col {
+    position: -webkit-sticky;
     position: sticky;
-    background: var(--background-color); /* Ensure the background matches the table's background */
-    z-index: 1; /* Ensure it stays on top */
+    background: var(--background-color); /* Adjust this as needed */
+    z-index: 1;
 }
 
-.fixed-col:first-child {
+.start-col {
     left: 0;
 }
 
-.fixed-col:last-child {
+.end-col {
     right: 0;
 }
 
@@ -75,7 +76,7 @@
     padding: 60px;
     margin-left: 10%;
     margin-right: 10%;
-    margin-top: 10%;
+    margin-top: 5%;
     z-index: 2;
 }
 

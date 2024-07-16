@@ -160,6 +160,14 @@ const SeletorCliente = () => {
     return [todosOption];
   };
 
+  const customStyles = {
+    menu: (provided) => ({
+      ...provided,
+      zIndex: 9999, // Set your desired z-index value here
+    }),
+    menuPortal: (base) => ({ ...base, zIndex: 9999 }), // If you're using the menuPortal
+  };
+
   return (
     <div className="search-bar-seletor">
       <form className="date-container-seletor p-4">
@@ -168,6 +176,7 @@ const SeletorCliente = () => {
             <div className="select-card-seletor">
               <span>Grupo</span>
               <Select
+                styles={customStyles}
                 options={groupOptions}
                 onChange={handleGroupChange}
                 value={selectedGroup}
@@ -181,6 +190,7 @@ const SeletorCliente = () => {
             <div className="select-card-seletor">
               <span>Cliente</span>
               <Select
+                styles={customStyles}
                 options={clientOptions}
                 placeholder="Selecione o Cliente / Filial"
                 onChange={handleClientChange}

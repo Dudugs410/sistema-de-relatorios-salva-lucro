@@ -9,6 +9,8 @@ import { FiEdit, FiPlus, FiTrash, FiX } from 'react-icons/fi'
 import { toast } from 'react-toastify'
 import { FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward } from 'react-icons/fi'
 import ConfirmDelete from '../../components/Componente_ConfirmDelete'
+import LazyLoader from '../../components/Componente_LazyLoader/index.js'
+import Overlay from '../../components/Component_Overlay/index.js'
 
 const Taxas = () => {
     const location = useLocation()
@@ -131,9 +133,11 @@ const Taxas = () => {
         setEditableTax({})
     }
 
+    const [isOverlayVisible, setOverlayVisible] = useState(false);
+
     const handleDelete = async (object) => {
         const onConfirm = async() => {
-            // Perform the delete operation here
+            setOverlayVisible(false);
 
             const toBeDeleted = {
                 CODIGO: object.CODIGO,
@@ -159,9 +163,11 @@ const Taxas = () => {
         };
 
         const onCancel = () => {
+            setOverlayVisible(false);
             toast.dismiss();
         };
 
+        setOverlayVisible(true);
         toast(
             <ConfirmDelete onConfirm={onConfirm} onCancel={onCancel} />,
             {
@@ -277,7 +283,7 @@ const Taxas = () => {
                 <table className="table table-striped table-hover table-bordered table-bancos det-table-global">
                     <thead>
                         <tr className='det-tr-top-global'>
-                            <th className='det-th-global' scope="col" style={{ width: '2%', textAlign: 'center' }}>
+                            <th className='det-th-global sticky-col start-col' scope="col" style={{ width: '2%', textAlign: 'center' }}>
                                 <button className="btn btn-primary btn-global" style={{ width: '100%' }} onClick={() => { setIsModalOpen(true) }}>
                                     <FiPlus size={25} className="icon" />
                                 </button>
@@ -287,14 +293,14 @@ const Taxas = () => {
                             <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Modalidade</th>
                             <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Tipo Taxa</th>
                             <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>% Taxa</th>
-                            <th className='det-th-global' scope="col" style={{ width: '2%', textAlign: 'center' }}></th>
+                            <th className='det-th-global sticky-col end-col' scope="col" style={{ width: '2%', textAlign: 'center' }}></th>
                         </tr>
                     </thead>
                     <tbody>
                         {currentItems.length > 0 &&
                             currentItems.map((object, index) => (
                                 <tr key={index} className="det-tr-global tr-taxas">
-                                    <th scope="row" style={{ textAlign: 'center' }} onClick={() => { handleEdit(object) }}>
+                                    <th className='sticky-col start-col' scope="row" style={{ textAlign: 'center' }} onClick={() => { handleEdit(object) }}>
                                         <FiEdit className="icon" />
                                     </th>
                                     <td className="det-td-vendas-global" data-label="BADDESCRICAO">{object.BADDESCRICAO}</td>
@@ -302,7 +308,7 @@ const Taxas = () => {
                                     <td className="det-td-vendas-global" data-label="MODDESCRICAO">{object.MODDESCRICAO}</td>
                                     <td className="det-td-vendas-global" data-label="TIPOTAXA">{object.TIPOTAXA}</td>
                                     <td className="det-td-vendas-global" data-label="TAXAPERCENTUAL">{object.TAXAPERCENTUAL} %</td>
-                                    <th scope="row" style={{ textAlign: 'center' }} onClick={() => handleDelete(object)}>
+                                    <th className='sticky-col end-col' scope="row" style={{ textAlign: 'center' }} onClick={() => handleDelete(object)}>
                                         <FiTrash className="icon" />
                                     </th>
                                 </tr>
@@ -657,6 +663,7 @@ const Taxas = () => {
     
     return (
         <div className='appPage'>
+            <Overlay isVisible={isOverlayVisible}/>
             <div className='page-background-global'>
                 <div className='page-content-global'>
                     <div className='page-content-taxas'>
@@ -671,7 +678,7 @@ const Taxas = () => {
                                 <hr className='hr-global'/>
                             </div>
                             }
-                            { ((taxesList && taxesList.length === 0) && (clientCode !== ('todos' || undefined))) && 
+                            { ((taxesList && taxesList.length === 0) && (clientCode !== ('todos' || undefined)) && (isLoadingTaxes === false)) && 
                             <>  
                                 <span className='subtitle'>Sem Taxas Cadastradas</span>
                                 <br/> 
@@ -679,14 +686,20 @@ const Taxas = () => {
                             </>
                             }
                             {
-                                clientCode === ('todos' || undefined) ?
+                                (clientCode === ('todos' || undefined) && (isLoadingTaxes === false)) ?
                                     <span className='subtitle'>Selecione um cliente para exibir suas taxas cadastradas</span>
                                     : 
                                     <></>
                             }
                         </div>
                     </div>
-                    { taxesList.length > 0 ? <TaxesTable /> : <></>}
+                    {
+                        isLoadingTaxes ? 
+                            <LazyLoader /> 
+                            : ( taxesList && taxesList.length > 0 ?  
+                                <TaxesTable />
+                            : <></> )
+                    }
                     <div className='modal-container' style={{ display: (isModalOpen || isModalEditOpen) ? 'block' : 'none' }}>
                         <ModalNewTax />
                         <ModalEditTax />

@@ -92,7 +92,7 @@ const BanksTable = ({banksList, adminsList, bannersList, productList, onAdd, onE
                     <table className="table table-striped table-hover table-bordered table-bancos det-table-global">
                         <thead>
                             <tr className='det-tr-top-global'>
-                                <th className='det-th-global' scope="col" style={{ width: '2%', textAlign: 'center' }}>
+                                <th className='det-th-global sticky-col start-col' scope="col" style={{ width: '2%', textAlign: 'center' }}>
                                     <button className="btn btn-primary btn-global" style={{ width: '100%' }} onClick={onAdd}>
                                         <FiPlus size={25} className="icon" />
                                     </button>
@@ -108,14 +108,14 @@ const BanksTable = ({banksList, adminsList, bannersList, productList, onAdd, onE
                                 <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Cod Cli</th>
                                 <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Cod Cli Adq</th>
                                 <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>ID</th>
-                                <th className='det-th-global' scope="col" style={{ width: '2%', textAlign: 'center' }}></th>
+                                <th className='det-th-global sticky-col end-col' scope="col" style={{ width: '2%', textAlign: 'center' }}></th>
                             </tr>
                         </thead>
                         <tbody>
                             {currentItems.length > 0 &&
                                 currentItems.map((object, index) => (
                                     <tr key={index} className="det-tr-global tr-bancos">
-                                        <th scope="row" style={{ textAlign: 'center' }} onClick={() => { onEdit(object, index) }}>
+                                        <th className='sticky-col start-col' scope="row" style={{ textAlign: 'center' }} onClick={() => { onEdit(object, index) }}>
                                             <FiEdit className="icon" />
                                         </th>
                                         <td className="det-td-vendas-global" data-label="banco">{object.BANCO}</td>
@@ -129,7 +129,7 @@ const BanksTable = ({banksList, adminsList, bannersList, productList, onAdd, onE
                                         <td className="det-td-vendas-global" data-label="codigoCliente">{object.CLICODIGO}</td>
                                         <td className="det-td-vendas-global" data-label="codigoClienteAdquirente">{object.CLDCODIGO}</td>
                                         <td className="det-td-vendas-global" data-label="ID">{object.CODIGO}</td>
-                                        <th scope="row" style={{ textAlign: 'center' }} onClick={() => onDelete(object)}>
+                                        <th className='sticky-col end-col' scope="row" style={{ textAlign: 'center' }} onClick={() => onDelete(object)}>
                                             <FiTrash className="icon" />
                                         </th>
                                     </tr>
