@@ -1,6 +1,6 @@
 @import '../../styles/variables.scss';
 
-.lazy-loader{
+.lazy-loader-modal{
     position: fixed;
     top: 0;
     left: 0;
@@ -17,14 +17,14 @@
 
 }
 
-.lazy-loading-container {
+.lazy-loading-container-modal {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100px; /* Adjust height as needed */
   }
   
-  .lazy-loading-animation {
+  .lazy-loading-animation-modal {
     display: flex;
     align-items: center;
     padding: 20px;
@@ -33,7 +33,7 @@
     
   }
   
-  .lazy-loading-spinner {
+  .lazy-loading-spinner-modal {
     border: 4px solid transparent;
     border-radius: 50%;
     width: 40px;
@@ -46,7 +46,7 @@
 
 
   @media screen and (max-width: 869px){
-    .lazy-loader{
+    .lazy-loader-modal{
       border-radius: 0px;
     }
   }
@@ -56,18 +56,18 @@
     100% { transform: rotate(360deg); }
   }
   
-  .lazy-loading-text {
+  .lazy-loading-text-modal {
     font-size: 18px;
     color: #555;
     transition: all 0.3s ease-in-out; /* Smooth transition */
   }
   
-  .lazy-loading-container:hover .lazy-loading-spinner {
+  .lazy-loading-container-modal:hover .lazy-loading-spinner {
     width: 60px;
     height: 60px;
   }
   
-  .lazy-loading-container:hover .lazy-loading-text {
+  .lazy-loading-container-modal:hover .lazy-loading-text {
     font-size: 20px;
   }
   

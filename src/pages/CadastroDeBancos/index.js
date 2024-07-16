@@ -7,6 +7,8 @@ import './cadastroDeBancos.scss'
 import { FiPlus } from 'react-icons/fi'
 import { toast } from 'react-toastify'
 import ConfirmDelete from '../../components/Componente_ConfirmDelete'
+import LazyLoader from '../../components/Componente_LazyLoader/index.js'
+import Overlay from '../../components/Component_Overlay/index.js'
 
 import BanksTable from './BanksTable'
 import ModalNewBank from './ModalNewBank'
@@ -23,6 +25,7 @@ const CadastroDeBancos = () => {
         loadMods,
         loadCliAdq,
         loadBanks,
+        isLoadingBanks,
         addBank,
         editBank,
         deleteBank,
@@ -266,53 +269,58 @@ const CadastroDeBancos = () => {
         setIsModalEditOpen(false)
     }
 
+    const [isOverlayVisible, setOverlayVisible] = useState(false);
+
     const handleDelete = async (object) => {
-        const onConfirm = async () => {
-            // Perform the delete operation here
-            const toBeDeleted = {
-                CodigoEstabelecimento: object.CODIGOESTABELECIMENTO,
-                CodigoCliente: object.CLICODIGO,
-                CodigoClienteAdquirente: object.CLDCODIGO,
-                Bandeira: object.BADCODIGO,
-                Adquirente: object.ADQCODIGO,
-                Produto: object.PROCODIGO,
-                Subproduto: object.SUPCODIGO,
-                Banco: object.BANCO,
-                Agencia: object.AGENCIA,
-                Conta: object.CONTA,
-                CodigoBancoCliente: object.CODIGO,
-            }
-        
-            try {
-                toast.dismiss()
-                await toast.promise(deleteBank(toBeDeleted), {
-                    pending: 'Carregando...',
-                    error: 'Ocorreu um Erro',
-                })
-                // Optimistically update state
-                setBanksList(prevBanksList => prevBanksList.filter(bank => bank.CODIGO !== object.CODIGO))
-                handleCancel()
-            } catch (error) {
-                console.error('Error handling delete:', error)
-            }
-            toast.dismiss();
+      const onConfirm = async () => {
+        setOverlayVisible(false);
+        // Perform the delete operation here
+        const toBeDeleted = {
+          CodigoEstabelecimento: object.CODIGOESTABELECIMENTO,
+          CodigoCliente: object.CLICODIGO,
+          CodigoClienteAdquirente: object.CLDCODIGO,
+          Bandeira: object.BADCODIGO,
+          Adquirente: object.ADQCODIGO,
+          Produto: object.PROCODIGO,
+          Subproduto: object.SUPCODIGO,
+          Banco: object.BANCO,
+          Agencia: object.AGENCIA,
+          Conta: object.CONTA,
+          CodigoBancoCliente: object.CODIGO,
         };
-
-        const onCancel = () => {
-            toast.dismiss();
-        };
-
-        toast(
-            <ConfirmDelete onConfirm={onConfirm} onCancel={onCancel} />,
-            {
-                position: "top-center",
-                autoClose: false,
-                closeOnClick: false,
-                closeButton: false,
-                draggable: false,
-            }
-        );
-    }
+  
+        try {
+          toast.dismiss();
+          await toast.promise(deleteBank(toBeDeleted), {
+            pending: 'Carregando...',
+            error: 'Ocorreu um Erro',
+          });
+          // Optimistically update state
+          setBanksList(prevBanksList => prevBanksList.filter(bank => bank.CODIGO !== object.CODIGO));
+          handleCancel();
+        } catch (error) {
+          console.error('Error handling delete:', error);
+        }
+        toast.dismiss();
+      };
+  
+      const onCancel = () => {
+        setOverlayVisible(false);
+        toast.dismiss();
+      };
+  
+      setOverlayVisible(true);
+      toast(
+        <ConfirmDelete onConfirm={onConfirm} onCancel={onCancel} />,
+        {
+          position: "top-center",
+          autoClose: false,
+          closeOnClick: false,
+          closeButton: false,
+          draggable: false,
+        }
+      );
+    };
 
     const handleCancel = () => {
         resetValues()
@@ -346,6 +354,7 @@ const CadastroDeBancos = () => {
 
     return (
         <div className='appPage'>
+            <Overlay isVisible={isOverlayVisible} />
             {isLoading && (
                 <ModalLoading />)}
                     <div className='page-background-global'>
@@ -362,7 +371,7 @@ const CadastroDeBancos = () => {
                                             <hr className='hr-global'/>
                                         </div>
                                     }
-                                    { ((banksList && banksList.length === 0) && (clientCode !== ('todos' || undefined))) && 
+                                    { ((banksList && banksList.length === 0) && (clientCode !== ('todos' || undefined)) && (isLoadingBanks === false)) && 
                                         <>
                                             <span className='subtitle'>Sem Bancos Cadastrados</span>
                                             <br/>
@@ -377,7 +386,21 @@ const CadastroDeBancos = () => {
                                     }
                                 </div> 
                             </div>
-                            { banksList && banksList.length > 0 ? <BanksTable banksList={banksList} adminsList={adminsList} bannersList={bannersList} productList={productList} onAdd={handleAdd} onEdit={handleEdit} onDelete={handleDelete}/> : <></>}
+                            {
+                                isLoadingBanks ? 
+                                    <LazyLoader /> 
+                                    : ( banksList && banksList.length > 0 ?  
+                                        <BanksTable 
+                                            banksList={banksList} 
+                                            adminsList={adminsList} 
+                                            bannersList={bannersList} 
+                                            productList={productList} 
+                                            onAdd={handleAdd} 
+                                            onEdit={handleEdit} 
+                                            onDelete={handleDelete} 
+                                        />
+                                    : <></> )
+                                }
                             <div className='modal-container' style={{ display: (isModalOpen || isModalEditOpen) ? 'block' : 'none' }}>
                                 {isModalOpen && (
                                     <ModalNewBank
