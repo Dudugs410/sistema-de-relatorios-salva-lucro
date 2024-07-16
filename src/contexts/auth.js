@@ -282,68 +282,71 @@ function AuthProvider({ children }){
 		}
 		// retorna Objeto de Taxas
 		const loadTaxes = async () => {
+			setIsLoadingTaxes(true)
 			try {
 				const apiClientCode = Cookies.get('clientCode');
 				if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
 					let params = {
 						codigo: apiClientCode
-					};
+					}
 		
 					let config = {
 						params: params
-					};
+					}
 		
-					const response = await api.get('taxas', config);
-					return response.data;
+					const response = await api.get('taxas', config)
+					return response.data
 				} else {
-					console.log('Invalid client code:', apiClientCode);
-					return [];
+					console.log('Invalid client code:', apiClientCode)
+					return []
 				}
 			} catch (error) {
-				console.error('Error fetching taxas:', error);
+				console.error('Error fetching taxas:', error)
 				if (error.response.status === 401) {
 					logout()
 					alert('Sessão expirada. Faça login novamente.')
 					return
 				}
-				return [];
+				return []
+			} finally {
+				setIsLoadingTaxes(false)
 			}
-		};
+		}
 		
 		//Adiciona nova Taxa
 		const addTax = async (tax) => {
-			setIsLoadingTaxes(true);
+			setIsLoadingTaxes(true)
 			try {
-				const apiClientCode = Cookies.get('clientCode');
+				const apiClientCode = Cookies.get('clientCode')
 				if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
-					let body = tax;
-					const response = await api.post('taxas', body);
-					console.log('response:', response);
+					let body = tax
+					const response = await api.post('taxas', body)
+					console.log('response:', response)
 				} else {
-					console.log('Invalid client code:', apiClientCode);
+					console.log('Invalid client code:', apiClientCode)
 				}
 			} catch (error) {
-				console.error('Error adding tax:', error);
+				console.error('Error adding tax:', error)
 				if (error.response.status === 401) {
 					logout()
 					alert('Sessão expirada. Faça login novamente.')
 					return
 				}
 			} finally {
-				setIsLoadingTaxes(false);
+				setIsLoadingTaxes(false)
 			}
-		};
+		}
 
 		//Edita Taxa
 
 		const editTax = async (tax) => {
-			setIsLoadingTaxes(true);
-			console.log('editTax: ', tax);
+			setIsLoadingTaxes(true)
+			console.log('editTax: ', tax)
 		  
 			try {
 			  const apiClientCode = tax.CLICODIGO;
 			  if (apiClientCode !== 'todos' && apiClientCode !== 'TODOS' && apiClientCode !== undefined) {
-				let body = JSON.stringify(tax);
+				let body = JSON.stringify(tax)
 		  
 				const response = await fetch('https://app.salvalucro.com.br/api/v1/taxas', {
 				  method: 'PUT',
@@ -354,23 +357,23 @@ function AuthProvider({ children }){
 				  body: body,
 				});
 		  
-				const responseData = await response.json();
-				console.log('response: ', responseData);
+				const responseData = await response.json()
+				console.log('response: ', responseData)
 		  
 				if (response.ok) {
 					toast.dismiss()
-				  	toast.success('Taxa alterada com sucesso!');
+				  	toast.success('Taxa alterada com sucesso!')
 				} else {
 					toast.dismiss()
-				  	toast.error('Erro ao alterar taxa!');
+				  	toast.error('Erro ao alterar taxa!')
 				}
 			  } else {
 				return [];
 			  }
 			} catch (error) {
-			  console.error('Error updating tax:', error);
+			  console.error('Error updating tax:', error)
 			  toast.dismiss()
-			  toast.error('Erro ao alterar taxa!');
+			  toast.error('Erro ao alterar taxa!')
 			  if (error.response.status === 401) {
 				logout()
 				alert('Sessão expirada. Faça login novamente.')
@@ -385,8 +388,8 @@ function AuthProvider({ children }){
 		//Deleta Taxa
 
 		const deleteTax = async (tax) => {
-			setIsLoadingTaxes(true);
-			console.log(tax);
+			setIsLoadingTaxes(true)
+			console.log(tax)
 			try {
 				const apiClientCode = Cookies.get('clientCode');
 				if(apiClientCode !== 'todos' && apiClientCode !== 'TODOS' && apiClientCode !== undefined) {
@@ -398,30 +401,30 @@ function AuthProvider({ children }){
 						data: body
 					})
 					.then(response => {
-						console.log('response: ', response);
+						console.log('response: ', response)
 						toast.dismiss()
-						toast.success('Taxa deletada com sucesso!');
+						toast.success('Taxa deletada com sucesso!')
 					})
 					.catch(error => {
-						console.log('error: ', error);
+						console.log('error: ', error)
 						toast.dismiss()
-						toast.error('Erro ao deletar taxa!');
+						toast.error('Erro ao deletar taxa!')
 					});
 				} else {
 					return [];
 				}
-				setIsLoadingTaxes(false);
+				setIsLoadingTaxes(false)
 			} catch (error) {
-				console.error('Error fetching vendas:', error);
-				setIsLoadingTaxes(false);
+				console.error('Error fetching vendas:', error)
+				setIsLoadingTaxes(false)
 				if (error.response.status === 401) {
 					logout()
 					alert('Sessão expirada. Faça login novamente.')
 					return
 				}
-				return;
+				return
 			}
-		};
+		}
 
 		//Bancos
 
@@ -431,6 +434,7 @@ function AuthProvider({ children }){
 
 		// retorna array de bancos
 		const loadBanks = async () => {
+			setIsLoadingBanks(true)
 			try {
 				const apiClientCode = Cookies.get('clientCode');
 				if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
@@ -456,6 +460,8 @@ function AuthProvider({ children }){
 					return
 				}
 				return [];
+			} finally {
+				setIsLoadingBanks(false)
 			}
 		}
 

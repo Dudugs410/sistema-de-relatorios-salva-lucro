@@ -9,6 +9,8 @@ import { FiEdit, FiPlus, FiTrash, FiX } from 'react-icons/fi'
 import { toast } from 'react-toastify'
 import { FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward } from 'react-icons/fi'
 import ConfirmDelete from '../../components/Componente_ConfirmDelete'
+import LazyLoader from '../../components/Componente_LazyLoader/index.js'
+import Overlay from '../../components/Component_Overlay/index.js'
 
 const Taxas = () => {
     const location = useLocation()
@@ -131,9 +133,11 @@ const Taxas = () => {
         setEditableTax({})
     }
 
+    const [isOverlayVisible, setOverlayVisible] = useState(false);
+
     const handleDelete = async (object) => {
         const onConfirm = async() => {
-            // Perform the delete operation here
+            setOverlayVisible(false);
 
             const toBeDeleted = {
                 CODIGO: object.CODIGO,
@@ -159,9 +163,11 @@ const Taxas = () => {
         };
 
         const onCancel = () => {
+            setOverlayVisible(false);
             toast.dismiss();
         };
 
+        setOverlayVisible(true);
         toast(
             <ConfirmDelete onConfirm={onConfirm} onCancel={onCancel} />,
             {
@@ -657,6 +663,7 @@ const Taxas = () => {
     
     return (
         <div className='appPage'>
+            <Overlay isVisible={isOverlayVisible}/>
             <div className='page-background-global'>
                 <div className='page-content-global'>
                     <div className='page-content-taxas'>
@@ -671,7 +678,7 @@ const Taxas = () => {
                                 <hr className='hr-global'/>
                             </div>
                             }
-                            { ((taxesList && taxesList.length === 0) && (clientCode !== ('todos' || undefined))) && 
+                            { ((taxesList && taxesList.length === 0) && (clientCode !== ('todos' || undefined)) && (isLoadingTaxes === false)) && 
                             <>  
                                 <span className='subtitle'>Sem Taxas Cadastradas</span>
                                 <br/> 
@@ -679,14 +686,20 @@ const Taxas = () => {
                             </>
                             }
                             {
-                                clientCode === ('todos' || undefined) ?
+                                (clientCode === ('todos' || undefined) && (isLoadingTaxes === false)) ?
                                     <span className='subtitle'>Selecione um cliente para exibir suas taxas cadastradas</span>
                                     : 
                                     <></>
                             }
                         </div>
                     </div>
-                    { taxesList.length > 0 ? <TaxesTable /> : <></>}
+                    {
+                        isLoadingTaxes ? 
+                            <LazyLoader /> 
+                            : ( taxesList && taxesList.length > 0 ?  
+                                <TaxesTable />
+                            : <></> )
+                    }
                     <div className='modal-container' style={{ display: (isModalOpen || isModalEditOpen) ? 'block' : 'none' }}>
                         <ModalNewTax />
                         <ModalEditTax />
