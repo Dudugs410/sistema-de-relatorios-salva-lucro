@@ -1,27 +1,41 @@
-.table-taxas{
-    overflow-x: scroll;
-}
-
-.page-content-taxas{
+/* Apply the scrollbar-gutter property to the page content */
+.page-content-taxas {
     display: flex;
     flex-direction: column;
     width: 100%;
     align-content: center;
-
+    scrollbar-gutter: stable both-edges; /* Reserve space for the scrollbar */
 }
 
-.form-taxas{
+.table-taxas {
+    overflow-x: auto; /* Use 'auto' instead of 'scroll' */
+}
+
+.table-wrapper-taxes {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: auto;
+    width: 100%; /* Ensure it takes up the full width */
+    flex-direction: column;
+}
+
+/* Ensure the table fits within the container */
+.table-taxas table {
+    width: 100%;
+    table-layout: auto !important; /* Ensure the table layout is fixed to prevent overflow */
+}
+
+/* Other styles */
+.form-taxas {
     width: 100%;
     display: flex;
-    /* display: grid; */
-    justify-items: center;
     flex-direction: column;
     align-items: center;
     padding: 0;
     z-index: 1;
 }
 
-.tr-taxas{
+.tr-taxas {
     border: solid var(--primary-color) 1px !important; 
 }
 
@@ -40,18 +54,18 @@
     right: 0;
 }
 
-.btn-taxas{
+.btn-taxas {
     min-width: 191px;
 }
 
-.modal-new-tax-container{
+.modal-new-tax-container {
     display: flex;
     width: 100%;
     justify-content: center;
     z-index: 2;
 }
 
-.modal-container{
+.modal-container {
     position: fixed;
     top: 0;
     left: 0;
@@ -65,7 +79,7 @@
     z-index: 2;
 }
 
-.modal-taxas{
+.modal-taxas {
     display: flex;
     flex-direction: column;
     width: 80%;
@@ -80,23 +94,14 @@
     z-index: 2;
 }
 
-.table-wrapper-taxes{
-    display: flex;
-    overflow-x: scroll;
-    width: -webkit-fill-available;
-    flex-direction: column;
-}
-
 .custom-select .react-select__control {
     background-color: red !important; /* Background color of the control */
     color: green !important; /* Text color of the control */
-    /* Add more styles as needed */
 }
 
 .custom-select .react-select__menu {
     background-color: purple !important; /* Background color of the dropdown menu */
     color: yellow !important; /* Text color of the dropdown menu */
-    /* Add more styles as needed */
 }
 
 .form-group-taxas {
@@ -104,19 +109,19 @@
     flex-wrap: wrap;
     gap: 20px;
     margin-bottom: 20px;
-  }
+}
   
-  .group-element-taxas {
+.group-element-taxas {
     flex: 1;
     min-width: 200px; /* Adjust as needed */
-  }
-
-  .group-input-taxa{
+}
+  
+.group-input-taxa {
     display: flex;
     flex-direction: column;
     width: 48%;
-  }
-
-  .header-container-taxa{
+}
+  
+.header-container-taxa {
     display: flex;
-  }
+}
