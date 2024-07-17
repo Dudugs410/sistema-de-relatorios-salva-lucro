@@ -232,8 +232,12 @@ function AuthProvider({ children }){
 			} catch (error) {
 				setBtnDisabledCredits(false)
 				console.error('Error fetching credits:', error)
-				setErrorCredits(true)
+				if(error.response.status === 401){
+					logout()
+				}
 				return []
+			} finally{
+				setErrorCredits(true)
 			}
 		}
 		// retorna array de serviços/ajustes
@@ -1181,11 +1185,6 @@ function AuthProvider({ children }){
 				})
 			} catch (error) {
 				console.log('Erro: ', error)
-				if (error.response.status === 401) {
-					logout()
-					alert('Sessão expirada. Faça login novamente.')
-					return
-				}
 			}
 		}
 
