@@ -642,6 +642,21 @@
         transition: all, 0.4s;
     }
   }
+
+  @media only screen and (max-width: 360px) {
+        .toggle-container{
+            //border: solid red 1px;
+            display: inline-flex;
+            align-items: center;
+            /* padding: 0 5px 0 5px; */
+            flex-direction: row;
+            /* width: 100%; */
+            justify-content: flex-end;
+            /* position: absolute; */
+            left: 20px;
+        }
+
+    }
   
 
 
