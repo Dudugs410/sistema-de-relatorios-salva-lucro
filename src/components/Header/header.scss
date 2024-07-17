@@ -605,44 +605,71 @@
     }
 }
 
-@media only screen and (max-width: 517px) {
-    .navbar-nav{
-        display: none;
+    @media only screen and (max-width: 517px) {
+        .navbar-nav{
+            display: none;
+        }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            padding: 0 5px 0 5px;
+            flex-direction: row;
+            width: 100%;
+            justify-content: flex-end;
+            position: relative;
+            left: 50px;
+        }
+
+        /* esconde texto do navbar em telas pequenas*/
+        .li-btn-text{
+            display: none;
+        }
+
+        .relatorios-child .li-btn-text {
+            display: inline; // Display Relatórios children text
+        }
+
+        .li-button-content{
+            color: white;
+            background-color: var(--primary-color);
+
+        }
+        
+        .li-button-content:hover{
+            color: var(--primary-color);
+            background-color: var(--secondary-color);
+            transition: all, 0.4s;
+        }
     }
 
-    .toggle-container {
-        display: flex;
-        align-items: center;
-        padding: 0 5px 0 5px;
-        flex-direction: row;
-        width: 100%;
-        justify-content: flex-end;
-        position: relative;
-        left: 50px;
+    @media only screen and (max-width: 360px) {
+        .toggle-container{
+            //border: solid red 1px;
+            display: inline-flex;
+            align-items: center;
+            /* padding: 0 5px 0 5px; */
+            flex-direction: row;
+            /* width: 100%; */
+            justify-content: flex-end;
+            /* position: absolute; */
+            left: 20px;
+        }
     }
-
-    /* esconde texto do navbar em telas pequenas*/
-    .li-btn-text{
-        display: none;
-    }
-
-    .relatorios-child .li-btn-text {
-        display: inline; // Display Relatórios children text
-    }
-
-    .li-button-content{
-        color: white;
-        background-color: var(--primary-color);
-
-    }
-    
-    .li-button-content:hover{
-        color: var(--primary-color);
-        background-color: var(--secondary-color);
-        transition: all, 0.4s;
-    }
-  }
   
+    @media only screen and (max-width: 412px) {
+        .toggle-container{
+            //border: solid red 1px;
+            display: inline-flex;
+            align-items: center;
+            /* padding: 0 5px 0 5px; */
+            flex-direction: row;
+            /* width: 100%; */
+            justify-content: flex-end;
+            /* position: absolute; */
+            left: 20px;
+        }
+    }
 
 
 

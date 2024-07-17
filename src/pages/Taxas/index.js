@@ -668,7 +668,7 @@ const Taxas = () => {
                 <div className='page-content-global'>
                     <div className='page-content-taxas'>
                         <div className='title-container-global'>
-                            <h1 className='title-global'>Taxas</h1>
+                            <h1 className='title-global'>Cadastramento de Taxas</h1>
                         </div>
                         <hr className='hr-global'/>
                         <div className='container-global' style={{margin: '0', flexDirection: 'column', alignItems: 'center'}}>

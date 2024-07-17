@@ -118,3 +118,20 @@
   .header-container-bancos{
     display: flex;
   }
+
+@media only screen and (max-width: 360px) {
+    .modal-bancos{
+        display: flex;
+        flex-direction: column;
+        width: 80%;
+        height: 90%;
+        border-radius: 20px;
+        border: solid var(--secondary-color) 2px;
+        background-color: var(--background-color);
+        padding: 20px;
+        margin-left: 10%;
+        margin-right: 10%;
+        margin-top: 5%;
+        z-index: 2;
+    }
+}

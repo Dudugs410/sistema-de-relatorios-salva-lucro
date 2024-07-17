@@ -1,13 +1,13 @@
-import { Link, Navigate, useNavigate } from "react-router-dom";
-import { FiMoon, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText, FiClipboard, FiDownload, FiCalendar, FiList, FiPaperclip, FiSettings, FiTruck, FiShoppingBag, FiMenu, FiSidebar, FiTable, FiLink } from "react-icons/fi";
-import { AuthContext } from "../../contexts/auth";
-import React, { useContext, useEffect, useRef, useState } from "react";
-import salvaLucroLogoBranco from '../../assets/LogoTopo.png';
-import './header.scss';
-import '../../index.scss';
-import Cookies from "js-cookie";
-import Relogio from "../Componente_Relogio";
-import SideBar from "../Componente_SideBar";
+import { Link, Navigate, useNavigate } from "react-router-dom"
+import { FiMoon, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText, FiClipboard, FiDownload, FiCalendar, FiPaperclip, FiSettings, FiTruck, FiShoppingBag, FiTable, FiLink } from "react-icons/fi"
+import { AuthContext } from "../../contexts/auth"
+import React, { useContext, useEffect, useState } from "react"
+import salvaLucroLogoBranco from '../../assets/LogoTopo.png'
+import './header.scss'
+import '../../index.scss'
+import Cookies from "js-cookie"
+import Relogio from "../Componente_Relogio"
+import SideBar from "../Componente_SideBar"
 
 const Header = () => {
     const { logout, isCheckedCalendar, setIsCheckedCalendar } = useContext(AuthContext)
@@ -17,58 +17,55 @@ const Header = () => {
     const [showRelatoriosDropdown, setShowRelatoriosDropdown] = useState(false)
     const [showExportacoesDropdown, setShowExportacoesDropdown] = useState(false)
 
-    // const usada para setar as opções de navagação as quais o usuario logado terá acesso
-    const [clientOptions, setClientOptions] = useState([])
-
     const handleCheckboxChangeCalendar = () => {
 		setIsCheckedCalendar(!isCheckedCalendar); // Toggle the state
 	  };
   
 	  useEffect(()=>{
         if (localStorage.getItem('localUsers') !== null) {
-            let localUsersTemp = JSON.parse(localStorage.getItem('localUsers'));
+            let localUsersTemp = JSON.parse(localStorage.getItem('localUsers'))
             localUsersTemp.map(user => {
                 if (user.id === Cookies.get('userID')) {
-                    user.calendar = isCheckedCalendar;
+                    user.calendar = isCheckedCalendar
                 }
             });
-            localStorage.setItem('localUsers', JSON.stringify(localUsersTemp));
+            localStorage.setItem('localUsers', JSON.stringify(localUsersTemp))
         } else {
-            let localUsersTemp = [];
-            let userTemp = { id: Cookies.get('userID'), calendar: isCheckedCalendar };
-            localUsersTemp.push(userTemp);
-            localStorage.setItem('localUsers', JSON.stringify(localUsersTemp));
+            let localUsersTemp = []
+            let userTemp = { id: Cookies.get('userID'), calendar: isCheckedCalendar }
+            localUsersTemp.push(userTemp)
+            localStorage.setItem('localUsers', JSON.stringify(localUsersTemp))
         }
 	  },[isCheckedCalendar])
 
     const handleCheckboxChange = () => {
-        const updatedChecked = !isChecked;
-        setIsChecked(updatedChecked);
-        localStorage.setItem('isChecked', updatedChecked);
+        const updatedChecked = !isChecked
+        setIsChecked(updatedChecked)
+        localStorage.setItem('isChecked', updatedChecked)
       
         if (localStorage.getItem('localUsers') !== null) {
-            let localUsersTemp = JSON.parse(localStorage.getItem('localUsers'));
+            let localUsersTemp = JSON.parse(localStorage.getItem('localUsers'))
             localUsersTemp.map(user => {
                 if (user.id === Cookies.get('userID')) {
                     user.theme = updatedChecked;
                 }
             });
-            localStorage.setItem('localUsers', JSON.stringify(localUsersTemp));
+            localStorage.setItem('localUsers', JSON.stringify(localUsersTemp))
         } else {
-            let localUsersTemp = [];
-            let userTemp = { id: Cookies.get('userID'), theme: updatedChecked };
-            localUsersTemp.push(userTemp);
-            localStorage.setItem('localUsers', JSON.stringify(localUsersTemp));
+            let localUsersTemp = []
+            let userTemp = { id: Cookies.get('userID'), theme: updatedChecked }
+            localUsersTemp.push(userTemp)
+            localStorage.setItem('localUsers', JSON.stringify(localUsersTemp))
         }
     }
 
     useEffect(() => {
-        setIsChecked(JSON.parse(localStorage.getItem('isChecked')));
-    }, []);
+        setIsChecked(JSON.parse(localStorage.getItem('isChecked')))
+    }, [])
 
     useEffect(()=>{
                 // atualiza _variables.scss com as propriedades do tema selecionado
-                const root = document.documentElement;
+                const root = document.documentElement
                 if (isChecked) {
                   root.style.setProperty('--primary-color', 'var(--primary-color-dark)')
                   root.style.setProperty('--secondary-color', 'var(--secondary-color-dark)')
@@ -133,8 +130,11 @@ const Header = () => {
             { nome: 'Vendas', icone: icones['FiDollarSign'], rota: '/vendas' },
             { nome: 'Créditos', icone: icones['FiCreditCard'], rota: '/creditos' },
             { nome: 'Serviços', icone: icones['FiTool'], rota: '/servicos' },
-            { nome: 'Cadastro de Bancos', icone: icones['FiLink'], rota: '/cadastrodebancos' },
-            { nome: 'Relatórios', icone: icones['FiFileText'], children: [
+            { nome: 'Bancos', icone: icones['FiLink'], rota: '/cadastrodebancos' },
+            { nome: 'Taxas', icone: icones['FiTable'], rota: '/taxas'},
+        ];
+
+        {/*             { nome: 'Relatórios', icone: icones['FiFileText'], children: [
                 { nome: 'Financeiro', rota: '/financeiro' },
                 { nome: 'Gerenciais', rota: '/gerenciais' },
                 { nome: 'Outros', rota: '/outrosrelatorios'},
@@ -144,42 +144,39 @@ const Header = () => {
                 { nome: 'Meta', rota: '/meta' },
                 { nome: 'Meta Sapiranga', rota: '/metasapiranga' },
             ]},
-            { nome: 'Administração', icone: icones['FiPaperClip'], rota: '/administracao'},
+           { nome: 'Administração', icone: icones['FiPaperClip'], rota: '/administracao'},
             { nome: 'Suporte', icone: icones['FiSettings'], rota: '/suporte'},
             { nome: 'Delivery', icone: icones['FiTruck'], rota: '/vendasdelivery'},
-            { nome: 'Conciliacao', icone: icones['FiShoppingBag'], rota: '/conciliacao'},
-            { nome: 'Taxas', icone: icones['FiTable'], rota: '/taxas'}
-        ];
+            { nome: 'Conciliacao', icone: icones['FiShoppingBag'], rota: '/conciliacao'},   */}
 
-        let arrayOpcoes = [];
+        let arrayOpcoes = []
 
         orderedOptions.forEach((option, index) => {
             if (option.children) {
-                arrayOpcoes.push(option);
+                arrayOpcoes.push(option)
             } else {
-                arrayOpcoes.push(option);
+                arrayOpcoes.push(option)
             }
-        });
+        })
+        setOptionsWithIcons(arrayOpcoes)
+    }, [])
 
-        setOptionsWithIcons(arrayOpcoes);
-    }, []);
-
-const CustomCheckbox = ({ isChecked, handleCheckboxChange }) => {
-  return (
-    <label className="checkbox-label">
-      <input
-        type="checkbox"
-        checked={isChecked}
-        onChange={handleCheckboxChange}
-        className='checkbox-input'
-      />
-      <span className='checkbox-custom'></span> {/* aparencia da checkbox-custom */}
-      <span className='checkbox-icon'>
-        <FiCalendar className={`calendar-icon ${isCheckedCalendar ? 'isCheckedCalendar' : ''}`} size={20} />
-      </span>
-    </label>
-  );
-};
+    const CustomCheckbox = ({ isChecked, handleCheckboxChange }) => {
+    return (
+        <label className="checkbox-label">
+        <input
+            type="checkbox"
+            checked={isChecked}
+            onChange={handleCheckboxChange}
+            className='checkbox-input'
+        />
+        <span className='checkbox-custom'></span> {/* aparencia da checkbox-custom */}
+        <span className='checkbox-icon'>
+            <FiCalendar className={`calendar-icon ${isCheckedCalendar ? 'isCheckedCalendar' : ''}`} size={20} />
+        </span>
+        </label>
+    )
+    }
 
     const navigate = useNavigate()
 
@@ -215,15 +212,15 @@ const CustomCheckbox = ({ isChecked, handleCheckboxChange }) => {
                                     {opcao.children ? (
                                         <div className="nav-hover dropdown" onMouseEnter={() => {
                                             if(opcao.nome === 'Relatórios') {
-                                                setShowRelatoriosDropdown(true);
+                                                setShowRelatoriosDropdown(true)
                                             } else if (opcao.nome === 'Exportações') {
-                                                setShowExportacoesDropdown(true);
+                                                setShowExportacoesDropdown(true)
                                             }
                                         }} onMouseLeave={() => {
                                             if(opcao.nome === 'Relatórios') {
-                                                setShowRelatoriosDropdown(false);
+                                                setShowRelatoriosDropdown(false)
                                             } else if (opcao.nome === 'Exportações') {
-                                                setShowExportacoesDropdown(false);
+                                                setShowExportacoesDropdown(false)
                                             }
                                         }}>
                                             <button className='px-2 me-1 li-button-content nav-hover-button dropdown-button'>
