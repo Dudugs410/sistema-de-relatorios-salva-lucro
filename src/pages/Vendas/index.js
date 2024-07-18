@@ -1,4 +1,4 @@
-import { useEffect, useContext, createContext, useState } from 'react'
+import { useEffect, useContext } from 'react'
 import './vendas.scss'
 import { AuthContext } from '../../contexts/auth'
 import { useLocation } from 'react-router-dom'

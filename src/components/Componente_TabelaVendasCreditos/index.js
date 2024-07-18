@@ -13,7 +13,6 @@ const TabelaVendasCreditos = ({array, tipo, isDashboard}) =>{
 	const { dateConvert,
 			setTotaisGlobalVendas, 
 			setTotaisGlobalCreditos, 
-			isDarkTheme,
 			pagina, 
 			dataBuscaInicialVendas, 
 			dataBuscaFinalVendas,
@@ -399,15 +398,15 @@ const TabelaVendasCreditos = ({array, tipo, isDashboard}) =>{
 				setPaginaAtual('Vendas')
 				setDataInicialDisplay(dataBuscaInicialVendas)
 				setDataFinalDisplay(dataBuscaFinalVendas)
-				break;
+				break
 			case '/creditos':
 				setPaginaAtual('Créditos')
 				setDataInicialDisplay(dataBuscaInicialCreditos)
 				setDataFinalDisplay(dataBuscaFinalCreditos)
-				break;
+				break
 			default:
 				setPaginaAtual('Dados')
-				break;
+				break
 			}
 
 	},[pagina])

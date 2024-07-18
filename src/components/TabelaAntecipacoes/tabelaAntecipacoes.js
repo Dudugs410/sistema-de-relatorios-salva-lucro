@@ -1,6 +1,5 @@
-import React from "react";
+import React from "react"
 import './tabelaAntecipacoes.css'
-import TabelaFiltrada from "../../pages/Antecipacoes";
 
 function Tabela({ dados }) {
   return (
@@ -26,7 +25,7 @@ function Tabela({ dados }) {
         </tbody>
       </table>
     </div>
-  );
+  )
 }
 
-export default Tabela;
+export default Tabela

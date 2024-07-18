@@ -1,6 +1,5 @@
-import React from 'react';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import React from 'react'
+import 'react-toastify/dist/ReactToastify.css'
 import './confirmDelete.scss'
 
 const ConfirmDelete = ({ onConfirm, onCancel }) => (
@@ -13,4 +12,4 @@ const ConfirmDelete = ({ onConfirm, onCancel }) => (
     </div>
 );
 
-export default ConfirmDelete;
+export default ConfirmDelete

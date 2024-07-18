@@ -4,7 +4,7 @@ import { React, createContext, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import Cookies from 'js-cookie'
-import api, { config } from '../services/api'
+import api from '../services/api'
 
 import md5 from 'md5'
 
@@ -13,7 +13,6 @@ import 'react-toastify/dist/ReactToastify.css'
 import jwtDecode from 'jwt-decode'
 
 import _ from 'lodash'
-import isEqual from 'lodash/isEqual'
 
 export const AuthContext = createContext({})
 
@@ -28,7 +27,7 @@ function AuthProvider({ children }){
 	const [servicesTableData, setServicesTableData] = useState([])
 
 	const [exportName, setExportName] = useState('')
-	const [isCheckedCalendar, setIsCheckedCalendar] = useState(true);
+	const [isCheckedCalendar, setIsCheckedCalendar] = useState(true)
 	const [changedOption, setChangedOption] = useState(false)
 
 	const [errorSales, setErrorSales] = useState(false)
@@ -288,7 +287,7 @@ function AuthProvider({ children }){
 		const loadTaxes = async () => {
 			setIsLoadingTaxes(true)
 			try {
-				const apiClientCode = Cookies.get('clientCode');
+				const apiClientCode = Cookies.get('clientCode')
 				if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
 					let params = {
 						codigo: apiClientCode
@@ -348,7 +347,7 @@ function AuthProvider({ children }){
 			console.log('editTax: ', tax)
 		  
 			try {
-			  const apiClientCode = tax.CLICODIGO;
+			  const apiClientCode = tax.CLICODIGO
 			  if (apiClientCode !== 'todos' && apiClientCode !== 'TODOS' && apiClientCode !== undefined) {
 				let body = JSON.stringify(tax)
 		  
@@ -359,7 +358,7 @@ function AuthProvider({ children }){
 					'Authorization': `Bearer ${Cookies.get('token')}`
 				  },
 				  body: body,
-				});
+				})
 		  
 				const responseData = await response.json()
 				console.log('response: ', responseData)
@@ -372,7 +371,7 @@ function AuthProvider({ children }){
 				  	toast.error('Erro ao alterar taxa!')
 				}
 			  } else {
-				return [];
+				return []
 			  }
 			} catch (error) {
 			  console.error('Error updating tax:', error)
@@ -384,9 +383,9 @@ function AuthProvider({ children }){
 				return
 			}
 			} finally {
-			  setIsLoadingTaxes(false);
+			  setIsLoadingTaxes(false)
 			}
-		  };
+		  }
 		  
 
 		//Deleta Taxa
@@ -395,9 +394,9 @@ function AuthProvider({ children }){
 			setIsLoadingTaxes(true)
 			console.log(tax)
 			try {
-				const apiClientCode = Cookies.get('clientCode');
+				const apiClientCode = Cookies.get('clientCode')
 				if(apiClientCode !== 'todos' && apiClientCode !== 'TODOS' && apiClientCode !== undefined) {
-					let body = tax;
+					let body = tax
 					api.delete('taxas', {
 						headers: {
 							'Content-Type': 'application/json'
@@ -413,9 +412,9 @@ function AuthProvider({ children }){
 						console.log('error: ', error)
 						toast.dismiss()
 						toast.error('Erro ao deletar taxa!')
-					});
+					})
 				} else {
-					return [];
+					return []
 				}
 				setIsLoadingTaxes(false)
 			} catch (error) {
@@ -440,7 +439,7 @@ function AuthProvider({ children }){
 		const loadBanks = async () => {
 			setIsLoadingBanks(true)
 			try {
-				const apiClientCode = Cookies.get('clientCode');
+				const apiClientCode = Cookies.get('clientCode')
 				if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
 					let params = {
 						codigo: apiClientCode
@@ -450,20 +449,20 @@ function AuthProvider({ children }){
 						params: params
 					}
 		
-					const response = await api.get('banco', config);
-					return response.data;
+					const response = await api.get('banco', config)
+					return response.data
 				} else {
-					console.log('Invalid client code:', apiClientCode);
-					return [];
+					console.log('Invalid client code:', apiClientCode)
+					return []
 				}
 			} catch (error) {
-				console.error('Error fetching banco:', error);
+				console.error('Error fetching banco:', error)
 				if (error.response.status === 401) {
 					logout()
 					alert('Sessão expirada. Faça login novamente.')
 					return
 				}
-				return [];
+				return []
 			} finally {
 				setIsLoadingBanks(false)
 			}
@@ -476,23 +475,23 @@ function AuthProvider({ children }){
 			try {
 				const apiClientCode = Cookies.get('clientCode')
 				if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
-					let body = bank;
-					const response = await api.post('banco', body);
-					console.log('response:', response);
+					let body = bank
+					const response = await api.post('banco', body)
+					console.log('response:', response)
 				} else {
-					console.log('Invalid client code:', apiClientCode);
+					console.log('Invalid client code:', apiClientCode)
 				}
 			} catch (error) {
-				console.error('Error adding banco:', error);
+				console.error('Error adding banco:', error)
 				if (error.response.status === 401) {
 					logout()
 					alert('Sessão expirada. Faça login novamente.')
 					return
 				}
 			} finally {
-				setIsLoadingBanks(false);
+				setIsLoadingBanks(false)
 			}
-		};
+		}
 
 		// edita banco
 		const editBank = async (editedBank) => {
@@ -508,12 +507,12 @@ function AuthProvider({ children }){
 						'Authorization': `Bearer ${Cookies.get('token')}`
 					},
 					body: body,
-					});
+					})
 
 					console.log(response)
 			
-					const responseData = await response.json();
-					console.log('response: ', responseData);
+					const responseData = await response.json()
+					console.log('response: ', responseData)
 			
 					if (response.ok) {
 						toast.dismiss()
@@ -532,9 +531,9 @@ function AuthProvider({ children }){
 					return
 				}
 			} finally {
-				setIsLoadingBanks(false);
+				setIsLoadingBanks(false)
 			}	 
-		};
+		}
 
 		// deleta banco
 		const deleteBank = async (bankToDelete) => {
@@ -567,7 +566,7 @@ function AuthProvider({ children }){
 					alert('Sessão expirada. Faça login novamente.')
 					return
 				}
-				return;
+				return
 			}
 		}
 
@@ -700,8 +699,8 @@ function AuthProvider({ children }){
 		const refreshSession = async () =>{
 			try {
 					let refreshToken = Cookies.get('refreshToken')
-					const encodedRefreshToken = encodeURIComponent(refreshToken);
-					const response = await api.post('token/refresh/' + encodedRefreshToken);
+					const encodedRefreshToken = encodeURIComponent(refreshToken)
+					const response = await api.post('token/refresh/' + encodedRefreshToken)
 					Cookies.set('token', response.data.acess_token)
 					Cookies.set('refreshToken', response.data.refresh_token)
 			} catch (error) {
@@ -789,19 +788,19 @@ function AuthProvider({ children }){
 				let salesTemp = []
 		
 				function getFirstDayOfMonth() {
-					const currentDate = new Date();
-					const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-					return firstDayOfMonth;
+					const currentDate = new Date()
+					const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
+					return firstDayOfMonth
 				}
 			
 				function getLastDayOfMonth(){
-					const currentDate = new Date();
-					const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-					return lastDayOfMonth;
+					const currentDate = new Date()
+					const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0)
+					return lastDayOfMonth
 				}
 			
-				const firstDay = getFirstDayOfMonth();
-				const lastDay = getLastDayOfMonth();
+				const firstDay = getFirstDayOfMonth()
+				const lastDay = getLastDayOfMonth()
 			  
 				try {
 					salesTemp = await loadSales(firstDay, lastDay)
@@ -849,34 +848,34 @@ function AuthProvider({ children }){
 			function separateAdmin(array) {
 				let sums = {
 					total: 0
-				};
+				}
 				
 				let tempSales = []
-				let separatedByAdquirente = [];
+				let separatedByAdquirente = []
 
 					array.forEach((sale) => {
-						sums.total += sale.valorBruto;
-						tempSales.push(sale);
+						sums.total += sale.valorBruto
+						tempSales.push(sale)
 					
 						// Find or create entry in separatedByAdquirente
-						let entry = separatedByAdquirente.find(adquirente => adquirente.adminName === sale.adquirente.nomeAdquirente);
+						let entry = separatedByAdquirente.find(adquirente => adquirente.adminName === sale.adquirente.nomeAdquirente)
 						if (!entry) {
 							entry = {
 								id: separatedByAdquirente.length,
 								adminName: sale.adquirente.nomeAdquirente,
 								total: 0,
 								sales: [] // Initialize vendas array
-							};
-							separatedByAdquirente.push(entry);
+							}
+							separatedByAdquirente.push(entry)
 						}
 					
 						// Push the current venda into the vendas array of the entry
-						entry.sales.push(sale);
+						entry.sales.push(sale)
 					
 						// Update total for this adquirente
-						entry.total += sale.valorBruto;
-					});
-				return separatedByAdquirente;
+						entry.total += sale.valorBruto
+					})
+				return separatedByAdquirente
 			}
 
 			try {
@@ -884,14 +883,14 @@ function AuthProvider({ children }){
 					loadSalesMonth(),
 					loadLast4()
 				]).then(() => {
-					tempAdmin = separateAdmin(salesMonth);
-					salesByAdmin = sortArray(tempAdmin);
-					const chartData = loadChart(salesByAdmin);
-					setChartSales(chartData);
+					tempAdmin = separateAdmin(salesMonth)
+					salesByAdmin = sortArray(tempAdmin)
+					const chartData = loadChart(salesByAdmin)
+					setChartSales(chartData)
 			
 					// Move the code that depends on chartSales here
-					totalSalesLast4 = salesLast4.reduce((total, obj) => total + obj.valorBruto, 0);
-					totalSalesMonth = salesMonth.reduce((total, obj) => total + obj.valorBruto, 0);
+					totalSalesLast4 = salesLast4.reduce((total, obj) => total + obj.valorBruto, 0)
+					totalSalesMonth = salesMonth.reduce((total, obj) => total + obj.valorBruto, 0)
 			
 					setSalesDashboard({
 						sales: salesMonth,
@@ -899,9 +898,9 @@ function AuthProvider({ children }){
 						totalLast4: Number(totalSalesLast4),
 						totalMonth: Number(totalSalesMonth),
 						chart: chartData
-					});
+					})
 					setIsLoadedSalesDashboard(true)
-				});
+				})
 			} catch (error) {
 				console.log('Erro: ', error)
 			}
@@ -922,19 +921,19 @@ function AuthProvider({ children }){
 				let creditsTemp = []
 		
 				function getFirstDayOfMonth() {
-					const currentDate = new Date();
-					const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-					return firstDayOfMonth;
+					const currentDate = new Date()
+					const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
+					return firstDayOfMonth
 				}
 			
 				function getLastDayOfMonth(){
-					const currentDate = new Date();
-					const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-					return lastDayOfMonth;
+					const currentDate = new Date()
+					const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0)
+					return lastDayOfMonth
 				}
 			
-				const firstDay = getFirstDayOfMonth();
-				const lastDay = getLastDayOfMonth();
+				const firstDay = getFirstDayOfMonth()
+				const lastDay = getLastDayOfMonth()
 			  
 				try {
 					creditsTemp = await loadCredits(firstDay, lastDay)
@@ -967,34 +966,34 @@ function AuthProvider({ children }){
 			function separateAdmin(array) {
 				let sums = {
 					total: 0
-				};
+				}
 				
 				let tempSales = []
-				let separatedByAdquirente = [];
+				let separatedByAdquirente = []
 			
 					array.forEach((sale) => {
-						sums.total += sale.valorLiquido;
-						tempSales.push(sale);
+						sums.total += sale.valorLiquido
+						tempSales.push(sale)
 					
 						// Find or create entry in separatedByAdquirente
-						let entry = separatedByAdquirente.find(adquirente => adquirente.adminName === sale.adquirente.nomeAdquirente);
+						let entry = separatedByAdquirente.find(adquirente => adquirente.adminName === sale.adquirente.nomeAdquirente)
 						if (!entry) {
 							entry = {
 								id: separatedByAdquirente.length,
 								adminName: sale.adquirente.nomeAdquirente,
 								total: 0,
 								sales: [] // Initialize vendas array
-							};
-							separatedByAdquirente.push(entry);
+							}
+							separatedByAdquirente.push(entry)
 						}
 					
 						// Push the current venda into the vendas array of the entry
-						entry.sales.push(sale);
+						entry.sales.push(sale)
 					
 						// Update total for this adquirente
-						entry.total += sale.valorLiquido;
-					});
-				return separatedByAdquirente;
+						entry.total += sale.valorLiquido
+					})
+				return separatedByAdquirente
 			}
 
 			try {
@@ -1003,10 +1002,10 @@ function AuthProvider({ children }){
 					loadCreditsMonth(),
 					//loadNext5()
 				]).then(() => {
-					tempAdmin = separateAdmin(creditsMonth);
-					creditsByAdmin = sortArray(tempAdmin);
-					const chartData = loadChart(creditsByAdmin);
-					setChartCredits(chartData);
+					tempAdmin = separateAdmin(creditsMonth)
+					creditsByAdmin = sortArray(tempAdmin)
+					const chartData = loadChart(creditsByAdmin)
+					setChartCredits(chartData)
 			
 					let todayTemp = new Date()
 		
@@ -1021,14 +1020,14 @@ function AuthProvider({ children }){
 			
 					creditsMonth.forEach((venda) => {
 						for (let i = 1; i <= 5; i++) {
-							let nextDate = new Date(todayTemp);
-							nextDate.setDate(nextDate.getDate() + i);
-							let nextDateFormatted = nextDate.toISOString().split('T')[0]; // Format as "YYYY-MM-DD"
+							let nextDate = new Date(todayTemp)
+							nextDate.setDate(nextDate.getDate() + i)
+							let nextDateFormatted = nextDate.toISOString().split('T')[0] // Format as "YYYY-MM-DD"
 							if (venda.dataCredito === nextDateFormatted) {
-								totalCreditsNext5 += venda.valorLiquido;
+								totalCreditsNext5 += venda.valorLiquido
 							}
 						}
-					});
+					})
 			
 					setCreditsDashboard({
 						credits: creditsMonth,
@@ -1036,9 +1035,9 @@ function AuthProvider({ children }){
 						totalCreditsNext5: Number(totalCreditsNext5),
 						totalCreditsToday: Number(totalCreditsToday),
 						chart: chartData
-					});
+					})
 					setIsLoadedCreditsDashboard(true)
-				});
+				})
 			} catch (error) {
 				console.log('Erro: ', error)
 				if (error.response.status === 401) {
@@ -1095,34 +1094,34 @@ function AuthProvider({ children }){
 			function separateAdmin(array) {
 				let sums = {
 					total: 0
-				};
+				}
 				
 				let tempSales = []
-				let separatedByAdquirente = [];
+				let separatedByAdquirente = []
 			
 					array.forEach((sale) => {
-						sums.total += sale.valor;
-						tempSales.push(sale);
+						sums.total += sale.valor
+						tempSales.push(sale)
 					
 						// Find or create entry in separatedByAdquirente
-						let entry = separatedByAdquirente.find(adquirente => adquirente.adminName === sale.nome_adquirente);
+						let entry = separatedByAdquirente.find(adquirente => adquirente.adminName === sale.nome_adquirente)
 						if (!entry) {
 							entry = {
 								id: separatedByAdquirente.length,
 								adminName: sale.nome_adquirente,
 								total: 0,
 								sales: [] // Initialize vendas array
-							};
-							separatedByAdquirente.push(entry);
+							}
+							separatedByAdquirente.push(entry)
 						}
 					
 						// Push the current venda into the vendas array of the entry
-						entry.sales.push(sale);
+						entry.sales.push(sale)
 					
 						// Update total for this adquirente
-						entry.total += sale.valor;
-					});
-				return separatedByAdquirente;
+						entry.total += sale.valor
+					})
+				return separatedByAdquirente
 			}
 
 			try {
@@ -1144,9 +1143,9 @@ function AuthProvider({ children }){
 						} else {
 							const existingObject = temp.find(obj => obj.nomeAdquirente === service.nome_adquirente)
 							if (existingObject) {
-								existingObject.total = (existingObject.total || 0) + service.valor;
-								existingObject.total = parseFloat(existingObject.total.toFixed(2)); // Round to 2 decimal places
-								existingObject.vendas.push(service);
+								existingObject.total = (existingObject.total || 0) + service.valor
+								existingObject.total = parseFloat(existingObject.total.toFixed(2)) // Round to 2 decimal places
+								existingObject.vendas.push(service)
 							} else {
 								temp.push({
 									adminName: service.nome_adquirente,
@@ -1159,9 +1158,9 @@ function AuthProvider({ children }){
 
 					let tempAdmin = separateAdmin(servicesMonth)
 					const servicesByAdmin = (sortArray(tempAdmin))        
-					const chartData = loadChart(servicesByAdmin);
+					const chartData = loadChart(servicesByAdmin)
 
-					setChartServices(chartData);
+					setChartServices(chartData)
 
 					const totalMesTemp = servicesMonth.reduce((total, obj) => total + obj.valor, 0)
 					totalServicesMonth = totalMesTemp
@@ -1180,7 +1179,7 @@ function AuthProvider({ children }){
 						totalServicesMonth: Number(totalServicesMonth),
 						totalServicesToday: Number(totalServicesToday),
 						chart: chartData
-					});
+					})
 					setIsLoadedServicesDashboard(true)
 				})
 			} catch (error) {
@@ -1263,68 +1262,68 @@ function AuthProvider({ children }){
 
 		let sums = {
 			total: 0
-		};
+		}
 		
 		let tempSales = []
-		let separatedByAdquirente = [];
+		let separatedByAdquirente = []
 
 			array.forEach((sale) => {
-				sums.total += sale.valorBruto;
-				tempSales.push(sale);
+				sums.total += sale.valorBruto
+				tempSales.push(sale)
 			
 				// Find or create entry in separatedByAdquirente
-				let entry = separatedByAdquirente.find(adquirente => adquirente.adminName === sale.adquirente.nomeAdquirente);
+				let entry = separatedByAdquirente.find(adquirente => adquirente.adminName === sale.adquirente.nomeAdquirente)
 				if (!entry) {
 					entry = {
 						id: separatedByAdquirente.length,
 						adminName: sale.adquirente.nomeAdquirente,
 						total: 0,
 						sales: [] // Initialize vendas array
-					};
-					separatedByAdquirente.push(entry);
+					}
+					separatedByAdquirente.push(entry)
 				}
 			
 				// Push the current venda into the vendas array of the entry
-				entry.sales.push(sale);
+				entry.sales.push(sale)
 			
 				// Update total for this adquirente
-				entry.total += sale.valorBruto;
-			});
-		return separatedByAdquirente;
+				entry.total += sale.valorBruto
+			})
+		return separatedByAdquirente
 	}
 
 	function groupServicesByAdmin(array) {
 
 		let sums = {
 			total: 0
-		};
+		}
 		
 		let tempSales = []
-		let separatedByAdquirente = [];
+		let separatedByAdquirente = []
 
 			array.forEach((sale) => {
-				sums.total += sale.valor;
-				tempSales.push(sale);
+				sums.total += sale.valor
+				tempSales.push(sale)
 			
 				// Find or create entry in separatedByAdquirente
-				let entry = separatedByAdquirente.find(adquirente => adquirente.adminName === sale.nome_adquirente);
+				let entry = separatedByAdquirente.find(adquirente => adquirente.adminName === sale.nome_adquirente)
 				if (!entry) {
 					entry = {
 						id: separatedByAdquirente.length,
 						adminName: sale.nome_adquirente,
 						total: 0,
 						sales: [] // Initialize vendas array
-					};
-					separatedByAdquirente.push(entry);
+					}
+					separatedByAdquirente.push(entry)
 				}
 			
 				// Push the current venda into the vendas array of the entry
-				entry.sales.push(sale);
+				entry.sales.push(sale)
 			
 				// Update total for this adquirente
-				entry.total += sale.valor;
-			});
-		return separatedByAdquirente;
+				entry.total += sale.valor
+			})
+		return separatedByAdquirente
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////
@@ -1371,15 +1370,15 @@ function AuthProvider({ children }){
 				switch(venda.produto.descricaoProduto){
 				case 'Crédito':
 					totalCreditTemp += venda.valorBruto
-					break;
+					break
 	
 				case 'Débito':
 					totalDebitTemp += venda.valorBruto
-					break;
+					break
 	
 				case 'Voucher':
 					totalVoucherTemp += venda.valorBruto
-					break;
+					break
 				}
 				total += venda.valorBruto
 			})
@@ -1445,15 +1444,15 @@ function AuthProvider({ children }){
 				switch(venda.produto.descricaoProduto){
 				case 'Crédito':
 					totalCreditTemp += venda.valorLiquido
-					break;
+					break
 	
 				case 'Débito':
 					totalDebitTemp += venda.valorLiquido
-					break;
+					break
 	
 				case 'Voucher':
 					totalVoucherTemp += venda.valorLiquido
-					break;
+					break
 				}
 				total += venda.valorLiquido
 			})

@@ -5,9 +5,7 @@ import '../../styles/global.scss'
 import Select from 'react-select'
 import './exportacao.scss'
 import MyCalendar from '../../components/Componente_Calendario'
-import base64PDFdownload from '../../components/Componente_Base64PDF'
 import RadioSelect from '../../components/Componente_RadioSelect'
-import Cookies from 'js-cookie'
 import { toast } from 'react-toastify'
 
 const ExportacaoSysmo = () =>{

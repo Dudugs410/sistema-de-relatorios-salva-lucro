@@ -1,11 +1,8 @@
 /* eslint-disable react/react-in-jsx-scope */
 
-import { useContext } from 'react'
 import './footer.scss'
-import { AuthContext } from '../../contexts/auth'
 
 const Footer = () =>{
-	const { isDarkTheme } = useContext(AuthContext)
 
 	return(
 		<>

@@ -4,12 +4,10 @@ import { useState, useEffect, useContext, useRef } from 'react'
 
 import './buscarServicos.scss'
 import { AuthContext } from '../../contexts/auth'
-import { ServicosContext } from '../../pages/Servicos'
 
 import '../../styles/global.scss'
 
 import { toast } from 'react-toastify'
-import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 import './reactdatepicker.css'
@@ -17,36 +15,19 @@ import Cookies from 'js-cookie'
 
 const BuscarClienteServicos = () => {
 	const [buscou, setBuscou] = useState(false)
-	const [arrayDados, setArrayDados] = useState([])
 	const [clicouPesquisar, setClicouPesquisar] = useState(false)
 
-	const { 
-		setCnpj,  
+	const {  
 		setLoading,
 		loadAjustes,
 		setTotaisGlobal,
-		isDarkTheme,
 		setAjustes,
 		ajustes,
-		detalhes,
 		setDetalhes,
 		alerta,
-		dataBuscaServicos, setDataBuscaServicos, 
-		cnpjBuscaServicos, setCnpjBuscaServicos,
-		dataInicialExibicaoServicos, setDataInicialExibicaoServicos,
-		dataFinalExibicaoServicos, setDataFinalExibicaoServicos,
-		arrayRelatorioServicos, setArrayRelatorioServicos,
-		arrayAdmServicos, setArrayAdmServicos,
-		ajustesTempServicos, setAjustesTempServicos,
-		dataInicialServicos, setDataInicialServicos,
-		dataFinalServicos,  setDataFinalServicos,
-		loadServicosPage, handleDateChangeServicos,
+		dataBuscaServicos, 
+		cnpjBuscaServicos,
 	} = useContext(AuthContext)
-    
-	/*useEffect(()=>{
-		setCnpj(Cookies.get('cnpj'))
-		setCnpjBusca(Cookies.get('cnpj'))
-	},[])*/
     
 	async function handleBusca(e){
 		toast.dismiss()
@@ -63,22 +44,22 @@ const BuscarClienteServicos = () => {
 		await loadAjustes(cnpjBuscaServicos, dataBuscaServicos[0], dataBuscaServicos[1])
 		.then(() => {
 			if (dataBuscaServicos === '' || cnpjBuscaServicos === '') {
-				return 0;
+				return 0
 			} else {
 				//adiciono .toLocaleDateString('pt-BR') às datas para que possamos comparar apenas o dia, mes e ano, sem levar em consideração a hora, minuto e segundos
 				if(buscou !== true){
 					toast.dismiss()
 					toast.success(dataBuscaServicos[0].toLocaleDateString('pt-BR') === dataBuscaServicos[1].toLocaleDateString('pt-BR') ? `executou a busca do dia ${dataBuscaServicos[0].toLocaleDateString('pt-BR')}` : `executou a busca do dia ${dataBuscaServicos[0].toLocaleDateString('pt-BR')} ao dia ${dataBuscaServicos[1].toLocaleDateString('pt-BR')}`)
-					setBuscou(true);	
+					setBuscou(true)
 				}
 
 				if (ajustes.length === 0) {
-					setDetalhes(false);
-					setClicouPesquisar(false);
+					setDetalhes(false)
+					setClicouPesquisar(false)
 				}
 			}
-		});
-	setLoading(false);
+		})
+	setLoading(false)
 	}
 
 	useEffect(()=>{

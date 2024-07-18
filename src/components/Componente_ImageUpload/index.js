@@ -1,26 +1,26 @@
-import React, { useState, useCallback, useRef } from 'react';
-import { useDropzone } from 'react-dropzone';
-import Webcam from 'react-webcam';
-import './ImageUpload.scss'; // Import the SCSS file
+import React, { useState, useCallback, useRef } from 'react'
+import { useDropzone } from 'react-dropzone'
+import Webcam from 'react-webcam'
+import './ImageUpload.scss' // Import the SCSS file
 
 const ImageUpload = (onUpload) => {
-  const [selectedFiles, setSelectedFiles] = useState([]);
-  const [isWebcamOpen, setIsWebcamOpen] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState([])
+  const [isWebcamOpen, setIsWebcamOpen] = useState(false)
 
   const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
     if (acceptedFiles.length > 0) {
       if (selectedFiles.length + acceptedFiles.length > 5) {
-        alert('You can upload a maximum of 5 images.');
+        alert('You can upload a maximum of 5 images.')
       } else {
-        const newFiles = acceptedFiles.map(file => URL.createObjectURL(file));
-        setSelectedFiles(prevFiles => [...prevFiles, ...newFiles]);
+        const newFiles = acceptedFiles.map(file => URL.createObjectURL(file))
+        setSelectedFiles(prevFiles => [...prevFiles, ...newFiles])
       }
     }
     if (rejectedFiles.length > 0) {
-      console.error('Invalid file type:', rejectedFiles);
+      console.error('Invalid file type:', rejectedFiles)
       alert('Formato de arquivo inválido. Selecione apenas arquivos de imagem (jpg, jpeg, png, etc.)')
     }
-  }, [selectedFiles]);
+  }, [selectedFiles])
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
@@ -28,31 +28,31 @@ const ImageUpload = (onUpload) => {
       'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.bmp', '.webp'],
     },
     maxFiles: 5,
-  });
+  })
 
   const toggleWebcam = () => {
     if (selectedFiles.length >= 5) {
-      alert('You can upload a maximum of 5 images.');
-      return;
+      alert('You can upload a maximum of 5 images.')
+      return
     }
-    setIsWebcamOpen((prev) => !prev);
-  };
+    setIsWebcamOpen((prev) => !prev)
+  }
 
-  const webcamRef = useRef(null);
+  const webcamRef = useRef(null)
 
   const capture = useCallback(() => {
     if (selectedFiles.length >= 5) {
-      alert('You can upload a maximum of 5 images.');
-      return;
+      alert('You can upload a maximum of 5 images.')
+      return
     }
-    const imageSrc = webcamRef.current.getScreenshot();
-    setSelectedFiles(prevFiles => [...prevFiles, imageSrc]);
-    setIsWebcamOpen(false);
-  }, [selectedFiles]);
+    const imageSrc = webcamRef.current.getScreenshot()
+    setSelectedFiles(prevFiles => [...prevFiles, imageSrc])
+    setIsWebcamOpen(false)
+  }, [selectedFiles])
 
   const deleteImage = (index) => {
-    setSelectedFiles(prevFiles => prevFiles.filter((_, i) => i !== index));
-  };
+    setSelectedFiles(prevFiles => prevFiles.filter((_, i) => i !== index))
+  }
 
   return (
     <div className="image-upload-container">
@@ -71,7 +71,7 @@ const ImageUpload = (onUpload) => {
         </div>
       )}
 
-      <button className='btn-global' style={{width: 'auto'}} onClick={toggleWebcam}>
+      <button className='btn btn-global'  onClick={toggleWebcam}>
         {isWebcamOpen ? 'Fechar Câmera' : 'Usar Câmera'}
       </button>
 
@@ -87,7 +87,7 @@ const ImageUpload = (onUpload) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default ImageUpload;
+export default ImageUpload
