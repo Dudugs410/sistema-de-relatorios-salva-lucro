@@ -8,13 +8,13 @@
 }
 
 .table-taxas {
-    overflow-x: auto; /* Use 'auto' instead of 'scroll' */
+    overflow-x: overlay; /* Use 'auto' instead of 'scroll' */
 }
 
 .table-wrapper-taxes {
     display: flex;
-    overflow-x: auto;
-    overflow-y: auto;
+    overflow-x: overlay;
+    overflow-y: overlay;
     width: 100%; /* Ensure it takes up the full width */
     flex-direction: column;
 }
