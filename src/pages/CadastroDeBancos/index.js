@@ -50,7 +50,7 @@ const CadastroDeBancos = () => {
     const [modOptions, setModOptions] = useState([])
     const [cliAdqOptions, setCliAdqOptions] = useState([])
 
-    const [isSelected, setIsSelected] = useState(false);
+    const [isSelected, setIsSelected] = useState(false)
 
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isModalEditOpen, setIsModalEditOpen] = useState(false)
@@ -146,12 +146,12 @@ const CadastroDeBancos = () => {
     // Update cliAdqOptions when cliAdqList changes
     useEffect(() => {
         if (cliAdqList.length > 0) {
-            const cliAdqListOptions = cliAdqList.map(sub => ({ value: sub.codigoClienteAdquirente, label: sub.codigoEstabelecimento }));
-            setCliAdqOptions(cliAdqListOptions);
+            const cliAdqListOptions = cliAdqList.map(sub => ({ value: sub.codigoClienteAdquirente, label: sub.codigoEstabelecimento }))
+            setCliAdqOptions(cliAdqListOptions)
         } else {
-            setCliAdqOptions([]);
+            setCliAdqOptions([])
         }
-    }, [cliAdqList]);
+    }, [cliAdqList])
 
     useEffect(() => {
         if (subproductList.length > 0) {
@@ -166,23 +166,23 @@ const CadastroDeBancos = () => {
     useEffect(() => {
         const fetchCliAdqList = async () => {
             if (isSelected) {
-                const clientCode = Cookies.get('clientCode');
-                const admCode = Cookies.get('admCode');
+                const clientCode = Cookies.get('clientCode')
+                const admCode = Cookies.get('admCode')
                 
                 if (clientCode !== '0' && admCode !== '0') {
                     try {
-                        const response = await loadCliAdq();
-                        setCliAdqList(response);
+                        const response = await loadCliAdq()
+                        setCliAdqList(response)
                     } catch (error) {
-                        console.error('Error fetching cliAdqList:', error);
+                        console.error('Error fetching cliAdqList:', error)
                     } finally {
-                        setIsSelected(false);
+                        setIsSelected(false)
                     }
                 } else {
-                    setIsSelected(false);
+                    setIsSelected(false)
                 }
             }
-        };
+        }
 
         const fetchSubProductList = async () => {
             if (isSelected) {
@@ -200,7 +200,7 @@ const CadastroDeBancos = () => {
                     setIsSelected(false)
                 }
             }
-        };
+        }
 
         fetchCliAdqList()
         fetchSubProductList()
@@ -208,13 +208,13 @@ const CadastroDeBancos = () => {
 
     const fetchSUPname = async (SUPCODIGO) => {
         try {
-            const subProducts = await loadSubproducts();
-            const subProductName = getSubproductDescription(SUPCODIGO, subProducts);
-            return subProductName;
+            const subProducts = await loadSubproducts()
+            const subProductName = getSubproductDescription(SUPCODIGO, subProducts)
+            return subProductName
         } catch (error) {
-            console.error('Error fetching subproductList:', error);
+            console.error('Error fetching subproductList:', error)
         }
-    };
+    }
 
     const handleAdd = () =>{
         setCliAdqOptions([])
@@ -222,7 +222,7 @@ const CadastroDeBancos = () => {
         setIsModalOpen(true)
     }
     
-    const [editableBank, setEditableBank] = useState();
+    const [editableBank, setEditableBank] = useState()
     
     const handleEdit = async (object, index) => {
         Cookies.set('admCode', object.ADQCODIGO)
@@ -249,10 +249,10 @@ const CadastroDeBancos = () => {
             conta: object.CONTA,
             codigoBancoCliente: object.CODIGO,
             codigoEstabelecimento: object.CODIGOESTABELECIMENTO,
-        });
+        })
         setIsLoading(false)
-        setIsModalEditOpen(true);
-    };
+        setIsModalEditOpen(true)
+    }
 
     const resetValues = () => {
         setEditableBank({            
@@ -269,11 +269,11 @@ const CadastroDeBancos = () => {
         setIsModalEditOpen(false)
     }
 
-    const [isOverlayVisible, setOverlayVisible] = useState(false);
+    const [isOverlayVisible, setOverlayVisible] = useState(false)
 
     const handleDelete = async (object) => {
       const onConfirm = async () => {
-        setOverlayVisible(false);
+        setOverlayVisible(false)
         // Perform the delete operation here
         const toBeDeleted = {
           CodigoEstabelecimento: object.CODIGOESTABELECIMENTO,
@@ -287,40 +287,40 @@ const CadastroDeBancos = () => {
           Agencia: object.AGENCIA,
           Conta: object.CONTA,
           CodigoBancoCliente: object.CODIGO,
-        };
+        }
   
         try {
-          toast.dismiss();
+          toast.dismiss()
           await toast.promise(deleteBank(toBeDeleted), {
             pending: 'Carregando...',
             error: 'Ocorreu um Erro',
-          });
+          })
           // Optimistically update state
-          setBanksList(prevBanksList => prevBanksList.filter(bank => bank.CODIGO !== object.CODIGO));
-          handleCancel();
+          setBanksList(prevBanksList => prevBanksList.filter(bank => bank.CODIGO !== object.CODIGO))
+          handleCancel()
         } catch (error) {
-          console.error('Error handling delete:', error);
+          console.error('Error handling delete:', error)
         }
-        toast.dismiss();
-      };
+        toast.dismiss()
+      }
   
       const onCancel = () => {
-        setOverlayVisible(false);
-        toast.dismiss();
-      };
+        setOverlayVisible(false)
+        toast.dismiss()
+      }
   
-      setOverlayVisible(true);
+      setOverlayVisible(true)
       toast(
         <ConfirmDelete onConfirm={onConfirm} onCancel={onCancel} />,
         {
-          position: "top-center",
+          position: "bottom-center",
           autoClose: false,
           closeOnClick: false,
           closeButton: false,
           draggable: false,
         }
-      );
-    };
+      )
+    }
 
     const handleCancel = () => {
         resetValues()
@@ -375,7 +375,7 @@ const CadastroDeBancos = () => {
                                         <>
                                             <span className='subtitle'>Sem Bancos Cadastrados</span>
                                             <br/>
-                                            <button className='btn btn-primary btn-global' onClick={()=>{setIsModalOpen(true)}}><FiPlus className='icon' />Adicionar Banco</button>
+                                            <button className='btn btn-primary btn-global' onClick={()=>{setIsModalOpen(true)}}><FiPlus className='icon' />Adicionar</button>
                                         </>
                                     }
                                     {

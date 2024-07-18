@@ -1,16 +1,16 @@
 import React, { useContext, useEffect, useState } from "react"
 import Calendar from "react-calendar"
 import { AuthContext } from "../../contexts/auth"
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
 import './Calendar.scss'
 import '../../styles/global.scss'
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom"
 
 const MyCalendar = ({ onLoadData, getCalendarDate, btnDisabled }) => {
     const { isCheckedCalendar } = useContext(AuthContext)
 
-    const location = useLocation();
+    const location = useLocation()
     
     const [dateRange, setDateRange] = useState([new Date(), new Date()]);
     const [dateSysmo, setDateSysmo] = useState(new Date())
@@ -78,8 +78,8 @@ const MyCalendar = ({ onLoadData, getCalendarDate, btnDisabled }) => {
             </div>
           </div>
         </div>
-      );
-    };
+      )
+    }
 
     const CalendarDefault = () => {
       return (

@@ -1,7 +1,6 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
 /* eslint-disable react/prop-types */
-import React, { useContext, useEffect } from 'react'
-import { AuthContext } from '../../contexts/auth'
+import React from 'react'
 
 import './detalhesBanco.scss'
 

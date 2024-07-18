@@ -7,9 +7,7 @@ import { FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward } from 'react-
 
 const TabelaVendasDashboard = ({array}) =>{
 
-	const { dateConvert,
-			isDarkTheme,
-		 } = useContext(AuthContext)
+	const { dateConvert } = useContext(AuthContext)
 
 	const [vendasArray, setVendasArray] = useState([])
 	const [vendasTeste, setVendasTeste] = useState([])

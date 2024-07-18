@@ -1,17 +1,15 @@
-import React, { useState } from 'react';
-import './radio.scss'; // Import the SCSS file with the custom radio styles
-import { useContext } from 'react';
-import { AuthContext } from '../../contexts/auth';
+import React, { useState } from 'react'
+import './radio.scss' // Import the SCSS file with the custom radio styles
 
 const RadioSelect = ({ options, onSelect }) => {
   // State to hold the selected option
-  const [selectedOption, setSelectedOption] = useState(null);
+  const [selectedOption, setSelectedOption] = useState(null)
 
   // Function to handle option selection
   const handleOptionChange = (optionValue) => {
-    setSelectedOption(optionValue);
-    onSelect(optionValue); // Execute the function passed as prop
-  };
+    setSelectedOption(optionValue)
+    onSelect(optionValue) // Execute the function passed as prop
+  }
 
   return (
     <div className='radio-container-exportacao'>
@@ -31,7 +29,7 @@ const RadioSelect = ({ options, onSelect }) => {
         </div>
       ))}
     </div>
-  );
-};
+  )
+}
 
-export default RadioSelect;
+export default RadioSelect

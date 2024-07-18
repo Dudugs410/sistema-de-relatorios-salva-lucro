@@ -1,31 +1,22 @@
 /* eslint-disable react/react-in-jsx-scope */
 /* eslint-disable no-unused-vars */
-import { useState, useEffect, useContext, useRef } from 'react'
-
+import { useState, useEffect, useContext } from 'react'
 import './buscarVendas.scss'
 import { AuthContext } from '../../contexts/auth'
-import { VendasContext } from '../../pages/Vendas'
-
 import { toast } from 'react-toastify'
-import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-
 import '../../styles/global.scss'
 import './reactdatepicker.css'
 import Cookies from 'js-cookie'
-import { useCallback } from 'react'
                                                                                                                                        
 const BuscarClienteVendas = () => {
 	const [buscou, setBuscou] = useState(false)
-	const [arrayDados, setArrayDados] = useState([])
 	const [clicouPesquisar, setClicouPesquisar] = useState(false)
 
 	const {
-		setCnpj,
 		setLoading,
 		loadVendas,
 		setTotaisGlobal,
-		isDarkTheme,
 		vendas,
 		detalhes,
 		setDetalhes,
@@ -34,7 +25,6 @@ const BuscarClienteVendas = () => {
 		setVendas,
 		dataBuscaVendas,
 		cnpjBuscaVendas,
-		setCnpjBuscaVendas,
 		setTotalDebitoVendas,
 		setTotalCreditoVendas,
 		setTotalVoucherVendas,
@@ -42,11 +32,6 @@ const BuscarClienteVendas = () => {
 		setArrayAdmVendas,
 
 	} = useContext(AuthContext)
-    
-	/*useEffect(()=>{
-		setCnpj(Cookies.get('cnpj'))
-		setCnpjBusca(Cookies.get('cnpj'))
-	},[])*/
 
 	async function handleBusca(e) {
 
@@ -77,10 +62,10 @@ const BuscarClienteVendas = () => {
 				//adiciono .toLocaleDateString('pt-BR') às datas para que possamos comparar apenas o dia, mes e ano, sem levar em consideração a hora, minuto e segundos
 				if(buscou !== true){
 					if(dataBuscaVendas[0].toLocaleDateString('pt-BR') === dataBuscaVendas[1].toLocaleDateString('pt-BR')){
-						alerta(`executou a busca do dia ${dataBuscaVendas[0].toLocaleDateString('pt-BR')}`);
+						alerta(`executou a busca do dia ${dataBuscaVendas[0].toLocaleDateString('pt-BR')}`)
 						setBuscou(true)
 					} else if (dataBuscaVendas[0].toLocaleDateString('pt-BR') !== dataBuscaVendas[1].toLocaleDateString('pt-BR')){
-						alerta(`executou a busca do dia ${dataBuscaVendas[0].toLocaleDateString('pt-BR')} ao dia ${dataBuscaVendas[1].toLocaleDateString('pt-BR')}`);
+						alerta(`executou a busca do dia ${dataBuscaVendas[0].toLocaleDateString('pt-BR')} ao dia ${dataBuscaVendas[1].toLocaleDateString('pt-BR')}`)
 						setBuscou(true)
 					}
 				}   

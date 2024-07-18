@@ -8,9 +8,7 @@ import { FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward } from 'react-
 
 const TabelaCreditos = ({array}) =>{
 
-	const { isDarkTheme, dateConvert,
-			creditsDateRange, setCreditsTotal,
-	} = useContext(AuthContext)
+	const { dateConvert, creditsDateRange, setCreditsTotal } = useContext(AuthContext)
 
 	const [vendasArray, setVendasArray] = useState([])
 	const [vendasTeste, setVendasTeste] = useState([])

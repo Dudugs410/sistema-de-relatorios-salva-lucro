@@ -1,35 +1,35 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
 
 const Relogio = () => {
-    const [currentTime, setCurrentTime] = useState(null);
+    const [currentTime, setCurrentTime] = useState(null)
   
     useEffect(() => {
       const retornaDiaAtual = async () => {
         try {
-          const response = await axios.get('http://worldtimeapi.org/api/ip');
-          const currentDate = new Date(response.data.datetime);
-          setCurrentTime(currentDate);
+          const response = await axios.get('http://worldtimeapi.org/api/ip')
+          const currentDate = new Date(response.data.datetime)
+          setCurrentTime(currentDate)
         } catch (error) {
-          console.error('Error fetching current date and time:', error);
+          console.error('Error fetching current date and time:', error)
         }
-      };
+      }
   
-      retornaDiaAtual(); // Fetch the current time from the API when the component mounts
+      retornaDiaAtual() // Fetch the current time from the API when the component mounts
   
-      let animationFrameId;
+      let animationFrameId
   
       const updateClock = () => {
-        setCurrentTime(new Date());
-        animationFrameId = requestAnimationFrame(updateClock);
-      };
+        setCurrentTime(new Date())
+        animationFrameId = requestAnimationFrame(updateClock)
+      }
   
-      animationFrameId = requestAnimationFrame(updateClock); // Start the clock
+      animationFrameId = requestAnimationFrame(updateClock) // Start the clock
   
       return () => {
-        cancelAnimationFrame(animationFrameId); // Cleanup on unmount
-      };
-    }, []);
+        cancelAnimationFrame(animationFrameId) // Cleanup on unmount
+      }
+    }, [])
   
     return (
       <div>
@@ -39,7 +39,7 @@ const Relogio = () => {
           <div>Loading...</div>
         )}
       </div>
-    );
-  };
+    )
+  }
   
-  export default Relogio;
+  export default Relogio

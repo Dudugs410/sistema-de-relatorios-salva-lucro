@@ -26,13 +26,13 @@ const BanksTable = ({banksList, adminsList, bannersList, productList, onAdd, onE
     }
 
     useEffect(() => {
-        setFilteredItems(banksList); // Initialize with all items
-    }, [banksList]);
+        setFilteredItems(banksList) // Initialize with all items
+    }, [banksList])
 
     useEffect(() => {
-        setCurrentPage(1); // Reset page to 1 when filter changes
-        filterItems();
-    }, [filter]);
+        setCurrentPage(1) // Reset page to 1 when filter changes
+        filterItems()
+    }, [filter])
 
     // Change page functions
     const goToPrevPage = () => {
@@ -58,7 +58,7 @@ const BanksTable = ({banksList, adminsList, bannersList, productList, onAdd, onE
     
         const filterItems = () => {
             if (filter === '') {
-                setFilteredItems(banksList);
+                setFilteredItems(banksList)
             } else {
                 const filtered = banksList.filter(item =>
                     item.BANCO.toLowerCase().includes(filter.toLowerCase()) ||
@@ -72,10 +72,10 @@ const BanksTable = ({banksList, adminsList, bannersList, productList, onAdd, onE
                     item.CLICODIGO.toString().toLowerCase().includes(filter.toLowerCase()) ||
                     item.CLDCODIGO.toString().toLowerCase().includes(filter.toLowerCase()) ||
                     item.CODIGO.toString().toLowerCase().includes(filter.toLowerCase())
-                );
-                setFilteredItems(filtered);
+                )
+                setFilteredItems(filtered)
             }
-        };
+        }
     
         return (
             <>
