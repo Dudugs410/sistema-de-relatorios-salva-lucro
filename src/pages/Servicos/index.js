@@ -1,15 +1,7 @@
-import Calendar from 'react-calendar'
 import './servicos.scss'
-import { useContext, useEffect, useState, createContext } from 'react' 
+import { useContext, useEffect } from 'react' 
 import { AuthContext } from '../../contexts/auth'
-// import DateRangePicker from '../../components/Componente_TabelaServicos'
-import GerarRelatorio from '../../components/Componente_GerarRelatorio'
-import Cookies from 'js-cookie'
 import { useLocation } from 'react-router-dom'
-import BuscarClienteServicos from '../../components/Componente_BuscarClienteServicos'
-import TabelaServicos from '../../components/Componente_TabelaServicos'
-import TabelaGenericaAdm from '../../components/Componente_TabelaAdm'
-
 import MyCalendar from '../../components/Componente_Calendario'
 import { toast } from 'react-toastify'
 import DisplayData from '../../components/Componente_DisplayData'
@@ -30,8 +22,6 @@ const Servicos = () =>{
     btnDisabledServices, setBtnDisabledServices,
     groupServicesByAdmin,
     exportServices,
-
-	  alerta,
 	} = useContext(AuthContext)
 
   useEffect(()=>{
