@@ -1,4 +1,4 @@
-import { Link, Navigate, useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { FiMoon, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText, FiClipboard, FiDownload, FiCalendar, FiPaperclip, FiSettings, FiTruck, FiShoppingBag, FiTable, FiLink } from "react-icons/fi"
 import { AuthContext } from "../../contexts/auth"
 import React, { useContext, useEffect, useState } from "react"
@@ -18,8 +18,8 @@ const Header = () => {
     const [showExportacoesDropdown, setShowExportacoesDropdown] = useState(false)
 
     const handleCheckboxChangeCalendar = () => {
-		setIsCheckedCalendar(!isCheckedCalendar); // Toggle the state
-	  };
+		setIsCheckedCalendar(!isCheckedCalendar) // Toggle the state
+	  }
   
 	  useEffect(()=>{
         if (localStorage.getItem('localUsers') !== null) {
@@ -28,7 +28,7 @@ const Header = () => {
                 if (user.id === Cookies.get('userID')) {
                     user.calendar = isCheckedCalendar
                 }
-            });
+            })
             localStorage.setItem('localUsers', JSON.stringify(localUsersTemp))
         } else {
             let localUsersTemp = []
@@ -47,9 +47,9 @@ const Header = () => {
             let localUsersTemp = JSON.parse(localStorage.getItem('localUsers'))
             localUsersTemp.map(user => {
                 if (user.id === Cookies.get('userID')) {
-                    user.theme = updatedChecked;
+                    user.theme = updatedChecked
                 }
-            });
+            })
             localStorage.setItem('localUsers', JSON.stringify(localUsersTemp))
         } else {
             let localUsersTemp = []
@@ -105,7 +105,7 @@ const Header = () => {
                 }
     },[isChecked])
     
-    const [optionsWithIcons, setOptionsWithIcons] = useState([]);
+    const [optionsWithIcons, setOptionsWithIcons] = useState([])
 
     useEffect(() => {
         const icones = {
@@ -123,7 +123,7 @@ const Header = () => {
             'FiShoppingBag': FiShoppingBag,
             'FiTable': FiTable,
             'FiLink': FiLink,
-        };
+        }
 
         const orderedOptions = [
             { nome: 'Início', icone: icones['FiHome'], rota: '/dashboard' },
@@ -132,7 +132,7 @@ const Header = () => {
             { nome: 'Serviços', icone: icones['FiTool'], rota: '/servicos' },
             { nome: 'Bancos', icone: icones['FiLink'], rota: '/cadastrodebancos' },
             { nome: 'Taxas', icone: icones['FiTable'], rota: '/taxas'},
-        ];
+        ]
 
         {/*             { nome: 'Relatórios', icone: icones['FiFileText'], children: [
                 { nome: 'Financeiro', rota: '/financeiro' },
@@ -263,4 +263,4 @@ const Header = () => {
     )
 }
 
-export default Header;
+export default Header

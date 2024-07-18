@@ -1,11 +1,8 @@
 /* eslint-disable react/react-in-jsx-scope */
 
-import { useContext, useEffect, useState } from 'react'
 import './totalModalidade.scss'
-import { AuthContext } from '../../contexts/auth'
 
 const TotalModalidadesComp = ({totals}) =>{
-	const { isDarkTheme } = useContext(AuthContext)
 
 	const debit = totals.debit || 0
 	const credit = totals.credit || 0

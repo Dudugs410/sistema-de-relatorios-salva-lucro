@@ -6,10 +6,7 @@ import { AuthContext } from '../../contexts/auth'
 import { FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward } from 'react-icons/fi'
 
 const TabelaServicos = ({ array }) => {  
-	const { 
-		isDarkTheme, dateConvert,
-		servicesDateRange,
-	} = useContext(AuthContext)
+	const { dateConvert,  servicesDateRange } = useContext(AuthContext)
 
 	const [vendasArray, setVendasArray] = useState([])
 	const [vendasTeste, setVendasTeste] = useState([])

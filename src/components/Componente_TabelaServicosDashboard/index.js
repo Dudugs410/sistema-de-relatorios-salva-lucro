@@ -8,12 +8,7 @@ import '../Componente_TabelaVendasCreditos/detalhesCredito.scss'
 import '../../styles/global.scss'
 
 const TabelaServicosDashboard = ({ array }) => {  
-	const { 
-		dateConvert, 
-		isDarkTheme, 
-		dataBuscaInicialServicos, 
-		dataBuscaFinalServicos, 
-	} = useContext(AuthContext)
+	const { dateConvert	} = useContext(AuthContext)
 
 	const [vendasArray, setVendasArray] = useState([])
 

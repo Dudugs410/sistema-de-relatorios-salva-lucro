@@ -1,11 +1,9 @@
-import { useEffect, useContext, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { AuthContext } from '../../contexts/auth'
 import Select from 'react-select'
 
 import '../../styles/global.scss'
 import '../Financeiro/financeiro.scss'
-import Calendar from 'react-calendar'
 import MyCalendar from '../../components/Componente_Calendario'
 import base64PDFdownload from '../../components/Componente_Base64PDF'
 

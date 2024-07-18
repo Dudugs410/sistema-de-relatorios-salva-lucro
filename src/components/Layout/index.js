@@ -2,39 +2,38 @@ import Header from "../Header"
 import Footer from "../Footer"
 import SeletorCliente from "../SeletorCliente"
 import { FiMail, FiPlusCircle } from "react-icons/fi"
-import { useContext, useEffect, useState } from "react"
-import { AuthContext } from "../../contexts/auth"
+import { useEffect, useState } from "react"
 import '../../styles/global.scss'
 import './layout.scss'
 import ImageUpload from "../Componente_ImageUpload"
 
 function Layout({ children }){
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [uploadedImages, setUploadedImages] = useState([]);
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [uploadedImages, setUploadedImages] = useState([])
         
     const openModal = () => {
-        setIsModalOpen(true);
-    };
+        setIsModalOpen(true)
+    }
     
     const closeModal = () => {
-        setIsModalOpen(false);
-    };
+        setIsModalOpen(false)
+    }
 
     const handleClick = () => {
         openModal()
     }
 
     const handleUpload = (images) => {
-      setUploadedImages(images);
-    };
+      setUploadedImages(images)
+    }
 
 
     const [formData, setFormData] = useState({
         nome: '',
         email: '',
         mensagem: ''
-      });
+      })
 
       let nomeTemp
       let emailTemp
@@ -42,15 +41,15 @@ function Layout({ children }){
     
       const handleChangeNome = (e) => {
         nomeTemp = e.target.value
-      };
+      }
 
       const handleChangeEmail = (e) => {
         emailTemp = e.target.value
-      };
+      }
 
       const handleChangeMensagem = (e) => {
         mensagemTemp = e.target.value
-      };
+      }
 
       const [enviar, setEnviar] = useState(false)
     
@@ -59,11 +58,11 @@ function Layout({ children }){
         setFormData(objTemp)
         setEnviar(true)
         //
-      };
+      }
 
       useEffect(()=>{
         if(enviar && formData){
-            window.location.href = `mailto:eduardo@salvalucro.com.br?subject=${formData.nome}&body=${formData.mensagem}`;
+            window.location.href = `mailto:eduardo@salvalucro.com.br?subject=${formData.nome}&body=${formData.mensagem}`
             setEnviar(false)
             setFormData({
                 nome: '',
@@ -113,11 +112,11 @@ function Layout({ children }){
               <button className='btn btn-global' type='submit' >Enviar</button>
             </form>
             </div>
-          );
+          )
     }
 
     const Modal = ({ isOpen, onClose, children }) => {
-        if (!isOpen) return null;
+        if (!isOpen) return null
         
         return (
             <div className="modal-layout" onClick={onClose}>
@@ -125,8 +124,8 @@ function Layout({ children }){
                     {children}
                 </div>
             </div>
-        );
-    };
+        )
+    }
           
     const Contato = () => { 
         return (
@@ -137,28 +136,27 @@ function Layout({ children }){
                     </div>
                 </Modal>
             </div>
-        );
-    };
+        )
+    }
 
     return(
-        <div className='layout'>
-            <div className='appPage'>
-                <Header />
-                <SeletorCliente/>
-                { children }
-                <div className='btn-contato-container'>
-                    <button className='btn-global btn-contato' onClick={handleClick}>
-                        <span><FiMail size={30}/></span>
-                    </button>
-                </div>
-                <span className='span-plus' ><FiPlusCircle size={20}/></span>
-                {isModalOpen && (
-                    <Contato />
-                    )}
-                <Footer />
-            </div>
-        </div>
-
+      <div className='layout'>
+          <div className='appPage'>
+              <Header />
+              <SeletorCliente/>
+              { children }
+              <div className='btn-contato-container'>
+                  <button className='btn-global btn-contato' onClick={handleClick}>
+                      <span><FiMail size={30}/></span>
+                  </button>
+              </div>
+              <span className='span-plus' ><FiPlusCircle size={20}/></span>
+              {isModalOpen && (
+                  <Contato />
+                  )}
+              <Footer />
+          </div>
+      </div>
     )
 }
 

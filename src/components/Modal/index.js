@@ -1,12 +1,8 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect } from 'react'
 import './modal.scss'
-import { FiX } from 'react-icons/fi';
-import { AuthContext } from '../../contexts/auth';
-
+import { FiX } from 'react-icons/fi'
 
 const Modal = ({ onClose, children }) => {
-
-  const {isDarkTheme} = useContext(AuthContext)
 
   useEffect(()=>{
     sessionStorage.setItem('showModalDash', false)
@@ -27,4 +23,4 @@ const Modal = ({ onClose, children }) => {
   )
 }
 
-export default Modal;
+export default Modal

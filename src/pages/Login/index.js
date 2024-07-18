@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { AuthContext } from "../../contexts/auth"
-import Cookies from "js-cookie"
 import salvaLucroLogo from '../../assets/logoSalvaLucro.png'
 import './login.css'
 import { useContext } from "react"
 import LoadingModal from "../../components/LoadingModal"
-import api from "../../services/api"
-import md5 from "md5"
 
 ///////////////////////////////////////////////////////////////
 

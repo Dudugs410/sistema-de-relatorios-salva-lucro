@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { Resizable } from 'react-resizable';
-import 'react-resizable/css/styles.css'; // Import resizable styles
+import React, { useState } from 'react'
+import { Resizable } from 'react-resizable'
+import 'react-resizable/css/styles.css' // Import resizable styles
 import './resizable.scss'
 
 const ResizableComponent = ({ width, height, children }) => {
-  const [size, setSize] = useState({ width, height });
+  const [size, setSize] = useState({ width, height })
 
   const onResize = (event, { size }) => {
-    setSize(size);
-  };
+    setSize(size)
+  }
 
   return (
     <Resizable
@@ -20,7 +20,7 @@ const ResizableComponent = ({ width, height, children }) => {
     >
       <div className='responsive' style={{ width: size.width, height: size.height }}>{children}</div>
     </Resizable>
-  );
-};
+  )
+}
 
-export default ResizableComponent;
+export default ResizableComponent

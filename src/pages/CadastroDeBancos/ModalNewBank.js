@@ -1,12 +1,10 @@
-import { useEffect, useState } from 'react';
-import { AuthContext } from '../../contexts/auth';
-import Cookies from 'js-cookie';
-import '../../styles/global.scss';
-import './cadastroDeBancos.scss';
-import Select from 'react-select';
-import { FiX } from 'react-icons/fi';
-import { toast } from 'react-toastify';
-import { sub } from 'date-fns';
+import { useEffect, useState } from 'react'
+import Cookies from 'js-cookie'
+import '../../styles/global.scss'
+import './cadastroDeBancos.scss'
+import Select from 'react-select'
+import { FiX } from 'react-icons/fi'
+import { toast } from 'react-toastify'
 
 
 const ModalNewBank = ({ onClose, cliAdqOptions, setIsSelected, cliOptions, admOptions, banOptions, productOptions, subproductOptions, addBank, loadBanks, setBanksList }) => {
@@ -33,8 +31,8 @@ const ModalNewBank = ({ onClose, cliAdqOptions, setIsSelected, cliOptions, admOp
     const [isLoadingBanks, setIsLoadingBanks] = useState(false)
 
     const isObjectFullyPopulated = (obj) => {
-        return obj && Object.values(obj).every(value => value !== null && value !== '' && value.label !== 'Selecione' && value !== 'Sem Estabelecimentos');
-    };
+        return obj && Object.values(obj).every(value => value !== null && value !== '' && value.label !== 'Selecione' && value !== 'Sem Estabelecimentos')
+    }
 
     const resetValues = () => {
         setCodeBankCli(0)
@@ -46,7 +44,7 @@ const ModalNewBank = ({ onClose, cliAdqOptions, setIsSelected, cliOptions, admOp
         setSelectedBank('')
         setSelectedAgency('')
         setSelectedAccount('')
-    };
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -62,15 +60,15 @@ const ModalNewBank = ({ onClose, cliAdqOptions, setIsSelected, cliOptions, admOp
             Banco: selectedBank,
             Agencia: selectedAgency,
             Conta: selectedAccount,
-        };
+        }
 
         if (isObjectFullyPopulated(newBankObj)) {
             try {
-                toast.dismiss();
+                toast.dismiss()
                 await toast.promise(addBank(newBankObj), {
                     success: 'Cadastrado com sucesso!',
                     pending: 'Carregando...',
-                });
+                })
 
                 const updatedBanks = await loadBanks()
                 setBanksList(updatedBanks)
@@ -231,7 +229,7 @@ const ModalNewBank = ({ onClose, cliAdqOptions, setIsSelected, cliOptions, admOp
                 </div>
             </form>
         </div>
-    );
-};
+    )
+}
 
-export default ModalNewBank;
+export default ModalNewBank

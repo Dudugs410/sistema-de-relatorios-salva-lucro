@@ -133,11 +133,11 @@ const Taxas = () => {
         setEditableTax({})
     }
 
-    const [isOverlayVisible, setOverlayVisible] = useState(false);
+    const [isOverlayVisible, setOverlayVisible] = useState(false)
 
     const handleDelete = async (object) => {
         const onConfirm = async() => {
-            setOverlayVisible(false);
+            setOverlayVisible(false)
 
             const toBeDeleted = {
                 CODIGO: object.CODIGO,
@@ -159,25 +159,25 @@ const Taxas = () => {
             } catch (error) {
                 console.error('Error handling busca:', error)
             }
-            toast.dismiss();
-        };
+            toast.dismiss()
+        }
 
         const onCancel = () => {
-            setOverlayVisible(false);
-            toast.dismiss();
-        };
+            setOverlayVisible(false)
+            toast.dismiss()
+        }
 
-        setOverlayVisible(true);
+        setOverlayVisible(true)
         toast(
             <ConfirmDelete onConfirm={onConfirm} onCancel={onCancel} />,
             {
-                position: "top-center",
+                position: "bottom-center",
                 autoClose: false,
                 closeOnClick: false,
                 closeButton: false,
                 draggable: false,
             }
-        );
+        )
     }
 
     const handleCancel = () => {
@@ -224,13 +224,13 @@ const Taxas = () => {
         const [itemsPerPage] = useState(15) // Number of items per page
     
         useEffect(() => {
-            setFilteredItems(taxesList); // Initialize with all items
-        }, [taxesList]);
+            setFilteredItems(taxesList) // Initialize with all items
+        }, [taxesList])
     
         useEffect(() => {
-            setCurrentPage(1); // Reset page to 1 when filter changes
-            filterItems();
-        }, [filter]);
+            setCurrentPage(1) // Reset page to 1 when filter changes
+            filterItems()
+        }, [filter])
 
         // Change page functions
         const goToPrevPage = () => {
@@ -682,7 +682,7 @@ const Taxas = () => {
                             <>  
                                 <span className='subtitle'>Sem Taxas Cadastradas</span>
                                 <br/> 
-                                <button className='btn btn-primary btn-global' onClick={()=>{setIsModalOpen(true)}}><FiPlus className='icon' />Adicionar Taxa</button>
+                                <button className='btn btn-primary btn-global' onClick={()=>{setIsModalOpen(true)}}><FiPlus className='icon' />Adicionar</button>
                             </>
                             }
                             {

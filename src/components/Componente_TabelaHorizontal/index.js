@@ -1,8 +1,7 @@
 /* eslint-disable react/prop-types */
-import React, { useContext } from 'react'
+import React from 'react'
 
 import './tabelaHorizontal.scss'
-import { AuthContext } from '../../contexts/auth'
 
 function TabelaHorizontal({header, valor}){
 

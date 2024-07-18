@@ -1,4 +1,4 @@
-import { useContext, useRef } from 'react'
+import { useRef } from 'react'
 import { FiFilePlus } from 'react-icons/fi'
 import '../Financeiro/financeiro.scss'
 import '../../styles/global.scss'

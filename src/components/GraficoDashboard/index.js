@@ -1,16 +1,16 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Pie } from 'react-chartjs-2';
-import Modal from '../Modal';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
+import { Pie } from 'react-chartjs-2'
+import Modal from '../Modal'
 import './grafico.scss'
-import { AuthContext } from '../../contexts/auth';
-import TabelaVendasDashboard from '../Componente_TabelaVendasDashboard';
-import TabelaCreditosDashboard from '../Componente_TabelaCreditosDashboard';
-import TabelaServicosDashboard from '../Componente_TabelaServicosDashboard';
+import { AuthContext } from '../../contexts/auth'
+import TabelaVendasDashboard from '../Componente_TabelaVendasDashboard'
+import TabelaCreditosDashboard from '../Componente_TabelaCreditosDashboard'
+import TabelaServicosDashboard from '../Componente_TabelaServicosDashboard'
 
 
 
-ChartJS.register(ArcElement, Tooltip, Legend);
+ChartJS.register(ArcElement, Tooltip, Legend)
 
 const PieChart = ({ data01, arrayAdm, tipo, dados } ) => {
 
@@ -23,28 +23,28 @@ const PieChart = ({ data01, arrayAdm, tipo, dados } ) => {
     switch (dados) {
       case 'vendas':
           setDado('Vendas')
-        break;
+        break
       case 'creditos':
           setDado('Créditos')
-        break;
+        break
       case 'servicos':
           setDado('Serviços')
-        break;
+        break
       default:
           setDado('')
-        break;
+        break
     }
   },[])
 
   const handleChartClick = useCallback((event, elements) => {
     if (elements.length > 0) {
-      const clickedElementIndex = elements[0].index;
-      const selectedAdmData = arrayAdm[clickedElementIndex];
+      const clickedElementIndex = elements[0].index
+      const selectedAdmData = arrayAdm[clickedElementIndex]
 
-      setSelectedAdm(selectedAdmData);
-      setShowAdmModal(true);
+      setSelectedAdm(selectedAdmData)
+      setShowAdmModal(true)
     }
-  }, [arrayAdm]);
+  }, [arrayAdm])
 
   // setando as cores do gráfico por administradora.
   // Caso não especificada, a cor será cinza.
@@ -122,7 +122,7 @@ const PieChart = ({ data01, arrayAdm, tipo, dados } ) => {
   }
 
   const generateColors = (labels) => {
-    return labels.map(label => labelColors[label] || 'grey');
+    return labels.map(label => labelColors[label] || 'grey')
   }
 
   const chartData = useMemo(() => {
@@ -136,8 +136,8 @@ const PieChart = ({ data01, arrayAdm, tipo, dados } ) => {
           borderWidth: 0.2,
         },
       ],
-    };
-  }, [data01]);
+    }
+  }, [data01])
   
   const chartOptions = {
     maintainAspectRatio: false,
@@ -153,17 +153,17 @@ const PieChart = ({ data01, arrayAdm, tipo, dados } ) => {
         labels: {
           // Use a callback function to generate custom legend labels
           generateLabels: function (chart) {
-            const { data } = chart;
+            const { data } = chart
             if (data.labels.length && data.datasets.length) {
               return data.labels.map((label, index) => {
-                const value = data.datasets[0].data[index];
+                const value = data.datasets[0].data[index]
                 const formattedValue = value.toLocaleString("pt-BR", {
                   style: "currency",
                   currency: "BRL",
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                   
-                });
+                })
                 return {
                   text: `${label}: ${formattedValue}`,
                   fillStyle: data.datasets[0].backgroundColor[index],
@@ -171,24 +171,24 @@ const PieChart = ({ data01, arrayAdm, tipo, dados } ) => {
                   hidden:
                     isNaN(data.datasets[0].data[index]) ||
                     chart.getDatasetMeta(0).data[index].hidden,
-                };
-              });
+                }
+              })
             }
-            return [];
+            return []
           },
         },
       },
       tooltip: {
         callbacks: {
           label: (context) => {
-            const value = context.dataset.data[context.dataIndex];
+            const value = context.dataset.data[context.dataIndex]
             const formattedValue = value.toLocaleString("pt-BR", {
               style: "currency",
               currency: "BRL",
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
-            });
-            return `Total de ${dado}: ${formattedValue}`;
+            })
+            return `Total de ${dado}: ${formattedValue}`
           },
         },
       },
@@ -196,15 +196,15 @@ const PieChart = ({ data01, arrayAdm, tipo, dados } ) => {
     layout: {
       autoPadding: true,
     },
-  };
+  }
 
-  const styleTag = document.createElement('style');
+  const styleTag = document.createElement('style')
 styleTag.innerHTML = `
   .chartjs-render-monitor .chart-legend li span {
     color: red; /* Change the color here */
   }
-`;
-document.head.appendChild(styleTag);
+`
+document.head.appendChild(styleTag)
   
   return (
     <div className='chart-container' style={{ height: '290px', position: 'relative', maintainAspectRatio: false }}>
@@ -221,9 +221,9 @@ document.head.appendChild(styleTag);
         </Modal>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default PieChart;
+export default PieChart
 
 //////////////////////////////////////////////////////////////////////////////////////////

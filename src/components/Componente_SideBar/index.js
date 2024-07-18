@@ -1,36 +1,34 @@
-import React, { useContext, useEffect } from "react";
-import { AuthContext } from "../../contexts/auth";
-import { FiMenu } from "react-icons/fi";
+import React, { useEffect } from "react"
+import { FiMenu } from "react-icons/fi"
 import '../Header/header.scss'
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom"
 
 
 
 const SideBar = ({ options }) =>{
-    const { isDarkTheme } = useContext(AuthContext)
 
     useEffect(() => {
         function handleClickOutside(event) {
-            const sidebarButton = document.querySelector('.side-bar-container .btn-primary');
-            const collapseElement = document.getElementById('multiCollapseExample1');
+            const sidebarButton = document.querySelector('.side-bar-container .btn-primary')
+            const collapseElement = document.getElementById('multiCollapseExample1')
             
             // Check if click occurred outside the collapsed sidebar and the sidebar button is not clicked
             if (collapseElement && !collapseElement.contains(event.target) && event.target !== sidebarButton) {
-                const collapse = bootstrap.Collapse.getInstance(collapseElement);
+                const collapse = bootstrap.Collapse.getInstance(collapseElement)
                 if (collapse && !collapse._isTransitioning) {
-                    collapse.hide();
+                    collapse.hide()
                 }
             }
         }
 
         // Add event listener to detect clicks on document body
-        document.addEventListener('click', handleClickOutside);
+        document.addEventListener('click', handleClickOutside)
         
         return () => {
             // Remove event listener when component unmounts
-            document.removeEventListener('click', handleClickOutside);
-        };
-    }, []);
+            document.removeEventListener('click', handleClickOutside)
+        }
+    }, [])
 
     return (
             <div className='side-bar-container'>
@@ -79,7 +77,7 @@ const SideBar = ({ options }) =>{
                     </div>
                 </div>
             </div>
-        );
+        )
     }
 
     export default SideBar
