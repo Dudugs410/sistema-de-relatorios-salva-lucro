@@ -79,33 +79,33 @@ const Vendas = () =>{
   }
 
   return(
-      <div className='appPage'>
-        <div className='page-vendas-background'>
-          <div className='page-content-vendas'>
-            <div className='vendas-title-container'>
-              <h1 className='vendas-title'>Calendário de Vendas</h1>
-            </div>
-            <div className='component-container-vendas'>
+    <div className='appPage'>
+      <div className='page-vendas-background'>
+        <div className='page-content-vendas'>
+          <div className='vendas-title-container'>
+            <h1 className='vendas-title'>Calendário de Vendas</h1>
+          </div>
+          <div className='component-container-vendas'>
             {salesPageArray !== null ? (
               salesPageArray.length > 0 ? (
-                  <DisplayData 
-                    dataArray={salesPageArray} 
-                    adminDataArray={salesPageAdminArray} 
-                    totals={salesTotal} 
-                    onGoBack={resetValues} 
+                  <DisplayData
+                    dataArray={salesPageArray}
+                    adminDataArray={salesPageAdminArray}
+                    totals={salesTotal}
+                    onGoBack={resetValues}
                   />
                 ) : (
-                  <MyCalendar 
-                    onLoadData={handleLoadData} 
-                    getCalendarDate={handleDateRangeChange} 
-                    btnDisabled={btnDisabledSales} 
+                  <MyCalendar
+                    onLoadData={handleLoadData}
+                    getCalendarDate={handleDateRangeChange}
+                    btnDisabled={btnDisabledSales}
                   />
                 )
-              ) : null}
-            </div>
+              ) : null }
           </div>
         </div>
       </div>
+    </div>
   )
 }
 
