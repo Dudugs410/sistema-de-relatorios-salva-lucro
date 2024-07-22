@@ -184,6 +184,7 @@ function AuthProvider({ children }){
 				}
 			} catch (error) {
 				setBtnDisabledSales(false)
+				toast.error('Erro ao Carregar Vendas ', error.response.status )
 				console.error('Error fetching vendas:', error)
 				setErrorSales(true)
 				if (error.response.status === 401) {
@@ -230,9 +231,11 @@ function AuthProvider({ children }){
 				}
 			} catch (error) {
 				setBtnDisabledCredits(false)
+				toast.error('Erro ao Carregar Créditos ', error.response.status )
 				console.error('Error fetching credits:', error)
 				if(error.response.status === 401){
 					logout()
+					alert('erro 401 - não autorizado')
 				}
 				return []
 			} finally{
@@ -273,6 +276,7 @@ function AuthProvider({ children }){
 				}
 			} catch (error) {
 				setBtnDisabledServices(false)
+				toast.error('Erro ao Carregar Serviços ', error.response.status )
 				console.log(error)
 				setErrorServices(true)
 				if (error.response.status === 401) {
@@ -478,9 +482,17 @@ function AuthProvider({ children }){
 					let body = bank
 					const response = await api.post('banco', body)
 					console.log('response:', response)
+					if (response.ok) {
+						toast.dismiss()
+						toast.success('Banco adicionado com sucesso!')
+					} else {
+						toast.dismiss()
+						toast.error('Erro ao alterar Banco!')
+					}
 				} else {
 					console.log('Invalid client code:', apiClientCode)
 				}
+
 			} catch (error) {
 				console.error('Error adding banco:', error)
 				if (error.response.status === 401) {

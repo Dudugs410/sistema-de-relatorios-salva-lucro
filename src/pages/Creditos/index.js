@@ -53,8 +53,6 @@ async function handleLoadData(e) {
     toast.dismiss()
     await toast.promise(loadData(), {
       pending: 'Carregando...',
-      success: 'Carregado com Sucesso',
-      error: 'Ocorreu um Erro',
     })
     setBtnDisabledCredits(false)
   } catch (error) {
@@ -98,12 +96,24 @@ async function loadData() {
 				<h1 className='vendas-title'>Calendário de Créditos</h1>
 			  </div>
 			  <div className='component-container-vendas'>
-				{ creditsPageArray.length > 0 ? 
-          <DisplayData dataArray={creditsPageArray} adminDataArray={creditsPageAdminArray} totals={creditsTotal} onGoBack={resetValues}/>
-          : 
-          <MyCalendar onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange} btnDisabled={btnDisabledCredits}/> }
+				{ creditsPageArray !== null ?
+          (creditsPageArray.length > 0 ? (
+              <DisplayData 
+                dataArray={creditsPageArray} 
+                adminDataArray={creditsPageAdminArray} 
+                totals={creditsTotal} 
+                onGoBack={resetValues}
+              />
+            ) : (
+              <MyCalendar 
+                onLoadData={handleLoadData} 
+                getCalendarDate={handleDateRangeChange} 
+                btnDisabled={btnDisabledCredits} 
+              />
+            )
+          ) : null }
+			    </div>
 			  </div>
-			</div>
 		  </div>
 		</div>
 	)
