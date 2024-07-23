@@ -151,6 +151,8 @@ const ModalNewBank = ({ onClose, cliAdqOptions, setIsSelected, cliOptions, admOp
               style={{ height: '100%' }}
               type="text"
               id="bankInput"
+              inputMode="numeric" 
+              pattern="[0-9]*"
               value={selectedBank}
               onChange={(e) => setSelectedBank(e.target.value)}
             />
@@ -161,6 +163,8 @@ const ModalNewBank = ({ onClose, cliAdqOptions, setIsSelected, cliOptions, admOp
               style={{ height: '100%' }}
               type="text"
               id="agencyInput"
+              inputMode="numeric" 
+              pattern="[0-9]*"
               value={selectedAgency}
               onChange={(e) => setSelectedAgency(e.target.value)}
             />
@@ -171,6 +175,8 @@ const ModalNewBank = ({ onClose, cliAdqOptions, setIsSelected, cliOptions, admOp
               style={{ height: '100%' }}
               type="text"
               id="accountInput"
+              inputMode="numeric" 
+              pattern="[0-9]*"
               value={selectedAccount}
               onChange={(e) => setSelectedAccount(e.target.value)}
             />

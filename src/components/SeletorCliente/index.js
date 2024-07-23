@@ -180,7 +180,7 @@ const SeletorCliente = () => {
                 options={groupOptions}
                 onChange={handleGroupChange}
                 value={selectedGroup}
-                isDisabled={fetchingData}
+                //isDisabled={fetchingData}
                 menuPortalTarget={document.body}
                 menuPosition="fixed"
               />
@@ -195,7 +195,7 @@ const SeletorCliente = () => {
                 placeholder="Selecione o Cliente / Filial"
                 onChange={handleClientChange}
                 value={selectedClient}
-                isDisabled={(!selectedGroup || fetchingData)}
+                //isDisabled={(!selectedGroup || fetchingData)}
                 menuPortalTarget={document.body}
                 menuPosition="fixed"
               />

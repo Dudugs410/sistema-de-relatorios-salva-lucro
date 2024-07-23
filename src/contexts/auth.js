@@ -131,7 +131,6 @@ function AuthProvider({ children }){
 				console.error(error)
 				if (error.response.status === 401) {
 					logout()
-					alert('Sessão expirada. Faça login novamente.')
 				}
 				throw new Error(error.message) // Re-throw the error for handling in the caller function
 			}
@@ -189,7 +188,6 @@ function AuthProvider({ children }){
 				setErrorSales(true)
 				if (error.response.status === 401) {
 					logout()
-					alert('Sessão expirada. Faça login novamente.')
 					return
 				}
 				return []
@@ -281,7 +279,6 @@ function AuthProvider({ children }){
 				setErrorServices(true)
 				if (error.response.status === 401) {
 					logout()
-					alert('Sessão expirada. Faça login novamente.')
 					return
 				}
 				return []
@@ -311,7 +308,6 @@ function AuthProvider({ children }){
 				console.error('Error fetching taxas:', error)
 				if (error.response.status === 401) {
 					logout()
-					alert('Sessão expirada. Faça login novamente.')
 					return
 				}
 				return []
@@ -336,7 +332,6 @@ function AuthProvider({ children }){
 				console.error('Error adding tax:', error)
 				if (error.response.status === 401) {
 					logout()
-					alert('Sessão expirada. Faça login novamente.')
 					return
 				}
 			} finally {
@@ -383,7 +378,6 @@ function AuthProvider({ children }){
 			  toast.error('Erro ao alterar taxa!')
 			  if (error.response.status === 401) {
 				logout()
-				alert('Sessão expirada. Faça login novamente.')
 				return
 			}
 			} finally {
@@ -426,7 +420,6 @@ function AuthProvider({ children }){
 				setIsLoadingTaxes(false)
 				if (error.response.status === 401) {
 					logout()
-					alert('Sessão expirada. Faça login novamente.')
 					return
 				}
 				return
@@ -463,7 +456,6 @@ function AuthProvider({ children }){
 				console.error('Error fetching banco:', error)
 				if (error.response.status === 401) {
 					logout()
-					alert('Sessão expirada. Faça login novamente.')
 					return
 				}
 				return []
@@ -497,7 +489,6 @@ function AuthProvider({ children }){
 				console.error('Error adding banco:', error)
 				if (error.response.status === 401) {
 					logout()
-					alert('Sessão expirada. Faça login novamente.')
 					return
 				}
 			} finally {
@@ -539,7 +530,6 @@ function AuthProvider({ children }){
 				toast.error('Erro ao alterar banco!')
 				if (error.response.status === 401) {
 					logout()
-					alert('Sessão expirada. Faça login novamente.')
 					return
 				}
 			} finally {
@@ -575,7 +565,6 @@ function AuthProvider({ children }){
 				setIsLoadingBanks(false)
 				if (error.response.status === 401) {
 					logout()
-					alert('Sessão expirada. Faça login novamente.')
 					return
 				}
 				return
@@ -608,7 +597,6 @@ function AuthProvider({ children }){
 				console.log(error)
 				if (error.response.status === 401) {
 					logout()
-					alert('Sessão expirada. Faça login novamente.')
 					return
 				}
 			}
@@ -630,7 +618,6 @@ function AuthProvider({ children }){
 				console.log(error)
 				if (error.response.status === 401) {
 					logout()
-					alert('Sessão expirada. Faça login novamente.')
 					return
 				}
 			}
@@ -656,7 +643,6 @@ function AuthProvider({ children }){
 				console.log(error)
 				if (error.response.status === 401) {
 					logout()
-					alert('Sessão expirada. Faça login novamente.')
 					return
 				}
 			}
@@ -672,7 +658,6 @@ function AuthProvider({ children }){
 				console.log(error)
 				if (error.response.status === 401) {
 					logout()
-					alert('Sessão expirada. Faça login novamente.')
 					return
 				}
 			}
@@ -701,7 +686,6 @@ function AuthProvider({ children }){
 				console.log(error)
 				if (error.response.status === 401) {
 					logout()
-					alert('Sessão expirada. Faça login novamente.')
 					return
 				}
 			}
@@ -719,7 +703,6 @@ function AuthProvider({ children }){
 				console.log(error)
 				if (error.response.status === 401) {
 					logout()
-					alert('Sessão expirada. Faça login novamente.')
 					return
 				}
 			}	
@@ -820,7 +803,6 @@ function AuthProvider({ children }){
 					console.error('Erro: ', error)
 					if (error.response.status === 401) {
 						logout()
-						alert('Sessão expirada. Faça login novamente.')
 						return
 					}
 				}
@@ -953,7 +935,6 @@ function AuthProvider({ children }){
 					console.error('Erro: ', error)
 					if (error.response.status === 401) {
 						logout()
-						alert('Sessão expirada. Faça login novamente.')
 						return
 					}
 				}
@@ -1054,7 +1035,6 @@ function AuthProvider({ children }){
 				console.log('Erro: ', error)
 				if (error.response.status === 401) {
 					logout()
-					alert('Sessão expirada. Faça login novamente.')
 					return
 				}
 			}
@@ -1218,7 +1198,6 @@ function AuthProvider({ children }){
 				console.log('erro: ', error)
 				if (error.response.status === 401) {
 					logout()
-					alert('Sessão expirada. Faça login novamente.')
 					return
 				}
 			}
@@ -1572,7 +1551,6 @@ function AuthProvider({ children }){
 			console.error(error)
 			if (error.response.status === 401) {
 				logout()
-				alert('Sessão expirada. Faça login novamente.')
 				return
 			}
 			return null // or handle the error as needed
