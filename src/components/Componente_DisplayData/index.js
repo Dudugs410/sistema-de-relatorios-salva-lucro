@@ -49,7 +49,7 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack }) => {
       </div>
       <div className='search-bar'>
         <form className='date-container-vendas'>
-          <div className='submit-container select-align'>
+          <div className='submit-container select-align voltar-align'>
             <button className='btn btn-secondary btn-global btn-pesquisar' onClick={onGoBack}>Voltar</button>
           </div>
         </form>
