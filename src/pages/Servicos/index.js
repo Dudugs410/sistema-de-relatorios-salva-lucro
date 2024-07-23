@@ -44,8 +44,6 @@ const Servicos = () =>{
       toast.dismiss()
       await toast.promise(loadData(), {
         pending: 'Carregando...',
-        success: 'Carregado com Sucesso',
-        error: 'Ocorreu um Erro',
       })
       setBtnDisabledServices(false)
     } catch (error) {
@@ -83,12 +81,25 @@ const Servicos = () =>{
 				<h1 className='vendas-title'>Serviços</h1>
 			  </div>
 			  <div className='component-container-vendas'>
-				{ servicesPageArray.length > 0 ? 
-          <DisplayData dataArray={servicesPageArray} adminDataArray={servicesPageAdminArray} totals={null} onGoBack={resetValues}/>
-          : 
-          <MyCalendar onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange} btnDisabled={btnDisabledServices}/> }
+          { servicesPageArray !== null ?
+            (servicesPageArray.length > 0 ? (
+              <DisplayData 
+                dataArray={servicesPageArray} 
+                adminDataArray={servicesPageAdminArray} 
+                totals={null} 
+                onGoBack={resetValues}
+              />
+              ) : (
+              <MyCalendar 
+                onLoadData={handleLoadData} 
+                getCalendarDate={handleDateRangeChange} 
+                btnDisabled={btnDisabledServices}
+              />
+              )
+            )
+          : null }
+			    </div>
 			  </div>
-			</div>
 		  </div>
 		</div>
 	)

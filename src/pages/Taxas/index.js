@@ -495,6 +495,8 @@ const Taxas = () => {
                             style={{height: '100%'}}
                             type="text"
                             id="taxInput"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
                             value={tax}
                             onChange={(e) => {
                                 const inputValue = e.target.value
@@ -634,6 +636,8 @@ const Taxas = () => {
                                 style={{height: '100%'}}
                                 type="text"
                                 id="taxInput"
+                                inputMode="numeric" 
+                                pattern="[0-9]*"
                                 value={tax}
                                 onChange={(e) => {
                                 const inputValue = e.target.value

@@ -117,16 +117,16 @@
     display: flex;
   }
 
-@media only screen and (max-width: 360px) {
+@media only screen and (max-width: 375px) {
     .modal-bancos{
         display: flex;
         flex-direction: column;
         width: 80%;
-        height: 90%;
+        height: 80%;
         border-radius: 20px;
         border: solid var(--secondary-color) 2px;
         background-color: var(--background-color);
-        padding: 20px;
+        padding: 18px;
         margin-left: 10%;
         margin-right: 10%;
         margin-top: 5%;

@@ -114,7 +114,7 @@ const BuscarClienteVendas = () => {
 		<>
 			<div className='search-bar'>
 				<form className='date-container-vendas'>       
-					<div className='submit-container select-align'>
+					<div className='submit-container select-align voltar-align'>
 						{ vendas.length > 0 ? <button className='btn btn-secondary btn-global btn-pesquisar' onClick={ (e) => { handleVoltar(e) }}>Voltar</button> : <button className='btn btn-primary btn-global btn-pesquisar' onClick={handleBusca}>Pesquisar</button>}
 					</div>
 				</form>
