@@ -496,7 +496,7 @@ const Taxas = () => {
                             type="text"
                             id="taxInput"
                             inputMode="numeric"
-                            pattern="[0-9]*"
+                            pattern="[0-9\-]*"
                             value={tax}
                             onChange={(e) => {
                                 const inputValue = e.target.value
@@ -637,7 +637,7 @@ const Taxas = () => {
                                 type="text"
                                 id="taxInput"
                                 inputMode="numeric" 
-                                pattern="[0-9]*"
+                                pattern="[0-9\-]*"
                                 value={tax}
                                 onChange={(e) => {
                                 const inputValue = e.target.value

@@ -474,12 +474,12 @@ function AuthProvider({ children }){
 					let body = bank
 					const response = await api.post('banco', body)
 					console.log('response:', response)
-					if (response.ok) {
+					if (response.data.success) {
 						toast.dismiss()
-						toast.success('Banco adicionado com sucesso!')
+						toast.success(response.data.mensagem)
 					} else {
 						toast.dismiss()
-						toast.error('Erro ao alterar Banco!')
+						toast.error('Erro ao adicionar Banco!')
 					}
 				} else {
 					console.log('Invalid client code:', apiClientCode)
