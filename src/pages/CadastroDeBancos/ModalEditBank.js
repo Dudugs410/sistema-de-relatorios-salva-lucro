@@ -97,12 +97,12 @@ const ModalEditBank = ({ editableBank, onClose, cliAdqOptions, setIsSelected, cl
 
     return (
         <div className='modal-bancos modal'>
-            <div className='header-container-taxa'>
-                <div className='title-container-global'>
-                    <h3 className='title-global' style={{margin: '0'}}>Editar Banco</h3>
-                </div>
-                <button className='btn btn-danger close-modal' onClick={onClose} style={{marginLeft: '5px'}}><FiX size={25}/></button>
-            </div>
+      <div className='header-container-taxa'>
+        <div className='title-container-global title-container-banco'>
+          <h3 className='title-global' style={{ margin: '0' }}>Editar Banco</h3>
+          <button className='btn btn-danger close-modal-banco' onClick={onClose}><FiX size={13} /></button>
+        </div>
+      </div>
             <hr className='hr-global'/>
             <form className='select-container-bancos' onSubmit={handleSubmit}>
             <div className='form-group-bancos'>

@@ -49,10 +49,10 @@ const ModalNewBank = ({ onClose, cliAdqOptions, setIsSelected, cliOptions, admOp
   return (
     <div className='modal-bancos modal'>
       <div className='header-container-taxa'>
-        <div className='title-container-global'>
+        <div className='title-container-global title-container-banco'>
           <h3 className='title-global' style={{ margin: '0' }}>Cadastrar Banco</h3>
+          <button className='btn btn-danger close-modal-banco' onClick={onClose}><FiX size={13} /></button>
         </div>
-        <button className='btn btn-danger close-modal' onClick={onClose} style={{ marginLeft: '5px' }}><FiX size={25} /></button>
       </div>
       <hr className='hr-global' />
       <form className='select-container-bancos' onSubmit={handleSubmit}>
@@ -188,7 +188,7 @@ const ModalNewBank = ({ onClose, cliAdqOptions, setIsSelected, cliOptions, admOp
         </div>
       </form>
     </div>
-  );
-};
+  )
+}
 
 export default ModalNewBank;
