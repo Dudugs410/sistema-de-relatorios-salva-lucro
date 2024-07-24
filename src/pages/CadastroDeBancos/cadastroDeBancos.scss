@@ -117,7 +117,36 @@
     display: flex;
   }
 
-@media only screen and (max-width: 375px) {
+  .modal-bancos .header-container-taxa {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+  }
+  
+  .modal-bancos .title-container-global {
+    flex-grow: 1;
+    text-align: center;
+    display: inline-grid;
+    align-items: center;
+  }
+  
+  .modal-bancos .close-modal-banco {
+    position: absolute;
+    right: 20px; /* Adjust this margin as needed */
+  }
+
+  .close-modal-banco{
+    display: flex;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    margin: 0;
+    align-items: center;
+    justify-content: center;
+  }
+
+@media only screen and (max-width: 412px) {
     .modal-bancos{
         display: flex;
         flex-direction: column;
@@ -126,10 +155,22 @@
         border-radius: 20px;
         border: solid var(--secondary-color) 2px;
         background-color: var(--background-color);
-        padding: 18px;
+        padding: 20px;
+        padding-top: 0;
         margin-left: 10%;
         margin-right: 10%;
         margin-top: 5%;
         z-index: 2;
     }
+
+    .title-container-banco{
+        margin-top:10%;
+        display: inline-flex;
+        justify-content: center;
+    }
+
+    .modal-bancos .close-modal-banco {
+        position: absolute;
+        right: 10px; /* Adjust this margin as needed */
+      }
 }

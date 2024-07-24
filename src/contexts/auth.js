@@ -145,7 +145,6 @@ function AuthProvider({ children }){
 		const [btnDisabledServices, setBtnDisabledServices] = useState(false)
 		const [btnDisabledSysmo, setBtnDisabledSysmo] = useState(false)
 
-
 		// retorna array de vendas //
 		const loadSales = async (startDate, endDate) => {
 			try {
@@ -474,19 +473,19 @@ function AuthProvider({ children }){
 					let body = bank
 					const response = await api.post('banco', body)
 					console.log('response:', response)
-					if (response.ok) {
+					if (response.data.success) {
 						toast.dismiss()
-						toast.success('Banco adicionado com sucesso!')
+						toast.success(response.data.mensagem)
 					} else {
 						toast.dismiss()
-						toast.error('Erro ao alterar Banco!')
+						toast.error('Erro ao adicionar Banco!')
 					}
 				} else {
-					console.log('Invalid client code:', apiClientCode)
+					console.log('código do cliente inválido:', apiClientCode)
 				}
 
 			} catch (error) {
-				console.error('Error adding banco:', error)
+				console.error('Erro ao adicionar banco:', error)
 				if (error.response.status === 401) {
 					logout()
 					return
@@ -501,7 +500,6 @@ function AuthProvider({ children }){
 			console.log('editBank:', editedBank)
 			setIsLoadingBanks(true)
 			try {
-					console.log('entrou no if')
 					let body = JSON.stringify(editedBank)
 					const response = await fetch('https://app.salvalucro.com.br/api/v1/banco', {
 					method: 'PUT',
