@@ -76,10 +76,10 @@ function Layout({ children }){
       const FormContato = () => {
         return (
           <div style={{ display: 'contents', position: 'relative', overflow: 'hidden' }}>
-              <div className='header-sticky'>
+              <div className='header-sticky' style={{paddingTop: '0'}}>
                 <div className='header-container-taxa'>
                   <div className='title-container-global title-container-banco title-container-contato' style={{ marginTop: '5%' }}>
-                    <h3 className='title-global' style={{ margin: '0' }}>Contato</h3>
+                    <h3 className='title-global' style={{ margin: '0', height: 'auto' }}>Contato</h3>
                     <button className='btn btn-danger close-modal-banco close-modal-contato' onClick={closeModal}><FiX size={13} /></button>
                   </div>
                 </div>
@@ -137,18 +137,18 @@ function Layout({ children }){
         )
     }
           
-    const Contato = () => { 
+    const Contato = () => {
         return (
-            <div>
-                <Modal isOpen={isModalOpen} onClose={closeModal}>
-                    <div className='modal-layout-body'>
-                        <FormContato />
-                    </div>
-                </Modal>
-            </div>
+          <div>
+            <Modal isOpen={isModalOpen} onClose={closeModal}>
+              <div className='modal-layout-body'>
+                <FormContato />
+              </div>
+            </Modal>
+          </div>
         )
     }
-
+    
     return(
       <div className='layout'>
           <div className='appPage'>
