@@ -54,6 +54,7 @@
     border: solid var(--secondary-color) 2px;
     background-color: var(--background-color);
     padding: 60px;
+    padding-top: 0;
     margin-left: 10%;
     margin-right: 10%;
     margin-top: 5%;
@@ -150,6 +151,7 @@
     position: -webkit-sticky; /* For Safari */
     position: sticky;
     top: 0;
+    padding-top: 60px;
     background: white;
     z-index: 2;
     width: 100%;
