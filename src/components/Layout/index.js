@@ -79,7 +79,7 @@ function Layout({ children }){
               <div className='header-sticky'>
                 <div className='header-container-taxa'>
                   <div className='title-container-global title-container-banco title-container-contato' style={{ marginTop: '5%' }}>
-                    <h3 className='title-global' style={{ margin: '0' }}>Contato</h3>
+                    <h3 className='title-global' style={{ margin: '0', height: 'auto' }}>Contato</h3>
                     <button className='btn btn-danger close-modal-banco close-modal-contato' onClick={closeModal}><FiX size={13} /></button>
                   </div>
                 </div>

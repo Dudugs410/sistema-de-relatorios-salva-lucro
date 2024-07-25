@@ -157,7 +157,6 @@ function AuthProvider({ children }){
 						datafinal: endDate,
 						codigoGrupo: apiGroupCode,
 					}
-	
 					let config = {
 						params: params
 					}
