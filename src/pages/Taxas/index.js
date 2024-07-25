@@ -425,13 +425,15 @@ const Taxas = () => {
 
         return (
             <div className={`modal-taxas modal ${isModalOpen ? 'modal-open' : ''}`} style={{ display: isModalOpen ? 'block' : 'none' }}>
-                <div className='header-container-taxa'>
-                    <div className='title-container-global'>
-                        <h3 className='title-global' style={{margin: '0'}}>Cadastrar Nova Taxa:</h3>
+                <div className='header-sticky' style={{paddingTop: '0'}}>
+                    <div className='header-container-taxa'>
+                        <div className='title-container-global title-container-banco title-container-contato' style={{ marginTop: '5%' }}>
+                            <h3 className='title-global' style={{ margin: '0', height: 'auto' }}>Cadastrar Taxa</h3>
+                            <button className='btn btn-danger close-modal-banco close-modal-contato' onClick={closeModal}><FiX size={13} /></button>
+                        </div>
                     </div>
-                    <button className='btn btn-danger close-modal' onClick={closeModal} style={{marginLeft: '5px'}}><FiX size={25}/></button>
+                    <hr className='hr-global'/>
                 </div>
-                <hr className='hr-global'/>
                 <form className='select-container-taxas' onSubmit={handleSubmit}>
                     <div className='form-group-taxas'>
                         <div className='group-element-taxas'>
@@ -577,13 +579,15 @@ const Taxas = () => {
     
         return (
             <div className={`modal-taxas modal ${isModalEditOpen ? 'modal-open' : ''}`} style={{ display: isModalEditOpen ? 'block' : 'none' }}>
-                <div className='header-container-taxa'>
-                    <div className='title-container-global'>
-                        <h3 className='title-global' style={{margin: '0'}}>Editar Taxa:</h3>
+                <div className='header-sticky' style={{paddingTop: '0'}}>
+                    <div className='header-container-taxa'>
+                        <div className='title-container-global title-container-banco title-container-contato' style={{ marginTop: '5%' }}>
+                            <h3 className='title-global' style={{ margin: '0', height: 'auto' }}>Cadastrar Taxa</h3>
+                            <button className='btn btn-danger close-modal-banco close-modal-contato' onClick={closeModal}><FiX size={13} /></button>
+                        </div>
                     </div>
-                    <button className='btn btn-danger close-modal' onClick={closeModal} style={{marginLeft: '5px'}}><FiX size={25}/></button>
+                    <hr className='hr-global'/>
                 </div>
-                <hr className='hr-global'/>
                 <form className='select-container-taxas' onSubmit={handleEditTax}>
                     <div className='form-group-taxas'>
                         <div className='group-element-taxas'>
