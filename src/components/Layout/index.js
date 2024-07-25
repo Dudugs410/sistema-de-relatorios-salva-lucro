@@ -140,11 +140,11 @@ function Layout({ children }){
     const Contato = () => {
         return (
           <div>
-              <Modal isOpen={isModalOpen} onClose={closeModal}>
-                  <div className='modal-layout-body'>
-                      <FormContato />
-                  </div>
-              </Modal>
+            <Modal isOpen={isModalOpen} onClose={closeModal}>
+              <div className='modal-layout-body'>
+                <FormContato />
+              </div>
+            </Modal>
           </div>
         )
     }
