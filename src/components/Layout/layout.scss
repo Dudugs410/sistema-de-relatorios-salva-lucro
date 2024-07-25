@@ -74,9 +74,14 @@
 .modal-layout-contato-content{
     background-color: var(--background-color);
     border: solid var(--secondary-color) 2px;
-    padding-top: 1%;
+    /* padding-top: 1%; */
     margin-bottom: 5%;
     overflow-y: overlay;
+}
+
+.close-modal-contato{
+    position: absolute;
+    right: 10px;
 }
 
 .title-form{
@@ -120,6 +125,21 @@ form>.input-container{
     width: 100%;
     display: contents;
 
+}
+
+.title-container-contato{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.form-content-container{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: center;
+    align-items: center;
+    padding-bottom: 5%;
 }
 
 @media screen and (max-width: 869px){

@@ -71,7 +71,7 @@ const ImageUpload = (onUpload) => {
         </div>
       )}
 
-      <button className='btn btn-global'  onClick={toggleWebcam}>
+      <button className='btn btn-global' style={{width: '50%'}}  onClick={toggleWebcam}>
         {isWebcamOpen ? 'Fechar Câmera' : 'Usar Câmera'}
       </button>
 

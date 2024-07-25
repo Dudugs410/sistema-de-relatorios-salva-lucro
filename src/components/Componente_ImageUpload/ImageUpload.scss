@@ -1,11 +1,11 @@
 .image-upload-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 60%;
-  //height: 100vh; // Full viewport height to centralize vertically
-  text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    text-align: center;
+  }
 
   .dropzone {
     border: 2px dashed #cccccc;
@@ -72,4 +72,3 @@
       margin: 10px;
     }
   }
-}

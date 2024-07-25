@@ -1,10 +1,11 @@
 import Header from "../Header"
 import Footer from "../Footer"
 import SeletorCliente from "../SeletorCliente"
-import { FiMail, FiPlusCircle } from "react-icons/fi"
+import { FiMail, FiPlusCircle, FiX } from "react-icons/fi"
 import { useEffect, useState } from "react"
 import '../../styles/global.scss'
 import './layout.scss'
+import '../../pages/CadastroDeBancos/cadastroDeBancos.scss'
 import ImageUpload from "../Componente_ImageUpload"
 
 function Layout({ children }){
@@ -75,42 +76,51 @@ function Layout({ children }){
       const FormContato = () => {
         return (
           <div style={{ display: 'contents', position: 'relative', overflow: 'hidden' }}>
-          <h1 className='title-chart title-form' style={{margin: 0}}><b>Contato</b></h1>
-          <hr className='hr-global'/>
-            <form className='form-contato-container' onSubmit={handleSubmit}>
-              <div className='input-container input-container-contato'>
-                <h6 className='form-input-title' htmlFor="nome"><b className='form-input-b'>Nome:</b> *</h6>
-                <input
-                  type="text"
-                  value={nomeTemp}
-                  onChange={handleChangeNome}
-                  placeholder='Nome...'
-                  required
-                />
+              <div className='header-sticky'>
+                <div className='header-container-taxa'>
+                  <div className='title-container-global title-container-banco title-container-contato' style={{ marginTop: '5%' }}>
+                    <h3 className='title-global' style={{ margin: '0' }}>Contato</h3>
+                    <button className='btn btn-danger close-modal-banco close-modal-contato' onClick={closeModal}><FiX size={13} /></button>
+                  </div>
+                </div>
+                <hr className='hr-global'/>
               </div>
-              <div className='input-container input-container-contato'>
-                <h6 className='form-input-title' htmlFor="email"><b className='form-input-b'>E-mail:</b> *</h6>
-                <input
-                  type="email"
-                  value={emailTemp}
-                  onChange={handleChangeEmail}
-                  placeholder='Exemplo@email.com.br'
-                  required
-                />
-              </div>
-              <div className='input-container input-container-contato'>
-                <h6 className='form-input-title' htmlFor="mensagem"><b className='form-input-b'>Mensagem:</b> *</h6>
-                <textarea
-                  value={mensagemTemp}
-                  onChange={handleChangeMensagem}
-                  placeholder='Mensagem...'
-                  required
-                />
-              </div>
-              <ImageUpload onUpload={handleUpload} />
-              <hr className='hr-global' />
-              <button className='btn btn-global' type='submit' >Enviar</button>
-            </form>
+              <form className='form-contato-container' onSubmit={handleSubmit}>
+                <div className='form-content-container'>
+                <div className='input-container input-container-contato'>
+                  <h6 className='form-input-title' htmlFor="nome"><b className='form-input-b'>Nome:</b> *</h6>
+                  <input
+                    type="text"
+                    value={nomeTemp}
+                    onChange={handleChangeNome}
+                    placeholder='Nome...'
+                    required
+                  />
+                </div>
+                <div className='input-container input-container-contato'>
+                  <h6 className='form-input-title' htmlFor="email"><b className='form-input-b'>E-mail:</b> *</h6>
+                  <input
+                    type="email"
+                    value={emailTemp}
+                    onChange={handleChangeEmail}
+                    placeholder='Exemplo@email.com.br'
+                    required
+                  />
+                </div>
+                <div className='input-container input-container-contato'>
+                  <h6 className='form-input-title' htmlFor="mensagem"><b className='form-input-b'>Mensagem:</b> *</h6>
+                  <textarea
+                    value={mensagemTemp}
+                    onChange={handleChangeMensagem}
+                    placeholder='Mensagem...'
+                    required
+                  />
+                </div>
+                <ImageUpload onUpload={handleUpload} />
+                <hr className='hr-global' />
+                <button className='btn btn-global' type='submit' >Enviar</button>
+                </div>
+              </form>
             </div>
           )
     }
