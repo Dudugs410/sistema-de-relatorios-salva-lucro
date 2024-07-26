@@ -1,11 +1,12 @@
-import React, { useState, useCallback, useRef } from 'react'
+import React, { useState, useCallback, useRef, useEffect } from 'react'
 import { useDropzone } from 'react-dropzone'
 import Webcam from 'react-webcam'
 import './ImageUpload.scss' // Import the SCSS file
 
-const ImageUpload = (onUpload) => {
+const ImageUpload = ({ onUpload }) => {
   const [selectedFiles, setSelectedFiles] = useState([])
   const [isWebcamOpen, setIsWebcamOpen] = useState(false)
+  const [hasWebcam, setHasWebcam] = useState(false)
 
   const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
     if (acceptedFiles.length > 0) {
@@ -30,7 +31,8 @@ const ImageUpload = (onUpload) => {
     maxFiles: 5,
   })
 
-  const toggleWebcam = () => {
+  const toggleWebcam = (event) => {
+    event.preventDefault() // Prevent form submission
     if (selectedFiles.length >= 5) {
       alert('You can upload a maximum of 5 images.')
       return
@@ -40,7 +42,8 @@ const ImageUpload = (onUpload) => {
 
   const webcamRef = useRef(null)
 
-  const capture = useCallback(() => {
+  const capture = useCallback((event) => {
+    event.preventDefault() // Prevent form submission
     if (selectedFiles.length >= 5) {
       alert('You can upload a maximum of 5 images.')
       return
@@ -54,6 +57,16 @@ const ImageUpload = (onUpload) => {
     setSelectedFiles(prevFiles => prevFiles.filter((_, i) => i !== index))
   }
 
+  useEffect(() => {
+    const checkForWebcam = async () => {
+      const devices = await navigator.mediaDevices.enumerateDevices()
+      const hasVideoInput = devices.some(device => device.kind === 'videoinput')
+      setHasWebcam(hasVideoInput)
+    }
+    
+    checkForWebcam()
+  }, [])
+
   return (
     <div className="image-upload-container">
       <div {...getRootProps({ className: 'dropzone' })}>
@@ -65,25 +78,31 @@ const ImageUpload = (onUpload) => {
           {selectedFiles.map((file, index) => (
             <div key={index} className="image-container">
               <img src={file} alt={`Selected ${index}`} />
-              <button className='btn-global button-delete' onClick={() => deleteImage(index)}>X</button>
+              <button className='btn-global button-delete' type="button" onClick={() => deleteImage(index)}>X</button>
             </div>
           ))}
         </div>
       )}
 
-      <button className='btn btn-global' style={{width: '50%'}}  onClick={toggleWebcam}>
+      <button className='btn btn-global' style={{width: '50%'}} type="button" onClick={toggleWebcam}>
         {isWebcamOpen ? 'Fechar Câmera' : 'Usar Câmera'}
       </button>
 
       {isWebcamOpen && (
         <div className="webcam-container">
-          <Webcam
-            audio={false}
-            ref={webcamRef}
-            screenshotFormat="image/jpeg"
-            className="webcam"
-          />
-          <button className='btn-global' onClick={capture}>Tirar Foto</button>
+          {hasWebcam ? (
+            <>
+              <Webcam
+                audio={false}
+                ref={webcamRef}
+                screenshotFormat="image/jpeg"
+                className="webcam"
+              />
+              <button className='btn-global' type="button" onClick={capture}>Tirar Foto</button>
+            </>
+          ) : (
+            <p>No webcam detected.</p>
+          )}
         </div>
       )}
     </div>
