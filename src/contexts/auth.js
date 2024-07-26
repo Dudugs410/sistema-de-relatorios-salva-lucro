@@ -327,12 +327,14 @@ function AuthProvider({ children }){
 					console.log('Invalid client code:', apiClientCode)
 				}
 			} catch (error) {
+				toast.alert('Erro ao cadastrar taxa')
 				console.error('Error adding tax:', error)
 				if (error.response.status === 401) {
 					logout()
 					return
 				}
 			} finally {
+				toast.success('Taxa cadastrada com sucesso')
 				setIsLoadingTaxes(false)
 			}
 		}
@@ -342,7 +344,6 @@ function AuthProvider({ children }){
 		const editTax = async (tax) => {
 			setIsLoadingTaxes(true)
 			console.log('editTax: ', tax)
-		  
 			try {
 			  const apiClientCode = tax.CLICODIGO
 			  if (apiClientCode !== 'todos' && apiClientCode !== 'TODOS' && apiClientCode !== undefined) {
