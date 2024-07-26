@@ -11,7 +11,6 @@ import Servicos from "../pages/Servicos"
 import CadastroDeBancos from "../pages/CadastroDeBancos"
 import Financeiro from "../pages/Financeiro"
 import Gerenciais from "../pages/Gerenciais"
-import PageTeste from "../pages/000TESTE"
 import ExportacaoSysmo from "../pages/ExportacaoSysmo"
 import ExportacaoMeta from "../pages/ExportacaoMeta"
 import ExportacaoMetaSapiranga from "../pages/ExportacaoMetaSapiranga"
@@ -59,7 +58,6 @@ function RoutesApp() {
       <Route path='/suporte' element={<Private><Suporte /></Private>} />
       <Route path='/vendasdelivery' element={<Private><VendasDelivery /></Private>} />
       <Route path='/conciliacao' element={<Private><ConciliacaoBancaria /></Private>} />
-      <Route path='/TESTE' element={<Private><PageTeste /></Private>} />
       */}
     </Routes>
   )

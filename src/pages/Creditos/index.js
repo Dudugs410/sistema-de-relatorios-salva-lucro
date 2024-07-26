@@ -93,25 +93,25 @@ async function loadData() {
 		  <div className='page-vendas-background'>
 			<div className='page-content-vendas'>
 			  <div className='vendas-title-container'>
-				<h1 className='vendas-title'>Calendário de Créditos</h1>
+				  <h1 className='vendas-title'>Calendário de Créditos</h1>
 			  </div>
 			  <div className='component-container-vendas'>
-				{ creditsPageArray !== null ?
-          (creditsPageArray.length > 0 ? (
-              <DisplayData 
-                dataArray={creditsPageArray} 
-                adminDataArray={creditsPageAdminArray} 
-                totals={creditsTotal} 
-                onGoBack={resetValues}
-              />
-            ) : (
-              <MyCalendar 
-                onLoadData={handleLoadData} 
-                getCalendarDate={handleDateRangeChange} 
-                btnDisabled={btnDisabledCredits} 
-              />
-            )
-          ) : null }
+          { creditsPageArray !== null ?
+            (creditsPageArray.length > 0 ? (
+                <DisplayData 
+                  dataArray={creditsPageArray} 
+                  adminDataArray={creditsPageAdminArray} 
+                  totals={creditsTotal} 
+                  onGoBack={resetValues}
+                />
+              ) : (
+                <MyCalendar 
+                  onLoadData={handleLoadData} 
+                  getCalendarDate={handleDateRangeChange} 
+                  btnDisabled={btnDisabledCredits} 
+                />
+              )
+            ) : null }
 			    </div>
 			  </div>
 		  </div>

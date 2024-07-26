@@ -168,7 +168,6 @@ const CadastroDeBancos = () => {
             if (isSelected) {
                 const clientCode = Cookies.get('clientCode')
                 const admCode = Cookies.get('admCode')
-                
                 if (clientCode !== '0' && admCode !== '0') {
                     try {
                         const response = await loadCliAdq()
@@ -201,7 +200,6 @@ const CadastroDeBancos = () => {
                 }
             }
         }
-
         fetchCliAdqList()
         fetchSubProductList()
     }, [isSelected])
@@ -226,7 +224,6 @@ const CadastroDeBancos = () => {
     
     const handleEdit = async (object, index) => {
         Cookies.set('admCode', object.ADQCODIGO)
-
         setIsLoading(true)
 
         localStorage.setItem('editIndex', index)
@@ -355,87 +352,86 @@ const CadastroDeBancos = () => {
     return (
         <div className='appPage'>
             <Overlay isVisible={isOverlayVisible} />
-            {isLoading && (
-                <ModalLoading />)}
-                    <div className='page-background-global'>
-                        <div className='page-content-global'>
-                            <div className='page-content-bancos'>
-                                <div className='title-container-global'>
-                                    <h1 className='title-global'>Cadastramento de Bancos</h1>
-                                </div>
-                                <hr className='hr-global'/>
-                            <div className='container-global' style={{margin: '0', flexDirection: 'column', alignItems: 'center'}}>
-                                    { ((banksList && banksList.length > 0) && (clientCode !== ('todos' || undefined))) && 
-                                        <div>
-                                            <h3 className='subtitle' style={{width: '100%', display: 'flex', flexDirection: 'column', alignContent: 'center', textAlign: 'center'}}>Cliente: {JSON.parse(Cookies.get('selectedClient')).label}</h3>
-                                            <hr className='hr-global'/>
-                                        </div>
-                                    }
-                                    { ((banksList && banksList.length === 0) && (clientCode !== ('todos' || undefined)) && (isLoadingBanks === false)) && 
-                                        <>
-                                            <span className='subtitle'>Sem Bancos Cadastrados</span>
-                                            <br/>
-                                            <button className='btn btn-primary btn-global' onClick={()=>{setIsModalOpen(true)}}><FiPlus className='icon' />Adicionar</button>
-                                        </>
-                                    }
-                                    {
-                                        clientCode === ('todos' || undefined) ?
-                                            <span className='subtitle'>Selecione um cliente para exibir seus bancos cadastrados</span>
-                                            : 
-                                            <></>
-                                    }
-                                </div> 
-                            </div>
-                            {
-                                isLoadingBanks ? 
-                                    <LazyLoader /> 
-                                    : ( banksList && banksList.length > 0 ?  
-                                        <BanksTable 
-                                            banksList={banksList} 
-                                            adminsList={adminsList} 
-                                            bannersList={bannersList} 
-                                            productList={productList} 
-                                            onAdd={handleAdd} 
-                                            onEdit={handleEdit} 
-                                            onDelete={handleDelete} 
-                                        />
-                                    : <></> )
-                                }
-                            <div className='modal-container' style={{ display: (isModalOpen || isModalEditOpen) ? 'block' : 'none' }}>
-                                {isModalOpen && (
-                                    <ModalNewBank
-                                        onClose={closeModal}
-                                        setIsSelected={setIsSelected}
-                                        cliAdqOptions={cliAdqOptions}
-                                        cliOptions={cliOptions}
-                                        admOptions={admOptions}
-                                        banOptions={banOptions}
-                                        productOptions={productOptions}
-                                        subproductOptions={subproductOptions}
-                                        addBank={addBank}
-                                        loadBanks={loadBanks}
-                                        setBanksList={setBanksList}
-                                    />
-                                )}
-                                {isModalEditOpen && (
-                                    <ModalEditBank 
-                                        editableBank={editableBank}
-                                        onClose={closeModal}
-                                        setIsSelected={setIsSelected}
-                                        cliAdqOptions={cliAdqOptions}
-                                        cliOptions={cliOptions}
-                                        admOptions={admOptions}
-                                        banOptions={banOptions}
-                                        productOptions={productOptions}
-                                        subproductOptions={subproductOptions}
-                                        editBank={editBank}
-                                        loadBanks={loadBanks}
-                                        setBanksList={setBanksList}
-                                    />
-                                )}
-                            </div>
+            {isLoading && (<ModalLoading />)}
+            <div className='page-background-global'>
+                <div className='page-content-global'>
+                    <div className='page-content-bancos'>
+                        <div className='title-container-global'>
+                            <h1 className='title-global'>Cadastramento de Bancos</h1>
                         </div>
+                        <hr className='hr-global'/>
+                        <div className='container-global' style={{margin: '0', flexDirection: 'column', alignItems: 'center'}}>
+                            { ((banksList && banksList.length > 0) && (clientCode !== ('todos' || undefined))) && 
+                                <div>
+                                    <h3 className='subtitle' style={{width: '100%', display: 'flex', flexDirection: 'column', alignContent: 'center', textAlign: 'center'}}>Cliente: {JSON.parse(Cookies.get('selectedClient')).label}</h3>
+                                    <hr className='hr-global'/>
+                                </div>
+                            }
+                            { ((banksList && banksList.length === 0) && (clientCode !== ('todos' || undefined)) && (isLoadingBanks === false)) && 
+                                <>
+                                    <span className='subtitle'>Sem Bancos Cadastrados</span>
+                                    <br/>
+                                    <button className='btn btn-primary btn-global' onClick={()=>{setIsModalOpen(true)}}><FiPlus className='icon' />Adicionar</button>
+                                </>
+                            }
+                            {
+                                clientCode === ('todos' || undefined) ?
+                                    <span className='subtitle'>Selecione um cliente para exibir seus bancos cadastrados</span>
+                                    : 
+                                    <></>
+                            }
+                        </div> 
                     </div>
+                    {
+                        isLoadingBanks ? 
+                            <LazyLoader /> 
+                            : ( banksList && banksList.length > 0 ?  
+                                <BanksTable 
+                                    banksList={banksList} 
+                                    adminsList={adminsList} 
+                                    bannersList={bannersList} 
+                                    productList={productList} 
+                                    onAdd={handleAdd} 
+                                    onEdit={handleEdit} 
+                                    onDelete={handleDelete} 
+                                />
+                            : <></> )
+                        }
+                    <div className='modal-container' style={{ display: (isModalOpen || isModalEditOpen) ? 'block' : 'none' }}>
+                        {isModalOpen && (
+                            <ModalNewBank
+                                onClose={closeModal}
+                                setIsSelected={setIsSelected}
+                                cliAdqOptions={cliAdqOptions}
+                                cliOptions={cliOptions}
+                                admOptions={admOptions}
+                                banOptions={banOptions}
+                                productOptions={productOptions}
+                                subproductOptions={subproductOptions}
+                                addBank={addBank}
+                                loadBanks={loadBanks}
+                                setBanksList={setBanksList}
+                            />
+                        )}
+                        {isModalEditOpen && (
+                            <ModalEditBank 
+                                editableBank={editableBank}
+                                onClose={closeModal}
+                                setIsSelected={setIsSelected}
+                                cliAdqOptions={cliAdqOptions}
+                                cliOptions={cliOptions}
+                                admOptions={admOptions}
+                                banOptions={banOptions}
+                                productOptions={productOptions}
+                                subproductOptions={subproductOptions}
+                                editBank={editBank}
+                                loadBanks={loadBanks}
+                                setBanksList={setBanksList}
+                            />
+                        )}
+                    </div>
+                </div>
+            </div>
         </div>
     )
 }
