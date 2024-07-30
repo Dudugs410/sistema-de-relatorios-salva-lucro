@@ -132,22 +132,21 @@ const Header = () => {
             { nome: 'Serviços', icone: icones['FiTool'], rota: '/servicos' },
             { nome: 'Bancos', icone: icones['FiLink'], rota: '/cadastrodebancos' },
             { nome: 'Taxas', icone: icones['FiTable'], rota: '/taxas'},
-        ]
-
-        {/*             { nome: 'Relatórios', icone: icones['FiFileText'], children: [
+            { nome: 'Relatórios', icone: icones['FiFileText'], children: [
                 { nome: 'Financeiro', rota: '/financeiro' },
                 { nome: 'Gerenciais', rota: '/gerenciais' },
                 { nome: 'Outros', rota: '/outrosrelatorios'},
-            ]},
+                ]},
             { nome: 'Exportações', icone: icones['FiDownload'], children: [
                 { nome: 'Sysmo', rota: '/sysmo' },
                 { nome: 'Meta', rota: '/meta' },
                 { nome: 'Meta Sapiranga', rota: '/metasapiranga' },
             ]},
-           { nome: 'Administração', icone: icones['FiPaperClip'], rota: '/administracao'},
+            { nome: 'Administração', icone: icones['FiPaperClip'], rota: '/administracao'},
             { nome: 'Suporte', icone: icones['FiSettings'], rota: '/suporte'},
             { nome: 'Delivery', icone: icones['FiTruck'], rota: '/vendasdelivery'},
-            { nome: 'Conciliacao', icone: icones['FiShoppingBag'], rota: '/conciliacao'},   */}
+            { nome: 'Conciliacao', icone: icones['FiShoppingBag'], rota: '/conciliacao'}
+        ]
 
         let arrayOpcoes = []
 
@@ -162,20 +161,20 @@ const Header = () => {
     }, [])
 
     const CustomCheckbox = ({ isChecked, handleCheckboxChange }) => {
-    return (
-        <label className="checkbox-label">
-        <input
-            type="checkbox"
-            checked={isChecked}
-            onChange={handleCheckboxChange}
-            className='checkbox-input'
-        />
-        <span className='checkbox-custom'></span> {/* aparencia da checkbox-custom */}
-        <span className='checkbox-icon'>
-            <FiCalendar className={`calendar-icon ${isCheckedCalendar ? 'isCheckedCalendar' : ''}`} size={20} />
-        </span>
-        </label>
-    )
+        return (
+            <label className="checkbox-label">
+            <input
+                type="checkbox"
+                checked={isChecked}
+                onChange={handleCheckboxChange}
+                className='checkbox-input'
+            />
+            <span className='checkbox-custom'></span> {/* aparencia da checkbox-custom */}
+            <span className='checkbox-icon'>
+                <FiCalendar className={`calendar-icon ${isCheckedCalendar ? 'isCheckedCalendar' : ''}`} size={20} />
+            </span>
+            </label>
+        )
     }
 
     const navigate = useNavigate()
@@ -200,9 +199,7 @@ const Header = () => {
                         </div>
                     </div>
                 </div>
-
                 <SideBar options={ optionsWithIcons }/>
-
                 <div className='header-content'>
                     <div className='barra-header'>
                         <div className="li-container px-3">

@@ -111,7 +111,7 @@ const ExportacaoMetaSapiranga = () =>{
                 </div>
                 <MyCalendar onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange}/>
                 <form>
-                <div className='select-container-meta'>
+                    <div className='select-container-meta'>
                         <RadioSelect options={radioOptions} onSelect={(e) => {setType(e)}}/>
                         <div className='select-component-container'>
                             <div className='select-component'>

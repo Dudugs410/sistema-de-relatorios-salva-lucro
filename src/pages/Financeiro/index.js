@@ -65,37 +65,37 @@ const Financeiro = () =>{
             </div>
             <div className='container-financeiro' style={{width: '100%'}}>
             <MyCalendar onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange}/>
-                    <form className='form-container-relatorios'>
-                        <div className='select-elements-container'>
-                            <div className='container-select'>
-                                <span className='span-picker'>Tipo de Relatório</span>
-                                <Select
-                                    value={tipoRelatorio} 
-                                    onChange={handleRelatorio}
-                                    placeholder="Selecione"
-                                    options={opcoesRelatorio}
-                                    isSearchable={false}
-                                    menuPortalTarget={document.body}
-                                    menuPosition="fixed"
-                                />
-                            </div>
-                            <div className='container-select'>
-                                <span className='span-picker'>Formato</span>
-                                <Select 
-                                    value={formatoRelatorio}
-                                    onChange={handleFormato}
-                                    placeholder="Selecione"
-                                    options={opcoesFormato}
-                                    isSearchable={false}
-                                    menuPortalTarget={document.body}
-                                    menuPosition="fixed"
-                                />
-                            </div>
+                <form className='form-container-relatorios'>
+                    <div className='select-elements-container'>
+                        <div className='container-select'>
+                            <span className='span-picker'>Tipo de Relatório</span>
+                            <Select
+                                value={tipoRelatorio} 
+                                onChange={handleRelatorio}
+                                placeholder="Selecione"
+                                options={opcoesRelatorio}
+                                isSearchable={false}
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
+                            />
                         </div>
-                        <div className='btn-container-financeiro'>
-                            <button className='btn btn-primary btn-global' onClick={handleExport}>Exportar</button>
+                        <div className='container-select'>
+                            <span className='span-picker'>Formato</span>
+                            <Select 
+                                value={formatoRelatorio}
+                                onChange={handleFormato}
+                                placeholder="Selecione"
+                                options={opcoesFormato}
+                                isSearchable={false}
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
+                            />
                         </div>
-                    </form>
+                    </div>
+                    <div className='btn-container-financeiro'>
+                        <button className='btn btn-primary btn-global' onClick={handleExport}>Exportar</button>
+                    </div>
+                </form>
             </div>
           </div>
         </div>

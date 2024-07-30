@@ -29,7 +29,6 @@ const Login = () => {
 
     async function handleLogin(e){
         e.preventDefault()
-        
         setLoading(true)
         await loginApp(login, password)
         setLoading(false)
