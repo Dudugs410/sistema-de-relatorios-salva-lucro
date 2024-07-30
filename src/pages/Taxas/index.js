@@ -495,9 +495,8 @@ const Taxas = () => {
                         <label className='span-picker'>Taxa (%)</label>
                         <input
                             style={{height: '100%'}}
-                            type="text"
+                            type="number"
                             id="taxInput"
-                            inputMode="numeric"
                             pattern="[0-9\-]*"
                             value={tax}
                             onChange={(e) => {
@@ -638,9 +637,8 @@ const Taxas = () => {
                             <label className='span-picker'>Taxa (%)</label>
                             <input
                                 style={{height: '100%'}}
-                                type="text"
+                                type="number"
                                 id="taxInput"
-                                inputMode="numeric" 
                                 pattern="[0-9\-]*"
                                 value={tax}
                                 onChange={(e) => {

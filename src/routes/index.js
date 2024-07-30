@@ -5,21 +5,21 @@ import Private from "./Private"
 
 import Login from '../pages/Login'
 import Dashboard from '../pages/Dashboard'
-import Vendas from "../pages/Vendas"
-import Recebiveis from "../pages/Creditos"
-import Servicos from "../pages/Servicos"
-import CadastroDeBancos from "../pages/CadastroDeBancos"
-import Financeiro from "../pages/Financeiro"
-import Gerenciais from "../pages/Gerenciais"
-import ExportacaoSysmo from "../pages/ExportacaoSysmo"
-import ExportacaoMeta from "../pages/ExportacaoMeta"
-import ExportacaoMetaSapiranga from "../pages/ExportacaoMetaSapiranga"
-import Administracao from "../pages/Administracao"
-import Suporte from "../pages/Suporte"
-import OutrosRelatorios from "../pages/OutrosRelatorios"
-import VendasDelivery from "../pages/VendasDelivery"
-import ConciliacaoBancaria from "../pages/ConciliacaoBancaria"
-import Taxas from "../pages/Taxas"
+import Vendas from '../pages/Vendas'
+import Recebiveis from '../pages/Creditos'
+import Servicos from '../pages/Servicos'
+import CadastroDeBancos from '../pages/CadastroDeBancos'
+import Financeiro from '../pages/Financeiro'
+import Gerenciais from '../pages/Gerenciais'
+import ExportacaoSysmo from '../pages/ExportacaoSysmo'
+import ExportacaoMeta from '../pages/ExportacaoMeta'
+import ExportacaoMetaSapiranga from '../pages/ExportacaoMetaSapiranga'
+import Administracao from '../pages/Administracao'
+import Suporte from '../pages/Suporte'
+import OutrosRelatorios from '../pages/OutrosRelatorios'
+import VendasDelivery from '../pages/VendasDelivery'
+import ConciliacaoBancaria from '../pages/ConciliacaoBancaria'
+import Taxas from '../pages/Taxas'
 
 function RoutesApp() {
   const location = useLocation()
