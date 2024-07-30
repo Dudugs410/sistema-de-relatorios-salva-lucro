@@ -22,7 +22,6 @@ const Creditos = () =>{
 	  groupByAdmin, 
     btnDisabledCredits, setBtnDisabledCredits,
     exportCredits, creditsTableData
-
 	} = useContext(AuthContext)
   
 

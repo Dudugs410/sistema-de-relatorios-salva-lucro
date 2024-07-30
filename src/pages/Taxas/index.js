@@ -270,91 +270,91 @@ const Taxas = () => {
 
         return (
             <>
-            <div>
-                <input
-                    type="text"
-                    placeholder="Digite para Filtrar..."
-                    value={filter}
-                    onChange={(e) => setFilter(e.target.value)}
-                    style={{ marginBottom: '10px' }}
-                />
-            </div>
-            <div className='table-wrapper table-wrapper-taxes'>
-                <table className="table table-striped table-hover table-bordered table-bancos det-table-global">
-                    <thead>
-                        <tr className='det-tr-top-global'>
-                            <th className='det-th-global sticky-col start-col' scope="col" style={{ width: '2%', textAlign: 'center' }}>
-                                <button className="btn btn-primary btn-global" style={{ width: '100%' }} onClick={() => { setIsModalOpen(true) }}>
-                                    <FiPlus size={25} className="icon" />
-                                </button>
-                            </th>
-                            <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Bandeira</th>
-                            <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Adquirente</th>
-                            <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Modalidade</th>
-                            <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Tipo Taxa</th>
-                            <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>% Taxa</th>
-                            <th className='det-th-global sticky-col end-col' scope="col" style={{ width: '2%', textAlign: 'center' }}></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {currentItems.length > 0 &&
-                            currentItems.map((object, index) => (
-                                <tr key={index} className="det-tr-global tr-taxas">
-                                    <th className='sticky-col start-col' scope="row" style={{ textAlign: 'center' }} onClick={() => { handleEdit(object) }}>
-                                        <FiEdit className="icon" />
-                                    </th>
-                                    <td className="det-td-vendas-global" data-label="BADDESCRICAO">{object.BADDESCRICAO}</td>
-                                    <td className="det-td-vendas-global" data-label="nomeAdquirente">{object.ADQUIRENTE.nomeAdquirente}</td>
-                                    <td className="det-td-vendas-global" data-label="MODDESCRICAO">{object.MODDESCRICAO}</td>
-                                    <td className="det-td-vendas-global" data-label="TIPOTAXA">{object.TIPOTAXA}</td>
-                                    <td className="det-td-vendas-global" data-label="TAXAPERCENTUAL">{object.TAXAPERCENTUAL} %</td>
-                                    <th className='sticky-col end-col' scope="row" style={{ textAlign: 'center' }} onClick={() => handleDelete(object)}>
-                                        <FiTrash className="icon" />
-                                    </th>
-                                </tr>
-                            ))}
-                    </tbody>
-                </table>
-            </div>
-            <hr className='hr-global'/>
-            { filteredItems.length > itemsPerPage && (
-                <div className="container-btn-pagina">
-                    <button
-                        className='btn btn-primary btn-global btn-skip'
-                        onClick={goToFirstPage}
-                        disabled={currentPage === 1} // Disable if already on the first page
-                    >
-                        <FiSkipBack />
-                    </button>
-                    <button
-                        className='btn btn-primary btn-global btn-navigate'
-                        onClick={goToPrevPage}
-                        disabled={currentPage === 1} // Disable if it's the first page
-                    >
-                        <FiChevronLeft/> {/* Left arrow */}
-                    </button>
-                    <div className='pagina-atual'>
-                        <span className='texto-paginacao'>Página </span>
-                        <span className='texto-paginacao'>{currentPage}</span>
-                    </div>
-                    <button
-                        className='btn btn-primary btn-global btn-navigate'
-                        onClick={goToNextPage}
-                        disabled={currentPage === Math.ceil(taxesList.length / itemsPerPage)} // Disable if it's the last page
-                    >
-                        <FiChevronRight/> {/* Right arrow */}
-                    </button>
-                    <button
-                        className='btn btn-primary btn-global btn-skip'
-                        onClick={goToLastPage}
-                        disabled={currentPage === Math.ceil(taxesList.length / itemsPerPage)} // Disable if already on the last page
-                    >
-                        <FiSkipForward />
-                    </button>
+                <div>
+                    <input
+                        type="text"
+                        placeholder="Digite para Filtrar..."
+                        value={filter}
+                        onChange={(e) => setFilter(e.target.value)}
+                        style={{ marginBottom: '10px' }}
+                    />
                 </div>
-            )}
-            { taxesList.length > itemsPerPage ? (<hr className='hr-global'/>) : (<></>) }
-        </>
+                <div className='table-wrapper table-wrapper-taxes'>
+                    <table className="table table-striped table-hover table-bordered table-bancos det-table-global">
+                        <thead>
+                            <tr className='det-tr-top-global'>
+                                <th className='det-th-global sticky-col start-col' scope="col" style={{ width: '2%', textAlign: 'center' }}>
+                                    <button className="btn btn-primary btn-global" style={{ width: '100%' }} onClick={() => { setIsModalOpen(true) }}>
+                                        <FiPlus size={25} className="icon" />
+                                    </button>
+                                </th>
+                                <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Bandeira</th>
+                                <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Adquirente</th>
+                                <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Modalidade</th>
+                                <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Tipo Taxa</th>
+                                <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>% Taxa</th>
+                                <th className='det-th-global sticky-col end-col' scope="col" style={{ width: '2%', textAlign: 'center' }}></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {currentItems.length > 0 &&
+                                currentItems.map((object, index) => (
+                                    <tr key={index} className="det-tr-global tr-taxas">
+                                        <th className='sticky-col start-col' scope="row" style={{ textAlign: 'center' }} onClick={() => { handleEdit(object) }}>
+                                            <FiEdit className="icon" />
+                                        </th>
+                                        <td className="det-td-vendas-global" data-label="BADDESCRICAO">{object.BADDESCRICAO}</td>
+                                        <td className="det-td-vendas-global" data-label="nomeAdquirente">{object.ADQUIRENTE.nomeAdquirente}</td>
+                                        <td className="det-td-vendas-global" data-label="MODDESCRICAO">{object.MODDESCRICAO}</td>
+                                        <td className="det-td-vendas-global" data-label="TIPOTAXA">{object.TIPOTAXA}</td>
+                                        <td className="det-td-vendas-global" data-label="TAXAPERCENTUAL">{object.TAXAPERCENTUAL} %</td>
+                                        <th className='sticky-col end-col' scope="row" style={{ textAlign: 'center' }} onClick={() => handleDelete(object)}>
+                                            <FiTrash className="icon" />
+                                        </th>
+                                    </tr>
+                                ))}
+                        </tbody>
+                    </table>
+                </div>
+                <hr className='hr-global'/>
+                { filteredItems.length > itemsPerPage && (
+                    <div className="container-btn-pagina">
+                        <button
+                            className='btn btn-primary btn-global btn-skip'
+                            onClick={goToFirstPage}
+                            disabled={currentPage === 1} // Disable if already on the first page
+                        >
+                            <FiSkipBack />
+                        </button>
+                        <button
+                            className='btn btn-primary btn-global btn-navigate'
+                            onClick={goToPrevPage}
+                            disabled={currentPage === 1} // Disable if it's the first page
+                        >
+                            <FiChevronLeft/> {/* Left arrow */}
+                        </button>
+                        <div className='pagina-atual'>
+                            <span className='texto-paginacao'>Página </span>
+                            <span className='texto-paginacao'>{currentPage}</span>
+                        </div>
+                        <button
+                            className='btn btn-primary btn-global btn-navigate'
+                            onClick={goToNextPage}
+                            disabled={currentPage === Math.ceil(taxesList.length / itemsPerPage)} // Disable if it's the last page
+                        >
+                            <FiChevronRight/> {/* Right arrow */}
+                        </button>
+                        <button
+                            className='btn btn-primary btn-global btn-skip'
+                            onClick={goToLastPage}
+                            disabled={currentPage === Math.ceil(taxesList.length / itemsPerPage)} // Disable if already on the last page
+                        >
+                            <FiSkipForward />
+                        </button>
+                    </div>
+                )}
+                { taxesList.length > itemsPerPage ? (<hr className='hr-global'/>) : (<></>) }
+            </>
         )
     }
 
@@ -362,14 +362,6 @@ const Taxas = () => {
         setIsModalOpen(false)
         setIsModalEditOpen(false)
     }
-
-    const [taxesTemp, setTaxesTemp] = useState([])
-
-    useEffect(()=>{
-        if(taxesTemp.length > 0){
-            setTaxesList(prevTaxesList => [taxesTemp])
-        }
-    },[taxesTemp])
 
     const isObjectFullyPopulated = (obj) => {
         return obj && Object.values(obj).every(value => value !== null && value !== 0 && value !== '' && value !== 'Selecione')

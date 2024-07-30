@@ -47,7 +47,6 @@ const CadastroDeBancos = () => {
     const [admOptions, setAdmOptions] = useState([])
     const [productOptions, setProductOptions] = useState([])
     const [subproductOptions, setSubproductOptions] = useState([])
-    const [modOptions, setModOptions] = useState([])
     const [cliAdqOptions, setCliAdqOptions] = useState([])
 
     const [isSelected, setIsSelected] = useState(false)
@@ -116,15 +115,6 @@ const CadastroDeBancos = () => {
             }
         }
     }, [productList])
-
-    useEffect(() => {
-        if (modList) {
-            if (modList.length > 0) {
-                const modListOptions = modList.map(mod => ({ value: mod.codigoModalidade, label: mod.descricaoModalidade }))
-                setModOptions(modListOptions)
-            }
-        }
-    }, [modList])
 
     useEffect(() => {
         setClientCode(Cookies.get('clientCode'))

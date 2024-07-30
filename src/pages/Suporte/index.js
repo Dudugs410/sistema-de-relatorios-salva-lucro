@@ -1,14 +1,21 @@
-import { useEffect, useContext, useState } from 'react'
+import React, { useEffect, useContext, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { AuthContext } from '../../contexts/auth'
 import '../ExportacaoSysmo'
 import MyCalendar from '../../components/Componente_Calendario'
 import base64PDFdownload from '../../components/Componente_Base64PDF'
-import { FiActivity, FiCheckSquare, FiCopy, FiDatabase, FiEdit, FiFilePlus, FiLock, FiPlus, FiSearch, FiTrash, FiUpload } from 'react-icons/fi'
+import { FiSearch, FiTrash } from 'react-icons/fi'
 import Select from 'react-select'
 import '../../styles/global.scss'
 import './suporte.scss'
-import RadioSelect from '../../components/Componente_RadioSelect'
+import AutC6 from './AutC6.js'
+import AutCielo from './AutCielo.js'
+import AutRedeCard from './AutRedeCard.js'
+import AutStone from './AutStone.js'
+import ConsultaArquivo from './ConsultaArquivo.js'
+import CorrigirAdq from './CorrigirAdq.js'
+import GestaoAdq from './GestaoAdq.js'
+import RelatorioCliAdq from './RelatorioCliAdq.js'
 
 const Suporte = () =>{
     const location = useLocation()
@@ -180,277 +187,6 @@ const Suporte = () =>{
         )
     }
 
-    const AutCielo = () =>{
-        return(
-            <div className='container-cielo'>
-                <div>
-                    <h4>Prezado Cliente</h4>
-                    <p>Para que possamos ter acesso aos arquivos de extratos da Administradora Cielo, é necessária sua autorização eletrônica, para isso, nosso sistema está integrado com o portal da Cielo.
-                    <br/><br/>
-                    Selecione na lista abaixo, um código de Estabelecimento e clique no botão "Autorizar" para prosseguir.</p>
-                </div>
-                <div className='suporte-content'>
-                    <div className='input-suporte'>
-                        <div className='input-block'>
-                            <h6><b>Estabelecimento</b></h6>
-                            <input className='input-suporte' type='text'/>
-                        </div>
-                        <div className='input-block'>
-                            <h6><b>CNPJ</b></h6>
-                            <input className='input-suporte' type='text'/>    
-                        </div>
-                        <div className='input-block'>
-                            <h6><b>Razão Social</b></h6>
-                            <input className='input-suporte' type='text'/>                    
-                        </div>
-                        <div className='input-block'>
-                            <button className='btn btn-global'><FiSearch />&nbsp;Filtrar</button>
-                        </div>
-                    </div>
-                    <hr className='hr-global'/>
-                    <PlaceHolder />
-                    <div className='input-suporte'>
-                        <div className='input-block'>
-                            <button className='btn btn-global'><FiLock />&nbsp;Autorizar</button>
-                        </div>
-                        <div className='input-block'>
-                            <button className='btn btn-global'><FiCheckSquare />&nbsp;Consultar Status</button>
-                        </div>
-                        <div className='input-block'>
-                            <button className='btn btn-global'><FiActivity />&nbsp;Credenciar</button>
-                        </div>
-                        <div className='input-block'>
-                            <button className='btn btn-global'><FiUpload />&nbsp;Atualizar Status</button>
-                        </div>
-                        <div className='input-block'>
-                            <button className='btn btn-global'><FiCopy />&nbsp;Duplicação</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        )
-    }
-
-    const AutStone = () =>{
-        return(
-            <div className='container-cielo'>
-                <div className='suporte-content'>
-                    <div className='input-suporte'>
-                        <div className='input-block'>
-                            <h6><b>Estabelecimento</b></h6>
-                            <input className='input-suporte' type='text'/>
-                        </div>
-                        <div className='input-block'>
-                            <h6><b>CNPJ</b></h6>
-                            <input className='input-suporte' type='text'/>    
-                        </div>
-                        <div className='input-block'>
-                            <h6><b>Razão Social</b></h6>
-                            <input className='input-suporte' type='text'/>                    
-                        </div>
-                        <div className='input-block'>
-                            <button className='btn btn-global'><FiSearch />&nbsp;Filtrar</button>
-                        </div>
-                    </div>
-                    <hr className='hr-global'/>
-                    <PlaceHolder />
-                    <div className='input-suporte'>
-                        <div className='input-block'>
-                            <button className='btn btn-global'><FiLock />&nbsp;Autorizar</button>
-                        </div>
-                        <div className='input-block'>
-                            <button className='btn btn-global'><FiUpload />&nbsp;Atualizar Status</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        )
-    }
-
-    const AutRedeCard = () =>{
-        return(
-            <div className='container-cielo' >
-                <div className='suporte-content'>
-                    <div className='input-suporte'>
-                        <div className='input-block'>
-                            <h6><b>Estabelecimento</b></h6>
-                            <input className='input-suporte' type='text'/>
-                        </div>
-                        <div className='input-block'>
-                            <h6><b>CNPJ</b></h6>
-                            <input className='input-suporte' type='text'/>    
-                        </div>
-                        <div className='input-block'>
-                            <h6><b>Razão Social</b></h6>
-                            <input className='input-suporte' type='text'/>                    
-                        </div>
-                        <div className='input-block'>
-                            <button className='btn btn-global'><FiSearch />&nbsp;Filtrar</button>
-                        </div>
-                    </div>
-                    <hr className='hr-global'/>
-                    <PlaceHolder />
-                    <div className='input-suporte'>
-                        <div className='input-block'>
-                            <button className='btn btn-global'><FiLock />&nbsp;Autorizar</button>
-                        </div>
-                        <div className='input-block'>
-                            <button className='btn btn-global'><FiActivity />&nbsp;Credenciar</button>
-                        </div>
-                        <div className='input-block'>
-                            <button className='btn btn-global'><FiUpload />&nbsp;Atualizar Status</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        )
-    }
-    
-    const AutC6 = () =>{
-        return(
-            <div className='container-cielo' >
-                <div className='suporte-content'>
-                    <div className='input-suporte'>
-                        <div className='input-block'>
-                            <h6><b>Estabelecimento</b></h6>
-                            <input className='input-suporte' type='text'/>
-                        </div>
-                        <div className='input-block'>
-                            <h6><b>CNPJ</b></h6>
-                            <input className='input-suporte' type='text'/>    
-                        </div>
-                        <div className='input-block'>
-                            <h6><b>Razão Social</b></h6>
-                            <input className='input-suporte' type='text'/>                    
-                        </div>
-                        <div className='input-block'>
-                            <button className='btn btn-global'><FiSearch />&nbsp;Filtrar</button>
-                        </div>
-                    </div>
-                    <hr className='hr-global'/>
-                    <PlaceHolder />
-                    <div className='input-suporte'>
-                        <div className='input-block'>
-                            <button className='btn btn-global'><FiLock />&nbsp;Autorizar</button>
-                        </div>
-                        <div className='input-block'>
-                            <button className='btn btn-global'><FiUpload />&nbsp;Atualizar Status</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        )
-    }
-
-    const radioOptions = [{value: 0, label: 'Identificados'},{value: 1, label: 'Pendentes'}]
-    const [radioOption, setRadioOption] = useState(null)
-
-    const GestaoAdq = () =>{
-        return(
-            <div className='container-cielo' >
-                <div className='suporte-content'>
-                    <div className='input-suporte'>
-                        <div className='input-block'>
-                            <h6><b>Estabelecimento</b></h6>
-                            <input className='input-suporte' type='text'/>
-                        </div>
-                        <div className='input-block'>
-                            <h6><b>CNPJ</b></h6>
-                            <input className='input-suporte' type='text'/>    
-                        </div>
-                        <div className='input-block'>
-                            <h6><b>Razão Social</b></h6>
-                            <input className='input-suporte' type='text'/>                    
-                        </div>
-                        <div className='input-block'>
-                            <h6><b>Código do Cliente</b></h6>
-                            <input className='input-suporte' type='text'/>                    
-                        </div>
-                        <div className='input-block'>
-                            <div className='radio-suporte'><RadioSelect options={radioOptions} onSelect={(e) => {setRadioOption(e)}}/></div>
-                        </div>
-                        <div className='input-block'>
-                            <button className='btn btn-global'><FiSearch />&nbsp;Filtrar</button>
-                        </div>
-                    </div>
-                    <hr className='hr-global'/>
-                    <PlaceHolder2 />
-                </div>
-            </div>
-        )
-    }
-
-    const ConsultaArquivo = () =>{
-        return(
-            <div className='suporte-content'>
-                <div className='input-suporte'>
-                    <div className='input-block'>
-                        <h6><b>Nome do Arquivo</b></h6>
-                        <input className='input-suporte' type='text'/>
-                    </div>
-                    <div className='input-block'>
-                        <button className='btn btn-global'><FiSearch />&nbsp;Filtrar</button>
-                    </div>
-                </div>
-                <div className='consulta-arquivos'>
-
-                </div>
-            </div>
-        )
-    }
-
-    const CorrigirAdq = () =>{
-        return(
-            <div className='container-cielo' >
-                <div>
-                    <p>Realiza a correção dos cruzamentos entre Clientes x Adquirentes cadastrados incorretamente.</p>
-                    <br/><br/>
-                </div>
-                <div className='input-suporte-correcao'>
-                    <div className='input-block-correcao'>
-                        <h6><b>Adquirente *</b></h6>
-                        <input className='input-suporte input-correcao' type='text'/>
-                    </div>
-                    <br/>
-                    <div className='input-block-correcao'>
-                        <h6><b>Cód do Estabelecimento na Adquirente *</b></h6>
-                        <input className='input-suporte input-correcao' type='text'/>
-                    </div>
-                    <br/>
-                    <div className='input-block-correcao'>
-                        <h6><b>CNPJ Origem *</b></h6>
-                        <input className='input-suporte input-correcao' type='text'/>                    
-                    </div>
-                    <br/>
-                    <div className='input-block-correcao'>
-                        <h6><b>Razão Social Origem</b></h6>
-                        <input className='input-suporte input-correcao' type='text'/>                    
-                    </div>
-                    <br/>
-                    <div className='input-block-correcao'>
-                        <h6><b>CNPJ Destino *</b></h6>
-                        <input className='input-suporte input-correcao' type='text'/>                    
-                    </div>
-                    <br/>
-                    <div className='input-block-correcao'>
-                        <h6><b>Razão Social Destino</b></h6>
-                        <input className='input-suporte input-correcao' type='text'/>                    
-                    </div>
-                    <br/>
-                    <hr className='hr-global'/>
-                    <div className='input-block-correcao'>
-                        <button className='btn btn-global btn-correcao'>Aplicar Correção</button>
-                    </div>
-                    <div className='input-block-corração'>
-                        <p className='p-correcao'>Campos com * são obrigatórios</p>
-                    </div>
-                </div>
-            </div>
-        )
-    }
-
-    
-
     const [adqSelecionada, setAdqSelecionada] = useState(null)
     const [adqfiltradas, setAdqFiltradas] = useState(null)
 
@@ -474,47 +210,17 @@ const Suporte = () =>{
         } 
     },[adminsList])
 
-    const RelatorioCliAdq = () =>{
-        return(
-            <div className='container-cielo' style={{marginBottom: '300px'}} >
-                <div>
-                    <p>Gera um arquivo Excel com todos <b>Clientes</b> que possuem a <b>Adquirente</b> selecionada.</p>
-                    <br/><br/>
-                </div>
-                <div className='input-suporte-cli-adq'>
-                    <div className='select-container'>
-                        <h6><b>Adquirente *</b></h6>
-                        {adqfiltradas.length > 0 ? (
-                            <Select
-                                styles={{ maxWidth: '500px'}}
-                                options={adqfiltradas}
-                                onChange={handleAdqChange}
-                                value={adqSelecionada}
-                                placeholder="Selecione"
-                                menuPortalTarget={document.body}
-                                menuPosition="fixed"
-                            />
-                        ) : <></>}
-                    </div>
-                    <br/>
-                    <div className='input-block-cli-adq'>
-                        <button className='btn btn-global'><FiFilePlus /> &nbsp; Gerar Excel</button>
-                    </div>
-                </div>
-            </div>
-        )
-    } 
-
     const opcoes = [
-        {value: 0, label:'Autorização Cielo', componente: AutCielo}, 
-        {value: 1, label:'Autorização Stone', componente: AutStone}, 
-        {value: 2, label: 'Autorização Redecard', componente: AutRedeCard},
-        {value: 3, label: 'Autorização C6-Bank', componente: AutC6},
-        {value: 4, label: 'Gestão de Adquirentes', componente: GestaoAdq},
-        {value: 5, label: 'Consulta de Arquivos Importados', componente: ConsultaArquivo},
-        {value: 6, label: 'Corrigir Cadastro de Adquirente', componente: CorrigirAdq},
-        {value: 7, label: 'Clientes por Adquirente', componente: RelatorioCliAdq},
+        { value: 0, label: 'Autorização Cielo', componente: AutCielo, props: { PlaceHolder: PlaceHolder } },
+        { value: 1, label: 'Autorização Stone', componente: AutStone, props: { PlaceHolder: PlaceHolder } },
+        { value: 2, label: 'Autorização Redecard', componente: AutRedeCard, props: { PlaceHolder: PlaceHolder } },
+        { value: 3, label: 'Autorização C6-Bank', componente: AutC6, props: { PlaceHolder: PlaceHolder } },
+        { value: 4, label: 'Gestão de Adquirentes', componente: GestaoAdq, props: { PlaceHolder2: PlaceHolder2 } },
+        { value: 5, label: 'Consulta de Arquivos Importados', componente: ConsultaArquivo },
+        { value: 6, label: 'Corrigir Cadastro de Adquirente', componente: CorrigirAdq },
+        { value: 7, label: 'Clientes por Adquirente', componente: RelatorioCliAdq, props: { adqfiltradas: adqfiltradas, handleAdqChange: handleAdqChange, adqSelecionada: adqSelecionada } },
     ]
+
     const [tipoOpcao, setTipoOpcao] = useState(null)
     
     const handleTipoOpcao = selectedOption =>{
@@ -545,9 +251,9 @@ const Suporte = () =>{
                     </form>
                     <hr className='hr-global'/>
                     {tipoOpcao && (
-                        <div style={{width: '100%', height: '100%'}}>
-                            <h5 style={{paddingTop: '5px', paddingBottom: '5px'}}>{tipoOpcao.label}</h5>
-                            {tipoOpcao.componente && <tipoOpcao.componente />} {/* Render the component if it exists */}
+                        <div style={{ width: '100%', height: '100%' }}>
+                            <h5 style={{ paddingTop: '5px', paddingBottom: '5px' }}>{tipoOpcao.label}</h5>
+                            {tipoOpcao.componente && React.createElement(tipoOpcao.componente, tipoOpcao.props)} {/* Render the component if it exists */}
                         </div>
                     )}
                 </div>
