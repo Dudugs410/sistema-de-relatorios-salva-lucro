@@ -33,7 +33,6 @@ const ModalNewBank = ({ onClose, cliAdqOptions, setIsSelected, cliOptions, admOp
     setSelectedAccount,
     isLoadingBanks,
     handleSubmit,
-    resetValues,
   } = useBankForm(addBank, loadBanks, onClose, setBanksList);
 
   const handleAdmin = (selected) => {

@@ -1,7 +1,5 @@
-import React, { useContext } from "react"
+import React from "react"
 import './modalLoading.scss'
-import LoadingIcons from 'react-loading-icons'
-import { AuthContext } from "../../contexts/auth"
 
 const ModalLoading = () => {
     return(

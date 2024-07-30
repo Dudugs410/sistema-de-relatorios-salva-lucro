@@ -150,7 +150,6 @@ const Dashboard = () => {
 							<DisplaySales />
 						}
 					</div>
-
 					<div className='data-group-area'>
 						<h1 className='title-chart'>Créditos:</h1>			
 						{ isLoadedCreditsDashboard === false ? 
@@ -159,7 +158,6 @@ const Dashboard = () => {
 							<DisplayCredits />
 						}
 					</div>
-
 					<div className='data-group-area'>
 						<h1 className='title-chart'>Serviços:</h1>
 						{ isLoadedServicesDashboard === false ? 

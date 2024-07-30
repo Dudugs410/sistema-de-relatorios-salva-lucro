@@ -1,13 +1,10 @@
 import { useEffect, useState } from 'react'
-import { AuthContext } from '../../contexts/auth'
 import Cookies from 'js-cookie'
 import '../../styles/global.scss'
 import './cadastroDeBancos.scss'
 import Select from 'react-select'
 import { FiX } from 'react-icons/fi'
 import { toast } from 'react-toastify'
-import { set } from 'lodash'
-
 
 const ModalEditBank = ({ editableBank, onClose, cliAdqOptions, setIsSelected, cliOptions, admOptions, banOptions, productOptions, subproductOptions, editBank, loadBanks, setBanksList }) => {
     const [selectedCli, setSelectedCli] = useState(() => {
@@ -74,7 +71,6 @@ const ModalEditBank = ({ editableBank, onClose, cliAdqOptions, setIsSelected, cl
                     pending: 'Carregando...',
                     error: 'Erro ao adicionar Taxa',
                 })
-    
                 const updatedBanks = await loadBanks()
                 setBanksList(updatedBanks)
                 resetValues()
