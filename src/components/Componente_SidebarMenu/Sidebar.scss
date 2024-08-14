@@ -42,15 +42,21 @@
     color: var(--font-color)
 }
 
+.navbar-expand-md .navbar-nav .nav-link {
+    text-align: start;
+    /* padding-right: var(--bs-navbar-nav-link-padding-x); */
+    /* padding-left: var(--bs-navbar-nav-link-padding-x); */
+}
+
 /* Parent hover and active styles */
 .navlink-parent:hover, 
 .navlink-parent.active-parent {
-    background-color: var(secondary-color);
+    background-color: var(--secondary-color);
     color: white;
 }
 
 .navlink-child {
-    padding-left: 1rem;
+    padding-left: 2rem !important;
     cursor: pointer;
     color: var(--background-color)
 }
@@ -58,8 +64,8 @@
 /* Child hover and active styles */
 .navlink-child:hover,
 .navlink-child.active-child {
-    background-color: var(secondary-color);
-    color: white;
+    background-color: var(--secondary-color);
+    color: var(--font-color);
 }
 
 .navlink-child:hover{

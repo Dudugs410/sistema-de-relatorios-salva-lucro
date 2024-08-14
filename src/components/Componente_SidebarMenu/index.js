@@ -24,7 +24,7 @@ const Sidebar = () => {
         } else {
             setActiveParent(parent);
         }
-    };
+    }
 
     const handleChildClick = (child, navigationLink) => {
         setActiveChild(child);
