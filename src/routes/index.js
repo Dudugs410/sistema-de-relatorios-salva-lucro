@@ -47,7 +47,6 @@ function RoutesApp() {
       <Route path='/servicos' element={<Private><Servicos /></Private>} />
       <Route path='/cadastrodebancos' element={<Private><CadastroDeBancos /></Private>} />
       <Route path='/Taxas' element={<Private><Taxas /></Private>} />
-      {/* Uncomment the routes as needed */}
       <Route path='/financeiro' element={<Private><Financeiro /></Private>} />
       <Route path='/gerenciais' element={<Private><Gerenciais /></Private>} />
       <Route path='/outrosrelatorios' element={<Private><OutrosRelatorios /></Private>} />
@@ -58,7 +57,6 @@ function RoutesApp() {
       <Route path='/suporte' element={<Private><Suporte /></Private>} />
       <Route path='/vendasdelivery' element={<Private><VendasDelivery /></Private>} />
       <Route path='/conciliacao' element={<Private><ConciliacaoBancaria /></Private>} />
-      {/*   */}
     </Routes>
   )
 }
