@@ -8,7 +8,6 @@ import '../../index.scss'
 import Cookies from "js-cookie"
 import Relogio from "../Componente_Relogio"
 import SideBar from "../Componente_SideBar"
-import './header.scss'
 
 const Header = () => {
     const { logout, isCheckedCalendar, setIsCheckedCalendar } = useContext(AuthContext)
@@ -186,18 +185,79 @@ const Header = () => {
     }
 
     return (
-        <div className="header-container">
-            <div className='header-bg-image'>
-                <div className="header-info-wrapper px-4 py-3 header-bg">
-                    <div className='navbar-customer-wrapper me-2 text-truncate'>
-                        <Relogio/>
+        <>
+            <div className="header-bg-image">
+                <div className='header-bg'>
+                    <div className='navbar-title'>
+                        <img className='img-header' src={salvaLucroLogoBranco} alt='logo salva lucro' onClick={handleLogo}/>
                     </div>
-                    <div className='btn-container'>
-                        <button type='button' className='btn btn-outline-danger px-2 py-1' onClick={logout}>Sair</button>
+                    <div className="header-info-wrapper px-4 py-3">
+                        <div className='navbar-customer-wrapper me-2 text-truncate'>
+                            <Relogio/>
+                        </div>
+                        <div className='btn-container'>
+                            <button type='button' className='btn btn-outline-danger px-2 py-1' onClick={logout}>Sair</button>
+                        </div>
+                    </div>
+                </div>
+                <SideBar options={ optionsWithIcons }/>
+                <div className='header-content'>
+                    <div className='barra-header'>
+                        <div className="li-container px-3">
+                            <ul className='navbar-nav pe-2'>
+                            {optionsWithIcons.length > 0 && optionsWithIcons.map((opcao, index) => (
+                                <li className="nav-item" key={index}>
+                                    {opcao.children ? (
+                                        <div className="nav-hover dropdown" onMouseEnter={() => {
+                                            if(opcao.nome === 'Relatórios') {
+                                                setShowRelatoriosDropdown(true)
+                                            } else if (opcao.nome === 'Exportações') {
+                                                setShowExportacoesDropdown(true)
+                                            }
+                                        }} onMouseLeave={() => {
+                                            if(opcao.nome === 'Relatórios') {
+                                                setShowRelatoriosDropdown(false)
+                                            } else if (opcao.nome === 'Exportações') {
+                                                setShowExportacoesDropdown(false)
+                                            }
+                                        }}>
+                                            <button className='px-2 me-1 li-button-content nav-hover-button dropdown-button'>
+                                                {opcao.icone && React.createElement(opcao.icone)}
+                                                <span className="ms-1 mt-2 mb-auto li-btn-text span-header">{opcao.nome}</span>
+                                            </button>
+                                            <div className={`dropdown-menu-normal ${opcao.nome === 'Relatórios' ? (showRelatoriosDropdown ? 'show' : '') : (opcao.nome === 'Exportações' ? (showExportacoesDropdown ? 'show' : '') : '')}`} aria-labelledby="dropdownMenuButton" style={{ position: 'absolute', top: '100%', left: 0 }}>
+                                                {opcao.children.map((childOption, childIndex) => (
+                                                    <Link key={childIndex} to={childOption.rota} className='dropdown-item relatorios-child'>
+                                                        <button className='px-2 me-1 li-button-content nav-hover-button dropdown-button'>
+                                                            <span className="ms-1 mt-2 mb-auto li-btn-text span-option">{childOption.nome}</span>
+                                                        </button>
+                                                    </Link>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <Link to={opcao.rota} className="nav-hover active text-shadow">
+                                            <button className='px-2 me-1 li-button-content nav-hover-button' >
+                                                {opcao.icone && React.createElement(opcao.icone)}
+                                                <span className="ms-1 mt-2 mb-auto li-btn-text">{opcao.nome}</span>
+                                            </button>
+                                        </Link>
+                                    )}
+                                </li>
+                            ))}
+                            </ul>
+                            <div className="toggle-container me-1">
+                                <label className="switch">
+                                    <input type="checkbox" id="toggleButton" checked={isChecked} onChange={handleCheckboxChange}/>
+                                    <span className="slider"><FiMoon/><FiSun/></span>
+                                </label>
+                                <CustomCheckbox isChecked={isCheckedCalendar} handleCheckboxChange={handleCheckboxChangeCalendar}/>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     )
 }
 
