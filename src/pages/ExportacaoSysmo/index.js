@@ -142,35 +142,36 @@ const ExportacaoSysmo = () =>{
                     <h1 className='title-global'>Exportação Sysmo</h1>
                 </div>
                 <hr className='hr-global'/>
-                <form style={{width: '-webkit-fill-available'}}>
-                    <div className='component-container-sysmo'>
+                <div className='component-container-sysmo'>
+                    <div className='select-component'>
+                        <p className='radio-title-sysmo'>Tipo:</p>
                         <RadioSelect options={radioOptions} onSelect={(e) => {setType(e)}}/>
-                        <div className='select-component-container'>
-                            <div className='select-component'>
-                                <span className='span-picker'>Bandeira</span>
-                                <Select
-                                    value={selectedBan}
-                                    onChange={handleBan}
-                                    placeholder="Selecione"
-                                    options={banOptions}
-                                    menuPortalTarget={document.body}
-                                    menuPosition="fixed"
-                                />
-                            </div>
-                            <div className='select-component'>
-                                <span className='span-picker'>Adquirente</span>
-                                <Select 
-                                    value={selectedAdm} 
-                                    onChange={handleAdq}
-                                    placeholder="Selecione"
-                                    options={admOptions}
-                                    menuPortalTarget={document.body}
-                                    menuPosition="fixed"
-                                />
-                            </div>
+                    </div>
+                    <div className='select-component-container'>
+                        <div className='select-component'>
+                            <span className='span-picker'>Bandeira</span>
+                            <Select
+                                value={selectedBan}
+                                onChange={handleBan}
+                                placeholder="Selecione"
+                                options={banOptions}
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
+                            />
+                        </div>
+                        <div className='select-component'>
+                            <span className='span-picker'>Adquirente</span>
+                            <Select 
+                                value={selectedAdm} 
+                                onChange={handleAdq}
+                                placeholder="Selecione"
+                                options={admOptions}
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
+                            />
                         </div>
                     </div>
-                </form>
+                </div>
                 <MyCalendar onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange} btnDisabled={btnDisabledSysmo}/>
             </div>
         </div>

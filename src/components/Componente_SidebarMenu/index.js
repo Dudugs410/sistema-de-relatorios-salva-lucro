@@ -13,25 +13,38 @@ const Sidebar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [activeChild, setActiveChild] = useState(null);
     const [optionsWithIcons, setOptionsWithIcons] = useState([]);
-    const [activeParent, setActiveParent] = useState(null); // Track the active parent option
-    const [sidebarVisible, setSidebarVisible] = useState(false); // State to control sidebar visibility
+    const [activeParent, setActiveParent] = useState(null);
+    const [lastClicked, setLastClicked] = useState(null); // Track the last clicked option
+    const [sidebarVisible, setSidebarVisible] = useState(false);
 
     const navigate = useNavigate();
 
     const toggleDropdown = (parent) => {
         if (activeParent === parent) {
             setActiveParent(null); // Close the dropdown if it's already open
+            setActiveChild(null); // Reset any active child when closing the parent
         } else {
             setActiveParent(parent);
+            setActiveChild(null); // Reset any active child when a new parent is selected
+            setLastClicked(parent); // Track this parent as the last clicked
         }
     }
 
-    const handleChildClick = (child, navigationLink) => {
+    const handleChildClick = (child, navigationLink, parent) => {
         setActiveChild(child);
+        setLastClicked(child); // Track this child as the last clicked
+        setActiveParent(parent); // Keep the parent active
         navigate(navigationLink);
-        setSidebarVisible(false); // Close sidebar after selection on mobile
+        setSidebarVisible(false); // Optionally close the sidebar after navigation
     };
-    
+
+    const handleParentClickWithoutChildren = (parent, navigationLink) => {
+        setActiveParent(parent); // Mark this parent as active
+        setActiveChild(null); // Reset the active child
+        setLastClicked(parent); // Track this parent as the last clicked
+        navigate(navigationLink);
+        setSidebarVisible(false); // Optionally close the sidebar after navigation
+    };
 
     const handleLogo = () => {
         navigate('/dashboard');
@@ -105,9 +118,9 @@ const Sidebar = () => {
                         {optionsWithIcons.map((option, index) => (
                             <NavItem key={index}>
                                 <NavLink 
-                                    className={`b-links navlink-parent ${activeParent === option.nome ? 'active-parent' : ''}`} 
+                                    className={`b-links navlink-parent ${lastClicked === option.nome || activeParent === option.nome ? 'active-parent' : ''}`} 
                                     href="#" 
-                                    onClick={() => option.children ? toggleDropdown(option.nome) : handleChildClick(option.nome, option.rota)}
+                                    onClick={() => option.children ? toggleDropdown(option.nome) : handleParentClickWithoutChildren(option.nome, option.rota)}
                                 >
                                     <option.icone /><b>{option.nome}</b>
                                 </NavLink>
@@ -117,8 +130,8 @@ const Sidebar = () => {
                                             {option.children.map((child, childIndex) => (
                                                 <NavItem key={childIndex}>
                                                     <NavLink 
-                                                        className={`navlink-child ${activeChild === child.nome ? 'active-child' : ''}`} 
-                                                        onClick={() => handleChildClick(child.nome, child.rota)}
+                                                        className={`navlink-child ${lastClicked === child.nome ? 'active-child' : ''}`} 
+                                                        onClick={() => handleChildClick(child.nome, child.rota, option.nome)}
                                                     >
                                                         {child.nome}
                                                     </NavLink>
