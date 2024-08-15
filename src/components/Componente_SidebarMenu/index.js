@@ -29,7 +29,9 @@ const Sidebar = () => {
     const handleChildClick = (child, navigationLink) => {
         setActiveChild(child);
         navigate(navigationLink);
+        setSidebarVisible(false); // Close sidebar after selection on mobile
     };
+    
 
     const handleLogo = () => {
         navigate('/dashboard');

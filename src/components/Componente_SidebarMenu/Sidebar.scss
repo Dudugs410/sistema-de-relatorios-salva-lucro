@@ -55,10 +55,21 @@
     color: white;
 }
 
+/* Child hover and active styles */
 .navlink-child {
     padding-left: 2rem !important;
     cursor: pointer;
-    color: var(--background-color)
+    color: var(--background-color);
+
+    &.active-child {
+        background-color: var(--secondary-color);
+        color: var(--font-color);
+        opacity: 0.8;
+    }
+
+    &:hover {
+        background-color: var(--secondary-color);
+    }
 }
 
 /* Child hover and active styles */
@@ -66,6 +77,7 @@
 .navlink-child.active-child {
     background-color: var(--secondary-color);
     color: var(--font-color);
+    opacity: 0.8;
 }
 
 .navlink-child:hover{
@@ -74,17 +86,23 @@
 
 .bg-sidebar{
     height: 100%;
-    background-color: var(--primary-color);
     border-right: solid var(--secondary-color) 1px;
 }
 
 ul{
-    background-color: var(--primary-color);
+    background-color: none;
+    //background-color: var(--primary-color);
+    //background-blend-mode: multiply;
+}
+
+.bg-light{
+        --bs-bg-opacity: 0;
 }
 
 .navbar-expand-md .navbar-nav .nav-link {
     padding-right: var(--bs-navbar-nav-link-padding-x);
     /* padding-left: var(--bs-navbar-nav-link-padding-x); */
+
 }
 
 .sidebar {
@@ -102,7 +120,7 @@ ul{
         top: 0;
         height: 100%;
         z-index: 1000;
-
+        background-color: var(--primary-color);
         &.visible {
             transform: translateX(0);
         }
@@ -122,7 +140,14 @@ ul{
 
     @media (max-width: 946px) {
         display: block;
+        border: solid var(--secondary-color) 1px;
+        background-color: var(--primary-color);
+
     }
+}
+
+.sidebar-content>button:hover{
+    background-color: var(--secondary-color);
 }
 
 

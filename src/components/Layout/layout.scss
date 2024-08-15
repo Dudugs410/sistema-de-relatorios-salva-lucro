@@ -38,6 +38,11 @@ img.img-header:hover{
   
   .sidebar-content {
     flex-shrink: 0;
+    background-image: url("../../assets/financ.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-blend-mode: multiply;
+    background-color: var(--header-bg);
   }
   
   .column-container {
