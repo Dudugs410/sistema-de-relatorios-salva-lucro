@@ -43,8 +43,21 @@
     flex-direction: row;
 }
 
+.radio-title-sysmo{
+    font-weight: bold;
+    color: var(--font-color);
+    margin-bottom: 0;
+
+}
+
 .component-container-sysmo{
     display: inline-flex;
     width: 100%;
     align-items: center;
+    @media (max-width: 946px){
+        display: flex;
+        width: 100%;
+        flex-wrap: wrap;
+        
+    }
 }

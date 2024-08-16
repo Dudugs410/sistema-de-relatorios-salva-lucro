@@ -29,13 +29,42 @@
     color: var(--background-color);
 }
 
+/* Parent hover and active styles */
 .navlink-parent {
     display: inline-flex;
     align-items: center;
     width: 100%;
     cursor: pointer;
-    color: var(--background-color)
+    color: var(--background-color);
+
+    &.active-parent {
+        background-color: var(--secondary-color);
+        color: white;
+    }
+    
+    &:hover {
+        background-color: var(--secondary-color);
+        color: var(--font-color);
+    }
 }
+
+/* Child hover and active styles */
+.navlink-child {
+    padding-left: 2rem !important;
+    cursor: pointer;
+    color: var(--background-color);
+
+    &.active-child {
+        background-color: var(--secondary-color);
+        color: var(--font-color);
+        opacity: 0.8;
+    }
+
+    &:hover {
+        background-color: var(--secondary-color);
+    }
+}
+
 
 .navlink-parent:hover{
     background-color: var(--secondary-color);
@@ -55,17 +84,12 @@
     color: white;
 }
 
-.navlink-child {
-    padding-left: 2rem !important;
-    cursor: pointer;
-    color: var(--background-color)
-}
-
 /* Child hover and active styles */
 .navlink-child:hover,
 .navlink-child.active-child {
     background-color: var(--secondary-color);
     color: var(--font-color);
+    opacity: 0.8;
 }
 
 .navlink-child:hover{
@@ -74,22 +98,29 @@
 
 .bg-sidebar{
     height: 100%;
-    background-color: var(--primary-color);
     border-right: solid var(--secondary-color) 1px;
 }
 
 ul{
-    background-color: var(--primary-color);
+    background-color: none;
+    //background-color: var(--primary-color);
+    //background-blend-mode: multiply;
+}
+
+.bg-light{
+    --bs-bg-opacity: 0;
 }
 
 .navbar-expand-md .navbar-nav .nav-link {
     padding-right: var(--bs-navbar-nav-link-padding-x);
     /* padding-left: var(--bs-navbar-nav-link-padding-x); */
+
 }
 
 .sidebar {
     width: 250px;
     transition: transform 0.3s ease;
+    overflow-y: overlay;
     
     &.visible {
         transform: translateX(0);
@@ -97,12 +128,17 @@ ul{
 
     @media (max-width: 946px) {
         transform: translateX(-100%);
+        padding-top: 70px;
         position: fixed;
         left: 0;
         top: 0;
         height: 100%;
         z-index: 1000;
-
+        background-image: url("../../assets/financ.jpg");
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-blend-mode: multiply;
+        background-color: var(--header-bg);
         &.visible {
             transform: translateX(0);
         }
@@ -122,7 +158,12 @@ ul{
 
     @media (max-width: 946px) {
         display: block;
+        border: solid var(--secondary-color) 1px;
+        background-color: var(--primary-color);
+
     }
 }
 
-
+.sidebar-content>button:hover{
+    background-color: var(--secondary-color);
+}
