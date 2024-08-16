@@ -49,49 +49,51 @@ const Administracao = () =>{
 
     const PlaceHolder = () =>{
         return(
-            <table class="table table-striped table-hover table-bordered">
+            <div className='suporte-content' style={{'overflowX': 'overlay'}}>
+                <table class="table table-striped table-hover table-bordered table-suporte">
+                    <thead>
+                        <tr>
+                            <th colspan="6"><FiPlus className='icon' />Adicionar</th>
+                        </tr>
+                    </thead>
                 <thead>
                     <tr>
-                        <th colspan="6"><FiPlus className='icon' />Adicionar</th>
+                        <th scope="col"></th>
+                        <th scope="col">Bandeira</th>
+                        <th scope="col">Modalidade</th>
+                        <th scope="col">Tipo Taxa</th>
+                        <th scope="col">% Taxa</th>
+                        <th scope="col"></th>
                     </tr>
                 </thead>
-            <thead>
-                <tr>
-                    <th scope="col"></th>
-                    <th scope="col">Bandeira</th>
-                    <th scope="col">Modalidade</th>
-                    <th scope="col">Tipo Taxa</th>
-                    <th scope="col">% Taxa</th>
-                    <th scope="col"></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <th scope="row"><FiEdit className='icon' /></th>
-                        <td>Amex</td>
-                        <td>Crédito À Vista</td>
-                        <td>Redecen</td>
-                        <td>1.36</td>
-                        <td><FiTrash className='icon'/></td>
-                </tr>
-                <tr>
-                    <th scope="row"><FiEdit className='icon' /></th>
-                        <td>Amex</td>
-                        <td>Crédito parcelado s/juros 2 a 6x</td>
-                        <td>Redecen</td>
-                        <td>2.19</td>
-                        <td><FiTrash className='icon'/></td>
-                </tr>
-                <tr>
-                    <th scope="row"><FiEdit className='icon' /></th>
-                        <td>Elo</td>
-                        <td>Crédito parcelado s/juros 2 a 6x</td>
-                        <td>Redecen</td>
-                        <td>1.74</td>
-                        <td><FiTrash  className='icon' /></td>
-                </tr>
-            </tbody>
-        </table>
+                <tbody>
+                    <tr>
+                        <th scope="row"><FiEdit className='icon' /></th>
+                            <td>Amex</td>
+                            <td>Crédito À Vista</td>
+                            <td>Redecen</td>
+                            <td>1.36</td>
+                            <td><FiTrash className='icon'/></td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><FiEdit className='icon' /></th>
+                            <td>Amex</td>
+                            <td>Crédito parcelado s/juros 2 a 6x</td>
+                            <td>Redecen</td>
+                            <td>2.19</td>
+                            <td><FiTrash className='icon'/></td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><FiEdit className='icon' /></th>
+                            <td>Elo</td>
+                            <td>Crédito parcelado s/juros 2 a 6x</td>
+                            <td>Redecen</td>
+                            <td>1.74</td>
+                            <td><FiTrash  className='icon' /></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
         )
     }
 
@@ -110,28 +112,22 @@ const Administracao = () =>{
             <div className='title-container-global'>
               <h1 className='title-global'>Análise Inicial</h1>
             </div>
-            <div className=''>
-                <MyCalendar onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange}/>
-                <div className=''>
-                    <form className=''>
-                        <div className='component-container'>
-                            <h5 style={{fontWeight: 'bold'}}>Tipo de Taxa</h5>
-                            <br/>
-                            <RadioSelect options={radioOptions} onSelect={(e) => {setTipo(e)}}/>
-                            <br/>
-                        </div>
-                        <div className='component-container'>
-                            <br/>
-                            <h5 style={{fontWeight: 'bold'}}>Cadastro de Taxas Comparativas</h5>
-                            <br/>
-                            <PlaceHolder />
-                            <br/>
-                        </div>
-                        <div className='btn-container-financeiro'>
-                            <button className='btn btn-primary btn-global' onClick={handleExport}>Gerar PDF</button>
-                        </div>
-                    </form>
-                </div>
+            <MyCalendar onLoadData={handleLoadData} getCalendarDate={handleDateRangeChange}/>
+            <div className='component-container'>
+                <h5 style={{fontWeight: 'bold'}}>Tipo de Taxa</h5>
+                <br/>
+                <RadioSelect options={radioOptions} onSelect={(e) => {setTipo(e)}}/>
+                <br/>
+            </div>
+            <div className='component-container'>
+                <br/>
+                <h5 style={{fontWeight: 'bold'}}>Cadastro de Taxas Comparativas</h5>
+                <br/>
+                <PlaceHolder />
+                <br/>
+            </div>
+            <div className='btn-container-financeiro'>
+                <button className='btn btn-primary btn-global' onClick={handleExport}>Gerar PDF</button>
             </div>
           </div>
         </div>

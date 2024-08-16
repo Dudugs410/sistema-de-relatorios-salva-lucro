@@ -19,7 +19,6 @@ export const AuthContext = createContext({})
 function AuthProvider({ children }){
 	const [isSignedIn, setIsSignedIn] = useState(false)
 	const [accessToken, setAccessToken] = useState(undefined)
-
 	////////////////////////////////////////////////////////////////
 
 	const [salesTableData, setSalesTableData] = useState([])
