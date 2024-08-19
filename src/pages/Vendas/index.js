@@ -25,9 +25,11 @@ const Vendas = () =>{
   } = useContext(AuthContext)
 
   useEffect(()=>{
-    if(salesPageArray.length>0){
+    if(salesPageArray && salesPageArray.length > 0){
       setSalesPageAdminArray(groupByAdmin(salesPageArray))
       loadTotalSales(salesPageArray)
+    } else if (salesPageArray === null) {
+      handleResetOnError()
     }
   },[salesPageArray])
 
@@ -44,6 +46,11 @@ const Vendas = () =>{
     salesTableData.length = 0
   }
 
+  const handleResetOnError = () => {
+    resetValues()
+    toast.error('Ocorreu um erro ao carregar os dados de vendas. A página foi redefinida.')
+  }
+
   async function handleLoadData(e) {
     e.preventDefault()
     try {
@@ -56,12 +63,14 @@ const Vendas = () =>{
     } catch (error) {
       setBtnDisabledSales(false)
       console.error('Error handling busca:', error)
+      handleResetOnError()
     }
   }
 
   async function loadData() {
     try {
-      setSalesPageArray(await loadSales(salesDateRange[0].toLocaleDateString('pt-BR'), salesDateRange[1].toLocaleDateString('pt-BR')))
+      const data = await loadSales(salesDateRange[0].toLocaleDateString('pt-BR'), salesDateRange[1].toLocaleDateString('pt-BR'))
+      setSalesPageArray(data)
     } catch (error) {
       console.error('Error fetching sales data:', error)
       throw error
@@ -69,7 +78,7 @@ const Vendas = () =>{
   }
 
   useEffect(()=>{
-    if(salesPageArray.length > 0){
+    if(salesPageArray && salesPageArray.length > 0){
       exportSales(salesPageArray)
     }
   },[salesPageArray, sessionStorage.getItem('currentPath')])
@@ -110,4 +119,3 @@ const Vendas = () =>{
 }
 
 export default Vendas
-

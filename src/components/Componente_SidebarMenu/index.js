@@ -98,7 +98,7 @@ const Sidebar = () => {
                                     href="#" 
                                     onClick={() => option.children ? toggleDropdown(option.nome) : handleParentClickWithoutChildren(option.nome, option.rota)}
                                 >
-                                    <option.icone /><b>{option.nome}</b>
+                                    &nbsp;<option.icone /><b>&nbsp;{option.nome}</b>
                                 </NavLink>
                                 {option.children && (
                                     <Collapse isOpen={activeParent === option.nome}>

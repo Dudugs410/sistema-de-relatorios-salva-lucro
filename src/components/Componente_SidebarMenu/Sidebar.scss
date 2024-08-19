@@ -21,8 +21,7 @@
 
 .nav-link {
     border-bottom: solid #888888 1px;
-    color: var(--font-color);
-    color: var(--background-color)
+    color: var(--table-row-hover-bg);
 }
 
 .nav-link:focus, .nav-link:hover {
@@ -35,7 +34,7 @@
     align-items: center;
     width: 100%;
     cursor: pointer;
-    color: var(--background-color);
+    color: var(--sidebar-font-color);
 
     &.active-parent {
         background-color: var(--secondary-color);
@@ -68,7 +67,7 @@
 
 .navlink-parent:hover{
     background-color: var(--secondary-color);
-    color: var(--font-color)
+    color: var(--table-row-hover-bg)
 }
 
 .navbar-expand-md .navbar-nav .nav-link {
@@ -88,7 +87,7 @@
 .navlink-child:hover,
 .navlink-child.active-child {
     background-color: var(--secondary-color);
-    color: var(--font-color);
+    color: var(--sidebar-font-color);
     opacity: 0.8;
 }
 

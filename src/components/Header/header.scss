@@ -29,3 +29,115 @@
     align-items: center;
 }
 
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 24px;
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    justify-content: space-around;
+    align-items: center;
+  }
+  
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 6px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+  }
+  
+  input:checked + .slider {
+    background-color: #35495a;
+  }
+  
+  input:checked + .slider:before {
+    transform: translateX(31px);
+  }
+
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 24px;
+  }
+  
+  .switch input {
+    display: none;
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    flex-direction: row;
+    padding-left: 10px;
+}
+    
+.checkbox-input {
+display: none; /* Hide the default checkbox */
+}
+    
+.checkbox-custom {
+position: relative;
+display: inline-block;
+width: 20px;
+height: 20px;
+border: 2px solid #ccc;
+border-radius: 4px;
+margin-right: 8px;
+border-color: var(--primary-color);
+
+}
+    
+.checkbox-input:checked + .checkbox-custom {
+    border-color: var(--secondary-color);
+    background-color: var(--secondary-color);
+}
+
+.checkbox-icon {
+    position: relative;
+    right: 28.5px;
+    bottom: 1px;
+    margin-right: 8px;
+}
+
+.checkbox-label:hover .checkbox-custom {
+border-color: #999; /* Change border color on hover */
+}
+
+/* Animation example */
+.checkbox-custom {
+transition: background-color 0.3s, border-color 0.3s;
+}
+
+.navbar-customer-wrapper{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    font-size: 0.8em;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+.toggle-container {
+    display: flex;
+    align-items: center;
+    padding: 0 5px 0 5px;
+    flex-direction: row;
+    width: 100%;
+    justify-content: flex-start;
+    position: relative;
+    left: 50px;
+}
