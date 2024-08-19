@@ -84,7 +84,7 @@ const Header = () => {
                   root.style.setProperty('--calendar-btn-navigation-color', 'var(--calendar-btn-navigation-color-dark)')
                   root.style.setProperty('--calendar-neighbor-bg', 'var(--calendar-neighbor-bg-dark)')
                   root.style.setProperty('--subtitle-color', 'var(--subtitle-dark)')
-                    
+                  root.style.setProperty('--sidebar-font-color', 'var(sidebar-font-color-dark)')   
                 } else { 
                   root.style.setProperty('--primary-color', 'var(--primary-color-light)')
                   root.style.setProperty('--secondary-color', 'var(--secondary-color-light)')
@@ -102,7 +102,7 @@ const Header = () => {
                   root.style.setProperty('--calendar-btn-navigation-color', 'var(--calendar-btn-navigation-color-light)')
                   root.style.setProperty('--calendar-neighbor-bg', 'var(--calendar-neighbor-bg-light)')
                   root.style.setProperty('--subtitle-color', 'var(--subtitle-light)')
-
+                  root.style.setProperty('--sidebar-font-color', 'var(sidebar-font-color-light)')
                 }
     },[isChecked])
     
@@ -190,6 +190,13 @@ const Header = () => {
             <div className='header-bg-image'>
                 <div className="header-info-wrapper px-4 py-3 header-bg">
                     <div className='navbar-customer-wrapper me-2 text-truncate'>
+                        <div className="toggle-container me-1">
+                            <label className="switch">
+                                <input type="checkbox" id="toggleButton" checked={isChecked} onChange={handleCheckboxChange}/>
+                                <span className="slider"><FiMoon/><FiSun/></span>
+                            </label>
+                            <CustomCheckbox isChecked={isCheckedCalendar} handleCheckboxChange={handleCheckboxChangeCalendar}/>
+                        </div>
                         <Relogio/>
                     </div>
                     <div className='btn-container'>
