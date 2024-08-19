@@ -26,6 +26,7 @@
     --calendar-neighbor-bg: rgb(187, 187, 187);
 
     //outros
+    --sidebar-font-color: white;
     --subtitle-color: rgb(10, 61, 112);
 
     //-----------------------------------------------------------------//
@@ -54,6 +55,9 @@
     --calendar-neighbor-color-light: #757575;
     --calendar-btn-navigation-color-light: rgb(10, 61, 112);
     --calendar-neighbor-bg-light: rgb(187, 187, 187);
+
+    //sidebar
+    --sidebar-font-color-light: white;
 
     //subtitle
     --subtitle-light: rgb(10, 61, 112);
@@ -84,6 +88,9 @@
     --calendar-neighbor-color-dark: rgb(26, 26, 26);
     --calendar-btn-navigation-color-dark: white;
     --calendar-neighbor-bg-dark: black;
+
+    //sidebar
+    --sidebar-font-color-dark: #d3d3d3;
 
     //subtitle
     --subtitle-dark: darkgray;

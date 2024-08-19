@@ -167,7 +167,7 @@ const PieChart = ({ data01, arrayAdm, tipo, dados } ) => {
                 return {
                   text: `${label}: ${formattedValue}`,
                   fillStyle: data.datasets[0].backgroundColor[index],
-                  fontColor: getComputedStyle(document.documentElement).getPropertyValue('--font-color'),
+                  fontColor: getComputedStyle(document.documentElement).getPropertyValue('--font-color-light'),
                   hidden:
                     isNaN(data.datasets[0].data[index]) ||
                     chart.getDatasetMeta(0).data[index].hidden,
