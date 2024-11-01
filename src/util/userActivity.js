@@ -1,12 +1,21 @@
 import { useEffect, useRef } from 'react';
 
-export function useUserActivity(onIdle, idleTimeout = 10 * 60 * 1000) {
+const THROTTLE_INTERVAL = 10 * 60 * 1000; // 10 minutes in milliseconds
+
+export function useUserActivity(onActive, onIdle, idleTimeout = 10 * 60 * 1000) {
   const lastActivityTimeRef = useRef(Date.now());
+  const lastRefreshTimeRef = useRef(Date.now());
   const idleCheckTimeout = useRef(null);
   const logInterval = useRef(null);
 
   const updateActivity = () => {
     lastActivityTimeRef.current = Date.now();
+
+    // Check if enough time has passed to allow a refresh
+    if (Date.now() - lastRefreshTimeRef.current > THROTTLE_INTERVAL) {
+      onActive(); // Trigger the refresh if allowed
+      lastRefreshTimeRef.current = Date.now(); // Update the last refresh time
+    }
 
     // Reset idle check when activity is detected
     resetIdleCheck();
@@ -38,7 +47,7 @@ export function useUserActivity(onIdle, idleTimeout = 10 * 60 * 1000) {
 
     // Start initial idle check and logging interval
     resetIdleCheck();
-    logInterval.current = setInterval(logTimeLeftUntilIdle, 10000); // Log every 10 seconds
+    logInterval.current = setInterval(logTimeLeftUntilIdle, 5000); // Log every 5 seconds
 
     return () => {
       // Clean up events, timeout, and logging interval on unmount
@@ -46,7 +55,7 @@ export function useUserActivity(onIdle, idleTimeout = 10 * 60 * 1000) {
       if (idleCheckTimeout.current) clearTimeout(idleCheckTimeout.current);
       if (logInterval.current) clearInterval(logInterval.current);
     };
-  }, [onIdle, idleTimeout]);
+  }, [onActive, onIdle, idleTimeout]);
 
   return;
 }

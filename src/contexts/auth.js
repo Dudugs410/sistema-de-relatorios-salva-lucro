@@ -690,6 +690,9 @@ function AuthProvider({ children }){
 
 		// renova o access token/sessão do usuário
 		const refreshSession = async () => {
+			if(Cookies.get('token')){
+				
+			}
 			try {
 			  const refreshToken = Cookies.get('refreshToken');
 			  
@@ -708,7 +711,7 @@ function AuthProvider({ children }){
 			  Cookies.set('refreshToken', response.data.refresh_token);
 
 			  console.log('access token: ', Cookies.get('token'))
-			  console.log('refresh token: ', Cookies.get(refreshToken))
+			  console.log('refresh token: ', Cookies.get('refreshToken'))
 		  
 			  console.log('Session refreshed successfully');
 			} catch (error) {
