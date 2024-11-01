@@ -689,21 +689,37 @@ function AuthProvider({ children }){
 		} 
 
 		// renova o access token/sessão do usuário
-		const refreshSession = async () =>{
+		const refreshSession = async () => {
 			try {
-					let refreshToken = Cookies.get('refreshToken')
-					const encodedRefreshToken = encodeURIComponent(refreshToken)
-					const response = await api.post('token/refresh/' + encodedRefreshToken)
-					Cookies.set('token', response.data.acess_token)
-					Cookies.set('refreshToken', response.data.refresh_token)
+			  const refreshToken = Cookies.get('refreshToken');
+			  
+			  if (!refreshToken) {
+				console.log('No refresh token available');
+				return;
+			  }
+		  
+			  // Send the refresh token in the body of the POST request
+			  const response = await api.post('token/refresh/', {
+				refresh_token: refreshToken
+			  });
+		  
+			  // Update cookies with the new tokens received
+			  Cookies.set('token', response.data.acess_token);
+			  Cookies.set('refreshToken', response.data.refresh_token);
+
+			  console.log('access token: ', Cookies.get('token'))
+			  console.log('refresh token: ', Cookies.get(refreshToken))
+		  
+			  console.log('Session refreshed successfully');
 			} catch (error) {
-				console.log(error)
-				if (error.response.status === 401) {
-					logout()
-					return
-				}
-			}	
-		}
+			  console.error('Error refreshing session:', error);
+		  
+			  if (error.response && error.response.status === 401) {
+				console.log('Unauthorized: logging out');
+				logout(); // Call your logout function here
+			  }
+			}
+		  };
 
 	// >>> Dashboard <<< //
 
@@ -1746,6 +1762,7 @@ function AuthProvider({ children }){
 				isSignedIn, setIsSignedIn,
 				logout,
 				accessToken, setAccessToken,
+				refreshSession,
 
 				////////////////
 
