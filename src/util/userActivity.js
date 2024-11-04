@@ -1,12 +1,17 @@
+// userActivity.js
+
 import { useEffect, useRef } from 'react';
 
-const THROTTLE_INTERVAL = 10 * 60 * 1000; // 10 minutes in milliseconds
+const THROTTLE_INTERVAL = 10 * 60 * 1000; // 10 minutes
+const TOKEN_EXPIRATION_THRESHOLD = 10 * 60 * 1000; // Show modal 10 minutes before token expires
+const TOKEN_EXPIRATION_TIME = 120 * 60 * 1000; // 2 hours (7200 seconds)
 
-export function useUserActivity(onActive, onIdle, idleTimeout = 10 * 60 * 1000) {
+export function useUserActivity(onActive, onIdle, idleTimeout = 10 * 60 * 1000, onExpiryWarning) {
   const lastActivityTimeRef = useRef(Date.now());
   const lastRefreshTimeRef = useRef(Date.now());
   const idleCheckTimeout = useRef(null);
   const logInterval = useRef(null);
+  const expiryWarningTimeout = useRef(null);
 
   const updateActivity = () => {
     lastActivityTimeRef.current = Date.now();
@@ -17,8 +22,8 @@ export function useUserActivity(onActive, onIdle, idleTimeout = 10 * 60 * 1000) 
       lastRefreshTimeRef.current = Date.now(); // Update the last refresh time
     }
 
-    // Reset idle check when activity is detected
     resetIdleCheck();
+    checkForExpiryWarning();
   };
 
   const resetIdleCheck = () => {
@@ -33,6 +38,15 @@ export function useUserActivity(onActive, onIdle, idleTimeout = 10 * 60 * 1000) 
     }, idleTimeout);
   };
 
+  const checkForExpiryWarning = () => {
+    const timeSinceLastRefresh = Date.now() - lastRefreshTimeRef.current;
+    const timeUntilExpiration = TOKEN_EXPIRATION_TIME - timeSinceLastRefresh;
+
+    if (timeUntilExpiration <= TOKEN_EXPIRATION_THRESHOLD) {
+      onExpiryWarning(); // Trigger modal 10 minutes before token expires
+    }
+  };
+
   const logTimeLeftUntilIdle = () => {
     const currentTime = Date.now();
     const timeSinceLastActivity = currentTime - lastActivityTimeRef.current;
@@ -41,21 +55,20 @@ export function useUserActivity(onActive, onIdle, idleTimeout = 10 * 60 * 1000) 
   };
 
   useEffect(() => {
-    // Register activity events
     const events = ['mousemove', 'mousedown', 'keypress', 'scroll', 'touchstart'];
     events.forEach((event) => window.addEventListener(event, updateActivity));
 
-    // Start initial idle check and logging interval
     resetIdleCheck();
+    checkForExpiryWarning();
     logInterval.current = setInterval(logTimeLeftUntilIdle, 5000); // Log every 5 seconds
 
     return () => {
-      // Clean up events, timeout, and logging interval on unmount
       events.forEach((event) => window.removeEventListener(event, updateActivity));
       if (idleCheckTimeout.current) clearTimeout(idleCheckTimeout.current);
       if (logInterval.current) clearInterval(logInterval.current);
+      if (expiryWarningTimeout.current) clearTimeout(expiryWarningTimeout.current);
     };
-  }, [onActive, onIdle, idleTimeout]);
+  }, [onActive, onIdle, idleTimeout, onExpiryWarning]);
 
   return;
 }

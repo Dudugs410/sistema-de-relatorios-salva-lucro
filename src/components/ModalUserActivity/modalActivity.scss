@@ -63,6 +63,15 @@
     flex-direction: column;
     width:100%;
     align-items: center;
+    
+}
+
+.text-container-private{
+    border: solid var(--primary-color) 1px;
+    border-radius: 16px;
+    margin: 3% 0;
+    padding: 3%;
+    width: -webkit-fill-available;
 }
 
 .text-private{

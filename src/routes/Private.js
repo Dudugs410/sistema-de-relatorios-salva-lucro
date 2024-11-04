@@ -1,37 +1,39 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Cookies from 'js-cookie';
-import Layout from '../components/Layout';
-import { AuthContext } from '../contexts/auth';
-import { useUserActivity } from '../util/userActivity';
-import ModalUserActivity from '../components/ModalUserActivity';
+import React, { useContext, useState } from 'react'
+import Layout from '../components/Layout'
+import { AuthContext } from '../contexts/auth'
+import { useUserActivity } from '../util/userActivity'
+import ModalUserActivity from '../components/ModalUserActivity'
 
 export default function Private({ children }) {
-  const { logout, refreshSession } = useContext(AuthContext);
-  const [showModal, setShowModal] = useState(false);
+  const { logout, refreshSession } = useContext(AuthContext)
+  const [showModal, setShowModal] = useState(false)
 
   const stayLoggedIn = async () => {
     try {
       await refreshSession(); // Refresh token on activity if allowed by throttle
-      console.log('Token refreshed successfully');
+      console.log('Token refreshed successfully')
       setShowModal(false); // Close modal on successful refresh
     } catch (error) {
-      console.error('Failed to refresh token:', error);
+      console.error('Failed to refresh token:', error)
       logout();
     }
-  };
+  }
 
   const handleInactivity = () => {
-    console.log('User inactivity detected, showing modal...');
-    setShowModal(true); // Show modal on inactivity
-  };
+    console.log('User inactivity detected, showing modal...')
+    setShowModal(true)
+  }
 
-  useUserActivity(stayLoggedIn, handleInactivity); // Pass stayLoggedIn to refresh on user activity
+  const handleExpiryWarning = () => {
+    setShowModal(true)
+  }
+
+  useUserActivity(stayLoggedIn, handleInactivity, 10 * 60 * 1000, handleExpiryWarning)
 
   if (sessionStorage.getItem('isSignedIn') === 'true') {
     return (
       <>
-        <button onClick={() => setShowModal(true)}>kek</button>
+        { /*<button onClick={() => setShowModal(true)}>Modal Inatividade</button>*/}
         <Layout>{children}</Layout>
         {showModal && (
           <ModalUserActivity onClose={() => setShowModal(false)}>
