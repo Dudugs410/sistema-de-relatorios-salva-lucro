@@ -2,6 +2,7 @@ import { useState, useEffect, useContext, useRef } from 'react'
 import Select from 'react-select'
 import Cookies from 'js-cookie'
 import axios from 'axios'
+import { cancelOngoingRequests } from '../../services/api'
 
 import { AuthContext } from '../../contexts/auth'
 
@@ -30,7 +31,12 @@ const SeletorCliente = () => {
   const [selectedGroup, setSelectedGroup] = useState(null)
   const [selectedClient, setSelectedClient] = useState(null)
 
-  const cancelSourceRef = useRef(axios.CancelToken.source())
+  const handleLoad = (e) => {
+    setIsLoadedSalesDashboard(false)
+    setIsLoadedCreditsDashboard(false)
+    setIsLoadedServicesDashboard(false)
+    setChangedOption(!changedOption)
+  }
 
   useEffect(() => {
     if (selectorGroupList) {
@@ -86,7 +92,7 @@ const SeletorCliente = () => {
       Cookies.set('groupClients', JSON.stringify(selectedGroup.clients))
       Cookies.set('selectedGroup', JSON.stringify(selectedGroup))
       Cookies.set('groupCode', selectedGroup.value)
-      setChangedOption(!changedOption)
+      //setChangedOption(!changedOption)
     }
   }, [selectedGroup])
 
@@ -103,20 +109,14 @@ const SeletorCliente = () => {
       Cookies.set('clientCode', 'todos')
       setExportName(selectedGroup ? `${selectedGroup.label} - Todas Filiais` : '')
     }
-    setChangedOption(!changedOption)
+    //setChangedOption(!changedOption)
   }, [selectedClient, selectedGroup])
 
   const handleGroupChange = (selected) => {
-    setIsLoadedSalesDashboard(false)
-    setIsLoadedCreditsDashboard(false)
-    setIsLoadedServicesDashboard(false)
+    //setIsLoadedSalesDashboard(false)
+    //setIsLoadedCreditsDashboard(false)
+    //setIsLoadedServicesDashboard(false)
     setSelectedGroup(selected)
-
-    // Cancel ongoing Axios requests
-    if (cancelSourceRef.current) {
-      cancelSourceRef.current.cancel('Operation canceled due to new selection.')
-    }
-    cancelSourceRef.current = axios.CancelToken.source()
 
     // Reset selected client to the first option
     const options = getClientOptions(selected)
@@ -131,17 +131,12 @@ const SeletorCliente = () => {
   }
 
   const handleClientChange = (selected) => {
-    setIsLoadedSalesDashboard(false)
-    setIsLoadedCreditsDashboard(false)
-    setIsLoadedServicesDashboard(false)
+    cancelOngoingRequests()
+    //setIsLoadedSalesDashboard(false)
+    //setIsLoadedCreditsDashboard(false)
+    //setIsLoadedServicesDashboard(false)
     setSelectedClient(selected)
     Cookies.set('selectedClient', JSON.stringify(selected))
-
-    // Cancel ongoing Axios requests
-    if (cancelSourceRef.current) {
-      cancelSourceRef.current.cancel('Operation canceled due to new selection.')
-    }
-    cancelSourceRef.current = axios.CancelToken.source()
   }
 
   const getClientOptions = (group) => {
@@ -187,7 +182,7 @@ const SeletorCliente = () => {
             </div>
           </div>
           <div className="date-column-seletor">
-            <div className="select-card-seletor">
+            <div className="select-card-seletor" >
               <span>Cliente</span>
               <Select
                 styles={customStyles}
@@ -200,6 +195,9 @@ const SeletorCliente = () => {
                 menuPosition="fixed"
               />
             </div>
+          </div>
+          <div className='date-column-seletor'>
+            <button className='btn btn-global btn-seletor' onClick={handleLoad}>Selecionar</button>
           </div>
         </div>
       </form>

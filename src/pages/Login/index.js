@@ -13,7 +13,8 @@ import LoadingModal from "../../components/LoadingModal"
 const Login = () => {
     const {
         loginApp,
-        isSignedIn, 
+        isSignedIn,
+        resetAppValues,
     } = useContext(AuthContext)
     const navigate = useNavigate()
 
