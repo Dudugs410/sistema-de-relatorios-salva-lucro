@@ -11,6 +11,12 @@
     
 }
 
+.btn-seletor:hover{
+    border: solid var(--secondary-color) 1px !important;
+    background-color: white !important;
+    color: var(--primary-color) !important;
+}
+
 .cli-container{
     // flex-wrap: wrap;
     display: flex;
@@ -70,11 +76,16 @@
 }
 
 .select-card-seletor{
-    width: 333px;
+    width: 250px;
 }
 
-.date-column-seletor:last-child {
-    padding-left: 1.5rem;
+.date-column-seletor{
+    width: 100%;
+    max-width: 250px;
+}
+
+.date-column-seletor {
+    margin-right: 25px;
 }
 
 .date-column-seletor>.select-card-seletor>select{
@@ -148,14 +159,12 @@
     transition: all .4s;
     border: solid var(--secondary-color) 1px;
     background-color: var(--secondary-color);
-    color: var(--primary-color);
-    
+    color: var(--primary-color);  
 }
 
 .btn-seletor:hover{
     color: var(--background-color);
     background-color: var(--secondary-color);
-
 }
 
 
@@ -167,7 +176,10 @@
 
     // quebrar linha quando diminui a tela
     .cli-container{
-        flex-direction: column;
+        display: flex;
+        width: 100%;
+        flex-wrap: wrap;
+        justify-content: flex-start;
     }
 
     .date-text{
@@ -186,6 +198,7 @@
 
     .select-card-seletor{
         width: 100%;
+        padding-left: 0;
     }
 
     body{

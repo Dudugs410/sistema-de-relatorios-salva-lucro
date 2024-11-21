@@ -6,12 +6,17 @@ import './login.css'
 import { useContext } from "react"
 import LoadingModal from "../../components/LoadingModal"
 
-///////////////////////////////////////////////////////////////
+//teste home
+
+//////////////////////////
+// teste commit pc novo //
+//////////////////////////
 
 const Login = () => {
     const {
         loginApp,
-        isSignedIn, 
+        isSignedIn,
+        resetAppValues,
     } = useContext(AuthContext)
     const navigate = useNavigate()
 

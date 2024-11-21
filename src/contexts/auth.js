@@ -4,7 +4,7 @@ import { React, createContext, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import Cookies from 'js-cookie'
-import api from '../services/api'
+import api, { cancelOngoingRequests } from '../services/api'
 
 import md5 from 'md5'
 
@@ -44,8 +44,13 @@ function AuthProvider({ children }){
 	const [groupsList, setGroupsList] = useState([])
 	const [clientsList, setClientsList] = useState([])
 
+	useEffect(()=>{
+		resetAppValues()
+	},[cancelOngoingRequests])
+
 	// Função que loga o usuário e gerencia quaisquer dados relevantes à isso
 	const loginApp = async (login, password) => {
+		resetAppValues()
 		try {
 			const response = await api.post('token', { client_id: login, client_secret: md5(password) })
 			const responseData = response.data
@@ -180,12 +185,17 @@ function AuthProvider({ children }){
 				}
 			} catch (error) {
 				setBtnDisabledSales(false)
-				toast.error('Erro ao Carregar Vendas ', error.response.status )
-				console.error('Error fetching vendas:', error)
-				setErrorSales(true)
-				if (error.response.status === 401) {
-					logout()
-					return
+				if(error.code === "ERR_CANCELED"){
+					console.log('requisição cancelada')
+					//toast.error('Cancelado')
+				} else {
+					toast.error('Erro ao Carregar Vendas ', error.response.status )
+					console.error('Error fetching vendas:', error)
+					setErrorSales(true)
+					if (error.response.status === 401) {
+						logout()
+						return
+					}
 				}
 				return []
 			}
@@ -226,11 +236,16 @@ function AuthProvider({ children }){
 				}
 			} catch (error) {
 				setBtnDisabledCredits(false)
-				toast.error('Erro ao Carregar Créditos ', error.response.status )
-				console.error('Error fetching credits:', error)
-				if(error.response.status === 401){
-					logout()
-					alert('erro 401 - não autorizado')
+				if(error.code === "ERR_CANCELED"){
+					console.log('requisição cancelada')
+					//toast.error('Cancelado')
+				} else {
+					toast.error('Erro ao Carregar Créditos ', error.response.status )
+					console.error('Error fetching credits:', error)
+					if(error.response.status === 401){
+						logout()
+						alert('erro 401 - não autorizado')
+					}
 				}
 				return []
 			} finally{
@@ -271,12 +286,17 @@ function AuthProvider({ children }){
 				}
 			} catch (error) {
 				setBtnDisabledServices(false)
-				toast.error('Erro ao Carregar Serviços ', error.response.status )
-				console.log(error)
-				setErrorServices(true)
-				if (error.response.status === 401) {
-					logout()
-					return
+				if(error.code === "ERR_CANCELED"){
+					console.log('requisição cancelada')
+					//toast.error('Cancelado')
+				} else {
+					toast.error('Erro ao Carregar Serviços ', error.response.status )
+					console.log(error)
+					setErrorServices(true)
+					if (error.response.status === 401) {
+						logout()
+						return
+					}
 				}
 				return []
 			}
@@ -1521,6 +1541,10 @@ function AuthProvider({ children }){
 		setChartSales({data: [], labels: []})
 		setChartCredits({data: [], labels: []})
 		setChartServices({data: [], labels: []})
+
+		setErrorSales(false)
+		setErrorCredits(false)
+		setErrorServices(false)
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////
@@ -1557,6 +1581,7 @@ function AuthProvider({ children }){
 	/////desloga usuário
 	function logout(){
 		sessionStorage.clear()
+		cancelOngoingRequests()
 		const clearAllCookies = () => {
 			const cookies = Cookies.get()
 			for (const cookie in cookies) {

@@ -6,6 +6,7 @@ import './dashboard.scss'
 
 import { useContext, useEffect } from 'react'
 import { AuthContext } from '../../contexts/auth'
+import { cancelOngoingRequests } from '../../services/api.js'
 import TabelaHorizontal from '../../components/Componente_TabelaHorizontal'
 import PieChart from '../../components/GraficoDashboard'
 import { useLocation } from 'react-router-dom'
@@ -69,7 +70,7 @@ const Dashboard = () => {
 						</>
 						: 
 						<div style={{'alignSelf': 'center'}}>
-							{ errorSales ? 
+							{ errorSales || salesDashboard.sales === null ? 
 								<div className='dashboard-error-container'>
 									<h3 className='subtitle-global'>Ocorreu um erro</h3>
 									<button className='btn btn-global btn-danger  btn-dash-error' onClick={reloadSales}>Recarregar</button>
