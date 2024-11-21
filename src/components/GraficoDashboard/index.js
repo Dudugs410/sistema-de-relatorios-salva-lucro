@@ -162,10 +162,6 @@ const PieChart = ({ data01, arrayAdm, tipo, dados } ) => {
                   currency: "BRL",
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
-<<<<<<< HEAD
-=======
-                  
->>>>>>> f687bc9 (feat: refresh token)
                 })
                 return {
                   text: `${label}: ${formattedValue}`,
