@@ -9,7 +9,7 @@ import { AuthContext } from '../../contexts/auth'
 import 'react-toastify/dist/ReactToastify.css'
 import './Seletor.scss'
 
-const SeletorCliente = () => {
+const SeletorCliente = ({onClose}) => {
   const {
     changedOption, setChangedOption,
     setIsLoadedSalesDashboard,
@@ -23,7 +23,7 @@ const SeletorCliente = () => {
   } = useContext(AuthContext)
 
   const [selectorGroupList, setSelectorGroupList] = useState(
-    JSON.parse(sessionStorage.getItem('groupsStorage'))
+    JSON.parse(localStorage.getItem('groupsStorage'))
   )
 
   const [groupOptions, setGroupOptions] = useState([])
@@ -37,6 +37,7 @@ const SeletorCliente = () => {
     setIsLoadedCreditsDashboard(false)
     setIsLoadedServicesDashboard(false)
     setChangedOption(!changedOption)
+    onClose()
   }
 
   useEffect(() => {
@@ -50,7 +51,7 @@ const SeletorCliente = () => {
         .sort((a, b) => a.label.localeCompare(b.label))
       setGroupOptions(sortedOptions)
 
-      const isFirstLoad = sessionStorage.getItem('isSelected') !== 'true'
+      const isFirstLoad = localStorage.getItem('isSelected') !== 'true'
       if (isFirstLoad) {
         if (sortedOptions.length > 0) {
           const initialGroup = sortedOptions[0]
@@ -64,7 +65,7 @@ const SeletorCliente = () => {
           localStorage.setItem('clientOptions', JSON.stringify(initialClientOptions))
           localStorage.setItem('selectedClient', JSON.stringify(initialClientOptions[0]))
           localStorage.setItem('groupCode', initialGroup.value)
-          sessionStorage.setItem('isSelected', 'true')
+          localStorage.setItem('isSelected', 'true')
         }
       } else {
         const savedGroup = localStorage.getItem('selectedGroup')

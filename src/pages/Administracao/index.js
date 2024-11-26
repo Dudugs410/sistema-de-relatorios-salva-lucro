@@ -23,7 +23,7 @@ const Administracao = () =>{
     ]
 
     useEffect(() => {
-        sessionStorage.setItem('currentPath', location.pathname)
+        localStorage.setItem('currentPath', location.pathname)
     }, [location])
 
     const handleDateChange = date => {

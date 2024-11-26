@@ -12,7 +12,7 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack }) => {
   const [exportPage, setExportPage] = useState('')
 
   useEffect(() => {
-    const currentPath = sessionStorage.getItem('currentPath')
+    const currentPath = localStorage.getItem('currentPath')
     switch (currentPath) {
       case '/vendas':
         setExportPage(0)
@@ -27,7 +27,7 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack }) => {
         setExportPage('')
         break
     }
-  }, [sessionStorage.getItem('currentPath')])
+  }, [localStorage.getItem('currentPath')])
 
   const componentMap = {
     0: TabelaVendas,
@@ -40,7 +40,7 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack }) => {
   return (
     <>
       {totals && <TotalModalidadesComp totals={totals} />}
-      {sessionStorage.getItem('currentPath') === '/servicos' && <hr className='hr-global' />}
+      {localStorage.getItem('currentPath') === '/servicos' && <hr className='hr-global' />}
       <GerarRelatorio className='export' />
       <div className='component-container-vendas'>
         {SelectedTableComponent && <SelectedTableComponent array={dataArray} />}

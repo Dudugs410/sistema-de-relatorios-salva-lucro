@@ -384,8 +384,8 @@ const TabelaVendasCreditos = ({array, tipo, isDashboard}) =>{
 	const [dataFinalDisplay, setDataFinalDisplay] = useState(new Date)
 
 	useEffect(() => {
-		// Retrieve the value from sessionStorage
-		const pagina = sessionStorage.getItem('currentPath')
+		// Retrieve the value from localStorage
+		const pagina = localStorage.getItem('currentPath')
     
 		if ((pagina === '/dashboard') || (pagina === '/Dashboard')) {
 			setStyle({ display: 'none' })

@@ -43,7 +43,7 @@ const Taxas = () => {
     const [taxesList, setTaxesList] = useState([])
 
     useEffect(() => {
-        sessionStorage.setItem('currentPath', location.pathname)
+        localStorage.setItem('currentPath', location.pathname)
     }, [])
 
     useEffect(() => {

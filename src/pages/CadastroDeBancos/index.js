@@ -56,7 +56,7 @@ const CadastroDeBancos = () => {
     const [isLoading, setIsLoading] = useState(false)
 
     useEffect(() => {
-        sessionStorage.setItem('currentPath', location.pathname)
+        localStorage.setItem('currentPath', location.pathname)
     }, [])
 
     useEffect(() => {

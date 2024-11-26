@@ -8,7 +8,9 @@ import '../../index.scss'
 import Cookies from "js-cookie"
 import Relogio from "../Componente_Relogio"
 import SideBar from "../Componente_SideBar"
+import Modal from "../Modal"
 import './header.scss'
+import SeletorCliente from "../SeletorCliente"
 
 const Header = () => {
     const { logout, isCheckedCalendar, setIsCheckedCalendar } = useContext(AuthContext)
@@ -186,6 +188,7 @@ const Header = () => {
     }
 
     return (
+        
         <div className="header-container">
             <div className='header-bg-image'>
                 <div className="header-info-wrapper px-4 py-3 header-bg">

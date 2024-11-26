@@ -23,7 +23,7 @@ const OutrosRelatorios = () =>{
     const [dataBuscaFinal, setDataBuscaFinal] = useState(new Date)
 
     useEffect(() => {
-        sessionStorage.setItem('currentPath', location.pathname)
+        localStorage.setItem('currentPath', location.pathname)
     }, [location])
 
     const opcoesRelatorio = [{value: 0, label:'Previsão de Recebimento'}, {value: 1, label:'Créditos por Data e Banco'}, {value: 2, label: 'Antecipações'}, {value:3, label: 'Gravame/Cessão'}, {value:4, label:'Posição Contábil'}]

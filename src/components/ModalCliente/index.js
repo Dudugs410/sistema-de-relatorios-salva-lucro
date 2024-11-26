@@ -19,7 +19,7 @@ const ModalCliente = () => {
     const [gruSelecionado, setGruSelecionado] = useState('')
 
     async function iniciaGrupos(){
-        setGrupos(JSON.parse(sessionStorage.getItem('grupos')))
+        setGrupos(JSON.parse(localStorage.getItem('grupos')))
         if(grupos.length === 0){
             loadGrupos()
         }
@@ -36,7 +36,7 @@ const ModalCliente = () => {
         const grupoObj = grupos.find(item => item.CODIGOGRUPO === Number(gruSelecionado))
         let cli = grupoObj ? grupoObj.CLIENTES : []
         setListaClientes(cli)
-        sessionStorage.setItem('codigoGrupo', gruSelecionado)
+        localStorage.setItem('codigoGrupo', gruSelecionado)
       },[gruSelecionado])
 
     function handleSubmit(e){

@@ -92,11 +92,11 @@ function AuthProvider({ children }){
 					localStorage.setItem('localUsers', JSON.stringify(localUsers))
 				}
 				const opt = await loadOptions()
-				sessionStorage.setItem('options', JSON.stringify(opt))
+				localStorage.setItem('options', JSON.stringify(opt))
 				
 				const gru = await loadGroupsList()
 
-				sessionStorage.setItem('groupsStorage', JSON.stringify(gru))
+				localStorage.setItem('groupsStorage', JSON.stringify(gru))
 				localStorage.setItem('groupCode', gru[0].CODIGOGRUPO)
 				localStorage.setItem('cnpj', 'todos')
 			}
@@ -108,10 +108,10 @@ function AuthProvider({ children }){
 			if (userMatch) {
 				const userData = { NOME: userMatch.NOME, EMAIL: userMatch.EMAIL }
 				localStorage.setItem('GRUCODIGO', userMatch.GRUCODIGO)
-				sessionStorage.setItem('isSignedIn', true)
-				sessionStorage.setItem('userData', JSON.stringify(userData))
 				localStorage.setItem('isSignedIn', true)
-				sessionStorage.setItem('isSignedIn', true)
+				localStorage.setItem('userData', JSON.stringify(userData))
+				localStorage.setItem('isSignedIn', true)
+				localStorage.setItem('isSignedIn', true)
 				setIsSignedIn(true)
 			} else {
 				console.log('Usuario não encontrado')
@@ -1599,20 +1599,12 @@ function AuthProvider({ children }){
 
 	/////desloga usuário
 	function logout(){
-		sessionStorage.clear()
+		localStorage.clear()
+		localStorage.clear()
 		cancelOngoingRequests()
-		const clearAllCookies = () => {
-			const cookies = localStorage.getItem()
-			for (const cookie in cookies) {
-				if (Object.prototype.hasOwnProperty.call(cookies, cookie)) {
-					Cookies.remove(cookie)
-				}
-			}
-		}
 		resetAppValues()
-		clearAllCookies()
 		setIsSignedIn(false)
-		sessionStorage.setItem('isSignedIn', false)
+		localStorage.setItem('isSignedIn', false)
 		navigate('/')
 	}
 

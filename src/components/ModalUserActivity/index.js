@@ -4,7 +4,7 @@ import './modalActivity.scss'
 const ModalUserActivity = ({ onClose, children }) => {
 
   useEffect(()=>{
-    sessionStorage.setItem('showModalDash', false)
+    localStorage.setItem('showModalDash', false)
   },[onClose])
 
   return (

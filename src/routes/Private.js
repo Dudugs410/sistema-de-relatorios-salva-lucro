@@ -30,7 +30,7 @@ export default function Private({ children }) {
 
   useUserActivity(stayLoggedIn, handleInactivity, 10 * 60 * 1000, handleExpiryWarning)
 
-  if (sessionStorage.getItem('isSignedIn') === 'true') {
+  if (localStorage.getItem('isSignedIn') === 'true') {
     return (
       <>
         { /*<button onClick={() => setShowModal(true)}>Modal Inatividade</button>*/}

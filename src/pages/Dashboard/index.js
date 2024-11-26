@@ -17,7 +17,7 @@ const Dashboard = () => {
 	const location = useLocation()
 	
 	useEffect(() => {
-		sessionStorage.setItem('currentPath', location.pathname)
+		localStorage.setItem('currentPath', location.pathname)
 	}, [location])
 
 	const {  
