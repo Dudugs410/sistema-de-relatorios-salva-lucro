@@ -32,7 +32,7 @@ const CadastroDeBancos = () => {
         changedOption,
     } = useContext(AuthContext)
 
-    const cliOptions = JSON.parse(Cookies.get('clientOptions'))
+    const cliOptions = JSON.parse(localStorage.getItem('clientOptions'))
 
     const [bannersList, setBannersList] = useState([])
     const [adminsList, setAdminsList] = useState([])
@@ -42,7 +42,7 @@ const CadastroDeBancos = () => {
     const [cliAdqList, setCliAdqList] = useState([])
     const [banksList, setBanksList] = useState([])
 
-    const [clientCode, setClientCode] = useState(Cookies.get('clientCode'))
+    const [clientCode, setClientCode] = useState(localStorage.getItem('clientCode'))
     const [banOptions, setBanOptions] = useState([])
     const [admOptions, setAdmOptions] = useState([])
     const [productOptions, setProductOptions] = useState([])
@@ -117,7 +117,7 @@ const CadastroDeBancos = () => {
     }, [productList])
 
     useEffect(() => {
-        setClientCode(Cookies.get('clientCode'))
+        setClientCode(localStorage.getItem('clientCode'))
         setBanksList([])
     }, [changedOption])
 
@@ -156,8 +156,8 @@ const CadastroDeBancos = () => {
     useEffect(() => {
         const fetchCliAdqList = async () => {
             if (isSelected) {
-                const clientCode = Cookies.get('clientCode')
-                const admCode = Cookies.get('admCode')
+                const clientCode = localStorage.getItem('clientCode')
+                const admCode = localStorage.getItem('admCode')
                 if (clientCode !== '0' && admCode !== '0') {
                     try {
                         const response = await loadCliAdq()
@@ -175,7 +175,7 @@ const CadastroDeBancos = () => {
 
         const fetchSubProductList = async () => {
             if (isSelected) {
-                const admCode = Cookies.get('admCode')
+                const admCode = localStorage.getItem('admCode')
                 if (admCode !== '0') {
                     try {
                         const response = await loadSubproducts()
@@ -206,14 +206,14 @@ const CadastroDeBancos = () => {
 
     const handleAdd = () =>{
         setCliAdqOptions([])
-        Cookies.set('admCode', 0)
+        localStorage.setItem('admCode', 0)
         setIsModalOpen(true)
     }
     
     const [editableBank, setEditableBank] = useState()
     
     const handleEdit = async (object, index) => {
-        Cookies.set('admCode', object.ADQCODIGO)
+        localStorage.setItem('admCode', object.ADQCODIGO)
         setIsLoading(true)
 
         localStorage.setItem('editIndex', index)
@@ -353,7 +353,7 @@ const CadastroDeBancos = () => {
                         <div className='container-global' style={{margin: '0', flexDirection: 'column', alignItems: 'center'}}>
                             { ((banksList && banksList.length > 0) && (clientCode !== ('todos' || undefined))) && 
                                 <div>
-                                    <h3 className='subtitle' style={{width: '100%', display: 'flex', flexDirection: 'column', alignContent: 'center', textAlign: 'center'}}>Cliente: {JSON.parse(Cookies.get('selectedClient')).label}</h3>
+                                    <h3 className='subtitle' style={{width: '100%', display: 'flex', flexDirection: 'column', alignContent: 'center', textAlign: 'center'}}>Cliente: {JSON.parse(localStorage.getItem('selectedClient')).label}</h3>
                                     <hr className='hr-global'/>
                                 </div>
                             }

@@ -15,7 +15,7 @@ import LazyLoader from '../../components/Componente_LazyLoader/index.js'
 
 const Dashboard = () => {
 	const location = useLocation()
-
+	
 	useEffect(() => {
 		sessionStorage.setItem('currentPath', location.pathname)
 	}, [location])

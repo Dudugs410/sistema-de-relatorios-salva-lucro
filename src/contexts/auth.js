@@ -54,10 +54,10 @@ function AuthProvider({ children }){
 		try {
 			const response = await api.post('token', { client_id: login, client_secret: md5(password) })
 			const responseData = response.data
-			Cookies.set('token', responseData.acess_token)
-			Cookies.set('refreshToken', responseData.refresh_token)
+			localStorage.setItem('token', responseData.acess_token)
+			localStorage.setItem('refreshToken', responseData.refresh_token)
 			const userId = jwtDecode(responseData.acess_token).id
-			Cookies.set('userID', userId)
+			localStorage.setItem('userID', userId)
 			const loggedSuccessfully = JSON.parse(responseData.sucess)
 
 			if (loggedSuccessfully) {
@@ -97,8 +97,8 @@ function AuthProvider({ children }){
 				const gru = await loadGroupsList()
 
 				sessionStorage.setItem('groupsStorage', JSON.stringify(gru))
-				Cookies.set('groupCode', gru[0].CODIGOGRUPO)
-				Cookies.set('cnpj', 'todos')
+				localStorage.setItem('groupCode', gru[0].CODIGOGRUPO)
+				localStorage.setItem('cnpj', 'todos')
 			}
   
 			const userResponse = await api.get('/usuario')
@@ -107,7 +107,7 @@ function AuthProvider({ children }){
   
 			if (userMatch) {
 				const userData = { NOME: userMatch.NOME, EMAIL: userMatch.EMAIL }
-				Cookies.set('GRUCODIGO', userMatch.GRUCODIGO)
+				localStorage.setItem('GRUCODIGO', userMatch.GRUCODIGO)
 				sessionStorage.setItem('isSignedIn', true)
 				sessionStorage.setItem('userData', JSON.stringify(userData))
 				localStorage.setItem('isSignedIn', true)
@@ -153,8 +153,8 @@ function AuthProvider({ children }){
 		const loadSales = async (startDate, endDate) => {
 			try {
 				setErrorSales(false)
-				const apiCNPJ = Cookies.get('cnpj')
-				const apiGroupCode = Cookies.get('groupCode')
+				const apiCNPJ = localStorage.getItem('cnpj')
+				const apiGroupCode = localStorage.getItem('groupCode')
 				if(apiCNPJ === ('todos' || 'TODOS') && (apiGroupCode !== 'selecione')){
 					let params = {
 						datainicial: startDate,
@@ -204,8 +204,8 @@ function AuthProvider({ children }){
 		const loadCredits = async (startDate, endDate) => {
 			try {
 				setErrorCredits(false)
-				const apiCNPJ = Cookies.get('cnpj')
-				const apiGroupCode = Cookies.get('groupCode')
+				const apiCNPJ = localStorage.getItem('cnpj')
+				const apiGroupCode = localStorage.getItem('groupCode')
 				if(apiCNPJ === ('todos' || 'TODOS') && (apiGroupCode !== 'selecione')){
 					let params = {
 						dataInicial: startDate,
@@ -256,8 +256,8 @@ function AuthProvider({ children }){
 		const loadServices = async (startDate, endDate) => {
 			try {
 				setErrorServices(false)
-				const apiCNPJ = Cookies.get('cnpj')
-				const apiGroupCode = Cookies.get('groupCode')
+				const apiCNPJ = localStorage.getItem('cnpj')
+				const apiGroupCode = localStorage.getItem('groupCode')
 				if(apiCNPJ === ('todos' || 'TODOS') && (apiGroupCode !== 'selecione')){
 					let params = {
 						dataInicial: startDate,
@@ -305,7 +305,7 @@ function AuthProvider({ children }){
 		const loadTaxes = async () => {
 			setIsLoadingTaxes(true)
 			try {
-				const apiClientCode = Cookies.get('clientCode')
+				const apiClientCode = localStorage.getItem('clientCode')
 				if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
 					let params = {
 						codigo: apiClientCode
@@ -337,7 +337,7 @@ function AuthProvider({ children }){
 		const addTax = async (tax) => {
 			setIsLoadingTaxes(true)
 			try {
-				const apiClientCode = Cookies.get('clientCode')
+				const apiClientCode = localStorage.getItem('clientCode')
 				if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
 					let body = tax
 					const response = await api.post('taxas', body)
@@ -372,7 +372,7 @@ function AuthProvider({ children }){
 				  method: 'PUT',
 				  headers: {
 					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${Cookies.get('token')}`
+					'Authorization': `Bearer ${localStorage.getItem('token')}`
 				  },
 				  body: body,
 				})
@@ -410,7 +410,7 @@ function AuthProvider({ children }){
 			setIsLoadingTaxes(true)
 			console.log(tax)
 			try {
-				const apiClientCode = Cookies.get('clientCode')
+				const apiClientCode = localStorage.getItem('clientCode')
 				if(apiClientCode !== 'todos' && apiClientCode !== 'TODOS' && apiClientCode !== undefined) {
 					let body = tax
 					api.delete('taxas', {
@@ -454,7 +454,7 @@ function AuthProvider({ children }){
 		const loadBanks = async () => {
 			setIsLoadingBanks(true)
 			try {
-				const apiClientCode = Cookies.get('clientCode')
+				const apiClientCode = localStorage.getItem('clientCode')
 				if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
 					let params = {
 						codigo: apiClientCode
@@ -487,7 +487,7 @@ function AuthProvider({ children }){
 			console.log('addBank: ', bank)
 			setIsLoadingBanks(true)
 			try {
-				const apiClientCode = Cookies.get('clientCode')
+				const apiClientCode = localStorage.getItem('clientCode')
 				if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
 					let body = bank
 					const response = await api.post('banco', body)
@@ -524,7 +524,7 @@ function AuthProvider({ children }){
 					method: 'PUT',
 					headers: {
 						'Content-Type': 'application/json',
-						'Authorization': `Bearer ${Cookies.get('token')}`
+						'Authorization': `Bearer ${localStorage.getItem('token')}`
 					},
 					body: body,
 					})
@@ -591,8 +591,8 @@ function AuthProvider({ children }){
 		const loadCliAdq = async () => {
 			try {
 				let params = {
-					codigoCliente: Cookies.get('clientCode'),
-					codigoAdquirente: Cookies.get('admCode')
+					codigoCliente: localStorage.getItem('clientCode'),
+					codigoAdquirente: localStorage.getItem('admCode')
 				}
 
 				let config = {
@@ -622,7 +622,7 @@ function AuthProvider({ children }){
 		const loadSubproducts = async () => {
 			try {
 				let params = {
-					codigoAdquirente: Cookies.get('admCode')
+					codigoAdquirente: localStorage.getItem('admCode')
 				}
 
 				let config = {
@@ -710,11 +710,11 @@ function AuthProvider({ children }){
 
 		// renova o access token/sessão do usuário
 		const refreshSession = async () => {
-			if(Cookies.get('token')){
+			if(localStorage.getItem('token')){
 				
 			}
 			try {
-			  const refreshToken = Cookies.get('refreshToken');
+			  const refreshToken = localStorage.getItem('refreshToken');
 			  
 			  if (!refreshToken) {
 				console.log('No refresh token available');
@@ -727,11 +727,11 @@ function AuthProvider({ children }){
 			  });
 		  
 			  // Update cookies with the new tokens received
-			  Cookies.set('token', response.data.acess_token);
-			  Cookies.set('refreshToken', response.data.refresh_token);
+			  localStorage.setItem('token', response.data.acess_token);
+			  localStorage.setItem('refreshToken', response.data.refresh_token);
 
-			  console.log('access token: ', Cookies.get('token'))
-			  console.log('refresh token: ', Cookies.get('refreshToken'))
+			  console.log('access token: ', localStorage.getItem('token'))
+			  console.log('refresh token: ', localStorage.getItem('refreshToken'))
 		  
 			  console.log('Session refreshed successfully');
 			} catch (error) {
@@ -1578,7 +1578,7 @@ function AuthProvider({ children }){
 	async function loadOptions() {
 		try {
 			let params = {
-				codigo: Cookies.get('userID')
+				codigo: localStorage.getItem('userID')
 			}
   
 			let config = {
@@ -1602,7 +1602,7 @@ function AuthProvider({ children }){
 		sessionStorage.clear()
 		cancelOngoingRequests()
 		const clearAllCookies = () => {
-			const cookies = Cookies.get()
+			const cookies = localStorage.getItem()
 			for (const cookie in cookies) {
 				if (Object.prototype.hasOwnProperty.call(cookies, cookie)) {
 					Cookies.remove(cookie)

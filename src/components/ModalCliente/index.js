@@ -41,13 +41,13 @@ const ModalCliente = () => {
 
     function handleSubmit(e){
         e.preventDefault()
-        Cookies.set('cnpj', cliente)
+        localStorage.setItem('cnpj', cliente)
         if((cliente === 'selecione') || (cliente === '')){
             alerta('Selecione um cliente válido')
         } else {
             setCnpj(cliente)
             setModalCliente(false)
-            Cookies.set('carregouModalCliente', true)
+            localStorage.setItem('carregouModalCliente', true)
         }
     }
     

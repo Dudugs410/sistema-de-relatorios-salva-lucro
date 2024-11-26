@@ -8,7 +8,7 @@ import { toast } from 'react-toastify'
 
 const ModalEditBank = ({ editableBank, onClose, cliAdqOptions, setIsSelected, cliOptions, admOptions, banOptions, productOptions, subproductOptions, editBank, loadBanks, setBanksList }) => {
     const [selectedCli, setSelectedCli] = useState(() => {
-        const cookieValue = Cookies.get('selectedClient')
+        const cookieValue = localStorage.getItem('selectedClient')
         return cookieValue ? JSON.parse(cookieValue) : { label: 'Selecione', value: 0 }
     })
     const [selectedCliAdm, setSelectedCliAdm] = useState(editableBank?.cliAdq || { label: 'Selecione', value: 0 })
@@ -85,7 +85,7 @@ const ModalEditBank = ({ editableBank, onClose, cliAdqOptions, setIsSelected, cl
     }
 
     const handleAdmin = (selected) => {
-        Cookies.set('admCode', selected.value)
+        localStorage.setItem('admCode', selected.value)
         setSelectedAdm(selected)
         setIsSelected(true)
         setSelectedCliAdm(cliAdqOptions.length > 0 ? cliAdqOptions[0] : { label: 'Sem Estabelecimentos', value: 0 })

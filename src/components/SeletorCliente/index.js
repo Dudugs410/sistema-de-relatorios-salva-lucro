@@ -32,6 +32,7 @@ const SeletorCliente = () => {
   const [selectedClient, setSelectedClient] = useState(null)
 
   const handleLoad = (e) => {
+    e.preventDefault()
     setIsLoadedSalesDashboard(false)
     setIsLoadedCreditsDashboard(false)
     setIsLoadedServicesDashboard(false)
@@ -59,16 +60,16 @@ const SeletorCliente = () => {
           setClientOptions(initialClientOptions)
           setSelectedClient(initialClientOptions[0])
 
-          Cookies.set('selectedGroup', JSON.stringify(initialGroup))
-          Cookies.set('clientOptions', JSON.stringify(initialClientOptions))
-          Cookies.set('selectedClient', JSON.stringify(initialClientOptions[0]))
-          Cookies.set('groupCode', initialGroup.value)
+          localStorage.setItem('selectedGroup', JSON.stringify(initialGroup))
+          localStorage.setItem('clientOptions', JSON.stringify(initialClientOptions))
+          localStorage.setItem('selectedClient', JSON.stringify(initialClientOptions[0]))
+          localStorage.setItem('groupCode', initialGroup.value)
           sessionStorage.setItem('isSelected', 'true')
         }
       } else {
-        const savedGroup = Cookies.get('selectedGroup')
-        const savedClientOptions = Cookies.get('clientOptions')
-        const savedClient = Cookies.get('selectedClient')
+        const savedGroup = localStorage.getItem('selectedGroup')
+        const savedClientOptions = localStorage.getItem('clientOptions')
+        const savedClient = localStorage.getItem('selectedClient')
 
         if (savedGroup) setSelectedGroup(JSON.parse(savedGroup))
         if (savedClientOptions) setClientOptions(JSON.parse(savedClientOptions))
@@ -82,16 +83,16 @@ const SeletorCliente = () => {
       const options = getClientOptions(selectedGroup)
       setClientOptions(options)
 
-      if (!Cookies.get('selectedClient')) {
+      if (!localStorage.getItem('selectedClient')) {
         setSelectedClient(options[0])
-        Cookies.set('selectedClient', JSON.stringify(options[0]))
+        localStorage.setItem('selectedClient', JSON.stringify(options[0]))
       }
 
-      Cookies.set('clientOptions', JSON.stringify(options))
-      Cookies.set('groupName', selectedGroup.label)
-      Cookies.set('groupClients', JSON.stringify(selectedGroup.clients))
-      Cookies.set('selectedGroup', JSON.stringify(selectedGroup))
-      Cookies.set('groupCode', selectedGroup.value)
+      localStorage.setItem('clientOptions', JSON.stringify(options))
+      localStorage.setItem('groupName', selectedGroup.label)
+      localStorage.setItem('groupClients', JSON.stringify(selectedGroup.clients))
+      localStorage.setItem('selectedGroup', JSON.stringify(selectedGroup))
+      localStorage.setItem('groupCode', selectedGroup.value)
       //setChangedOption(!changedOption)
     }
   }, [selectedGroup])
@@ -101,12 +102,12 @@ const SeletorCliente = () => {
     setCreditsPageArray([])
     setServicesPageArray([])
     if (selectedClient && selectedClient.label !== 'TODOS') {
-      Cookies.set('cnpj', selectedClient.value)
-      Cookies.set('clientCode', selectedClient.cod)
+      localStorage.setItem('cnpj', selectedClient.value)
+      localStorage.setItem('clientCode', selectedClient.cod)
       setExportName(selectedClient.label)
     } else if (selectedClient) {
-      Cookies.set('cnpj', selectedClient.value)
-      Cookies.set('clientCode', 'todos')
+      localStorage.setItem('cnpj', selectedClient.value)
+      localStorage.setItem('clientCode', 'todos')
       setExportName(selectedGroup ? `${selectedGroup.label} - Todas Filiais` : '')
     }
     //setChangedOption(!changedOption)
@@ -124,10 +125,10 @@ const SeletorCliente = () => {
     setSelectedClient(options[0])
 
     // Update cookies
-    Cookies.set('selectedGroup', JSON.stringify(selected))
-    Cookies.set('groupCode', selected.value)
-    Cookies.set('clientOptions', JSON.stringify(options))
-    Cookies.set('selectedClient', JSON.stringify(options[0]))
+    localStorage.setItem('selectedGroup', JSON.stringify(selected))
+    localStorage.setItem('groupCode', selected.value)
+    localStorage.setItem('clientOptions', JSON.stringify(options))
+    localStorage.setItem('selectedClient', JSON.stringify(options[0]))
   }
 
   const handleClientChange = (selected) => {
@@ -136,7 +137,7 @@ const SeletorCliente = () => {
     //setIsLoadedCreditsDashboard(false)
     //setIsLoadedServicesDashboard(false)
     setSelectedClient(selected)
-    Cookies.set('selectedClient', JSON.stringify(selected))
+    localStorage.setItem('selectedClient', JSON.stringify(selected))
   }
 
   const getClientOptions = (group) => {
@@ -175,7 +176,7 @@ const SeletorCliente = () => {
                 options={groupOptions}
                 onChange={handleGroupChange}
                 value={selectedGroup}
-                //isDisabled={fetchingData}
+                isDisabled={fetchingData}
                 menuPortalTarget={document.body}
                 menuPosition="fixed"
               />
@@ -190,7 +191,7 @@ const SeletorCliente = () => {
                 placeholder="Selecione o Cliente / Filial"
                 onChange={handleClientChange}
                 value={selectedClient}
-                //isDisabled={(!selectedGroup || fetchingData)}
+                isDisabled={(!selectedGroup || fetchingData)}
                 menuPortalTarget={document.body}
                 menuPosition="fixed"
               />
