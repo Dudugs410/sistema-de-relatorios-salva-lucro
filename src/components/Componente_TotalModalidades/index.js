@@ -33,7 +33,7 @@ const TotalModalidadesComp = ({totals}) =>{
 				</div>
 				<div className='total-container-modalidade'> 
 					<div className='text-container-modalidade'>
-						<h1 className='title-modalidade'>{sessionStorage.getItem('currentPath') === '/vendas' ? 'Total Bruto' : 'Total Líquido'}</h1>
+						<h1 className='title-modalidade'>{localStorage.getItem('currentPath') === '/vendas' ? 'Total Bruto' : 'Total Líquido'}</h1>
 						<p className='text-modalidade'>TOTAL: <span className='green-modalidade'>{Number(total).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></p>
 					</div>
 				</div>

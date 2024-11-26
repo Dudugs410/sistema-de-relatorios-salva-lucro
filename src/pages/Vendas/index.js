@@ -11,7 +11,7 @@ const Vendas = () =>{
   const location = useLocation()
 
   useEffect(() => {
-      sessionStorage.setItem('currentPath', location.pathname)
+      localStorage.setItem('currentPath', location.pathname)
   }, [location])
 
   const {
@@ -81,7 +81,7 @@ const Vendas = () =>{
     if(salesPageArray && salesPageArray.length > 0){
       exportSales(salesPageArray)
     }
-  },[salesPageArray, sessionStorage.getItem('currentPath')])
+  },[salesPageArray, localStorage.getItem('currentPath')])
 
   const handleDateRangeChange = (dateRange) => {
     setSalesDateRange(dateRange)

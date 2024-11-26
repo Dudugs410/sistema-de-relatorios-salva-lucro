@@ -11,7 +11,7 @@ const Servicos = () =>{
   const location = useLocation()
 
   useEffect(() => {
-      sessionStorage.setItem('currentPath', location.pathname)
+      localStorage.setItem('currentPath', location.pathname)
   }, [location])
 
 	const {
@@ -67,7 +67,7 @@ const Servicos = () =>{
     if(servicesPageArray.length > 0){
       exportServices(servicesPageArray)
     }
-  },[servicesPageArray, sessionStorage.getItem('currentPath')])
+  },[servicesPageArray, localStorage.getItem('currentPath')])
 
   const handleDateRangeChange = (dateRange) => {
     setServicesDateRange(dateRange)

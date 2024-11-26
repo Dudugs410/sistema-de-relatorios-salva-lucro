@@ -5,7 +5,7 @@ import { FiX } from 'react-icons/fi'
 const Modal = ({ onClose, children }) => {
 
   useEffect(()=>{
-    sessionStorage.setItem('showModalDash', false)
+    localStorage.setItem('showModalDash', false)
   },[onClose])
 
   return (

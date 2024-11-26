@@ -20,7 +20,7 @@ const TabelaGenerica = ({ array }) => {
 
 	return(
 		<>
-			{ sessionStorage.getItem('currentPath') === '/dashboard' ? 
+			{ localStorage.getItem('currentPath') === '/dashboard' ? 
 				<div className='header-tabela-grafico'>
 					<div className='total-container'>
 						<h3 className='titulo-grafico'>Adquirente: &nbsp;</h3><h3 style={{ fontWeight: 'bold' }}>{nomeAdquirente}</h3>

@@ -179,11 +179,16 @@
         display: flex;
         width: 100%;
         flex-wrap: wrap;
-        justify-content: flex-start;
+        justify-content: center;
     }
 
     .date-text{
         color:white;
+    }
+
+    .date-column-seletor {
+        display: flex;
+        justify-content: center;
     }
     
     .date-column-seletor>.select-card-seletor>select{

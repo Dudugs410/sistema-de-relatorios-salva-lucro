@@ -30,7 +30,7 @@ const Taxas = () => {
     const [adminsList, setAdminsList] = useState([])
     const [modsList, setModsList] = useState([])
 
-    const cliOptions = JSON.parse(Cookies.get('clientOptions'))
+    const cliOptions = JSON.parse(localStorage.getItem('clientOptions'))
 
     const [banOptions, setBanOptions] = useState([])
     const [admOptions, setAdmOptions] = useState([])
@@ -39,11 +39,11 @@ const Taxas = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isModalEditOpen, setIsModalEditOpen] = useState(false)
 
-    const [clientCode, setClientCode] = useState(Cookies.get('clientCode'))
+    const [clientCode, setClientCode] = useState(localStorage.getItem('clientCode'))
     const [taxesList, setTaxesList] = useState([])
 
     useEffect(() => {
-        sessionStorage.setItem('currentPath', location.pathname)
+        localStorage.setItem('currentPath', location.pathname)
     }, [])
 
     useEffect(() => {
@@ -99,7 +99,7 @@ const Taxas = () => {
     }, [modsList])
 
     useEffect(() => {
-        setClientCode(Cookies.get('clientCode'))
+        setClientCode(localStorage.getItem('clientCode'))
         setTaxesList([])
     }, [changedOption])
 
@@ -369,7 +369,7 @@ const Taxas = () => {
 
     const ModalNewTax = () => {
         const [selectedCli, setSelectedCli] = useState(() => {
-            const cookieValue = Cookies.get('selectedClient')
+            const cookieValue = localStorage.getItem('selectedClient')
             return cookieValue ? JSON.parse(cookieValue) : { label: 'Selecione', value: 0 }
         })
         const [selectedBan, setSelectedBan] = useState({ label: 'Selecione', value: 0 })
@@ -672,7 +672,7 @@ const Taxas = () => {
                         <div className='container-global' style={{margin: '0', flexDirection: 'column', alignItems: 'center'}}>
                             { ((taxesList && taxesList.length > 0) && (clientCode !== ('todos' || undefined))) && 
                             <div>    
-                                <h3 className='subtitle' style={{width: '100%', display: 'flex', flexDirection: 'column', alignContent: 'center', textAlign: 'center'}}>Cliente: {JSON.parse(Cookies.get('selectedClient')).label}</h3>
+                                <h3 className='subtitle' style={{width: '100%', display: 'flex', flexDirection: 'column', alignContent: 'center', textAlign: 'center'}}>Cliente: {JSON.parse(localStorage.getItem('selectedClient')).label}</h3>
                                 <hr className='hr-global'/>
                             </div>
                             }

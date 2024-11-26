@@ -34,7 +34,7 @@ const ExportacaoSysmo = () =>{
     ]
 
     useEffect(() => {
-        sessionStorage.setItem('currentPath', location.pathname)
+        localStorage.setItem('currentPath', location.pathname)
     }, [location])
 
     useEffect(()=>{

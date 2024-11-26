@@ -8,7 +8,9 @@ import '../../index.scss'
 import Cookies from "js-cookie"
 import Relogio from "../Componente_Relogio"
 import SideBar from "../Componente_SideBar"
+import Modal from "../Modal"
 import './header.scss'
+import SeletorCliente from "../SeletorCliente"
 
 const Header = () => {
     const { logout, isCheckedCalendar, setIsCheckedCalendar } = useContext(AuthContext)
@@ -26,14 +28,14 @@ const Header = () => {
         if (localStorage.getItem('localUsers') !== null) {
             let localUsersTemp = JSON.parse(localStorage.getItem('localUsers'))
             localUsersTemp.map(user => {
-                if (user.id === Cookies.get('userID')) {
+                if (user.id === localStorage.getItem('userID')) {
                     user.calendar = isCheckedCalendar
                 }
             })
             localStorage.setItem('localUsers', JSON.stringify(localUsersTemp))
         } else {
             let localUsersTemp = []
-            let userTemp = { id: Cookies.get('userID'), calendar: isCheckedCalendar }
+            let userTemp = { id: localStorage.getItem('userID'), calendar: isCheckedCalendar }
             localUsersTemp.push(userTemp)
             localStorage.setItem('localUsers', JSON.stringify(localUsersTemp))
         }
@@ -47,14 +49,14 @@ const Header = () => {
         if (localStorage.getItem('localUsers') !== null) {
             let localUsersTemp = JSON.parse(localStorage.getItem('localUsers'))
             localUsersTemp.map(user => {
-                if (user.id === Cookies.get('userID')) {
+                if (user.id === localStorage.getItem('userID')) {
                     user.theme = updatedChecked
                 }
             })
             localStorage.setItem('localUsers', JSON.stringify(localUsersTemp))
         } else {
             let localUsersTemp = []
-            let userTemp = { id: Cookies.get('userID'), theme: updatedChecked }
+            let userTemp = { id: localStorage.getItem('userID'), theme: updatedChecked }
             localUsersTemp.push(userTemp)
             localStorage.setItem('localUsers', JSON.stringify(localUsersTemp))
         }
@@ -186,6 +188,7 @@ const Header = () => {
     }
 
     return (
+        
         <div className="header-container">
             <div className='header-bg-image'>
                 <div className="header-info-wrapper px-4 py-3 header-bg">

@@ -163,7 +163,7 @@ const TabelaVendas = ({array}) =>{
 	},[vendasExibicao])
 
 	useEffect(()=>{
-		if(sessionStorage.getItem('currentPath') === '/vendas'){
+		if(localStorage.getItem('currentPath') === '/vendas'){
 			setVendasExibicao(vendasTeste)
 
 			const bandeirasTemp = []

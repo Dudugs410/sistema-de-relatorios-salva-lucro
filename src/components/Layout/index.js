@@ -5,6 +5,7 @@ import '../../styles/global.scss'
 import './layout.scss'
 import '../../pages/CadastroDeBancos/cadastroDeBancos.scss'
 import SidebarMenu from '../Componente_SidebarMenu'
+import DadosGrupoCliente from "../Componente_DadosGrupoCliente"
 
 function Layout({ children }) {
   return (
@@ -15,7 +16,8 @@ function Layout({ children }) {
         </div>
         <div className='column-container'>
           <Header />
-          <SeletorCliente />
+          {/*<SeletorCliente />*/}
+          <DadosGrupoCliente/>
           {children}
         </div>
         <Footer/>
