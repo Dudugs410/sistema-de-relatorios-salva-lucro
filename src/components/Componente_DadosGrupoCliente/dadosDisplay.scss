@@ -1,0 +1,57 @@
+@import '../../styles/_variables.scss';
+
+.display-seletor{
+    height: auto;
+    /* width: 100%; */
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; */
+    align-items: stretch;
+}
+
+.dados-display-container{
+    background-color: var(--primary-color);
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.grupo-cli-container{
+    width: 80%;
+    display: flex;
+    padding: 1.5em 1em;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.grupo-cli-content{
+
+}
+
+.cli-container-display{
+    display: flex;
+    width: 100%;
+    /* flex-wrap: wrap; */
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+}
+
+.span-display{
+    color: var(--secondary-color) !important;
+}
+
+.select-card-seletor-display{
+    //max-width: 250px;
+}
+
+@media only screen and (max-width: 630px){
+    .grupo-cli-container{
+        width: 80%;
+        display: flex;
+        flex-direction: column;
+        padding: 1.5em 1em;
+        align-items: flex-start;
+    }
+}

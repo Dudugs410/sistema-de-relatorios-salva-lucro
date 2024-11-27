@@ -2,12 +2,13 @@
 
 .search-bar-seletor{
     height: auto;
-    /* width: 100%; */
+    width: 100%;
     background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     flex-direction: column;
     /* justify-content: center; */
     align-items: stretch;
+    border-radius: 15px;
     
 }
 
@@ -18,22 +19,19 @@
 }
 
 .cli-container{
-    // flex-wrap: wrap;
+    width: 80%;
     display: flex;
-    // flex-direction: row;
-    // width: 100%;
-    // justify-content: space-between;
+    padding: 1.5em 1em;
+    align-items: center;
+    justify-content: space-around;
 }
 
 .date-container-seletor{
-    flex-wrap: wrap;
+    background-color: var(--primary-color);
     display: flex;
     flex-direction: row;
-    width: 100%;
-    justify-content: space-between;
-    //border-top: solid var(--secondary-color) 1px;
-    //border-bottom: solid var(--secondary-color) 1px;
-    background-color: var(--primary-color);
+    justify-content: flex-start;
+    border-radius: 15px;
     
 }
 
@@ -82,10 +80,7 @@
 .date-column-seletor{
     width: 100%;
     max-width: 250px;
-}
-
-.date-column-seletor {
-    margin-right: 25px;
+    margin-right: 1.5em;
 }
 
 .date-column-seletor>.select-card-seletor>select{

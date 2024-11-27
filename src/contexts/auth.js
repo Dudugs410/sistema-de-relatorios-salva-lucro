@@ -35,6 +35,9 @@ function AuthProvider({ children }){
 
 	const [fetchingData, setFetchingData] = useState(false)
 
+	const [displayGroup, setDisplayGroup] = useState('')
+    const [displayClient, setDisplayClient] = useState('')
+
 	//////////////////////////////////////////////////////////////////
 
 	// *** Usuário e Login *** //
@@ -1864,6 +1867,8 @@ function AuthProvider({ children }){
 
 				groupsList, clientsList,
 				loadGroupsList, setGroupsList,
+				displayClient, displayGroup,
+				setDisplayGroup, setDisplayClient,
 
 				changedOption, setChangedOption,
 			}}

@@ -1,12 +1,21 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Layout from '../components/Layout'
 import { AuthContext } from '../contexts/auth'
 import { useUserActivity } from '../util/userActivity'
 import ModalUserActivity from '../components/ModalUserActivity'
+import { Navigate, useNavigate } from 'react-router-dom'
 
 export default function Private({ children }) {
   const { logout, refreshSession } = useContext(AuthContext)
   const [showModal, setShowModal] = useState(false)
+
+  const navigate = useNavigate()
+
+  useEffect(()=>{
+    if(localStorage.getItem('isSignedIn') !== 'true'){
+      navigate('/')
+    }
+  },[])
 
   const stayLoggedIn = async () => {
     try {
@@ -61,6 +70,8 @@ export default function Private({ children }) {
         )}
       </>
     );
+  } else {
+    logout()
   }
   return null;
 }
