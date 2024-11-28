@@ -31,7 +31,9 @@ const Login = () => {
     useEffect(()=>{
         if(isSignedIn === true){
             const path = localStorage.getItem('currentPath')
-            navigate(`/${path}`)
+            if(path !== '/'){
+                navigate(`/${path}`)
+            }
         }
     },[isSignedIn])
 
