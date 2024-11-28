@@ -12,9 +12,11 @@ const Modal = ({ onClose, children }) => {
     <div className="modal-overlay">
       <div className='modal-window-content'>
         <div className="modal-content-adq">
-          <button className="btn btn-danger modal-close" onClick={onClose}>
-            <FiX />
-          </button>
+          <div className='modal-btn-container'>
+            <button className="btn btn-danger modal-close" onClick={onClose}>
+              <FiX />
+            </button>
+          </div>
           {children}
         </div>
       </div>

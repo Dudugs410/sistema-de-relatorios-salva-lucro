@@ -19,6 +19,8 @@ const SeletorCliente = ({onClose}) => {
     setSalesPageArray,
     setCreditsPageArray,
     setServicesPageArray,
+    setDisplayGroup,
+    setDisplayClient,
     fetchingData,
   } = useContext(AuthContext)
 
@@ -33,10 +35,15 @@ const SeletorCliente = ({onClose}) => {
 
   const handleLoad = (e) => {
     e.preventDefault()
+    cancelOngoingRequests()
     setIsLoadedSalesDashboard(false)
     setIsLoadedCreditsDashboard(false)
     setIsLoadedServicesDashboard(false)
     setChangedOption(!changedOption)
+    if(selectedGroup && selectedClient){
+      setDisplayGroup(selectedGroup.label)
+      setDisplayClient(selectedClient.label)
+    }
     onClose()
   }
 
@@ -177,7 +184,7 @@ const SeletorCliente = ({onClose}) => {
                 options={groupOptions}
                 onChange={handleGroupChange}
                 value={selectedGroup}
-                isDisabled={fetchingData}
+                //isDisabled={fetchingData}
                 menuPortalTarget={document.body}
                 menuPosition="fixed"
               />
@@ -192,7 +199,7 @@ const SeletorCliente = ({onClose}) => {
                 placeholder="Selecione o Cliente / Filial"
                 onChange={handleClientChange}
                 value={selectedClient}
-                isDisabled={(!selectedGroup || fetchingData)}
+                //isDisabled={(!selectedGroup || fetchingData)}
                 menuPortalTarget={document.body}
                 menuPosition="fixed"
               />
