@@ -64,6 +64,7 @@ function AuthProvider({ children }){
 			const loggedSuccessfully = JSON.parse(responseData.sucess)
 
 			if (loggedSuccessfully) {
+				localStorage.setItem('currentPath', '/dashboard')
 				let localUsers = []
 				if (localStorage.getItem('localUsers') !== null) {
 					localUsers = JSON.parse(localStorage.getItem('localUsers'))
