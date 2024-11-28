@@ -177,6 +177,7 @@ const DadosGrupoCliente = () => {
             { modalOpen && <Modal children={<SeletorCliente onClose={()=>{setModalOpen(false)}}/>} onClose={()=>{setModalOpen(false)}}/> }
             <div className="dados-display-container">
                 <div className="grupo-cli-container">
+                  <div className='gru-cli-inner-container'>
                     <div className="grupo-cli-content">
                         <div className="select-card-seletor-display">
                             <span style={{color: 'white'}}>Grupo: </span>
@@ -189,6 +190,7 @@ const DadosGrupoCliente = () => {
                             <span className='span-display'>{displayClient}</span>
                         </div>
                     </div>
+                  </div>
                     <div className="grupo-cli-content">
                         <div className="select-card-seletor-display">
                             <button type='button' className='btn btn-outline-success px-2 py-1' onClick={() => {setModalOpen(true)}}><FiRefreshCw/> Trocar</button>

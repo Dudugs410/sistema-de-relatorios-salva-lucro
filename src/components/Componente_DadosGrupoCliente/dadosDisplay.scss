@@ -18,15 +18,23 @@
 }
 
 .grupo-cli-container{
-    width: 80%;
+    width: 100%;
     display: flex;
     padding: 1.5em 1em;
     align-items: center;
-    justify-content: space-around;
+    justify-content: space-between;
 }
 
 .grupo-cli-content{
 
+}
+
+.gru-cli-inner-container{
+    display: inline-flex;
+}
+
+.gru-cli-inner-container>.grupo-cli-content{
+    margin-right: 1.5em;
 }
 
 .cli-container-display{
@@ -44,6 +52,7 @@
 
 .select-card-seletor-display{
     //max-width: 250px;
+    white-space: nowrap
 }
 
 @media only screen and (max-width: 630px){
@@ -53,5 +62,10 @@
         flex-direction: column;
         padding: 1.5em 1em;
         align-items: flex-start;
+    }
+
+    .gru-cli-inner-container{
+        flex-direction: column;
+        margin-bottom: 1em;
     }
 }
