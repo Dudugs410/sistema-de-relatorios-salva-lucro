@@ -6,6 +6,7 @@ import { FiRefreshCw } from 'react-icons/fi'
 import Modal from "../Modal"
 import SeletorCliente from '../SeletorCliente'
 import './dadosDisplay.scss'
+import { cancelOngoingRequests } from '../../services/api'
 
 const DadosGrupoCliente = () => {
 
@@ -22,7 +23,8 @@ const DadosGrupoCliente = () => {
         displayClient,
         setDisplayGroup,
         setDisplayClient,
-        fetchingData,
+        fetchingData, setFetchingData,
+        setCanceled,
       } = useContext(AuthContext)
 
       const [modalOpen, setModalOpen] = useState(false)
@@ -172,6 +174,12 @@ const DadosGrupoCliente = () => {
         return [todosOption]
       }
 
+      const handleCancel = () => {
+        cancelOngoingRequests()
+        setFetchingData(false)
+        setCanceled(true)
+      } 
+
     return (
         <div className="display-seletor">
             { modalOpen && <Modal children={<SeletorCliente onClose={()=>{setModalOpen(false)}}/>} onClose={()=>{setModalOpen(false)}}/> }
@@ -193,7 +201,9 @@ const DadosGrupoCliente = () => {
                   </div>
                     <div className="grupo-cli-content">
                         <div className="select-card-seletor-display">
-                            <button type='button' className='btn btn-outline-success px-2 py-1' onClick={() => {setModalOpen(true)}}><FiRefreshCw/> Trocar</button>
+                            <button type='button' className='btn btn-success px-2 py-1' onClick={() => {setModalOpen(true)}} disabled={fetchingData}><FiRefreshCw/> {fetchingData ? 'Carregando dados. Aguarde' : 'Trocar'}</button>
+                            {fetchingData &&
+                              <button type='button' className='btn btn-outline-danger px-2 py-1' onClick={handleCancel}>cancelar</button>}
                         </div>
                     </div>
                 </div>

@@ -14,7 +14,6 @@ ChartJS.register(ArcElement, Tooltip, Legend)
 
 const PieChart = ({ data01, arrayAdm, tipo, dados } ) => {
 
-  const { isDarkTheme } = useContext(AuthContext)
   const [selectedAdm, setSelectedAdm] = useState(null)
   const [showAdmModal, setShowAdmModal] = useState(null)
   const [dado, setDado] = useState('')
@@ -139,63 +138,66 @@ const PieChart = ({ data01, arrayAdm, tipo, dados } ) => {
     }
   }, [data01])
   
-  const chartOptions = {
-    maintainAspectRatio: false,
-    onClick: handleChartClick,
-    responsive: true,
-    plugins: {
-      colors: {
-        forceOverride: true
-      },
-      legend: {
-        display: true,
-        position: "left",
-        labels: {
-          // Use a callback function to generate custom legend labels
-          generateLabels: function (chart) {
-            const { data } = chart
-            if (data.labels.length && data.datasets.length) {
-              return data.labels.map((label, index) => {
-                const value = data.datasets[0].data[index]
-                const formattedValue = value.toLocaleString("pt-BR", {
-                  style: "currency",
-                  currency: "BRL",
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })
-                return {
-                  text: `${label}: ${formattedValue}`,
-                  fillStyle: data.datasets[0].backgroundColor[index],
-                  fontColor: getComputedStyle(document.documentElement).getPropertyValue('--font-color-light'),
-                  hidden:
-                    isNaN(data.datasets[0].data[index]) ||
-                    chart.getDatasetMeta(0).data[index].hidden,
-                }
-              })
-            }
-            return []
-          },
-        },
-      },
-      tooltip: {
-        callbacks: {
-          label: (context) => {
-            const value = context.dataset.data[context.dataIndex]
-            const formattedValue = value.toLocaleString("pt-BR", {
-              style: "currency",
-              currency: "BRL",
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })
-            return `Total de ${dado}: ${formattedValue}`
-          },
+const chartOptions = {
+  maintainAspectRatio: false,
+  onClick: handleChartClick,
+  responsive: true,
+  plugins: {
+    colors: {
+      forceOverride: true,
+    },
+    legend: {
+      display: true,
+      position: "left",
+      labels: {
+        boxWidth: 20, // Adjust the box size for better spacing
+        padding: 10,  // Space between items
+        generateLabels: function (chart) {
+          const { data } = chart;
+          if (data.labels.length && data.datasets.length) {
+            return data.labels.map((label, index) => {
+              const value = data.datasets[0].data[index];
+              const formattedValue = value.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              });
+              return {
+                text: `${label}: ${formattedValue}`,
+                fillStyle: data.datasets[0].backgroundColor[index],
+                fontColor: getComputedStyle(document.documentElement).getPropertyValue('--font-color-light'),
+                hidden:
+                  isNaN(data.datasets[0].data[index]) ||
+                  chart.getDatasetMeta(0).data[index].hidden,
+              };
+            });
+          }
+          return [];
         },
       },
     },
-    layout: {
-      autoPadding: true,
+    tooltip: {
+      callbacks: {
+        label: (context) => {
+          const value = context.dataset.data[context.dataIndex];
+          const formattedValue = value.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          });
+          return `Total de ${dado}: ${formattedValue}`;
+        },
+      },
     },
-  }
+  },
+  layout: {
+    padding: {
+      left: 20, // Extra space to accommodate legend if needed
+    },
+  },
+};
 
   const styleTag = document.createElement('style')
 styleTag.innerHTML = `
@@ -206,7 +208,7 @@ styleTag.innerHTML = `
 document.head.appendChild(styleTag)
   
   return (
-    <div className='chart-container' style={{ height: '290px', position: 'relative', maintainAspectRatio: false }}>
+    <div className='chart-container'>
       <Pie data={chartData} options={chartOptions} />
       {showAdmModal && selectedAdm && (
         <Modal onClose={() => setShowAdmModal(false)}>

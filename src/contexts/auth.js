@@ -33,6 +33,8 @@ function AuthProvider({ children }){
 	const [errorCredits, setErrorCredits] = useState(false)
 	const [errorServices, setErrorServices] = useState(false)
 
+	const [canceled, setCanceled] = useState(false)
+
 	const [fetchingData, setFetchingData] = useState(false)
 
 	const [displayGroup, setDisplayGroup] = useState('')
@@ -49,6 +51,14 @@ function AuthProvider({ children }){
 
 	useEffect(()=>{
 		resetAppValues()
+		setErrorSales(false)
+		setErrorCredits(false)
+		setErrorServices(false)
+		setIsLoadedSalesDashboard(false)
+		setIsLoadedCreditsDashboard(false)
+		setIsLoadedServicesDashboard(false)
+		setIsLoadedDashboard(false)
+		setCanceled(true)
 	},[cancelOngoingRequests])
 
 	// Função que loga o usuário e gerencia quaisquer dados relevantes à isso
@@ -188,19 +198,22 @@ function AuthProvider({ children }){
 					return response.data.VENDAS
 				}
 			} catch (error) {
+				console.log('error: ', error)
 				setBtnDisabledSales(false)
-				if(error.code === "ERR_CANCELED"){
-					console.log('requisição cancelada')
-					//toast.error('Cancelado')
-				} else {
-					toast.error('Erro ao Carregar Vendas ', error.response.status )
-					console.error('Error fetching vendas:', error)
-					setErrorSales(true)
-					if (error.response.status === 401) {
-						logout()
-						return
+					if(error.code !== 'ERR_CANCELED'){
+						console.log('not canceled')
+						toast.error('Erro ao Carregar Vendas ', error.response.status )
+						console.error('Error fetching vendas:', error)
+						if (error.response.status === 401) {
+							logout()
+							return
+						}
+						setErrorSales(true)
+					} else {
+						console.log('canceled')
+						setCanceled(true)
+						setErrorSales(false)
 					}
-				}
 				return []
 			}
 		}
@@ -758,6 +771,13 @@ function AuthProvider({ children }){
 		// para 'true' ao final, evitando que os dados sejam carregados novamente
 		// sem necessidade.
 
+		const resetDashboard = () => {
+			setSalesDashboard(null)
+			setCreditsDashboard(null)
+			setServicesDashboard(null)
+
+		}
+
 		const [isLoadedDashboard, setIsLoadedDashboard] = useState(false) // //
 
 		const [isLoadedSalesDashboard, setIsLoadedSalesDashboard] = useState(false)
@@ -944,6 +964,7 @@ function AuthProvider({ children }){
 		// ************** //
 		const loadCreditsGroup = async ()=> {
 			let creditsMonth
+			let creditsNext5
 			
 			let creditsByAdmin
 			let tempAdmin
@@ -979,6 +1000,29 @@ function AuthProvider({ children }){
 					}
 				}
 				creditsMonth = creditsTemp
+			}
+
+			const loadCreditsNext5 = async () => {
+				// Start from tomorrow
+				let firstDay = new Date()
+				firstDay.setDate(firstDay.getDate() + 1) // Tomorrow: 29th Nov
+			
+				// Calculate the last day: 5 days after tomorrow
+				let lastDay = new Date(firstDay)
+				lastDay.setDate(lastDay.getDate() + 4) // Ends 5 days after firstDay: 3rd Dec
+			
+				let creditsTemp
+			
+				try {
+					creditsTemp = await loadCredits(firstDay, lastDay) // Load credits for this range
+					creditsNext5 = creditsTemp // Assign to creditsNext5 if no error occurs
+				} catch (error) {
+					console.error('Erro: ', error)
+					if (error.response && error.response.status === 401) {
+						logout()
+						return
+					}
+				}
 			}
 
 			function loadChart(array){
@@ -1033,7 +1077,7 @@ function AuthProvider({ children }){
 
 				await Promise.all([
 					loadCreditsMonth(),
-					//loadNext5()
+					loadCreditsNext5()
 				]).then(() => {
 					tempAdmin = separateAdmin(creditsMonth)
 					creditsByAdmin = sortArray(tempAdmin)
@@ -1044,23 +1088,15 @@ function AuthProvider({ children }){
 		
 					todayTemp = converteData(todayTemp)
 					totalCreditsToday = 0
-					totalCreditsNext5 = 0
+					
 					creditsMonth.forEach((venda) => {
 						if(venda.dataCredito === todayTemp){
 							totalCreditsToday += venda.valorLiquido
 						}
 					})
 			
-					creditsMonth.forEach((venda) => {
-						for (let i = 1; i <= 5; i++) {
-							let nextDate = new Date(todayTemp)
-							nextDate.setDate(nextDate.getDate() + i)
-							let nextDateFormatted = nextDate.toISOString().split('T')[0] // Format as "YYYY-MM-DD"
-							if (venda.dataCredito === nextDateFormatted) {
-								totalCreditsNext5 += venda.valorLiquido
-							}
-						}
-					})
+					totalCreditsNext5 = 0
+					totalCreditsNext5 = creditsNext5.reduce((total, venda) => total + venda.valorLiquido, 0);
 			
 					setCreditsDashboard({
 						credits: creditsMonth,
@@ -1224,6 +1260,11 @@ function AuthProvider({ children }){
 		// função que gerencia o carregamento de tudo que será visto no Dashboard
 
 		const loadDashboard = async () => {	
+			resetDashboard()
+			setIsLoadedSalesDashboard(false)
+			setIsLoadedCreditsDashboard(false)
+			setIsLoadedServicesDashboard(false)
+			setIsLoadedDashboard(false)
 			try {
 				setFetchingData(true)
 				Promise.all([
@@ -1864,7 +1905,7 @@ function AuthProvider({ children }){
 				isCheckedCalendar, setIsCheckedCalendar,
 				converteData, dateConvert, dateConvertSearch, dateConvertYYYYMMDD,
 
-				fetchingData,
+				fetchingData, setFetchingData,
 
 				groupsList, clientsList,
 				loadGroupsList, setGroupsList,
@@ -1872,6 +1913,9 @@ function AuthProvider({ children }){
 				setDisplayGroup, setDisplayClient,
 
 				changedOption, setChangedOption,
+				canceled, setCanceled,
+
+				resetAppValues,
 			}}
 		>
 			{children}
