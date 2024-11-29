@@ -12,6 +12,7 @@ import './Seletor.scss'
 const SeletorCliente = ({onClose}) => {
   const {
     changedOption, setChangedOption,
+    setIsLoadedDashboard,
     setIsLoadedSalesDashboard,
     setIsLoadedCreditsDashboard,
     setIsLoadedServicesDashboard,
@@ -21,7 +22,6 @@ const SeletorCliente = ({onClose}) => {
     setServicesPageArray,
     setDisplayGroup,
     setDisplayClient,
-    fetchingData,
   } = useContext(AuthContext)
 
   const [selectorGroupList, setSelectorGroupList] = useState(
@@ -36,6 +36,7 @@ const SeletorCliente = ({onClose}) => {
   const handleLoad = (e) => {
     e.preventDefault()
     cancelOngoingRequests()
+    setIsLoadedDashboard(false)
     setIsLoadedSalesDashboard(false)
     setIsLoadedCreditsDashboard(false)
     setIsLoadedServicesDashboard(false)

@@ -7,15 +7,25 @@
     border: solid white 1px;
 }
 
-.chart-container{
-    height: 290px;
-    position: relative;
+.chart-container {
+    height: 100%; // Ensure it adapts to its container
+    min-height: 300px; // Minimum height
+    max-height: 500px; // Maximum height
+    width: 100%; /* The container stays unrestricted */
+   //max-width: 500px;
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
+    //position:relative;
+}
+
+.chart-legend {
+    flex-shrink: 0; /* Prevent shrinking */
+    overflow: visible; /* Ensure all legend items are shown */
 }
 
 .chartjs-render-monitor .chart-legend li span {
     color: red; /* Change the color here */
-  }
+}
+
+  

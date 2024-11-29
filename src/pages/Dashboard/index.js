@@ -29,14 +29,9 @@ const Dashboard = () => {
 	} = useContext(AuthContext)
 
 	// Run loadDashboard only once when the component mounts
-	useEffect(() => {
-		if(isLoadedDashboard === false){
-			loadDashboard()
-		}
-	}, [])
-
 	useEffect(()=>{
-		if((changedOption === true) && (isLoadedDashboard === true)){
+		console.log('loadDashboard')
+		if(isLoadedDashboard === false){
 			loadDashboard()
 		}
 	},[changedOption])
@@ -61,26 +56,29 @@ const Dashboard = () => {
 	const DisplaySales = () => {
 		return (
 			<div className='graph-data'>
-				<div className='dash-table-container'>
-					{ chartDataExists(salesDashboard.sales) ? 
-						<>
-							<PieChart data01={salesDashboard.chart} arrayAdm={salesDashboard.salesByAdmin} tipo='0' dados='vendas'/>
+				{ chartDataExists(salesDashboard.sales) ? 
+					<>
+						<PieChart data01={salesDashboard.chart} arrayAdm={salesDashboard.salesByAdmin} tipo='0' dados='vendas'/>
+						<div className='dash-table-container'>
 							<TabelaHorizontal header='Total Últimos 4 dias' valor={salesDashboard.totalLast4} />
 							<TabelaHorizontal header='Total do Mês' valor={salesDashboard.totalMonth} /> 
-						</>
-						: 
-						<div style={{'alignSelf': 'center'}}>
-							{ errorSales || salesDashboard.sales === null ? 
-								<div className='dashboard-error-container'>
-									<h3 className='subtitle-global'>Ocorreu um erro</h3>
-									<button className='btn btn-global btn-danger  btn-dash-error' onClick={reloadSales}>Recarregar</button>
-								</div>
-								:
-								<h3 className='subtitle-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>						
-								}
 						</div>
-					}
-				</div>
+					</>
+					: 
+					<div style={{'alignSelf': 'center'}}>
+						{ errorSales || salesDashboard.sales === null ? 
+							<div className='dash-table-container'>
+								<h3 className='subtitle-global'>Ocorreu um erro</h3>
+								<button className='btn btn-global btn-danger  btn-dash-error' onClick={reloadSales}>Recarregar</button>
+							</div>
+							:
+							<div className='dash-table-container'>
+								<h3 className='subtitle-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>
+								<button className='btn btn-global btn-danger btn-dash-error' onClick={reloadSales}>Recarregar</button>
+							</div>					
+							}
+					</div>
+				}
 			</div>
 		)
 	}
@@ -88,26 +86,29 @@ const Dashboard = () => {
 	const DisplayCredits = () => {
 		return (
 			<div className='graph-data'>
-				<div className='dash-table-container'>
 					{ chartDataExists(creditsDashboard.credits) ? 
 						<>
 							<PieChart data01={creditsDashboard.chart} arrayAdm={creditsDashboard.creditsByAdmin} tipo='1' dados='creditos'/>
-							<TabelaHorizontal header='Previsão de Hoje' valor={creditsDashboard.totalCreditsToday} />
-							<TabelaHorizontal header='Previsão Próx 5 Dias' valor={creditsDashboard.totalCreditsNext5} /> 
+							<div className='dash-table-container'>
+								<TabelaHorizontal header='Previsão de Hoje' valor={creditsDashboard.totalCreditsToday} />
+								<TabelaHorizontal header='Previsão Próx 5 Dias' valor={creditsDashboard.totalCreditsNext5} />
+							</div> 
 						</>
 					: 
 						<div style={{'alignSelf': 'center'}}>
 							{ errorCredits ? 
-								<div className='dashboard-error-container'>
+								<div className='dash-table-container'>
 									<h3 className='subtitle-global'>Ocorreu um erro</h3>
 									<button className='btn btn-global btn-danger  btn-dash-error' onClick={reloadCredits}>Recarregar</button>
 								</div>
 								:
-								<h3 className='subtitle-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>
+								<div className='dash-table-container'>
+									<h3 className='subtitle-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>
+									<button className='btn btn-global btn-danger btn-dash-error' onClick={reloadCredits}>Recarregar</button>
+								</div>
 							}
 						</div>
 					}
-				</div>
 			</div>
 		)
 	}
@@ -115,26 +116,29 @@ const Dashboard = () => {
 	const DisplayServices = () => {
 		return (
 			<div className='graph-data'>
-				<div className='dash-table-container'>
-					{ chartDataExists(servicesDashboard.services) ? 
-						<>
-							<PieChart data01={servicesDashboard.chart} arrayAdm={servicesDashboard.servicesByAdmin} tipo='2' dados='servicos'/> 
+				{ chartDataExists(servicesDashboard.services) ? 
+					<>
+						<PieChart data01={servicesDashboard.chart} arrayAdm={servicesDashboard.servicesByAdmin} tipo='2' dados='servicos'/> 
+						<div className='dash-table-container'>
 							<TabelaHorizontal header='Total de Hoje' valor={servicesDashboard.totalServicesToday} />
 							<TabelaHorizontal header='Total do Mês' valor={servicesDashboard.totalServicesMonth} /> 
-						</>
-					: 
-						<div style={{'alignSelf': 'center'}}>
-							{ errorServices ? 
-								<div className='dashboard-error-container'>
-									<h3 className='subtitle-global'>Ocorreu um erro</h3>
-									<button className='btn btn-global btn-danger btn-dash-error' onClick={reloadServices}>Recarregar</button>
-								</div>
-								:
-								<h3 className='subtitle-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>
-							}
 						</div>
-					}
-				</div>
+					</>
+				: 
+					<div style={{'alignSelf': 'center'}}>
+						{ errorServices ? 
+							<div className='dash-table-container'>
+								{<h3 className='subtitle-global'>Ocorreu um erro</h3>}
+								<button className='btn btn-global btn-danger btn-dash-error' onClick={reloadServices}>Recarregar</button>
+							</div>
+							:
+							<div className='dash-table-container'>
+								<h3 className='subtitle-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>
+								<button className='btn btn-global btn-danger btn-dash-error' onClick={reloadServices}>Recarregar</button>
+							</div>
+						}
+					</div>
+				}
 			</div>
 		)
 	}
@@ -145,12 +149,13 @@ const Dashboard = () => {
 				<div className='content-area dash'>
 					<div className='data-group-area'>
 						<h1 className='title-chart'>Vendas:</h1>
-						{isLoadedSalesDashboard === false ? 
+						{isLoadedSalesDashboard === false  ? 
 							<LazyLoader /> 
 						: 
 							<DisplaySales />
 						}
 					</div>
+					<br/><br/>
 					<div className='data-group-area'>
 						<h1 className='title-chart'>Créditos:</h1>			
 						{ isLoadedCreditsDashboard === false ? 
@@ -159,6 +164,7 @@ const Dashboard = () => {
 							<DisplayCredits />
 						}
 					</div>
+					<br/><br/>
 					<div className='data-group-area'>
 						<h1 className='title-chart'>Serviços:</h1>
 						{ isLoadedServicesDashboard === false ? 
