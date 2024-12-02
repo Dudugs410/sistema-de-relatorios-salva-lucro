@@ -42,7 +42,7 @@
 }
 
 .title-chart{
-  /* width: 95%; */
+  width: 100%;
   display: block;
   text-align: center;
   font-family: sans-serif;
@@ -110,7 +110,7 @@
 
 @media screen and (max-width: 869px){
   .title-chart{
-    display: inline-flex;
+    display: inline-flex; 
     flex-direction: column;
     flex-wrap: wrap;
     align-content: stretch;
