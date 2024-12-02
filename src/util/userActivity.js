@@ -51,7 +51,7 @@ export function useUserActivity(onActive, onIdle, idleTimeout = 10 * 60 * 1000, 
     const currentTime = Date.now();
     const timeSinceLastActivity = currentTime - lastActivityTimeRef.current;
     const timeLeftUntilIdle = Math.max((idleTimeout - timeSinceLastActivity) / 1000, 0);
-    console.log(`Time left until idle: ${timeLeftUntilIdle.toFixed(0)} seconds`);
+    //console.log(`Time left until idle: ${timeLeftUntilIdle.toFixed(0)} seconds`);
   };
 
   useEffect(() => {
