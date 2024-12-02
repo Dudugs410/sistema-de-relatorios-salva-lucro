@@ -1,32 +1,31 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
-import { Pie } from 'react-chartjs-2'
-import Modal from '../Modal'
-import './grafico.scss'
-import TabelaVendasDashboard from '../Componente_TabelaVendasDashboard'
-import TabelaCreditosDashboard from '../Componente_TabelaCreditosDashboard'
-import TabelaServicosDashboard from '../Componente_TabelaServicosDashboard'
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { Pie } from 'react-chartjs-2';
+import Modal from '../Modal';
+import './grafico.scss';
+import TabelaVendasDashboard from '../Componente_TabelaVendasDashboard';
+import TabelaCreditosDashboard from '../Componente_TabelaCreditosDashboard';
+import TabelaServicosDashboard from '../Componente_TabelaServicosDashboard';
 
-ChartJS.register(ArcElement, Tooltip, Legend)
+ChartJS.register(ArcElement, Tooltip, Legend);
 
-// Global color mapping object to ensure consistent colors across charts
-const labelColorMap = {};
+// Global color pool and mapping
 const colorPool = [
   'rgb(244, 67, 54)', 'rgb(76, 175, 80)', 'rgb(33, 150, 243)', 'rgb(255, 152, 0)',
   'rgb(156, 39, 176)', 'rgb(0, 188, 212)', 'rgb(63, 81, 181)', 'rgb(139, 195, 74)',
   'rgb(255, 87, 34)', 'rgb(121, 85, 72)', 'rgb(96, 125, 139)', 'rgb(255, 235, 59)',
 ];
 
+const labelColorMap = new Map();
 let colorIndex = 0;
 
-// Function to assign colors dynamically
+// Function to assign colors in order
 const assignColor = (label) => {
-  if (!labelColorMap[label]) {
-    // If no color is assigned yet, assign one from the pool
-    labelColorMap[label] = colorPool[colorIndex % colorPool.length];
+  if (!labelColorMap.has(label)) {
+    labelColorMap.set(label, colorPool[colorIndex % colorPool.length]);
     colorIndex++;
   }
-  return labelColorMap[label];
+  return labelColorMap.get(label);
 };
 
 const PieChart = ({ data01, arrayAdm, tipo, dados }) => {
