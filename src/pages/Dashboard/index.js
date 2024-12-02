@@ -155,7 +155,7 @@ const Dashboard = () => {
 							<DisplaySales />
 						}
 					</div>
-					<br/><br/>
+					{/*<br/><br/>*/}
 					<div className='data-group-area'>
 						<h1 className='title-chart'>Créditos:</h1>			
 						{ isLoadedCreditsDashboard === false ? 
@@ -164,7 +164,7 @@ const Dashboard = () => {
 							<DisplayCredits />
 						}
 					</div>
-					<br/><br/>
+					{/*<br/><br/>*/}
 					<div className='data-group-area'>
 						<h1 className='title-chart'>Serviços:</h1>
 						{ isLoadedServicesDashboard === false ? 
