@@ -69,12 +69,12 @@ const Dashboard = () => {
 						{ errorSales || salesDashboard.sales === null ? 
 							<div className='dash-table-container'>
 								<h3 className='subtitle-global'>Ocorreu um erro</h3>
-								<button className='btn btn-global btn-danger  btn-dash-error' onClick={reloadSales}>Recarregar</button>
+								<button className='btn btn-global' onClick={reloadSales}>Recarregar</button>
 							</div>
 							:
 							<div className='dash-table-container'>
 								<h3 className='subtitle-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>
-								<button className='btn btn-global btn-danger btn-dash-error' onClick={reloadSales}>Recarregar</button>
+								<button className='btn btn-global' onClick={reloadSales}>Recarregar</button>
 							</div>					
 							}
 					</div>
@@ -99,12 +99,12 @@ const Dashboard = () => {
 							{ errorCredits ? 
 								<div className='dash-table-container'>
 									<h3 className='subtitle-global'>Ocorreu um erro</h3>
-									<button className='btn btn-global btn-danger  btn-dash-error' onClick={reloadCredits}>Recarregar</button>
+									<button className='btn btn-global' onClick={reloadCredits}>Recarregar</button>
 								</div>
 								:
 								<div className='dash-table-container'>
 									<h3 className='subtitle-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>
-									<button className='btn btn-global btn-danger btn-dash-error' onClick={reloadCredits}>Recarregar</button>
+									<button className='btn btn-global' onClick={reloadCredits}>Recarregar</button>
 								</div>
 							}
 						</div>
@@ -129,12 +129,12 @@ const Dashboard = () => {
 						{ errorServices ? 
 							<div className='dash-table-container'>
 								{<h3 className='subtitle-global'>Ocorreu um erro</h3>}
-								<button className='btn btn-global btn-danger btn-dash-error' onClick={reloadServices}>Recarregar</button>
+								<button className='btn btn-global' onClick={reloadServices}>Recarregar</button>
 							</div>
 							:
 							<div className='dash-table-container'>
 								<h3 className='subtitle-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>
-								<button className='btn btn-global btn-danger btn-dash-error' onClick={reloadServices}>Recarregar</button>
+								<button className='btn btn-global ' onClick={reloadServices}>Recarregar</button>
 							</div>
 						}
 					</div>
