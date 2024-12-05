@@ -65,6 +65,8 @@ const PieChart = ({ data01, arrayAdm, tipo, dados }) => {
 
   const generateColors = (labels) => labels.map(assignColor);
 
+
+  
   const chartData = useMemo(() => {
     return {
       labels: data01.labels.slice(),
@@ -88,8 +90,43 @@ const PieChart = ({ data01, arrayAdm, tipo, dados }) => {
         display: true,
         position: 'left',
         labels: {
+          generateLabels: function (chart) {
+            const { data } = chart;
+            if (data.labels.length && data.datasets.length) {
+              return data.labels.map((label, index) => {
+                const value = data.datasets[0].data[index];
+                const formattedValue = value.toLocaleString("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                });
+                const datasetMeta = chart.getDatasetMeta(0); // Assumes single dataset
+                return {
+                  text: `${label}: ${formattedValue}`,
+                  fillStyle: data.datasets[0].backgroundColor[index],
+                  fontColor: getComputedStyle(document.documentElement).getPropertyValue('--font-color-light'),
+                  hidden: datasetMeta.data[index]?.hidden || false, // Ensure safe access
+                  index, // Store index to identify the data point
+                  datasetIndex: 0, // Specify dataset
+                };
+              });
+            }
+            return [];
+          },
           boxWidth: 20,
           padding: 10,
+        },
+        onClick: function (e, legendItem, legend) {
+          const chart = legend.chart;
+          const datasetMeta = chart.getDatasetMeta(legendItem.datasetIndex); // Access the dataset
+          const index = legendItem.index;
+  
+          // Toggle the visibility of the corresponding slice
+          datasetMeta.data[index].hidden = !datasetMeta.data[index].hidden;
+  
+          // Update chart
+          chart.update();
         },
       },
       tooltip: {
@@ -105,6 +142,7 @@ const PieChart = ({ data01, arrayAdm, tipo, dados }) => {
       },
     },
   };
+  
 
   return (
     <div className="chart-container">
