@@ -33,8 +33,6 @@ function AuthProvider({ children }){
 	const [errorCredits, setErrorCredits] = useState(false)
 	const [errorServices, setErrorServices] = useState(false)
 
-	const [canceled, setCanceled] = useState(false)
-
 	const [fetchingData, setFetchingData] = useState(false)
 
 	const [displayGroup, setDisplayGroup] = useState('')
@@ -420,7 +418,6 @@ function AuthProvider({ children }){
 			}
 		  }
 		  
-
 		//Deleta Taxa
 
 		const deleteTax = async (tax) => {
@@ -783,8 +780,18 @@ function AuthProvider({ children }){
 		const [isLoadedSalesDashboard, setIsLoadedSalesDashboard] = useState(false)
 		const [isLoadedCreditsDashboard, setIsLoadedCreditsDashboard] = useState(false)
 		const [isLoadedServicesDashboard, setIsLoadedServicesDashboard] = useState(false)
-				// consts que guardarão os objetos referentes à cada grupo de dados no Dashboard
+				
+		const [canceled, setCanceled] = useState(false)
 
+		useEffect(()=>{
+			if(fetchingData){
+				setCanceled(false)
+			}
+
+		},[fetchingData])
+		
+		
+		// consts que guardarão os objetos referentes à cada grupo de dados no Dashboard
 				const [salesDashboard, setSalesDashboard] = useState({
 					sales: [], 		// ->	Array com as vendas do Mês 		//
 					totalLast4: 0, 	// ->	Total dos últimos 4 dias 		//
@@ -838,6 +845,14 @@ function AuthProvider({ children }){
 			
 			let totalSalesMonth
 			let totalSalesLast4
+
+			if(!fetchingData){
+				setFetchingData(true)
+			}
+
+			if(canceled){
+				setCanceled(false)
+			}
 			
 			const loadSalesMonth = async () => {
 				let salesTemp = []
@@ -971,6 +986,14 @@ function AuthProvider({ children }){
 
 			let totalCreditsToday
 			let totalCreditsNext5
+
+			if(!fetchingData){
+				setFetchingData(true)
+			}
+
+			if(canceled){
+				setCanceled(false)
+			}
 			
 			const loadCreditsMonth = async () => {
 				let creditsTemp = []
@@ -1125,6 +1148,14 @@ function AuthProvider({ children }){
 			let totalServicesToday = 0
 			let totalServicesMonth = 0
 
+			if(!fetchingData){
+				setFetchingData(true)
+			}
+
+			if(canceled){
+				setCanceled(false)
+			}
+
 			const loadServicesMonth = async () => {
 				function firstDay() {
 					const today = new Date()
@@ -1266,7 +1297,9 @@ function AuthProvider({ children }){
 			setIsLoadedServicesDashboard(false)
 			setIsLoadedDashboard(false)
 			try {
-				setFetchingData(true)
+				if(!fetchingData){
+					setFetchingData(true)
+				}
 				Promise.all([
 					loadSalesGroup(),
 					loadCreditsGroup(),

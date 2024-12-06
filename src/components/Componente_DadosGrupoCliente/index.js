@@ -201,9 +201,11 @@ const DadosGrupoCliente = () => {
                   </div>
                     <div className="grupo-cli-content">
                         <div className="select-card-seletor-display">
+                          <div className='select-card-seletor-btn-container'>
                             <button type='button' className='btn btn-success px-2 py-1' onClick={() => {setModalOpen(true)}} disabled={fetchingData}><FiRefreshCw/> {fetchingData ? 'Carregando dados. Aguarde' : 'Trocar'}</button>
-                            {fetchingData &&
-                              <button type='button' className='btn btn-outline-danger px-2 py-1' onClick={handleCancel}>cancelar</button>}
+                              {fetchingData &&
+                                <button type='button' className='btn btn-outline-danger px-2 py-1' onClick={handleCancel}>cancelar</button>}
+                          </div>
                         </div>
                     </div>
                 </div>
