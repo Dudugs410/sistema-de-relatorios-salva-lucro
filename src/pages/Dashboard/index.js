@@ -82,15 +82,15 @@ const Dashboard = () => {
 		console.log('credits: ', isLoadedCreditsDashboard)
 		console.log('services: ', isLoadedServicesDashboard)
 		if(!fetchingData && canceled){
-			if(!isLoadedSalesDashboard){
+			if(!chartDataExists(salesDashboard.sales)){
 				setCanceledSales(true)
 			}
 
-			if(!isLoadedCreditsDashboard){
+			if(!chartDataExists(creditsDashboard.credits)){
 				setCanceledCredits(true)
 			}
 
-			if(!isLoadedServicesDashboard){
+			if(!chartDataExists(servicesDashboard.services)){
 				setCanceledServices(true)
 			}	
 		} else {
