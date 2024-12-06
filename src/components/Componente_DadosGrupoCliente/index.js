@@ -175,9 +175,8 @@ const DadosGrupoCliente = () => {
       }
 
       const handleCancel = () => {
-        cancelOngoingRequests()
-        setFetchingData(false)
         setCanceled(true)
+        cancelOngoingRequests()
       } 
 
     return (

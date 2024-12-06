@@ -25,8 +25,13 @@ const Dashboard = () => {
 		salesDashboard, isLoadedSalesDashboard, setIsLoadedSalesDashboard, loadSalesGroup, errorSales,
 		creditsDashboard, isLoadedCreditsDashboard, setIsLoadedCreditsDashboard, loadCreditsGroup, errorCredits,
 		servicesDashboard, isLoadedServicesDashboard, setIsLoadedServicesDashboard, loadServicesGroup, errorServices,
-		changedOption, canceled, fetchingData
+		changedOption, canceled, fetchingData, setFetchingData, setCanceled
 	} = useContext(AuthContext)
+
+	useEffect(()=>{
+		setCanceled(false)
+
+	},[])
 
 	// Run loadDashboard only once when the component mounts
 	useEffect(()=>{
@@ -62,6 +67,20 @@ const Dashboard = () => {
 
 	useEffect(()=>{
 		console.log('canceled: ', canceled)
+		if(canceled){
+			setFetchingData(false)
+		}
+	},[canceled])
+
+{/*
+
+*/}
+
+	useEffect(()=>{
+		console.log('fechingData: ', fetchingData, 'canceled: ', canceled)
+		console.log('sales: ', isLoadedSalesDashboard)
+		console.log('credits: ', isLoadedCreditsDashboard)
+		console.log('services: ', isLoadedServicesDashboard)
 		if(!fetchingData && canceled){
 			if(!isLoadedSalesDashboard){
 				setCanceledSales(true)
@@ -73,9 +92,13 @@ const Dashboard = () => {
 
 			if(!isLoadedServicesDashboard){
 				setCanceledServices(true)
-			}
+			}	
+		} else {
+			setCanceledSales(false)
+			setCanceledCredits(false)
+			setCanceledServices(false)
 		}
-	},[canceled])
+	},[fetchingData])
 
 	useEffect(()=>{
 		console.log('isLoadedSalesDashboard: ', isLoadedSalesDashboard)

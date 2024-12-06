@@ -198,7 +198,7 @@ const Header = () => {
                                 <input type="checkbox" id="toggleButton" checked={isChecked} onChange={handleCheckboxChange}/>
                                 <span className="slider"><FiMoon/><FiSun/></span>
                             </label>
-                            <CustomCheckbox isChecked={isCheckedCalendar} handleCheckboxChange={handleCheckboxChangeCalendar}/>
+                            {/*<CustomCheckbox isChecked={isCheckedCalendar} handleCheckboxChange={handleCheckboxChangeCalendar}/>*/}
                         </div>
                         <Relogio/>
                     </div>
