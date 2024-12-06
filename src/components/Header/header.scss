@@ -139,5 +139,11 @@ transition: background-color 0.3s, border-color 0.3s;
     width: 100%;
     justify-content: flex-start;
     position: relative;
+}
+
+@media (max-width: 946px){
+  .toggle-container {
+
     left: 50px;
+}
 }
