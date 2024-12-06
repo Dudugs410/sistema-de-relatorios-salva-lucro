@@ -48,15 +48,17 @@ function AuthProvider({ children }){
 	const [clientsList, setClientsList] = useState([])
 
 	useEffect(()=>{
-		resetAppValues()
-		setErrorSales(false)
-		setErrorCredits(false)
-		setErrorServices(false)
-		setIsLoadedSalesDashboard(false)
-		setIsLoadedCreditsDashboard(false)
-		setIsLoadedServicesDashboard(false)
-		setIsLoadedDashboard(false)
-		setCanceled(true)
+		if(canceled){
+			resetAppValues()
+			setErrorSales(false)
+			setErrorCredits(false)
+			setErrorServices(false)
+			setIsLoadedSalesDashboard(false)
+			setIsLoadedCreditsDashboard(false)
+			setIsLoadedServicesDashboard(false)
+			setIsLoadedDashboard(false)
+			setFetchingData(false)
+		}
 	},[cancelOngoingRequests])
 
 	// Função que loga o usuário e gerencia quaisquer dados relevantes à isso
@@ -209,7 +211,6 @@ function AuthProvider({ children }){
 						setErrorSales(true)
 					} else {
 						console.log('canceled')
-						setCanceled(true)
 						setErrorSales(false)
 					}
 				return []
@@ -782,13 +783,6 @@ function AuthProvider({ children }){
 		const [isLoadedServicesDashboard, setIsLoadedServicesDashboard] = useState(false)
 				
 		const [canceled, setCanceled] = useState(false)
-
-		useEffect(()=>{
-			if(fetchingData){
-				setCanceled(false)
-			}
-
-		},[fetchingData])
 		
 		
 		// consts que guardarão os objetos referentes à cada grupo de dados no Dashboard
