@@ -62,19 +62,17 @@ const Dashboard = () => {
 
 	useEffect(()=>{
 		console.log('canceled: ', canceled)
-		if(!fetchingData){
-			if(canceled){
-				if(!isLoadedSalesDashboard){
-					setCanceledSales(true)
-				}
-	
-				if(!isLoadedCreditsDashboard){
-					setCanceledCredits(true)
-				}
-	
-				if(!isLoadedServicesDashboard){
-					setCanceledServices(true)
-				}
+		if(!fetchingData && canceled){
+			if(!isLoadedSalesDashboard){
+				setCanceledSales(true)
+			}
+
+			if(!isLoadedCreditsDashboard){
+				setCanceledCredits(true)
+			}
+
+			if(!isLoadedServicesDashboard){
+				setCanceledServices(true)
 			}
 		}
 	},[canceled])
