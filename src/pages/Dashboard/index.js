@@ -4,7 +4,7 @@
 
 import './dashboard.scss'
 
-import { useContext, useEffect } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../../contexts/auth'
 import { cancelOngoingRequests } from '../../services/api.js'
 import TabelaHorizontal from '../../components/Componente_TabelaHorizontal'
@@ -25,7 +25,7 @@ const Dashboard = () => {
 		salesDashboard, isLoadedSalesDashboard, setIsLoadedSalesDashboard, loadSalesGroup, errorSales,
 		creditsDashboard, isLoadedCreditsDashboard, setIsLoadedCreditsDashboard, loadCreditsGroup, errorCredits,
 		servicesDashboard, isLoadedServicesDashboard, setIsLoadedServicesDashboard, loadServicesGroup, errorServices,
-		changedOption,
+		changedOption, canceled, fetchingData
 	} = useContext(AuthContext)
 
 	// Run loadDashboard only once when the component mounts
@@ -38,46 +38,85 @@ const Dashboard = () => {
 
 	const chartDataExists = (array) => array.length > 0
 
+	const [canceledSales, setCanceledSales] = useState(false)
+	const [canceledCredits, setCanceledCredits] = useState(false)
+	const [canceledServices, setCanceledServices] = useState(false)
+
 	const reloadSales = () => {
 		setIsLoadedSalesDashboard(false)
+		setCanceledSales(false)
 		loadSalesGroup()
 	}
 
 	const reloadCredits = () => {
 		setIsLoadedCreditsDashboard(false)
+		setCanceledCredits(false)
 		loadCreditsGroup()
 	}
 
 	const reloadServices = () => {
 		setIsLoadedServicesDashboard(false)
+		setCanceledServices(false)
 		loadServicesGroup()
 	}
+
+	useEffect(()=>{
+		console.log('canceled: ', canceled)
+		if(!fetchingData && canceled){
+			if(!isLoadedSalesDashboard){
+				setCanceledSales(true)
+			}
+
+			if(!isLoadedCreditsDashboard){
+				setCanceledCredits(true)
+			}
+
+			if(!isLoadedServicesDashboard){
+				setCanceledServices(true)
+			}
+		}
+	},[canceled])
+
+	useEffect(()=>{
+		console.log('isLoadedSalesDashboard: ', isLoadedSalesDashboard)
+	},[isLoadedSalesDashboard])
 
 	const DisplaySales = () => {
 		return (
 			<div className='graph-data'>
-				{ chartDataExists(salesDashboard.sales) ? 
+				{ !canceledSales ?
 					<>
-						<PieChart data01={salesDashboard.chart} arrayAdm={salesDashboard.salesByAdmin} tipo='0' dados='vendas'/>
-						<div className='dash-table-container'>
-							<TabelaHorizontal header='Total Últimos 4 dias' valor={salesDashboard.totalLast4} />
-							<TabelaHorizontal header='Total do Mês' valor={salesDashboard.totalMonth} /> 
-						</div>
-					</>
-					: 
-					<div style={{'alignSelf': 'center'}}>
-						{ errorSales || salesDashboard.sales === null ? 
-							<div className='dash-table-container'>
-								<h3 className='subtitle-global'>Ocorreu um erro</h3>
-								<button className='btn btn-global btn-danger  btn-dash-error' onClick={reloadSales}>Recarregar</button>
+						{ chartDataExists(salesDashboard.sales) ? 
+							<>
+								<PieChart data01={salesDashboard.chart} arrayAdm={salesDashboard.salesByAdmin} tipo='0' dados='vendas'/>
+								<div className='dash-table-container'>
+									<TabelaHorizontal header='Total Últimos 4 dias' valor={salesDashboard.totalLast4} />
+									<TabelaHorizontal header='Total do Mês' valor={salesDashboard.totalMonth} /> 
+								</div>
+							</>
+							: 
+							<div>
+								{ errorSales || salesDashboard.sales === null ? 
+									<div className='dash-table-container'>
+										<h3 className='subtitle-global'>Ocorreu um erro</h3>
+										<button className='btn btn-global' onClick={reloadSales}>Recarregar</button>
+									</div>
+									:
+									<div className='dash-table-container'>
+										<h3 className='subtitle-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>
+										<button className='btn btn-global' onClick={reloadSales}>Recarregar</button>
+									</div>					
+									}
 							</div>
-							:
-							<div className='dash-table-container'>
-								<h3 className='subtitle-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>
-								<button className='btn btn-global btn-danger btn-dash-error' onClick={reloadSales}>Recarregar</button>
-							</div>					
-							}
-					</div>
+						}
+					</>
+						:
+					<>
+						<div className='dash-table-container'>
+							<h3 className='subtitle-global'>Carregamento Cancelado</h3>
+							<button className='btn btn-global' onClick={reloadSales}>Recarregar</button>
+						</div>	
+					</>
 				}
 			</div>
 		)
@@ -86,29 +125,40 @@ const Dashboard = () => {
 	const DisplayCredits = () => {
 		return (
 			<div className='graph-data'>
-					{ chartDataExists(creditsDashboard.credits) ? 
-						<>
-							<PieChart data01={creditsDashboard.chart} arrayAdm={creditsDashboard.creditsByAdmin} tipo='1' dados='creditos'/>
-							<div className='dash-table-container'>
-								<TabelaHorizontal header='Previsão de Hoje' valor={creditsDashboard.totalCreditsToday} />
-								<TabelaHorizontal header='Previsão Próx 5 Dias' valor={creditsDashboard.totalCreditsNext5} />
-							</div> 
-						</>
-					: 
-						<div style={{'alignSelf': 'center'}}>
-							{ errorCredits ? 
+				{ !canceledCredits ?
+					<>
+						{ chartDataExists(creditsDashboard.credits) ? 
+							<>
+								<PieChart data01={creditsDashboard.chart} arrayAdm={creditsDashboard.creditsByAdmin} tipo='1' dados='creditos'/>
 								<div className='dash-table-container'>
-									<h3 className='subtitle-global'>Ocorreu um erro</h3>
-									<button className='btn btn-global btn-danger  btn-dash-error' onClick={reloadCredits}>Recarregar</button>
-								</div>
-								:
-								<div className='dash-table-container'>
-									<h3 className='subtitle-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>
-									<button className='btn btn-global btn-danger btn-dash-error' onClick={reloadCredits}>Recarregar</button>
-								</div>
-							}
-						</div>
-					}
+									<TabelaHorizontal header='Previsão de Hoje' valor={creditsDashboard.totalCreditsToday} />
+									<TabelaHorizontal header='Previsão Próx 5 Dias' valor={creditsDashboard.totalCreditsNext5} />
+								</div> 
+							</>
+						: 
+							<div>
+								{ errorCredits ? 
+									<div className='dash-table-container'>
+										<h3 className='subtitle-global'>Ocorreu um erro</h3>
+										<button className='btn btn-global' onClick={reloadCredits}>Recarregar</button>
+									</div>
+									:
+									<div className='dash-table-container'>
+										<h3 className='subtitle-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>
+										<button className='btn btn-global' onClick={reloadCredits}>Recarregar</button>
+									</div>
+								}
+							</div>
+						}
+					</>
+						:
+					<>
+						<div className='dash-table-container'>
+							<h3 className='subtitle-global'>Carregamento Cancelado</h3>
+							<button className='btn btn-global' onClick={reloadCredits}>Recarregar</button>
+						</div>	
+					</>
+				}
 			</div>
 		)
 	}
@@ -116,28 +166,39 @@ const Dashboard = () => {
 	const DisplayServices = () => {
 		return (
 			<div className='graph-data'>
-				{ chartDataExists(servicesDashboard.services) ? 
+				{ !canceledServices ?
 					<>
-						<PieChart data01={servicesDashboard.chart} arrayAdm={servicesDashboard.servicesByAdmin} tipo='2' dados='servicos'/> 
-						<div className='dash-table-container'>
-							<TabelaHorizontal header='Total de Hoje' valor={servicesDashboard.totalServicesToday} />
-							<TabelaHorizontal header='Total do Mês' valor={servicesDashboard.totalServicesMonth} /> 
-						</div>
-					</>
-				: 
-					<div style={{'alignSelf': 'center'}}>
-						{ errorServices ? 
-							<div className='dash-table-container'>
-								{<h3 className='subtitle-global'>Ocorreu um erro</h3>}
-								<button className='btn btn-global btn-danger btn-dash-error' onClick={reloadServices}>Recarregar</button>
-							</div>
-							:
-							<div className='dash-table-container'>
-								<h3 className='subtitle-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>
-								<button className='btn btn-global btn-danger btn-dash-error' onClick={reloadServices}>Recarregar</button>
+						{ chartDataExists(servicesDashboard.services) ? 
+							<>
+								<PieChart data01={servicesDashboard.chart} arrayAdm={servicesDashboard.servicesByAdmin} tipo='2' dados='servicos'/> 
+								<div className='dash-table-container'>
+									<TabelaHorizontal header='Total de Hoje' valor={servicesDashboard.totalServicesToday} />
+									<TabelaHorizontal header='Total do Mês' valor={servicesDashboard.totalServicesMonth} /> 
+								</div>
+							</>
+						: 
+							<div>
+								{ errorServices ? 
+									<div className='dash-table-container'>
+										{<h3 className='subtitle-global'>Ocorreu um erro</h3>}
+										<button className='btn btn-global' onClick={reloadServices}>Recarregar</button>
+									</div>
+									:
+									<div className='dash-table-container'>
+										<h3 className='subtitle-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>
+										<button className='btn btn-global ' onClick={reloadServices}>Recarregar</button>
+									</div>
+								}
 							</div>
 						}
-					</div>
+					</>
+						:
+					<>
+						<div className='dash-table-container'>
+							<h3 className='subtitle-global'>Carregamento Cancelado</h3>
+							<button className='btn btn-global' onClick={reloadServices}>Recarregar</button>
+						</div>	
+					</>
 				}
 			</div>
 		)
