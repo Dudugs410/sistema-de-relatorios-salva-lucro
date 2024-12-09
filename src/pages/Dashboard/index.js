@@ -69,14 +69,21 @@ const Dashboard = () => {
 		console.log('canceled: ', canceled)
 		if(canceled){
 			setFetchingData(false)
+			if(!isLoadedSalesDashboard){
+				setCanceledSales(true)
+			}
+
+			if(!isLoadedCreditsDashboard){
+				setCanceledCredits(true)
+			}
+
+			if(!isLoadedServicesDashboard){
+				setCanceledServices(true)
+			}
 		}
 	},[canceled])
 
-{/*
-
-*/}
-
-	useEffect(()=>{
+/*	useEffect(()=>{
 		console.log('fechingData: ', fetchingData, 'canceled: ', canceled)
 		console.log('sales: ', isLoadedSalesDashboard)
 		console.log('credits: ', isLoadedCreditsDashboard)
@@ -98,7 +105,7 @@ const Dashboard = () => {
 			setCanceledCredits(false)
 			setCanceledServices(false)
 		}
-	},[fetchingData])
+	},[fetchingData]) */
 
 	useEffect(()=>{
 		console.log('isLoadedSalesDashboard: ', isLoadedSalesDashboard)
@@ -109,7 +116,7 @@ const Dashboard = () => {
 			<div className='graph-data'>
 				{ !canceledSales ?
 					<>
-						{ chartDataExists(salesDashboard.sales) ? 
+						{ chartDataExists(salesDashboard.sales) && !canceledSales ? 
 							<>
 								<PieChart data01={salesDashboard.chart} arrayAdm={salesDashboard.salesByAdmin} tipo='0' dados='vendas'/>
 								<div className='dash-table-container'>
@@ -150,7 +157,7 @@ const Dashboard = () => {
 			<div className='graph-data'>
 				{ !canceledCredits ?
 					<>
-						{ chartDataExists(creditsDashboard.credits) ? 
+						{ chartDataExists(creditsDashboard.credits) && !canceledCredits ? 
 							<>
 								<PieChart data01={creditsDashboard.chart} arrayAdm={creditsDashboard.creditsByAdmin} tipo='1' dados='creditos'/>
 								<div className='dash-table-container'>
@@ -191,7 +198,7 @@ const Dashboard = () => {
 			<div className='graph-data'>
 				{ !canceledServices ?
 					<>
-						{ chartDataExists(servicesDashboard.services) ? 
+						{ chartDataExists(servicesDashboard.services) && !canceledServices ? 
 							<>
 								<PieChart data01={servicesDashboard.chart} arrayAdm={servicesDashboard.servicesByAdmin} tipo='2' dados='servicos'/> 
 								<div className='dash-table-container'>

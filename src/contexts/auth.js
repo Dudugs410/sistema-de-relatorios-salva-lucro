@@ -252,22 +252,25 @@ function AuthProvider({ children }){
 				}
 			} catch (error) {
 				setBtnDisabledCredits(false)
-				if(error.code === "ERR_CANCELED"){
-					console.log('requisição cancelada')
-					//toast.error('Cancelado')
-				} else {
-					toast.error('Erro ao Carregar Créditos ', error.response.status )
-					console.error('Error fetching credits:', error)
-					if(error.response.status === 401){
-						logout()
-						alert('erro 401 - não autorizado')
+					if(error.code !== 'ERR_CANCELED'){
+						toast.error('Erro ao Carregar Créditos ', error.response.status )
+						console.error('Error fetching credits:', error)
+						if (error.response.status === 401) {
+							alert('erro 401 - não autorizado')
+							logout()
+							return
+						}
+						setErrorCredits(true)
+					} else {
+						console.log('canceled')
+						setErrorCredits(false)
 					}
-				}
 				return []
-			} finally{
-				setErrorCredits(true)
 			}
 		}
+
+		//
+
 		// retorna array de serviços/ajustes
 		const loadServices = async (startDate, endDate) => {
 			try {
@@ -783,7 +786,6 @@ function AuthProvider({ children }){
 		const [isLoadedServicesDashboard, setIsLoadedServicesDashboard] = useState(false)
 				
 		const [canceled, setCanceled] = useState(false)
-		
 		
 		// consts que guardarão os objetos referentes à cada grupo de dados no Dashboard
 				const [salesDashboard, setSalesDashboard] = useState({
