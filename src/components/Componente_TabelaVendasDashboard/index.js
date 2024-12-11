@@ -207,7 +207,6 @@ const TabelaVendasDashboard = ({array}) =>{
 
 	return(
 		<>
-			<hr className='hr-global'/>
 			<div className='dropShadow vendas-view'>
 			<h3>{array.adminName}</h3> <hr className='hr-global'/>
 				<div className='table-wrapper'>
