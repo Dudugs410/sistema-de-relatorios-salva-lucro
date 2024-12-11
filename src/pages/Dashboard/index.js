@@ -83,30 +83,6 @@ const Dashboard = () => {
 		}
 	},[canceled])
 
-/*	useEffect(()=>{
-		console.log('fechingData: ', fetchingData, 'canceled: ', canceled)
-		console.log('sales: ', isLoadedSalesDashboard)
-		console.log('credits: ', isLoadedCreditsDashboard)
-		console.log('services: ', isLoadedServicesDashboard)
-		if(!fetchingData && canceled){
-			if(!chartDataExists(salesDashboard.sales)){
-				setCanceledSales(true)
-			}
-
-			if(!chartDataExists(creditsDashboard.credits)){
-				setCanceledCredits(true)
-			}
-
-			if(!chartDataExists(servicesDashboard.services)){
-				setCanceledServices(true)
-			}	
-		} else {
-			setCanceledSales(false)
-			setCanceledCredits(false)
-			setCanceledServices(false)
-		}
-	},[fetchingData]) */
-
 	useEffect(()=>{
 		console.log('isLoadedSalesDashboard: ', isLoadedSalesDashboard)
 	},[isLoadedSalesDashboard])

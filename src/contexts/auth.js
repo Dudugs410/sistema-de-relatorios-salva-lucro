@@ -79,6 +79,7 @@ function AuthProvider({ children }){
 				if (localStorage.getItem('localUsers') !== null) {
 					localUsers = JSON.parse(localStorage.getItem('localUsers'))
 				}
+				localStorage.setItem('md5Pass', md5(password))
         
 				let userTemp = {}
 
@@ -198,24 +199,24 @@ function AuthProvider({ children }){
 					return response.data.VENDAS
 				}
 			} catch (error) {
-				console.log('error: ', error)
 				setBtnDisabledSales(false)
-					if(error.code !== 'ERR_CANCELED'){
+					if(error.code === 'ERR_CANCELED'){
+						console.log('canceled')
+						setErrorSales(false)
+					} else if (error.response.status === 401) {
+						toast.error('Sessão Expirada')
+						logout()
+						return
+					} else {
 						console.log('not canceled')
 						toast.error('Erro ao Carregar Vendas ', error.response.status )
 						console.error('Error fetching vendas:', error)
-						if (error.response.status === 401) {
-							logout()
-							return
-						}
 						setErrorSales(true)
-					} else {
-						console.log('canceled')
-						setErrorSales(false)
 					}
 				return []
 			}
 		}
+
 		// retorna array de créditos/recebimentos
 		const loadCredits = async (startDate, endDate) => {
 			try {
@@ -252,24 +253,22 @@ function AuthProvider({ children }){
 				}
 			} catch (error) {
 				setBtnDisabledCredits(false)
-					if(error.code !== 'ERR_CANCELED'){
-						toast.error('Erro ao Carregar Créditos ', error.response.status )
-						console.error('Error fetching credits:', error)
-						if (error.response.status === 401) {
-							alert('erro 401 - não autorizado')
-							logout()
-							return
-						}
-						setErrorCredits(true)
-					} else {
+					if(error.code === 'ERR_CANCELED'){
 						console.log('canceled')
 						setErrorCredits(false)
+					} else if (error.response.status === 401) {
+						toast.error('Sessão Expirada')
+						logout()
+						return
+					} else {
+						console.log('not canceled')
+						toast.error('Erro ao Carregar Créditos: ', error.response.status )
+						console.error('Error fetching vendas:', error)
+						setErrorSales(true)
 					}
 				return []
 			}
 		}
-
-		//
 
 		// retorna array de serviços/ajustes
 		const loadServices = async (startDate, endDate) => {
@@ -305,21 +304,23 @@ function AuthProvider({ children }){
 				}
 			} catch (error) {
 				setBtnDisabledServices(false)
-				if(error.code === "ERR_CANCELED"){
-					console.log('requisição cancelada')
-					//toast.error('Cancelado')
-				} else {
-					toast.error('Erro ao Carregar Serviços ', error.response.status )
-					console.log(error)
-					setErrorServices(true)
-					if (error.response.status === 401) {
+					if(error.code === 'ERR_CANCELED'){
+						console.log('canceled')
+						setErrorServices(false)
+					} else if (error.response.status === 401) {
+						toast.error('Sessão Expirada')
 						logout()
 						return
+					} else {
+						console.log('not canceled')
+						toast.error('Erro ao Carregar Serviços: ', error.response.status )
+						console.error('Error fetching serviços:', error)
+						setErrorServices(true)
 					}
-				}
 				return []
 			}
 		}
+
 		// retorna Objeto de Taxas
 		const loadTaxes = async () => {
 			setIsLoadingTaxes(true)
@@ -351,7 +352,7 @@ function AuthProvider({ children }){
 				setIsLoadingTaxes(false)
 			}
 		}
-		
+
 		//Adiciona nova Taxa
 		const addTax = async (tax) => {
 			setIsLoadingTaxes(true)
@@ -378,7 +379,6 @@ function AuthProvider({ children }){
 		}
 
 		//Edita Taxa
-
 		const editTax = async (tax) => {
 			setIsLoadingTaxes(true)
 			console.log('editTax: ', tax)
@@ -423,7 +423,6 @@ function AuthProvider({ children }){
 		  }
 		  
 		//Deleta Taxa
-
 		const deleteTax = async (tax) => {
 			setIsLoadingTaxes(true)
 			console.log(tax)
@@ -463,10 +462,7 @@ function AuthProvider({ children }){
 		}
 
 		//Bancos
-
 		const [isLoadingBanks, setIsLoadingBanks] = useState(false)
-
-		//
 
 		// retorna array de bancos
 		const loadBanks = async () => {
@@ -1128,10 +1124,6 @@ function AuthProvider({ children }){
 				})
 			} catch (error) {
 				console.log('Erro: ', error)
-				if (error.response.status === 401) {
-					logout()
-					return
-				}
 			}
 		}
 		// ************** //

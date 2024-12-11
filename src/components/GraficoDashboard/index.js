@@ -136,12 +136,12 @@ const PieChart = ({ data01, arrayAdm, tipo, dados }) => {
             return `Total de ${dado}: ${value.toLocaleString('pt-BR', {
               style: 'currency',
               currency: 'BRL',
-            })}`;
+            })}`
           },
         },
       },
     },
-  };
+  }
   
 
   return (
