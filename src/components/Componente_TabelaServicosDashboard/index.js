@@ -213,10 +213,9 @@ const TabelaServicosDashboard = ({ array }) => {
 
 	return(
 		<>
-		<hr className='hr-global'/>
-		<div className='dropShadow vendas-view'>
-			<h3>{array.adminName}</h3>
-			<div className='table-wrapper'>
+			<div className='dropShadow vendas-view'>
+				<h3>{array.adminName}</h3> <hr className='hr-global'/>
+				<div className='table-wrapper'>
 				<table className='table table-striped det-table-global table-hover'>
 					<thead>
 						<tr className='det-tr-top-global'>
