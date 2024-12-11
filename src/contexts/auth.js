@@ -79,6 +79,7 @@ function AuthProvider({ children }){
 				if (localStorage.getItem('localUsers') !== null) {
 					localUsers = JSON.parse(localStorage.getItem('localUsers'))
 				}
+				localStorage.setItem('md5Pass', md5(password))
         
 				let userTemp = {}
 
@@ -198,24 +199,24 @@ function AuthProvider({ children }){
 					return response.data.VENDAS
 				}
 			} catch (error) {
-				console.log('error: ', error)
 				setBtnDisabledSales(false)
-					if(error.code !== 'ERR_CANCELED'){
+					if(error.code === 'ERR_CANCELED'){
+						console.log('canceled')
+						setErrorSales(false)
+					} else if (error.response.status === 401) {
+						toast.error('Sessão Expirada')
+						logout()
+						return
+					} else {
 						console.log('not canceled')
 						toast.error('Erro ao Carregar Vendas ', error.response.status )
 						console.error('Error fetching vendas:', error)
-						if (error.response.status === 401) {
-							logout()
-							return
-						}
 						setErrorSales(true)
-					} else {
-						console.log('canceled')
-						setErrorSales(false)
 					}
 				return []
 			}
 		}
+
 		// retorna array de créditos/recebimentos
 		const loadCredits = async (startDate, endDate) => {
 			try {
@@ -252,22 +253,23 @@ function AuthProvider({ children }){
 				}
 			} catch (error) {
 				setBtnDisabledCredits(false)
-				if(error.code === "ERR_CANCELED"){
-					console.log('requisição cancelada')
-					//toast.error('Cancelado')
-				} else {
-					toast.error('Erro ao Carregar Créditos ', error.response.status )
-					console.error('Error fetching credits:', error)
-					if(error.response.status === 401){
+					if(error.code === 'ERR_CANCELED'){
+						console.log('canceled')
+						setErrorCredits(false)
+					} else if (error.response.status === 401) {
+						toast.error('Sessão Expirada')
 						logout()
-						alert('erro 401 - não autorizado')
+						return
+					} else {
+						console.log('not canceled')
+						toast.error('Erro ao Carregar Créditos: ', error.response.status )
+						console.error('Error fetching vendas:', error)
+						setErrorSales(true)
 					}
-				}
 				return []
-			} finally{
-				setErrorCredits(true)
 			}
 		}
+
 		// retorna array de serviços/ajustes
 		const loadServices = async (startDate, endDate) => {
 			try {
@@ -302,21 +304,23 @@ function AuthProvider({ children }){
 				}
 			} catch (error) {
 				setBtnDisabledServices(false)
-				if(error.code === "ERR_CANCELED"){
-					console.log('requisição cancelada')
-					//toast.error('Cancelado')
-				} else {
-					toast.error('Erro ao Carregar Serviços ', error.response.status )
-					console.log(error)
-					setErrorServices(true)
-					if (error.response.status === 401) {
+					if(error.code === 'ERR_CANCELED'){
+						console.log('canceled')
+						setErrorServices(false)
+					} else if (error.response.status === 401) {
+						toast.error('Sessão Expirada')
 						logout()
 						return
+					} else {
+						console.log('not canceled')
+						toast.error('Erro ao Carregar Serviços: ', error.response.status )
+						console.error('Error fetching serviços:', error)
+						setErrorServices(true)
 					}
-				}
 				return []
 			}
 		}
+
 		// retorna Objeto de Taxas
 		const loadTaxes = async () => {
 			setIsLoadingTaxes(true)
@@ -348,7 +352,7 @@ function AuthProvider({ children }){
 				setIsLoadingTaxes(false)
 			}
 		}
-		
+
 		//Adiciona nova Taxa
 		const addTax = async (tax) => {
 			setIsLoadingTaxes(true)
@@ -375,7 +379,6 @@ function AuthProvider({ children }){
 		}
 
 		//Edita Taxa
-
 		const editTax = async (tax) => {
 			setIsLoadingTaxes(true)
 			console.log('editTax: ', tax)
@@ -420,7 +423,6 @@ function AuthProvider({ children }){
 		  }
 		  
 		//Deleta Taxa
-
 		const deleteTax = async (tax) => {
 			setIsLoadingTaxes(true)
 			console.log(tax)
@@ -460,10 +462,7 @@ function AuthProvider({ children }){
 		}
 
 		//Bancos
-
 		const [isLoadingBanks, setIsLoadingBanks] = useState(false)
-
-		//
 
 		// retorna array de bancos
 		const loadBanks = async () => {
@@ -784,7 +783,6 @@ function AuthProvider({ children }){
 				
 		const [canceled, setCanceled] = useState(false)
 		
-		
 		// consts que guardarão os objetos referentes à cada grupo de dados no Dashboard
 				const [salesDashboard, setSalesDashboard] = useState({
 					sales: [], 		// ->	Array com as vendas do Mês 		//
@@ -835,6 +833,7 @@ function AuthProvider({ children }){
 			let salesLast4
 			
 			let salesByAdmin
+			let totalAdmin = 0
 			let tempAdmin
 			
 			let totalSalesMonth
@@ -901,6 +900,7 @@ function AuthProvider({ children }){
 					const sum = index.total
 					const adminName = index.adminName
 					let temp = sum
+					totalAdmin += sum
 					label.push(adminName)
 					data.push(Number(temp))
 				})
@@ -960,6 +960,7 @@ function AuthProvider({ children }){
 						salesByAdmin: salesByAdmin,
 						totalLast4: Number(totalSalesLast4),
 						totalMonth: Number(totalSalesMonth),
+						totalAdmin: totalAdmin,
 						chart: chartData
 					})
 					setIsLoadedSalesDashboard(true)
@@ -976,6 +977,7 @@ function AuthProvider({ children }){
 			let creditsNext5
 			
 			let creditsByAdmin
+			let totalAdmin = 0
 			let tempAdmin
 
 			let totalCreditsToday
@@ -1050,6 +1052,7 @@ function AuthProvider({ children }){
 					const sum = index.total
 					const adminName = index.adminName
 					let temp = sum
+					totalAdmin += sum
 					label.push(adminName)
 					data.push(Number(temp))
 				})
@@ -1120,16 +1123,13 @@ function AuthProvider({ children }){
 						creditsByAdmin: creditsByAdmin,
 						totalCreditsNext5: Number(totalCreditsNext5),
 						totalCreditsToday: Number(totalCreditsToday),
-						chart: chartData
+						chart: chartData,
+						totalAdmin: totalAdmin
 					})
 					setIsLoadedCreditsDashboard(true)
 				})
 			} catch (error) {
 				console.log('Erro: ', error)
-				if (error.response.status === 401) {
-					logout()
-					return
-				}
 			}
 		}
 		// ************** //
@@ -1141,6 +1141,7 @@ function AuthProvider({ children }){
 
 			let totalServicesToday = 0
 			let totalServicesMonth = 0
+			let totalAdmin = 0
 
 			if(!fetchingData){
 				setFetchingData(true)
@@ -1177,6 +1178,7 @@ function AuthProvider({ children }){
 					const sum = index.total
 					const adminName = index.adminName
 					let temp = sum
+					totalAdmin += sum
 					label.push(adminName)
 					data.push(Number(temp))
 				})
@@ -1271,7 +1273,8 @@ function AuthProvider({ children }){
 						servicesByAdmin: servicesByAdmin,
 						totalServicesMonth: Number(totalServicesMonth),
 						totalServicesToday: Number(totalServicesToday),
-						chart: chartData
+						chart: chartData,
+						totalAdmin: totalAdmin
 					})
 					setIsLoadedServicesDashboard(true)
 				})

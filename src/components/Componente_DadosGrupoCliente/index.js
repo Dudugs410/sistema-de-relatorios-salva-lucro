@@ -11,10 +11,6 @@ import { cancelOngoingRequests } from '../../services/api'
 const DadosGrupoCliente = () => {
 
     const {
-        changedOption, setChangedOption,
-        setIsLoadedSalesDashboard,
-        setIsLoadedCreditsDashboard,
-        setIsLoadedServicesDashboard,
         setExportName,
         setSalesPageArray,
         setCreditsPageArray,
@@ -23,7 +19,7 @@ const DadosGrupoCliente = () => {
         displayClient,
         setDisplayGroup,
         setDisplayClient,
-        fetchingData, setFetchingData,
+        fetchingData,
         setCanceled,
       } = useContext(AuthContext)
 
@@ -37,16 +33,6 @@ const DadosGrupoCliente = () => {
       const [clientOptions, setClientOptions] = useState([])
       const [selectedGroup, setSelectedGroup] = useState(null)
       const [selectedClient, setSelectedClient] = useState(null)
-    
-      const handleLoad = (e) => {
-        e.preventDefault()
-        cancelOngoingRequests()
-        setIsLoadedSalesDashboard(false)
-        setIsLoadedCreditsDashboard(false)
-        setIsLoadedServicesDashboard(false)
-        setChangedOption(!changedOption)
-        onClose()
-      }
     
       useEffect(()=>{
         console.log(selectedGroup, selectedClient)
@@ -111,7 +97,6 @@ const DadosGrupoCliente = () => {
           localStorage.setItem('groupClients', JSON.stringify(selectedGroup.clients))
           localStorage.setItem('selectedGroup', JSON.stringify(selectedGroup))
           localStorage.setItem('groupCode', selectedGroup.value)
-          //setChangedOption(!changedOption)
         }
       }, [selectedGroup])
     
@@ -128,35 +113,7 @@ const DadosGrupoCliente = () => {
           localStorage.setItem('clientCode', 'todos')
           setExportName(selectedGroup ? `${selectedGroup.label} - Todas Filiais` : '')
         }
-        //setChangedOption(!changedOption)
       }, [selectedClient, selectedGroup])
-    
-      const handleGroupChange = (selected) => {
-        //setIsLoadedSalesDashboard(false)
-        //setIsLoadedCreditsDashboard(false)
-        //setIsLoadedServicesDashboard(false)
-        setSelectedGroup(selected)
-    
-        // Reset selected client to the first option
-        const options = getClientOptions(selected)
-        setClientOptions(options)
-        setSelectedClient(options[0])
-    
-        // Update cookies
-        localStorage.setItem('selectedGroup', JSON.stringify(selected))
-        localStorage.setItem('groupCode', selected.value)
-        localStorage.setItem('clientOptions', JSON.stringify(options))
-        localStorage.setItem('selectedClient', JSON.stringify(options[0]))
-      }
-    
-      const handleClientChange = (selected) => {
-        cancelOngoingRequests()
-        //setIsLoadedSalesDashboard(false)
-        //setIsLoadedCreditsDashboard(false)
-        //setIsLoadedServicesDashboard(false)
-        setSelectedClient(selected)
-        localStorage.setItem('selectedClient', JSON.stringify(selected))
-      }
     
       const getClientOptions = (group) => {
         const todosOption = { label: 'TODOS', value: 'todos' }
