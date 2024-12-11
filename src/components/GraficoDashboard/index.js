@@ -28,7 +28,7 @@ const assignColor = (label) => {
   return labelColorMap.get(label);
 };
 
-const PieChart = ({ data01, arrayAdm, tipo, dados }) => {
+const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
   const [selectedAdm, setSelectedAdm] = useState(null);
   const [showAdmModal, setShowAdmModal] = useState(false);
   const [dado, setDado] = useState('');
@@ -79,7 +79,7 @@ const PieChart = ({ data01, arrayAdm, tipo, dados }) => {
         },
       ],
     };
-  }, [data01, dado]);
+  }, [data01, dado])
 
   const chartOptions = {
     maintainAspectRatio: false,
@@ -91,16 +91,16 @@ const PieChart = ({ data01, arrayAdm, tipo, dados }) => {
         position: 'left',
         labels: {
           generateLabels: function (chart) {
-            const { data } = chart;
+            const { data } = chart
             if (data.labels.length && data.datasets.length) {
               return data.labels.map((label, index) => {
-                const value = data.datasets[0].data[index];
+                const value = data.datasets[0].data[index]
                 const formattedValue = value.toLocaleString("pt-BR", {
                   style: "currency",
                   currency: "BRL",
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
-                });
+                })
                 const datasetMeta = chart.getDatasetMeta(0); // Assumes single dataset
                 return {
                   text: `${label}: ${formattedValue}`,
@@ -109,10 +109,10 @@ const PieChart = ({ data01, arrayAdm, tipo, dados }) => {
                   hidden: datasetMeta.data[index]?.hidden || false, // Ensure safe access
                   index, // Store index to identify the data point
                   datasetIndex: 0, // Specify dataset
-                };
-              });
+                }
+              })
             }
-            return [];
+            return []
           },
           boxWidth: 20,
           padding: 10,
@@ -124,7 +124,7 @@ const PieChart = ({ data01, arrayAdm, tipo, dados }) => {
   
           // Toggle the visibility of the corresponding slice
           datasetMeta.data[index].hidden = !datasetMeta.data[index].hidden;
-  
+
           // Update chart
           chart.update();
         },
@@ -132,8 +132,9 @@ const PieChart = ({ data01, arrayAdm, tipo, dados }) => {
       tooltip: {
         callbacks: {
           label: (context) => {
+            const percentage = Math.round(context.dataset.data[context.dataIndex] / totalAdmin * 100);
             const value = context.dataset.data[context.dataIndex];
-            return `Total de ${dado}: ${value.toLocaleString('pt-BR', {
+            return `${percentage}% do total, Total de ${dado}: ${value.toLocaleString('pt-BR', {
               style: 'currency',
               currency: 'BRL',
             })}`

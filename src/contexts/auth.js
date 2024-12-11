@@ -833,6 +833,7 @@ function AuthProvider({ children }){
 			let salesLast4
 			
 			let salesByAdmin
+			let totalAdmin = 0
 			let tempAdmin
 			
 			let totalSalesMonth
@@ -899,6 +900,7 @@ function AuthProvider({ children }){
 					const sum = index.total
 					const adminName = index.adminName
 					let temp = sum
+					totalAdmin += sum
 					label.push(adminName)
 					data.push(Number(temp))
 				})
@@ -958,6 +960,7 @@ function AuthProvider({ children }){
 						salesByAdmin: salesByAdmin,
 						totalLast4: Number(totalSalesLast4),
 						totalMonth: Number(totalSalesMonth),
+						totalAdmin: totalAdmin,
 						chart: chartData
 					})
 					setIsLoadedSalesDashboard(true)
@@ -974,6 +977,7 @@ function AuthProvider({ children }){
 			let creditsNext5
 			
 			let creditsByAdmin
+			let totalAdmin = 0
 			let tempAdmin
 
 			let totalCreditsToday
@@ -1048,6 +1052,7 @@ function AuthProvider({ children }){
 					const sum = index.total
 					const adminName = index.adminName
 					let temp = sum
+					totalAdmin += sum
 					label.push(adminName)
 					data.push(Number(temp))
 				})
@@ -1118,7 +1123,8 @@ function AuthProvider({ children }){
 						creditsByAdmin: creditsByAdmin,
 						totalCreditsNext5: Number(totalCreditsNext5),
 						totalCreditsToday: Number(totalCreditsToday),
-						chart: chartData
+						chart: chartData,
+						totalAdmin: totalAdmin
 					})
 					setIsLoadedCreditsDashboard(true)
 				})
@@ -1135,6 +1141,7 @@ function AuthProvider({ children }){
 
 			let totalServicesToday = 0
 			let totalServicesMonth = 0
+			let totalAdmin = 0
 
 			if(!fetchingData){
 				setFetchingData(true)
@@ -1171,6 +1178,7 @@ function AuthProvider({ children }){
 					const sum = index.total
 					const adminName = index.adminName
 					let temp = sum
+					totalAdmin += sum
 					label.push(adminName)
 					data.push(Number(temp))
 				})
@@ -1265,7 +1273,8 @@ function AuthProvider({ children }){
 						servicesByAdmin: servicesByAdmin,
 						totalServicesMonth: Number(totalServicesMonth),
 						totalServicesToday: Number(totalServicesToday),
-						chart: chartData
+						chart: chartData,
+						totalAdmin: totalAdmin
 					})
 					setIsLoadedServicesDashboard(true)
 				})

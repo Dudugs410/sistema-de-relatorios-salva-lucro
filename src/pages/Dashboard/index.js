@@ -94,7 +94,7 @@ const Dashboard = () => {
 					<>
 						{ chartDataExists(salesDashboard.sales) && !canceledSales ? 
 							<>
-								<PieChart data01={salesDashboard.chart} arrayAdm={salesDashboard.salesByAdmin} tipo='0' dados='vendas'/>
+								<PieChart data01={salesDashboard.chart} arrayAdm={salesDashboard.salesByAdmin} tipo='0' dados='vendas' totalAdmin={salesDashboard.totalAdmin}/>
 								<div className='dash-table-container'>
 									<TabelaHorizontal header='Total Últimos 4 dias' valor={salesDashboard.totalLast4} />
 									<TabelaHorizontal header='Total do Mês' valor={salesDashboard.totalMonth} /> 
@@ -135,7 +135,7 @@ const Dashboard = () => {
 					<>
 						{ chartDataExists(creditsDashboard.credits) && !canceledCredits ? 
 							<>
-								<PieChart data01={creditsDashboard.chart} arrayAdm={creditsDashboard.creditsByAdmin} tipo='1' dados='creditos'/>
+								<PieChart data01={creditsDashboard.chart} arrayAdm={creditsDashboard.creditsByAdmin} tipo='1' dados='creditos' totalAdmin={creditsDashboard.totalAdmin}/>
 								<div className='dash-table-container'>
 									<TabelaHorizontal header='Previsão de Hoje' valor={creditsDashboard.totalCreditsToday} />
 									<TabelaHorizontal header='Previsão Próx 5 Dias' valor={creditsDashboard.totalCreditsNext5} />
@@ -176,7 +176,7 @@ const Dashboard = () => {
 					<>
 						{ chartDataExists(servicesDashboard.services) && !canceledServices ? 
 							<>
-								<PieChart data01={servicesDashboard.chart} arrayAdm={servicesDashboard.servicesByAdmin} tipo='2' dados='servicos'/> 
+								<PieChart data01={servicesDashboard.chart} arrayAdm={servicesDashboard.servicesByAdmin} tipo='2' dados='servicos' totalAdmin={servicesDashboard.totalAdmin}/> 
 								<div className='dash-table-container'>
 									<TabelaHorizontal header='Total de Hoje' valor={servicesDashboard.totalServicesToday} />
 									<TabelaHorizontal header='Total do Mês' valor={servicesDashboard.totalServicesMonth} /> 
