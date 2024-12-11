@@ -202,6 +202,7 @@ const TabelaCreditosDashboard = ({array}) =>{
 		<>
 			<hr className='hr-global'/>
 			<div className='dropShadow vendas-view'>
+				<h3>{array.adminName}</h3>
 				<div className='table-wrapper'>
 					<table className='table table-striped table-hover det-table-global'>
 						<thead>

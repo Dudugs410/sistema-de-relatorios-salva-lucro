@@ -30,6 +30,7 @@ const TabelaVendasDashboard = ({array}) =>{
 
 	useEffect(() => {
 		setCurrentPage(1) // Reset page to 1 when data changes
+		console.log('array: ', array)
 	}, [array])
 
 	// Change page functions
@@ -208,6 +209,7 @@ const TabelaVendasDashboard = ({array}) =>{
 		<>
 			<hr className='hr-global'/>
 			<div className='dropShadow vendas-view'>
+				<h3>{array.adminName}</h3>
 				<div className='table-wrapper'>
 					<table className='table table-striped table-hover det-table-global'>
 						<thead>

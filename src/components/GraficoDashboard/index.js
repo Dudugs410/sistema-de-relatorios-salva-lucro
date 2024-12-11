@@ -132,9 +132,9 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
       tooltip: {
         callbacks: {
           label: (context) => {
-            const percentage = Math.round(context.dataset.data[context.dataIndex] / totalAdmin * 100);
+            const percentage = (context.dataset.data[context.dataIndex] / totalAdmin * 100).toFixed(2); // Use toFixed() to control decimal places
             const value = context.dataset.data[context.dataIndex];
-            return `${percentage}% do total, Total de ${dado}: ${value.toLocaleString('pt-BR', {
+            return `${percentage}% Total de ${dado}: ${value.toLocaleString('pt-BR', {
               style: 'currency',
               currency: 'BRL',
             })}`
@@ -144,7 +144,6 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
     },
   }
   
-
   return (
     <div className="chart-container">
       <Pie data={chartData} options={chartOptions} />
