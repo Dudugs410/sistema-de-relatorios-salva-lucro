@@ -25,7 +25,9 @@ const Dashboard = () => {
 		salesDashboard, isLoadedSalesDashboard, setIsLoadedSalesDashboard, loadSalesGroup, errorSales,
 		creditsDashboard, isLoadedCreditsDashboard, setIsLoadedCreditsDashboard, loadCreditsGroup, errorCredits,
 		servicesDashboard, isLoadedServicesDashboard, setIsLoadedServicesDashboard, loadServicesGroup, errorServices,
-		changedOption, canceled, fetchingData, setFetchingData, setCanceled
+		changedOption, canceled, fetchingData, setFetchingData, setCanceled,
+		canceledSales, canceledCredits, canceledServices,
+		setCanceledSales, setCanceledCredits, setCanceledServices,
 	} = useContext(AuthContext)
 
 	useEffect(()=>{
@@ -43,9 +45,6 @@ const Dashboard = () => {
 
 	const chartDataExists = (array) => array.length > 0
 
-	const [canceledSales, setCanceledSales] = useState(false)
-	const [canceledCredits, setCanceledCredits] = useState(false)
-	const [canceledServices, setCanceledServices] = useState(false)
 
 	const reloadSales = () => {
 		setIsLoadedSalesDashboard(false)
