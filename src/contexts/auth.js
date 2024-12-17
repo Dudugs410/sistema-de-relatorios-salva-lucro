@@ -38,6 +38,11 @@ function AuthProvider({ children }){
 	const [displayGroup, setDisplayGroup] = useState('')
     const [displayClient, setDisplayClient] = useState('')
 
+	
+	const [canceledSales, setCanceledSales] = useState(false)
+	const [canceledCredits, setCanceledCredits] = useState(false)
+	const [canceledServices, setCanceledServices] = useState(false)
+
 	//////////////////////////////////////////////////////////////////
 
 	// *** Usuário e Login *** //
@@ -1877,6 +1882,9 @@ function AuthProvider({ children }){
 				salesDashboard, isLoadedSalesDashboard, setIsLoadedSalesDashboard, loadSalesGroup,
 				creditsDashboard, isLoadedCreditsDashboard, setIsLoadedCreditsDashboard, loadCreditsGroup,
 				servicesDashboard, isLoadedServicesDashboard, setIsLoadedServicesDashboard, loadServicesGroup,
+				canceledSales, setCanceledSales,
+				canceledCredits, setCanceledCredits,
+				canceledServices, setCanceledServices,
 				
 				// Vendas //
 

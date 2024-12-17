@@ -22,6 +22,9 @@ const SeletorCliente = ({onClose}) => {
     setServicesPageArray,
     setDisplayGroup,
     setDisplayClient,
+    setCanceledSales,
+    setCanceledCredits,
+    setCanceledServices
   } = useContext(AuthContext)
 
   const [selectorGroupList, setSelectorGroupList] = useState(
@@ -41,6 +44,9 @@ const SeletorCliente = ({onClose}) => {
     setIsLoadedCreditsDashboard(false)
     setIsLoadedServicesDashboard(false)
     setChangedOption(!changedOption)
+    setCanceledSales(false)
+    setCanceledCredits(false)
+    setCanceledServices(false)
     if(selectedGroup && selectedClient){
       setDisplayGroup(selectedGroup.label)
       setDisplayClient(selectedClient.label)
