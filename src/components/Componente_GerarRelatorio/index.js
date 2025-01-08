@@ -55,7 +55,7 @@ export default function GerarRelatorio(){
 	  }, [])
 
 	useEffect(()=>{
-		switch (sessionStorage.getItem('currentPath')) {
+		switch (localStorage.getItem('currentPath')) {
 			case '/vendas':
 				setTipoRelatorio('Relatório de Vendas')
 				setTipo('vendas')
@@ -75,7 +75,7 @@ export default function GerarRelatorio(){
 			default:
 				break
 		}
-	},[sessionStorage.getItem('currentPath')])
+	},[localStorage.getItem('currentPath')])
 
 	// EXCEL ////////////////////////////////////////////////////////////
 	

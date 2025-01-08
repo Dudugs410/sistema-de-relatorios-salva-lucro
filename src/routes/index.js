@@ -27,7 +27,17 @@ function RoutesApp() {
 
   // Save the current path in localStorage
   useEffect(() => {
-    localStorage.setItem('currentPath', location.pathname)
+    if(location.pathname !== '/'){
+      localStorage.setItem('currentPath', location.pathname)
+    } else {
+      if(localStorage.getItem('isSignedIn') && localStorage.getItem('isSignedIn') === true){
+        localStorage.setItem('currentPath', '/dashboard')
+      }
+    }
+
+    if(localStorage.getItem('currentPath') === '/null') {
+      localStorage.setItem('currentPath', '/dashboard')
+    }
   }, [location.pathname])
 
   // Check and redirect to the saved path on load

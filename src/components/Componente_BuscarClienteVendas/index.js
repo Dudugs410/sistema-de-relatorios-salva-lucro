@@ -75,7 +75,7 @@ const BuscarClienteVendas = () => {
 	}
 
 	useEffect(()=>{
-		if(((cnpjBuscaVendas === '' || cnpjBuscaVendas === 'Selecione' || cnpjBuscaVendas === undefined) && (Cookies.get('cnpj') !== '')) && (clicouPesquisar)){
+		if(((cnpjBuscaVendas === '' || cnpjBuscaVendas === 'Selecione' || cnpjBuscaVendas === undefined) && (localStorage.getItem('cnpj') !== '')) && (clicouPesquisar)){
 			alerta('selecione um cliente válido')
 			return
 		}

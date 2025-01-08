@@ -2,15 +2,17 @@ import { useState, useEffect, useContext, useRef } from 'react'
 import Select from 'react-select'
 import Cookies from 'js-cookie'
 import axios from 'axios'
+import { cancelOngoingRequests } from '../../services/api'
 
 import { AuthContext } from '../../contexts/auth'
 
 import 'react-toastify/dist/ReactToastify.css'
 import './Seletor.scss'
 
-const SeletorCliente = () => {
+const SeletorCliente = ({onClose}) => {
   const {
     changedOption, setChangedOption,
+    setIsLoadedDashboard,
     setIsLoadedSalesDashboard,
     setIsLoadedCreditsDashboard,
     setIsLoadedServicesDashboard,
@@ -18,11 +20,15 @@ const SeletorCliente = () => {
     setSalesPageArray,
     setCreditsPageArray,
     setServicesPageArray,
-    fetchingData,
+    setDisplayGroup,
+    setDisplayClient,
+    setCanceledSales,
+    setCanceledCredits,
+    setCanceledServices
   } = useContext(AuthContext)
 
   const [selectorGroupList, setSelectorGroupList] = useState(
-    JSON.parse(sessionStorage.getItem('groupsStorage'))
+    JSON.parse(localStorage.getItem('groupsStorage'))
   )
 
   const [groupOptions, setGroupOptions] = useState([])
@@ -30,7 +36,23 @@ const SeletorCliente = () => {
   const [selectedGroup, setSelectedGroup] = useState(null)
   const [selectedClient, setSelectedClient] = useState(null)
 
-  const cancelSourceRef = useRef(axios.CancelToken.source())
+  const handleLoad = (e) => {
+    e.preventDefault()
+    cancelOngoingRequests()
+    setIsLoadedDashboard(false)
+    setIsLoadedSalesDashboard(false)
+    setIsLoadedCreditsDashboard(false)
+    setIsLoadedServicesDashboard(false)
+    setChangedOption(!changedOption)
+    setCanceledSales(false)
+    setCanceledCredits(false)
+    setCanceledServices(false)
+    if(selectedGroup && selectedClient){
+      setDisplayGroup(selectedGroup.label)
+      setDisplayClient(selectedClient.label)
+    }
+    onClose()
+  }
 
   useEffect(() => {
     if (selectorGroupList) {
@@ -43,7 +65,7 @@ const SeletorCliente = () => {
         .sort((a, b) => a.label.localeCompare(b.label))
       setGroupOptions(sortedOptions)
 
-      const isFirstLoad = sessionStorage.getItem('isSelected') !== 'true'
+      const isFirstLoad = localStorage.getItem('isSelected') !== 'true'
       if (isFirstLoad) {
         if (sortedOptions.length > 0) {
           const initialGroup = sortedOptions[0]
@@ -53,16 +75,16 @@ const SeletorCliente = () => {
           setClientOptions(initialClientOptions)
           setSelectedClient(initialClientOptions[0])
 
-          Cookies.set('selectedGroup', JSON.stringify(initialGroup))
-          Cookies.set('clientOptions', JSON.stringify(initialClientOptions))
-          Cookies.set('selectedClient', JSON.stringify(initialClientOptions[0]))
-          Cookies.set('groupCode', initialGroup.value)
-          sessionStorage.setItem('isSelected', 'true')
+          localStorage.setItem('selectedGroup', JSON.stringify(initialGroup))
+          localStorage.setItem('clientOptions', JSON.stringify(initialClientOptions))
+          localStorage.setItem('selectedClient', JSON.stringify(initialClientOptions[0]))
+          localStorage.setItem('groupCode', initialGroup.value)
+          localStorage.setItem('isSelected', 'true')
         }
       } else {
-        const savedGroup = Cookies.get('selectedGroup')
-        const savedClientOptions = Cookies.get('clientOptions')
-        const savedClient = Cookies.get('selectedClient')
+        const savedGroup = localStorage.getItem('selectedGroup')
+        const savedClientOptions = localStorage.getItem('clientOptions')
+        const savedClient = localStorage.getItem('selectedClient')
 
         if (savedGroup) setSelectedGroup(JSON.parse(savedGroup))
         if (savedClientOptions) setClientOptions(JSON.parse(savedClientOptions))
@@ -76,17 +98,17 @@ const SeletorCliente = () => {
       const options = getClientOptions(selectedGroup)
       setClientOptions(options)
 
-      if (!Cookies.get('selectedClient')) {
+      if (!localStorage.getItem('selectedClient')) {
         setSelectedClient(options[0])
-        Cookies.set('selectedClient', JSON.stringify(options[0]))
+        localStorage.setItem('selectedClient', JSON.stringify(options[0]))
       }
 
-      Cookies.set('clientOptions', JSON.stringify(options))
-      Cookies.set('groupName', selectedGroup.label)
-      Cookies.set('groupClients', JSON.stringify(selectedGroup.clients))
-      Cookies.set('selectedGroup', JSON.stringify(selectedGroup))
-      Cookies.set('groupCode', selectedGroup.value)
-      setChangedOption(!changedOption)
+      localStorage.setItem('clientOptions', JSON.stringify(options))
+      localStorage.setItem('groupName', selectedGroup.label)
+      localStorage.setItem('groupClients', JSON.stringify(selectedGroup.clients))
+      localStorage.setItem('selectedGroup', JSON.stringify(selectedGroup))
+      localStorage.setItem('groupCode', selectedGroup.value)
+      //setChangedOption(!changedOption)
     }
   }, [selectedGroup])
 
@@ -95,28 +117,22 @@ const SeletorCliente = () => {
     setCreditsPageArray([])
     setServicesPageArray([])
     if (selectedClient && selectedClient.label !== 'TODOS') {
-      Cookies.set('cnpj', selectedClient.value)
-      Cookies.set('clientCode', selectedClient.cod)
+      localStorage.setItem('cnpj', selectedClient.value)
+      localStorage.setItem('clientCode', selectedClient.cod)
       setExportName(selectedClient.label)
     } else if (selectedClient) {
-      Cookies.set('cnpj', selectedClient.value)
-      Cookies.set('clientCode', 'todos')
+      localStorage.setItem('cnpj', selectedClient.value)
+      localStorage.setItem('clientCode', 'todos')
       setExportName(selectedGroup ? `${selectedGroup.label} - Todas Filiais` : '')
     }
-    setChangedOption(!changedOption)
+    //setChangedOption(!changedOption)
   }, [selectedClient, selectedGroup])
 
   const handleGroupChange = (selected) => {
-    setIsLoadedSalesDashboard(false)
-    setIsLoadedCreditsDashboard(false)
-    setIsLoadedServicesDashboard(false)
+    //setIsLoadedSalesDashboard(false)
+    //setIsLoadedCreditsDashboard(false)
+    //setIsLoadedServicesDashboard(false)
     setSelectedGroup(selected)
-
-    // Cancel ongoing Axios requests
-    if (cancelSourceRef.current) {
-      cancelSourceRef.current.cancel('Operation canceled due to new selection.')
-    }
-    cancelSourceRef.current = axios.CancelToken.source()
 
     // Reset selected client to the first option
     const options = getClientOptions(selected)
@@ -124,24 +140,19 @@ const SeletorCliente = () => {
     setSelectedClient(options[0])
 
     // Update cookies
-    Cookies.set('selectedGroup', JSON.stringify(selected))
-    Cookies.set('groupCode', selected.value)
-    Cookies.set('clientOptions', JSON.stringify(options))
-    Cookies.set('selectedClient', JSON.stringify(options[0]))
+    localStorage.setItem('selectedGroup', JSON.stringify(selected))
+    localStorage.setItem('groupCode', selected.value)
+    localStorage.setItem('clientOptions', JSON.stringify(options))
+    localStorage.setItem('selectedClient', JSON.stringify(options[0]))
   }
 
   const handleClientChange = (selected) => {
-    setIsLoadedSalesDashboard(false)
-    setIsLoadedCreditsDashboard(false)
-    setIsLoadedServicesDashboard(false)
+    cancelOngoingRequests()
+    //setIsLoadedSalesDashboard(false)
+    //setIsLoadedCreditsDashboard(false)
+    //setIsLoadedServicesDashboard(false)
     setSelectedClient(selected)
-    Cookies.set('selectedClient', JSON.stringify(selected))
-
-    // Cancel ongoing Axios requests
-    if (cancelSourceRef.current) {
-      cancelSourceRef.current.cancel('Operation canceled due to new selection.')
-    }
-    cancelSourceRef.current = axios.CancelToken.source()
+    localStorage.setItem('selectedClient', JSON.stringify(selected))
   }
 
   const getClientOptions = (group) => {
@@ -187,7 +198,7 @@ const SeletorCliente = () => {
             </div>
           </div>
           <div className="date-column-seletor">
-            <div className="select-card-seletor">
+            <div className="select-card-seletor" >
               <span>Cliente</span>
               <Select
                 styles={customStyles}
@@ -200,6 +211,9 @@ const SeletorCliente = () => {
                 menuPosition="fixed"
               />
             </div>
+          </div>
+          <div className='date-column-seletor'>
+            <button className='btn btn-global btn-seletor' onClick={handleLoad}>Selecionar</button>
           </div>
         </div>
       </form>

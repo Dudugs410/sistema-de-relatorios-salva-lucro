@@ -4,7 +4,7 @@ import { React, createContext, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import Cookies from 'js-cookie'
-import api from '../services/api'
+import api, { cancelOngoingRequests } from '../services/api'
 
 import md5 from 'md5'
 
@@ -35,6 +35,14 @@ function AuthProvider({ children }){
 
 	const [fetchingData, setFetchingData] = useState(false)
 
+	const [displayGroup, setDisplayGroup] = useState('')
+    const [displayClient, setDisplayClient] = useState('')
+
+	
+	const [canceledSales, setCanceledSales] = useState(false)
+	const [canceledCredits, setCanceledCredits] = useState(false)
+	const [canceledServices, setCanceledServices] = useState(false)
+
 	//////////////////////////////////////////////////////////////////
 
 	// *** Usuário e Login *** //
@@ -44,22 +52,39 @@ function AuthProvider({ children }){
 	const [groupsList, setGroupsList] = useState([])
 	const [clientsList, setClientsList] = useState([])
 
+	useEffect(()=>{
+		if(canceled){
+			resetAppValues()
+			setErrorSales(false)
+			setErrorCredits(false)
+			setErrorServices(false)
+			setIsLoadedSalesDashboard(false)
+			setIsLoadedCreditsDashboard(false)
+			setIsLoadedServicesDashboard(false)
+			setIsLoadedDashboard(false)
+			setFetchingData(false)
+		}
+	},[cancelOngoingRequests])
+
 	// Função que loga o usuário e gerencia quaisquer dados relevantes à isso
 	const loginApp = async (login, password) => {
+		resetAppValues()
 		try {
 			const response = await api.post('token', { client_id: login, client_secret: md5(password) })
 			const responseData = response.data
-			Cookies.set('token', responseData.acess_token)
-			Cookies.set('refreshToken', responseData.refresh_token)
+			localStorage.setItem('token', responseData.acess_token)
+			localStorage.setItem('refreshToken', responseData.refresh_token)
 			const userId = jwtDecode(responseData.acess_token).id
-			Cookies.set('userID', userId)
+			localStorage.setItem('userID', userId)
 			const loggedSuccessfully = JSON.parse(responseData.sucess)
 
 			if (loggedSuccessfully) {
+				localStorage.setItem('currentPath', '/dashboard')
 				let localUsers = []
 				if (localStorage.getItem('localUsers') !== null) {
 					localUsers = JSON.parse(localStorage.getItem('localUsers'))
 				}
+				localStorage.setItem('md5Pass', md5(password))
         
 				let userTemp = {}
 
@@ -87,13 +112,13 @@ function AuthProvider({ children }){
 					localStorage.setItem('localUsers', JSON.stringify(localUsers))
 				}
 				const opt = await loadOptions()
-				sessionStorage.setItem('options', JSON.stringify(opt))
+				localStorage.setItem('options', JSON.stringify(opt))
 				
 				const gru = await loadGroupsList()
 
-				sessionStorage.setItem('groupsStorage', JSON.stringify(gru))
-				Cookies.set('groupCode', gru[0].CODIGOGRUPO)
-				Cookies.set('cnpj', 'todos')
+				localStorage.setItem('groupsStorage', JSON.stringify(gru))
+				localStorage.setItem('groupCode', gru[0].CODIGOGRUPO)
+				localStorage.setItem('cnpj', 'todos')
 			}
   
 			const userResponse = await api.get('/usuario')
@@ -102,11 +127,11 @@ function AuthProvider({ children }){
   
 			if (userMatch) {
 				const userData = { NOME: userMatch.NOME, EMAIL: userMatch.EMAIL }
-				Cookies.set('GRUCODIGO', userMatch.GRUCODIGO)
-				sessionStorage.setItem('isSignedIn', true)
-				sessionStorage.setItem('userData', JSON.stringify(userData))
+				localStorage.setItem('GRUCODIGO', userMatch.GRUCODIGO)
 				localStorage.setItem('isSignedIn', true)
-				sessionStorage.setItem('isSignedIn', true)
+				localStorage.setItem('userData', JSON.stringify(userData))
+				localStorage.setItem('isSignedIn', true)
+				localStorage.setItem('isSignedIn', true)
 				setIsSignedIn(true)
 			} else {
 				console.log('Usuario não encontrado')
@@ -148,8 +173,8 @@ function AuthProvider({ children }){
 		const loadSales = async (startDate, endDate) => {
 			try {
 				setErrorSales(false)
-				const apiCNPJ = Cookies.get('cnpj')
-				const apiGroupCode = Cookies.get('groupCode')
+				const apiCNPJ = localStorage.getItem('cnpj')
+				const apiGroupCode = localStorage.getItem('groupCode')
 				if(apiCNPJ === ('todos' || 'TODOS') && (apiGroupCode !== 'selecione')){
 					let params = {
 						datainicial: startDate,
@@ -180,22 +205,29 @@ function AuthProvider({ children }){
 				}
 			} catch (error) {
 				setBtnDisabledSales(false)
-				toast.error('Erro ao Carregar Vendas ', error.response.status )
-				console.error('Error fetching vendas:', error)
-				setErrorSales(true)
-				if (error.response.status === 401) {
-					logout()
-					return
-				}
+					if(error.code === 'ERR_CANCELED'){
+						console.log('canceled')
+						setErrorSales(false)
+					} else if (error.response.status === 401) {
+						toast.error('Sessão Expirada')
+						logout()
+						return
+					} else {
+						console.log('not canceled')
+						toast.error('Erro ao Carregar Vendas ', error.response.status )
+						console.error('Error fetching vendas:', error)
+						setErrorSales(true)
+					}
 				return []
 			}
 		}
+
 		// retorna array de créditos/recebimentos
 		const loadCredits = async (startDate, endDate) => {
 			try {
 				setErrorCredits(false)
-				const apiCNPJ = Cookies.get('cnpj')
-				const apiGroupCode = Cookies.get('groupCode')
+				const apiCNPJ = localStorage.getItem('cnpj')
+				const apiGroupCode = localStorage.getItem('groupCode')
 				if(apiCNPJ === ('todos' || 'TODOS') && (apiGroupCode !== 'selecione')){
 					let params = {
 						dataInicial: startDate,
@@ -226,23 +258,29 @@ function AuthProvider({ children }){
 				}
 			} catch (error) {
 				setBtnDisabledCredits(false)
-				toast.error('Erro ao Carregar Créditos ', error.response.status )
-				console.error('Error fetching credits:', error)
-				if(error.response.status === 401){
-					logout()
-					alert('erro 401 - não autorizado')
-				}
+					if(error.code === 'ERR_CANCELED'){
+						console.log('canceled')
+						setErrorCredits(false)
+					} else if (error.response.status === 401) {
+						toast.error('Sessão Expirada')
+						logout()
+						return
+					} else {
+						console.log('not canceled')
+						toast.error('Erro ao Carregar Créditos: ', error.response.status )
+						console.error('Error fetching vendas:', error)
+						setErrorSales(true)
+					}
 				return []
-			} finally{
-				setErrorCredits(true)
 			}
 		}
+
 		// retorna array de serviços/ajustes
 		const loadServices = async (startDate, endDate) => {
 			try {
 				setErrorServices(false)
-				const apiCNPJ = Cookies.get('cnpj')
-				const apiGroupCode = Cookies.get('groupCode')
+				const apiCNPJ = localStorage.getItem('cnpj')
+				const apiGroupCode = localStorage.getItem('groupCode')
 				if(apiCNPJ === ('todos' || 'TODOS') && (apiGroupCode !== 'selecione')){
 					let params = {
 						dataInicial: startDate,
@@ -271,21 +309,28 @@ function AuthProvider({ children }){
 				}
 			} catch (error) {
 				setBtnDisabledServices(false)
-				toast.error('Erro ao Carregar Serviços ', error.response.status )
-				console.log(error)
-				setErrorServices(true)
-				if (error.response.status === 401) {
-					logout()
-					return
-				}
+					if(error.code === 'ERR_CANCELED'){
+						console.log('canceled')
+						setErrorServices(false)
+					} else if (error.response.status === 401) {
+						toast.error('Sessão Expirada')
+						logout()
+						return
+					} else {
+						console.log('not canceled')
+						toast.error('Erro ao Carregar Serviços: ', error.response.status )
+						console.error('Error fetching serviços:', error)
+						setErrorServices(true)
+					}
 				return []
 			}
 		}
+
 		// retorna Objeto de Taxas
 		const loadTaxes = async () => {
 			setIsLoadingTaxes(true)
 			try {
-				const apiClientCode = Cookies.get('clientCode')
+				const apiClientCode = localStorage.getItem('clientCode')
 				if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
 					let params = {
 						codigo: apiClientCode
@@ -312,12 +357,12 @@ function AuthProvider({ children }){
 				setIsLoadingTaxes(false)
 			}
 		}
-		
+
 		//Adiciona nova Taxa
 		const addTax = async (tax) => {
 			setIsLoadingTaxes(true)
 			try {
-				const apiClientCode = Cookies.get('clientCode')
+				const apiClientCode = localStorage.getItem('clientCode')
 				if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
 					let body = tax
 					const response = await api.post('taxas', body)
@@ -339,7 +384,6 @@ function AuthProvider({ children }){
 		}
 
 		//Edita Taxa
-
 		const editTax = async (tax) => {
 			setIsLoadingTaxes(true)
 			console.log('editTax: ', tax)
@@ -352,7 +396,7 @@ function AuthProvider({ children }){
 				  method: 'PUT',
 				  headers: {
 					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${Cookies.get('token')}`
+					'Authorization': `Bearer ${localStorage.getItem('token')}`
 				  },
 				  body: body,
 				})
@@ -383,14 +427,12 @@ function AuthProvider({ children }){
 			}
 		  }
 		  
-
 		//Deleta Taxa
-
 		const deleteTax = async (tax) => {
 			setIsLoadingTaxes(true)
 			console.log(tax)
 			try {
-				const apiClientCode = Cookies.get('clientCode')
+				const apiClientCode = localStorage.getItem('clientCode')
 				if(apiClientCode !== 'todos' && apiClientCode !== 'TODOS' && apiClientCode !== undefined) {
 					let body = tax
 					api.delete('taxas', {
@@ -425,16 +467,13 @@ function AuthProvider({ children }){
 		}
 
 		//Bancos
-
 		const [isLoadingBanks, setIsLoadingBanks] = useState(false)
-
-		//
 
 		// retorna array de bancos
 		const loadBanks = async () => {
 			setIsLoadingBanks(true)
 			try {
-				const apiClientCode = Cookies.get('clientCode')
+				const apiClientCode = localStorage.getItem('clientCode')
 				if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
 					let params = {
 						codigo: apiClientCode
@@ -467,7 +506,7 @@ function AuthProvider({ children }){
 			console.log('addBank: ', bank)
 			setIsLoadingBanks(true)
 			try {
-				const apiClientCode = Cookies.get('clientCode')
+				const apiClientCode = localStorage.getItem('clientCode')
 				if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
 					let body = bank
 					const response = await api.post('banco', body)
@@ -504,7 +543,7 @@ function AuthProvider({ children }){
 					method: 'PUT',
 					headers: {
 						'Content-Type': 'application/json',
-						'Authorization': `Bearer ${Cookies.get('token')}`
+						'Authorization': `Bearer ${localStorage.getItem('token')}`
 					},
 					body: body,
 					})
@@ -571,8 +610,8 @@ function AuthProvider({ children }){
 		const loadCliAdq = async () => {
 			try {
 				let params = {
-					codigoCliente: Cookies.get('clientCode'),
-					codigoAdquirente: Cookies.get('admCode')
+					codigoCliente: localStorage.getItem('clientCode'),
+					codigoAdquirente: localStorage.getItem('admCode')
 				}
 
 				let config = {
@@ -602,7 +641,7 @@ function AuthProvider({ children }){
 		const loadSubproducts = async () => {
 			try {
 				let params = {
-					codigoAdquirente: Cookies.get('admCode')
+					codigoAdquirente: localStorage.getItem('admCode')
 				}
 
 				let config = {
@@ -689,21 +728,40 @@ function AuthProvider({ children }){
 		} 
 
 		// renova o access token/sessão do usuário
-		const refreshSession = async () =>{
+		const refreshSession = async () => {
+			if(localStorage.getItem('token')){
+				
+			}
 			try {
-					let refreshToken = Cookies.get('refreshToken')
-					const encodedRefreshToken = encodeURIComponent(refreshToken)
-					const response = await api.post('token/refresh/' + encodedRefreshToken)
-					Cookies.set('token', response.data.acess_token)
-					Cookies.set('refreshToken', response.data.refresh_token)
+			  const refreshToken = localStorage.getItem('refreshToken');
+			  
+			  if (!refreshToken) {
+				console.log('No refresh token available');
+				return;
+			  }
+		  
+			  // Send the refresh token in the body of the POST request
+			  const response = await api.post('token/refresh/', {
+				refresh_token: refreshToken
+			  });
+		  
+			  // Update cookies with the new tokens received
+			  localStorage.setItem('token', response.data.acess_token);
+			  localStorage.setItem('refreshToken', response.data.refresh_token);
+
+			  console.log('access token: ', localStorage.getItem('token'))
+			  console.log('refresh token: ', localStorage.getItem('refreshToken'))
+		  
+			  console.log('Session refreshed successfully');
 			} catch (error) {
-				console.log(error)
-				if (error.response.status === 401) {
-					logout()
-					return
-				}
-			}	
-		}
+			  console.error('Error refreshing session:', error);
+		  
+			  if (error.response && error.response.status === 401) {
+				console.log('Unauthorized: logging out');
+				logout(); // Call your logout function here
+			  }
+			}
+		  };
 
 	// >>> Dashboard <<< //
 
@@ -715,13 +773,22 @@ function AuthProvider({ children }){
 		// para 'true' ao final, evitando que os dados sejam carregados novamente
 		// sem necessidade.
 
+		const resetDashboard = () => {
+			setSalesDashboard(null)
+			setCreditsDashboard(null)
+			setServicesDashboard(null)
+
+		}
+
 		const [isLoadedDashboard, setIsLoadedDashboard] = useState(false) // //
 
 		const [isLoadedSalesDashboard, setIsLoadedSalesDashboard] = useState(false)
 		const [isLoadedCreditsDashboard, setIsLoadedCreditsDashboard] = useState(false)
 		const [isLoadedServicesDashboard, setIsLoadedServicesDashboard] = useState(false)
-				// consts que guardarão os objetos referentes à cada grupo de dados no Dashboard
-
+				
+		const [canceled, setCanceled] = useState(false)
+		
+		// consts que guardarão os objetos referentes à cada grupo de dados no Dashboard
 				const [salesDashboard, setSalesDashboard] = useState({
 					sales: [], 		// ->	Array com as vendas do Mês 		//
 					totalLast4: 0, 	// ->	Total dos últimos 4 dias 		//
@@ -771,10 +838,19 @@ function AuthProvider({ children }){
 			let salesLast4
 			
 			let salesByAdmin
+			let totalAdmin = 0
 			let tempAdmin
 			
 			let totalSalesMonth
 			let totalSalesLast4
+
+			if(!fetchingData){
+				setFetchingData(true)
+			}
+
+			if(canceled){
+				setCanceled(false)
+			}
 			
 			const loadSalesMonth = async () => {
 				let salesTemp = []
@@ -829,6 +905,7 @@ function AuthProvider({ children }){
 					const sum = index.total
 					const adminName = index.adminName
 					let temp = sum
+					totalAdmin += sum
 					label.push(adminName)
 					data.push(Number(temp))
 				})
@@ -888,6 +965,7 @@ function AuthProvider({ children }){
 						salesByAdmin: salesByAdmin,
 						totalLast4: Number(totalSalesLast4),
 						totalMonth: Number(totalSalesMonth),
+						totalAdmin: totalAdmin,
 						chart: chartData
 					})
 					setIsLoadedSalesDashboard(true)
@@ -901,12 +979,22 @@ function AuthProvider({ children }){
 		// ************** //
 		const loadCreditsGroup = async ()=> {
 			let creditsMonth
+			let creditsNext5
 			
 			let creditsByAdmin
+			let totalAdmin = 0
 			let tempAdmin
 
 			let totalCreditsToday
 			let totalCreditsNext5
+
+			if(!fetchingData){
+				setFetchingData(true)
+			}
+
+			if(canceled){
+				setCanceled(false)
+			}
 			
 			const loadCreditsMonth = async () => {
 				let creditsTemp = []
@@ -938,6 +1026,29 @@ function AuthProvider({ children }){
 				creditsMonth = creditsTemp
 			}
 
+			const loadCreditsNext5 = async () => {
+				// Start from tomorrow
+				let firstDay = new Date()
+				firstDay.setDate(firstDay.getDate() + 1) // Tomorrow: 29th Nov
+			
+				// Calculate the last day: 5 days after tomorrow
+				let lastDay = new Date(firstDay)
+				lastDay.setDate(lastDay.getDate() + 4) // Ends 5 days after firstDay: 3rd Dec
+			
+				let creditsTemp
+			
+				try {
+					creditsTemp = await loadCredits(firstDay, lastDay) // Load credits for this range
+					creditsNext5 = creditsTemp // Assign to creditsNext5 if no error occurs
+				} catch (error) {
+					console.error('Erro: ', error)
+					if (error.response && error.response.status === 401) {
+						logout()
+						return
+					}
+				}
+			}
+
 			function loadChart(array){
 				let label = []
 				let data = []
@@ -946,6 +1057,7 @@ function AuthProvider({ children }){
 					const sum = index.total
 					const adminName = index.adminName
 					let temp = sum
+					totalAdmin += sum
 					label.push(adminName)
 					data.push(Number(temp))
 				})
@@ -990,7 +1102,7 @@ function AuthProvider({ children }){
 
 				await Promise.all([
 					loadCreditsMonth(),
-					//loadNext5()
+					loadCreditsNext5()
 				]).then(() => {
 					tempAdmin = separateAdmin(creditsMonth)
 					creditsByAdmin = sortArray(tempAdmin)
@@ -1001,39 +1113,28 @@ function AuthProvider({ children }){
 		
 					todayTemp = converteData(todayTemp)
 					totalCreditsToday = 0
-					totalCreditsNext5 = 0
+					
 					creditsMonth.forEach((venda) => {
 						if(venda.dataCredito === todayTemp){
 							totalCreditsToday += venda.valorLiquido
 						}
 					})
 			
-					creditsMonth.forEach((venda) => {
-						for (let i = 1; i <= 5; i++) {
-							let nextDate = new Date(todayTemp)
-							nextDate.setDate(nextDate.getDate() + i)
-							let nextDateFormatted = nextDate.toISOString().split('T')[0] // Format as "YYYY-MM-DD"
-							if (venda.dataCredito === nextDateFormatted) {
-								totalCreditsNext5 += venda.valorLiquido
-							}
-						}
-					})
+					totalCreditsNext5 = 0
+					totalCreditsNext5 = creditsNext5.reduce((total, venda) => total + venda.valorLiquido, 0);
 			
 					setCreditsDashboard({
 						credits: creditsMonth,
 						creditsByAdmin: creditsByAdmin,
 						totalCreditsNext5: Number(totalCreditsNext5),
 						totalCreditsToday: Number(totalCreditsToday),
-						chart: chartData
+						chart: chartData,
+						totalAdmin: totalAdmin
 					})
 					setIsLoadedCreditsDashboard(true)
 				})
 			} catch (error) {
 				console.log('Erro: ', error)
-				if (error.response.status === 401) {
-					logout()
-					return
-				}
 			}
 		}
 		// ************** //
@@ -1045,6 +1146,15 @@ function AuthProvider({ children }){
 
 			let totalServicesToday = 0
 			let totalServicesMonth = 0
+			let totalAdmin = 0
+
+			if(!fetchingData){
+				setFetchingData(true)
+			}
+
+			if(canceled){
+				setCanceled(false)
+			}
 
 			const loadServicesMonth = async () => {
 				function firstDay() {
@@ -1073,6 +1183,7 @@ function AuthProvider({ children }){
 					const sum = index.total
 					const adminName = index.adminName
 					let temp = sum
+					totalAdmin += sum
 					label.push(adminName)
 					data.push(Number(temp))
 				})
@@ -1167,7 +1278,8 @@ function AuthProvider({ children }){
 						servicesByAdmin: servicesByAdmin,
 						totalServicesMonth: Number(totalServicesMonth),
 						totalServicesToday: Number(totalServicesToday),
-						chart: chartData
+						chart: chartData,
+						totalAdmin: totalAdmin
 					})
 					setIsLoadedServicesDashboard(true)
 				})
@@ -1181,8 +1293,15 @@ function AuthProvider({ children }){
 		// função que gerencia o carregamento de tudo que será visto no Dashboard
 
 		const loadDashboard = async () => {	
+			resetDashboard()
+			setIsLoadedSalesDashboard(false)
+			setIsLoadedCreditsDashboard(false)
+			setIsLoadedServicesDashboard(false)
+			setIsLoadedDashboard(false)
 			try {
-				setFetchingData(true)
+				if(!fetchingData){
+					setFetchingData(true)
+				}
 				Promise.all([
 					loadSalesGroup(),
 					loadCreditsGroup(),
@@ -1521,6 +1640,10 @@ function AuthProvider({ children }){
 		setChartSales({data: [], labels: []})
 		setChartCredits({data: [], labels: []})
 		setChartServices({data: [], labels: []})
+
+		setErrorSales(false)
+		setErrorCredits(false)
+		setErrorServices(false)
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////
@@ -1535,7 +1658,7 @@ function AuthProvider({ children }){
 	async function loadOptions() {
 		try {
 			let params = {
-				codigo: Cookies.get('userID')
+				codigo: localStorage.getItem('userID')
 			}
   
 			let config = {
@@ -1556,19 +1679,12 @@ function AuthProvider({ children }){
 
 	/////desloga usuário
 	function logout(){
-		sessionStorage.clear()
-		const clearAllCookies = () => {
-			const cookies = Cookies.get()
-			for (const cookie in cookies) {
-				if (Object.prototype.hasOwnProperty.call(cookies, cookie)) {
-					Cookies.remove(cookie)
-				}
-			}
-		}
+		localStorage.clear()
+		localStorage.clear()
+		cancelOngoingRequests()
 		resetAppValues()
-		clearAllCookies()
 		setIsSignedIn(false)
-		sessionStorage.setItem('isSignedIn', false)
+		localStorage.setItem('isSignedIn', false)
 		navigate('/')
 	}
 
@@ -1746,6 +1862,7 @@ function AuthProvider({ children }){
 				isSignedIn, setIsSignedIn,
 				logout,
 				accessToken, setAccessToken,
+				refreshSession,
 
 				////////////////
 
@@ -1765,6 +1882,9 @@ function AuthProvider({ children }){
 				salesDashboard, isLoadedSalesDashboard, setIsLoadedSalesDashboard, loadSalesGroup,
 				creditsDashboard, isLoadedCreditsDashboard, setIsLoadedCreditsDashboard, loadCreditsGroup,
 				servicesDashboard, isLoadedServicesDashboard, setIsLoadedServicesDashboard, loadServicesGroup,
+				canceledSales, setCanceledSales,
+				canceledCredits, setCanceledCredits,
+				canceledServices, setCanceledServices,
 				
 				// Vendas //
 
@@ -1823,12 +1943,17 @@ function AuthProvider({ children }){
 				isCheckedCalendar, setIsCheckedCalendar,
 				converteData, dateConvert, dateConvertSearch, dateConvertYYYYMMDD,
 
-				fetchingData,
+				fetchingData, setFetchingData,
 
 				groupsList, clientsList,
 				loadGroupsList, setGroupsList,
+				displayClient, displayGroup,
+				setDisplayGroup, setDisplayClient,
 
 				changedOption, setChangedOption,
+				canceled, setCanceled,
+
+				resetAppValues,
 			}}
 		>
 			{children}
@@ -1837,4 +1962,3 @@ function AuthProvider({ children }){
 }
 
 export default AuthProvider
-

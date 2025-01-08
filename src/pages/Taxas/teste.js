@@ -25,7 +25,7 @@ const Taxas = () =>{
     const [adminsList, setAdminsList] = useState([])
     const [modsList, setModsList] = useState([])
 
-    const cliOptions = JSON.parse(Cookies.get('clientOptions'))
+    const cliOptions = JSON.parse(localStorage.getItem('clientOptions'))
     
     const [banOptions, setBanOptions] = useState([])
     const [admOptions, setAdmOptions] = useState([])
@@ -35,12 +35,12 @@ const Taxas = () =>{
     const [isModalEditOpen, setIsModalEditOpen] = useState(false)
 
     // Codigo do Cliente, Proveniente do SeletorCliente
-    const [clientCode, setClientCode] = useState(Cookies.get('clientCode'))
+    const [clientCode, setClientCode] = useState(localStorage.getItem('clientCode'))
     // Array de Objetos a Serem Mostrados na Tabela
     const [taxesList, setTaxesList] = useState([])
 
     useEffect(()=>{
-        sessionStorage.setItem('currentPath', location.pathname)
+        localStorage.setItem('currentPath', location.pathname)
     },[])
 
     useEffect(()=>{
@@ -60,7 +60,7 @@ const Taxas = () =>{
             setModsList(response)
           }
 
-          if(Cookies.get('clientCode' !== ('todos'))){
+          if(localStorage.getItem('clientCode' !== ('todos'))){
             const response = await loadTaxes()
             setTaxesList(response)
           }
@@ -96,7 +96,7 @@ const Taxas = () =>{
     }, [modsList]);
 
     useEffect(()=>{
-        setClientCode(Cookies.get('clientCode'))
+        setClientCode(localStorage.getItem('clientCode'))
         setTaxesList([])
     },[changedOption])
 
@@ -604,7 +604,7 @@ const Taxas = () =>{
               <div className='container-global'>
                   { ((taxesList && taxesList.length > 0) && (clientCode !== ('todos' || undefined))) && 
                   <>    
-                      <h3 className='subtitle'>Cliente: {JSON.parse(Cookies.get('selectedClient')).label}</h3>
+                      <h3 className='subtitle'>Cliente: {JSON.parse(localStorage.getItem('selectedClient')).label}</h3>
                       <hr className='hr-global'/>
                       <TaxesTable />
                       

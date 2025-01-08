@@ -6,12 +6,15 @@ import './login.css'
 import { useContext } from "react"
 import LoadingModal from "../../components/LoadingModal"
 
+//teste home
+
 ///////////////////////////////////////////////////////////////
 
 const Login = () => {
     const {
         loginApp,
-        isSignedIn, 
+        isSignedIn,
+        setIsSignedIn,
     } = useContext(AuthContext)
     const navigate = useNavigate()
 
@@ -20,8 +23,17 @@ const Login = () => {
     const [loading, setLoading] = useState(false)
 
     useEffect(()=>{
+        if(localStorage.getItem('isSignedIn')){
+            setIsSignedIn(JSON.parse(localStorage.getItem('isSignedIn')))
+        }
+    },[])
+
+    useEffect(()=>{
         if(isSignedIn === true){
-            navigate('/Dashboard')
+            const path = localStorage.getItem('currentPath')
+            if(path !== '/'){
+                navigate(`/${path}`)
+            }
         }
     },[isSignedIn])
 

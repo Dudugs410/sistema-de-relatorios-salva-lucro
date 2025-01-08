@@ -36,7 +36,7 @@ const ModalNewBank = ({ onClose, cliAdqOptions, setIsSelected, cliOptions, admOp
   } = useBankForm(addBank, loadBanks, onClose, setBanksList);
 
   const handleAdmin = (selected) => {
-    Cookies.set('admCode', selected.value);
+    localStorage.setItem('admCode', selected.value);
     setSelectedAdm(selected);
     setIsSelected(true);
   };

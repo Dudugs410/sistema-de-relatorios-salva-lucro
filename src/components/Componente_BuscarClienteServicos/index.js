@@ -63,7 +63,7 @@ const BuscarClienteServicos = () => {
 	}
 
 	useEffect(()=>{
-		if(((cnpjBuscaServicos === '' || cnpjBuscaServicos === 'Selecione' || cnpjBuscaServicos === undefined) && (Cookies.get('cnpj') !== '')) && (clicouPesquisar)){
+		if(((cnpjBuscaServicos === '' || cnpjBuscaServicos === 'Selecione' || cnpjBuscaServicos === undefined) && (localStorage.getItem('cnpj') !== '')) && (clicouPesquisar)){
 			alerta('selecione um cliente válido')
 			return
 		}

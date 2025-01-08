@@ -11,7 +11,7 @@ const Creditos = () =>{
 	const location = useLocation()
 
 	useEffect(() => {
-		sessionStorage.setItem('currentPath', location.pathname)
+		localStorage.setItem('currentPath', location.pathname)
 	}, [location])
   
 	const {
@@ -77,7 +77,7 @@ async function loadData() {
     if(creditsPageArray.length > 0){
       exportCredits(creditsPageArray)
     }
-  },[creditsPageArray, sessionStorage.getItem('currentPath')])
+  },[creditsPageArray, localStorage.getItem('currentPath')])
 
   const handleDateRangeChange = (dateRange) => {
     setCreditsDateRange(dateRange)

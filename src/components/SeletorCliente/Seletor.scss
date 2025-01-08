@@ -2,32 +2,36 @@
 
 .search-bar-seletor{
     height: auto;
-    /* width: 100%; */
+    width: 100%;
     background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     flex-direction: column;
     /* justify-content: center; */
     align-items: stretch;
+    border-radius: 15px;
     
 }
 
+.btn-seletor:hover{
+    border: solid var(--secondary-color) 1px !important;
+    background-color: white !important;
+    color: var(--primary-color) !important;
+}
+
 .cli-container{
-    // flex-wrap: wrap;
+    width: 80%;
     display: flex;
-    // flex-direction: row;
-    // width: 100%;
-    // justify-content: space-between;
+    padding: 1.5em 1em;
+    align-items: center;
+    justify-content: space-around;
 }
 
 .date-container-seletor{
-    flex-wrap: wrap;
+    background-color: var(--primary-color);
     display: flex;
     flex-direction: row;
-    width: 100%;
-    justify-content: space-between;
-    //border-top: solid var(--secondary-color) 1px;
-    //border-bottom: solid var(--secondary-color) 1px;
-    background-color: var(--primary-color);
+    justify-content: flex-start;
+    border-radius: 15px;
     
 }
 
@@ -70,11 +74,13 @@
 }
 
 .select-card-seletor{
-    width: 333px;
+    width: 250px;
 }
 
-.date-column-seletor:last-child {
-    padding-left: 1.5rem;
+.date-column-seletor{
+    width: 100%;
+    max-width: 250px;
+    margin-right: 1.5em;
 }
 
 .date-column-seletor>.select-card-seletor>select{
@@ -148,14 +154,12 @@
     transition: all .4s;
     border: solid var(--secondary-color) 1px;
     background-color: var(--secondary-color);
-    color: var(--primary-color);
-    
+    color: var(--primary-color);  
 }
 
 .btn-seletor:hover{
     color: var(--background-color);
     background-color: var(--secondary-color);
-
 }
 
 
@@ -167,11 +171,19 @@
 
     // quebrar linha quando diminui a tela
     .cli-container{
-        flex-direction: column;
+        display: flex;
+        width: 100%;
+        flex-wrap: wrap;
+        justify-content: center;
     }
 
     .date-text{
         color:white;
+    }
+
+    .date-column-seletor {
+        display: flex;
+        justify-content: center;
     }
     
     .date-column-seletor>.select-card-seletor>select{
@@ -186,6 +198,7 @@
 
     .select-card-seletor{
         width: 100%;
+        padding-left: 0;
     }
 
     body{

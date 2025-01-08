@@ -26,7 +26,7 @@ const Suporte = () =>{
     const [dataBuscaInicial, setDataBuscaInicial] = useState(new Date)
 
     useEffect(() => {
-        sessionStorage.setItem('currentPath', location.pathname)
+        localStorage.setItem('currentPath', location.pathname)
     }, [location])
 
     useEffect(() => {

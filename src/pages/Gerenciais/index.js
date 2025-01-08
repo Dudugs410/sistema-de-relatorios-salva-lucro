@@ -16,7 +16,7 @@ const Gerenciais = () =>{
     const [formatoRelatorio, setFormatoRelatorio] = useState('PDF')
 
     useEffect(() => {
-        sessionStorage.setItem('currentPath', location.pathname)
+        localStorage.setItem('currentPath', location.pathname)
     }, [location])
 
     const opcoesRelatorio = [{value: 0, label:'Resumo Mensal'}, {value: 1, label:'Comparativo de Taxas'}, {value: 2, label: 'Vero - Não Autorizadas'}]

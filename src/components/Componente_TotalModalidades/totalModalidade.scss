@@ -70,8 +70,18 @@
         font-size: 0.9em;
     }
 
+    .content-container-modalidade{
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* Creates 2 equal columns */
+        grid-template-rows: repeat(2, 1fr);    /* Creates 2 equal rows */
+        gap: 10px;  
+    }
+
     .total-container-modalidade{
-        font-size: 0.9em;
+        //background-color: #f0f0f0;
+        padding: 20px;
+        text-align: center;
+        border: 1px solid #ccc;
     }
 
 
@@ -86,7 +96,7 @@
     }
 
     .total-container-modalidade{
-        background-color: #f0f0f0;
+        //background-color: #f0f0f0;
         padding: 20px;
         text-align: center;
         border: 1px solid #ccc;

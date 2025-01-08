@@ -104,7 +104,7 @@ const ApiCalls = () => {
           let config = {
             headers: { 
               'Content-Type': 'application/json', 
-              'Authorization': `Bearer ${Cookies.get('token')}`
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
             },
             params: params
           }
@@ -131,7 +131,7 @@ const ApiCalls = () => {
         let config = {
           headers: { 
             'Content-Type': 'application/json', 
-            'Authorization': `Bearer ${Cookies.get('token')}`
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
           },
           params: params
         }

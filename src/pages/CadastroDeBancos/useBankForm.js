@@ -4,12 +4,12 @@ import { toast } from 'react-toastify'
 
 function useBankForm(addBank, loadBanks, onClose, setBanksList) {
   const [selectedCli, setSelectedCli] = useState(() => {
-    const cookieValue = Cookies.get('selectedClient')
+    const cookieValue = localStorage.getItem('selectedClient')
     return cookieValue ? JSON.parse(cookieValue) : { label: 'Selecione', value: 0 }
   })
 
   const [codeBankCli, setCodeBankCli] = useState(0)
-  const [selectedClientCode, setSelectedClientCode] = useState(parseInt(Cookies.get('clientCode')))
+  const [selectedClientCode, setSelectedClientCode] = useState(parseInt(localStorage.getItem('clientCode')))
   const [selectedCliAdm, setSelectedCliAdm] = useState({ label: 'Selecione', value: 0 })
   const [selectedBan, setSelectedBan] = useState({ label: 'Selecione', value: 0 })
   const [selectedAdm, setSelectedAdm] = useState({ label: 'Selecione', value: 0 })
