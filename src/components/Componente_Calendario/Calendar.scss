@@ -245,3 +245,49 @@
   color: var(--font-color);
 }
 
+.react-calendar__tile {
+  max-width: 100%;
+  padding: 0; /* Remove padding to ensure background fills tile */
+  background: none;
+  text-align: center;
+  line-height: 16px;
+  color: var(--calendar-cell-color);
+  display: inline-block;
+  box-sizing: border-box;
+  width: 100%; /* Ensure tile takes full width */
+  height: 100%; /* Ensure tile takes full height */
+  aspect-ratio: 1; /* Keep square aspect ratio */
+}
+
+.react-calendar__tile--active {
+
+  transition: all 0.4s;
+  background-color: var(--secondary-color) !important; /* Full background color */
+  box-shadow: none; /* Remove inset shadow if unwanted */
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.react-calendar__tile--hasActive {
+  background-color: var(--primary-color) !important;
+  width: 100%; /* Ensure it takes full width */
+  height: 100%; /* Ensure it takes full height */
+}
+
+.react-calendar__tile--active:enabled:hover,
+.react-calendar__tile--active:enabled:focus {
+  transition: all 0.4s;
+  color: var(--secondary-color);
+  background-color: var(--primary-color) !important;
+  box-shadow: inset 0px 38px 0px 0px var(--primary-color);
+}
+
+.react-calendar__tile--now {
+  font-weight: bold;
+  color: var(--calendar-now-color);
+  background-color: var(--primary-color) !important; /* Keep it consistent */
+}
+
