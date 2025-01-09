@@ -172,7 +172,7 @@
 
 .react-calendar__tile--now:enabled:hover,
 .react-calendar__tile--now:enabled:focus {
-    background-color: var(--secondary-color);
+    background-color: var(--secondary-color) !important;
 }
 
 .react-calendar__tile--hasActive {
@@ -289,5 +289,8 @@
   font-weight: bold;
   color: var(--calendar-now-color);
   background-color: var(--primary-color) !important; /* Keep it consistent */
+  &hover{
+    background-color: var(--secondary-color) !important;
+  }
 }
 

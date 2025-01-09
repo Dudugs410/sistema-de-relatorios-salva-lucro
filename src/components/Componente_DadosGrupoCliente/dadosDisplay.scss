@@ -61,6 +61,18 @@
     gap: 5px;
 }
 
+.btn-success-dados{
+    background-color: var(--secondary-color);
+    color: var(--font-color);
+    transition: all .4s;
+
+    &:hover{
+        border: solid var(--secondary-color) 1px;
+        color: var(--secondary-color);
+    }
+
+}
+
 @media only screen and (max-width: 630px){
     .grupo-cli-container{
         width: 80%;

@@ -22,7 +22,7 @@
     transition: all .4s;
     color: var(--font-color);
     background-color: var(--background-color);
-    border: solid var(--modalidades-border) 1px;
+    border: solid #ccc 1px;
     padding: 5px;
 }
 
@@ -44,7 +44,7 @@
 }
 
 .title-modalidade{
-    font-size: 1.3em;
+    font-size: 0.95em;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
