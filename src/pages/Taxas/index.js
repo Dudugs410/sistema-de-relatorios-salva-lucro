@@ -421,7 +421,6 @@ const Taxas = () => {
                     <div className='header-container-taxa'>
                         <div className='title-container-global title-container-banco title-container-contato' style={{ marginTop: '5%' }}>
                             <h3 className='title-global' style={{ margin: '0', height: 'auto' }}>Cadastrar Taxa</h3>
-                            <button className='btn btn-danger close-modal-banco close-modal-contato' onClick={closeModal}><FiX size={13} /></button>
                         </div>
                     </div>
                     <hr className='hr-global'/>
@@ -507,9 +506,12 @@ const Taxas = () => {
                             maxLength={5} // Maximum length including the decimal point
                         />
                     </div>
+                    <hr className='hr-global'/>
                     <div className='group-element-taxas'>
-                        <hr className='hr-global'/>
-                        <button className='btn-global btn-taxas' disabled={isLoadingTaxes}>Cadastrar Taxa</button>
+                        <div className='btn-container-modal-taxas'>
+                            <button className='btn-global btn-taxas' disabled={isLoadingTaxes}>Cadastrar Taxa</button>
+                            <button className='btn btn-danger' onClick={closeModal} style={{height: '35.19px', borderRadius: '10px'}}>Voltar</button>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -574,7 +576,6 @@ const Taxas = () => {
                     <div className='header-container-taxa'>
                         <div className='title-container-global title-container-banco title-container-contato' style={{ marginTop: '5%' }}>
                             <h3 className='title-global' style={{ margin: '0', height: 'auto' }}>Cadastrar Taxa</h3>
-                            <button className='btn btn-danger close-modal-banco close-modal-contato' onClick={closeModal}><FiX size={13} /></button>
                         </div>
                     </div>
                     <hr className='hr-global'/>
@@ -650,9 +651,12 @@ const Taxas = () => {
                             />
                         </div>
                     </div>
+                    <hr className='hr-global'/>
                     <div className='group-element-taxas'>
-                        <hr className='hr-global'/>
-                        <button className='btn-global btn-taxas' disabled={isLoadingTaxes}>Atualizar Taxa</button>
+                        <div className='btn-container-modal-taxas'>
+                            <button className='btn-global btn-taxas' disabled={isLoadingTaxes}>Atualizar Taxa</button>
+                            <button className='btn btn-danger' onClick={closeModal} style={{height: '35.19px', borderRadius: '10px'}}>Voltar</button>
+                        </div>
                     </div>
                 </form>
             </div>

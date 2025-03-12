@@ -7,7 +7,12 @@ import './Calendar.scss'
 import '../../styles/global.scss'
 import { useLocation } from "react-router-dom"
 
-const MyCalendar = ({ onLoadData, getCalendarDate, btnDisabled }) => {
+const MyCalendar = (props) => {
+
+  const onLoadData = props.onLoadData
+  const getCalendarDate = props.getCalendarDate
+  const btnDisabled = props.btnDisabled
+
     const { isCheckedCalendar } = useContext(AuthContext)
 
     const location = useLocation()
