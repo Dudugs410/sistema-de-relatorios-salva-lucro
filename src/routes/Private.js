@@ -3,7 +3,7 @@ import Layout from '../components/Layout'
 import { AuthContext } from '../contexts/auth'
 import { useUserActivity } from '../util/userActivity'
 import ModalUserActivity from '../components/ModalUserActivity'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 export default function Private({ children }) {
   const { logout, refreshSession } = useContext(AuthContext)
@@ -69,7 +69,7 @@ export default function Private({ children }) {
           </ModalUserActivity>
         )}
       </>
-    );
+    )
   } else {
     logout()
   }

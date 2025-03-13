@@ -167,7 +167,14 @@
   font-weight: bold;
   color: var(--calendar-now-color);
   background-color: var(--secondary-color);
-  //variável-específica
+}
+
+.react-calendar__tile 
+.react-calendar__tile--now 
+.react-calendar__tile--active 
+.react-calendar__tile--range 
+.react-calendar__month-view__days__day{
+  background-color: var(--secondary-color) !important;
 }
 
 .react-calendar__tile--now:enabled:hover,
@@ -280,7 +287,7 @@
 .react-calendar__tile--active:enabled:hover,
 .react-calendar__tile--active:enabled:focus {
   transition: all 0.4s;
-  color: var(--secondary-color);
+  color: var(--secondary-color) !important;
   background-color: var(--primary-color) !important;
   box-shadow: inset 0px 38px 0px 0px var(--primary-color);
 }
@@ -292,5 +299,39 @@
   &hover{
     background-color: var(--secondary-color) !important;
   }
+}
+
+///
+
+.react-calendar__tile--now {
+  font-weight: bold;
+  color: var(--secondary-color) !important; // Define this variable in your styles
+  background-color: var(--primary-color); // Define this variable in your styles
+  border: solid var(--primary-color) 1px; // Example of making it circular
+}
+
+.react-calendar__tile--active {
+  color: var(--primary-color) !important; // Define this variable
+  background-color: var(--secondary-color) !important; // Define this variable
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2); // Add a shadow for better distinction
+}
+
+.react-calendar__tile--range {
+  color: var(--primary-color !important); // Define this variable
+  background-color: var(--secondary-color) !important; // Define this variable
+}
+
+.react-calendar__tile--rangeStart,
+.react-calendar__tile--rangeEnd {
+  color: var(--primary-color) !important; // Define this variable
+  background-color: var(--secondary-color) !important; // Define this variable
+}
+
+.react-calendar__tile--now:hover,
+.react-calendar__tile--active:hover,
+.react-calendar__tile--range:hover {
+  transition: background-color 0.3s, color 0.3s;
+  background-color: var(--secondary-color) !important; // Define this variable
+  color: var(--primary-color) !important; // Define this variable
 }
 

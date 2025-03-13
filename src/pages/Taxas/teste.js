@@ -389,9 +389,12 @@ const Taxas = () =>{
                           />
                       </div>
                     </div>
-                    <div className='select-component'>
-                        <hr className='hr-global'/>
-                        <button className='btn-global' disabled={isLoadingTaxes}>Adicionar</button>
+                    <hr className='hr-global'/>
+                    <div className='btn-container-modal-taxas'>
+                        <div className='select-component'>
+                            <button className='btn-global' disabled={isLoadingTaxes}>Adicionar</button>
+                            <button className='btn btn-danger' onClick={closeModal}>Voltar</button>
+                        </div>
                     </div>
                 </form>
             </div>
