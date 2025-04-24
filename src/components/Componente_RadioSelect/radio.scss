@@ -1,0 +1,75 @@
+@import '../../styles/variables';
+
+.radio-container-exportacao {
+    display: inline-flex;
+    width: 48%;
+    justify-content: space-around;
+}
+
+.radio-container-exportacao-sysmo{
+    /* display: flex; */
+    /* flex-direction: column; */
+    width: 48%;
+}
+
+.radio {
+    display: inline-flex;
+    align-items: center;
+    min-width: max-content;
+}
+
+.radio-label:hover {
+    cursor: pointer;
+    color: var(--secondary-color);
+}
+
+.radio input[type="radio"] {
+    display: none; /* Hide the actual radio input */
+    
+}
+
+.radio input[type=radio]:checked + .radio-indicator::after {
+    content: "";
+    width: 12px;
+    height: 12px;
+}
+
+.radio-indicator {
+    position: relative;
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    margin-right: 5px; /* espaço entre a 'bolinha' e o texto */
+    background-color: lightgray; /* Cor do background da 'bolinha' do radio-select */
+
+}
+
+.radio-indicator:hover {
+    cursor: pointer;
+    color: var(--secondary-color);
+}
+
+/* Style the custom radio indicator when it's checked */
+.radio input[type="radio"]:checked + .radio-indicator {
+    cursor: pointer;
+    background-color: var(--primary-color);
+}
+
+.radio-label {
+    color: var(--font-color); /* Cor do texto do radio-select */
+    margin-right: 10px;
+}
+
+.light-theme .radio-label {
+    color: #000; /* Light theme color */
+}
+
+.dark-theme .radio-label {
+    color: #fff; /* Dark theme color */
+}
+
+@media screen and (max-width: 869px){
+    .radio-container-exportacao{
+        width: 100%;
+    }
+}

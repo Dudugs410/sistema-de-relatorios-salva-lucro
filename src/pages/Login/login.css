@@ -1,0 +1,108 @@
+
+
+.teste-bandeiras{
+    border: solid red 2px;
+    width: 100%;
+    height: 100%;
+}
+
+
+.body-login{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    background-size: cover;
+    background-repeat: no-repeat;
+    justify-content: center;
+    border-radius: 4px;
+    background-image: url("../../assets/img-login.jpg");
+}
+
+.form-login>h1{
+    color:white;
+    margin-top: 80%;
+
+}
+
+.form-login{
+    color: rgb(255, 255, 255);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    cursor: default;
+    justify-content:center;
+
+}
+
+.form-login:hover{
+    cursor:default;
+}
+
+.titulo-Login{
+    margin-top: 80%;
+}
+
+.input-container-login{
+    width: 70%;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    padding: 40px;
+}
+
+.input-login{
+    border-radius: 8px;
+    padding: 4px;
+    text-align: center;
+    
+}
+
+.input-login:not(:first-child){
+    margin-top: 10px;
+}
+
+.pw{
+    font-size: 0.8em;
+    color: rgb(190, 190, 190);
+    text-align: center;
+    text-decoration: none;
+}
+
+.pw:hover{
+    text-decoration: underline;
+}
+
+.img-container{
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+}
+
+.form-login>img{
+    width: 100%;
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+.form-login{
+    align-items: center;
+    display: flex;
+}
+
+.img-login{
+    display: flex;
+    justify-content: center;
+    width: 300px;
+    height: 80px;
+
+}
+
+@media (max-width: 500px) {
+    .img-login {
+      width: 120px;
+      height: 40px;
+    }
+  }

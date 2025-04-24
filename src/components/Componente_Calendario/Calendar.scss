@@ -1,0 +1,337 @@
+@import '../../styles/variables';
+
+.react-calendar {
+  max-width: 540px;
+  width: 100%;
+  min-height: 300px;
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.125em;
+  margin: 0;
+  background-color: var(--primary-color);
+  border: 1px solid var(--background-color);
+}
+
+.form-container-picker{
+  width: 100%;
+}
+
+.select-elements-container-picker{
+    display: inline-flex;
+    width: 100%;
+    justify-content: space-evenly;
+}
+
+.react-calendar--doubleView {
+  width: 700px;
+  
+}
+
+.react-calendar--doubleView .react-calendar__viewContainer {
+  display: flex;
+  margin: -0.5em;
+
+}
+
+.react-calendar--doubleView .react-calendar__viewContainer > * {
+  width: 50%;
+  margin: 0.5em;
+}
+
+.react-calendar,
+.react-calendar *,
+.react-calendar *:before,
+.react-calendar *:after {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.react-calendar button {
+  margin: 0;
+  border: 0;
+  outline: none;
+  background-color: var(--background-color);
+  border: 1px solid var(--primary-color);
+}
+
+.react-calendar button:enabled:hover {
+  cursor: pointer;
+}
+
+.react-calendar__navigation {
+  display: flex;
+  height: 44px;
+  border: 1px solid var(--primary-color);
+}
+
+.react-calendar__navigation button {
+  min-width: 44px;
+  font-weight: bold;
+  transition: all 0.4s;
+  color: var(--calendar-btn-navigation-color);
+  //variável específica?
+}
+
+.react-calendar__navigation{
+  background: var(--background-color);
+  color: var(--primary-color);
+}
+
+.react-calendar__navigation button:disabled {
+  background-color: #f0f0f0;
+}
+
+.react-calendar__navigation button:enabled:hover,
+.react-calendar__navigation button:enabled:focus {
+    background-color: var(--secondary-color);
+    box-shadow:inset 0px 38px 0px 0px var(--secondary-color);
+    color: var(--font-color);
+}
+
+.react-calendar__month-view__weekdays {
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 0.75em;
+
+  
+}
+
+.react-calendar__month-view__weekdays__weekday {
+  padding: 0.5em;
+  border: 1px solid var(--primary-color);
+}
+
+.react-calendar__month-view__weekNumbers .react-calendar__tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75em;
+  font-weight: bold;
+  
+}
+
+//cores dos dias dos finais de semana
+
+.react-calendar__month-view__days__day--weekend {
+  color: #d10000 !important;
+  
+}
+
+//cores das Datas dos meses vizinhos que aparecem no calendário
+
+.react-calendar__month-view__days__day--neighboringMonth {
+  color: var(--calendar-neighbor-color) !important;
+  background-color: var(--calendar-neighbor-bg) !important;
+  //variável específica
+}
+
+.react-calendar__year-view .react-calendar__tile,
+.react-calendar__decade-view .react-calendar__tile,
+.react-calendar__century-view .react-calendar__tile {
+  padding: 2em 0.5em;
+}
+
+.react-calendar__tile {
+  max-width: 80px;
+  padding: 10px 6.6667px;
+  background: none;
+  text-align: center;
+  line-height: 16px;
+  color: var(--calendar-cell-color);
+  aspect-ratio: 1;
+
+  @media (max-width: 640px){
+    aspect-ratio: 1;
+    display: block;
+    width: 100%;
+  }
+}
+
+.react-calendar__tile:disabled {
+  background-color: #f0f0f0;
+}
+
+.react-calendar__tile:enabled:hover,
+.react-calendar__tile:enabled:focus {
+
+  transition: all 0.4s;
+  color: var(--primary-color);
+  background-color: var(--secondary-color);
+  box-shadow:inset 0px 38px 0px 0px var(--secondary-color);
+
+}
+
+.react-calendar__tile--now {
+  font-weight: bold;
+  color: var(--calendar-now-color);
+  background-color: var(--secondary-color);
+}
+
+.react-calendar__tile 
+.react-calendar__tile--now 
+.react-calendar__tile--active 
+.react-calendar__tile--range 
+.react-calendar__month-view__days__day{
+  background-color: var(--secondary-color) !important;
+}
+
+.react-calendar__tile--now:enabled:hover,
+.react-calendar__tile--now:enabled:focus {
+    background-color: var(--secondary-color) !important;
+}
+
+.react-calendar__tile--hasActive {
+  background-color: var(--primary-color);
+}
+
+.react-calendar__tile--hasActive:enabled:hover,
+.react-calendar__tile--hasActive:enabled:focus {
+  background-color: var(--secondary-color);
+}
+
+.react-calendar__tile--active {
+  color: white;
+  transition: all 0.4s;
+  background-color: var(--primary-color);
+  box-shadow:inset 0px 38px 0px 0px var(--secondary-color);
+}
+
+.react-calendar__tile--active:enabled:hover,
+.react-calendar__tile--active:enabled:focus {
+  transition: all 0.4s;
+  color: var(--secondary-color);
+  background-color: var(--primary-color);
+  box-shadow:inset 0px 38px 0px 0px var(--primary-color);
+}
+
+.react-calendar--selectRange .react-calendar__tile--hover {
+  background-color: var(--background-color);
+}
+
+.input-picker{
+  width: 100%;
+  color: var(--font-color);
+  background-color: var(--background-color);
+}
+
+.component-container{
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+  flex-direction: column;
+}
+
+.container-select{
+  display: grid;
+}
+
+.parent-container{
+  width:100%;
+}
+
+.picker-container{
+  display: inline-flex;
+  flex-direction: row;
+  width: 100%;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+}
+
+.date-wrapper{
+  display: grid;
+}
+
+.label-calendar{
+  color: var(--font-color);
+}
+
+.span-picker{
+  font-weight: bold;
+  color: var(--font-color);
+}
+
+.react-calendar__tile {
+  max-width: 100%;
+  padding: 0; /* Remove padding to ensure background fills tile */
+  background: none;
+  text-align: center;
+  line-height: 16px;
+  color: var(--calendar-cell-color);
+  display: inline-block;
+  box-sizing: border-box;
+  width: 100%; /* Ensure tile takes full width */
+  height: 100%; /* Ensure tile takes full height */
+  aspect-ratio: 1; /* Keep square aspect ratio */
+}
+
+.react-calendar__tile--active {
+
+  transition: all 0.4s;
+  background-color: var(--secondary-color) !important; /* Full background color */
+  box-shadow: none; /* Remove inset shadow if unwanted */
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.react-calendar__tile--hasActive {
+  background-color: var(--primary-color) !important;
+  width: 100%; /* Ensure it takes full width */
+  height: 100%; /* Ensure it takes full height */
+}
+
+.react-calendar__tile--active:enabled:hover,
+.react-calendar__tile--active:enabled:focus {
+  transition: all 0.4s;
+  color: var(--secondary-color) !important;
+  background-color: var(--primary-color) !important;
+  box-shadow: inset 0px 38px 0px 0px var(--primary-color);
+}
+
+.react-calendar__tile--now {
+  font-weight: bold;
+  color: var(--calendar-now-color);
+  background-color: var(--primary-color) !important; /* Keep it consistent */
+  &hover{
+    background-color: var(--secondary-color) !important;
+  }
+}
+
+///
+
+.react-calendar__tile--now {
+  font-weight: bold;
+  color: var(--secondary-color) !important; // Define this variable in your styles
+  background-color: var(--primary-color); // Define this variable in your styles
+  border: solid var(--primary-color) 1px; // Example of making it circular
+}
+
+.react-calendar__tile--active {
+  color: var(--primary-color) !important; // Define this variable
+  background-color: var(--secondary-color) !important; // Define this variable
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2); // Add a shadow for better distinction
+}
+
+.react-calendar__tile--range {
+  color: var(--primary-color !important); // Define this variable
+  background-color: var(--secondary-color) !important; // Define this variable
+}
+
+.react-calendar__tile--rangeStart,
+.react-calendar__tile--rangeEnd {
+  color: var(--primary-color) !important; // Define this variable
+  background-color: var(--secondary-color) !important; // Define this variable
+}
+
+.react-calendar__tile--now:hover,
+.react-calendar__tile--active:hover,
+.react-calendar__tile--range:hover {
+  transition: background-color 0.3s, color 0.3s;
+  background-color: var(--secondary-color) !important; // Define this variable
+  color: var(--primary-color) !important; // Define this variable
+}
+

@@ -1,0 +1,196 @@
+.table-bancos{
+    overflow-x: overlay;
+}
+
+.page-content-bancos{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-content: center;
+}
+
+.form-bancos{
+    width: 100%;
+    display: flex;
+    /* display: grid; */
+    justify-items: center;
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+    z-index: 1;
+}
+
+.tr-bancos{
+    border: solid var(--primary-color) 1px !important; 
+}
+
+.modal-new-bancos-container{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    z-index: 2;
+}
+
+.modal-container{
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+}
+
+.modal-bancos{
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    height: 80%;
+    border-radius: 20px;
+    border: solid var(--secondary-color) 2px;
+    background-color: var(--background-color);
+    padding: 60px;
+    padding-top: 0;
+    margin-left: 10%;
+    margin-right: 10%;
+    margin-top: 5%;
+    z-index: 2;
+}
+
+.btn-bancos{
+    min-width: 191px;
+}
+
+.table-wrapper-bancos{
+    overflow-x: overlay;
+}
+
+.sticky-col {
+    position: -webkit-sticky;
+    position: sticky;
+    background: var(--background-color); /* Adjust this as needed */
+    z-index: 1;
+}
+
+.start-col {
+    left: 0;
+}
+
+.end-col {
+    right: 0;
+}
+
+.custom-select .react-select__control {
+    background-color: red !important; /* Background color of the control */
+    color: green !important; /* Text color of the control */
+    /* Add more styles as needed */
+}
+
+.custom-select .react-select__menu {
+    background-color: purple !important; /* Background color of the dropdown menu */
+    color: yellow !important; /* Text color of the dropdown menu */
+    /* Add more styles as needed */
+}
+
+.form-group-bancos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .group-element-bancos {
+    flex: 1;
+    min-width: 200px; /* Adjust as needed */
+  }
+
+  .group-input-bancos{
+    display: flex;
+    flex-direction: column;
+    width: 48%;
+  }
+
+  .header-container-bancos{
+    display: flex;
+  }
+
+  .modal-bancos .header-container-taxa {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+  }
+  
+  .modal-bancos .title-container-global {
+    flex-grow: 1;
+    text-align: center;
+    display: inline-grid;
+    align-items: center;
+  }
+  
+  .modal-bancos .close-modal-banco {
+    position: absolute;
+    right: 20px; /* Adjust this margin as needed */
+  }
+
+  .close-modal-banco{
+    display: flex;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    margin: 0;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .header-sticky{
+    position: -webkit-sticky; /* For Safari */
+    position: sticky;
+    top: 0;
+    padding-top: 60px;
+    background: var(--background-color);
+    z-index: 2;
+    width: 100%;
+  }
+
+@media only screen and (max-width: 412px) {
+    .modal-bancos{
+        display: flex;
+        flex-direction: column;
+        width: 80%;
+        height: 80%;
+        border-radius: 20px;
+        border: solid var(--secondary-color) 2px;
+        background-color: var(--background-color);
+        padding: 20px;
+        padding-top: 0;
+        margin-left: 10%;
+        margin-right: 10%;
+        margin-top: 5%;
+        z-index: 2;
+    }
+
+    .title-container-banco{
+        margin-top:10%;
+        display: inline-flex;
+        justify-content: center;
+    }
+
+    .modal-bancos .close-modal-banco {
+        position: absolute;
+        right: 10px; /* Adjust this margin as needed */
+      }
+
+    .header-sticky{
+      position: sticky;
+      top: 0;
+      padding-top: 20px;
+      background: var(--background-color);
+      z-index: 2;
+      width: 100%;
+    }
+}

@@ -1,0 +1,116 @@
+@import '../../styles/variables';
+
+.container-cielo{
+    width: 100%;
+    margin: 0 auto;
+    color: var(--font-color);
+}
+
+.suporte-content{
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    height: 100%;
+}
+
+.input-suporte{
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-evenly;
+}
+
+.input-correcao{
+    min-width: 200px;
+    width: 30%;
+}
+
+.btn-correcao{
+    min-width: 200px;
+    width: 30%;
+}
+
+.p-correcao{
+    margin-top: 0.5rem;
+}
+
+.input-block{
+    width: 100%;
+    padding: 2px;
+}
+
+.input-block > .btn-global{
+    width: 100%;
+    padding: 2px;
+}
+
+.input-suporte > .btn-global{
+    //width: 170px;
+    margin: 0;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    width: 80%;
+}
+
+.table-suporte-container{
+    /* min-width: 815px; */
+    width: 100%;
+    overflow-x: overlay;
+}
+
+.table-suporte{
+    width: 100%;
+    min-width: 750px;
+    overflow-x: overlay;
+}
+
+.page-suporte-content{
+    width: 100%;
+    min-width: 300px;
+}
+
+.consulta-arquivos{
+    height: 100%;
+    width: 100%;
+    border: solid gray 1px;
+}
+
+.input-suporte-correcao {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .input-block-correcao {
+    flex: 0 0 calc(50% - 0.5px);
+    margin: 0.25px;
+  }
+
+.input-suporte-cli-adq{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    height: 1.7em;
+    margin-bottom: 10px;
+}
+
+.form-suport{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    height: 100px;
+}
+
+@media screen and (max-width: 1067px){
+    .input-suporte {
+        display: flex;
+        flex-wrap: wrap;
+      }
+      
+      .input-block {
+        flex: 0 0 calc(50% - 0.5px);
+        margin: 0.25px;
+      }
+}

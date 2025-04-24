@@ -1,0 +1,63 @@
+@import '../../styles/variables';
+
+.layout {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+  }
+  
+  .layout-content {
+    display: flex;
+    flex: 1;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+  }
+
+  .navbar-title{
+    display: flex;
+    /* flex-direction: column; */
+    /* align-self: start; */
+    /* padding-left: 20px; */
+    /* padding-top: 15px; */
+    /* font-size: x-large; */
+    /* z-index: 1; */
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    flex-wrap: wrap;
+    padding: 8px;
+}
+
+.navbar-title>img{
+    width: 160px;
+}
+
+img.img-header:hover{
+    cursor: pointer !important;
+  }
+  
+  .sidebar-content {
+    flex-shrink: 0;
+    background-image: url("../../assets/financ.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-blend-mode: multiply;
+    background-color: var(--header-bg);
+  }
+  
+  .column-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+    overflow-y: auto; /* Allow vertical scroll */
+  }
+  
+  .children-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto; /* Allow vertical scroll */
+    width: 100%; /* Ensure full width is used */
+  }
+  

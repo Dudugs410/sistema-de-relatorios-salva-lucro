@@ -1,0 +1,71 @@
+@import '../../styles/_variables.scss';
+
+.modal-cliente{
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.5);
+    top: 0;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+    z-index: 2;
+}
+
+.modal-window{
+    width: 80%;
+    height: 50%;
+    background-color: var(--primary-color);
+    border: solid 2px var(--secondary-color);
+    border-radius: 20px;
+    z-index: 2;
+}
+
+.form-modal-cliente{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.select-card-modal-cliente{
+    position: relative;
+    display: inline-flex;
+    width: 100%;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: center;
+    align-items: center;
+
+}
+
+.select-card-modal-cliente>span {
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 1em;
+}
+
+.select-card-modal-cliente>select{
+    display: flex;
+    height: 2.2em;
+    width: 50%;
+    max-width: 400px;
+    border-radius: 10px;
+    text-align: center;
+    font-style: italic;
+    color: gray;
+
+}
+
+.btn-container-modal-cliente{
+    margin-top: 2em;
+}

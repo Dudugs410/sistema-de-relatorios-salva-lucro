@@ -1,0 +1,133 @@
+@import '../../styles/variables';
+
+.content-area {
+  position: relative;
+  padding: 3% 3% 10%;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.4s;
+  background-color: var(--background-color);
+
+}
+
+.content-area + .dash{
+  height: 100%;
+}
+
+.data-group-area{
+  display: flex;
+  padding-bottom: 1%;
+  /* height: 400px; */
+  flex-direction: column;
+  align-content: center;
+  align-items: center;
+}
+
+.dash-table-container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.dashboard-error-container{
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.btn-dash-error{
+  margin-top: 50px;
+  width: 200px;
+}
+
+.title-chart{
+  width: 100%;
+  display: block;
+  text-align: center;
+  font-family: sans-serif;
+  font-size: 1.5em;
+  margin-top: 8px;
+  /* margin-left: 2.5%; */
+  align-self: center;
+  padding: 5px;
+  border-radius: 20px;
+  transition: all 0.4s;
+  color: var(--primary-color);
+  background-color: var(--secondary-color);
+}
+
+.data-group-area{
+  padding-bottom: 1%;
+
+}
+
+.graph-data{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+  padding: 10px;
+  //position: absolute;
+  width: -webkit-fill-available;
+  background-color: var(--background-color);
+  border-radius: 20px;
+  box-shadow: inset 0 270px 0 0;
+  box-shadow: 0 0 10px #000000b3;
+  color: var(--font-color);
+  transition: all .4s;
+}
+
+.dash-body-flex{
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-content: stretch;
+
+}
+
+.thead-admin{
+  position: sticky;
+  top: 0px;
+
+}
+
+.custom-chart {
+  height:50%;
+
+}
+
+.modal-card{
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+@media screen and (max-width: 869px){
+  .title-chart{
+    display: inline-flex; 
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: stretch;
+    width: 100%;
+    border-radius: 0px;
+  }
+
+  .data-group-area{
+
+  }
+
+  .content-area{
+    padding: 0 0 9%;
+  }
+
+  .graph-data{
+    border-radius: 0px;
+  }
+
+}

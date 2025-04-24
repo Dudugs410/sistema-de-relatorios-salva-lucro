@@ -1,0 +1,323 @@
+
+@import './variables';
+
+.app-page-global{
+    display: contents;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+}
+
+.page-background-global{
+    display: flex;
+    justify-content: center;
+    transition: all 0.4s;
+    background-color: var(--background-color);
+    flex-direction: column;
+    align-items: center;
+}
+
+.page-content-global{
+    width: 95%;
+    padding: 1%;
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    border-radius: 20px;
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 54px;
+    background-color: var(--background-color);
+}
+
+.subtitle-global{
+    text-align: center;
+}
+
+
+.title-container-global{
+    text-align: center;
+    border-bottom: solid white 1px;
+    width: 100%;
+    border-radius: 20px;
+    padding: 10px;
+    color: var(--font-color);
+    background-color: var(--secondary-color);
+}
+
+.title-global{
+    margin: 0;
+    color: var(--primary-color);
+    text-align: center;
+}
+
+.container-global{
+    width: 100%;
+    padding: 1%;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    border-radius: 20px;
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 54px;
+    transition: all 0.4s;
+    /* flex-direction: column;*/
+}
+
+.css-13cymwt-control{
+    background-color: var(--background-color) !important;
+}
+
+.css-1dimb5e-singleValue{
+    color: var(--font-color) !important;
+}
+
+.css-t3ipsp-control {
+    color: var(--font-color) !important;
+    background-color: var(--background-color) !important;
+    border-color: var(--secondary-color) !important;
+    box-shadow: 0 0 0 1px var(--secondary-color) !important;
+}
+
+.css-t3ipsp-control:hover{
+    border-color: var(--secondary-color) !important;
+    box-shadow: 0 0 0 1px var(--secondary-color) !important;
+    background-color: var(--secondary-color) !important;
+}
+
+.css-qbdosj-Input {
+    visibility: visible;
+    -webkit-flex: 1 1 auto;
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+    display: inline-grid;
+    grid-area: 1 / 1 / 2 / 3;
+    grid-template-columns: 0 min-content;
+    margin: 2px;
+    padding-bottom: 2px;
+    padding-top: 2px;
+    color: var(--font-color) !important;
+    box-sizing: border-box;
+}
+
+.css-1nmdiq5-menu{
+    color: var(--font-color) !important;
+    background-color: var(--background-color) !important;
+}
+
+.hr-global{
+    width: 100%;
+    margin: 1rem 0;
+    border: 0;
+    border-top: var(--bs-border-width) solid;
+    opacity: .25;
+    color: gray;
+
+}
+
+.subtitle{
+    color: var(--subtitle-color)
+}
+
+///Botões
+
+.btn-global{
+    width: 30%;
+    display: flex;
+    height: 2.2em;
+    text-align: center;
+    max-width: 300px;
+    justify-content: center;
+    border-radius: 10px;
+    font-weight: 200;
+    align-items: center;
+
+    border: solid var(--secondary-color) 1px;
+    background-color: var(--secondary-color);
+    color:var(--primary-color);
+
+}
+
+.btn-global .btn.disabled, .btn:disabled{
+    background-color: var(--secondary-color);
+}
+
+.btn-global:hover{
+    color: var(--secondary-color);
+    background-color: var(--primary-color);
+}
+
+///select
+
+.select-disabled-global{
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+}
+
+.select-global {
+    display: flex;
+    height: 2.2em;
+    border-radius: 10px;
+    text-align: center;
+    width: 80%;
+    font-style: italic;
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+}
+
+///tabela
+
+.table {
+    --bs-table-color-type: initial;
+    --bs-table-bg-type: initial;
+    --bs-table-color-state: initial;
+    --bs-table-bg-state: initial;
+    --bs-table-color: var(--bs-emphasis-color);
+    --bs-table-bg: var(--bs-body-bg);
+    --bs-table-border-color: var(--bs-border-color);
+    --bs-table-accent-bg: transparent;
+    --bs-table-striped-color: var(--bs-emphasis-color);
+    --bs-table-striped-bg: rgba(var(--bs-emphasis-color-rgb), 0.05);
+    --bs-table-active-color: var(--bs-emphasis-color);
+    --bs-table-active-bg: rgba(var(--bs-emphasis-color-rgb), 0.1);
+    --bs-table-hover-color: var(--table-row-hover-color);
+    --bs-table-hover-bg: var(--table-row-hover-bg);
+    
+    height: auto;
+    width: 100%;
+    margin-bottom: 1rem;
+    vertical-align: top;
+
+    --bs-table-color: var(--font-color);
+    --bs-table-bg: var(--table-background);
+
+    --bs-table-striped-color: var(--font-color);
+    --bs-table-striped-bg: rgba(var(--primary-color), 0.05);
+}
+
+.table-bordered>:not(caption)>* {
+    border-width: var(--bs-border-width) 0;
+    border-color: (var(--primary-color))
+}
+
+
+.thead-global{
+    background-color: var(--primary-color)
+}
+    //Linhas e Background da tabela
+.det-table-global{
+    min-height:30%;
+    --bs-table-striped-color: var(--font-color);
+    --bs-table-striped-bg: rgba(0, 0, 0, 0.2);
+    border: none;
+    background-color: var(--table-background);
+    border-bottom: solid var(--primary-color) 1px;
+    
+}
+
+.det-th-global{
+    position: sticky;
+    top: 0;
+    background-color: white;
+    
+
+}
+    //Header da tabela
+.det-tr-top-global{
+    position: sticky;
+    top: 0;
+    text-align: center;
+    width: 100%;
+    border-radius: 20px;
+    padding: 10px;
+    z-index: 2;
+
+    --bs-table-color: white;
+    --bs-table-bg: var(--primary-color);
+}
+
+.det-tr-global{
+    --bs-table-bg: var(--table-background);
+}
+
+tr{
+    height: 1.5em;
+}
+
+.det-th-global, .det-td-global{
+    width: 200px;
+    text-align: center;
+    white-space: nowrap;
+    border: none;
+    
+}
+
+.det-td-vendas-global{
+    width: 200px;
+    text-align: center;
+    white-space: nowrap;
+    border: none;
+    
+}
+
+.green-global{
+    color: rgb(0, 204, 0);
+}
+
+.red-global{
+    color:rgb(218, 100, 100);
+}
+
+///Paginas 
+
+///Modal
+
+///Scrollbar
+
+  /* width */
+  ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+  }
+  
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.116)
+  }
+   
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #888; 
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+  }
+
+  @media screen and (max-width: 869px){
+    .page-content-global {
+        width: 100%;
+        padding: 1%;
+        margin-left: 0%;
+        flex-direction: row;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        border-radius: 0;
+
+    }
+
+    .page-background-global{
+        display: flex;
+        justify-content: center;
+        transition: all .4s;
+        
+    }
+
+    .voltar-align{
+        display: inline-flex;
+        justify-content: center;
+    }
+
+}

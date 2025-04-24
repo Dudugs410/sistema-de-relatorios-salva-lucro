@@ -1,0 +1,63 @@
+
+.page-content-exportacao{
+    //width: 80%;
+    padding: 1%;
+    display: flex;
+    border-radius: 20px;
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 54px;
+    flex-direction: column;
+}
+
+.btn-container-financeiro{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding-top:1.5em;
+}
+
+.select-component-container{
+    width: 100%;
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
+.select-container{
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: column;
+    max-width: 300px;
+}
+
+.select-component{
+    /* display: flex; */
+    /* flex-direction: column; */
+    width: 48%;
+}
+
+.select-exportacao{
+    display: inline-flex;
+    flex-direction: row;
+}
+
+.radio-title-sysmo{
+    font-weight: bold;
+    color: var(--font-color);
+    margin-bottom: 0;
+
+}
+
+.component-container-sysmo{
+    display: inline-flex;
+    width: 100%;
+    align-items: center;
+    @media (max-width: 946px){
+        display: flex;
+        width: 100%;
+        flex-wrap: wrap;
+        
+    }
+}

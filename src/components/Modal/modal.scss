@@ -1,0 +1,76 @@
+@import '../../styles/variables';
+
+.modal-overlay{
+    background-color: rgba(0, 0, 0, 0.5);
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+    align-content: center;
+
+}
+
+.modal-window-content{
+    width: 80%;
+    border-radius: 20px;
+    background-color: var(--primary-color);
+    padding: 16px;
+    z-index: 9;
+    
+}
+
+.modal-btn-container{
+    display: flex;
+    justify-content: flex-end;
+}
+
+.modal-content-adq{
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: stretch;
+    /* justify-content: flex-end; */
+    align-items: stretch;
+}
+
+.modal-close {
+    position: relative;
+    top: -1px;
+    right: 3px;
+    /* margin-bottom: 10px;*/
+}
+
+.modal-window-content{
+    background-color: var(--background-color);
+    border: solid var(--secondary-color) 2px;
+}
+
+.modal-background{
+    position:absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+
+@media screen and (max-width: 869px){
+
+    .modal-window-content{
+        width: 100%;
+        border-radius: 20px;
+        padding: 16px;
+        z-index: 9;
+        background-color: var(--background-color);
+    }
+}
+

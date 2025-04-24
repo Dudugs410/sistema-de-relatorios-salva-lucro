@@ -1,0 +1,168 @@
+.sidebar {
+    width: 10%;
+    min-width: 200px;
+}
+
+.vh-100 {
+    height: 100vh;
+}
+
+.ml-3 {
+    margin-left: 0;
+}
+
+.b-links{
+    color: var(--background-color)
+}
+
+.navbar, .container-fluid {
+    padding: 0;
+}
+
+.nav-link {
+    border-bottom: solid #888888 1px;
+    color: var(--table-row-hover-bg);
+}
+
+.nav-link:focus, .nav-link:hover {
+    color: var(--background-color);
+}
+
+/* Parent hover and active styles */
+.navlink-parent {
+    display: inline-flex;
+    align-items: center;
+    width: 100%;
+    cursor: pointer;
+    color: var(--sidebar-font-color);
+
+    &.active-parent {
+        background-color: var(--secondary-color);
+        color: white;
+    }
+    
+    &:hover {
+        background-color: var(--secondary-color);
+        color: var(--font-color);
+    }
+}
+
+/* Child hover and active styles */
+.navlink-child {
+    padding-left: 2rem !important;
+    cursor: pointer;
+    color: var(--background-color);
+
+    &.active-child {
+        background-color: var(--secondary-color);
+        color: var(--font-color);
+        opacity: 0.8;
+    }
+
+    &:hover {
+        background-color: var(--secondary-color);
+    }
+}
+
+
+.navlink-parent:hover{
+    background-color: var(--secondary-color);
+    color: var(--table-row-hover-bg)
+}
+
+.navbar-expand-md .navbar-nav .nav-link {
+    text-align: start;
+    /* padding-right: var(--bs-navbar-nav-link-padding-x); */
+    /* padding-left: var(--bs-navbar-nav-link-padding-x); */
+}
+
+/* Parent hover and active styles */
+.navlink-parent:hover, 
+.navlink-parent.active-parent {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+/* Child hover and active styles */
+.navlink-child:hover,
+.navlink-child.active-child {
+    background-color: var(--secondary-color);
+    color: var(--sidebar-font-color);
+    opacity: 0.8;
+}
+
+.navlink-child:hover{
+    background-color: var(--secondary-color);
+}
+
+.bg-sidebar{
+    height: 100%;
+    border-right: solid var(--secondary-color) 1px;
+}
+
+ul{
+    background-color: none;
+    //background-color: var(--primary-color);
+    //background-blend-mode: multiply;
+}
+
+.bg-light{
+    --bs-bg-opacity: 0;
+}
+
+.navbar-expand-md .navbar-nav .nav-link {
+    padding-right: var(--bs-navbar-nav-link-padding-x);
+    /* padding-left: var(--bs-navbar-nav-link-padding-x); */
+
+}
+
+.sidebar {
+    width: 250px;
+    transition: transform 0.3s ease;
+    overflow-y: overlay;
+    
+    &.visible {
+        transform: translateX(0);
+    }
+
+    @media (max-width: 946px) {
+        transform: translateX(-100%);
+        padding-top: 70px;
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100%;
+        z-index: 1000;
+        background-image: url("../../assets/financ.jpg");
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-blend-mode: multiply;
+        background-color: var(--header-bg);
+        &.visible {
+            transform: translateX(0);
+        }
+    }
+}
+
+.sidebar-toggle {
+    display: none;
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 1001;
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    color: white;
+
+    @media (max-width: 946px) {
+        display: block;
+        border: solid var(--secondary-color) 1px;
+        background-color: var(--primary-color);
+
+    }
+}
+
+.sidebar-content>button:hover{
+    background-color: var(--secondary-color);
+}

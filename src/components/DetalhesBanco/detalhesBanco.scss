@@ -1,0 +1,73 @@
+@import '../../styles/variables';
+
+.window-modal-banco{
+    background-color: var(--primary-color);
+    border-radius: 2px;
+    width: 99%;
+    border: solid var(--background-color) 1px;
+}
+
+.vendas-view{
+    width: 100%;
+    min-height: 500px;
+    overflow: overlay;
+    background-color: azure;
+}
+
+.table-wrapper{
+    height: 500px;
+    padding-bottom: 10%;
+}
+
+.det-table{
+    min-height:30%;
+    
+}
+
+.det-th{
+    position: sticky;
+    top: 0;
+    background-color: white;
+
+}
+
+.det-tr-top{
+    position: sticky;
+    top: 0;
+    color: white;
+    text-align: center;
+    border-bottom: solid white 1px;
+    background-color:var(--primary-color);
+    width: 100%;
+    border-radius: 20px;
+    padding: 10px;
+}
+
+.det-th, .det-td{
+    width: 200px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.det-td-vendas{
+    color: black;
+    width: 200px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.table-btn{
+    height: 1em;
+    text-align: center;
+    justify-content: center;
+}
+
+.green{
+    color: rgb(0, 255, 0);
+    text-shadow: 1px 1px 1px #000000;
+}
+
+.red{
+    color:red;
+    text-shadow: 1px 1px 1px #000000;
+}

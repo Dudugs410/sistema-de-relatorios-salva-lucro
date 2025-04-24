@@ -1,0 +1,89 @@
+@import '../../styles/_variables.scss';
+
+.display-seletor{
+    height: auto;
+    /* width: 100%; */
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; */
+    align-items: stretch;
+}
+
+.dados-display-container{
+    background-color: var(--primary-color);
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.grupo-cli-container{
+    width: 100%;
+    display: flex;
+    padding: 1.5em 1em;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.grupo-cli-content{
+
+}
+
+.gru-cli-inner-container{
+    display: inline-flex;
+}
+
+.gru-cli-inner-container>.grupo-cli-content{
+    margin-right: 1.5em;
+}
+
+.cli-container-display{
+    display: flex;
+    width: 100%;
+    /* flex-wrap: wrap; */
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+}
+
+.span-display{
+    color: var(--secondary-color) !important;
+}
+
+.select-card-seletor-display{
+    //max-width: 250px;
+    white-space: nowrap
+}
+
+.select-card-seletor-btn-container{
+    display: inline-flex
+;
+    gap: 5px;
+}
+
+.btn-success-dados{
+    background-color: var(--secondary-color);
+    color: var(--font-color);
+    transition: all .4s;
+
+    &:hover{
+        border: solid var(--secondary-color) 1px;
+        color: var(--secondary-color);
+    }
+
+}
+
+@media only screen and (max-width: 630px){
+    .grupo-cli-container{
+        width: 80%;
+        display: flex;
+        flex-direction: column;
+        padding: 1.5em 1em;
+        align-items: flex-start;
+    }
+
+    .gru-cli-inner-container{
+        flex-direction: column;
+        margin-bottom: 1em;
+    }
+}

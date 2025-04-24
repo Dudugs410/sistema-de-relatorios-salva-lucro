@@ -1,0 +1,23 @@
+@import '../../styles/variables';
+
+.container-conciliacao{
+    border: solid var(--primary-color) 1px;
+    height:400px;
+
+}
+
+.body-conciliacao{
+    width: 100%;
+    margin: 0 auto;
+    color: var(--font-color);
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    flex-wrap: wrap;
+}
+
+.container-extrato-cnab{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

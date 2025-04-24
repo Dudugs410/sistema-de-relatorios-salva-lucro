@@ -1,0 +1,215 @@
+@import '../../styles/variables';
+
+.search-bar-seletor{
+    height: auto;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; */
+    align-items: stretch;
+    border-radius: 15px;
+    
+}
+
+.btn-seletor:hover{
+    border: solid var(--secondary-color) 1px !important;
+    background-color: white !important;
+    color: var(--primary-color) !important;
+}
+
+.cli-container{
+    width: 80%;
+    display: flex;
+    padding: 1.5em 1em;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.date-container-seletor{
+    background-color: var(--primary-color);
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    border-radius: 15px;
+    
+}
+
+.date-text-seletor{
+    color:white;
+}
+
+.date-picker-seletor{
+    text-align: center;
+    display: flex;
+    border-radius: 10px;
+    height:2.2em;
+    width: 80%;
+    font-style: italic;
+    color: black;
+
+}
+
+.date-container-seletor>.date-column-seletor>input{
+    height: 2.2em;
+    border-radius: 10px;
+    width: 80%;
+    
+}
+
+.date-container-seletor>.date-column-seletor>span{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-weight: bold;
+    
+}
+
+.date-container-seletor>.date-column-seletor>select{
+    display: flex;
+    height: 2.2em;
+    text-align: center;
+    width: 80%;
+    font-style: italic;
+}
+
+.select-card-seletor{
+    width: 250px;
+}
+
+.date-column-seletor{
+    width: 100%;
+    max-width: 250px;
+    margin-right: 1.5em;
+}
+
+.date-column-seletor>.select-card-seletor>select{
+    display: flex;
+    height: 2.2em;
+    border-radius: 10px;
+    text-align: center;
+    width: 80%;
+    font-style: italic;
+    color: var(--primary-color)t;
+    
+}
+
+.select-card-seletor>span{
+    color: white;
+    font-weight: bold;
+    
+}
+
+.date-column-seletor>button{
+    height: 2.2em;
+    width: 80%;
+    border-radius: 10px;
+    text-align: center;
+    margin-top: 1.5em;
+}
+
+.date-column-seletor>.export{
+    height: 2.2em;
+    width: 80%;
+    border-radius: 10px;
+    text-align: center;
+    margin-top: 1.5em;
+}
+
+.select-card-seletor:not(:first-child){
+    margin-top: 10px;
+}
+
+.date-column-seletor>.date-text{
+    margin-top: 10px;
+}
+
+.btn-export{
+    width: 80%;
+}
+
+.submit-container{
+    width: 100%;
+}
+
+.select-disabled{
+    background-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.select-btn-seletor{
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-end;
+}
+
+.btn-global{
+    //max-width: none !important;
+}
+
+.btn-seletor{
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    transition: all .4s;
+    border: solid var(--secondary-color) 1px;
+    background-color: var(--secondary-color);
+    color: var(--primary-color);  
+}
+
+.btn-seletor:hover{
+    color: var(--background-color);
+    background-color: var(--secondary-color);
+}
+
+
+@media only screen and (max-width: 750px){
+
+    .select-btn-seletor{
+        margin-top: 1em;
+    }
+
+    // quebrar linha quando diminui a tela
+    .cli-container{
+        display: flex;
+        width: 100%;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .date-text{
+        color:white;
+    }
+
+    .date-column-seletor {
+        display: flex;
+        justify-content: center;
+    }
+    
+    .date-column-seletor>.select-card-seletor>select{
+        display: flex;
+        height: 2.2em;
+        max-width: 200px;
+        border-radius: 10px;
+        text-align: center;
+        font-style: italic;
+        color: gray;
+    }
+
+    .select-card-seletor{
+        width: 100%;
+        padding-left: 0;
+    }
+
+    body{
+        min-width: 300px;
+    }
+
+    /* reseta o padding do segundo seletor em telas pequenas*/
+    .date-column-seletor:last-child {
+        padding-left: 0;
+    }
+    .date-container-seletor{
+        display: inline-block;
+    }
+}
