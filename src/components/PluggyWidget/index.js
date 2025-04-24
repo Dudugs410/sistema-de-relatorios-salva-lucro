@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 
 import { PluggyConnect } from 'react-pluggy-connect';
 
