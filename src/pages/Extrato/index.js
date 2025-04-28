@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom'
 import { createRoot } from 'react-dom/client' // For React 18+
 import Cookies from 'js-cookie'
 import PluggyWidget from '../../components/PluggyWidget'
-import pluggyImg from '../../assets/logoPluggy.webp'
+import pluggyImg from '../../assets/ID - COLORIDA 1 HORIZ 09.23.19.png'
 import './extrato.scss'
 
 import pluggyApi from '../../services/pluggy'
@@ -61,7 +61,6 @@ const Extrato = () => {
             const root = createRoot(container)
             root.render(<PluggyWidget />)
         }
-
     }
 
     return (
@@ -73,7 +72,7 @@ const Extrato = () => {
                     </div>
                     <hr className='hr-global' />
                     <div className='pluggy-container'>
-                        <img className='pluggy-icon' src={pluggyImg} alt='logo pluggy' />
+                        {/*<img className='pluggy-icon' src={pluggyImg} alt='logo pluggy' />*/}
                         <button 
                             className='btn btn-primary btn-global' 
                             onClick={handleConnectClick}
