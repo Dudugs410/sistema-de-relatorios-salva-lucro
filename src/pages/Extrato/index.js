@@ -1,45 +1,91 @@
-import { useEffect, useState } from 'react'
-import { PluggyConnect } from 'react-pluggy-connect'
+import { useEffect, useRef } from 'react'
 import { useLocation } from 'react-router-dom'
+import { createRoot } from 'react-dom/client' // For React 18+
+import Cookies from 'js-cookie'
 import PluggyWidget from '../../components/PluggyWidget'
 import pluggyImg from '../../assets/logoPluggy.webp'
-
 import './extrato.scss'
 
-const Extrato = () =>{
-    const location = useLocation()
+import pluggyApi from '../../services/pluggy'
 
-    const [pluggy, setPluggy] = useState(false)
-    const onSuccess = (itemData) => {
-        // do something with the financial data
-      };
-    
-      const onError = (error) => {
-        // handle the error
-      };
+const Extrato = () => {
+    const location = useLocation()
+    const widgetContainerRef = useRef(null) // Ref to mount the widget
 
     useEffect(() => {
         localStorage.setItem('currentPath', location.pathname)
     }, [location])
 
-    return(
-      <div className='appPage'>
-        <div className='page-background-global'>
-          <div className='page-content-global page-content-financeiro'>
-            {pluggy && 
-                <PluggyWidget/>
+    const fetchToken = async () => {
+        try {
+            const response = await pluggyApi.post('connect_token')
+            const pluggyAccessToken = response.data
+            console.log(response.data)
+            console.log(pluggyAccessToken)
+            Cookies.set('accessToken', pluggyAccessToken.accessToken)
+            
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    const handleConnectClick = async() => {
+        if(!Cookies.get('accessToken')){
+            fetchToken()
+                .then(()=>{
+                    // Clear previous widget if it exists
+                    if (widgetContainerRef.current) {
+                        widgetContainerRef.current.innerHTML = ''
+                    }
+        
+                    // Create a new container for the widget
+                    const container = document.createElement('div')
+                    widgetContainerRef.current?.appendChild(container)
+        
+                    // Manually render PluggyWidget into the container
+                    const root = createRoot(container)
+                    root.render(<PluggyWidget />)   
+                })
+        }
+
+        else{
+            if (widgetContainerRef.current) {
+                widgetContainerRef.current.innerHTML = ''
             }
-            <div className='title-container-global'>
-              <h1 className='title-global'>Extrato Bancário</h1>
+
+            // Create a new container for the widget
+            const container = document.createElement('div')
+            widgetContainerRef.current?.appendChild(container)
+
+            // Manually render PluggyWidget into the container
+            const root = createRoot(container)
+            root.render(<PluggyWidget />)
+        }
+
+    }
+
+    return (
+        <div className='appPage'>
+            <div className='page-background-global'>
+                <div className='page-content-global page-content-financeiro'>
+                    <div className='title-container-global'>
+                        <h1 className='title-global'>Extrato Bancário</h1>
+                    </div>
+                    <hr className='hr-global' />
+                    <div className='pluggy-container'>
+                        <img className='pluggy-icon' src={pluggyImg} alt='logo pluggy' />
+                        <button 
+                            className='btn btn-primary btn-global' 
+                            onClick={handleConnectClick}
+                        >
+                            Conectar
+                        </button>
+                    </div>
+                    {/* Container where PluggyWidget will be mounted */}
+                    <div ref={widgetContainerRef}></div>
+                </div>
             </div>
-            <hr className='hr-global'/>
-            <div className='pluggy-container'>
-                <img className='pluggy-icon' src={pluggyImg} alt='logo pluggy' />
-                <button className='btn btn-primary btn-global' onClick={()=>{setPluggy(true)}}>Conectar</button>
-            </div>
-          </div>
         </div>
-      </div>
     )
 }
 
