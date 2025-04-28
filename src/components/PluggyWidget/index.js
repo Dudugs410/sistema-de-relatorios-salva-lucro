@@ -1,24 +1,24 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React from 'react'
+import Cookies from 'js-cookie'
 
-import { PluggyConnect } from 'react-pluggy-connect';
+import { PluggyConnect } from 'react-pluggy-connect'
 
 const PluggyWidget = () => {
   const onSuccess = (itemData) => {
-    // do something with the financial data
-  };
+
+  }
 
   const onError = (error) => {
-    // handle the error
-  };
+    onClose()
+  }
 
   return (
     <PluggyConnect
-      connectToken={'your-connect-token-here'}
+      connectToken={Cookies.get('accessToken')}
       onSuccess={onSuccess}
       onError={onError}
     />
-  );
-};
+  )
+}
 
 export default PluggyWidget

@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 
 import Cookies from 'js-cookie'
 import api, { cancelOngoingRequests } from '../services/api'
+import pluggyApi from '../services/pluggy'
 
 import md5 from 'md5'
 
@@ -85,7 +86,22 @@ function AuthProvider({ children }){
 					localUsers = JSON.parse(localStorage.getItem('localUsers'))
 				}
 				localStorage.setItem('md5Pass', md5(password))
-        
+				
+				try {
+					let body = {
+						"clientId": "7cee8f27-cbfa-4a19-b14d-306f9656787a",
+						"clientSecret": "01e4edaf-639a-40ae-945a-4a04ab652bad"
+					}
+					const response = await pluggyApi.post('auth', body)
+					const pluggyApiKey = response.data
+					console.log(response.data)
+					console.log(pluggyApiKey)
+					Cookies.set('apiKey', pluggyApiKey.apiKey)
+					
+				} catch (error) {
+					console.error(error)
+				}
+
 				let userTemp = {}
 
 				const userExists = localUsers.some(storedUser => storedUser.id === userId)
@@ -1681,6 +1697,8 @@ function AuthProvider({ children }){
 	function logout(){
 		localStorage.clear()
 		localStorage.clear()
+		Cookies.remove('apiKey')
+		Cookies.remove('accessToken')
 		cancelOngoingRequests()
 		resetAppValues()
 		setIsSignedIn(false)
