@@ -7,6 +7,7 @@ import React from 'react'
 import { ToastContainer } from 'react-toastify'
 
 import './index.scss'
+import PluggyProvider from './contexts/pluggyContext'
 
 
 function App() {
@@ -14,7 +15,9 @@ function App() {
   return (
     <BrowserRouter basename='/salvalucro3'>
       <AuthProvider>
-            <RoutesApp/>
+        <PluggyProvider>
+          <RoutesApp/>
+        </PluggyProvider>
       </AuthProvider>
       <ToastContainer
                 position="bottom-right" // Set position to bottom right
