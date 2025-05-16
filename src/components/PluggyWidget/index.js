@@ -6,9 +6,9 @@ import { PluggyConnect } from 'react-pluggy-connect'
 const PluggyWidget = ({setId}) => {
 
   const onSuccess = (itemData) => {
-    console.log('Item Data: ', itemData)
+    console.log('Pluggy Widget Item Data: ', itemData)
     console.log('ID: ', itemData.item.id)
-    Cookies.set('id', itemData.item.id)
+    Cookies.set('itemID', itemData.item.id)
     setId(itemData.item.id)
   }
   
@@ -18,8 +18,10 @@ const PluggyWidget = ({setId}) => {
 
   return (
     <PluggyConnect
-      connectToken={Cookies.get('accessToken')}
+      connectToken={Cookies.get('pluggy_connect_token')}
+      clientUserId={'teste'}
       includeSandbox={true}
+      avoidDuplicates={true}
       onSuccess={onSuccess}
       onError={onError}
     />
