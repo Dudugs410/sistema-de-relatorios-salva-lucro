@@ -20,6 +20,8 @@ export const AuthContext = createContext({})
 function AuthProvider({ children }){
 	const [isSignedIn, setIsSignedIn] = useState(false)
 	const [accessToken, setAccessToken] = useState(undefined)
+
+	const [clientUserId, setClientUserId] = useState()
 	////////////////////////////////////////////////////////////////
 
 	const [salesTableData, setSalesTableData] = useState([])
@@ -68,95 +70,156 @@ function AuthProvider({ children }){
 	},[cancelOngoingRequests])
 
 	// Função que loga o usuário e gerencia quaisquer dados relevantes à isso
-	const loginApp = async (login, password) => {
-		resetAppValues()
-		try {
-			const response = await api.post('token', { client_id: login, client_secret: md5(password) })
-			const responseData = response.data
-			localStorage.setItem('token', responseData.acess_token)
-			localStorage.setItem('refreshToken', responseData.refresh_token)
-			const userId = jwtDecode(responseData.acess_token).id
-			localStorage.setItem('userID', userId)
-			const loggedSuccessfully = JSON.parse(responseData.sucess)
+const loginApp = async (login, password) => {
+    resetAppValues()
+    try {
+        // Step 1: Authenticate with your main API
+        const response = await api.post('token', { client_id: login, client_secret: md5(password) })
+        const responseData = response.data
+        localStorage.setItem('token', responseData.acess_token)
+        localStorage.setItem('refreshToken', responseData.refresh_token)
+        const userId = jwtDecode(responseData.acess_token).id
+        localStorage.setItem('userID', userId)
+        const loggedSuccessfully = JSON.parse(responseData.sucess)
 
-			if (loggedSuccessfully) {
-				localStorage.setItem('currentPath', '/dashboard')
-				let localUsers = []
-				if (localStorage.getItem('localUsers') !== null) {
-					localUsers = JSON.parse(localStorage.getItem('localUsers'))
-				}
-				localStorage.setItem('md5Pass', md5(password))
-				
-				try {
-					let body = {
-						"clientId": "7cee8f27-cbfa-4a19-b14d-306f9656787a",
-						"clientSecret": "01e4edaf-639a-40ae-945a-4a04ab652bad"
-					}
-					const response = await pluggyApi.post('auth', body)
-					const pluggyApiKey = response.data
-					console.log(response.data)
-					console.log(pluggyApiKey)
-					Cookies.set('apiKey', pluggyApiKey.apiKey)
-					
-				} catch (error) {
-					console.error(error)
-				}
+        if (loggedSuccessfully) {
+            localStorage.setItem('currentPath', '/dashboard')
+            let localUsers = []
+            if (localStorage.getItem('localUsers') !== null) {
+                localUsers = JSON.parse(localStorage.getItem('localUsers'))
+            }
+            localStorage.setItem('md5Pass', md5(password))
+            
+            // Step 2: Authenticate with Pluggy API
+            try {
+				//////
+				/*
+                let body = {
+                    "clientId": "7cee8f27-cbfa-4a19-b14d-306f9656787a",
+                    "clientSecret": "01e4edaf-639a-40ae-945a-4a04ab652bad",
+                }
+                const response = await pluggyApi.post('auth', body)
+                const pluggyApiKey = response.data
+                console.log("Pluggy Auth Response:", pluggyApiKey)
+                
+                // Store both the API key and clientUserId
+                Cookies.set('apiKey', pluggyApiKey.apiKey)
+                Cookies.set('clientUserId', userId)  // Store the userId we sent
+                */
+				//////
+            } catch (error) {
+                console.error("Pluggy authentication error:", error)
+                // Consider whether you want to continue if Pluggy auth fails
+                // or throw the error to stop the login process
+            }
 
-				let userTemp = {}
-
-				const userExists = localUsers.some(storedUser => storedUser.id === userId)
+            // Step 3: Handle user preferences
+            let userTemp = {}
+            const userExists = localUsers.some(storedUser => storedUser.id === userId)
+			setClientUserId(userId)
   
-				if (userExists) {
-					// Handle existing user in localUsers
-					const updatedUsers = localUsers.map(user => {
-						if (user.id === userId) {
-							userTemp = {id: userId, theme: JSON.parse(user.theme)}
-							localStorage.setItem('isDark', JSON.parse(user.theme))
-							localStorage.setItem('isChecked', JSON.parse(user.theme))
-							return { ...user, theme: user.theme } // Update the theme if needed
-						}
-						return user
-					})
-					localStorage.setItem('localUsers', JSON.stringify(updatedUsers))
-				} else {
-					// Add new user to localUsers
-					userTemp = { id: userId, theme: false, calendar: true}
-					localUsers.push(userTemp)
-					localStorage.setItem('isDark', false)
-					localStorage.setItem('isChecked', false)
-					localStorage.setItem('calendar', true)
-					localStorage.setItem('localUsers', JSON.stringify(localUsers))
-				}
-				const opt = await loadOptions()
-				localStorage.setItem('options', JSON.stringify(opt))
-				
-				const gru = await loadGroupsList()
+            if (userExists) {
+                // Handle existing user in localUsers
+                const updatedUsers = localUsers.map(user => {
+                    if (user.id === userId) {
+                        userTemp = {id: userId, theme: JSON.parse(user.theme)}
+                        localStorage.setItem('isDark', JSON.parse(user.theme))
+                        localStorage.setItem('isChecked', JSON.parse(user.theme))
+                        return { ...user, theme: user.theme }
+                    }
+                    return user
+                })
+                localStorage.setItem('localUsers', JSON.stringify(updatedUsers))
+            } else {
+                // Add new user to localUsers
+                userTemp = { id: userId, theme: false, calendar: true}
+                localUsers.push(userTemp)
+                localStorage.setItem('isDark', false)
+                localStorage.setItem('isChecked', false)
+                localStorage.setItem('calendar', true)
+                localStorage.setItem('localUsers', JSON.stringify(localUsers))
+            }
 
-				localStorage.setItem('groupsStorage', JSON.stringify(gru))
-				localStorage.setItem('groupCode', gru[0].CODIGOGRUPO)
-				localStorage.setItem('cnpj', 'todos')
-			}
+try {
+  const clientUserId = "user-123@mail.com"; // From your auth system
   
-			const userResponse = await api.get('/usuario')
-			const userList = userResponse.data
-			const userMatch = userList.find((user) => (user.LOGIN.toLowerCase() === login.toLowerCase()) && (user.SENHA === md5(password)))
+  const response = await fetch('https://api.pluggy.ai/auth', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      // Add if your API requires it:
+      // 'X-API-KEY': 'your-api-key-here' 
+    },
+    body: JSON.stringify({
+      clientId: "7cee8f27-cbfa-4a19-b14d-306f9656787a",
+      clientSecret: "01e4edaf-639a-40ae-945a-4a04ab652bad",
+      itemOptions: {
+        clientUserId: clientUserId
+      }
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const data = await response.json();
+  console.log('Auth response:', data);
+
+  // Store tokens with js-cookie
+  Cookies.set('pluggy_api_key', data.apiKey, {
+    expires: 1, // 1 day
+    secure: process.env.NODE_ENV === 'production', // HTTPS only in production
+    sameSite: 'strict'
+  });
+
+  Cookies.set('pluggy_client_id', clientUserId, {
+    expires: 1,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict'
+  });
+
+} catch (error) {
+  console.error('Authentication failed:', error);
   
-			if (userMatch) {
-				const userData = { NOME: userMatch.NOME, EMAIL: userMatch.EMAIL }
-				localStorage.setItem('GRUCODIGO', userMatch.GRUCODIGO)
-				localStorage.setItem('isSignedIn', true)
-				localStorage.setItem('userData', JSON.stringify(userData))
-				localStorage.setItem('isSignedIn', true)
-				localStorage.setItem('isSignedIn', true)
-				setIsSignedIn(true)
-			} else {
-				console.log('Usuario não encontrado')
-			}
-		} catch (error) {
-			console.error(error)
-			alert(error.message)
-		}
-	}
+  // Cleanup cookies on failure
+  Cookies.remove('pluggy_api_key');
+  Cookies.remove('pluggy_client_id');
+  
+  throw error;
+}
+
+            // Step 4: Load additional data
+            const opt = await loadOptions()
+            localStorage.setItem('options', JSON.stringify(opt))
+            
+            const gru = await loadGroupsList()
+            localStorage.setItem('groupsStorage', JSON.stringify(gru))
+            localStorage.setItem('groupCode', gru[0].CODIGOGRUPO)
+            localStorage.setItem('cnpj', 'todos')
+        }
+  
+        // Step 5: Get user details
+        const userResponse = await api.get('/usuario')
+        const userList = userResponse.data
+        const userMatch = userList.find((user) => (user.LOGIN.toLowerCase() === login.toLowerCase()) && (user.SENHA === md5(password)))
+  
+        if (userMatch) {
+            const userData = { NOME: userMatch.NOME, EMAIL: userMatch.EMAIL }
+            localStorage.setItem('GRUCODIGO', userMatch.GRUCODIGO)
+            localStorage.setItem('isSignedIn', true)
+            localStorage.setItem('userData', JSON.stringify(userData))
+            setIsSignedIn(true)
+        } else {
+            console.log('Usuário não encontrado')
+            throw new Error('Usuário não encontrado após autenticação bem-sucedida')
+        }
+    } catch (error) {
+        console.error('Login error:', error)
+        alert(error.message)
+        // Consider resetting any partial authentication state here
+    }
+}
 
 	// funções que retornam arrays com Grupos, Clientes, Bandeiras e Adquirentes, respectivamente //
 
@@ -1693,12 +1756,19 @@ function AuthProvider({ children }){
 		}
 	}
 
-	/////desloga usuário
-	function logout(){
-		localStorage.clear()
-		localStorage.clear()
+	function clearCookies(){
 		Cookies.remove('apiKey')
 		Cookies.remove('accessToken')
+		Cookies.remove('id')
+		Cookies.remove('accounts')
+		Cookies.remove('itemID')
+	}
+
+	/////desloga usuário
+	function logout(){
+		clearCookies()
+		localStorage.clear()
+		localStorage.clear()
 		cancelOngoingRequests()
 		resetAppValues()
 		setIsSignedIn(false)
@@ -1972,6 +2042,8 @@ function AuthProvider({ children }){
 				canceled, setCanceled,
 
 				resetAppValues,
+
+				clientUserId,
 			}}
 		>
 			{children}

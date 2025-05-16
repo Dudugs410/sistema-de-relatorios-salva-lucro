@@ -10,9 +10,9 @@ const pluggyApi = axios.create({
 
 pluggyApi.interceptors.request.use(
     (config) => {
-      const apiKey = Cookies.get('apiKey'); // Replace 'apiKey' with your storage key
+      const apiKey = Cookies.get('pluggy_api_key'); // Replace 'apiKey' with your storage key
       if (apiKey) {
-        config.headers['X-API-Key'] = apiKey; // Use the header name your API expects
+        config.headers['X-API-KEY'] = apiKey; // Use the header name your API expects
       }
       return config;
     },
@@ -22,9 +22,13 @@ pluggyApi.interceptors.request.use(
   )
 
 export function config(){
-    const config = { headers:{ 
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
+    const config = { 
+        headers:{ 
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body:{
+          'clientUserId': 'teste'
         }
     }
     return config

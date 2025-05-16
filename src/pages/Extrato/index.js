@@ -9,13 +9,26 @@ import './extrato.scss'
 import pluggyApi from '../../services/pluggy'
 import { PluggyContext } from '../../contexts/pluggyContext'
 import Tabela from '../../components/Tabela'
+import TabelaAccounts from '../../components/TabelaAccounts'
 import { Table } from 'react-bootstrap'
 import Modal from '../../components/Modal'
+import TabelaItem from '../../components/TabelaItem'
 
 const Extrato = () => {
-    const { id, setId, loadAccounts } = useContext(PluggyContext)
+    const { 
+        id, setId, 
+        itemId, setItemId,
+        clientUserId,
+        loadAccounts, loadItem, loadTransactions } = useContext(PluggyContext)
 
-    const [accounts, setAccounts] = useState([])
+    const [accounts, setAccounts] = useState(() => {
+        // Check cookies on initial render
+        const storedAccounts = Cookies.get('accounts');
+        return storedAccounts ? JSON.parse(storedAccounts) : [];
+      })
+    const [item, setItem] = useState()
+    const [transactions, setTransactions] = useState()
+
     const [clickedRow, setClickedRow] = useState(null)
     const [isClicked, setIsClicked] = useState(false)
     const location = useLocation()
@@ -30,15 +43,39 @@ const Extrato = () => {
     },[])
 
     const fetchToken = async () => {
+        let userId = localStorage.getItem('userID')
+        let apikey = Cookies.get('pluggy_api_key')
         try {
-            const response = await pluggyApi.post('connect_token')
-            const pluggyAccessToken = response.data
-            console.log(response.data)
-            console.log(pluggyAccessToken)
-            Cookies.set('accessToken', pluggyAccessToken.accessToken)
+            const options = {
+                method: 'POST',
+                headers: {
+                    accept: 'application/json', 
+                    'content-type': 'application/json',
+                    'X-API-KEY': apikey,
+                },
+                body: JSON.stringify({
+                    options: {
+                        clientUserId: userId,
+                        //avoidDuplicates: true
+                    }
+                })
+            }
             
+            // 1. Make the request
+            let response = await fetch('https://api.pluggy.ai/connect_token', options)
+            
+            // 2. Parse the JSON response
+            let responseData = await response.json()
+            
+            console.log('response data -> ', responseData)
+            
+            // 3. Set the cookie and return the token
+            Cookies.set('pluggy_connect_token', responseData.accessToken)
+            return responseData.accessToken;
+
         } catch (error) {
-            console.error(error)
+            console.log('error: ', error)
+            throw error; // Re-throw for UI handling
         }
     }
 
@@ -89,22 +126,88 @@ const Extrato = () => {
         }
     },[id])
 
+    useEffect(() => {
+        if(accounts){
+            Cookies.set('accounts', JSON.stringify(accounts))
+        }
+    }, [accounts])
+
     const handleRowClicked = (row) => {
         console.log('clicked row: ', row)
         setClickedRow(row)
         setIsClicked(true)
+        setItemId(row.itemId)
+        Cookies.set('accountID', row.id)
+        const loadItemFunc = async ()=>{
+            var resp = loadItem()
+            return resp
+        }
+        setItemId(loadItemFunc)
     }
+
+    useEffect(()=>{
+        if(item){
+            console.log('item', item)
+        }
+    },[item])
+
+    useEffect(() => {
+        console.log('clickedRow useEffect')
+        
+        if (!clickedRow) return;  // Early return if no clickedRow
+    
+        const fetchItemData = async () => {
+            try {
+                Cookies.set('itemID', clickedRow.itemId)
+                const itemData = await loadItem(clickedRow.itemId)  // Pass ID directly
+                setItem(itemData)
+            } catch (error) {
+                console.error('Failed to load item:', error)
+                // Consider setting an error state here
+            }
+        }
+        fetchItemData()
+    }, [clickedRow])
 
     const ModalExtrato = () => {
-        return(
-            <div className='modal-extrato-background' onClick={()=>{setIsClicked(false)}}>
+        const [isLoading, setIsLoading] = useState(false);
+        const [error, setError] = useState(null);
+    
+        useEffect(() => {
+            if (!clickedRow) return;
+    
+            const fetchItemData = async () => {
+                setIsLoading(true);
+                setError(null);
+                
+                try {
+                    const itemTransactions = await loadTransactions(clickedRow.id);
+                    setTransactions(itemTransactions);
+                } catch (err) {
+                    console.error('Failed to load transactions:', err);
+                    setError('Failed to load transactions');
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+    
+            fetchItemData();
+        }, [clickedRow]);
+        return (
+            <div className='modal-extrato-background' onClick={() => setIsClicked(false)}>
                 <div className='modal-extrato-container'>
-                    
+                    {isLoading ? (
+                        <div className="loading-indicator">Loading...</div>
+                    ) : error ? (
+                        <div className="error-message">{error}</div>
+                    ) : item ? (
+                        <TabelaItem data={item} />
+                    ) : null}
                 </div>
             </div>
-        )
-    }
-
+        );
+    };
+    
     useEffect(()=>{
         console.log('isClicked: ', isClicked)
     },[isClicked])
@@ -123,16 +226,18 @@ const Extrato = () => {
                     </div>
                     <hr className='hr-global' />
                     <div className='pluggy-container'>
-                        {/*<img className='pluggy-icon' src={pluggyImg} alt='logo pluggy' />*/}
-                        <button 
-                            className='btn btn-primary btn-global' 
-                            onClick={handleConnectClick}
-                        >
+                        {   
+                            accounts.length === 0 &&
+                            <button 
+                                className='btn btn-primary btn-global' 
+                                onClick={handleConnectClick}
+                            >
                             Conectar
-                        </button>
+                            </button>
+                        }
                     </div>
                     {
-                        accounts.length > 0 && <Tabela data={accounts} clickRow={handleRowClicked}/>
+                        accounts.length > 0 && <TabelaAccounts data={accounts} clickRow={handleRowClicked}/>
                     }
                     <div ref={widgetContainerRef}></div>
                 </div>
