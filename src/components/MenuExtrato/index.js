@@ -17,7 +17,7 @@ const MenuExtrato = ({ connectorData, handleProduct }) => {
     //PAYMENT_DATA: { name: 'Dados de Pagamentos', icon: '🧾' },
     INVESTMENTS: { name: 'Investimentos', icon: '📈' },
     //INVESTMENTS_TRANSACTIONS: { name: 'Transações de Investimento', icon: '📊' },
-    IDENTITY: { name: 'Identity', icon: '🆔' },
+    //IDENTITY: { name: 'Identity', icon: '🆔' },
     LOANS: { name: 'Empréstimos', icon: '🏦' },
     //BENEFITS: { name: 'Benefícios', icon: '🎁' },
     //PORTFOLIO: { name: 'Portfolio', icon: '📂' },
