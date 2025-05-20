@@ -3,13 +3,15 @@ import Cookies from 'js-cookie'
 
 import { PluggyConnect } from 'react-pluggy-connect'
 
-const PluggyWidget = ({setId}) => {
+const PluggyWidget = ({setId, setResponseData}) => {
 
   const onSuccess = (itemData) => {
     console.log('Pluggy Widget Item Data: ', itemData)
     console.log('ID: ', itemData.item.id)
     Cookies.set('itemID', itemData.item.id)
     setId(itemData.item.id)
+    setResponseData(itemData.item)
+
   }
   
   const onError = (error) => {

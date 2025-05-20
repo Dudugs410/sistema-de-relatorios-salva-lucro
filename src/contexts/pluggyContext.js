@@ -30,6 +30,61 @@ function PluggyProvider({ children }){
         }
     }
 
+    const loadIdentity = async () => {
+        console.log('loadIdentity: ')
+        if(id){
+            console.log('ID: ', id)
+
+            let params = {
+                itemId: id,
+            }
+            let config = {
+                params: params
+            }
+
+            let resp = await pluggyApi.get('/identity', config)
+            console.log('identity response: ', resp.data)
+            return resp.data.results;
+        }
+    }
+
+    const loadLoans = async () => {
+        console.log('loadLoans: ')
+        if(id){
+            console.log('ID: ', id)
+
+            let params = {
+                itemId: id,
+            }
+            let config = {
+                params: params
+            }
+
+            let resp = await pluggyApi.get('/loans', config)
+            console.log('loans response: ', resp.data)
+            return resp.data.results;
+        }
+    }
+
+    const loadInvestments = async () => {
+        console.log('loadInvestments: ')
+        if(id){
+            console.log('ID: ', id)
+
+            let params = {
+                itemId: id,
+            }
+
+            let config = {
+                params: params
+            }
+
+            let resp = await pluggyApi.get('/investments', config)
+            console.log('investments response: ', resp.data)
+            return resp.data.results;
+        }
+    }
+
     const loadItem = async () => {
         let body = {
             "connectorId": 0,
@@ -56,7 +111,7 @@ function PluggyProvider({ children }){
         }
     }
 
-        const loadTransactions = async () => {
+    const loadTransactions = async () => {
         console.log('loadTransactions (accountID): ')
         let accountID = Cookies.get('accountID')
         if(accountID) {
@@ -72,7 +127,9 @@ function PluggyProvider({ children }){
                id, setId,
                itemId, setItemId,
 
-               loadAccounts, loadItem, loadItemByID, loadTransactions
+               loadAccounts, loadTransactions,
+               loadInvestments, loadIdentity, loadLoans,
+               loadItem, loadItemByID,
             }}
         >
             {children}

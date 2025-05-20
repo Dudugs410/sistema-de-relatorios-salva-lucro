@@ -13,24 +13,32 @@ import TabelaAccounts from '../../components/TabelaAccounts'
 import { Table } from 'react-bootstrap'
 import Modal from '../../components/Modal'
 import TabelaItem from '../../components/TabelaItem'
+import MenuExtrato from '../../components/MenuExtrato'
 
 const Extrato = () => {
     const { 
-        id, setId, 
-        itemId, setItemId,
-        clientUserId,
-        loadAccounts, loadItem, loadTransactions } = useContext(PluggyContext)
+        setId, setItemId,
+        loadAccounts, loadItem, loadTransactions,
+        loadLoans, loadIdentity, loadInvestments, 
+    } = useContext(PluggyContext)
 
     const [accounts, setAccounts] = useState(() => {
         // Check cookies on initial render
         const storedAccounts = Cookies.get('accounts');
         return storedAccounts ? JSON.parse(storedAccounts) : [];
       })
+    const [responseData, setResponseData] = useState({})
     const [item, setItem] = useState()
     const [transactions, setTransactions] = useState()
 
     const [clickedRow, setClickedRow] = useState(null)
     const [isClicked, setIsClicked] = useState(false)
+
+    const [selected, setSelected] = useState(false)
+    const [displayedMenu, setDisplayedMenu] = useState(null)
+
+    const [data, setData] = useState([])
+
     const location = useLocation()
     const widgetContainerRef = useRef(null) // Ref to mount the widget
 
@@ -94,7 +102,7 @@ const Extrato = () => {
         
                     // Manually render PluggyWidget into the container
                     const root = createRoot(container)
-                    root.render(<PluggyWidget setId={setId}/>)   
+                    root.render(<PluggyWidget setId={setId} setResponseData={setResponseData}/>)   
                 })
         }
 
@@ -109,22 +117,9 @@ const Extrato = () => {
 
             // Manually render PluggyWidget into the container
             const root = createRoot(container)
-            root.render(<PluggyWidget setId={setId}/>)
+            root.render(<PluggyWidget setId={setId} setResponseData={setResponseData}/>)
         }
     }
-
-    useEffect(()=>{
-        console.log('id useEffect')
-        const fetchAccounts = async () => {
-            let accountsTemp = await loadAccounts()
-            setAccounts(accountsTemp)
-        }
-        
-        if(id){
-            console.log('id exists: ', id)
-            fetchAccounts()
-        }
-    },[id])
 
     useEffect(() => {
         if(accounts){
@@ -145,11 +140,67 @@ const Extrato = () => {
         setItemId(loadItemFunc)
     }
 
+    const fetchAccounts = async () => {
+        let dataTemp = await loadAccounts()
+        setData(dataTemp)
+    }
+
+    const fetchIdentity = async () => {
+        let dataTemp = await loadIdentity()
+        setData(dataTemp)
+    }
+
+    const fetchLoans = async () => {
+        let dataTemp = await loadLoans()
+        setData(dataTemp)
+    }
+
+    const fetchInvestments = async () => {
+        let dataTemp = await loadInvestments()
+        setData(dataTemp)
+    }
+
+    const handleSelectedProduct = (product) =>{
+        switch (product) {
+            case 'ACCOUNTS':
+                setData(null)
+                fetchAccounts()
+                setDisplayedMenu('accounts')
+            break;
+            
+            case 'IDENTITY':
+                setData(null)
+                fetchIdentity()
+                setDisplayedMenu('identity')
+            break;
+    
+            case 'LOANS':
+                setData(null)
+                fetchLoans()
+                setDisplayedMenu('loans')
+            break;
+    
+            case 'INVESTMENTS':
+                setData(null)
+                fetchInvestments()
+                setDisplayedMenu('investments')
+            break;
+        
+            default:
+            break;
+        }
+        setSelected(true)
+    }
+
     useEffect(()=>{
         if(item){
             console.log('item', item)
         }
     },[item])
+
+    useEffect(()=>{
+        console.log("responseData: ", responseData)
+    },[responseData])
 
     useEffect(() => {
         console.log('clickedRow useEffect')
@@ -193,6 +244,7 @@ const Extrato = () => {
     
             fetchItemData();
         }, [clickedRow]);
+
         return (
             <div className='modal-extrato-background' onClick={() => setIsClicked(false)}>
                 <div className='modal-extrato-container'>
@@ -226,18 +278,26 @@ const Extrato = () => {
                     </div>
                     <hr className='hr-global' />
                     <div className='pluggy-container'>
-                        {   
-                            accounts.length === 0 &&
-                            <button 
-                                className='btn btn-primary btn-global' 
-                                onClick={handleConnectClick}
-                            >
-                            Conectar
-                            </button>
-                        }
+                        <button 
+                            className='btn btn-primary btn-global' 
+                            onClick={handleConnectClick}
+                        >
+                        Conectar
+                        </button>
                     </div>
                     {
-                        accounts.length > 0 && <TabelaAccounts data={accounts} clickRow={handleRowClicked}/>
+                        (responseData !== (undefined && {} && [])) && <MenuExtrato connectorData={responseData.connector} handleProduct={handleSelectedProduct}/>
+                    }
+                    {
+                        selected && 
+                            <div> 
+                                <div>
+                                    { displayedMenu }
+                                </div> 
+                                <div>
+                                    {data && <Tabela data={data}/>}
+                                </div>
+                            </div>
                     }
                     <div ref={widgetContainerRef}></div>
                 </div>
