@@ -24,6 +24,18 @@ export default function GerarRelatorio(){
 	const [tipo, setTipo] = useState('')
 	const [tableData, setTableData] = useState([])
 
+	useEffect(()=>{
+		console.log('export: SALES -> ', salesTableData)
+	},[salesTableData])
+
+	useEffect(()=>{
+		console.log('export: CREDITS -> ', creditsTableData)
+	},[creditsTableData])
+
+	useEffect(()=>{
+		console.log('export: REAIS -> ', servicesTableData)
+	},[servicesTableData])
+
 	useEffect(() => {
 		const updateDateTime = () => {
 		  const now = new Date()
@@ -55,6 +67,9 @@ export default function GerarRelatorio(){
 	  }, [])
 
 	useEffect(()=>{
+		console.log('effect triggered. salesTableData: ', salesTableData)
+		console.log('effect triggered. creditsTableData: ', creditsTableData)
+		console.log('effect triggered. servicesTableData: ', servicesTableData)
 		switch (localStorage.getItem('currentPath')) {
 			case '/vendas':
 				setTipoRelatorio('Relatório de Vendas')
@@ -75,7 +90,7 @@ export default function GerarRelatorio(){
 			default:
 				break
 		}
-	},[localStorage.getItem('currentPath')])
+	},[localStorage.getItem('currentPath'), salesTableData, creditsTableData, servicesTableData])
 
 	// EXCEL ////////////////////////////////////////////////////////////
 	
@@ -248,6 +263,7 @@ export default function GerarRelatorio(){
 			let totalServicos = 0
 	
 			if (tipo === 'vendas') {
+				console.log('tableData VENDAS: ', tableData)
 				columns = ['CNPJ', 'Adquirente', 'Bandeira', 'Produto', 'Subproduto', 'Valor Bruto', 'Valor Líquido', 'Taxa', 'Valor Desconto', 'NSU', 'Data Venda', 'Hora Venda', 'Data Crédito', 'Código Autorização', 'QTD PARC'];
 				rows = tableData.map(rowData => {
 					const valorBruto = Number(rowData.valorBruto)
@@ -265,6 +281,7 @@ export default function GerarRelatorio(){
 					]
 				})
 			} else if (tipo === 'creditos') {
+				console.log('tableData CREDITOS: ', tableData)
 				columns = ['CNPJ', 'Adquirente', 'Bandeira', 'Produto', 'Subproduto', 'Data do Crédito', 'Data da Venda', 'Valor Bruto', 'Valor Líquido', 'Taxa', 'Valor Desconto', 'NSU', 'Código Autorização', 'Parcela', 'QTD Parc'];
 				rows = tableData.map(rowData => {
 					const valorBruto = Number(rowData.valorBruto)
@@ -283,6 +300,7 @@ export default function GerarRelatorio(){
 					]
 				})
 			} else if (tipo === 'servicos') {
+				console.log('tableData SERVIÇOS: ', tableData)
 				columns = ['CNPJ', 'Razão Social', 'Código do estabelecimento', 'Adquirente', 'Valor', 'Data', 'Descrição']
 				rows = tableData.map(rowData => {
 					const valor = Number(rowData.valor)

@@ -1845,9 +1845,10 @@ try {
 			return
 		}
 		setSalesTableData([])
+		let arrayTemp = []
 		if (array.length > 0) {
 			array.map((venda) => {
-				salesTableData.push({
+				arrayTemp.push({
 					cnpj: venda.cnpj,
 					adquirente: venda.adquirente.nomeAdquirente,
 					bandeira: venda.bandeira.descricaoBandeira,
@@ -1868,6 +1869,7 @@ try {
 					tid: venda.tid,
 				})
 			})
+			setSalesTableData(arrayTemp)
 		} 
 	}
 
@@ -1875,10 +1877,11 @@ try {
 		if(array.length === 0){
 			return
 		}
+		let arrayTemp = []
 		setCreditsTableData([])
 		if (array.length > 0) {
 			array.map((venda) => {
-				creditsTableData.push({
+				arrayTemp.push({
 					cnpj: venda.cnpj,
 					adquirente: venda.adquirente.nomeAdquirente,
 					bandeira: venda.bandeira.descricaoBandeira,
@@ -1901,7 +1904,8 @@ try {
 					tid: venda.tid,
 				})
 			})
-		} 
+		}
+		setCreditsTableData(arrayTemp)
 	}
 
 	function exportServices(array){
@@ -1910,9 +1914,11 @@ try {
 			return
 		}
 		servicesTableData.length = 0
+		setServicesTableData([])
+		let arrayTemp = []
 		if (array.length > 0) {
 			array.map((venda) => {
-				servicesTableData.push({
+				arrayTemp.push({
 					cnpj: venda.cnpj,
 					razao_social: venda.razao_social,
 					codigo_estabelecimento: venda.codigo_estabelecimento,
@@ -1922,6 +1928,7 @@ try {
 					descricao: venda.descricao,
 				})
 			})
+			setServicesTableData(arrayTemp)
 		}
 		return servicesTableData
 	}

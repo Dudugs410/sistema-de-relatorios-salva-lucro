@@ -10,6 +10,8 @@ const TabelaVendas = ({array}) =>{
 
 	const { isDarkTheme, dateConvert, 
 			salesDateRange, setSalesTotal,
+			setSalesTableData, salesTableData,
+			exportSales,
 		 } = useContext(AuthContext)
 
 	const [vendasArray, setVendasArray] = useState([])
@@ -289,6 +291,12 @@ const TabelaVendas = ({array}) =>{
 			setVendasExibicao(arrayFiltrado)
 		}
 	},[adqSelecionada])
+
+	useEffect(()=>{
+		if(vendasExibicao.length > 0){
+			exportSales(vendasExibicao)
+		}
+	},[vendasExibicao])
 
 	return(
 		<>

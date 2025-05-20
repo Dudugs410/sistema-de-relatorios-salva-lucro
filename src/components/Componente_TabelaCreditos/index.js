@@ -8,7 +8,7 @@ import { FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward } from 'react-
 
 const TabelaCreditos = ({array}) =>{
 
-	const { dateConvert, creditsDateRange, setCreditsTotal } = useContext(AuthContext)
+	const { dateConvert, creditsDateRange, setCreditsTotal, exportCredits } = useContext(AuthContext)
 
 	const [vendasArray, setVendasArray] = useState([])
 	const [vendasTeste, setVendasTeste] = useState([])
@@ -287,6 +287,12 @@ const TabelaCreditos = ({array}) =>{
 		}
 
 	},[adqSelecionada])
+
+	useEffect(()=>{
+		if(vendasExibicao.length > 0){
+			exportCredits(vendasExibicao)
+		}
+	},[vendasExibicao])
 
 	return(
 		<>

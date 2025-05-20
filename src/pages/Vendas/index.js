@@ -24,6 +24,7 @@ const Vendas = () =>{
     groupByAdmin,
     exportSales, 
     isCheckedCalendar, setIsCheckedCalendar,
+    
   } = useContext(AuthContext)
 
   useEffect(()=>{

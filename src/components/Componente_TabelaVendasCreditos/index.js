@@ -18,6 +18,7 @@ const TabelaVendasCreditos = ({array, tipo, isDashboard}) =>{
 			dataBuscaFinalVendas,
 			dataBuscaInicialCreditos,
 			dataBuscaFinalCreditos,
+			setSalesTableData,
 		 } = useContext(AuthContext)
 
 	const [vendasArray, setVendasArray] = useState([])
@@ -291,6 +292,12 @@ const TabelaVendasCreditos = ({array, tipo, isDashboard}) =>{
 			setBandeirasExistentes(sortedOptions)
 		}
 	}, [bandeirasExistentes])
+
+	useEffect(()=>{
+		if(vendasExibicao){
+			setSalesTableData(vendasExibicao)
+		}
+	},[vendasExibicao])
 
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////

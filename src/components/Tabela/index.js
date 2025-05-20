@@ -1,54 +1,53 @@
-import '../Componente_TabelaVendasCreditos/detalhesCredito.scss';
-import '../../styles/global.scss';
-import { useEffect } from 'react';
-import './tabelaPluggy.scss'
-
 const Tabela = ({ data, clickRow }) => {
-  
-  // Check if data exists and has at least one item
-  if (!data || data.length === 0) {
-    return <div>No data available</div>;
-  }
+  // Determine if we're dealing with a single object or array
+  const isSingleObject = !Array.isArray(data) && typeof data === 'object';
+  const displayData = isSingleObject ? [data] : data || [];
 
-  // Get the keys from the first item to use as column headers
-  const headers = Object.keys(data[0]);
+  // Get headers from the first item's keys (if available)
+  const headers = displayData[0] ? Object.keys(displayData[0]) : [];
 
-  // Function to safely render cell values
   const renderCellValue = (value) => {
-    if (value === null || value === undefined) {
-      return '';
+    if (value === null || value === undefined) return '';
+    
+    // Handle dates
+    if (typeof value === 'string' && !isNaN(Date.parse(value))) {
+      return new Date(value).toLocaleDateString('pt-BR');
     }
-    if (typeof value === 'object' && !Array.isArray(value)) {
-      // For nested objects like bankData, creditData
-      return '[Object]'; // or JSON.stringify(value) if you prefer
+    
+    // Handle arrays and objects
+    if (typeof value === 'object') {
+      return JSON.stringify(value);
     }
-    if (Array.isArray(value)) {
-      // For arrays like disaggregatedCreditLimits
-      return `[Array (${value.length} items)]`;
-    }
+    
     return value.toString();
   };
 
-  useEffect(()=>{
-    console.log('Tabela data: ', data)
-  },[])
+  if (headers.length === 0) {
+    return <div className="p-3 text-center">No data available</div>;
+  }
 
   return (
     <div className='dropShadow vendas-view'>
-			<div className='table-wrapper'>
+      <div className='table-wrapper'>
         <table className='table table-striped table-hover det-table-global'>
           <thead>
             <tr className='det-tr-top-global'>
-              {headers.map((header) => (
-                <th className='det-th-global' key={header}>{header}</th>
+              {headers.map(header => (
+                <th className='det-th-global' key={header}>
+                  {header}
+                </th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {data.map((row) => (
-              <tr className='det-tr-global row-pluggy' key={row.id} onClick={()=>{clickRow(row)}}>
-                {headers.map((header) => (
-                  <td className='det-td-vendas-global' key={`${row.id}-${header}`}>
+            {displayData.map((row, index) => (
+              <tr 
+                className='det-tr-global row-pluggy' 
+                key={row.id || index}
+                onClick={() => clickRow?.(row)}
+              >
+                {headers.map(header => (
+                  <td className='det-td-vendas-global' key={`${row.id || index}-${header}`}>
                     {renderCellValue(row[header])}
                   </td>
                 ))}
