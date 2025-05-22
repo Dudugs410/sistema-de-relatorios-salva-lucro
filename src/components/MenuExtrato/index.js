@@ -39,7 +39,7 @@ const MenuExtrato = ({ connectorData, handleProduct }) => {
   return (
     <Container className="my-4 products-container">
       <h4 className="mb-4">Produtos Disponíveis</h4>
-      <Row xs={2} md={3} lg={4} className="g-4">
+      <Row xs={2} md={3} lg={4} className="g-4 options_export">
         {filteredProducts.map((productCode) => {
           const product = productInfo[productCode]
           
