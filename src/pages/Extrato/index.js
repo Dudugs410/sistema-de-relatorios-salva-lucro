@@ -165,25 +165,25 @@ const Extrato = () => {
             case 'ACCOUNTS':
                 setData(null)
                 fetchAccounts()
-                setDisplayedMenu('accounts')
+                setDisplayedMenu('Contas')
             break;
             
             case 'IDENTITY':
                 setData(null)
                 fetchIdentity()
-                setDisplayedMenu('identity')
+                setDisplayedMenu('Identidade')
             break;
     
             case 'LOANS':
                 setData(null)
                 fetchLoans()
-                setDisplayedMenu('loans')
+                setDisplayedMenu('Empréstimos')
             break;
     
             case 'INVESTMENTS':
                 setData(null)
                 fetchInvestments()
-                setDisplayedMenu('investments')
+                setDisplayedMenu('Investimentos')
             break;
         
             default:
