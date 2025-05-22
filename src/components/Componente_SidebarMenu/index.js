@@ -1,58 +1,58 @@
-import React, { useContext, useState, useEffect } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './Sidebar.scss';
-import salvaLucroLogoBranco from '../../assets/LogoTopo.png';
+import React, { useContext, useState, useEffect } from 'react'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import './Sidebar.scss'
+import salvaLucroLogoBranco from '../../assets/LogoTopo.png'
 import { FiMoon, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText, FiClipboard, FiDownload, FiCalendar, FiPaperclip, FiSettings, FiTruck, FiShoppingBag, FiTable, FiLink } from "react-icons/fi"
-import { Collapse, Nav, Navbar, NavItem, NavLink, Button } from 'reactstrap';
-import { AuthContext } from '../../contexts/auth';
-import { FiMenu } from 'react-icons/fi'; // Import the menu icon
-import { useNavigate } from 'react-router-dom';
+import { Collapse, Nav, Navbar, NavItem, NavLink, Button } from 'reactstrap'
+import { AuthContext } from '../../contexts/auth'
+import { FiMenu } from 'react-icons/fi'
+import { useNavigate } from 'react-router-dom'
 
 const Sidebar = () => {
-    const { logout } = useContext(AuthContext);
-    const [isOpen, setIsOpen] = useState(false);
-    const [activeChild, setActiveChild] = useState(null);
-    const [optionsWithIcons, setOptionsWithIcons] = useState([]);
-    const [activeParent, setActiveParent] = useState(null);
-    const [lastClicked, setLastClicked] = useState(null); // Track the last clicked option
-    const [sidebarVisible, setSidebarVisible] = useState(false);
+    const { logout } = useContext(AuthContext)
+    const [isOpen, setIsOpen] = useState(false)
+    const [activeChild, setActiveChild] = useState(null)
+    const [optionsWithIcons, setOptionsWithIcons] = useState([])
+    const [activeParent, setActiveParent] = useState(null)
+    const [lastClicked, setLastClicked] = useState(null)
+    const [sidebarVisible, setSidebarVisible] = useState(false)
 
-    const navigate = useNavigate();
+    const navigate = useNavigate()
 
     const toggleDropdown = (parent) => {
         if (activeParent === parent) {
-            setActiveParent(null); // Close the dropdown if it's already open
-            setActiveChild(null); // Reset any active child when closing the parent
+            setActiveParent(null)
+            setActiveChild(null)
         } else {
-            setActiveParent(parent);
-            setActiveChild(null); // Reset any active child when a new parent is selected
-            setLastClicked(parent); // Track this parent as the last clicked
+            setActiveParent(parent)
+            setActiveChild(null)
+            setLastClicked(parent)
         }
     }
 
     const handleChildClick = (child, navigationLink, parent) => {
-        setActiveChild(child);
-        setLastClicked(child); // Track this child as the last clicked
-        setActiveParent(parent); // Keep the parent active
-        navigate(navigationLink);
-        setSidebarVisible(false); // Optionally close the sidebar after navigation
-    };
+        setActiveChild(child)
+        setLastClicked(child)
+        setActiveParent(parent)
+        navigate(navigationLink)
+        setSidebarVisible(false)
+    }
 
     const handleParentClickWithoutChildren = (parent, navigationLink) => {
-        setActiveParent(parent); // Mark this parent as active
-        setActiveChild(null); // Reset the active child
-        setLastClicked(parent); // Track this parent as the last clicked
-        navigate(navigationLink);
-        setSidebarVisible(false); // Optionally close the sidebar after navigation
-    };
+        setActiveParent(parent)
+        setActiveChild(null)
+        setLastClicked(parent)
+        navigate(navigationLink)
+        setSidebarVisible(false)
+    }
 
     const handleLogo = () => {
-        navigate('/dashboard');
-    };
+        navigate('/dashboard')
+    }
 
     const toggleSidebar = () => {
-        setSidebarVisible(!sidebarVisible); // Toggle sidebar visibility
-    };
+        setSidebarVisible(!sidebarVisible)
+    }
 
     useEffect(() => {
         const icones = {
@@ -68,7 +68,7 @@ const Sidebar = () => {
             'FiTruck': FiTruck,
             'FiShoppingBag': FiShoppingBag,
             'FiTable': FiTable,
-        };
+        }
 
         const orderedOptions = [
             { nome: 'Início', icone: icones['FiHome'], rota: '/dashboard' },
@@ -80,7 +80,7 @@ const Sidebar = () => {
         ];
 
         setOptionsWithIcons(orderedOptions);
-    }, []);
+    }, [])
 
     return (
         <>

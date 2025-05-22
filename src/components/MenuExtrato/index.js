@@ -3,13 +3,11 @@ import { Container, Row, Col, Card } from 'react-bootstrap';
 import './menuExtrato.scss';
 
 const MenuExtrato = ({ connectorData, handleProduct }) => {
-  // Return early if no data
 
   if (!connectorData) {
     return <></>;
   }
 
-  // Product mapping
   const productInfo = {
     ACCOUNTS: { name: 'Contas', icon: '💰' },
     //CREDIT_CARDS: { name: 'Cartões', icon: '💳' },
@@ -24,20 +22,16 @@ const MenuExtrato = ({ connectorData, handleProduct }) => {
     //INCOME_REPORTS: { name: 'Relatórios de Renda', icon: '📄' }
   }
 
-  // Get available product codes from the mapping (not from connectorData)
   const availableProductCodes = Object.keys(productInfo)
   
-  // Filter connector's products to only include those in our mapping
   const filteredProducts = (connectorData.products || [])
     .filter(productCode => availableProductCodes.includes(productCode))
 
-  // Handle product selection
   const handleProductSelect = (product) => {
     console.log('Selected product:', product)
     handleProduct(product)
-  };
+  }
 
-  // If no matching products available
   if (filteredProducts.length === 0) {
     return <div className="text-muted py-3">Nenhum produto disponível</div>
   }
