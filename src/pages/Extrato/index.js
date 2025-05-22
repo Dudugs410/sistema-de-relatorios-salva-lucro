@@ -290,11 +290,11 @@ const Extrato = () => {
                     }
                     {
                         selected && 
-                            <div> 
+                            <div className='tabela-extrato-container'> 
                                 <div>
                                     { displayedMenu }
                                 </div> 
-                                <div>
+                                <div >
                                     {data && <Tabela data={data}/>}
                                 </div>
                             </div>
