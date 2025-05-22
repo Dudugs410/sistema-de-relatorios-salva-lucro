@@ -1,29 +1,25 @@
 const Tabela = ({ data, clickRow }) => {
-  // Determine if we're dealing with a single object or array
-  const isSingleObject = !Array.isArray(data) && typeof data === 'object';
-  const displayData = isSingleObject ? [data] : data || [];
+  const isSingleObject = !Array.isArray(data) && typeof data === 'object'
+  const displayData = isSingleObject ? [data] : data || []
 
-  // Get headers from the first item's keys (if available)
-  const headers = displayData[0] ? Object.keys(displayData[0]) : [];
+  const headers = displayData[0] ? Object.keys(displayData[0]) : []
 
   const renderCellValue = (value) => {
-    if (value === null || value === undefined) return '';
+    if (value === null || value === undefined) return ''
     
-    // Handle dates
     if (typeof value === 'string' && !isNaN(Date.parse(value))) {
-      return new Date(value).toLocaleDateString('pt-BR');
+      return new Date(value).toLocaleDateString('pt-BR')
     }
-    
-    // Handle arrays and objects
+
     if (typeof value === 'object') {
-      return JSON.stringify(value);
+      return JSON.stringify(value)
     }
-    
-    return value.toString();
-  };
+
+    return value.toString()
+  }
 
   if (headers.length === 0) {
-    return <div className="p-3 text-center">No data available</div>;
+    return <div className="p-3 text-center">No data available</div>
   }
 
   return (
@@ -57,7 +53,7 @@ const Tabela = ({ data, clickRow }) => {
         </table>
       </div>
     </div>
-  );
-};
+  )
+}
 
 export default Tabela;
