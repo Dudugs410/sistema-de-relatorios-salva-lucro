@@ -19,10 +19,15 @@ const Dashboard = () => {
   // Joyride state
   const [runTutorial, setRunTutorial] = useState(false)
   const [steps] = useState([
+	{
+      target: '[data-tour="trocar-section"]',
+      content: 'Este botão permite trocar o Cliente/Filial, caso exista mais de um. O que for selecionado terá seus dados exibidos nos gráficos do dashboard',
+	  disableBeacon: true,
+      placement: 'bottom'
+    },
     {
       target: '[data-tour="sales-section"]',
       content: 'Esta seção mostra seus dados de vendas, incluindo totais mensais e desempenho dos últimos 4 dias.',
-      disableBeacon: true,
       placement: 'bottom'
     },
     {
@@ -35,16 +40,6 @@ const Dashboard = () => {
       content: 'Esta seção exibe dados de serviços com o total de hoje e o resumo mensal.',
       placement: 'bottom'
     },
-    {
-      target: '.btn-global',
-      content: 'Use estes botões para recarregar os dados quando necessário.',
-      placement: 'top'
-    },
-    {
-      target: '.pie-chart-container',
-      content: 'Estes gráficos mostram a distribuição dos seus dados por administrador.',
-      placement: 'right'
-    }
   ])
 
   const {  
@@ -264,8 +259,8 @@ const Dashboard = () => {
         showSkipButton={true}
         styles={{
           options: {
-            primaryColor: '#4a6bdf',
-            textColor: '#333',
+            primaryColor: '#99cc33',
+            textColor: '#0a3d70',
             zIndex: 10000,
           }
         }}
@@ -315,6 +310,7 @@ const Dashboard = () => {
       </div>
       
       <button 
+	  	className='btn btn-success-dados px-2 py-1'
         onClick={() => setRunTutorial(true)}
         style={{
           position: 'fixed',
@@ -322,8 +318,8 @@ const Dashboard = () => {
           right: '20px',
           zIndex: 1000,
           padding: '10px 15px',
-          background: '#4a6bdf',
-          color: 'white',
+          background: '#99cc33',
+          color: '#0a3d70',
           border: 'none',
           borderRadius: '5px',
           cursor: 'pointer'
