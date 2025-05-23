@@ -110,16 +110,16 @@ const Vendas = () =>{
   const CustomCheckbox = ({ isChecked, handleCheckboxChange }) => {
     return (
         <label className="checkbox-label">
-        <input
-            type="checkbox"
-            checked={isChecked}
-            onChange={handleCheckboxChange}
-            className='checkbox-input'
-        />
-        <span className='checkbox-custom'></span> {/* aparencia da checkbox-custom */}
-        <span className='checkbox-icon'>
-            <FiCalendar className={`calendar-icon ${isCheckedCalendar ? 'isCheckedCalendar' : ''}`} size={20} />
-        </span>
+          <input
+              type="checkbox"
+              checked={isChecked}
+              onChange={handleCheckboxChange}
+              className='checkbox-input'
+          />
+          <span className='checkbox-custom'></span> {/* aparencia da checkbox-custom */}
+          <span className='checkbox-icon'>
+              <FiCalendar className={`calendar-icon ${isCheckedCalendar ? 'isCheckedCalendar' : ''}`} size={20} />
+          </span>
         </label>
     )
 }
