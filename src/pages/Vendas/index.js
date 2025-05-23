@@ -1,5 +1,6 @@
-import { useEffect, useContext } from 'react'
+import { useEffect, useContext, useState } from 'react'
 import './vendas.scss'
+import Joyride from 'react-joyride'
 import { AuthContext } from '../../contexts/auth'
 import { useLocation } from 'react-router-dom'
 import '../../index.scss'
@@ -14,6 +15,41 @@ const Vendas = () =>{
   useEffect(() => {
       localStorage.setItem('currentPath', location.pathname)
   }, [location])
+
+    // Joyride state
+    const [runTutorial, setRunTutorial] = useState(false)
+    const [steps] = useState([
+    {
+        target: '[data-tour="calendario-section"]',
+        content: 'Clique em duas vezes em uma data, ou uma vez na data inicial e uma vez em uma data final para exibir as vendas referentes à essas datas.',
+        disableBeacon: true,
+        placement: 'bottom'
+      },
+      {
+        target: '[data-tour="pesquisar-section"]',
+        content: 'Tendo a data selecionada, clique aqui para realizar a pesquisa da data/período selecionado.',
+        placement: 'bottom'
+      },
+    ])
+
+      // Check if it's the user's first visit
+      useEffect(() => {
+        localStorage.setItem('currentPath', location.pathname)
+        
+        const tutorialCompleted = localStorage.getItem('dashboardTutorialCompleted')
+        if (!tutorialCompleted) {
+          // Wait a moment for the DOM to fully render
+          const timer = setTimeout(() => {
+            setRunTutorial(true)
+          }, 1000)
+          return () => clearTimeout(timer)
+        }
+      }, [location, ])
+    
+      const handleTutorialEnd = () => {
+        setRunTutorial(false)
+        localStorage.setItem('dashboardTutorialCompleted', 'true')
+      }
 
   const {
     salesPageArray, setSalesPageArray,
@@ -136,7 +172,36 @@ const handleCheckboxChangeCalendar = () => {
             <h1 className='vendas-title'>Calendário de Vendas</h1>
           </div>
           {/*<CustomCheckbox isChecked={isCheckedCalendar} handleCheckboxChange={handleCheckboxChangeCalendar}/>*/}
-          <div className='component-container-vendas'>
+          <div data-tour="calendario-section"className='component-container-vendas'>
+              { runTutorial &&
+                  <Joyride
+                    steps={steps}
+                    run={runTutorial}
+                    continuous={true}
+                    scrollToFirstStep={true}
+                    showProgress={true}
+                    showSkipButton={true}
+                    styles={{
+                      options: {
+                        primaryColor: '#99cc33',
+                        textColor: '#0a3d70',
+                        zIndex: 10000,
+                      }
+                    }}
+                    callback={(data) => {
+                      if (data.status === 'finished' || data.status === 'skipped') {
+                        handleTutorialEnd()
+                      }
+                    }}
+                    locale={{
+                      back: 'Voltar',
+                      close: 'Fechar',
+                      last: 'Finalizar',
+                      next: 'Próximo',
+                      skip: 'Pular'
+                    }}
+                  />	
+              }
             {salesPageArray !== null ? (
               salesPageArray.length > 0 ? (
                   <DisplayData
@@ -153,6 +218,24 @@ const handleCheckboxChangeCalendar = () => {
                   />
                 )
               ) : null }
+                  <button 
+                    className='btn btn-success-dados px-2 py-1'
+                      onClick={() => setRunTutorial(true)}
+                      style={{
+                        position: 'fixed',
+                        bottom: '20px',
+                        right: '20px',
+                        zIndex: 1000,
+                        padding: '10px 15px',
+                        background: '#99cc33',
+                        color: '#0a3d70',
+                        border: 'none',
+                        borderRadius: '5px',
+                        cursor: 'pointer'
+                      }}
+                  >
+        Mostrar Tutorial
+      </button>
           </div>
         </div>
       </div>

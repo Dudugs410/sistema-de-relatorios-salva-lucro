@@ -113,7 +113,7 @@ const MyCalendar = (props) => {
             </span>
           </div>
           <hr className='hr-global'/>
-          { showPesquisar === true ? <button className='btn btn-primary btn-global btn-pesquisar' onClick={ onLoadData } disabled={btnDisabled}>Pesquisar</button> : <></> }
+          { showPesquisar === true ? <button data-tour="pesquisar-section" className='btn btn-primary btn-global btn-pesquisar' onClick={ onLoadData } disabled={btnDisabled}>Pesquisar</button> : <></> }
           { showPesquisar === true ? <hr className='hr-global'/> : <></> }
         </div>
       )
