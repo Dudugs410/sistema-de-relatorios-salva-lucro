@@ -301,7 +301,7 @@ const TabelaVendas = ({array}) =>{
 	return(
 		<>
 			<div className='date-container'>
-					<div className='container'>
+					<div data-tour="bandeiraadquirente-section" className='container'>
 						<div className='export-column'>
 							<div className='select-card select-align select-align-filtro'>
 								<span className='span-str'>Adquirente</span>
@@ -336,7 +336,7 @@ const TabelaVendas = ({array}) =>{
 				</div>
 			</div>
 			<hr className='hr-global'/>
-			<div className='dropShadow vendas-view'>
+			<div data-tour="tabelavendas-section" className='dropShadow vendas-view'>
 				<div className='table-wrapper'>
 					<table className='table table-striped table-hover det-table-global'>
 						<thead>

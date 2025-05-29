@@ -2,6 +2,7 @@ import { useEffect, useContext, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { AuthContext } from '../../contexts/auth'
 import Cookies from 'js-cookie'
+import Joyride from 'react-joyride'
 import '../../styles/global.scss'
 import './taxas.scss'
 import Select from 'react-select'
@@ -45,6 +46,97 @@ const Taxas = () => {
     useEffect(() => {
         localStorage.setItem('currentPath', location.pathname)
     }, [])
+
+    // Joyride state
+    const [runTutorial, setRunTutorial] = useState(false)
+    const [runTutorialTaxas, setRunTutorialTaxas] = useState(false)
+    const [runTutorialTaxasTable, setRunTutorialTaxasTable] = useState(false)
+    
+    const [steps] = useState([
+    {
+        target: '[data-tour="trocar-section"]',
+        content: 'Utilize o botão "Trocar" para selecionar um cliente específico, dando assim a opção de cadastrar taxas, ou consultar taxas existentes',
+        disableBeacon: true,
+        placement: 'bottom'
+    },
+    ])
+
+    const [stepsTaxas] = useState([
+    {
+        target: '[data-tour="cadastrar-taxa-section"]',
+        content: 'Clique aqui para cadastrar taxas para o cliente selecionado.',
+        placement: 'bottom'
+    },
+    ])
+
+    const [stepsTaxasTable] = useState([
+    {
+        target: '[data-tour="editar-taxa-section"]',
+        content: 'Clique aqui para editar a taxa correspondente.',
+        placement: 'top'
+    },
+    {
+        target: '[data-tour="deletar-taxa-section"]',
+        content: 'Clique aqui para excluir a taxa correspondente.',
+        placement: 'top'
+    },
+    {
+        target: '[data-tour="filtrar-taxa-section"]',
+        content: 'Utilize este campo para filtrar as taxas exibidas.',
+        placement: 'top'
+    },
+    ])
+
+    useEffect(() => {
+        localStorage.setItem('currentPath', location.pathname)
+        
+        const tutorialCompleted = localStorage.getItem('taxasTutorialCompleted')
+        if (!tutorialCompleted) {
+        // Wait a moment for the DOM to fully render
+        const timer = setTimeout(() => {
+            setRunTutorial(true)
+        }, 1000)
+        return () => clearTimeout(timer)
+        }
+    }, [location])
+
+    useEffect(() => {
+        if(taxesList.length === 0){
+        const tutorialCompleted = localStorage.getItem('taxasTaxasTutorialCompleted')
+            if (!tutorialCompleted) {
+                // Wait a moment for the DOM to fully render
+                const timer = setTimeout(() => {
+                    setRunTutorialTaxas(true)
+                }, 1000)
+                return () => clearTimeout(timer)
+            }
+        }
+        else {
+        const tutorialCompleted = localStorage.getItem('taxasTutorialCompleted')
+        if (!tutorialCompleted) {
+            // Wait a moment for the DOM to fully render
+            const timer = setTimeout(() => {
+                setRunTutorialTaxasTable(true)
+            }, 1000)
+            return () => clearTimeout(timer)
+            }
+        }
+    }, [taxesList])
+    
+    const handleTutorialEnd = () => {
+        setRunTutorial(false)
+        localStorage.setItem('taxasTutorialCompleted', 'true')
+    }
+
+    const handleTaxasTutorialEnd = () => {
+        setRunTutorial(false)
+        localStorage.setItem('taxasTaxasTutorialCompleted', 'true')
+    }
+
+    const handleTaxasTableTutorialEnd = () => {
+        setRunTutorial(false)
+        localStorage.setItem('taxasTableTutorialCompleted', 'true')
+    }
 
     useEffect(() => {
         async function inicialize() {
@@ -270,7 +362,36 @@ const Taxas = () => {
 
         return (
             <>
-                <div>
+                { runTutorialTaxasTable &&
+                    <Joyride
+                    steps={stepsTaxasTable}
+                    run={runTutorialTaxasTable}
+                    continuous={true}
+                    scrollToFirstStep={true}
+                    showProgress={true}
+                    showSkipButton={true}
+                    styles={{
+                        options: {
+                        primaryColor: '#99cc33',
+                        textColor: '#0a3d70',
+                        zIndex: 10000,
+                        }
+                    }}
+                    callback={(data) => {
+                        if (data.status === 'finished' || data.status === 'skipped') {
+                            handleTaxasTableTutorialEnd()
+                        }
+                    }}
+                    locale={{
+                        back: 'Voltar',
+                        close: 'Fechar',
+                        last: 'Finalizar',
+                        next: 'Próximo',
+                        skip: 'Pular'
+                    }}
+                    />	
+                }
+                <div data-tour="filtrar-taxa-section">
                     <input
                         type="text"
                         placeholder="Digite para Filtrar..."
@@ -284,7 +405,7 @@ const Taxas = () => {
                         <thead>
                             <tr className='det-tr-top-global'>
                                 <th className='det-th-global sticky-col start-col' scope="col" style={{ width: '2%', textAlign: 'center' }}>
-                                    <button className="btn btn-primary btn-global" style={{ width: '100%' }} onClick={() => { setIsModalOpen(true) }}>
+                                    <button data-tour="cadastrar-taxa-section" className="btn btn-primary btn-global" style={{ width: '100%' }} onClick={() => { setIsModalOpen(true) }}>
                                         <FiPlus size={25} className="icon" />
                                     </button>
                                 </th>
@@ -300,7 +421,7 @@ const Taxas = () => {
                             {currentItems.length > 0 &&
                                 currentItems.map((object, index) => (
                                     <tr key={index} className="det-tr-global tr-taxas">
-                                        <th className='sticky-col start-col' scope="row" style={{ textAlign: 'center' }} onClick={() => { handleEdit(object) }}>
+                                        <th data-tour="editar-taxa-section" className='sticky-col start-col' scope="row" style={{ textAlign: 'center' }} onClick={() => { handleEdit(object) }}>
                                             <FiEdit className="icon" />
                                         </th>
                                         <td className="det-td-vendas-global" data-label="BADDESCRICAO">{object.BADDESCRICAO}</td>
@@ -308,7 +429,7 @@ const Taxas = () => {
                                         <td className="det-td-vendas-global" data-label="MODDESCRICAO">{object.MODDESCRICAO}</td>
                                         <td className="det-td-vendas-global" data-label="TIPOTAXA">{object.TIPOTAXA}</td>
                                         <td className="det-td-vendas-global" data-label="TAXAPERCENTUAL">{object.TAXAPERCENTUAL} %</td>
-                                        <th className='sticky-col end-col' scope="row" style={{ textAlign: 'center' }} onClick={() => handleDelete(object)}>
+                                        <th data-tour="deletar-taxa-section" className='sticky-col end-col' scope="row" style={{ textAlign: 'center' }} onClick={() => handleDelete(object)}>
                                             <FiTrash className="icon" />
                                         </th>
                                     </tr>
@@ -665,6 +786,64 @@ const Taxas = () => {
     
     return (
         <div className='appPage'>
+            { runTutorial &&
+                <Joyride
+                steps={steps}
+                run={runTutorial}
+                continuous={true}
+                scrollToFirstStep={true}
+                showProgress={true}
+                showSkipButton={true}
+                styles={{
+                    options: {
+                    primaryColor: '#99cc33',
+                    textColor: '#0a3d70',
+                    zIndex: 10000,
+                    }
+                }}
+                callback={(data) => {
+                    if (data.status === 'finished' || data.status === 'skipped') {
+                        handleTutorialEnd()
+                    }
+                }}
+                locale={{
+                    back: 'Voltar',
+                    close: 'Fechar',
+                    last: 'Finalizar',
+                    next: 'Próximo',
+                    skip: 'Pular'
+                }}
+                />	
+            }
+            { runTutorialTaxas &&
+                <Joyride
+                steps={stepsTaxas}
+                run={runTutorialTaxas}
+                continuous={true}
+                scrollToFirstStep={true}
+                showProgress={true}
+                showSkipButton={true}
+                styles={{
+                    options: {
+                    primaryColor: '#99cc33',
+                    textColor: '#0a3d70',
+                    zIndex: 10000,
+                    }
+                }}
+                callback={(data) => {
+                    if (data.status === 'finished' || data.status === 'skipped') {
+                    handleTaxasTutorialEnd()
+                    }
+                }}
+                locale={{
+                    back: 'Voltar',
+                    close: 'Fechar',
+                    last: 'Finalizar',
+                    next: 'Próximo',
+                    skip: 'Pular'
+                }}
+                />	
+            }
             <Overlay isVisible={isOverlayVisible}/>
             <div className='page-background-global'>
                 <div className='page-content-global'>

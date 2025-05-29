@@ -405,7 +405,7 @@ export default function GerarRelatorio(){
 
 	return(
 		<>
-			<div className='container'>
+			<div data-tour="exportacao-section" className='container'>
 				<div className='export-column'>
 					<button className="btn btn-exportar btn-exportar-excel" onClick={exportToExcel}>Download Excel <FiFilePlus /></button>
 				</div>

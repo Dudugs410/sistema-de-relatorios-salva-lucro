@@ -6,7 +6,7 @@ import '../../styles/global.scss'
 
 export default function TabelaGenericaAdm({Array, textColor}) {
 	return (
-		<div>
+		<div data-tour="totaladq-section">
 			{ 
 				Array ?
 					<div className='content tabela-adm-content'>

@@ -16,41 +16,6 @@ const Vendas = () =>{
       localStorage.setItem('currentPath', location.pathname)
   }, [location])
 
-    // Joyride state
-    const [runTutorial, setRunTutorial] = useState(false)
-    const [steps] = useState([
-    {
-        target: '[data-tour="calendario-section"]',
-        content: 'Clique em duas vezes em uma data, ou uma vez na data inicial e uma vez em uma data final para exibir as vendas referentes à essas datas.',
-        disableBeacon: true,
-        placement: 'bottom'
-      },
-      {
-        target: '[data-tour="pesquisar-section"]',
-        content: 'Tendo a data selecionada, clique aqui para realizar a pesquisa da data/período selecionado.',
-        placement: 'bottom'
-      },
-    ])
-
-      // Check if it's the user's first visit
-      useEffect(() => {
-        localStorage.setItem('currentPath', location.pathname)
-        
-        const tutorialCompleted = localStorage.getItem('dashboardTutorialCompleted')
-        if (!tutorialCompleted) {
-          // Wait a moment for the DOM to fully render
-          const timer = setTimeout(() => {
-            setRunTutorial(true)
-          }, 1000)
-          return () => clearTimeout(timer)
-        }
-      }, [location, ])
-    
-      const handleTutorialEnd = () => {
-        setRunTutorial(false)
-        localStorage.setItem('dashboardTutorialCompleted', 'true')
-      }
-
   const {
     salesPageArray, setSalesPageArray,
     salesPageAdminArray, setSalesPageAdminArray,
@@ -164,6 +129,40 @@ const handleCheckboxChangeCalendar = () => {
   setIsCheckedCalendar(!isCheckedCalendar) // Toggle the state
   }
 
+  // Joyride state
+
+  const [runTutorial, setRunTutorial] = useState(false)
+  const [steps, setSteps] = useState([
+    {
+      target: '[data-tour="calendario-section"]',
+      content: 'Clique em duas vezes em uma data para selecioná-la, ou uma vez em uma data inicial e uma vez em uma data final para selecionar o período começando e terminando nas datas selecionadas.',
+      disableBeacon: true,
+      placement: 'bottom'
+    },
+    {
+      target: '[data-tour="pesquisar-section"]',
+      content: 'Tendo a data selecionada, clique em "Pesquisar" para realizar a consulta das vendas da data ou período selecionado.',
+      placement: 'bottom'
+    },
+  ])
+
+  useEffect(() => {
+    localStorage.setItem('currentPath', location.pathname)
+    const tutorialCompleted = localStorage.getItem('vendasCalendarTutorialCompleted')
+    if (!tutorialCompleted) {
+      // Wait a moment for the DOM to fully render
+      const timer = setTimeout(() => {
+        setRunTutorial(true)
+      }, 1000)
+      return () => clearTimeout(timer)
+    }
+  }, [location])
+
+  const handleTutorialEnd = () => {
+    setRunTutorial(false)
+    localStorage.setItem('vendasCalendarTutorialCompleted', 'true')
+  }
+
   return(
     <div className='appPage'>
       <div className='page-vendas-background'>
@@ -172,7 +171,7 @@ const handleCheckboxChangeCalendar = () => {
             <h1 className='vendas-title'>Calendário de Vendas</h1>
           </div>
           {/*<CustomCheckbox isChecked={isCheckedCalendar} handleCheckboxChange={handleCheckboxChangeCalendar}/>*/}
-          <div data-tour="calendario-section"className='component-container-vendas'>
+          <div data-tour="calendario-section" className='component-container-vendas'>
               { runTutorial &&
                   <Joyride
                     steps={steps}
@@ -218,24 +217,24 @@ const handleCheckboxChangeCalendar = () => {
                   />
                 )
               ) : null }
-                  <button 
-                    className='btn btn-success-dados px-2 py-1'
-                      onClick={() => setRunTutorial(true)}
-                      style={{
-                        position: 'fixed',
-                        bottom: '20px',
-                        right: '20px',
-                        zIndex: 1000,
-                        padding: '10px 15px',
-                        background: '#99cc33',
-                        color: '#0a3d70',
-                        border: 'none',
-                        borderRadius: '5px',
-                        cursor: 'pointer'
-                      }}
-                  >
-        Mostrar Tutorial
-      </button>
+            <button 
+              className='btn btn-success-dados px-2 py-1'
+                onClick={() => setRunTutorial(true)}
+                style={{
+                  position: 'fixed',
+                  bottom: '20px',
+                  right: '20px',
+                  zIndex: 1000,
+                  padding: '10px 15px',
+                  background: '#99cc33',
+                  color: '#0a3d70',
+                  border: 'none',
+                  borderRadius: '5px',
+                  cursor: 'pointer'
+                }}
+                        >
+              Mostrar Tutorial
+            </button>
           </div>
         </div>
       </div>
