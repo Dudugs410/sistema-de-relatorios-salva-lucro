@@ -250,6 +250,7 @@ const Dashboard = () => {
 
   return (
     <>
+	{ runTutorial &&
       <Joyride
         steps={steps}
         run={runTutorial}
@@ -276,8 +277,8 @@ const Dashboard = () => {
           next: 'Próximo',
           skip: 'Pular'
         }}
-      />
-      
+      />	
+	}
       <div className='appPage'>
         <div className='content-area dash'>
           <div className='data-group-area' data-tour="sales-section">

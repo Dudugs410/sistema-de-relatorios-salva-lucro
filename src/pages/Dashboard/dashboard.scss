@@ -108,45 +108,6 @@
   text-align: center;
 }
 
-/* Joyride tooltip styles */
-.react-joyride__tooltip {
-  font-family: inherit;
-  border-radius: 8px;
-  max-width: 320px;
-  
-  h4 {
-    color: #4a6bdf;
-    margin-bottom: 8px;
-  }
-  
-  button {
-    &[data-action='primary'] {
-      background: #4a6bdf;
-      color: white;
-      
-      &:hover {
-        background: darken(#4a6bdf, 10%);
-      }
-    }
-    
-    &[data-action='back'] {
-      color: #4a6bdf;
-    }
-    
-    &[data-action='skip'] {
-      color: #666;
-    }
-  }
-}
-
-.react-joyride__spotlight {
-  border-radius: 8px;
-}
-
-.react-joyride__beacon {
-  z-index: 10001;
-}
-
 @media screen and (max-width: 869px){
   .title-chart{
     display: inline-flex; 

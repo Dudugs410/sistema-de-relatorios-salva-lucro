@@ -12,7 +12,7 @@ const TotalModalidadesComp = ({totals}) =>{
 	return(
 		<>
 			<hr className="hr-global"/>
-			<div className='content-container-modalidade'>
+			<div data-tour="modalidade-section" className='content-container-modalidade'>
 				<div className='total-container-modalidade'>
 					<div className='text-container-modalidade'>
 						<h1 className='title-modalidade'>Débito</h1>
