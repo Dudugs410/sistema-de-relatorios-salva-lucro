@@ -49,10 +49,7 @@ const Taxas = () => {
 
     // Joyride state
     const [runTutorial, setRunTutorial] = useState(false)
-    const [runTutorialTaxas, setRunTutorialTaxas] = useState(false)
-    const [runTutorialTaxasTable, setRunTutorialTaxasTable] = useState(false)
-    
-    const [steps] = useState([
+    const [steps, setSteps] = useState([
     {
         target: '[data-tour="trocar-section"]',
         content: 'Utilize o botão "Trocar" para selecionar um cliente específico, dando assim a opção de cadastrar taxas, ou consultar taxas existentes',
@@ -61,7 +58,7 @@ const Taxas = () => {
     },
     ])
 
-    const [stepsTaxas] = useState([
+    const [stepsNoTaxas] = useState([
     {
         target: '[data-tour="cadastrar-taxa-section"]',
         content: 'Clique aqui para cadastrar taxas para o cliente selecionado.',
@@ -69,7 +66,7 @@ const Taxas = () => {
     },
     ])
 
-    const [stepsTaxasTable] = useState([
+    const [stepsTaxas] = useState([
     {
         target: '[data-tour="editar-taxa-section"]',
         content: 'Clique aqui para editar a taxa correspondente.',
@@ -80,62 +77,22 @@ const Taxas = () => {
         content: 'Clique aqui para excluir a taxa correspondente.',
         placement: 'top'
     },
-    {
-        target: '[data-tour="filtrar-taxa-section"]',
-        content: 'Utilize este campo para filtrar as taxas exibidas.',
-        placement: 'top'
-    },
     ])
 
     useEffect(() => {
-        localStorage.setItem('currentPath', location.pathname)
-        
+        localStorage.setItem('currentPath', location.pathname)        
         const tutorialCompleted = localStorage.getItem('taxasTutorialCompleted')
         if (!tutorialCompleted) {
-        // Wait a moment for the DOM to fully render
-        const timer = setTimeout(() => {
-            setRunTutorial(true)
-        }, 1000)
-        return () => clearTimeout(timer)
-        }
-    }, [location])
-
-    useEffect(() => {
-        if(taxesList.length === 0){
-        const tutorialCompleted = localStorage.getItem('taxasTaxasTutorialCompleted')
-            if (!tutorialCompleted) {
-                // Wait a moment for the DOM to fully render
-                const timer = setTimeout(() => {
-                    setRunTutorialTaxas(true)
-                }, 1000)
-                return () => clearTimeout(timer)
-            }
-        }
-        else {
-        const tutorialCompleted = localStorage.getItem('taxasTutorialCompleted')
-        if (!tutorialCompleted) {
-            // Wait a moment for the DOM to fully render
             const timer = setTimeout(() => {
-                setRunTutorialTaxasTable(true)
+                setRunTutorial(true)
             }, 1000)
             return () => clearTimeout(timer)
-            }
         }
-    }, [taxesList])
+    }, [location, steps])
     
     const handleTutorialEnd = () => {
         setRunTutorial(false)
         localStorage.setItem('taxasTutorialCompleted', 'true')
-    }
-
-    const handleTaxasTutorialEnd = () => {
-        setRunTutorial(false)
-        localStorage.setItem('taxasTaxasTutorialCompleted', 'true')
-    }
-
-    const handleTaxasTableTutorialEnd = () => {
-        setRunTutorial(false)
-        localStorage.setItem('taxasTableTutorialCompleted', 'true')
     }
 
     useEffect(() => {
@@ -362,36 +319,7 @@ const Taxas = () => {
 
         return (
             <>
-                { runTutorialTaxasTable &&
-                    <Joyride
-                    steps={stepsTaxasTable}
-                    run={runTutorialTaxasTable}
-                    continuous={true}
-                    scrollToFirstStep={true}
-                    showProgress={true}
-                    showSkipButton={true}
-                    styles={{
-                        options: {
-                        primaryColor: '#99cc33',
-                        textColor: '#0a3d70',
-                        zIndex: 10000,
-                        }
-                    }}
-                    callback={(data) => {
-                        if (data.status === 'finished' || data.status === 'skipped') {
-                            handleTaxasTableTutorialEnd()
-                        }
-                    }}
-                    locale={{
-                        back: 'Voltar',
-                        close: 'Fechar',
-                        last: 'Finalizar',
-                        next: 'Próximo',
-                        skip: 'Pular'
-                    }}
-                    />	
-                }
-                <div data-tour="filtrar-taxa-section">
+                <div>
                     <input
                         type="text"
                         placeholder="Digite para Filtrar..."
@@ -786,7 +714,11 @@ const Taxas = () => {
     
     return (
         <div className='appPage'>
-            { runTutorial &&
+            <Overlay isVisible={isOverlayVisible}/>
+            <div className='page-background-global'>
+                <div className='page-content-global'>
+                    <div className='page-content-taxas'>
+                { runTutorial === true && taxesList && taxesList.length === 0 &&
                 <Joyride
                 steps={steps}
                 run={runTutorial}
@@ -815,39 +747,6 @@ const Taxas = () => {
                 }}
                 />	
             }
-            { runTutorialTaxas &&
-                <Joyride
-                steps={stepsTaxas}
-                run={runTutorialTaxas}
-                continuous={true}
-                scrollToFirstStep={true}
-                showProgress={true}
-                showSkipButton={true}
-                styles={{
-                    options: {
-                    primaryColor: '#99cc33',
-                    textColor: '#0a3d70',
-                    zIndex: 10000,
-                    }
-                }}
-                callback={(data) => {
-                    if (data.status === 'finished' || data.status === 'skipped') {
-                    handleTaxasTutorialEnd()
-                    }
-                }}
-                locale={{
-                    back: 'Voltar',
-                    close: 'Fechar',
-                    last: 'Finalizar',
-                    next: 'Próximo',
-                    skip: 'Pular'
-                }}
-                />	
-            }
-            <Overlay isVisible={isOverlayVisible}/>
-            <div className='page-background-global'>
-                <div className='page-content-global'>
-                    <div className='page-content-taxas'>
                         <div className='title-container-global'>
                             <h1 className='title-global'>Cadastramento de Taxas</h1>
                         </div>
@@ -863,7 +762,7 @@ const Taxas = () => {
                             <>  
                                 <span className='subtitle'>Sem Taxas Cadastradas</span>
                                 <br/> 
-                                <button className='btn btn-primary btn-global' onClick={()=>{setIsModalOpen(true)}}><FiPlus className='icon' />Adicionar</button>
+                                <button data-tour="cadastrar-taxa-section" className='btn btn-primary btn-global' onClick={()=>{setIsModalOpen(true)}}><FiPlus className='icon' />Adicionar</button>
                             </>
                             }
                             {
