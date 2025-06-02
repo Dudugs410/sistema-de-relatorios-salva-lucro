@@ -241,7 +241,7 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack }) => {
               primaryColor: '#99cc33',
               textColor: '#0a3d70',
               zIndex: 10000,
-            }
+            },
           }}
           callback={(data) => {
             if (data.status === 'finished' || data.status === 'skipped') {

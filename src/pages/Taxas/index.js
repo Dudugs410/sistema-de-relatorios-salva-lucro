@@ -328,42 +328,44 @@ const Taxas = () => {
                         style={{ marginBottom: '10px' }}
                     />
                 </div>
-                <div className='table-wrapper table-wrapper-taxes'>
-                    <table className="table table-striped table-hover table-bordered table-bancos det-table-global">
-                        <thead>
-                            <tr className='det-tr-top-global'>
-                                <th className='det-th-global sticky-col start-col' scope="col" style={{ width: '2%', textAlign: 'center' }}>
-                                    <button data-tour="cadastrar-taxa-section" className="btn btn-primary btn-global" style={{ width: '100%' }} onClick={() => { setIsModalOpen(true) }}>
-                                        <FiPlus size={25} className="icon" />
-                                    </button>
-                                </th>
-                                <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Bandeira</th>
-                                <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Adquirente</th>
-                                <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Modalidade</th>
-                                <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Tipo Taxa</th>
-                                <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>% Taxa</th>
-                                <th className='det-th-global sticky-col end-col' scope="col" style={{ width: '2%', textAlign: 'center' }}></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {currentItems.length > 0 &&
-                                currentItems.map((object, index) => (
-                                    <tr key={index} className="det-tr-global tr-taxas">
-                                        <th data-tour="editar-taxa-section" className='sticky-col start-col' scope="row" style={{ textAlign: 'center' }} onClick={() => { handleEdit(object) }}>
-                                            <FiEdit className="icon" />
-                                        </th>
-                                        <td className="det-td-vendas-global" data-label="BADDESCRICAO">{object.BADDESCRICAO}</td>
-                                        <td className="det-td-vendas-global" data-label="nomeAdquirente">{object.ADQUIRENTE.nomeAdquirente}</td>
-                                        <td className="det-td-vendas-global" data-label="MODDESCRICAO">{object.MODDESCRICAO}</td>
-                                        <td className="det-td-vendas-global" data-label="TIPOTAXA">{object.TIPOTAXA}</td>
-                                        <td className="det-td-vendas-global" data-label="TAXAPERCENTUAL">{object.TAXAPERCENTUAL} %</td>
-                                        <th data-tour="deletar-taxa-section" className='sticky-col end-col' scope="row" style={{ textAlign: 'center' }} onClick={() => handleDelete(object)}>
-                                            <FiTrash className="icon" />
-                                        </th>
-                                    </tr>
-                                ))}
-                        </tbody>
-                    </table>
+                <div className='dropShadow vendas-view'>
+                    <div className='table-wrapper table-wrapper-taxes'>
+                        <table className="table table-striped table-hover table-bordered table-bancos det-table-global">
+                            <thead>
+                                <tr className='det-tr-top-global'>
+                                    <th className='det-th-global sticky-col start-col' scope="col" style={{ width: '2%', textAlign: 'center' }}>
+                                        <button data-tour="cadastrar-taxa-section" className="btn btn-primary btn-global" style={{ width: '100%' }} onClick={() => { setIsModalOpen(true) }}>
+                                            <FiPlus size={25} className="icon" />
+                                        </button>
+                                    </th>
+                                    <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Bandeira</th>
+                                    <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Adquirente</th>
+                                    <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Modalidade</th>
+                                    <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Tipo Taxa</th>
+                                    <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>% Taxa</th>
+                                    <th className='det-th-global sticky-col end-col' scope="col" style={{ width: '2%', textAlign: 'center' }}></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {currentItems.length > 0 &&
+                                    currentItems.map((object, index) => (
+                                        <tr key={index} className="det-tr-global tr-taxas">
+                                            <th data-tour="editar-taxa-section" className='sticky-col start-col' scope="row" style={{ textAlign: 'center' }} onClick={() => { handleEdit(object) }}>
+                                                <FiEdit style={{ color: "green" }}className="icon" />
+                                            </th>
+                                            <td className="det-td-vendas-global" data-label="BADDESCRICAO">{object.BADDESCRICAO}</td>
+                                            <td className="det-td-vendas-global" data-label="nomeAdquirente">{object.ADQUIRENTE.nomeAdquirente}</td>
+                                            <td className="det-td-vendas-global" data-label="MODDESCRICAO">{object.MODDESCRICAO}</td>
+                                            <td className="det-td-vendas-global" data-label="TIPOTAXA">{object.TIPOTAXA}</td>
+                                            <td className="det-td-vendas-global" data-label="TAXAPERCENTUAL">{object.TAXAPERCENTUAL} %</td>
+                                            <th data-tour="deletar-taxa-section" className='sticky-col end-col' scope="row" style={{ textAlign: 'center' }} onClick={() => handleDelete(object)}>
+                                                <FiTrash style={{ color: "red" }} className="icon" />
+                                            </th>
+                                        </tr>
+                                    ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <hr className='hr-global'/>
                 { filteredItems.length > itemsPerPage && (
@@ -718,35 +720,6 @@ const Taxas = () => {
             <div className='page-background-global'>
                 <div className='page-content-global'>
                     <div className='page-content-taxas'>
-                { runTutorial === true && taxesList && taxesList.length === 0 &&
-                <Joyride
-                steps={steps}
-                run={runTutorial}
-                continuous={true}
-                scrollToFirstStep={true}
-                showProgress={true}
-                showSkipButton={true}
-                styles={{
-                    options: {
-                    primaryColor: '#99cc33',
-                    textColor: '#0a3d70',
-                    zIndex: 10000,
-                    }
-                }}
-                callback={(data) => {
-                    if (data.status === 'finished' || data.status === 'skipped') {
-                        handleTutorialEnd()
-                    }
-                }}
-                locale={{
-                    back: 'Voltar',
-                    close: 'Fechar',
-                    last: 'Finalizar',
-                    next: 'Próximo',
-                    skip: 'Pular'
-                }}
-                />	
-            }
                         <div className='title-container-global'>
                             <h1 className='title-global'>Cadastramento de Taxas</h1>
                         </div>
@@ -767,7 +740,7 @@ const Taxas = () => {
                             }
                             {
                                 (clientCode === ('todos' || undefined) && (isLoadingTaxes === false)) ?
-                                    <span className='subtitle'>Selecione um cliente para exibir suas taxas cadastradas</span>
+                                    <span className='subtitle' style={{textAlign: 'center'}}>Clique no botão 'Trocar' na parte superior da página para selecionar um cliente e exibir ou cadastrar suas taxas</span>
                                     : 
                                     <></>
                             }
