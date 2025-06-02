@@ -242,17 +242,6 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack }) => {
               textColor: '#0a3d70',
               zIndex: 10000,
             },
-            tooltipContainer: {
-            maxWidth: 'calc(100vw - 40px)', // Leaves 20px padding on each side
-            maxHeight: 'calc(100vh - 40px)',
-            overflow: 'auto'
-            },
-            tooltip: {
-              maxWidth: '100%' // Ensures content doesn't overflow container
-            },
-            maxWidth: 'calc(100vw - 40px)', // Leaves 20px padding on each side
-            maxHeight: 'calc(100vh - 40px)',
-            overflow: 'auto'
           }}
           callback={(data) => {
             if (data.status === 'finished' || data.status === 'skipped') {
