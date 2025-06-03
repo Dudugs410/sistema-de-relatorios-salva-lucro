@@ -15,7 +15,7 @@ import LazyLoader from '../../components/Componente_LazyLoader/index.js'
 
 const Dashboard = () => {
   const location = useLocation()
-  
+  const {clientUserId, getUserData, updateUserById} = useContext(AuthContext)
   // Joyride state
   const [runTutorial, setRunTutorial] = useState(false)
   const [steps] = useState([
@@ -67,20 +67,24 @@ const Dashboard = () => {
   // Check if it's the user's first visit
   useEffect(() => {
     localStorage.setItem('currentPath', location.pathname)
-    
-    const tutorialCompleted = localStorage.getItem('dashboardTutorialCompleted')
-    if (!tutorialCompleted && isLoadedSalesDashboard && isLoadedCreditsDashboard && isLoadedServicesDashboard) {
+    let userTemp = getUserData()
+    const tutorialCompleted = userTemp.joyrideComplete.dashboard
+    if (!tutorialCompleted) {
       // Wait a moment for the DOM to fully render
       const timer = setTimeout(() => {
         setRunTutorial(true)
       }, 1000)
       return () => clearTimeout(timer)
     }
-  }, [location, isLoadedSalesDashboard, isLoadedCreditsDashboard, isLoadedServicesDashboard])
+  }, [location])
 
   const handleTutorialEnd = () => {
     setRunTutorial(false)
-    localStorage.setItem('dashboardTutorialCompleted', 'true')
+    updateUserById(clientUserId, {
+      joyrideComplete: {
+        dashboard: true,
+      },
+    });
   }
 
   const chartDataExists = (array) => array.length > 0

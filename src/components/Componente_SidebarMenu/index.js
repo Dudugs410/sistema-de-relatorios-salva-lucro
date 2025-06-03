@@ -76,7 +76,7 @@ const Sidebar = () => {
             { nome: 'Créditos', icone: icones['FiCreditCard'], rota: '/creditos' },
             { nome: 'Serviços', icone: icones['FiTool'], rota: '/servicos' },
             { nome: 'Taxas', icone: icones['FiTable'], rota: '/taxas' },
-            //{ nome: 'Extrato Bancário', icone: icones['FiCreditCard'], rota: '/extrato'},
+            { nome: 'Extrato Bancário', icone: icones['FiCreditCard'], rota: '/extrato'},
         ];
 
         setOptionsWithIcons(orderedOptions);
