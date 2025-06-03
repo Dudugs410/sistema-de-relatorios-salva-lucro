@@ -80,6 +80,7 @@ const loginApp = async (login, password) => {
         localStorage.setItem('refreshToken', responseData.refresh_token)
         const userId = jwtDecode(responseData.acess_token).id
         localStorage.setItem('userID', userId)
+		Cookies.set('userID', userId)
         const loggedSuccessfully = JSON.parse(responseData.sucess)
 
         if (loggedSuccessfully) {
@@ -125,6 +126,8 @@ const loginApp = async (login, password) => {
                         userTemp = {id: userId, theme: JSON.parse(user.theme)}
                         localStorage.setItem('isDark', JSON.parse(user.theme))
                         localStorage.setItem('isChecked', JSON.parse(user.theme))
+						console.log('user ???  ', user)
+						localStorage.setItem('currentUser', JSON.stringify(user))
                         return { ...user, theme: user.theme }
                     }
                     return user
@@ -132,12 +135,26 @@ const loginApp = async (login, password) => {
                 localStorage.setItem('localUsers', JSON.stringify(updatedUsers))
             } else {
                 // Add new user to localUsers
-                userTemp = { id: userId, theme: false, calendar: true}
+                userTemp = { 
+					id: userId, 
+					theme: false, 
+					calendar: true,
+					joyrideComplete:{
+						dashboard: false,
+						vendasCalendar: false,
+						vendasTable: false,
+						creditsCalendar: false,
+						creditsTable: false,
+						servicosCalendar: false,
+						servicosTable: false,
+					}
+				}
                 localUsers.push(userTemp)
                 localStorage.setItem('isDark', false)
                 localStorage.setItem('isChecked', false)
                 localStorage.setItem('calendar', true)
                 localStorage.setItem('localUsers', JSON.stringify(localUsers))
+				localStorage.setItem('currentUser', JSON.stringify(userTemp))
             }
 
 try {
@@ -1725,6 +1742,32 @@ try {
 		setErrorServices(false)
 	}
 
+	function getUserData() {
+		const localUsers = JSON.parse(localStorage.getItem('localUsers')) || []
+		const user = localUsers.find(user => user.id === clientUserId)
+		return user || null
+	}
+
+	function updateUserById(userId, newData) {
+	const localUsers = JSON.parse(localStorage.getItem('localUsers')) || [];
+	const userIndex = localUsers.findIndex(user => user.id === userId);
+		if (userIndex !== -1) {
+			// Deep merge (keeps existing nested data)
+			localUsers[userIndex] = {
+			...localUsers[userIndex],     // Keep existing user data
+			...newData,                   // Apply new top-level data
+			joyrideComplete: {            // Manually merge nested joyrideComplete
+				...localUsers[userIndex].joyrideComplete, // Keep existing nested keys
+				...newData.joyrideComplete, // Apply new nested keys
+			},
+			};
+			localStorage.setItem('localUsers', JSON.stringify(localUsers));
+			console.log('User updated successfully!');
+		} else {
+			console.error('User not found!');
+		}
+	}
+
 	////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
@@ -1767,11 +1810,12 @@ try {
 	/////desloga usuário
 	function logout(){
 		clearCookies()
-		localStorage.clear()
+		let users = JSON.parse(localStorage.getItem('localUsers'))
 		localStorage.clear()
 		cancelOngoingRequests()
 		resetAppValues()
 		setIsSignedIn(false)
+		localStorage.setItem('localUsers', JSON.stringify(users))
 		localStorage.setItem('isSignedIn', false)
 		navigate('/')
 	}
@@ -2048,6 +2092,7 @@ try {
 				changedOption, setChangedOption,
 				canceled, setCanceled,
 
+				updateUserById, getUserData,
 				resetAppValues,
 
 				clientUserId,

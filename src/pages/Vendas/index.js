@@ -11,6 +11,11 @@ import { FiCalendar } from 'react-icons/fi'
 
 const Vendas = () =>{
   const location = useLocation()
+    const {
+      getUserData, 
+      updateUserById, 
+      clientUserId
+    } = useContext(AuthContext)
 
   useEffect(() => {
       localStorage.setItem('currentPath', location.pathname)
