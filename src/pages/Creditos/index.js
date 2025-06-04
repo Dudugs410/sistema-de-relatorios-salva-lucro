@@ -22,7 +22,8 @@ const Creditos = () =>{
 	  loadCredits, loadTotalCredits, creditsTotal, setCreditsTotal, tableData,
 	  groupByAdmin, 
     btnDisabledCredits, setBtnDisabledCredits,
-    exportCredits, creditsTableData
+    exportCredits, creditsTableData,
+    clientUserId, getUserData, updateUserById,
 	} = useContext(AuthContext)
   
 
@@ -107,8 +108,8 @@ async function loadData() {
   
     useEffect(() => {
       localStorage.setItem('currentPath', location.pathname)
-      const currentUser = localStorage.getItem()
-      const tutorialCompleted = localStorage.getItem('creditosCalendarTutorialCompleted')
+        let userTemp = getUserData()
+        const tutorialCompleted = userTemp.joyrideComplete.creditosCalendar
       if (!tutorialCompleted) {
         // Wait a moment for the DOM to fully render
         const timer = setTimeout(() => {
@@ -120,6 +121,11 @@ async function loadData() {
   
     const handleTutorialEnd = () => {
       setRunTutorial(false)
+      updateUserById(clientUserId, {
+        joyrideComplete: {
+          vendasCalendar: true,
+        },
+      })
       localStorage.setItem('creditosCalendarTutorialCompleted', 'true')
     }
 

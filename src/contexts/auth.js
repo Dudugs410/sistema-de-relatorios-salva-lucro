@@ -1760,11 +1760,13 @@ try {
 				...localUsers[userIndex].joyrideComplete, // Keep existing nested keys
 				...newData.joyrideComplete, // Apply new nested keys
 			},
-			};
+			}
 			localStorage.setItem('localUsers', JSON.stringify(localUsers));
-			console.log('User updated successfully!');
+			let currentUser = getUserData()
+			localStorage.setItem('currentUser', JSON.stringify(currentUser))
+			console.log('User updated successfully!')
 		} else {
-			console.error('User not found!');
+			console.error('User not found!')
 		}
 	}
 

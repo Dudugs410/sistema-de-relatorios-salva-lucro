@@ -153,7 +153,10 @@ const handleCheckboxChangeCalendar = () => {
 
   useEffect(() => {
     localStorage.setItem('currentPath', location.pathname)
-    const tutorialCompleted = localStorage.getItem('vendasCalendarTutorialCompleted')
+    
+    let userTemp = getUserData()
+    const tutorialCompleted = userTemp.joyrideComplete.vendasCalendar
+
     if (!tutorialCompleted) {
       // Wait a moment for the DOM to fully render
       const timer = setTimeout(() => {
@@ -165,6 +168,11 @@ const handleCheckboxChangeCalendar = () => {
 
   const handleTutorialEnd = () => {
     setRunTutorial(false)
+    updateUserById(clientUserId, {
+      joyrideComplete: {
+        vendasCalendar: true,
+      },
+    })
     localStorage.setItem('vendasCalendarTutorialCompleted', 'true')
   }
 

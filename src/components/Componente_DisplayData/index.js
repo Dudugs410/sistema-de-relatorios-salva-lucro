@@ -193,8 +193,8 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack }) => {
       }
       
       if(currentPath === '/vendas'){
-        
-        const tutorialCompleted = userData.vendasTableTutorialCompleted
+        let userTemp = getUserData()
+        const tutorialCompleted = userTemp.joyrideComplete.vendasTable
         if (!tutorialCompleted) {
           // Wait a moment for the DOM to fully render
           const timer = setTimeout(() => {
@@ -205,7 +205,8 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack }) => {
       } 
       
       if(currentPath === '/creditos'){
-        const tutorialCompleted = userData.creditosTableTutorialCompleted
+        let userTemp = getUserData()
+        const tutorialCompleted = userTemp.joyrideComplete.creditsTable
         if (!tutorialCompleted) {
           // Wait a moment for the DOM to fully render
           const timer = setTimeout(() => {
@@ -216,7 +217,8 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack }) => {
       } 
       
       if(currentPath === '/servicos'){
-        const tutorialCompleted = userData.servicosTableTutorialCompleted
+        let userTemp = getUserData()
+        const tutorialCompleted = userTemp.joyrideComplete.servicosTable
         if (!tutorialCompleted) {
           // Wait a moment for the DOM to fully render
           const timer = setTimeout(() => {
@@ -231,11 +233,23 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack }) => {
       setRunTutorial(false)
       const currentPath = localStorage.getItem('currentPath')
       if(currentPath === '/vendas'){
-       updateUserById(clientUserId, { vendasTableTutorialCompleted: true })
+        updateUserById(clientUserId, {
+            joyrideComplete: {
+            vendasTable: true,
+          },
+        })
       } else if(currentPath === '/creditos'){
-        updateUserById(clientUserId, { creditosTableTutorialCompleted: true })
+          updateUserById(clientUserId, {
+            joyrideComplete: {
+              creditosTable: true,
+            },
+          })
       } else if(currentPath === '/servicos'){
-        updateUserById(clientUserId, { servicosTableTutorialCompleted: true })
+          updateUserById(clientUserId, {
+            joyrideComplete: {
+              servicosTable: true,
+            },
+          })
       }
     }
 

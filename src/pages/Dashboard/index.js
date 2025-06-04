@@ -84,7 +84,7 @@ const Dashboard = () => {
       joyrideComplete: {
         dashboard: true,
       },
-    });
+    })
   }
 
   const chartDataExists = (array) => array.length > 0

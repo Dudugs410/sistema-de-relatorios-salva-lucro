@@ -22,7 +22,8 @@ const Servicos = () =>{
 	  loadServices, servicesTableData,
     btnDisabledServices, setBtnDisabledServices,
     groupServicesByAdmin,
-    exportServices,
+    exportServices, 
+    clientUserId, getUserData, updateUserById,
 	} = useContext(AuthContext)
 
   useEffect(()=>{
@@ -93,7 +94,8 @@ const Servicos = () =>{
   
     useEffect(() => {
       localStorage.setItem('currentPath', location.pathname)
-      const tutorialCompleted = localStorage.getItem('servicosCalendarTutorialCompleted')
+        let userTemp = getUserData()
+        const tutorialCompleted = userTemp.joyrideComplete.servicosCalendar
       if (!tutorialCompleted) {
         // Wait a moment for the DOM to fully render
         const timer = setTimeout(() => {
@@ -105,6 +107,11 @@ const Servicos = () =>{
   
     const handleTutorialEnd = () => {
       setRunTutorial(false)
+      updateUserById(clientUserId, {
+        joyrideComplete: {
+          vendasCalendar: true,
+        },
+      })
       localStorage.setItem('servicosCalendarTutorialCompleted', 'true')
     }
 
