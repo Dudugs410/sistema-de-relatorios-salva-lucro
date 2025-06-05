@@ -18,11 +18,6 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack }) => {
   } = useContext(AuthContext)
 
   const [exportPage, setExportPage] = useState('')
-  const [userData, setUserData] = useState(getUserData())
-
-  useEffect(()=>{
-    setUserData(getUserData())
-  },[updateUserById])
 
   useEffect(() => {
     const currentPath = localStorage.getItem('currentPath')
@@ -193,8 +188,8 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack }) => {
       }
       
       if(currentPath === '/vendas'){
-        
-        const tutorialCompleted = userData.vendasTableTutorialCompleted
+        let userTemp = getUserData()
+        const tutorialCompleted = userTemp.joyrideComplete.vendasTable
         if (!tutorialCompleted) {
           // Wait a moment for the DOM to fully render
           const timer = setTimeout(() => {
@@ -204,8 +199,9 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack }) => {
         }
       } 
       
-      if(currentPath === '/creditos'){
-        const tutorialCompleted = userData.creditosTableTutorialCompleted
+      else if(currentPath === '/creditos'){
+        let userTemp = getUserData()
+        const tutorialCompleted = userTemp.joyrideComplete.creditosTable
         if (!tutorialCompleted) {
           // Wait a moment for the DOM to fully render
           const timer = setTimeout(() => {
@@ -215,8 +211,9 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack }) => {
         }
       } 
       
-      if(currentPath === '/servicos'){
-        const tutorialCompleted = userData.servicosTableTutorialCompleted
+      else if(currentPath === '/servicos'){
+        let userTemp = getUserData()
+        const tutorialCompleted = userTemp.joyrideComplete.servicosTable
         if (!tutorialCompleted) {
           // Wait a moment for the DOM to fully render
           const timer = setTimeout(() => {
@@ -231,11 +228,23 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack }) => {
       setRunTutorial(false)
       const currentPath = localStorage.getItem('currentPath')
       if(currentPath === '/vendas'){
-       updateUserById(clientUserId, { vendasTableTutorialCompleted: true })
+        updateUserById(clientUserId, {
+            joyrideComplete: {
+            vendasTable: true,
+          },
+        })
       } else if(currentPath === '/creditos'){
-        updateUserById(clientUserId, { creditosTableTutorialCompleted: true })
+          updateUserById(clientUserId, {
+            joyrideComplete: {
+              creditosTable: true,
+            },
+          })
       } else if(currentPath === '/servicos'){
-        updateUserById(clientUserId, { servicosTableTutorialCompleted: true })
+          updateUserById(clientUserId, {
+            joyrideComplete: {
+              servicosTable: true,
+            },
+          })
       }
     }
 

@@ -22,7 +22,8 @@ const Creditos = () =>{
 	  loadCredits, loadTotalCredits, creditsTotal, setCreditsTotal, tableData,
 	  groupByAdmin, 
     btnDisabledCredits, setBtnDisabledCredits,
-    exportCredits, creditsTableData
+    exportCredits, creditsTableData,
+    clientUserId, getUserData, updateUserById,
 	} = useContext(AuthContext)
   
 
@@ -107,19 +108,38 @@ async function loadData() {
   
     useEffect(() => {
       localStorage.setItem('currentPath', location.pathname)
-      const currentUser = localStorage.getItem()
-      const tutorialCompleted = localStorage.getItem('creditosCalendarTutorialCompleted')
-      if (!tutorialCompleted) {
-        // Wait a moment for the DOM to fully render
-        const timer = setTimeout(() => {
-          setRunTutorial(true)
-        }, 1000)
-        return () => clearTimeout(timer)
+      
+      try {
+        let userTemp = getUserData()
+        console.log('userTemp: ', userTemp)
+        
+        // Check if userTemp exists and has joyrideComplete property
+        if (!userTemp?.joyrideComplete) {
+          console.error('User data or joyrideComplete property is missing')
+          return
+        }
+        
+        const tutorialCompleted = userTemp.joyrideComplete.creditosCalendar
+        
+        if (!tutorialCompleted) {
+          // Wait a moment for the DOM to fully render
+          const timer = setTimeout(() => {
+            setRunTutorial(true)
+          }, 1000)
+          return () => clearTimeout(timer)
+        }
+      } catch (error) {
+        console.error('Error while processing user data:', error)
       }
     }, [location])
   
     const handleTutorialEnd = () => {
       setRunTutorial(false)
+      updateUserById(clientUserId, {
+        joyrideComplete: {
+          creditosCalendar: true,
+        },
+      })
       localStorage.setItem('creditosCalendarTutorialCompleted', 'true')
     }
 
