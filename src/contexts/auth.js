@@ -143,7 +143,7 @@ const loginApp = async (login, password) => {
 						dashboard: false,
 						vendasCalendar: false,
 						vendasTable: false,
-						creditsCalendar: false,
+						creditosCalendar: false,
 						creditosTable: false,
 						servicosCalendar: false,
 						servicosTable: false,
