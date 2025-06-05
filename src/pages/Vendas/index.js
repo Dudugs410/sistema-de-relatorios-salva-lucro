@@ -7,7 +7,7 @@ import '../../index.scss'
 import MyCalendar from '../../components/Componente_Calendario'
 import DisplayData from '../../components/Componente_DisplayData'
 import { toast } from 'react-toastify'
-import { FiCalendar } from 'react-icons/fi'
+import { FiCalendar, FiHelpCircle } from 'react-icons/fi'
 
 const Vendas = () =>{
   const location = useLocation()
@@ -242,23 +242,23 @@ const handleCheckboxChangeCalendar = () => {
                   />
                 )
               ) : null }
-            <button 
-              className='btn btn-success-dados px-2 py-1'
-                onClick={() => setRunTutorial(true)}
-                style={{
-                  position: 'fixed',
-                  bottom: '20px',
-                  right: '20px',
-                  zIndex: 1000,
-                  padding: '10px 15px',
-                  background: '#99cc33',
-                  color: '#0a3d70',
-                  border: 'none',
-                  borderRadius: '5px',
-                  cursor: 'pointer'
-                }}
-                        >
-              Mostrar Tutorial
+              <button 
+                className='btn btn-success-dados btn-tutorial px-2 py-1'
+                    onClick={() => setRunTutorial(true)}
+                    style={{
+                    position: 'relative',
+                    bottom: '0px',
+                    right: '-10px',
+                    zIndex: 10,
+                    padding: '10px 15px',
+                    background: 'none',
+                    color: '#99cc33',
+                    border: 'none',
+                    borderRadius: '5px',
+                    cursor: 'pointer'
+                    }}
+                >
+                <FiHelpCircle />
             </button>
           </div>
         </div>
