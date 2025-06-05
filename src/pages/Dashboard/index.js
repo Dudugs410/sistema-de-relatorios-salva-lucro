@@ -12,6 +12,7 @@ import PieChart from '../../components/GraficoDashboard'
 import { useLocation } from 'react-router-dom'
 import '../../index.scss'
 import LazyLoader from '../../components/Componente_LazyLoader/index.js'
+import { FiHelpCircle } from 'react-icons/fi'
 
 const Dashboard = () => {
   const location = useLocation()
@@ -65,18 +66,32 @@ const Dashboard = () => {
   }, [changedOption])
 
   // Check if it's the user's first visit
-  useEffect(() => {
-    localStorage.setItem('currentPath', location.pathname)
-    let userTemp = getUserData()
-    const tutorialCompleted = userTemp.joyrideComplete.dashboard
-    if (!tutorialCompleted) {
-      // Wait a moment for the DOM to fully render
-      const timer = setTimeout(() => {
-        setRunTutorial(true)
-      }, 1000)
-      return () => clearTimeout(timer)
-    }
-  }, [location])
+    useEffect(() => {
+      localStorage.setItem('currentPath', location.pathname)
+      
+      try {
+        let userTemp = getUserData()
+        console.log('userTemp: ', userTemp)
+        
+        // Check if userTemp exists and has joyrideComplete property
+        if (!userTemp?.joyrideComplete) {
+          console.error('User data or joyrideComplete property is missing')
+          return
+        }
+        
+        const tutorialCompleted = userTemp.joyrideComplete.dashboard
+        
+        if (!tutorialCompleted) {
+          // Wait a moment for the DOM to fully render
+          const timer = setTimeout(() => {
+            setRunTutorial(true)
+          }, 1000)
+          return () => clearTimeout(timer)
+        }
+      } catch (error) {
+        console.error('Error while processing user data:', error)
+      }
+    }, [location])
 
   const handleTutorialEnd = () => {
     setRunTutorial(false)
@@ -312,26 +327,25 @@ const Dashboard = () => {
             }
           </div>
         </div>		
-      </div>
-      
+      </div>   
       <button 
-	  	className='btn btn-success-dados px-2 py-1'
-        onClick={() => setRunTutorial(true)}
-        style={{
-          position: 'fixed',
-          bottom: '20px',
-          right: '20px',
-          zIndex: 1000,
-          padding: '10px 15px',
-          background: '#99cc33',
-          color: '#0a3d70',
-          border: 'none',
-          borderRadius: '5px',
-          cursor: 'pointer'
-        }}
-      >
-        Mostrar Tutorial
-      </button>
+        className='btn btn-success-dados btn-tutorial px-2 py-1'
+            onClick={() => setRunTutorial(true)}
+            style={{
+            position: 'relative',
+            bottom: '0px',
+            right: '-10px',
+            zIndex: 10,
+            padding: '10px 15px',
+            background: 'none',
+            color: '#99cc33',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer'
+            }}
+        >
+        <FiHelpCircle />
+    </button>
     </>  
   )
 }

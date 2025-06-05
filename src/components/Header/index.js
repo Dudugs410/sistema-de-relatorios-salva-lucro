@@ -199,24 +199,6 @@ const Header = () => {
                                 <input type="checkbox" id="toggleButton" checked={isChecked} onChange={handleCheckboxChange}/>
                                 <span className="slider"><FiMoon/><FiSun/></span>
                             </label>
-                                <button 
-                                className='btn btn-success-dados px-2 py-1'
-                                    onClick={() => setRunTutorial(true)}
-                                    style={{
-                                    position: 'relative',
-                                    bottom: '0px',
-                                    right: '-10px',
-                                    zIndex: 10,
-                                    padding: '10px 15px',
-                                    background: 'none',
-                                    color: '#99cc33',
-                                    border: 'none',
-                                    borderRadius: '5px',
-                                    cursor: 'pointer'
-                                    }}
-                                >
-                                <FiHelpCircle />
-                            </button>
                             {/*<CustomCheckbox isChecked={isCheckedCalendar} handleCheckboxChange={handleCheckboxChangeCalendar}/>*/}
                         </div>
                         <Relogio/>
