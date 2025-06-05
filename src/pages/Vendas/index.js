@@ -151,20 +151,32 @@ const handleCheckboxChangeCalendar = () => {
     },
   ])
 
-  useEffect(() => {
-    localStorage.setItem('currentPath', location.pathname)
-    
-    let userTemp = getUserData()
-    const tutorialCompleted = userTemp.joyrideComplete.vendasCalendar
-
-    if (!tutorialCompleted) {
-      // Wait a moment for the DOM to fully render
-      const timer = setTimeout(() => {
-        setRunTutorial(true)
-      }, 1000)
-      return () => clearTimeout(timer)
-    }
-  }, [location])
+    useEffect(() => {
+      localStorage.setItem('currentPath', location.pathname)
+      
+      try {
+        let userTemp = getUserData()
+        console.log('userTemp: ', userTemp)
+        
+        // Check if userTemp exists and has joyrideComplete property
+        if (!userTemp?.joyrideComplete) {
+          console.error('User data or joyrideComplete property is missing')
+          return
+        }
+        
+        const tutorialCompleted = userTemp.joyrideComplete.vendasCalendar
+        
+        if (!tutorialCompleted) {
+          // Wait a moment for the DOM to fully render
+          const timer = setTimeout(() => {
+            setRunTutorial(true)
+          }, 1000)
+          return () => clearTimeout(timer)
+        }
+      } catch (error) {
+        console.error('Error while processing user data:', error)
+      }
+    }, [location])
 
   const handleTutorialEnd = () => {
     setRunTutorial(false)

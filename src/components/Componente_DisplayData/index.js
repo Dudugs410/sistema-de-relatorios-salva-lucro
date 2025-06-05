@@ -18,11 +18,6 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack }) => {
   } = useContext(AuthContext)
 
   const [exportPage, setExportPage] = useState('')
-  const [userData, setUserData] = useState(getUserData())
-
-  useEffect(()=>{
-    setUserData(getUserData())
-  },[updateUserById])
 
   useEffect(() => {
     const currentPath = localStorage.getItem('currentPath')
@@ -204,9 +199,9 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack }) => {
         }
       } 
       
-      if(currentPath === '/creditos'){
+      else if(currentPath === '/creditos'){
         let userTemp = getUserData()
-        const tutorialCompleted = userTemp.joyrideComplete.creditsTable
+        const tutorialCompleted = userTemp.joyrideComplete.creditosTable
         if (!tutorialCompleted) {
           // Wait a moment for the DOM to fully render
           const timer = setTimeout(() => {
@@ -216,7 +211,7 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack }) => {
         }
       } 
       
-      if(currentPath === '/servicos'){
+      else if(currentPath === '/servicos'){
         let userTemp = getUserData()
         const tutorialCompleted = userTemp.joyrideComplete.servicosTable
         if (!tutorialCompleted) {

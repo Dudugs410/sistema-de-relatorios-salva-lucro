@@ -144,7 +144,7 @@ const loginApp = async (login, password) => {
 						vendasCalendar: false,
 						vendasTable: false,
 						creditsCalendar: false,
-						creditsTable: false,
+						creditosTable: false,
 						servicosCalendar: false,
 						servicosTable: false,
 					}
@@ -1743,6 +1743,7 @@ try {
 	}
 
 	function getUserData() {
+		setClientUserId(localStorage.getItem('userID'))
 		const localUsers = JSON.parse(localStorage.getItem('localUsers')) || []
 		const user = localUsers.find(user => user.id === clientUserId)
 		return user || null
