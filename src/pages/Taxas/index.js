@@ -47,7 +47,6 @@ const Taxas = () => {
         localStorage.setItem('currentPath', location.pathname)
     }, [])
 
-    // Joyride state
     const [runTutorial, setRunTutorial] = useState(false)
     const [steps, setSteps] = useState([
     {
