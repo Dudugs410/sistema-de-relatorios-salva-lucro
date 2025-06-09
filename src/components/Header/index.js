@@ -135,7 +135,7 @@ const Header = () => {
             { nome: 'Serviços', icone: icones['FiTool'], rota: '/servicos' },
             { nome: 'Bancos', icone: icones['FiLink'], rota: '/cadastrodebancos' },
             { nome: 'Taxas', icone: icones['FiTable'], rota: '/taxas'},
-            //{ nome: 'Extratos', icone: icones['FiCreditCard'], rota: '/extrato'},
+            { nome: 'Extratos', icone: icones['FiCreditCard'], rota: '/extrato'}
         ]
 
     {/*     { nome: 'Relatórios', icone: icones['FiFileText'], children: [
