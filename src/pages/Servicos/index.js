@@ -163,7 +163,8 @@ const Servicos = () =>{
                 close: 'Fechar',
                 last: 'Finalizar',
                 next: 'Próximo',
-                skip: 'Pular'
+                skip: 'Pular',
+                nextLabelWithProgress: 'Próximo ({step} de {steps})',
               }}
             />	
           }
