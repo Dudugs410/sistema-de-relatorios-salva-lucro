@@ -32,6 +32,20 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
   const [selectedAdm, setSelectedAdm] = useState(null);
   const [showAdmModal, setShowAdmModal] = useState(false);
   const [dado, setDado] = useState('');
+  const [fontColor, setFontColor] = useState(
+  getComputedStyle(document.documentElement).getPropertyValue('--font-color')
+);
+
+useEffect(() => {
+  const interval = setInterval(() => {
+    const newColor = getComputedStyle(document.documentElement).getPropertyValue('--font-color');
+    if (newColor !== fontColor) {
+      setFontColor(newColor);
+    }
+  }, 100); // Check every 100ms
+
+  return () => clearInterval(interval);
+}, [fontColor]);
 
   useEffect(() => {
     switch (dados) {
@@ -105,7 +119,7 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
                 return {
                   text: `${label}: ${formattedValue}`,
                   fillStyle: data.datasets[0].backgroundColor[index],
-                  fontColor: getComputedStyle(document.documentElement).getPropertyValue('--font-color-light'),
+                  fontColor: fontColor,
                   hidden: datasetMeta.data[index]?.hidden || false, // Ensure safe access
                   index, // Store index to identify the data point
                   datasetIndex: 0, // Specify dataset
