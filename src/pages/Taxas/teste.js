@@ -610,7 +610,6 @@ const Taxas = () =>{
                       <h3 className='subtitle'>Cliente: {JSON.parse(localStorage.getItem('selectedClient')).label}</h3>
                       <hr className='hr-global'/>
                       <TaxesTable />
-                      
                   </>
                   }
                   { ((taxesList && taxesList.length === 0) && (clientCode !== ('todos' || undefined))) && 
