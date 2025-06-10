@@ -12,7 +12,7 @@ import MenuExtrato from '../../components/MenuExtrato'
 
 const Extrato = () => {
     const { 
-        setId, setItemId,
+        setId, itemId, setItemId,
         loadAccounts, loadItem, loadTransactions,
         loadLoans, loadIdentity, loadInvestments, 
     } = useContext(PluggyContext)
@@ -120,13 +120,12 @@ const Extrato = () => {
         setIsClicked(true)
         setItemId(row.itemId)
         Cookies.set('accountID', row.id)
-        /*const loadItemFunc = async ()=>{
-            var resp = loadItem()
-            return resp
-        }
-        let resp = loadItemFunc() 
-        setItemId(resp)*/
+
     }
+
+    useEffect(()=>{
+        
+    },[itemId])
 
     const fetchAccounts = async () => {
         let dataTemp = await loadAccounts()
@@ -190,75 +189,11 @@ const Extrato = () => {
         console.log("responseData: ", responseData)
     },[responseData])
 
-    useEffect(() => {
-        console.log('clickedRow useEffect')
-        
-        if (!clickedRow) return
-    
-        const fetchItemData = async () => {
-            try {
-                Cookies.set('itemID', clickedRow.itemId)
-                const itemData = await loadItem(clickedRow.itemId)
-                setItem(itemData)
-            } catch (error) {
-                console.error('Failed to load item:', error)
-            }
-        }
-        fetchItemData()
-    }, [clickedRow])
-
-    const ModalExtrato = () => {
-        const [isLoading, setIsLoading] = useState(false)
-        const [error, setError] = useState(null)
-    
-        useEffect(() => {
-            if (!clickedRow) return
-    
-            const fetchItemData = async () => {
-                setIsLoading(true)
-                setError(null)
-                
-                try {
-                    const itemTransactions = await loadTransactions(clickedRow.id);
-                    setTransactions(itemTransactions);
-                } catch (err) {
-                    console.error('Failed to load transactions:', err);
-                    setError('Failed to load transactions');
-                } finally {
-                    setIsLoading(false);
-                }
-            }
-    
-            fetchItemData()
-        }, [clickedRow])
-
-        return (
-            <div className='modal-extrato-background' onClick={() => setIsClicked(false)}>
-                <div className='modal-extrato-container'>
-                    {isLoading ? (
-                        <div className="loading-indicator">Loading...</div>
-                    ) : error ? (
-                        <div className="error-message">{error}</div>
-                    ) : item ? (
-                        <TabelaItem data={item} />
-                    ) : null}
-                </div>
-            </div>
-        )
-    }
-    
-    useEffect(()=>{
-        console.log('isClicked: ', isClicked)
-    },[isClicked])
-
     return (
         <div className='appPage'>
             <div className='page-background-global'>
                 <div className='page-content-global page-content-financeiro'>
                     {
-                        isClicked && (
-                            <ModalExtrato />
-                        )
                     }
                     <div className='title-container-global'>
                         <h1 className='title-global'>Extrato Bancário</h1>
