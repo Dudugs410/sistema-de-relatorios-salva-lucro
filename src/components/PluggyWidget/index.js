@@ -9,9 +9,10 @@ const PluggyWidget = ({setId, setResponseData}) => {
     console.log('Pluggy Widget Item Data: ', itemData)
     console.log('ID: ', itemData.item.id)
     Cookies.set('itemID', itemData.item.id)
+    localStorage.setItem('pluggyResponseData', JSON.stringify(itemData.item))
+    localStorage.setItem('pluggyID', itemData.item.id)
     setId(itemData.item.id)
     setResponseData(itemData.item)
-
   }
   
   const onError = (error) => {

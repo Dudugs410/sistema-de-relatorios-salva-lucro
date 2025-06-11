@@ -23,7 +23,10 @@ const Extrato = () => {
       })
     const [selectedAccount, setSelectedAccount] = useState(null)
 
-    const [responseData, setResponseData] = useState({})
+    const [responseData, setResponseData] = useState(() => {
+        const storedData = localStorage.getItem('pluggyResponseData');
+        return storedData ? JSON.parse(storedData) : {}
+    })
     const [item, setItem] = useState()
     const [transactions, setTransactions] = useState()
 
@@ -45,6 +48,13 @@ const Extrato = () => {
     useEffect(()=>{
         setIsClicked(false)
     },[])
+
+    useEffect(()=>{
+        if((!responseData || Object.keys(responseData).length === 0)){
+            setId(localStorage.getItem('pluggyID'))
+        }
+
+    },[responseData])
 
     const fetchToken = async () => {
         let userId = localStorage.getItem('userID')
@@ -193,19 +203,19 @@ const Extrato = () => {
         <div className='appPage'>
             <div className='page-background-global'>
                 <div className='page-content-global page-content-financeiro'>
-                    {
-                    }
                     <div className='title-container-global'>
                         <h1 className='title-global'>Extrato Bancário</h1>
                     </div>
                     <hr className='hr-global' />
-                    <div className='pluggy-container'>
+                    <div className='pluggy-container'> 
+                        {(!responseData || Object.keys(responseData).length === 0) && (
                         <button 
                             className='btn btn-primary btn-global' 
                             onClick={handleConnectClick}
                         >
-                        Conectar
+                            Conectar
                         </button>
+                        )}
                     </div>
                     {
                         (responseData !== (undefined && {} && [])) && <MenuExtrato connectorData={responseData.connector} handleProduct={handleSelectedProduct}/>

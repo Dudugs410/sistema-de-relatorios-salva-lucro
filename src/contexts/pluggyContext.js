@@ -9,7 +9,10 @@ export const PluggyContext = createContext({})
 
 function PluggyProvider({ children }){
 
-    const [id, setId] = useState()
+    const [id, setId] = useState(() => {
+        const storedData = localStorage.getItem('pluggyID');
+        return storedData ? storedData : '';
+    });
     const [itemId, setItemId] = useState()
 
     const loadAccounts = async () => {
