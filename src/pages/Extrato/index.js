@@ -138,23 +138,51 @@ const Extrato = () => {
     },[itemId])
 
     const fetchAccounts = async () => {
-        let dataTemp = await loadAccounts()
-        setData(dataTemp)
+        let pluggyData = JSON.parse(localStorage.getItem('pluggyData'))
+        if(pluggyData.accounts.length === 0){
+            let dataTemp = await loadAccounts()
+            pluggyData.accounts = dataTemp
+            localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
+            setData(dataTemp)
+        } else {
+            setData(pluggyData.accounts)
+        }
     }
 
     const fetchIdentity = async () => {
-        let dataTemp = await loadIdentity()
-        setData(dataTemp)
+        let pluggyData = JSON.parse(localStorage.getItem('pluggyData'))
+        if(pluggyData.identity.length === 0){
+            let dataTemp = await loadIdentity()
+            pluggyData.identity = dataTemp
+            localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
+            setData(dataTemp)
+        } else {
+            setData(pluggyData.identity)
+        }
     }
 
     const fetchLoans = async () => {
-        let dataTemp = await loadLoans()
-        setData(dataTemp)
+        let pluggyData = JSON.parse(localStorage.getItem('pluggyData'))
+        if(pluggyData.loans.length === 0){
+            let dataTemp = await loadLoans()
+            pluggyData.loans = dataTemp
+            localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
+            setData(dataTemp)
+        } else {
+            setData(pluggyData.loans)
+        }
     }
 
     const fetchInvestments = async () => {
-        let dataTemp = await loadInvestments()
-        setData(dataTemp)
+        let pluggyData = JSON.parse(localStorage.getItem('pluggyData'))
+        if(pluggyData.investments.length === 0){
+            let dataTemp = await loadInvestments()
+            pluggyData.investments = dataTemp
+            localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
+            setData(dataTemp)
+        } else {
+            setData(pluggyData.investments)
+        }
     }
 
     const handleSelectedProduct = (product) =>{

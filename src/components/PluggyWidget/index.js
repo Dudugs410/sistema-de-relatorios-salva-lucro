@@ -10,7 +10,13 @@ const PluggyWidget = ({setId, setResponseData}) => {
     console.log('ID: ', itemData.item.id)
     Cookies.set('itemID', itemData.item.id)
     localStorage.setItem('pluggyResponseData', JSON.stringify(itemData.item))
-    localStorage.setItem('pluggyID', itemData.item.id)
+    let pluggyData = {
+        id: itemData.item.id,
+        accounts: [],
+        loans: [],
+        investments: []
+    }
+    localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
     setId(itemData.item.id)
     setResponseData(itemData.item)
   }

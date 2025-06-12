@@ -10,9 +10,19 @@ export const PluggyContext = createContext({})
 function PluggyProvider({ children }){
 
     const [id, setId] = useState(() => {
-        const storedData = localStorage.getItem('pluggyID');
-        return storedData ? storedData : '';
-    });
+        try {
+            const storedData = localStorage.getItem('pluggyData')
+            if (storedData) {
+                const parsedData = JSON.parse(storedData)
+                return parsedData.id || ''
+            }
+            return ''
+        } catch (error) {
+            console.error('Error reading from localStorage:', error)
+            return ''
+        }
+    })
+
     const [itemId, setItemId] = useState()
 
     const loadAccounts = async () => {
@@ -141,3 +151,12 @@ function PluggyProvider({ children }){
 }
 
 export default PluggyProvider
+
+/*
+    pluggyData = {
+        id: int,
+        accounts: [],
+        loans: [],
+        investments: []
+    }
+*/
