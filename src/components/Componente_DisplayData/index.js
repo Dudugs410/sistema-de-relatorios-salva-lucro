@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from 'react'
-import Joyride from 'react-joyride'
 import TabelaGenericaAdm from '../../components/Componente_TabelaAdm'
 import TotalModalidadesComp from '../../components/Componente_TotalModalidades'
 import GerarRelatorio from "../../components/Componente_GerarRelatorio"
@@ -44,148 +43,9 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack }) => {
   }
 
   const SelectedTableComponent = componentMap[exportPage]
-
-    // Joyride state
-  
-    const [runTutorial, setRunTutorial] = useState(false)
-    const [steps, setSteps] = useState([
-          {
-            target: '[data-tour="modalidade-section"]',
-            content: 'Valores totais das vendas exibidas, por modalidade.',
-            disableBeacon: true,
-            placement: 'bottom'
-          },
-          {
-            target: '[data-tour="exportacao-section"]',
-            content: 'Exporta as vendas sendo exibidas para os formatos Excel ou PDF.',
-            placement: 'bottom'
-          },
-          {
-            target: '[data-tour="bandeiraadquirente-section"]',
-            content: 'Filtra as vendas de acordo com a combinação de bandeira/adquirente selecionada.',
-            placement: 'bottom'
-          },
-          {
-            target: '[data-tour="tabelavendas-section"]',
-            content: 'Vendas do período selecionado. Podem ser filtradas por bandeira/adquirente.',
-            placement: 'bottom'
-          },
-          {
-            target: '[data-tour="totaladq-section"]',
-            content: 'Valores totais das vendas sendo exibidas, separadas por adquirente.',
-            placement: 'bottom'
-          },
-          {
-            target: '[data-tour="botaovoltar-section"]',
-            content: 'Retorna ao calendário, possibilitando realizar uma nova consulta.',
-            placement: 'bottom'
-          },
-        ])
   
     useEffect(() => {
-      //********setar steps de acordo com currentPath
       const currentPath = localStorage.getItem('currentPath')
-      if(currentPath === '/vendas'){
-        let stepsTemp = [
-            {
-              target: '[data-tour="modalidade-section"]',
-              content: 'Valores totais das vendas exibidas, por modalidade.',
-              disableBeacon: true,
-              placement: 'bottom'
-            },
-            {
-              target: '[data-tour="exportacao-section"]',
-              content: 'Exporta as vendas sendo exibidas para os formatos Excel ou PDF.',
-              placement: 'bottom'
-            },
-            {
-              target: '[data-tour="bandeiraadquirente-section"]',
-              content: 'Filtra as vendas de acordo com a combinação de bandeira/adquirente selecionada.',
-              placement: 'bottom'
-            },
-            {
-              target: '[data-tour="tabelavendas-section"]',
-              content: 'Vendas do período selecionado. Podem ser filtradas por bandeira/adquirente.',
-              placement: 'bottom'
-            },
-            {
-              target: '[data-tour="totaladq-section"]',
-              content: 'Valores totais das vendas sendo exibidas, separadas por adquirente.',
-              placement: 'bottom'
-            },
-            {
-              target: '[data-tour="botaovoltar-section"]',
-              content: 'Retorna ao calendário, possibilitando realizar uma nova consulta.',
-              placement: 'bottom'
-            },
-        ]
-        setSteps(stepsTemp)
-      } else if(currentPath === '/creditos'){
-          let stepsTemp = [
-            {
-              target: '[data-tour="modalidade-section"]',
-              content: 'Valores totais das vendas exibidas, por modalidade.',
-              disableBeacon: true,
-              placement: 'bottom'
-            },
-            {
-              target: '[data-tour="exportacao-section"]',
-              content: 'Exporta as vendas sendo exibidas para os formatos Excel ou PDF.',
-              placement: 'bottom'
-            },
-            {
-              target: '[data-tour="bandeiraadquirente-section"]',
-              content: 'Filtra as vendas de acordo com a combinação de bandeira/adquirente selecionada.',
-              placement: 'bottom'
-            },
-            {
-              target: '[data-tour="tabelavendas-section"]',
-              content: 'Vendas do período selecionado. Podem ser filtradas por bandeira/adquirente.',
-              placement: 'bottom'
-            },
-            {
-              target: '[data-tour="totaladq-section"]',
-              content: 'Valores totais das vendas sendo exibidas, separadas por adquirente.',
-              placement: 'bottom'
-            },
-            {
-              target: '[data-tour="botaovoltar-section"]',
-              content: 'Retorna ao calendário, possibilitando realizar uma nova consulta.',
-              placement: 'bottom'
-            },
-        ]
-        setSteps(stepsTemp)
-      } else if(currentPath === '/servicos'){
-          let stepsTemp = [
-            {
-              target: '[data-tour="exportacao-section"]',
-              content: 'Exporta as informações de serviços/ajustes sendo exibidas, para os formatos Excel ou PDF.',
-              disableBeacon: true,
-              placement: 'bottom'
-            },
-            {
-              target: '[data-tour="bandeiraadquirente-section"]',
-              content: 'Filtra os ajustes/serviços de acordo com a combinação de bandeira/adquirente selecionada.',
-              placement: 'bottom'
-            },
-            {
-              target: '[data-tour="tabelavendas-section"]',
-              content: 'Serviços/Ajustes do período selecionado. Podem ser filtrados por bandeira/adquirente.',
-              placement: 'bottom'
-            },
-            {
-              target: '[data-tour="totaladq-section"]',
-              content: 'Valores totais dos serviços/ajustes sendo exibidas, separados por adquirente.',
-              placement: 'bottom'
-            },
-            {
-              target: '[data-tour="botaovoltar-section"]',
-              content: 'Retorna ao calendário, possibilitando realizar uma nova consulta.',
-              placement: 'bottom'
-            },
-        ]
-        setSteps(stepsTemp)
-      }
       
       if(currentPath === '/vendas'){
         let userTemp = getUserData()
@@ -250,36 +110,6 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack }) => {
 
   return (
     <>
-      { runTutorial &&
-        <Joyride
-          steps={steps}
-          run={runTutorial}
-          continuous={true}
-          scrollToFirstStep={true}
-          showProgress={true}
-          showSkipButton={true}
-          styles={{
-            options: {
-              primaryColor: '#99cc33',
-              textColor: '#0a3d70',
-              zIndex: 10000,
-            },
-          }}
-          callback={(data) => {
-            if (data.status === 'finished' || data.status === 'skipped') {
-              handleTutorialEnd()
-            }
-          }}
-          locale={{
-            back: 'Voltar',
-            close: 'Fechar',
-            last: 'Finalizar',
-            next: 'Próximo',
-            skip: 'Pular',
-            nextLabelWithProgress: 'Próximo ({step} de {steps})'
-          }}
-        />	
-      }
       {totals && <TotalModalidadesComp totals={totals} />}
       {localStorage.getItem('currentPath') === '/servicos' && <hr className='hr-global' />}
       <GerarRelatorio className='export' />
