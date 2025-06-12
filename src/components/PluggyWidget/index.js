@@ -9,9 +9,16 @@ const PluggyWidget = ({setId, setResponseData}) => {
     console.log('Pluggy Widget Item Data: ', itemData)
     console.log('ID: ', itemData.item.id)
     Cookies.set('itemID', itemData.item.id)
+    localStorage.setItem('pluggyResponseData', JSON.stringify(itemData.item))
+    let pluggyData = {
+        id: itemData.item.id,
+        accounts: [],
+        loans: [],
+        investments: []
+    }
+    localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
     setId(itemData.item.id)
     setResponseData(itemData.item)
-
   }
   
   const onError = (error) => {
