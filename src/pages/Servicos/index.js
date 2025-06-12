@@ -92,6 +92,54 @@ const Servicos = () =>{
         placement: 'bottom'
       },
     ])
+
+    useEffect(()=>{
+      if(servicesPageArray.length > 0){
+          let stepsTemp = [
+            {
+              target: '[data-tour="exportacao-section"]',
+              content: 'Exporta as informações de serviços/ajustes sendo exibidas, para os formatos Excel ou PDF.',
+              disableBeacon: true,
+              placement: 'bottom'
+            },
+            {
+              target: '[data-tour="bandeiraadquirente-section"]',
+              content: 'Filtra os ajustes/serviços de acordo com a combinação de bandeira/adquirente selecionada.',
+              placement: 'bottom'
+            },
+            {
+              target: '[data-tour="tabelavendas-section"]',
+              content: 'Serviços/Ajustes do período selecionado. Podem ser filtrados por bandeira/adquirente.',
+              placement: 'bottom'
+            },
+            {
+              target: '[data-tour="totaladq-section"]',
+              content: 'Valores totais dos serviços/ajustes sendo exibidas, separados por adquirente.',
+              placement: 'bottom'
+            },
+            {
+              target: '[data-tour="botaovoltar-section"]',
+              content: 'Retorna ao calendário, possibilitando realizar uma nova consulta.',
+              placement: 'bottom'
+            },
+        ]
+        setSteps(stepsTemp)
+      } else {
+        setSteps([
+          {
+            target: '[data-tour="calendario-section"]',
+            content: 'Clique em duas vezes em uma data para selecioná-la, ou uma vez em uma data inicial e uma vez em uma data final para selecionar o período começando e terminando nas datas selecionadas.',
+            disableBeacon: true,
+            placement: 'bottom'
+          },
+          {
+            target: '[data-tour="pesquisar-section"]',
+            content: 'Tendo a data selecionada, clique em "Pesquisar" para realizar a consulta das vendas da data ou período selecionado.',
+            placement: 'bottom'
+          },
+        ])
+      }
+    },[servicesPageArray])
   
     useEffect(() => {
       localStorage.setItem('currentPath', location.pathname)
