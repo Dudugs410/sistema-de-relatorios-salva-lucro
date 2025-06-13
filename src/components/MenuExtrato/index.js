@@ -1,6 +1,9 @@
-import React,  {useState } from 'react';
-import { Container, Row, Col, Card } from 'react-bootstrap';
-import './menuExtrato.scss';
+import React,  {useState } from 'react'
+import { Container, Row, Col, Card } from 'react-bootstrap'
+import { FiTrendingUp, FiDollarSign } from "react-icons/fi"
+import { BsPiggyBank } from "react-icons/bs"
+import './menuExtrato.scss'
+import '../../styles/global.scss'
 
 const MenuExtrato = ({ connectorData, handleProduct }) => {
 
@@ -9,14 +12,14 @@ const MenuExtrato = ({ connectorData, handleProduct }) => {
   }
 
   const productInfo = {
-    ACCOUNTS: { name: 'Contas', icon: '💰' },
+    ACCOUNTS: { name: 'Contas', icon: <FiDollarSign className='icone-global'/> },
     //CREDIT_CARDS: { name: 'Cartões', icon: '💳' },
     //TRANSACTIONS: { name: 'Transações', icon: '↔️' },
     //PAYMENT_DATA: { name: 'Dados de Pagamentos', icon: '🧾' },
-    INVESTMENTS: { name: 'Investimentos', icon: '📈' },
+    INVESTMENTS: { name: 'Investimentos', icon: <FiTrendingUp className='icone-global'/> },
     //INVESTMENTS_TRANSACTIONS: { name: 'Transações de Investimento', icon: '📊' },
     //IDENTITY: { name: 'Identity', icon: '🆔' },
-    LOANS: { name: 'Empréstimos', icon: '🏦' },
+    LOANS: { name: 'Empréstimos', icon: <BsPiggyBank className='icone-global'/> },
     //BENEFITS: { name: 'Benefícios', icon: '🎁' },
     //PORTFOLIO: { name: 'Portfolio', icon: '📂' },
     //INCOME_REPORTS: { name: 'Relatórios de Renda', icon: '📄' }
@@ -38,7 +41,7 @@ const MenuExtrato = ({ connectorData, handleProduct }) => {
 
   return (
     <Container className="my-4 products-container">
-      <h4 className="mb-4">Produtos Disponíveis</h4>
+      <h4 className="mb-4 title-global">Produtos Disponíveis</h4>
       <Row xs={2} md={3} lg={4} className="g-4 options_export">
         {filteredProducts.map((productCode) => {
           const product = productInfo[productCode]
@@ -59,7 +62,7 @@ const MenuExtrato = ({ connectorData, handleProduct }) => {
         })}
       </Row>
     </Container>
-  );
-};
+  )
+}
 
-export default MenuExtrato;
+export default MenuExtrato

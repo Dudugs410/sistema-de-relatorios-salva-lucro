@@ -309,6 +309,22 @@ tr{
     background: #555; 
   }
 
+    //icones
+
+    .icone-global{
+        color: var(--font-color);
+
+        &.active-child {
+            background-color: var(--secondary-color);
+            color: var(--font-color);
+            opacity: 0.8;
+        }
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+
   @media screen and (max-width: 869px){
     .page-content-global {
         width: 100%;
