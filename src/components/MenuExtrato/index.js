@@ -12,14 +12,14 @@ const MenuExtrato = ({ connectorData, handleProduct }) => {
   }
 
   const productInfo = {
-    ACCOUNTS: { name: 'Contas', icon: <FiDollarSign className='icone-global'/> },
+    ACCOUNTS: { name: <p className='text-global'>Contas</p>, icon: <FiDollarSign className='icone-global'/> },
     //CREDIT_CARDS: { name: 'Cartões', icon: '💳' },
     //TRANSACTIONS: { name: 'Transações', icon: '↔️' },
     //PAYMENT_DATA: { name: 'Dados de Pagamentos', icon: '🧾' },
-    INVESTMENTS: { name: 'Investimentos', icon: <FiTrendingUp className='icone-global'/> },
+    INVESTMENTS: { name: <p className='text-global'>Investimentos</p>, icon: <FiTrendingUp className='icone-global'/> },
     //INVESTMENTS_TRANSACTIONS: { name: 'Transações de Investimento', icon: '📊' },
     //IDENTITY: { name: 'Identity', icon: '🆔' },
-    LOANS: { name: 'Empréstimos', icon: <BsPiggyBank className='icone-global'/> },
+    LOANS: { name: <p className='text-global'>Empréstimos</p>, icon: <BsPiggyBank className='icone-global'/> },
     //BENEFITS: { name: 'Benefícios', icon: '🎁' },
     //PORTFOLIO: { name: 'Portfolio', icon: '📂' },
     //INCOME_REPORTS: { name: 'Relatórios de Renda', icon: '📄' }
@@ -41,24 +41,23 @@ const MenuExtrato = ({ connectorData, handleProduct }) => {
 
   return (
     <Container className="my-4 products-container">
-      <h4 className="mb-4 title-global">Produtos Disponíveis</h4>
+      <h4 className="mb-4 title-global text-global">Produtos Disponíveis</h4>
       <Row xs={2} md={3} lg={4} className="g-4 options_export">
         {filteredProducts.map((productCode) => {
           const product = productInfo[productCode]
-          
           return (
             <Col key={productCode}>
               <Card 
-                className="h-100 product-card" 
+                className="h-100 product-card " 
                 onClick={() => handleProductSelect(productCode)}
               >
                 <Card.Body className="text-center">
                   <div className="display-4 mb-2">{product.icon}</div>
-                  <Card.Title>{product.name}</Card.Title>
+                  <Card.Title >{product.name}</Card.Title>
                 </Card.Body>
               </Card>
             </Col>
-          );
+          )
         })}
       </Row>
     </Container>
