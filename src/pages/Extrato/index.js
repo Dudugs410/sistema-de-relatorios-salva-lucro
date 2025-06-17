@@ -185,6 +185,33 @@ const Extrato = () => {
         }
     }
 
+    const refresh = async () => {
+        let pluggyData = JSON.parse(localStorage.getItem('pluggyData'))
+        let dataTemp
+        switch (displayedMenu) {
+            case 'Contas':
+                dataTemp = await loadAccounts()
+                pluggyData.accounts = dataTemp
+                localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
+                setData(dataTemp)
+                break;
+            case 'Empréstimos':
+                dataTemp = await loadLoans()
+                pluggyData.loans = dataTemp
+                localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
+                setData(dataTemp)                
+                break;
+            case 'Investimentos':
+                dataTemp = await loadInvestments()
+                pluggyData.investments = dataTemp
+                localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
+                setData(dataTemp)                
+                break;        
+            default:
+                break;
+        }
+    }
+
     const handleSelectedProduct = (product) =>{
         switch (product) {
             case 'ACCOUNTS':
@@ -262,6 +289,7 @@ const Extrato = () => {
                                     {selectedAccount && <Tabela data={selectedAccount}/>}
                                 </div>
                                 }
+                                <button className='btn-global' onClick={refresh}>R E F R E S H</button>
                             </div>
                     }
                     <div ref={widgetContainerRef}></div>
