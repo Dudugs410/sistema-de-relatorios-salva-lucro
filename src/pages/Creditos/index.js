@@ -242,6 +242,8 @@ async function loadData() {
                   adminDataArray={creditsPageAdminArray} 
                   totals={creditsTotal} 
                   onGoBack={resetValues}
+                  setRunTutorial={setRunTutorial}
+                  location={location}
                 />
               ) : (
                 <MyCalendar 

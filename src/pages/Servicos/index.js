@@ -223,6 +223,8 @@ const Servicos = () =>{
                 adminDataArray={servicesPageAdminArray} 
                 totals={null} 
                 onGoBack={resetValues}
+                setRunTutorial={setRunTutorial}
+                location={location}
               />
               ) : (
               <MyCalendar 

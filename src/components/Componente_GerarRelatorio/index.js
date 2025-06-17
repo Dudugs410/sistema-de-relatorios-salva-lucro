@@ -33,7 +33,7 @@ export default function GerarRelatorio(){
 	},[creditsTableData])
 
 	useEffect(()=>{
-		console.log('export: REAIS -> ', servicesTableData)
+		console.log('export: SERVICES -> ', servicesTableData)
 	},[servicesTableData])
 
 	useEffect(() => {
@@ -90,7 +90,7 @@ export default function GerarRelatorio(){
 			default:
 				break
 		}
-	},[localStorage.getItem('currentPath'), salesTableData, creditsTableData, servicesTableData])
+	},[localStorage.getItem('currentPath')])
 
 	// EXCEL ////////////////////////////////////////////////////////////
 	

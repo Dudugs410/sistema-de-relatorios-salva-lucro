@@ -232,13 +232,21 @@ const handleCheckboxChangeCalendar = () => {
     }, [location])
 
   const handleTutorialEnd = () => {
+    console.log('handleTutorialEnd')
     setRunTutorial(false)
-    updateUserById(clientUserId, {
-      joyrideComplete: {
-        vendasCalendar: true,
-      },
-    })
-    localStorage.setItem('vendasCalendarTutorialCompleted', 'true')
+    if (salesPageArray.length > 0){
+      updateUserById(clientUserId, {
+          joyrideComplete: {
+          vendasTable: true,
+        },
+      })
+    } else{
+      updateUserById(clientUserId, {
+        joyrideComplete: {
+          vendasCalendar: true,
+        },
+      })      
+    }
   }
 
   return(
@@ -287,6 +295,8 @@ const handleCheckboxChangeCalendar = () => {
                     adminDataArray={salesPageAdminArray}
                     totals={salesTotal}
                     onGoBack={resetValues}
+                    setRunTutorial={setRunTutorial}
+                    location={location}
                   />
                 ) : (
                   <MyCalendar
