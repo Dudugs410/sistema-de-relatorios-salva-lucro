@@ -9,7 +9,7 @@ import './displayData.scss'
 import TabelaServicos from '../Componente_TabelaServicos'
 import { AuthContext } from '../../contexts/auth'
 
-const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack }) => {
+const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutorial, location }) => {
   const {
     getUserData, 
     updateUserById, 
@@ -34,7 +34,7 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack }) => {
         setExportPage('')
         break
     }
-  }, [localStorage.getItem('currentPath')])
+  }, [location])
 
   const componentMap = {
     0: TabelaVendas,
@@ -45,11 +45,12 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack }) => {
   const SelectedTableComponent = componentMap[exportPage]
   
     useEffect(() => {
-      const currentPath = localStorage.getItem('currentPath')
+      const currentPath = location
       
       if(currentPath === '/vendas'){
         let userTemp = getUserData()
         const tutorialCompleted = userTemp.joyrideComplete.vendasTable
+        console.log('tutorialCompleted: ', tutorialCompleted)
         if (!tutorialCompleted) {
           // Wait a moment for the DOM to fully render
           const timer = setTimeout(() => {
@@ -84,7 +85,7 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack }) => {
       }
     }, [location])
   
-    const handleTutorialEnd = () => {
+    const handleDataTutorialEnd = () => {
       setRunTutorial(false)
       const currentPath = localStorage.getItem('currentPath')
       if(currentPath === '/vendas'){
