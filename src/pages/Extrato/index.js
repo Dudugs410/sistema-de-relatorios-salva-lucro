@@ -4,7 +4,7 @@ import { createRoot } from 'react-dom/client' // For React 18+
 import Cookies from 'js-cookie'
 import PluggyWidget from '../../components/PluggyWidget'
 import './extrato.scss'
-
+import { FiRefreshCw } from "react-icons/fi";
 import { PluggyContext } from '../../contexts/pluggyContext'
 import Tabela from '../../components/Tabela'
 import TabelaItem from '../../components/TabelaItem'
@@ -289,7 +289,8 @@ const Extrato = () => {
                                     {selectedAccount && <Tabela data={selectedAccount}/>}
                                 </div>
                                 }
-                                <button className='btn-global' onClick={refresh}>R E F R E S H</button>
+                                <hr/>
+                                <button className='btn-global btn-refresh-extrato' style={{width:'100%'}} onClick={refresh}><FiRefreshCw /></button>
                             </div>
                     }
                     <div ref={widgetContainerRef}></div>
