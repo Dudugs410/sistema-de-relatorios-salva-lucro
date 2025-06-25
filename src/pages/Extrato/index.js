@@ -278,9 +278,9 @@ const Extrato = () => {
                     {
                         selected && 
                             <div className='tabela-extrato-container'> 
-                                <div>
+                                <h5 className='subtitle-global'>
                                     { displayedMenu }
-                                </div> 
+                                </h5> 
                                 <div >
                                     {data && <Tabela data={data} clickRow={handleRowClicked}/>}
                                 </div>
