@@ -187,15 +187,23 @@ async function loadData() {
       }
     }, [location])
   
-    const handleTutorialEnd = () => {
-      setRunTutorial(false)
+  const handleTutorialEnd = () => {
+    console.log('handleTutorialEnd')
+    setRunTutorial(false)
+    if (creditsPageArray.length > 0){
+      updateUserById(clientUserId, {
+          joyrideComplete: {
+          creditosTable: true,
+        },
+      })
+    } else{
       updateUserById(clientUserId, {
         joyrideComplete: {
           creditosCalendar: true,
         },
-      })
-      localStorage.setItem('creditosCalendarTutorialCompleted', 'true')
+      })      
     }
+  }
 
 	return(
 		<div className='appPage'>

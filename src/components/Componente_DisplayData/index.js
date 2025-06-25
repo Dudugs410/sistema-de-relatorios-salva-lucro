@@ -10,17 +10,30 @@ import TabelaServicos from '../Componente_TabelaServicos'
 import { AuthContext } from '../../contexts/auth'
 
 const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutorial, location }) => {
-  const {
-    getUserData, 
-    updateUserById, 
-    clientUserId
-  } = useContext(AuthContext)
-
+  const { getUserData, updateUserById, clientUserId } = useContext(AuthContext)
+  
+  // State initialization
   const [exportPage, setExportPage] = useState('')
+  const [currentPath, setCurrentPath] = useState(location.pathname)
 
+  // Helper function to get path key
+  const getPathKey = (path) => {
+    switch(path) {
+      case '/vendas': return 'vendasTable'
+      case '/creditos': return 'creditosTable'
+      case '/servicos': return 'servicosTable'
+      default: return null
+    }
+  }
+
+  // Main effect to handle path changes
   useEffect(() => {
-    const currentPath = localStorage.getItem('currentPath')
-    switch (currentPath) {
+    const path = location.pathname
+    setCurrentPath(path)
+    localStorage.setItem('currentPath', path)
+
+    // Update export page
+    switch (path) {
       case '/vendas':
         setExportPage(0)
         break
@@ -34,8 +47,19 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutori
         setExportPage('')
         break
     }
-  }, [location])
 
+    // Handle tutorial logic
+    const pathKey = getPathKey(path)
+    if (pathKey) {
+      const userTemp = getUserData()
+      if (!userTemp?.joyrideComplete?.[pathKey]) {
+        const timer = setTimeout(() => setRunTutorial(true), 1000)
+        return () => clearTimeout(timer)
+      }
+    }
+  }, [location.pathname, getUserData, setRunTutorial])
+
+  // Component mapping
   const componentMap = {
     0: TabelaVendas,
     1: TabelaCreditos,
@@ -43,76 +67,21 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutori
   }
 
   const SelectedTableComponent = componentMap[exportPage]
-  
-    useEffect(() => {
-      const currentPath = location
-      
-      if(currentPath === '/vendas'){
-        let userTemp = getUserData()
-        const tutorialCompleted = userTemp.joyrideComplete.vendasTable
-        console.log('tutorialCompleted: ', tutorialCompleted)
-        if (!tutorialCompleted) {
-          // Wait a moment for the DOM to fully render
-          const timer = setTimeout(() => {
-            setRunTutorial(true)
-          }, 1000)
-          return () => clearTimeout(timer)
-        }
-      } 
-      
-      else if(currentPath === '/creditos'){
-        let userTemp = getUserData()
-        const tutorialCompleted = userTemp.joyrideComplete.creditosTable
-        if (!tutorialCompleted) {
-          // Wait a moment for the DOM to fully render
-          const timer = setTimeout(() => {
-            setRunTutorial(true)
-          }, 1000)
-          return () => clearTimeout(timer)
-        }
-      } 
-      
-      else if(currentPath === '/servicos'){
-        let userTemp = getUserData()
-        const tutorialCompleted = userTemp.joyrideComplete.servicosTable
-        if (!tutorialCompleted) {
-          // Wait a moment for the DOM to fully render
-          const timer = setTimeout(() => {
-            setRunTutorial(true)
-          }, 1000)
-          return () => clearTimeout(timer)
-        }
-      }
-    }, [location])
-  
-    const handleDataTutorialEnd = () => {
-      setRunTutorial(false)
-      const currentPath = localStorage.getItem('currentPath')
-      if(currentPath === '/vendas'){
-        updateUserById(clientUserId, {
-            joyrideComplete: {
-            vendasTable: true,
-          },
-        })
-      } else if(currentPath === '/creditos'){
-          updateUserById(clientUserId, {
-            joyrideComplete: {
-              creditosTable: true,
-            },
-          })
-      } else if(currentPath === '/servicos'){
-          updateUserById(clientUserId, {
-            joyrideComplete: {
-              servicosTable: true,
-            },
-          })
-      }
+
+  const handleDataTutorialEnd = () => {
+    setRunTutorial(false)
+    const pathKey = getPathKey(currentPath)
+    if (pathKey && clientUserId) {
+      updateUserById(clientUserId, {
+        joyrideComplete: { [pathKey]: true }
+      })
     }
+  }
 
   return (
     <>
       {totals && <TotalModalidadesComp totals={totals} />}
-      {localStorage.getItem('currentPath') === '/servicos' && <hr className='hr-global' />}
+      {currentPath === '/servicos' && <hr className='hr-global' />}
       <GerarRelatorio className='export' />
       <div className='component-container-vendas'>
         {SelectedTableComponent && <SelectedTableComponent array={dataArray} />}
@@ -122,7 +91,13 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutori
       <div className='search-bar'>
         <form className='date-container-vendas'>
           <div className='submit-container select-align voltar-align'>
-            <button data-tour="botaovoltar-section" className='btn btn-secondary btn-global btn-pesquisar' onClick={onGoBack}>Voltar</button>
+            <button 
+              data-tour="botaovoltar-section" 
+              className='btn btn-secondary btn-global btn-pesquisar' 
+              onClick={onGoBack}
+            >
+              Voltar
+            </button>
           </div>
         </form>
       </div>

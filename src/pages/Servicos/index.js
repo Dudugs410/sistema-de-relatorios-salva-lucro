@@ -168,15 +168,23 @@ const Servicos = () =>{
       }
     }, [location])
   
-    const handleTutorialEnd = () => {
-      setRunTutorial(false)
+  const handleTutorialEnd = () => {
+    console.log('handleTutorialEnd')
+    setRunTutorial(false)
+    if (servicesPageArray.length > 0){
+      updateUserById(clientUserId, {
+          joyrideComplete: {
+          servicosTable: true,
+        },
+      })
+    } else{
       updateUserById(clientUserId, {
         joyrideComplete: {
           servicosCalendar: true,
         },
-      })
-      localStorage.setItem('servicosCalendarTutorialCompleted', 'true')
+      })      
     }
+  }
 
 	return(
 		<div className='appPage'>
