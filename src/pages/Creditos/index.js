@@ -112,28 +112,28 @@ async function loadData() {
           let stepsTemp = [
             {
               target: '[data-tour="modalidade-section"]',
-              content: 'Valores totais das vendas exibidas, por modalidade.',
+              content: 'Valores totais dos créditos exibidos, por modalidade.',
               disableBeacon: true,
               placement: 'bottom'
             },
             {
               target: '[data-tour="exportacao-section"]',
-              content: 'Exporta as vendas sendo exibidas para os formatos Excel ou PDF.',
+              content: 'Exporta os créditos sendo exibidos para os formatos Excel ou PDF.',
               placement: 'bottom'
             },
             {
               target: '[data-tour="bandeiraadquirente-section"]',
-              content: 'Filtra as vendas de acordo com a combinação de bandeira/adquirente selecionada.',
+              content: 'Filtra os créditos de acordo com a combinação de bandeira/adquirente selecionada.',
               placement: 'bottom'
             },
             {
               target: '[data-tour="tabelavendas-section"]',
-              content: 'Vendas do período selecionado. Podem ser filtradas por bandeira/adquirente.',
+              content: 'Créditos do período selecionado. Podem ser filtrados por bandeira/adquirente.',
               placement: 'bottom'
             },
             {
               target: '[data-tour="totaladq-section"]',
-              content: 'Valores totais das vendas sendo exibidas, separadas por adquirente.',
+              content: 'Valores totais dos créditos sendo exibidos, separados por adquirente.',
               placement: 'bottom'
             },
             {
