@@ -66,31 +66,27 @@ export default function GerarRelatorio(){
 		return () => clearInterval(intervalId)
 	  }, [])
 
-	useEffect(()=>{
-		console.log('effect triggered. salesTableData: ', salesTableData)
-		console.log('effect triggered. creditsTableData: ', creditsTableData)
-		console.log('effect triggered. servicesTableData: ', servicesTableData)
-		switch (localStorage.getItem('currentPath')) {
-			case '/vendas':
-				setTipoRelatorio('Relatório de Vendas')
-				setTipo('vendas')
-				setTableData(salesTableData)
-				break
-				
-			case '/creditos':
-				setTipoRelatorio('Relatório de Créditos')
-				setTipo('creditos')
-				setTableData(creditsTableData)
-				break
-
-			case '/servicos':
-				setTipoRelatorio('Relatório de Serviços')
-				setTipo('servicos')
-				setTableData(servicesTableData)
-			default:
-				break
-		}
-	},[localStorage.getItem('currentPath')])
+	useEffect(() => {
+	switch (localStorage.getItem('currentPath')) {
+		case '/vendas':
+		setTipoRelatorio('Relatório de Vendas')
+		setTipo('vendas')
+		setTableData(salesTableData)
+		break
+		case '/creditos':
+		setTipoRelatorio('Relatório de Créditos')
+		setTipo('creditos')
+		setTableData(creditsTableData)
+		break
+		case '/servicos':
+		setTipoRelatorio('Relatório de Serviços')
+		setTipo('servicos')
+		setTableData(servicesTableData)
+		break // Add missing break
+		default:
+		break
+	}
+	}, [salesTableData, creditsTableData, servicesTableData]) // Add dependencies
 
 	// EXCEL ////////////////////////////////////////////////////////////
 	

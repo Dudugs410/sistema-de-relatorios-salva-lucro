@@ -1,7 +1,13 @@
 import React,  {useState } from 'react'
 import { Container, Row, Col, Card } from 'react-bootstrap'
 import { FiTrendingUp, FiDollarSign } from "react-icons/fi"
-import { BsPiggyBank } from "react-icons/bs"
+import { BsPiggyBank, BsCreditCard } from "react-icons/bs"
+import { TbTransactionDollar, TbReportAnalytics } from "react-icons/tb";
+import { LiaChartBarSolid, LiaFileInvoiceDollarSolid } from "react-icons/lia";
+import { PiFoldersLight, PiIdentificationBadgeLight } from "react-icons/pi";
+import { GrTransaction } from "react-icons/gr";
+import { GoGift } from "react-icons/go";
+
 import './menuExtrato.scss'
 import '../../styles/global.scss'
 
@@ -13,16 +19,16 @@ const MenuExtrato = ({ connectorData, handleProduct }) => {
 
   const productInfo = {
     ACCOUNTS: { name: <p className='text-global'>Contas</p>, icon: <FiDollarSign className='icone-global'/> },
-    //CREDIT_CARDS: { name: 'Cartões', icon: '💳' },
-    //TRANSACTIONS: { name: 'Transações', icon: '↔️' },
-    //PAYMENT_DATA: { name: 'Dados de Pagamentos', icon: '🧾' },
+    CREDIT_CARDS: { name: <p className='text-global'>'Cartões'</p>, icon: <BsCreditCard className='icone-global'/> },
+    TRANSACTIONS: { name: <p className='text-global'>'Transações'</p>, icon: <GrTransaction className='icone-global'/> },
+    PAYMENT_DATA: { name: <p className='text-global'>'Dados de Pagamentos'</p>, icon: <LiaFileInvoiceDollarSolid className='icone-global'/> },
     INVESTMENTS: { name: <p className='text-global'>Investimentos</p>, icon: <FiTrendingUp className='icone-global'/> },
-    //INVESTMENTS_TRANSACTIONS: { name: 'Transações de Investimento', icon: '📊' },
-    //IDENTITY: { name: 'Identity', icon: '🆔' },
+    INVESTMENTS_TRANSACTIONS: { name: <p className='text-global'>'Transações de Investimento'</p>, icon: <LiaChartBarSolid className='icone-global'/> },
+    IDENTITY: { name: <p className='text-global'>'Identity'</p>, icon: <PiIdentificationBadgeLight className='icone-global'/> },
     LOANS: { name: <p className='text-global'>Empréstimos</p>, icon: <BsPiggyBank className='icone-global'/> },
-    //BENEFITS: { name: 'Benefícios', icon: '🎁' },
-    //PORTFOLIO: { name: 'Portfolio', icon: '📂' },
-    //INCOME_REPORTS: { name: 'Relatórios de Renda', icon: '📄' }
+    BENEFITS: { name: <p className='text-global'>'Benefícios'</p>, icon: <GoGift className='icone-global'/> },
+    PORTFOLIO: { name: <p className='text-global'>'Portfolio'</p>, icon: <PiFoldersLight className='icone-global'/> },
+    INCOME_REPORTS: { name: <p className='text-global'>'Relatórios de Renda'</p>, icon: <TbReportAnalytics className='icone-global' /> }
   }
 
   const availableProductCodes = Object.keys(productInfo)

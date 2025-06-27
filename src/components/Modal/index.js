@@ -3,10 +3,6 @@ import './modal.scss'
 import { FiX } from 'react-icons/fi'
 
 const Modal = ({ onClose, children }) => {
-  
-  useEffect(()=>{
-    console.log('modal children: ', children)
-  },[])
 
   useEffect(()=>{
     localStorage.setItem('showModalDash', false)

@@ -28,6 +28,11 @@ export default function Private({ children }) {
     }
   }
 
+  useEffect(()=>{
+    console.log('stayLoggedIn useEffect')
+    stayLoggedIn()
+  },[])
+
   const handleInactivity = () => {
     console.log('User inactivity detected, showing modal...')
     setShowModal(true)
