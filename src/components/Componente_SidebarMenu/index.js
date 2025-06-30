@@ -9,9 +9,6 @@ import { FiMenu } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
 
 const Sidebar = () => {
-    const { logout } = useContext(AuthContext)
-    const [isOpen, setIsOpen] = useState(false)
-    const [activeChild, setActiveChild] = useState(null)
     const [optionsWithIcons, setOptionsWithIcons] = useState([])
     const [activeParent, setActiveParent] = useState(null)
     const [lastClicked, setLastClicked] = useState(null)
@@ -22,16 +19,14 @@ const Sidebar = () => {
     const toggleDropdown = (parent) => {
         if (activeParent === parent) {
             setActiveParent(null)
-            setActiveChild(null)
+            
         } else {
             setActiveParent(parent)
-            setActiveChild(null)
             setLastClicked(parent)
         }
     }
 
     const handleChildClick = (child, navigationLink, parent) => {
-        setActiveChild(child)
         setLastClicked(child)
         setActiveParent(parent)
         navigate(navigationLink)
@@ -40,7 +35,6 @@ const Sidebar = () => {
 
     const handleParentClickWithoutChildren = (parent, navigationLink) => {
         setActiveParent(parent)
-        setActiveChild(null)
         setLastClicked(parent)
         navigate(navigationLink)
         setSidebarVisible(false)
@@ -77,10 +71,28 @@ const Sidebar = () => {
             { nome: 'Serviços', icone: icones['FiTool'], rota: '/servicos' },
             { nome: 'Taxas', icone: icones['FiTable'], rota: '/taxas' },
             { nome: 'Extrato Bancário', icone: icones['FiCreditCard'], rota: '/extrato'},
+            
         ]
 
         setOptionsWithIcons(orderedOptions)
     }, [])
+
+    {/*
+        { nome: 'Relatórios', icone: icones['FiFileText'], children: [
+        { nome: 'Financeiro', rota: '/financeiro' },
+        { nome: 'Gerenciais', rota: '/gerenciais' },
+        { nome: 'Outros', rota: '/outrosrelatorios'},
+        ]},
+        { nome: 'Exportações', icone: icones['FiDownload'], children: [
+            { nome: 'Sysmo', rota: '/sysmo' },
+            { nome: 'Meta', rota: '/meta' },
+            { nome: 'Meta Sapiranga', rota: '/metasapiranga' },
+        ]},
+        { nome: 'Administração', icone: icones['FiPaperClip'], rota: '/administracao'},
+        { nome: 'Suporte', icone: icones['FiSettings'], rota: '/suporte'},
+        { nome: 'Delivery', icone: icones['FiTruck'], rota: '/vendasdelivery'},
+        { nome: 'Conciliacao', icone: icones['FiShoppingBag'], rota: '/conciliacao'},    
+    */}
 
     return (
         <>
