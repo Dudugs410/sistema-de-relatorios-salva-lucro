@@ -13,6 +13,8 @@ import '../../styles/global.scss'
 
 const MenuExtrato = ({ connectorData, handleProduct }) => {
 
+  const [selectedProduct, setSelectedProduct] = useState(null)
+
   if (!connectorData) {
     return <></>;
   }
@@ -36,7 +38,8 @@ const MenuExtrato = ({ connectorData, handleProduct }) => {
   const filteredProducts = (connectorData.products || [])
     .filter(productCode => availableProductCodes.includes(productCode))
 
-  const handleProductSelect = (product) => {
+    const handleProductSelect = (product) => {
+    setSelectedProduct(product); // Update the selected product
     console.log('Selected product:', product)
     handleProduct(product)
   }
@@ -54,7 +57,7 @@ const MenuExtrato = ({ connectorData, handleProduct }) => {
           return (
             <Col key={productCode}>
               <Card 
-                className="h-100 product-card " 
+                className={`h-100 product-card ${selectedProduct === productCode ? 'selected-card' : ''}`}
                 onClick={() => handleProductSelect(productCode)}
               >
                 <Card.Body className="text-center">
