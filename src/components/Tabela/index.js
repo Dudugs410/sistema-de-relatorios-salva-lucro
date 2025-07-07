@@ -5,10 +5,11 @@ const Tabela = ({ data, clickRow }) => {
   const headers = displayData[0] ? Object.keys(displayData[0]) : []
 
   const renderCellValue = (value) => {
-    if (value === null || value === undefined) return ''
-    
-    if (typeof value === 'string' && !isNaN(Date.parse(value))) {
-      return new Date(value).toLocaleDateString('pt-BR')
+    if (value === null || value === undefined) return '';
+
+    // Strict check for ISO 8601 date strings (e.g., "2025-07-07T12:11:42.468Z")
+    if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value)) {
+      return new Date(value).toLocaleDateString('pt-BR') // "07/07/2025"
     }
 
     if (typeof value === 'object') {
