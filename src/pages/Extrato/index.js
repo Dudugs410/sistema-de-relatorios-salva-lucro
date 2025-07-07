@@ -9,6 +9,7 @@ import { PluggyContext } from '../../contexts/pluggyContext'
 import Tabela from '../../components/Tabela'
 import TabelaItem from '../../components/TabelaItem'
 import MenuExtrato from '../../components/MenuExtrato'
+import TabelaAccounts from '../../components/Tabelas Extrato Bancario/TabelaAccounts'
 
 const Extrato = () => {
     const { 
@@ -282,11 +283,11 @@ const Extrato = () => {
                                     { displayedMenu }
                                 </h5> 
                                 <div >
-                                    {data && <Tabela data={data} clickRow={handleRowClicked}/>}
+                                    {data && <TabelaAccounts data={data} clickRow={handleRowClicked}/>}
                                 </div>
                                 {
                                 <div >
-                                    {selectedAccount && <Tabela data={selectedAccount}/>}
+                                    {selectedAccount && <TabelaAccounts data={selectedAccount}/>}
                                 </div>
                                 }
                                 <hr/>

@@ -1,27 +1,12 @@
-const Tabela = ({ data, clickRow }) => {
-  const isSingleObject = !Array.isArray(data) && typeof data === 'object'
-  const displayData = isSingleObject ? [data] : data || []
-
-  const headers = displayData[0] ? Object.keys(displayData[0]) : []
-
-  const renderCellValue = (value) => {
-    if (value === null || value === undefined) return '';
-
-    // Strict check for ISO 8601 date strings (e.g., "2025-07-07T12:11:42.468Z")
-    if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value)) {
-      return new Date(value).toLocaleDateString('pt-BR') // "07/07/2025"
-    }
-
-    if (typeof value === 'object') {
-      return JSON.stringify(value)
-    }
-
-    return value.toString()
-  }
-
-  if (headers.length === 0) {
-    return <div className="p-3 text-center">No data available</div>
-  }
+const TabelaAccounts = ({ data, clickRow }) => {
+  // Define the headers and their corresponding data properties
+  const headers = [
+    { key: 'balance', label: 'Saldo' },
+    { key: 'currencyCode', label: 'Moeda' },
+    { key: 'name', label: 'nome' },
+    { key: 'owner', label: 'titular' },
+    { key: 'type', label: 'Tipo' },
+  ]
 
   return (
     <div className='dropShadow vendas-view'>
@@ -30,22 +15,22 @@ const Tabela = ({ data, clickRow }) => {
           <thead>
             <tr className='det-tr-top-global'>
               {headers.map(header => (
-                <th className='det-th-global' key={header}>
-                  {header}
+                <th className='det-th-global' key={header.key}>
+                  {header.label}
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {displayData.map((row, index) => (
+            {data.map((row, index) => (
               <tr 
                 className='det-tr-global row-pluggy' 
                 key={row.id || index}
                 onClick={() => clickRow?.(row)}
               >
                 {headers.map(header => (
-                  <td className='det-td-vendas-global' key={`${row.id || index}-${header}`}>
-                    {renderCellValue(row[header])}
+                  <td className='det-td-vendas-global' key={`${row.id || index}-${header.key}`}>
+                    {row[header.key] ?? '-'}  {/* Fallback to '-' if undefined/null */}
                   </td>
                 ))}
               </tr>
@@ -57,4 +42,4 @@ const Tabela = ({ data, clickRow }) => {
   )
 }
 
-export default Tabela;
+export default TabelaAccounts

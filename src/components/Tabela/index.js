@@ -1,4 +1,9 @@
+import { useEffect } from "react"
+
 const Tabela = ({ data, clickRow }) => {
+  useEffect(()=>{
+    console.log('data: ', data)
+  },[])
   const isSingleObject = !Array.isArray(data) && typeof data === 'object'
   const displayData = isSingleObject ? [data] : data || []
 
