@@ -10,6 +10,7 @@ import Tabela from '../../components/Tabela'
 import TabelaItem from '../../components/TabelaItem'
 import MenuExtrato from '../../components/MenuExtrato'
 import TabelaAccounts from '../../components/Tabelas Extrato Bancario/TabelaAccounts'
+import TabelaInvestments from '../../components/Tabelas Extrato Bancario/TabelaInvestments'
 
 const Extrato = () => {
     const { 
@@ -255,6 +256,18 @@ const Extrato = () => {
         console.log("responseData: ", responseData)
     },[responseData])
 
+        const renderTableComponent = () => {
+        switch (displayedMenu) {
+            case 'Contas':
+                return <TabelaAccounts data={data} clickRow={handleRowClicked} />;
+            case 'Investimentos':
+                return <TabelaInvestments data={data} clickRow={handleRowClicked} />;
+            // Add cases for other menu options as needed
+            default:
+                return <TabelaAccounts data={data} clickRow={handleRowClicked} />;
+        }
+    }
+
     return (
         <div className='appPage'>
             <div className='page-background-global'>
@@ -280,14 +293,14 @@ const Extrato = () => {
                         selected && 
                             <div className='tabela-extrato-container'> 
                                 <h5 className='subtitle-global'>
-                                    { displayedMenu }
+                                    {displayedMenu}
                                 </h5> 
-                                <div >
-                                    {data && <TabelaAccounts data={data} clickRow={handleRowClicked}/>}
+                                <div>
+                                    {data && renderTableComponent()}
                                 </div>
                                 {
-                                <div >
-                                    {selectedAccount && <TabelaAccounts data={selectedAccount}/>}
+                                <div>
+                                    {selectedAccount && renderTableComponent()}
                                 </div>
                                 }
                                 <hr/>

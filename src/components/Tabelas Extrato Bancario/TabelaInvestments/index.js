@@ -1,27 +1,34 @@
-const Tabela = ({ data, clickRow }) => {
-  const isSingleObject = !Array.isArray(data) && typeof data === 'object'
-  const displayData = isSingleObject ? [data] : data || []
-
-  const headers = displayData[0] ? Object.keys(displayData[0]) : []
-
-  const renderCellValue = (value) => {
-    if (value === null || value === undefined) return '';
-
-    // Strict check for ISO 8601 date strings (e.g., "2025-07-07T12:11:42.468Z")
-    if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value)) {
-      return new Date(value).toLocaleDateString('pt-BR') // "07/07/2025"
-    }
-
-    if (typeof value === 'object') {
-      return JSON.stringify(value)
-    }
-
-    return value.toString()
-  }
-
-  if (headers.length === 0) {
-    return <div className="p-3 text-center">No data available</div>
-  }
+const TabelaInvestments = ({ data, clickRow }) => {
+  // Define the headers and their corresponding data properties
+  const headers = [
+    { key: 'amount', label: 'Quantia' },
+    { key: 'amountOriginal', label: 'Quantia Original' },
+    { key: 'amountProfit', label: 'Lucro' },
+    { key: 'amountWithdrawal', label: 'Quantidade Sacada' },
+    { key: 'annualRate', label: 'Taxa Anual' },
+    { key: 'balance', label: 'Saldo' },
+    { key: 'code', label: 'Código' },
+    { key: 'createdAt', label: 'Criado Em' },
+    { key: 'currencyCode', label: 'Moeda' },
+    { key: 'date', label: 'Data' },
+    { key: 'issuer', label: 'issuer' },
+    { key: 'issuerCNPJ', label: 'issuer CNPJ' },
+    { key: 'lastMonthRate', label: 'taxa do último mês' },
+    { key: 'lastTwelveMonthsRate', label: 'taxa últimos 12 meses' },
+    { key: 'name', label: 'Nome' },
+    { key: 'number', label: 'Número' },
+    { key: 'owner', label: 'Titular' },
+    { key: 'quantity', label: 'Quantidade' },
+    { key: 'rate', label: 'taxa' },
+    { key: 'rateType', label: 'Tipo de Taxa' },
+    { key: 'status', label: 'Status' },
+    { key: 'subtype', label: 'Subtipo' },
+    { key: 'taxes', label: 'Taxas' },
+    { key: 'taxes2', label: 'Taxas 2' },
+    { key: 'type', label: 'Tipo' },
+    { key: 'updatedAt', label: 'Atualizado Em' },
+    { key: 'value', label: 'Valor' },
+  ]
 
   return (
     <div className='dropShadow vendas-view'>
@@ -30,22 +37,22 @@ const Tabela = ({ data, clickRow }) => {
           <thead>
             <tr className='det-tr-top-global'>
               {headers.map(header => (
-                <th className='det-th-global' key={header}>
-                  {header}
+                <th className='det-th-global' key={header.key}>
+                  {header.label}
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {displayData.map((row, index) => (
-              <tr 
+            {data.map((row, index) => (
+              <tr
                 className='det-tr-global row-pluggy' 
                 key={row.id || index}
                 onClick={() => clickRow?.(row)}
               >
                 {headers.map(header => (
-                  <td className='det-td-vendas-global' key={`${row.id || index}-${header}`}>
-                    {renderCellValue(row[header])}
+                  <td className='det-td-vendas-global' key={`${row.id || index}-${header.key}`}>
+                    {row[header.key] ?? '-'}  {/* Fallback to '-' if undefined/null */}
                   </td>
                 ))}
               </tr>
@@ -57,4 +64,4 @@ const Tabela = ({ data, clickRow }) => {
   )
 }
 
-export default Tabela;
+export default TabelaInvestments

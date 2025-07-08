@@ -23,7 +23,7 @@ const TabelaAccounts = ({ data, clickRow }) => {
           </thead>
           <tbody>
             {data.map((row, index) => (
-              <tr 
+              <tr
                 className='det-tr-global row-pluggy' 
                 key={row.id || index}
                 onClick={() => clickRow?.(row)}
