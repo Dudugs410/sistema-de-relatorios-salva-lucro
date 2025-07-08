@@ -5,7 +5,13 @@ const TabelaAccounts = ({ data, clickRow }) => {
     { key: 'currencyCode', label: 'Moeda' },
     { key: 'name', label: 'nome' },
     { key: 'owner', label: 'titular' },
+    { key: 'createdAt', label: 'criado Em' },
+    { key: 'marketingName', label: 'Nome Fantasia' },
+    { key: 'number', label: 'Número' },
+    { key: 'subtype', label: 'Subtipo' },
+    { key: 'taxNumber', label: 'Número Taxa' },
     { key: 'type', label: 'Tipo' },
+    { key: 'updatedAt', label: 'Atualizado Em' },
   ]
 
   return (
