@@ -11,6 +11,7 @@ import TabelaItem from '../../components/TabelaItem'
 import MenuExtrato from '../../components/MenuExtrato'
 import TabelaAccounts from '../../components/Tabelas Extrato Bancario/TabelaAccounts'
 import TabelaInvestments from '../../components/Tabelas Extrato Bancario/TabelaInvestments'
+import TabelaLoans from '../../components/Tabelas Extrato Bancario/TabelaLoans'
 
 const Extrato = () => {
     const { 
@@ -262,9 +263,11 @@ const Extrato = () => {
                 return <TabelaAccounts data={data} clickRow={handleRowClicked} />;
             case 'Investimentos':
                 return <TabelaInvestments data={data} clickRow={handleRowClicked} />;
+            case 'Empréstimos':
+                return <TabelaLoans data={data} clickRow={handleRowClicked} />;
             // Add cases for other menu options as needed
             default:
-                return <TabelaAccounts data={data} clickRow={handleRowClicked} />;
+                return <Tabela data={data} clickRow={handleRowClicked} />;
         }
     }
 
