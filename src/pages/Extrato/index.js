@@ -11,12 +11,14 @@ import TabelaItem from '../../components/TabelaItem'
 import MenuExtrato from '../../components/MenuExtrato'
 import TabelaAccounts from '../../components/Tabelas Extrato Bancario/TabelaAccounts'
 import TabelaInvestments from '../../components/Tabelas Extrato Bancario/TabelaInvestments'
+import TabelaLoans from '../../components/Tabelas Extrato Bancario/TabelaLoans'
 
 const Extrato = () => {
     const { 
         setId, itemId, setItemId,
         loadAccounts, loadItem, loadTransactions,
-        loadLoans, loadIdentity, loadInvestments, 
+        loadLoans, loadIdentity, loadInvestments,
+        loadBills,
     } = useContext(PluggyContext)
 
     const [accounts, setAccounts] = useState(() => {
@@ -187,6 +189,18 @@ const Extrato = () => {
         }
     }
 
+    const fetchBills = async () => {
+        let pluggyData = JSON.parse(localStorage.getItem('pluggyData'))
+        if(pluggyData.investments.length === 0){
+            let dataTemp = await loadInvestments()
+            pluggyData.investments = dataTemp
+            localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
+            setData(dataTemp)
+        } else {
+            setData(pluggyData.investments)
+        }
+    }
+
     const refresh = async () => {
         let pluggyData = JSON.parse(localStorage.getItem('pluggyData'))
         let dataTemp
@@ -262,9 +276,11 @@ const Extrato = () => {
                 return <TabelaAccounts data={data} clickRow={handleRowClicked} />;
             case 'Investimentos':
                 return <TabelaInvestments data={data} clickRow={handleRowClicked} />;
+            case 'Empréstimos':
+                return <TabelaLoans data={data} clickRow={handleRowClicked} />;
             // Add cases for other menu options as needed
             default:
-                return <TabelaAccounts data={data} clickRow={handleRowClicked} />;
+                return <Tabela data={data} clickRow={handleRowClicked} />;
         }
     }
 
