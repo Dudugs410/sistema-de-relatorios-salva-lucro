@@ -92,6 +92,8 @@ const MyCalendar = (props) => {
           { isCheckedCalendar ? <>
           <hr className='hr-global'/>
           <Calendar
+            locale="pt-BR"
+            calendarType="gregory"
             style={{ color:'white' }}
             onChange={ handleDateChange }
             selectRange={allowRange}
@@ -125,6 +127,8 @@ const MyCalendar = (props) => {
           { isCheckedCalendar ? <>
           <hr className='hr-global'/>
           <Calendar
+            locale="pt-BR"
+            calendarType="gregory"
             style={{ color:'white' }}
             onChange={ handleDateChangeSysmo }
             value={ dateSysmo }

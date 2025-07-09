@@ -134,6 +134,16 @@ function PluggyProvider({ children }){
         }
     }
 
+    const loadBills = async () => {
+        console.log('loadTransactions (accountID): ')
+        let accountID = Cookies.get('accountID')
+        if(accountID) {
+            let resp = await pluggyApi.get(`/bills/${accountID}`)
+            console.log('transactions response: ', resp.data)
+            return resp.data.results; // or just resp.data if no results field
+        }
+    }
+
     return(
         <PluggyContext.Provider
             value={{
@@ -143,6 +153,7 @@ function PluggyProvider({ children }){
                loadAccounts, loadTransactions,
                loadInvestments, loadIdentity, loadLoans,
                loadItem, loadItemByID,
+               loadBills,
             }}
         >
             {children}

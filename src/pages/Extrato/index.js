@@ -17,7 +17,8 @@ const Extrato = () => {
     const { 
         setId, itemId, setItemId,
         loadAccounts, loadItem, loadTransactions,
-        loadLoans, loadIdentity, loadInvestments, 
+        loadLoans, loadIdentity, loadInvestments,
+        loadBills,
     } = useContext(PluggyContext)
 
     const [accounts, setAccounts] = useState(() => {
@@ -177,6 +178,18 @@ const Extrato = () => {
     }
 
     const fetchInvestments = async () => {
+        let pluggyData = JSON.parse(localStorage.getItem('pluggyData'))
+        if(pluggyData.investments.length === 0){
+            let dataTemp = await loadInvestments()
+            pluggyData.investments = dataTemp
+            localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
+            setData(dataTemp)
+        } else {
+            setData(pluggyData.investments)
+        }
+    }
+
+    const fetchBills = async () => {
         let pluggyData = JSON.parse(localStorage.getItem('pluggyData'))
         if(pluggyData.investments.length === 0){
             let dataTemp = await loadInvestments()
