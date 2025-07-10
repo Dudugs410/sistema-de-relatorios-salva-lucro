@@ -1,6 +1,4 @@
-import BankData from "./BankData";
-
-const TabelaAccounts = ({ data, clickRow }) => {
+const BankData = ({ data, clickRow }) => {
   // Function to check if a value is an ISO date string
   const isISODate = (value) => {
     if (typeof value !== 'string') return false;
@@ -52,24 +50,14 @@ const TabelaAccounts = ({ data, clickRow }) => {
 
   // Define the headers and their corresponding data properties
   const headers = [
-    { key: 'balance', label: 'Saldo', isMoney: true },
-    { key: 'currencyCode', label: 'Moeda' },
-    { key: 'name', label: 'Nome' },
-    { key: 'owner', label: 'Titular' },
-    { key: 'createdAt', label: 'Criado Em', isDate: true },
-    { key: 'marketingName', label: 'Nome Fantasia' },
-    { key: 'number', label: 'Número' },
-    { key: 'subtype', label: 'Subtipo' },
-    { key: 'taxNumber', label: 'Número Taxa' },
-    { key: 'type', label: 'Tipo' },
-    { key: 'updatedAt', label: 'Atualizado Em', isDate: true },
-  ];
+    { key: 'automaticallyInvestedBalance', label: 'Saldo Investido Automaticamente', isMoney: true },
+    { key: 'closingBalance', label: 'Saldo de Fechamento', isMoney: true },
+    { key: 'overdraftContractedLimit', label: 'overdraftContractedLimit', isMoney: true },
+    { key: 'overdraftUsedLimit', label: 'overdraftUsedLimit', isMoney: true },
+    { key: 'transferNumber', label: 'Numero da Transferência'},
+    { key: 'unarrangedOverdraftAmount', label: 'unarrangedOverdraftAmount', isMoney: true },
 
-  const handleBankData = () => {
-    return <>
-      <BankData />
-    </>
-  }
+  ];
 
   return (
     <div className='dropShadow vendas-view'>
@@ -122,4 +110,4 @@ const TabelaAccounts = ({ data, clickRow }) => {
   );
 };
 
-export default TabelaAccounts;
+export default BankData;
