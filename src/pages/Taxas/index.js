@@ -12,6 +12,7 @@ import { FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward } from 'react-
 import ConfirmDelete from '../../components/Componente_ConfirmDelete'
 import LazyLoader from '../../components/Componente_LazyLoader/index.js'
 import Overlay from '../../components/Component_Overlay/index.js'
+import TabelaCompTaxas from './TabelaCompTaxas.js'
 
 const Taxas = () => {
     const location = useLocation()
@@ -42,6 +43,25 @@ const Taxas = () => {
 
     const [clientCode, setClientCode] = useState(localStorage.getItem('clientCode'))
     const [taxesList, setTaxesList] = useState([])
+
+    const taxasComp = {
+        nomeGrupo: 'nomeGrupo',
+        nomeCliente : 'nomeCliente',
+        periodo: 'periodo',
+        cnpj: 'cnpj',
+        taxas:[
+            {
+                adquirente: 'adquirente',
+                bandeira: 'bandeira',
+                produto: 'produto',
+                modalidade: 'modalidade',
+                taxaMediaPenultimoMes: 1.2,
+                taxaMediaUltimoMes: 1.5,
+                taxaCadastrada: 1.35,
+                comparativo: 1.36
+            }
+        ]
+    }
 
     useEffect(() => {
         localStorage.setItem('currentPath', location.pathname)
@@ -749,7 +769,10 @@ const Taxas = () => {
                         isLoadingTaxes ? 
                             <LazyLoader /> 
                             : ( taxesList && taxesList.length > 0 ?  
-                                <TaxesTable />
+                                <>
+                                    <TaxesTable />
+                                    <TabelaCompTaxas array={[taxasComp]}/>                                
+                                </>
                             : <></> )
                     }
                     <div className='modal-container' style={{ display: (isModalOpen || isModalEditOpen) ? 'block' : 'none' }}>
