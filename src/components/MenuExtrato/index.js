@@ -21,16 +21,16 @@ const MenuExtrato = ({ connectorData, handleProduct }) => {
 
   const productInfo = {
     ACCOUNTS: { name: <p className='text-global'>Contas</p>, icon: <FiDollarSign className='icone-global'/> },
-    CREDIT_CARDS: { name: <p className='text-global'>'Cartões'</p>, icon: <BsCreditCard className='icone-global'/> },
-    TRANSACTIONS: { name: <p className='text-global'>'Transações'</p>, icon: <GrTransaction className='icone-global'/> },
-    PAYMENT_DATA: { name: <p className='text-global'>'Dados de Pagamentos'</p>, icon: <LiaFileInvoiceDollarSolid className='icone-global'/> },
+    /*CREDIT_CARDS: { name: <p className='text-global'>'Cartões'</p>, icon: <BsCreditCard className='icone-global'/> },*/
+    /*TRANSACTIONS: { name: <p className='text-global'>'Transações'</p>, icon: <GrTransaction className='icone-global'/> },*/
+    /*PAYMENT_DATA: { name: <p className='text-global'>'Dados de Pagamentos'</p>, icon: <LiaFileInvoiceDollarSolid className='icone-global'/> },*/
     INVESTMENTS: { name: <p className='text-global'>Investimentos</p>, icon: <FiTrendingUp className='icone-global'/> },
-    INVESTMENTS_TRANSACTIONS: { name: <p className='text-global'>'Transações de Investimento'</p>, icon: <LiaChartBarSolid className='icone-global'/> },
+    /*INVESTMENTS_TRANSACTIONS: { name: <p className='text-global'>'Transações de Investimento'</p>, icon: <LiaChartBarSolid className='icone-global'/> },*/
     IDENTITY: { name: <p className='text-global'>'Identity'</p>, icon: <PiIdentificationBadgeLight className='icone-global'/> },
     LOANS: { name: <p className='text-global'>Empréstimos</p>, icon: <BsPiggyBank className='icone-global'/> },
-    BENEFITS: { name: <p className='text-global'>'Benefícios'</p>, icon: <GoGift className='icone-global'/> },
-    PORTFOLIO: { name: <p className='text-global'>'Portfolio'</p>, icon: <PiFoldersLight className='icone-global'/> },
-    INCOME_REPORTS: { name: <p className='text-global'>'Relatórios de Renda'</p>, icon: <TbReportAnalytics className='icone-global' /> }
+    /*BENEFITS: { name: <p className='text-global'>'Benefícios'</p>, icon: <GoGift className='icone-global'/> },*/
+    /*PORTFOLIO: { name: <p className='text-global'>'Portfolio'</p>, icon: <PiFoldersLight className='icone-global'/> },*/
+    /*INCOME_REPORTS: { name: <p className='text-global'>'Relatórios de Renda'</p>, icon: <TbReportAnalytics className='icone-global' /> }*/
   }
 
   const availableProductCodes = Object.keys(productInfo)

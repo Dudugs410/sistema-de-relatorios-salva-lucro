@@ -16,8 +16,8 @@ export default function GerarRelatorio(){
 
 	const { 
 		dateConvert, exportName,
-		salesTableData, creditsTableData, servicesTableData,
-	 } = useContext(AuthContext)
+		salesTableData, creditsTableData, servicesTableData, taxesTableData,
+	} = useContext(AuthContext)
 
 	const [tipoRelatorio, setTipoRelatorio] = useState('')
 	const [currentDateTime, setCurrentDateTime] = useState('')
@@ -35,6 +35,10 @@ export default function GerarRelatorio(){
 	useEffect(()=>{
 		console.log('export: SERVICES -> ', servicesTableData)
 	},[servicesTableData])
+
+	useEffect(()=>{
+		console.log('export: TAXES -> ', taxesTableData)
+	},[taxesTableData])
 
 	useEffect(() => {
 		const updateDateTime = () => {

@@ -26,6 +26,8 @@ const Taxas = () => {
         deleteTax,
         changedOption,
         isLoadingTaxes,
+        taxesPageArray,
+        setTaxesPageArray,
     } = useContext(AuthContext)
 
     const [bannersList, setBannersList] = useState([])
@@ -138,6 +140,12 @@ const Taxas = () => {
         }
         inicialize()
     }, [])
+
+    useEffect(()=>{
+    if(taxesPageArray.length > 0){
+        exportTaxes(taxesPageArray)
+    }
+    },[taxesPageArray, localStorage.getItem('currentPath')])
 
     useEffect(() => {
         if (bannersList) {
