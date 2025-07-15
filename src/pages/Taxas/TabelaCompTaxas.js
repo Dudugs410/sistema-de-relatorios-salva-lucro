@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward } from 'react-icons/fi'
+import GerarRelatorio from '../../components/Componente_GerarRelatorio'
 
 const TabelaCompTaxas = ({ array }) => {
     // Convert single object to array if needed
@@ -51,6 +52,7 @@ const TabelaCompTaxas = ({ array }) => {
 
     return(
         <>
+            <GerarRelatorio />
             <hr className='hr-global'/>
             <div data-tour="tabelavendas-section" className='dropShadow vendas-view'>
                 <div className='table-wrapper'>

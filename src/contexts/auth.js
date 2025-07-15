@@ -27,6 +27,7 @@ function AuthProvider({ children }){
 	const [salesTableData, setSalesTableData] = useState([])
 	const [creditsTableData, setCreditsTableData] = useState([])
 	const [servicesTableData, setServicesTableData] = useState([])
+	const [taxesTableData, setTaxesTableData] = useState([])
 
 	const [exportName, setExportName] = useState('')
 	const [isCheckedCalendar, setIsCheckedCalendar] = useState(true)
@@ -158,7 +159,7 @@ const loginApp = async (login, password) => {
             }
 
 try {
-  const clientUserId = "user-123@mail.com"; // From your auth system
+  const clientUserId = userId; // From your auth system
   
   const response = await fetch('https://api.pluggy.ai/auth', {
     method: 'POST',
@@ -188,22 +189,22 @@ try {
     expires: 1, // 1 day
     secure: process.env.NODE_ENV === 'production', // HTTPS only in production
     sameSite: 'strict'
-  });
+  })
 
   Cookies.set('pluggy_client_id', clientUserId, {
     expires: 1,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict'
-  });
+  })
 
 } catch (error) {
-  console.error('Authentication failed:', error);
+  console.error('Authentication failed:', error)
   
   // Cleanup cookies on failure
-  Cookies.remove('pluggy_api_key');
-  Cookies.remove('pluggy_client_id');
+  Cookies.remove('pluggy_api_key')
+  Cookies.remove('pluggy_client_id')
   
-  throw error;
+  throw error
 }
 
             // Step 4: Load additional data
@@ -1450,6 +1451,8 @@ try {
 
 		// >>> Página de Taxas <<< //
 		const [isLoadingTaxes, setIsLoadingTaxes] = useState(false)
+		const [taxesPageArray, setTaxesPageArray] = useState([])
+
 	////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
@@ -1980,6 +1983,27 @@ try {
 		return servicesTableData
 	}
 
+	taxesTableData
+	function exportTaxes(array){
+		taxesTableData.length = 0
+		setTaxesTableData([])
+		let arrayTemp = []
+		if (array.length > 0){
+			array.map((taxa) => {
+				arrayTemp.push({
+					adquirente: taxa.adquirente,
+					bandeira: taxa.bandeira,
+					produto: taxa.produto,
+					modalidade: taxa.modalidade,
+					taxaPenultimoMes: taxa.taxaMedia.PenultimoMes,
+					taxaUltimoMes: taxa.taxaMediaUltimoMes,
+					taxaCadastrada: taxa.taxaCadastrada,
+					comparativo: taxa.comparativo,
+				})
+			})
+		}
+	}
+
 	// Função que organiza array em ordem alfabética
 
 	const sortArray = (arrayAdq) => {
@@ -2064,6 +2088,8 @@ try {
 
 				loadTaxes, isLoadingTaxes, setIsLoadingTaxes,
 				addTax, editTax, deleteTax,
+				taxesTableData, setTaxesTableData, exportTaxes,
+				taxesPageArray, setTaxesPageArray,
 
 				// Bancos
 
