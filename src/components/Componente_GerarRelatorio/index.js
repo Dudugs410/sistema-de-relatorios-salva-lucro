@@ -86,6 +86,11 @@ export default function GerarRelatorio(){
 		setTipoRelatorio('Relatório de Serviços')
 		setTipo('servicos')
 		setTableData(servicesTableData)
+		break
+		case '/taxas':
+		setTipoRelatorio('Relatório de Taxas')
+		setTipo('taxas')
+		setTableData(taxesTableData)
 		break // Add missing break
 		default:
 		break
@@ -228,6 +233,38 @@ export default function GerarRelatorio(){
 			.catch((error) => {
 				console.error('Erro ao gerar arquivo Excel: ', error)
 			})
+		} else if (tipo === 'taxas'){
+			// Add data rows
+			tableData.forEach((rowData) => {
+				const values = Object.keys(rowData).map((key) => {
+					// Check if the key is a numeric field that should have "R$" added
+					if (key === 'valor') {
+						// Keep the numeric value unchanged, format with 2 decimal places
+						return Number(rowData[key].toFixed(2))
+					} else if(key === 'data'){
+						return new Date(rowData[key])
+					} else {
+						return rowData[key]
+					}
+				})
+			
+				worksheet.addRow(values)
+			})
+		
+			const columnWidth = 15 // Set the width to 15 (adjust as needed)
+
+			worksheet.columns.forEach((column) => {
+				column.width = columnWidth
+			  })
+
+			// Generate Excel file
+			workbook.xlsx.writeBuffer()
+			.then((buffer) => {
+				saveExcelFile(buffer, `${tipoRelatorio} - ${exportName} - ${currentDateTime}.xlsx`)
+			})
+			.catch((error) => {
+				console.error('Erro ao gerar arquivo Excel: ', error)
+			})
 		}
 	}
     
@@ -308,6 +345,16 @@ export default function GerarRelatorio(){
 					return [
 						rowData.cnpj, rowData.razao_social, rowData.codigo_estabelecimento, rowData.adquirente,
 						`R$ ${valor.toFixed(2)}`, dateConvert(rowData.data), rowData.descricao
+					]
+				})
+			} else if (tipo === 'taxas') {
+				console.log('tableData TAXAS: ', tableData)
+				columns = ['Adquirente', 'Bandeira', 'Produto', 'Modalidade', 'Taxa Penúltimo Mês', 'Taxa Último Mês', 'Taxa Cadastrada', 'Comparativo']
+				rows = tableData.map(rowData => {
+					return [
+						rowData.adquirente, rowData.bandeira, rowData.produto, rowData.modalidade,
+						`${rowData.taxaMediaPenultimoMes.toFixed(2)} %`, `${rowData.taxaMediaUltimoMes.toFixed(2)} %`,
+						`${rowData.taxaCadastrada.toFixed(2)} %`, `${rowData.comparativo.toFixed(2)} %`
 					]
 				})
 			}

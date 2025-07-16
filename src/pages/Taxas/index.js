@@ -46,24 +46,80 @@ const Taxas = () => {
     const [clientCode, setClientCode] = useState(localStorage.getItem('clientCode'))
     const [taxesList, setTaxesList] = useState([])
 
-    const taxasComp = {
-        nomeGrupo: 'nomeGrupo',
-        nomeCliente : 'nomeCliente',
-        periodo: 'periodo',
-        cnpj: 'cnpj',
-        taxas:[
-            {
-                adquirente: 'adquirente',
-                bandeira: 'bandeira',
-                produto: 'produto',
-                modalidade: 'modalidade',
-                taxaMediaPenultimoMes: 1.2,
-                taxaMediaUltimoMes: 1.5,
-                taxaCadastrada: 1.35,
-                comparativo: 1.36
-            }
-        ]
-    }
+    const taxasComp = [
+        {
+            nomeGrupo: 'nomeGrupo',
+            nomeCliente : 'nomeCliente',
+            periodo: 'periodo',
+            cnpj: 'cnpj',
+            taxas:[
+                {
+                    adquirente: 'adquirente',
+                    bandeira: 'bandeira',
+                    produto: 'produto',
+                    modalidade: 'modalidade',
+                    taxaMediaPenultimoMes: 1.2,
+                    taxaMediaUltimoMes: 1.5,
+                    taxaCadastrada: 1.35,
+                    comparativo: 1.36
+                }
+            ]
+        },
+                {
+            nomeGrupo: 'nomeGrupo',
+            nomeCliente : 'nomeCliente',
+            periodo: 'periodo',
+            cnpj: 'cnpj',
+            taxas:[
+                {
+                    adquirente: 'adquirente',
+                    bandeira: 'bandeira',
+                    produto: 'produto',
+                    modalidade: 'modalidade',
+                    taxaMediaPenultimoMes: 1.2,
+                    taxaMediaUltimoMes: 1.5,
+                    taxaCadastrada: 1.35,
+                    comparativo: 1.36
+                }
+            ]
+        },
+                {
+            nomeGrupo: 'nomeGrupo',
+            nomeCliente : 'nomeCliente',
+            periodo: 'periodo',
+            cnpj: 'cnpj',
+            taxas:[
+                {
+                    adquirente: 'adquirente',
+                    bandeira: 'bandeira',
+                    produto: 'produto',
+                    modalidade: 'modalidade',
+                    taxaMediaPenultimoMes: 1.2,
+                    taxaMediaUltimoMes: 1.5,
+                    taxaCadastrada: 1.35,
+                    comparativo: 1.36
+                }
+            ]
+        },
+                {
+            nomeGrupo: 'nomeGrupo',
+            nomeCliente : 'nomeCliente',
+            periodo: 'periodo',
+            cnpj: 'cnpj',
+            taxas:[
+                {
+                    adquirente: 'adquirente',
+                    bandeira: 'bandeira',
+                    produto: 'produto',
+                    modalidade: 'modalidade',
+                    taxaMediaPenultimoMes: 1.2,
+                    taxaMediaUltimoMes: 1.5,
+                    taxaCadastrada: 1.35,
+                    comparativo: 1.36
+                }
+            ]
+        },
+    ]
 
     useEffect(() => {
         localStorage.setItem('currentPath', location.pathname)
@@ -779,7 +835,7 @@ const Taxas = () => {
                             : ( taxesList && taxesList.length > 0 ?  
                                 <>
                                     <TaxesTable />
-                                    <TabelaCompTaxas array={[taxasComp]}/>                                
+                                    <TabelaCompTaxas array={taxasComp}/>                                
                                 </>
                             : <></> )
                     }
