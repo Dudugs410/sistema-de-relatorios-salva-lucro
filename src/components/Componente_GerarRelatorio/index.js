@@ -399,6 +399,9 @@ export default function GerarRelatorio(){
 				}
 			})
 	
+			if(tipo !== 'taxas'){
+				
+			}
 			// Add totals to the last page
 			doc.addPage()
 			doc.setFontSize(12)

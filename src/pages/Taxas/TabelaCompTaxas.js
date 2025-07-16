@@ -1,13 +1,9 @@
-import { useContext, useEffect, useState } from 'react'
-import { FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward } from 'react-icons/fi'
-import GerarRelatorio from '../../components/Componente_GerarRelatorio'
-import { AuthContext } from '../../contexts/auth'
+import React, { useContext, useEffect, useState } from 'react';
+import { FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward } from 'react-icons/fi';
+import GerarRelatorio from '../../components/Componente_GerarRelatorio';
+import { AuthContext } from '../../contexts/auth';
 
 const TabelaCompTaxas = ({ array }) => {
-    const { taxesTableData, setTaxesTableData } = useContext(AuthContext)
-
-    const [arrayTaxesTemp, setArrayTaxesTemp] = useState(array);
-
     const dataArray = Array.isArray(array) ? array : [array];
     
     const [currentPage, setCurrentPage] = useState(1);
@@ -15,60 +11,46 @@ const TabelaCompTaxas = ({ array }) => {
     const [expandedRows, setExpandedRows] = useState([]);
 
     useEffect(() => {
-        // Flatten the nested array structure first if needed
-        const flattenedArray = arrayTaxesTemp.flat();
-        
-        // Extract all taxas arrays and flatten them into one array
-        const allTaxas = flattenedArray.flatMap(item => item.taxas);
-        
-        setTaxesTableData(allTaxas);
-    }, [arrayTaxesTemp]);
-
-    useEffect(() => {
-        console.log('taxes table data: ', taxesTableData);
-    }, [taxesTableData])
-
-    useEffect(() => {
-        setCurrentPage(1) // Reset page to 1 when data changes
-    }, [array])
+        setCurrentPage(1); // Reset page to 1 when data changes
+    }, [array]);
 
     // Toggle row expansion
     const toggleRow = (index) => {
-        const newExpandedRows = [...expandedRows]
+        const newExpandedRows = [...expandedRows];
         if (newExpandedRows.includes(index)) {
             // If row is already expanded, collapse it
-            const idx = newExpandedRows.indexOf(index)
-            newExpandedRows.splice(idx, 1)
+            const idx = newExpandedRows.indexOf(index);
+            newExpandedRows.splice(idx, 1);
         } else {
             // If row is not expanded, expand it
-            newExpandedRows.push(index)
+            newExpandedRows.push(index);
         }
-        setExpandedRows(newExpandedRows)
-    }
+        setExpandedRows(newExpandedRows);
+    };
 
     // Change page functions
     const goToPrevPage = () => {
-        setCurrentPage((prevPage) => Math.max(prevPage - 1, 1))
-    }
+        setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
+    };
 
     const goToNextPage = () => {
-        setCurrentPage((prevPage) => Math.min(prevPage + 1, Math.ceil(dataArray.length / itemsPerPage)))
-    }
+        setCurrentPage((prevPage) => Math.min(prevPage + 1, Math.ceil(dataArray.length / itemsPerPage)));
+    };
 
     const goToFirstPage = () => {
-        setCurrentPage(1)
-    }
+        setCurrentPage(1);
+    };
     
     const goToLastPage = () => {
-        setCurrentPage(Math.ceil(dataArray.length / itemsPerPage))
-    }
+        setCurrentPage(Math.ceil(dataArray.length / itemsPerPage));
+    };
   
     // Calculate indexes for pagination
-    const indexOfLastItem = currentPage * itemsPerPage
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage
-    const currentItems = dataArray.slice(indexOfFirstItem, indexOfLastItem)
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = dataArray.slice(indexOfFirstItem, indexOfLastItem);
 
-    return(
+    return (
         <>
             <GerarRelatorio />
             <hr className='hr-global'/>
@@ -86,13 +68,13 @@ const TabelaCompTaxas = ({ array }) => {
                         </thead>
                         <tbody>
                             {dataArray.length > 0 && currentItems.map((item, index) => {
-                                const absoluteIndex = indexOfFirstItem + index
-                                const isExpanded = expandedRows.includes(absoluteIndex)
+                                const absoluteIndex = indexOfFirstItem + index;
+                                const isExpanded = expandedRows.includes(absoluteIndex);
+                                const rowKey = `row-${absoluteIndex}`;
                                 
-                                return(
-                                    <>
+                                return (
+                                    <React.Fragment key={rowKey}>
                                         <tr 
-                                            key={`parent-${absoluteIndex}`} 
                                             className='det-tr-global clickable-row'
                                             onClick={() => toggleRow(absoluteIndex)}
                                         >
@@ -109,7 +91,7 @@ const TabelaCompTaxas = ({ array }) => {
                                         </tr>
                                         
                                         {isExpanded && item.taxas && (
-                                            <tr key={`child-${absoluteIndex}`} className="expanded-row">
+                                            <tr key={`expanded-${rowKey}`} className="expanded-row">
                                                 <td colSpan="5">
                                                     <div className="sub-table-container p-3">
                                                         <table className="table table-bordered table-sm sub-table">
@@ -127,7 +109,7 @@ const TabelaCompTaxas = ({ array }) => {
                                                             </thead>
                                                             <tbody>
                                                                 {item.taxas.map((taxa, taxaIndex) => (
-                                                                    <tr key={`taxa-${absoluteIndex}-${taxaIndex}`}>
+                                                                    <tr key={`taxa-${rowKey}-${taxaIndex}`}>
                                                                         <td>{taxa.adquirente}</td>
                                                                         <td>{taxa.bandeira}</td>
                                                                         <td>{taxa.produto}</td>
@@ -146,8 +128,8 @@ const TabelaCompTaxas = ({ array }) => {
                                                 </td>
                                             </tr>
                                         )}
-                                    </>
-                                )
+                                    </React.Fragment>
+                                );
                             })}
                         </tbody>
                     </table> 
@@ -192,7 +174,7 @@ const TabelaCompTaxas = ({ array }) => {
             )}
             <hr className='hr-global'/>
             
-            {/* Add CSS for the expanded rows */}
+            {/* CSS for the expanded rows */}
             <style jsx>{`
                 .clickable-row {
                     cursor: pointer;
@@ -228,7 +210,7 @@ const TabelaCompTaxas = ({ array }) => {
                 }
             `}</style>
         </>
-    )
-}
+    );
+};
 
-export default TabelaCompTaxas
+export default TabelaCompTaxas;

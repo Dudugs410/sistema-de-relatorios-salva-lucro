@@ -27,7 +27,7 @@ const Taxas = () => {
         changedOption,
         isLoadingTaxes,
         taxesPageArray,
-        setTaxesPageArray,
+        setTaxesTableData,
     } = useContext(AuthContext)
 
     const [bannersList, setBannersList] = useState([])
@@ -54,10 +54,10 @@ const Taxas = () => {
             cnpj: 'cnpj',
             taxas:[
                 {
-                    adquirente: 'adquirente',
-                    bandeira: 'bandeira',
-                    produto: 'produto',
-                    modalidade: 'modalidade',
+                    adquirente: 'relenscard',
+                    bandeira: 'master',
+                    produto: '1',
+                    modalidade: '1',
                     taxaMediaPenultimoMes: 1.2,
                     taxaMediaUltimoMes: 1.5,
                     taxaCadastrada: 1.35,
@@ -72,14 +72,14 @@ const Taxas = () => {
             cnpj: 'cnpj',
             taxas:[
                 {
-                    adquirente: 'adquirente',
-                    bandeira: 'bandeira',
-                    produto: 'produto',
-                    modalidade: 'modalidade',
-                    taxaMediaPenultimoMes: 1.2,
-                    taxaMediaUltimoMes: 1.5,
-                    taxaCadastrada: 1.35,
-                    comparativo: 1.36
+                    adquirente: 'flibcard',
+                    bandeira: 'master',
+                    produto: '2',
+                    modalidade: '1',
+                    taxaMediaPenultimoMes: 1,
+                    taxaMediaUltimoMes: 0.8,
+                    taxaCadastrada: 1.22,
+                    comparativo: 1.1
                 }
             ]
         },
@@ -90,14 +90,14 @@ const Taxas = () => {
             cnpj: 'cnpj',
             taxas:[
                 {
-                    adquirente: 'adquirente',
-                    bandeira: 'bandeira',
-                    produto: 'produto',
-                    modalidade: 'modalidade',
-                    taxaMediaPenultimoMes: 1.2,
-                    taxaMediaUltimoMes: 1.5,
-                    taxaCadastrada: 1.35,
-                    comparativo: 1.36
+                    adquirente: 'crelenscred',
+                    bandeira: 'visa',
+                    produto: '3',
+                    modalidade: '2',
+                    taxaMediaPenultimoMes: 0.5,
+                    taxaMediaUltimoMes: 3.1,
+                    taxaCadastrada: 2.55,
+                    comparativo: 2.36
                 }
             ]
         },
@@ -120,6 +120,13 @@ const Taxas = () => {
             ]
         },
     ]
+
+    useEffect(() => {
+        if (taxasComp && taxasComp.length > 0) {
+            const allTaxas = taxasComp.flatMap(item => item.taxas || []);
+            setTaxesTableData(allTaxas);
+        }
+    }, [])
 
     useEffect(() => {
         localStorage.setItem('currentPath', location.pathname)
@@ -829,16 +836,20 @@ const Taxas = () => {
                             }
                         </div>
                     </div>
-                    {
-                        isLoadingTaxes ? 
-                            <LazyLoader /> 
-                            : ( taxesList && taxesList.length > 0 ?  
+                        {
+                            isLoadingTaxes ? (
+                                <LazyLoader />
+                            ) : taxesList && taxesList.length > 0 ? (
                                 <>
                                     <TaxesTable />
-                                    <TabelaCompTaxas array={taxasComp}/>                                
+                                    {taxasComp && taxasComp.length > 0 ? (
+                                        <TabelaCompTaxas array={taxasComp} />
+                                    ) : (
+                                        <div>No Data</div>
+                                    )}
                                 </>
-                            : <></> )
-                    }
+                            ) : null
+                        }
                     <div className='modal-container' style={{ display: (isModalOpen || isModalEditOpen) ? 'block' : 'none' }}>
                         <ModalNewTax />
                         <ModalEditTax />
