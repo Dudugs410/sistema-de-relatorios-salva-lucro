@@ -1,14 +1,32 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward } from 'react-icons/fi'
 import GerarRelatorio from '../../components/Componente_GerarRelatorio'
+import { AuthContext } from '../../contexts/auth'
 
 const TabelaCompTaxas = ({ array }) => {
-    // Convert single object to array if needed
-    const dataArray = Array.isArray(array) ? array : [array]
+    const { taxesTableData, setTaxesTableData } = useContext(AuthContext)
+
+    const [arrayTaxesTemp, setArrayTaxesTemp] = useState(array);
+
+    const dataArray = Array.isArray(array) ? array : [array];
     
-    const [currentPage, setCurrentPage] = useState(1)
-    const [itemsPerPage] = useState(15)
-    const [expandedRows, setExpandedRows] = useState([])
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(15);
+    const [expandedRows, setExpandedRows] = useState([]);
+
+    useEffect(() => {
+        // Flatten the nested array structure first if needed
+        const flattenedArray = arrayTaxesTemp.flat();
+        
+        // Extract all taxas arrays and flatten them into one array
+        const allTaxas = flattenedArray.flatMap(item => item.taxas);
+        
+        setTaxesTableData(allTaxas);
+    }, [arrayTaxesTemp]);
+
+    useEffect(() => {
+        console.log('taxes table data: ', taxesTableData);
+    }, [taxesTableData])
 
     useEffect(() => {
         setCurrentPage(1) // Reset page to 1 when data changes

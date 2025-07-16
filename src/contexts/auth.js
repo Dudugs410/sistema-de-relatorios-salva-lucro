@@ -1983,7 +1983,6 @@ try {
 		return servicesTableData
 	}
 
-	taxesTableData
 	function exportTaxes(array){
 		taxesTableData.length = 0
 		setTaxesTableData([])
