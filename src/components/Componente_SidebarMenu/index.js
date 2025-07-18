@@ -2,7 +2,8 @@ import React, { useContext, useState, useEffect } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './Sidebar.scss'
 import salvaLucroLogoBranco from '../../assets/LogoTopo.png'
-import { FiMoon, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText, FiClipboard, FiDownload, FiCalendar, FiPaperclip, FiSettings, FiTruck, FiShoppingBag, FiTable, FiLink } from "react-icons/fi"
+import { FiPercent, FiMoon, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText, FiClipboard, FiDownload, FiCalendar, FiPaperclip, FiSettings, FiTruck, FiShoppingBag, FiTable, FiLink } from "react-icons/fi"
+import { LiaFileInvoiceDollarSolid } from "react-icons/lia";
 import { Collapse, Nav, Navbar, NavItem, NavLink, Button } from 'reactstrap'
 import { AuthContext } from '../../contexts/auth'
 import { FiMenu } from 'react-icons/fi'
@@ -62,6 +63,8 @@ const Sidebar = () => {
             'FiTruck': FiTruck,
             'FiShoppingBag': FiShoppingBag,
             'FiTable': FiTable,
+            'FiPercent': FiPercent,
+            'LiaFileInvoiceDollarSolid': LiaFileInvoiceDollarSolid,
         }
 
         const orderedOptions = [
@@ -69,8 +72,9 @@ const Sidebar = () => {
             { nome: 'Vendas', icone: icones['FiDollarSign'], rota: '/vendas' },
             { nome: 'Créditos', icone: icones['FiCreditCard'], rota: '/creditos' },
             { nome: 'Serviços', icone: icones['FiTool'], rota: '/servicos' },
-            { nome: 'Taxas', icone: icones['FiTable'], rota: '/taxas' },
-            { nome: 'Extrato Bancário', icone: icones['FiCreditCard'], rota: '/extrato'},
+            { nome: 'Cadastro de Bancos', icone: icones['FiFileText'], rota: '/cadastrodebancos' },
+            { nome: 'Taxas', icone: icones['FiPercent'], rota: '/taxas' },
+            { nome: 'Extrato Bancário', icone: icones['LiaFileInvoiceDollarSolid'], rota: '/extrato'},
         ]
 
         setOptionsWithIcons(orderedOptions)
