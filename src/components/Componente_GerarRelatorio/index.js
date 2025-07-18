@@ -400,8 +400,6 @@ export default function GerarRelatorio(){
 			})
 	
 			if(tipo !== 'taxas'){
-				
-			}
 			// Add totals to the last page
 			doc.addPage()
 			doc.setFontSize(12)
@@ -415,40 +413,40 @@ export default function GerarRelatorio(){
 			// Add some spacing for totals
 			const totals = []
 			if(tipo !== 'servicos'){
-				totals.push(['Total Bruto', `R$ ${totalBruto.toFixed(2)}`])
-				totals.push(['Total Desconto', `R$ ${totalDesconto.toFixed(2)}`])
-				totals.push(['Total Líquido', `R$ ${totalLiquido.toFixed(2)}`])
-			} else {
-				totals.push(['Total', `R$ ${totalServicos.toFixed(2)}`])
-			}
-	
-			// Draw totals without header
-			doc.autoTable({
-				body: totals,
-				startY: 35,  // Adjusted Y coordinate for the table start position
-				styles: {
-					cellPadding: 2,
-					align: 'center',
-				},
-				columnStyles: {
-					0: { halign: 'left' },
-					1: { halign: 'right' }
-				},
-				didDrawPage: function (data) {
-					const imageWidth = 80
-					const imageHeight = 13
-					const positionX = 310
-					const positionY = 8
-	
-					const text = `${tipoRelatorio} ${exportName} - ${currentDateTime.replace(/-/g, '/').replace(/\./g, ':')}`
-					const textX = 14
-					const textY = 18
-	
-					doc.text(text, textX, textY)
-					doc.addImage(myImg, 'PNG', positionX, positionY, imageWidth, imageHeight)
+					totals.push(['Total Bruto', `R$ ${totalBruto.toFixed(2)}`])
+					totals.push(['Total Desconto', `R$ ${totalDesconto.toFixed(2)}`])
+					totals.push(['Total Líquido', `R$ ${totalLiquido.toFixed(2)}`])
+				} else {
+					totals.push(['Total', `R$ ${totalServicos.toFixed(2)}`])
 				}
-			})
-	
+		
+				// Draw totals without header
+				doc.autoTable({
+					body: totals,
+					startY: 35,  // Adjusted Y coordinate for the table start position
+					styles: {
+						cellPadding: 2,
+						align: 'center',
+					},
+					columnStyles: {
+						0: { halign: 'left' },
+						1: { halign: 'right' }
+					},
+					didDrawPage: function (data) {
+						const imageWidth = 80
+						const imageHeight = 13
+						const positionX = 310
+						const positionY = 8
+		
+						const text = `${tipoRelatorio} ${exportName} - ${currentDateTime.replace(/-/g, '/').replace(/\./g, ':')}`
+						const textX = 14
+						const textY = 18
+		
+						doc.text(text, textX, textY)
+						doc.addImage(myImg, 'PNG', positionX, positionY, imageWidth, imageHeight)
+					}
+				})
+			}
 			doc.save(`${tipoRelatorio} - ${exportName} - ${currentDateTime}.pdf`)
 		}
 	}
