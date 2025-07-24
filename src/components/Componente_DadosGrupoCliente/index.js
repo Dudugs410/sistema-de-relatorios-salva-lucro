@@ -34,10 +34,9 @@ const DadosGrupoCliente = () => {
       const [selectedGroup, setSelectedGroup] = useState(null)
       const [selectedClient, setSelectedClient] = useState(null)
     
-      useEffect(()=>{
-        console.log(selectedGroup, selectedClient)
-    
+      useEffect(()=>{    
         if(selectedGroup && selectedClient){
+          //console.log(selectedGroup, selectedClient)
           setDisplayGroup(selectedGroup.label)
           setDisplayClient(selectedClient.label)
         }

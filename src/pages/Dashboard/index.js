@@ -59,7 +59,6 @@ const Dashboard = () => {
 
   // Run loadDashboard only once when the component mounts
   useEffect(() => {
-    console.log('loadDashboard')
     if(isLoadedDashboard === false){
       loadDashboard()
     }
@@ -71,7 +70,6 @@ const Dashboard = () => {
       
       try {
         let userTemp = getUserData()
-        console.log('userTemp: ', userTemp)
         
         // Check if userTemp exists and has joyrideComplete property
         if (!userTemp?.joyrideComplete) {
@@ -123,7 +121,6 @@ const Dashboard = () => {
   }
 
   useEffect(() => {
-    console.log('canceled: ', canceled)
     if(canceled){
       setFetchingData(false)
       if(!isLoadedSalesDashboard){
@@ -139,10 +136,6 @@ const Dashboard = () => {
       }
     }
   }, [canceled])
-
-  useEffect(() => {
-    console.log('isLoadedSalesDashboard: ', isLoadedSalesDashboard)
-  }, [isLoadedSalesDashboard])
 
   const DisplaySales = () => {
     return (

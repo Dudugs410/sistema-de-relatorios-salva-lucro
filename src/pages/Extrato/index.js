@@ -155,13 +155,16 @@ const Extrato = () => {
 
     const fetchIdentity = async () => {
         let pluggyData = JSON.parse(localStorage.getItem('pluggyData'))
-        if(pluggyData.identity.length === 0){
-            let dataTemp = await loadIdentity()
-            pluggyData.identity = dataTemp
-            localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
-            setData(dataTemp)
-        } else {
-            setData(pluggyData.identity)
+        
+        if(pluggyData.idendity){
+            if(pluggyData.identity.length === 0){
+                let dataTemp = await loadIdentity()
+                pluggyData.identity = dataTemp
+                localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
+                setData(dataTemp)
+            } else {
+                setData(pluggyData.identity)
+            }
         }
     }
 
@@ -267,7 +270,9 @@ const Extrato = () => {
     },[item])
 
     useEffect(()=>{
-        console.log("responseData: ", responseData)
+        if(responseData){
+            console.log("responseData: ", responseData)
+        }
     },[responseData])
 
         const renderTableComponent = () => {
