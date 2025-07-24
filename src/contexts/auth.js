@@ -247,6 +247,7 @@ try {
 				const gru = response.data
 				setGroupsList(gru)
 				setClientsList(gru[0].CLIENTES)
+				console.log('groupsList: ', gru)
 				return gru
 			} catch (error) {
 				console.error(error)
@@ -1131,11 +1132,17 @@ try {
 				// Calculate the last day: 5 days after tomorrow
 				let lastDay = new Date(firstDay)
 				lastDay.setDate(lastDay.getDate() + 4) // Ends 5 days after firstDay: 3rd Dec
-			
+
+				firstDay = new Date(firstDay).toISOString().split('T')[0];
+				lastDay = new Date(lastDay).toISOString().split('T')[0];
+
 				let creditsTemp
 			
 				try {
+					console.log('data inicial: ', firstDay, 'data final: ', lastDay )
+
 					creditsTemp = await loadCredits(firstDay, lastDay) // Load credits for this range
+					console.log('loadCredits creditsTemp: ', creditsTemp)
 					creditsNext5 = creditsTemp // Assign to creditsNext5 if no error occurs
 				} catch (error) {
 					console.error('Erro: ', error)
