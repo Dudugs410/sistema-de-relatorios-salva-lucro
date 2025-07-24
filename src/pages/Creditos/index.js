@@ -165,7 +165,6 @@ async function loadData() {
       
       try {
         let userTemp = getUserData()
-        console.log('userTemp: ', userTemp)
         
         // Check if userTemp exists and has joyrideComplete property
         if (!userTemp?.joyrideComplete) {
@@ -188,7 +187,6 @@ async function loadData() {
     }, [location])
   
   const handleTutorialEnd = () => {
-    console.log('handleTutorialEnd')
     setRunTutorial(false)
     if (creditsPageArray.length > 0){
       updateUserById(clientUserId, {

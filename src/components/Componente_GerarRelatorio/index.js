@@ -24,7 +24,7 @@ export default function GerarRelatorio(){
 	const [tipo, setTipo] = useState('')
 	const [tableData, setTableData] = useState([])
 
-	useEffect(()=>{
+	/*useEffect(()=>{
 		console.log('export: SALES -> ', salesTableData)
 	},[salesTableData])
 
@@ -38,7 +38,7 @@ export default function GerarRelatorio(){
 
 	useEffect(()=>{
 		console.log('export: TAXES -> ', taxesTableData)
-	},[taxesTableData])
+	},[taxesTableData])*/
 
 	useEffect(() => {
 		const updateDateTime = () => {
@@ -300,7 +300,7 @@ export default function GerarRelatorio(){
 			let totalServicos = 0
 	
 			if (tipo === 'vendas') {
-				console.log('tableData VENDAS: ', tableData)
+				//console.log('tableData VENDAS: ', tableData)
 				columns = ['CNPJ', 'Adquirente', 'Bandeira', 'Produto', 'Subproduto', 'Valor Bruto', 'Valor Líquido', 'Taxa', 'Valor Desconto', 'NSU', 'Data Venda', 'Hora Venda', 'Data Crédito', 'Código Autorização', 'QTD PARC'];
 				rows = tableData.map(rowData => {
 					const valorBruto = Number(rowData.valorBruto)
@@ -318,7 +318,7 @@ export default function GerarRelatorio(){
 					]
 				})
 			} else if (tipo === 'creditos') {
-				console.log('tableData CREDITOS: ', tableData)
+				//console.log('tableData CREDITOS: ', tableData)
 				columns = ['CNPJ', 'Adquirente', 'Bandeira', 'Produto', 'Subproduto', 'Data do Crédito', 'Data da Venda', 'Valor Bruto', 'Valor Líquido', 'Taxa', 'Valor Desconto', 'NSU', 'Código Autorização', 'Parcela', 'QTD Parc'];
 				rows = tableData.map(rowData => {
 					const valorBruto = Number(rowData.valorBruto)
@@ -337,7 +337,7 @@ export default function GerarRelatorio(){
 					]
 				})
 			} else if (tipo === 'servicos') {
-				console.log('tableData SERVIÇOS: ', tableData)
+				//console.log('tableData SERVIÇOS: ', tableData)
 				columns = ['CNPJ', 'Razão Social', 'Código do estabelecimento', 'Adquirente', 'Valor', 'Data', 'Descrição']
 				rows = tableData.map(rowData => {
 					const valor = Number(rowData.valor)
@@ -348,7 +348,7 @@ export default function GerarRelatorio(){
 					]
 				})
 			} else if (tipo === 'taxas') {
-				console.log('tableData TAXAS: ', tableData)
+				//console.log('tableData TAXAS: ', tableData)
 				columns = ['Adquirente', 'Bandeira', 'Produto', 'Modalidade', 'Taxa Penúltimo Mês', 'Taxa Último Mês', 'Taxa Cadastrada', 'Comparativo']
 				rows = tableData.map(rowData => {
 					return [

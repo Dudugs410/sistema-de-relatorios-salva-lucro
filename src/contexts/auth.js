@@ -127,7 +127,6 @@ const loginApp = async (login, password) => {
                         userTemp = {id: userId, theme: JSON.parse(user.theme)}
                         localStorage.setItem('isDark', JSON.parse(user.theme))
                         localStorage.setItem('isChecked', JSON.parse(user.theme))
-						console.log('user ???  ', user)
 						localStorage.setItem('currentUser', JSON.stringify(user))
                         return { ...user, theme: user.theme }
                     }
@@ -182,7 +181,7 @@ try {
   }
 
   const data = await response.json();
-  console.log('Auth response:', data);
+  //console.log('Auth response:', data);
 
   // Store tokens with js-cookie
   Cookies.set('pluggy_api_key', data.apiKey, {
@@ -247,7 +246,7 @@ try {
 				const gru = response.data
 				setGroupsList(gru)
 				setClientsList(gru[0].CLIENTES)
-				console.log('groupsList: ', gru)
+				//console.log('groupsList: ', gru)
 				return gru
 			} catch (error) {
 				console.error(error)
@@ -608,7 +607,7 @@ try {
 				if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
 					let body = bank
 					const response = await api.post('banco', body)
-					console.log('response:', response)
+					//console.log('response:', response)
 					if (response.data.success) {
 						toast.dismiss()
 						toast.success(response.data.mensagem)
@@ -646,10 +645,10 @@ try {
 					body: body,
 					})
 
-					console.log(response)
+					//console.log(response)
 			
 					const responseData = await response.json()
-					console.log('response: ', responseData)
+					//console.log('response: ', responseData)
 			
 					if (response.ok) {
 						toast.dismiss()
@@ -847,10 +846,6 @@ try {
 			  localStorage.setItem('token', response.data.acess_token);
 			  localStorage.setItem('refreshToken', response.data.refresh_token);
 
-			  console.log('access token: ', localStorage.getItem('token'))
-			  console.log('refresh token: ', localStorage.getItem('refreshToken'))
-		  
-			  console.log('Session refreshed successfully');
 			} catch (error) {
 			  console.error('Error refreshing session:', error);
 		  
@@ -1139,10 +1134,7 @@ try {
 				let creditsTemp
 			
 				try {
-					console.log('data inicial: ', firstDay, 'data final: ', lastDay )
-
 					creditsTemp = await loadCredits(firstDay, lastDay) // Load credits for this range
-					console.log('loadCredits creditsTemp: ', creditsTemp)
 					creditsNext5 = creditsTemp // Assign to creditsNext5 if no error occurs
 				} catch (error) {
 					console.error('Erro: ', error)

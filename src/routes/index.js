@@ -56,9 +56,9 @@ function RoutesApp() {
       <Route path='/vendas' element={<Private><Vendas /></Private>} />
       <Route path='/creditos' element={<Private><Recebiveis /></Private>} />
       <Route path='/servicos' element={<Private><Servicos /></Private>} />
-      {/*<Route path='/cadastrodebancos' element={<Private><CadastroDeBancos /></Private>} />*/}
+      <Route path='/cadastrodebancos' element={<Private><CadastroDeBancos /></Private>} />
       <Route path='/taxas' element={<Private><Taxas /></Private>} />
-      {/*<Route path='/extrato' element={<Private><Extrato /></Private>} />*/}
+      <Route path='/extrato' element={<Private><Extrato /></Private>} />
     </Routes>
   )
 }

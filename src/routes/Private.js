@@ -20,21 +20,17 @@ export default function Private({ children }) {
   const stayLoggedIn = async () => {
     try {
       await refreshSession(); // Refresh token on activity if allowed by throttle
-      console.log('Token refreshed successfully')
       setShowModal(false); // Close modal on successful refresh
     } catch (error) {
-      console.error('Failed to refresh token:', error)
       logout();
     }
   }
 
   useEffect(()=>{
-    console.log('stayLoggedIn useEffect')
     stayLoggedIn()
   },[])
 
   const handleInactivity = () => {
-    console.log('User inactivity detected, showing modal...')
     setShowModal(true)
   }
 

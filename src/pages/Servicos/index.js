@@ -146,7 +146,6 @@ const Servicos = () =>{
       
       try {
         let userTemp = getUserData()
-        console.log('userTemp: ', userTemp)
         
         // Check if userTemp exists and has joyrideComplete property
         if (!userTemp?.joyrideComplete) {
@@ -169,7 +168,6 @@ const Servicos = () =>{
     }, [location])
   
   const handleTutorialEnd = () => {
-    console.log('handleTutorialEnd')
     setRunTutorial(false)
     if (servicesPageArray.length > 0){
       updateUserById(clientUserId, {
