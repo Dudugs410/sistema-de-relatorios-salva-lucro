@@ -847,7 +847,9 @@ const Taxas = () => {
                                     {taxasComp && taxasComp.length > 0 ? (
                                         <TabelaCompTaxas array={taxasComp} />
                                     ) : (
-                                        <div>No Data</div>
+                                        <div style={{width: '100%'}}>
+                                            <div className='subtitle-global'>Sem dados de comparativo de taxas a serem exibidos</div>
+                                        </div>
                                     )}
                                 </>
                             ) : null
