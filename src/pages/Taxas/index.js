@@ -47,7 +47,10 @@ const Taxas = () => {
     const [taxesList, setTaxesList] = useState([])
 
     const taxasComp = [
-        {
+ 
+    ]
+
+           {/*{
             nomeGrupo: 'nomeGrupo',
             nomeCliente : 'nomeCliente',
             periodo: 'periodo',
@@ -118,8 +121,7 @@ const Taxas = () => {
                     comparativo: 1.36
                 }
             ]
-        },
-    ]
+        },*/}
 
     useEffect(() => {
         if (taxasComp && taxasComp.length > 0) {
