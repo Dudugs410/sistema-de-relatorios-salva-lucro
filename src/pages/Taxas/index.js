@@ -50,79 +50,6 @@ const Taxas = () => {
  
     ]
 
-           {/*{
-            nomeGrupo: 'nomeGrupo',
-            nomeCliente : 'nomeCliente',
-            periodo: 'periodo',
-            cnpj: 'cnpj',
-            taxas:[
-                {
-                    adquirente: 'relenscard',
-                    bandeira: 'master',
-                    produto: '1',
-                    modalidade: '1',
-                    taxaMediaPenultimoMes: 1.2,
-                    taxaMediaUltimoMes: 1.5,
-                    taxaCadastrada: 1.35,
-                    comparativo: 1.36
-                }
-            ]
-        },
-                {
-            nomeGrupo: 'nomeGrupo',
-            nomeCliente : 'nomeCliente',
-            periodo: 'periodo',
-            cnpj: 'cnpj',
-            taxas:[
-                {
-                    adquirente: 'flibcard',
-                    bandeira: 'master',
-                    produto: '2',
-                    modalidade: '1',
-                    taxaMediaPenultimoMes: 1,
-                    taxaMediaUltimoMes: 0.8,
-                    taxaCadastrada: 1.22,
-                    comparativo: 1.1
-                }
-            ]
-        },
-                {
-            nomeGrupo: 'nomeGrupo',
-            nomeCliente : 'nomeCliente',
-            periodo: 'periodo',
-            cnpj: 'cnpj',
-            taxas:[
-                {
-                    adquirente: 'crelenscred',
-                    bandeira: 'visa',
-                    produto: '3',
-                    modalidade: '2',
-                    taxaMediaPenultimoMes: 0.5,
-                    taxaMediaUltimoMes: 3.1,
-                    taxaCadastrada: 2.55,
-                    comparativo: 2.36
-                }
-            ]
-        },
-                {
-            nomeGrupo: 'nomeGrupo',
-            nomeCliente : 'nomeCliente',
-            periodo: 'periodo',
-            cnpj: 'cnpj',
-            taxas:[
-                {
-                    adquirente: 'adquirente',
-                    bandeira: 'bandeira',
-                    produto: 'produto',
-                    modalidade: 'modalidade',
-                    taxaMediaPenultimoMes: 1.2,
-                    taxaMediaUltimoMes: 1.5,
-                    taxaCadastrada: 1.35,
-                    comparativo: 1.36
-                }
-            ]
-        },*/}
-
     useEffect(() => {
         if (taxasComp && taxasComp.length > 0) {
             const allTaxas = taxasComp.flatMap(item => item.taxas || []);
@@ -133,53 +60,6 @@ const Taxas = () => {
     useEffect(() => {
         localStorage.setItem('currentPath', location.pathname)
     }, [])
-
-    const [runTutorial, setRunTutorial] = useState(false)
-    const [steps, setSteps] = useState([
-    {
-        target: '[data-tour="trocar-section"]',
-        content: 'Utilize o botão "Trocar" para selecionar um cliente específico, dando assim a opção de cadastrar taxas, ou consultar taxas existentes',
-        disableBeacon: true,
-        placement: 'bottom'
-    },
-    ])
-
-    const [stepsNoTaxas] = useState([
-    {
-        target: '[data-tour="cadastrar-taxa-section"]',
-        content: 'Clique aqui para cadastrar taxas para o cliente selecionado.',
-        placement: 'bottom'
-    },
-    ])
-
-    const [stepsTaxas] = useState([
-    {
-        target: '[data-tour="editar-taxa-section"]',
-        content: 'Clique aqui para editar a taxa correspondente.',
-        placement: 'top'
-    },
-    {
-        target: '[data-tour="deletar-taxa-section"]',
-        content: 'Clique aqui para excluir a taxa correspondente.',
-        placement: 'top'
-    },
-    ])
-
-    useEffect(() => {
-        localStorage.setItem('currentPath', location.pathname)        
-        const tutorialCompleted = localStorage.getItem('taxasTutorialCompleted')
-        if (!tutorialCompleted) {
-            const timer = setTimeout(() => {
-                setRunTutorial(true)
-            }, 1000)
-            return () => clearTimeout(timer)
-        }
-    }, [location, steps])
-    
-    const handleTutorialEnd = () => {
-        setRunTutorial(false)
-        localStorage.setItem('taxasTutorialCompleted', 'true')
-    }
 
     useEffect(() => {
         async function inicialize() {
@@ -319,11 +199,6 @@ const Taxas = () => {
                 draggable: false,
             }
         )
-    }
-
-    const handleCancel = () => {
-        resetValues()
-        setIsModalEditOpen(false)
     }
 
         //adicionando páginas à tabela:
@@ -848,7 +723,7 @@ const Taxas = () => {
                                         <TabelaCompTaxas array={taxasComp} />
                                     ) : (
                                         <div style={{width: '100%'}}>
-                                            <div className='subtitle-global'>Sem dados de comparativo de taxas a serem exibidos</div>
+                                            <div className='subtitle-global text-global'>Sem dados de comparativo de taxas a serem exibidos ( Funcionalidade em Desenvolvimento )</div>
                                         </div>
                                     )}
                                 </>
@@ -865,3 +740,82 @@ const Taxas = () => {
 }
 
 export default Taxas
+
+/*
+
+taxasComp = [
+        {
+            nomeGrupo: 'nomeGrupo',
+            nomeCliente : 'nomeCliente',
+            periodo: 'periodo',
+            cnpj: 'cnpj',
+            taxas:[
+                {
+                    adquirente: 'relenscard',
+                    bandeira: 'master',
+                    produto: '1',
+                    modalidade: '1',
+                    taxaMediaPenultimoMes: 1.2,
+                    taxaMediaUltimoMes: 1.5,
+                    taxaCadastrada: 1.35,
+                    comparativo: 1.36
+                }
+            ]
+        },
+        {
+            nomeGrupo: 'nomeGrupo',
+            nomeCliente : 'nomeCliente',
+            periodo: 'periodo',
+            cnpj: 'cnpj',
+            taxas:[
+                {
+                    adquirente: 'flibcard',
+                    bandeira: 'master',
+                    produto: '2',
+                    modalidade: '1',
+                    taxaMediaPenultimoMes: 1,
+                    taxaMediaUltimoMes: 0.8,
+                    taxaCadastrada: 1.22,
+                    comparativo: 1.1
+                }
+            ]
+        },
+        {
+            nomeGrupo: 'nomeGrupo',
+            nomeCliente : 'nomeCliente',
+            periodo: 'periodo',
+            cnpj: 'cnpj',
+            taxas:[
+                {
+                    adquirente: 'crelenscred',
+                    bandeira: 'visa',
+                    produto: '3',
+                    modalidade: '2',
+                    taxaMediaPenultimoMes: 0.5,
+                    taxaMediaUltimoMes: 3.1,
+                    taxaCadastrada: 2.55,
+                    comparativo: 2.36
+                }
+            ]
+        },
+        {
+            nomeGrupo: 'nomeGrupo',
+            nomeCliente : 'nomeCliente',
+            periodo: 'periodo',
+            cnpj: 'cnpj',
+            taxas:[
+                {
+                    adquirente: 'adquirente',
+                    bandeira: 'bandeira',
+                    produto: 'produto',
+                    modalidade: 'modalidade',
+                    taxaMediaPenultimoMes: 1.2,
+                    taxaMediaUltimoMes: 1.5,
+                    taxaCadastrada: 1.35,
+                    comparativo: 1.36
+                }
+            ]
+        },
+    ] 
+    
+*/
