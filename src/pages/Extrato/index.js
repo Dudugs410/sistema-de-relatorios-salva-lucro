@@ -256,12 +256,54 @@ const Extrato = () => {
                 fetchInvestments()
                 setDisplayedMenu('Investimentos')
             break;
+
+            case 'CREDIT_CARDS':
+                setData(null)
+                fetchInvestments()
+                setDisplayedMenu('Cartão de Crédito')
+            break;
+
+            case 'TRANSACTIONS':
+                setData(null)
+                fetchInvestments()
+                setDisplayedMenu('Transações')
+            break;
+
+            case 'INVESTMENTS_TRANSACTIONS':
+                setData(null)
+                fetchInvestments()
+                setDisplayedMenu('Transações de Investimento')
+            break;
+
+            case 'PAYMENT_DATA':
+                setData(null)
+                fetchInvestments()
+                setDisplayedMenu('Dados de Pagamento')
+            break;
+
+            case 'BROKERAGE_NOTE':
+                setData(null)
+                fetchInvestments()
+                setDisplayedMenu('Nota de Corretagem')
+            break;
         
             default:
             break;
         }
         setSelected(true)
     }
+
+    /* 
+        0:"ACCOUNTS"
+        1:"CREDIT_CARDS"
+        2:"TRANSACTIONS"
+        3:"INVESTMENTS"
+        4:"IDENTITY"
+        5:"INVESTMENTS_TRANSACTIONS"
+        6:"PAYMENT_DATA"
+        7:"BROKERAGE_NOTE"
+        8:"LOANS"
+    */
 
     useEffect(()=>{
         if(item){
@@ -288,6 +330,12 @@ const Extrato = () => {
                 return <Tabela data={data} clickRow={handleRowClicked} />;
         }
     }
+
+    useEffect(()=>{
+        if(responseData){
+            console.log('connectorData: ', responseData.connector)            
+        }
+    },[responseData])
 
     return (
         <div className='appPage'>

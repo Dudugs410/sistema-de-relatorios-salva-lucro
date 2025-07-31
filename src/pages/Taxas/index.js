@@ -723,7 +723,7 @@ const Taxas = () => {
                                         <TabelaCompTaxas array={taxasComp} />
                                     ) : (
                                         <div style={{width: '100%'}}>
-                                            <div className='subtitle-global text-global'>Sem dados de comparativo de taxas a serem exibidos ( Funcionalidade em Desenvolvimento )</div>
+                                            <div className='subtitle-global text-global'>Sem dados de comparativo de taxas a serem exibidos ( <b style={{'color': 'orange'}}>Funcionalidade em Desenvolvimento</b> )</div>
                                         </div>
                                     )}
                                 </>

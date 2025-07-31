@@ -135,7 +135,7 @@ const CadastroDeBancos = () => {
 
     // Update cliAdqOptions when cliAdqList changes
     useEffect(() => {
-        if (cliAdqList.length > 0) {
+        if (cliAdqList && (cliAdqList.length > 0)) {
             const cliAdqListOptions = cliAdqList.map(sub => ({ value: sub.codigoClienteAdquirente, label: sub.codigoEstabelecimento }))
             setCliAdqOptions(cliAdqListOptions)
         } else {
@@ -144,7 +144,7 @@ const CadastroDeBancos = () => {
     }, [cliAdqList])
 
     useEffect(() => {
-        if (subproductList.length > 0) {
+        if (subproductList && (subproductList.length > 0)) {
             const subproductListOptions = subproductList.map(sub => ({ value: sub.codigoSubProduto, label: sub.Modalidade.descricaoModalidade }))
             setSubproductOptions(subproductListOptions)
         } else {
