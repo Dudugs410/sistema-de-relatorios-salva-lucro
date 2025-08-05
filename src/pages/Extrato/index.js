@@ -12,6 +12,7 @@ import MenuExtrato from '../../components/MenuExtrato'
 import TabelaAccounts from '../../components/Tabelas Extrato Bancario/TabelaAccounts'
 import TabelaInvestments from '../../components/Tabelas Extrato Bancario/TabelaInvestments'
 import TabelaLoans from '../../components/Tabelas Extrato Bancario/TabelaLoans'
+import TabelaIdentity from '../../components/Tabelas Extrato Bancario/TabelaIdentity'
 
 const Extrato = () => {
     const { 
@@ -137,6 +138,12 @@ const Extrato = () => {
 
     }
 
+    const fetchClicked = async (row) => {
+        Cookies.set('accountID', row.id)
+        let billsTemp = fetchBills()
+        console.log('billsTemp: ', billsTemp)
+    }
+
     useEffect(()=>{
         
     },[itemId])
@@ -155,16 +162,17 @@ const Extrato = () => {
 
     const fetchIdentity = async () => {
         let pluggyData = JSON.parse(localStorage.getItem('pluggyData'))
-        
-        if(pluggyData.idendity){
-            if(pluggyData.identity.length === 0){
-                let dataTemp = await loadIdentity()
-                pluggyData.identity = dataTemp
-                localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
-                setData(dataTemp)
-            } else {
-                setData(pluggyData.identity)
-            }
+        console.log('pluggyData: ', pluggyData)
+
+        if(pluggyData && (pluggyData.identity.length === 0)){
+            console.log('entrou aqui')
+            let dataTemp = await loadIdentity()
+            console.log('fetchID: ', dataTemp)
+            pluggyData.identity = dataTemp
+            localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
+            setData(dataTemp)
+        } else {
+            setData(pluggyData.identity)
         }
     }
 
@@ -194,13 +202,16 @@ const Extrato = () => {
 
     const fetchBills = async () => {
         let pluggyData = JSON.parse(localStorage.getItem('pluggyData'))
-        if(pluggyData.investments.length === 0){
-            let dataTemp = await loadInvestments()
-            pluggyData.investments = dataTemp
+        console.log('fetchBills pluggyData: ', pluggyData)
+        if(pluggyData.bills.length === 0){
+            console.log('pluggyData.bills.length === 0')
+            let dataTemp = await loadBills()
+            pluggyData.bills = dataTemp
             localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
             setData(dataTemp)
         } else {
-            setData(pluggyData.investments)
+            console.log('else')
+            setData(pluggyData.bills)
         }
     }
 
@@ -259,7 +270,7 @@ const Extrato = () => {
 
             case 'CREDIT_CARDS':
                 setData(null)
-                fetchInvestments()
+                fetchBills();
                 setDisplayedMenu('Cartão de Crédito')
             break;
 
@@ -320,11 +331,14 @@ const Extrato = () => {
         const renderTableComponent = () => {
         switch (displayedMenu) {
             case 'Contas':
-                return <TabelaAccounts data={data} clickRow={handleRowClicked} />;
+                return <TabelaAccounts data={data} clickRow={handleRowClicked} onClickRow={(e)=>{fetchClicked(e)}} loadBills={loadBills}/>;
             case 'Investimentos':
                 return <TabelaInvestments data={data} clickRow={handleRowClicked} />;
             case 'Empréstimos':
                 return <TabelaLoans data={data} clickRow={handleRowClicked} />;
+            case 'Identidade':
+                return <TabelaIdentity data={data} clickRow={handleRowClicked} />;
+            
             // Add cases for other menu options as needed
             default:
                 return <Tabela data={data} clickRow={handleRowClicked} />;

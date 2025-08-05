@@ -1,13 +1,41 @@
+import { useState } from "react";
 import BankData from "./BankData";
 
-const TabelaAccounts = ({ data, clickRow }) => {
-  // Function to check if a value is an ISO date string
+const TabelaAccounts = ({ data, clickRow, loadBills }) => {
+  const [expandedRow, setExpandedRow] = useState(null);
+  const [loadingBills, setLoadingBills] = useState({});
+  const [billsData, setBillsData] = useState({});
+  const [error, setError] = useState(null);
+
+  const toggleRow = async (row) => {
+    const rowId = row.id;
+    const isExpanding = expandedRow !== rowId;
+    
+    setExpandedRow(isExpanding ? rowId : null);
+    
+    if (clickRow) clickRow(row);
+
+    if (isExpanding && !billsData[rowId]) {
+      try {
+        setLoadingBills(prev => ({ ...prev, [rowId]: true }));
+        setError(null);
+        
+        const bills = await loadBills(rowId);
+        setBillsData(prev => ({ ...prev, [rowId]: bills }));
+      } catch (err) {
+        console.error('Error loading bills:', err);
+        setError('Failed to load bills data. Please try again.');
+      } finally {
+        setLoadingBills(prev => ({ ...prev, [rowId]: false }));
+      }
+    }
+  };
+
   const isISODate = (value) => {
     if (typeof value !== 'string') return false;
     return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/.test(value);
   };
 
-  // Function to format ISO date to Brazilian format
   const formatToBrazilianDateTime = (isoString) => {
     try {
       const date = new Date(isoString);
@@ -26,7 +54,6 @@ const TabelaAccounts = ({ data, clickRow }) => {
     }
   };
 
-  // Function to format currency values
   const formatCurrency = (value, currencyCode) => {
     if (value === undefined || value === null || isNaN(Number(value))) {
       return '-';
@@ -41,7 +68,6 @@ const TabelaAccounts = ({ data, clickRow }) => {
       }).format(numericValue);
     }
     
-    // Default formatting for other currencies
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: currencyCode || 'USD',
@@ -50,7 +76,6 @@ const TabelaAccounts = ({ data, clickRow }) => {
     }).format(numericValue);
   };
 
-  // Define the headers and their corresponding data properties
   const headers = [
     { key: 'balance', label: 'Saldo', isMoney: true },
     { key: 'currencyCode', label: 'Moeda' },
@@ -65,18 +90,99 @@ const TabelaAccounts = ({ data, clickRow }) => {
     { key: 'updatedAt', label: 'Atualizado Em', isDate: true },
   ];
 
-  const handleBankData = () => {
-    return <>
-      <BankData />
-    </>
-  }
+  const financeChargeTypes = {
+    'LATE_PAYMENT_FEE': 'Multa por atraso',
+    'IOF': 'IOF',
+    'INTEREST': 'Juros',
+    'OTHER': 'Outro'
+  };
+
+  const renderBillDetails = (bills) => {
+    if (!bills || bills.length === 0) {
+      return <div className="p-3 text-muted">Nenhuma fatura disponível</div>;
+    }
+
+    return (
+      <div className="p-3" style={{ backgroundColor: 'lightGrey' }}>
+        {bills.map((bill, index) => (
+          <div key={bill.id || index}>
+            <div className="mb-3">
+              <h5>Detalhes da Fatura</h5>
+              <div className="row">
+                <div className="col-md-4">
+                  <p><strong>Vencimento:</strong> {formatToBrazilianDateTime(bill.dueDate)}</p>
+                </div>
+                <div className="col-md-4">
+                  <p><strong>Valor Total:</strong> {formatCurrency(bill.totalAmount, bill.totalAmountCurrencyCode)}</p>
+                </div>
+                <div className="col-md-4">
+                  <p><strong>Pagamento Mínimo:</strong> {bill.minimumPaymentAmount ? 
+                    formatCurrency(bill.minimumPaymentAmount, bill.totalAmountCurrencyCode) : 'Não aplicável'}</p>
+                </div>
+              </div>
+            </div>
+
+            {bill.financeCharges && bill.financeCharges.length > 0 && (
+              <div className="mt-3">
+                <h6>Encargos Financeiros</h6>
+                <div className="table-responsive">
+                  <table className="table table-sm" style={{ backgroundColor: 'white' }}>
+                    <thead>
+                      <tr>
+                        <th>Tipo</th>
+                        <th>Valor</th>
+                        <th>Informações Adicionais</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {bill.financeCharges.map((charge) => (
+                        <tr key={charge.id}>
+                          <td>{financeChargeTypes[charge.type] || charge.type}</td>
+                          <td>{formatCurrency(charge.amount, charge.currencyCode)}</td>
+                          <td>{charge.additionalInfo || '-'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            <div className="row mt-3">
+              <div className="col-md-6">
+                <p><small className="text-muted">Criado em: {formatToBrazilianDateTime(bill.createdAt)}</small></p>
+              </div>
+              <div className="col-md-6">
+                <p><small className="text-muted">Atualizado em: {formatToBrazilianDateTime(bill.updatedAt)}</small></p>
+              </div>
+            </div>
+
+            {index < bills.length - 1 && <hr className="my-4" />}
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div className='dropShadow vendas-view'>
+      {error && (
+        <div className="alert alert-danger mb-3">
+          {error}
+          <button 
+            type="button" 
+            className="btn-close" 
+            onClick={() => setError(null)}
+            aria-label="Close"
+          ></button>
+        </div>
+      )}
+      
       <div className='table-wrapper'>
         <table className='table table-striped table-hover det-table-global'>
           <thead>
             <tr className='det-tr-top-global'>
+              <th className='det-th-global' style={{ width: '40px' }}></th>
               {headers.map(header => (
                 <th className='det-th-global' key={header.key}>
                   {header.label}
@@ -85,36 +191,73 @@ const TabelaAccounts = ({ data, clickRow }) => {
             </tr>
           </thead>
           <tbody>
-            {data.map((row, index) => (
-              <tr
-                className='det-tr-global row-pluggy' 
-                key={row.id || index}
-                onClick={() => clickRow?.(row)}
-              >
-                {headers.map(header => {
-                  const value = row[header.key];
-                  const currencyCode = row.currencyCode;
-                  
-                  let displayValue = '-';
-                  
-                  if (value !== undefined && value !== null) {
-                    if (header.isDate && isISODate(value)) {
-                      displayValue = formatToBrazilianDateTime(value);
-                    } else if (header.isMoney) {
-                      displayValue = formatCurrency(value, currencyCode);
-                    } else {
-                      displayValue = value;
-                    }
-                  }
-                  
-                  return (
-                    <td className='det-td-vendas-global' key={`${row.id || index}-${header.key}`}>
-                      {displayValue}
+            {data.map((row, index) => {
+              const rowId = row.id || index;
+              const isExpanded = expandedRow === rowId;
+              const isLoading = loadingBills[rowId];
+              const bills = billsData[rowId];
+              
+              return (
+                <>
+                  <tr
+                    className='det-tr-global row-pluggy' 
+                    key={rowId}
+                    onClick={() => toggleRow(row)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <td className='det-td-vendas-global'>
+                      {isLoading ? (
+                        <div className="spinner-border spinner-border-sm text-primary" role="status">
+                          <span className="visually-hidden">Loading...</span>
+                        </div>
+                      ) : (
+                        <i className={`bi bi-chevron-${isExpanded ? 'down' : 'right'}`} />
+                      )}
                     </td>
-                  );
-                })}
-              </tr>
-            ))}
+                    {headers.map(header => {
+                      const value = row[header.key];
+                      const currencyCode = row.currencyCode;
+                      
+                      let displayValue = '-';
+                      
+                      if (value !== undefined && value !== null) {
+                        if (header.isDate && isISODate(value)) {
+                          displayValue = formatToBrazilianDateTime(value);
+                        } else if (header.isMoney) {
+                          displayValue = formatCurrency(value, currencyCode);
+                        } else {
+                          displayValue = value;
+                        }
+                      }
+                      
+                      return (
+                        <td className='det-td-vendas-global' key={`${rowId}-${header.key}`} >
+                          {displayValue}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                  {isExpanded && (
+                    <tr className="det-tr-global" >
+                      <td colSpan={headers.length + 1} className="det-td-vendas-global p-0">
+                        <div>
+                          {isLoading ? (
+                            <div className="p-3 text-center" >
+                              <div className="spinner-border text-primary" role="status" >
+                                <span className="visually-hidden">Loading...</span>
+                              </div>
+                              <p className="mt-2">Carregando faturas...</p>
+                            </div>
+                          ) : (
+                            bills && renderBillDetails(bills)
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </>
+              );
+            })}
           </tbody>
         </table>
       </div>
