@@ -14,8 +14,11 @@ const PluggyWidget = ({setId, setResponseData}) => {
         id: itemData.item.id,
         accounts: [],
         loans: [],
-        investments: []
+        investments: [],
+        identity: [],
+        bills: [],
     }
+    console.log('pluggy data antes do storage: ', pluggyData)
     localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
     setId(itemData.item.id)
     setResponseData(itemData.item)

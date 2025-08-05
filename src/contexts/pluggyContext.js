@@ -44,7 +44,7 @@ function PluggyProvider({ children }){
     }
 
     const loadIdentity = async () => {
-        console.log('loadIdentity: ')
+        console.log('loadIdentity: ->->->')
         if(id){
             console.log('ID: ', id)
 
@@ -57,7 +57,7 @@ function PluggyProvider({ children }){
 
             let resp = await pluggyApi.get('/identity', config)
             console.log('identity response: ', resp.data)
-            return resp.data.results;
+            return resp.data;
         }
     }
 
@@ -110,7 +110,7 @@ function PluggyProvider({ children }){
 
         let resp = await pluggyApi.get('/items', body)
             console.log('items response: ', resp.data)
-            return resp.data.results; // or just resp.data if no results field
+            return resp.data.results;
 
 
     }
@@ -120,7 +120,7 @@ function PluggyProvider({ children }){
         if(id) {
             let resp = await pluggyApi.get(`/items/${id}`)
             console.log('items by ID response: ', resp.data)
-            return resp.data.results; // or just resp.data if no results field
+            return resp.data.results;
         }
     }
 
@@ -130,19 +130,23 @@ function PluggyProvider({ children }){
         if(accountID) {
             let resp = await pluggyApi.get(`/transactions`)
             console.log('transactions response: ', resp.data)
-            return resp.data.results; // or just resp.data if no results field
+            return resp.data.results;
         }
     }
 
-    const loadBills = async () => {
-        console.log('loadTransactions (accountID): ')
-        let accountID = Cookies.get('accountID')
-        if(accountID) {
-            let resp = await pluggyApi.get(`/bills/${accountID}`)
-            console.log('transactions response: ', resp.data)
-            return resp.data.results; // or just resp.data if no results field
-        }
-    }
+const loadBills = async (accountId) => {
+  console.log('loadBills (accountID): ', accountId);
+  if (accountId) {
+    let resp = await pluggyApi.get('/bills', {
+      params: {
+        accountId: accountId
+      }
+    });
+    console.log('bills response: ', resp.data);
+    return resp.data.results;
+  }
+  return []; // Return empty array if no accountId
+};
 
     return(
         <PluggyContext.Provider
