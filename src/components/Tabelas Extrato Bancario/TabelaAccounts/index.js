@@ -1,5 +1,5 @@
 import { useState } from "react";
-import BankData from "./BankData";
+import './subtable.scss'
 
 const TabelaAccounts = ({ data, clickRow, loadBills }) => {
   const [expandedRow, setExpandedRow] = useState(null);
@@ -97,69 +97,61 @@ const TabelaAccounts = ({ data, clickRow, loadBills }) => {
     'OTHER': 'Outro'
   };
 
-  const renderBillDetails = (bills) => {
-    if (!bills || bills.length === 0) {
-      return <div className="p-3 text-muted">Nenhuma fatura disponível</div>;
-    }
+  const renderBillDetails = (bill) => {
+    if (!bill) return <div className="p-3 text-muted">Nenhuma fatura disponível</div>;
 
     return (
-      <div className="p-3" style={{ backgroundColor: 'lightGrey' }}>
-        {bills.map((bill, index) => (
-          <div key={bill.id || index}>
-            <div className="mb-3">
-              <h5>Detalhes da Fatura</h5>
-              <div className="row">
-                <div className="col-md-4">
-                  <p><strong>Vencimento:</strong> {formatToBrazilianDateTime(bill.dueDate)}</p>
-                </div>
-                <div className="col-md-4">
-                  <p><strong>Valor Total:</strong> {formatCurrency(bill.totalAmount, bill.totalAmountCurrencyCode)}</p>
-                </div>
-                <div className="col-md-4">
-                  <p><strong>Pagamento Mínimo:</strong> {bill.minimumPaymentAmount ? 
-                    formatCurrency(bill.minimumPaymentAmount, bill.totalAmountCurrencyCode) : 'Não aplicável'}</p>
-                </div>
-              </div>
+      <div className="p-3" style={{ backgroundColor: 'rgba(0,0,0,0.03)', width: '100%' }}>
+        <div className="mb-3">
+          <h5 style={{ fontSize: '16px', fontWeight: '600' }}>Detalhes da Fatura</h5>
+          <div className="row" style={{ marginLeft: 0, marginRight: 0 }}>
+            <div className="col-md-4 p-2">
+              <p className="mb-1"><strong>Vencimento:</strong> {formatToBrazilianDateTime(bill.dueDate)}</p>
             </div>
-
-            {bill.financeCharges && bill.financeCharges.length > 0 && (
-              <div className="mt-3">
-                <h6>Encargos Financeiros</h6>
-                <div className="table-responsive">
-                  <table className="table table-sm" style={{ backgroundColor: 'white' }}>
-                    <thead>
-                      <tr>
-                        <th>Tipo</th>
-                        <th>Valor</th>
-                        <th>Informações Adicionais</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {bill.financeCharges.map((charge) => (
-                        <tr key={charge.id}>
-                          <td>{financeChargeTypes[charge.type] || charge.type}</td>
-                          <td>{formatCurrency(charge.amount, charge.currencyCode)}</td>
-                          <td>{charge.additionalInfo || '-'}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-
-            <div className="row mt-3">
-              <div className="col-md-6">
-                <p><small className="text-muted">Criado em: {formatToBrazilianDateTime(bill.createdAt)}</small></p>
-              </div>
-              <div className="col-md-6">
-                <p><small className="text-muted">Atualizado em: {formatToBrazilianDateTime(bill.updatedAt)}</small></p>
-              </div>
+            <div className="col-md-4 p-2">
+              <p className="mb-1"><strong>Valor Total:</strong> {formatCurrency(bill.totalAmount, bill.totalAmountCurrencyCode)}</p>
             </div>
-
-            {index < bills.length - 1 && <hr className="my-4" />}
+            <div className="col-md-4 p-2">
+              <p className="mb-1"><strong>Pagamento Mínimo:</strong> {bill.minimumPaymentAmount ? 
+                formatCurrency(bill.minimumPaymentAmount, bill.totalAmountCurrencyCode) : 'Não aplicável'}</p>
+            </div>
           </div>
-        ))}
+        </div>
+
+        {bill.financeCharges && bill.financeCharges.length > 0 && (
+          <div className="mt-3">
+            <h6 style={{ fontSize: '14px', fontWeight: '600' }}>Encargos Financeiros</h6>
+            <div className="table-responsive">
+              <table className="table table-sm" style={{ backgroundColor: 'white', marginBottom: '0' }}>
+                <thead>
+                  <tr>
+                    <th style={{ padding: '8px 12px' }}>Tipo</th>
+                    <th style={{ padding: '8px 12px' }}>Valor</th>
+                    <th style={{ padding: '8px 12px' }}>Informações Adicionais</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {bill.financeCharges.map((charge) => (
+                    <tr key={charge.id}>
+                      <td style={{ padding: '8px 12px' }}>{financeChargeTypes[charge.type] || charge.type}</td>
+                      <td style={{ padding: '8px 12px' }}>{formatCurrency(charge.amount, charge.currencyCode)}</td>
+                      <td style={{ padding: '8px 12px' }}>{charge.additionalInfo || '-'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        <div className="row mt-3" style={{ marginLeft: 0, marginRight: 0 }}>
+          <div className="col-md-6 p-2">
+            <p className="mb-1"><small className="text-muted">Criado em: {formatToBrazilianDateTime(bill.createdAt)}</small></p>
+          </div>
+          <div className="col-md-6 p-2">
+            <p className="mb-1"><small className="text-muted">Atualizado em: {formatToBrazilianDateTime(bill.updatedAt)}</small></p>
+          </div>
+        </div>
       </div>
     );
   };
@@ -231,25 +223,32 @@ const TabelaAccounts = ({ data, clickRow, loadBills }) => {
                       }
                       
                       return (
-                        <td className='det-td-vendas-global' key={`${rowId}-${header.key}`} >
+                        <td className='det-td-vendas-global' key={`${rowId}-${header.key}`}>
                           {displayValue}
                         </td>
                       );
                     })}
                   </tr>
                   {isExpanded && (
-                    <tr className="det-tr-global" >
-                      <td colSpan={headers.length + 1} className="det-td-vendas-global p-0">
-                        <div>
+                    <tr className="det-tr-global">
+                      <td colSpan={headers.length + 1} className="p-0 subtable">
+                        <div style={{ width: '100%' }}>
                           {isLoading ? (
-                            <div className="p-3 text-center" >
-                              <div className="spinner-border text-primary" role="status" >
+                            <div className="p-3 text-center">
+                              <div className="spinner-border text-primary" role="status">
                                 <span className="visually-hidden">Loading...</span>
                               </div>
                               <p className="mt-2">Carregando faturas...</p>
                             </div>
                           ) : (
-                            bills && renderBillDetails(bills)
+                            bills && bills.length > 0 ? 
+                              bills.map((bill, index) => (
+                                <div key={bill.id || index}>
+                                  {renderBillDetails(bill)}
+                                  {index < bills.length - 1 && <hr className="my-3" />}
+                                </div>
+                              ))
+                              : renderBillDetails(null)
                           )}
                         </div>
                       </td>

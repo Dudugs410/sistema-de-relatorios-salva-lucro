@@ -134,19 +134,19 @@ function PluggyProvider({ children }){
         }
     }
 
-const loadBills = async (accountId) => {
-  console.log('loadBills (accountID): ', accountId);
-  if (accountId) {
-    let resp = await pluggyApi.get('/bills', {
-      params: {
-        accountId: accountId
-      }
-    });
-    console.log('bills response: ', resp.data);
-    return resp.data.results;
-  }
-  return []; // Return empty array if no accountId
-};
+    const loadBills = async (accountId) => {
+    console.log('loadBills (accountID): ', accountId);
+    if (accountId) {
+        let resp = await pluggyApi.get('/bills', {
+        params: {
+            accountId: accountId
+        }
+        });
+        console.log('bills response: ', resp.data);
+        return resp.data.results;
+    }
+    return []; // Return empty array if no accountId
+    };
 
     return(
         <PluggyContext.Provider
