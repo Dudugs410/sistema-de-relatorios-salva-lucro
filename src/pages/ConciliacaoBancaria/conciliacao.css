@@ -1,0 +1,82 @@
+:root {
+  /* Current Theme Colors */
+  --primary-color: rgb(10, 61, 112);
+  --secondary-color: #99cc33;
+  --background-color: #fff;
+  --font-color: #0a3d70;
+  --header-text-color: white;
+  --modalidades-border: rgb(10, 61, 112);
+  --table-background: white;
+  --table-row-hover-color: #99cc33;
+  --table-row-hover-bg: rgb(10, 61, 112);
+  --header-bg: rgba(10,61,112,0.945);
+  --calendar-cell-color: rgb(10, 61, 112);
+  --calendar-now-color: rgb(153, 204, 51);
+  --calendar-neighbor-color: #757575;
+  --calendar-btn-navigation-color: #0a3d70;
+  --calendar-neighbor-bg: rgb(187, 187, 187);
+  --sidebar-font-color: white;
+  --subtitle-color: rgb(10, 61, 112);
+  /* Light Theme Colors */
+  --primary-color-light: rgb(10, 61, 112);
+  --secondary-color-light: rgb(153, 204, 51);
+  --background-color-light: #fff;
+  --font-color-light: rgb(10, 61, 112);
+  --header-text-color-light: white;
+  --modalidades-border-light: rgb(10, 61, 112);
+  --table-background-light: white;
+  --table-row-hover-color-light: rgb(153, 204, 51);
+  --table-row-hover-bg-light: rgb(10, 61, 112);
+  --header-bg-light: rgba(10,61,112,0.945);
+  --calendar-cell-color-light: rgb(10, 61, 112);
+  --calendar-now-color-light: rgb(153, 204, 51);
+  --calendar-neighbor-color-light: #757575;
+  --calendar-btn-navigation-color-light: rgb(10, 61, 112);
+  --calendar-neighbor-bg-light: rgb(187, 187, 187);
+  --sidebar-font-color-light: white;
+  --subtitle-light: rgb(10, 61, 112);
+  /* Dark Theme Colors */
+  --primary-color-dark: rgb(35, 31, 32);
+  --secondary-color-dark: darkgray;
+  --background-color-dark: rgb(20, 20, 20);
+  --font-color-dark: #d3d3d3;
+  --header-text-color-dark: black;
+  --modalidades-border-dark: rgb(97, 97, 97);
+  --table-background-dark: rgb(20, 20, 20);
+  --table-row-hover-color-dark: rgb(55, 51, 52);
+  --table-row-hover-bg-dark: rgb(97, 97, 97);
+  --header-bg-dark: rgba(35,31,32, 0.945);
+  --calendar-cell-color-dark: rgb(97, 97, 97);
+  --calendar-now-color-dark: white;
+  --calendar-neighbor-color-dark: rgb(26, 26, 26);
+  --calendar-btn-navigation-color-dark: white;
+  --calendar-neighbor-bg-dark: black;
+  --sidebar-font-color-dark: #d3d3d3;
+  --subtitle-dark: darkgray;
+  --default-font: Arial, Helvetica, sans-serif;
+  --default-background: #fff;
+  --default-primary: #000;
+  --default-secondary: #4f4f4f;
+  --default-font-app: var(--default-font);
+}
+
+.container-conciliacao {
+  border: solid var(--primary-color) 1px;
+  height: 400px;
+}
+
+.body-conciliacao {
+  width: 100%;
+  margin: 0 auto;
+  color: var(--font-color);
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  flex-wrap: wrap;
+}
+
+.container-extrato-cnab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}/*# sourceMappingURL=conciliacao.css.map */

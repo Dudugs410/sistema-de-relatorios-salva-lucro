@@ -1,0 +1,677 @@
+:root {
+  /* Current Theme Colors */
+  --primary-color: rgb(10, 61, 112);
+  --secondary-color: #99cc33;
+  --background-color: #fff;
+  --font-color: #0a3d70;
+  --header-text-color: white;
+  --modalidades-border: rgb(10, 61, 112);
+  --table-background: white;
+  --table-row-hover-color: #99cc33;
+  --table-row-hover-bg: rgb(10, 61, 112);
+  --header-bg: rgba(10,61,112,0.945);
+  --calendar-cell-color: rgb(10, 61, 112);
+  --calendar-now-color: rgb(153, 204, 51);
+  --calendar-neighbor-color: #757575;
+  --calendar-btn-navigation-color: #0a3d70;
+  --calendar-neighbor-bg: rgb(187, 187, 187);
+  --sidebar-font-color: white;
+  --subtitle-color: rgb(10, 61, 112);
+  /* Light Theme Colors */
+  --primary-color-light: rgb(10, 61, 112);
+  --secondary-color-light: rgb(153, 204, 51);
+  --background-color-light: #fff;
+  --font-color-light: rgb(10, 61, 112);
+  --header-text-color-light: white;
+  --modalidades-border-light: rgb(10, 61, 112);
+  --table-background-light: white;
+  --table-row-hover-color-light: rgb(153, 204, 51);
+  --table-row-hover-bg-light: rgb(10, 61, 112);
+  --header-bg-light: rgba(10,61,112,0.945);
+  --calendar-cell-color-light: rgb(10, 61, 112);
+  --calendar-now-color-light: rgb(153, 204, 51);
+  --calendar-neighbor-color-light: #757575;
+  --calendar-btn-navigation-color-light: rgb(10, 61, 112);
+  --calendar-neighbor-bg-light: rgb(187, 187, 187);
+  --sidebar-font-color-light: white;
+  --subtitle-light: rgb(10, 61, 112);
+  /* Dark Theme Colors */
+  --primary-color-dark: rgb(35, 31, 32);
+  --secondary-color-dark: darkgray;
+  --background-color-dark: rgb(20, 20, 20);
+  --font-color-dark: #d3d3d3;
+  --header-text-color-dark: black;
+  --modalidades-border-dark: rgb(97, 97, 97);
+  --table-background-dark: rgb(20, 20, 20);
+  --table-row-hover-color-dark: rgb(55, 51, 52);
+  --table-row-hover-bg-dark: rgb(97, 97, 97);
+  --header-bg-dark: rgba(35,31,32, 0.945);
+  --calendar-cell-color-dark: rgb(97, 97, 97);
+  --calendar-now-color-dark: white;
+  --calendar-neighbor-color-dark: rgb(26, 26, 26);
+  --calendar-btn-navigation-color-dark: white;
+  --calendar-neighbor-bg-dark: black;
+  --sidebar-font-color-dark: #d3d3d3;
+  --subtitle-dark: darkgray;
+  --default-font: Arial, Helvetica, sans-serif;
+  --default-background: #fff;
+  --default-primary: #000;
+  --default-secondary: #4f4f4f;
+  --default-font-app: var(--default-font);
+}
+
+.header-bg-image {
+  display: inline-table;
+  width: 100%;
+  height: 74.77px;
+  background-image: url("../../assets/financ.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.side-bar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.side-bar-container:first-child {
+  height: 100%;
+  background-color: lightblue;
+}
+
+.li-sidebar {
+  width: 100%;
+}
+
+.li-sidebar > button {
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 100%;
+  color: white;
+}
+
+.p-side-bar {
+  display: none;
+}
+
+.mobile {
+  display: flex;
+  width: 200px;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+}
+
+.btn-mobile {
+  display: inline-flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  width: 100%;
+  transition: all 0.4s;
+  color: white;
+  border: solid var(--secondary-color) 1px;
+  background-color: var(--primary-color);
+}
+
+.btn-mobile:hover {
+  color: var(--font-color);
+  border: solid var(--primary-color) 1px;
+  background-color: var(--secondary-color);
+}
+
+.transition-slide-down {
+  transition: all 0.3s ease-in-out;
+}
+
+.header-bg {
+  width: 100%;
+  color: white;
+  font-weight: bold;
+  display: flex;
+  height: 5em;
+  background-repeat: no-repeat;
+  background-blend-mode: multiply;
+  background-color: var(--header-bg);
+}
+
+.barra-header {
+  display: inline-flex;
+  flex-direction: row;
+  width: 100%;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  background-color: var(--primary-color);
+}
+
+.li-container {
+  height: 40px;
+  display: inline-flex;
+  width: 100%;
+}
+
+.navbar-title {
+  display: flex;
+  flex-direction: column;
+  align-self: start;
+  padding-left: 20px;
+  padding-top: 15px;
+  font-size: x-large;
+  z-index: 1;
+}
+
+.navbar-title > img {
+  width: 260px;
+}
+
+.header-info-wrapper {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.navbar-customer-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  font-size: 0.8em;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.navbar-customer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  text-align: start;
+}
+
+.teste {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.nav-item {
+  width: -moz-fit-content;
+  width: fit-content;
+  height: 100%;
+  display: inline;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.navbar-nav {
+  display: inline-flex;
+  flex-direction: row;
+  width: 100%;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  background-color: var(--primary-color);
+}
+
+.navbar-nav .dropdown-menu {
+  position: relative;
+  z-index: 9999;
+  background-color: var(--primary-color);
+  border: solid var(--secondary-color) 1px;
+}
+
+.navbar-nav .dropdown-menu-normal {
+  position: relative;
+  z-index: 9999;
+  background-color: var(--primary-color);
+  border: solid var(--secondary-color) 1px;
+}
+
+.btn-container {
+  align-items: center;
+  justify-content: center;
+  margin: auto 0;
+}
+
+.li-button-content {
+  /* padding: 5px; */
+  height: 100%;
+  width: 100%;
+  color: white;
+  display: inline-flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background-color: var(--primary-color);
+}
+
+.li-button-content:hover {
+  border-radius: 8px 0;
+  color: var(--primary-color);
+  background-color: var(--secondary-color);
+  transition: all, 0.4s;
+}
+
+.toggle-container {
+  display: flex;
+  align-items: center;
+  padding: 0 5px 0 5px;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 24px;
+}
+
+.switch input {
+  display: none;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 6px;
+  bottom: 4px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #35495a;
+}
+
+input:checked + .slider:before {
+  transform: translateX(31px);
+}
+
+img.img-header:hover {
+  cursor: pointer !important;
+  z-index: 1000000000000000000000000;
+}
+
+/* Styles for dropdown menu */
+.dropdown-menu {
+  inset: 0px auto auto 0px;
+  position: absolute;
+  margin: 0px;
+  transform: translate(202px, 0px);
+  background: none;
+  border: none;
+  padding: 0;
+  z-index: 1000; /* Ensure the dropdown menu is above other elements */
+}
+
+.dropdown-menu.show {
+  display: block;
+}
+
+.dropdown-menu-normal {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 5px;
+  z-index: 1000; /* Ensure the dropdown menu is above other elements */
+}
+
+.dropdown-menu-normal.show {
+  display: block;
+}
+
+.dropdown-menu-mobile {
+  display: none !important;
+  inset: 0px auto auto 0px !important;
+  position: absolute !important;
+  margin: 0px !important;
+  transform: translate(202px, 0px) !important;
+}
+
+.dropdown-menu-mobile.show {
+  display: block !important;
+}
+
+.dropdown-item {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  color: inherit;
+  text-decoration: none;
+  padding: 0;
+  position: relative;
+  z-index: 1000;
+  align-items: stretch;
+  align-content: stretch;
+  color: white;
+  background-color: var(--primary-color);
+}
+
+.dropdown-button:hover {
+  color: white;
+  background-color: var(--secondary-color);
+}
+
+.dropdown-item:hover {
+  color: var(--secondary-color);
+  background-color: var(--primary-color);
+}
+
+.navbar-nav .dropdown-menu .dropdown-item {
+  text-decoration: none !important;
+}
+
+.navbar-nav .dropdown-menu-normal .dropdown-item {
+  text-decoration: none !important;
+}
+
+.ms-1 .mt-2 .mb-auto .li-btn-text {
+  color: white;
+  text-decoration: none !important;
+}
+
+a {
+  text-decoration: none !important;
+}
+
+.dropdown {
+  position: relative;
+  height: 100%;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  flex-direction: row;
+  padding-left: 10px;
+}
+
+.checkbox-input {
+  display: none; /* Hide the default checkbox */
+}
+
+.checkbox-custom {
+  position: relative;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  margin-right: 8px;
+  border-color: var(--primary-color);
+}
+
+.checkbox-input:checked + .checkbox-custom {
+  border-color: var(--secondary-color);
+  background-color: var(--secondary-color);
+}
+
+.checkbox-icon {
+  margin-right: 8px;
+}
+
+.checkbox-label:hover .checkbox-custom {
+  border-color: #999; /* Change border color on hover */
+}
+
+/* Animation example */
+.checkbox-custom {
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.li-button-content {
+  color: white;
+  background-color: var(--primary-color);
+}
+
+.li-button-content:hover {
+  color: var(--font-color);
+  background-color: var(--secondary-color);
+  transition: all, 0.4s;
+}
+
+.calendar-icon {
+  position: relative;
+  right: 28px;
+  top: -2px;
+  color: var(--secondary-color);
+  transition: all, 0.4s;
+}
+.calendar-icon.isCheckedCalendar {
+  color: var(--primary-color);
+}
+
+@media screen and (max-width: 1231px) {
+  .navbar-nav {
+    display: none;
+  }
+  .toggle-container {
+    display: flex;
+    align-items: center;
+    padding: 0 5px 0 5px;
+    flex-direction: row;
+    width: 100%;
+    justify-content: flex-end;
+    position: relative;
+    left: 50px;
+  }
+  .p-side-bar {
+    margin-left: 10px;
+    margin-top: 10px;
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 15%;
+    display: block;
+  }
+  .li-btn-text {
+    display: none;
+  }
+  .a-side-bar {
+    width: 50px !important;
+    border-radius: 12px;
+    border: solid var(--primary-color) 2px !important;
+  }
+  .a-side-bar:hover {
+    border: solid var(--secondary-color) 1px !important;
+  }
+  .header-bg-image {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+  }
+  .header-bg {
+    width: 100%;
+    color: white;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+  }
+  .navbar-title {
+    display: flex;
+    flex-direction: column;
+    align-self: start;
+    padding-left: 0px;
+    padding-top: 15px;
+    font-size: x-large;
+    width: 100%;
+    z-index: 1;
+    align-content: center;
+    align-items: center;
+  }
+  .navbar-title > img {
+    padding-bottom: 15px;
+  }
+  .nav-text {
+    margin-left: 0px;
+  }
+  .navbar-customer-wrapper {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.8em;
+  }
+  .navbar-customer span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  li {
+    transition: all 0.4s;
+  }
+  .btn-exit {
+    text-align: center;
+    align-self: end;
+    position: absolute;
+    top: 0px;
+    z-index: 99;
+  }
+  .nav-item {
+    width: 100%;
+    color: white;
+  }
+  .navbar-nav {
+    align-items: center;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+  }
+  .btn-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: stretch;
+  }
+  .li-button-content {
+    width: 100%;
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    color: white;
+    background-color: var(--primary-color);
+  }
+  .li-button-content:hover {
+    color: var(--primary-color);
+    background-color: var(--secondary-color);
+    transition: all, 0.4s;
+  }
+  .relatorios-child .li-btn-text {
+    display: inline;
+  }
+}
+@media screen and (max-width: 637px) {
+  .navbar-nav {
+    display: none;
+  }
+  .toggle-container {
+    display: flex;
+    align-items: center;
+    padding: 0 5px 0 5px;
+    flex-direction: row;
+    width: 100%;
+    justify-content: flex-end;
+    position: relative;
+    left: 50px;
+  }
+  .li-btn-text {
+    display: none;
+  }
+  .relatorios-child .li-btn-text {
+    display: inline;
+  }
+  .li-button-content {
+    color: white;
+    background-color: var(--primary-color);
+  }
+  .li-button-content:hover {
+    color: var(--primary-color);
+    background-color: var(--secondary-color);
+    transition: all, 0.4s;
+  }
+}
+@media only screen and (max-width: 517px) {
+  .navbar-nav {
+    display: none;
+  }
+  .toggle-container {
+    display: flex;
+    align-items: center;
+    padding: 0 5px 0 5px;
+    flex-direction: row;
+    width: 100%;
+    justify-content: flex-end;
+    position: relative;
+    left: 50px;
+  }
+  /* esconde texto do navbar em telas pequenas*/
+  .li-btn-text {
+    display: none;
+  }
+  .relatorios-child .li-btn-text {
+    display: inline;
+  }
+  .li-button-content {
+    color: white;
+    background-color: var(--primary-color);
+  }
+  .li-button-content:hover {
+    color: var(--primary-color);
+    background-color: var(--secondary-color);
+    transition: all, 0.4s;
+  }
+}
+@media only screen and (max-width: 360px) {
+  .toggle-container {
+    display: inline-flex;
+    align-items: center;
+    /* padding: 0 5px 0 5px; */
+    flex-direction: row;
+    /* width: 100%; */
+    justify-content: flex-end;
+    /* position: absolute; */
+    left: 20px;
+  }
+}
+@media only screen and (max-width: 412px) {
+  .toggle-container {
+    display: inline-flex;
+    align-items: center;
+    /* padding: 0 5px 0 5px; */
+    flex-direction: row;
+    /* width: 100%; */
+    justify-content: flex-end;
+    /* position: absolute; */
+    left: 20px;
+  }
+}/*# sourceMappingURL=header copy.css.map */

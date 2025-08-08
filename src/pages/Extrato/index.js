@@ -351,50 +351,65 @@ const Extrato = () => {
         }
     },[responseData])
 
-    return (
-        <div className='appPage'>
-            <div className='page-background-global'>
-                <div className='page-content-global page-content-financeiro'>
-                    <div className='title-container-global'>
-                        <h1 className='title-global'>Extrato Bancário</h1>
+return (
+    <div className='appPage'>
+        <div className='page-background-global'>
+            <div className='page-content-global page-content-financeiro'>
+                <div className='title-container-global'>
+                    <h1 className='title-global'>Extrato Bancário</h1>
+                </div>
+                <hr className='hr-global' />
+                <div className='pluggy-container'> 
+                    {(!responseData || Object.keys(responseData).length === 0) && (
+                    <button 
+                        className='btn btn-primary btn-global' 
+                        onClick={handleConnectClick}
+                    >
+                        Conectar
+                    </button>
+                    )}
+                </div>
+                
+                {/* New layout container */}
+                <div className='extrato-layout-container'>
+                    {/* Left sidebar for MenuExtrato */}
+                    <div className='extrato-menu-sidebar'>
+                        {(responseData !== (undefined && {} && [])) && 
+                            <MenuExtrato connectorData={responseData.connector} handleProduct={handleSelectedProduct}/>
+                        }
                     </div>
-                    <hr className='hr-global' />
-                    <div className='pluggy-container'> 
-                        {(!responseData || Object.keys(responseData).length === 0) && (
-                        <button 
-                            className='btn btn-primary btn-global' 
-                            onClick={handleConnectClick}
-                        >
-                            Conectar
-                        </button>
-                        )}
-                    </div>
-                    {
-                        (responseData !== (undefined && {} && [])) && <MenuExtrato connectorData={responseData.connector} handleProduct={handleSelectedProduct}/>
-                    }
-                    {
-                        selected && 
+                    
+                    {/* Right content area */}
+                    <div className='extrato-content-area'>
+                        {selected && 
                             <div className='tabela-extrato-container'> 
-                                <h5 className='subtitle-global'>
-                                    {displayedMenu}
-                                </h5> 
-                                <div>
+                                <div className='content-header'>
+                                    <h5 className='subtitle-global'>
+                                        {displayedMenu}
+                                    </h5>
+                                    <button 
+                                        className='btn-global btn-refresh-extrato' 
+                                        onClick={refresh}
+                                    >
+                                        <FiRefreshCw />
+                                    </button>
+                                </div>
+                                <div className='table-container'>
                                     {data && renderTableComponent()}
                                 </div>
-                                {
-                                <div>
+                                <div className='table-container'>
                                     {selectedAccount && renderTableComponent()}
                                 </div>
-                                }
-                                <hr/>
-                                <button className='btn-global btn-refresh-extrato' style={{width:'100%'}} onClick={refresh}><FiRefreshCw /></button>
                             </div>
-                    }
-                    <div ref={widgetContainerRef}></div>
+                        }
+                    </div>
                 </div>
+                
+                <div ref={widgetContainerRef}></div>
             </div>
         </div>
-    )
+    </div>
+)
 }
 
 export default Extrato

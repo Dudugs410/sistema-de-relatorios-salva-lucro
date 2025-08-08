@@ -1,0 +1,207 @@
+:root {
+  /* Current Theme Colors */
+  --primary-color: rgb(10, 61, 112);
+  --secondary-color: #99cc33;
+  --background-color: #fff;
+  --font-color: #0a3d70;
+  --header-text-color: white;
+  --modalidades-border: rgb(10, 61, 112);
+  --table-background: white;
+  --table-row-hover-color: #99cc33;
+  --table-row-hover-bg: rgb(10, 61, 112);
+  --header-bg: rgba(10,61,112,0.945);
+  --calendar-cell-color: rgb(10, 61, 112);
+  --calendar-now-color: rgb(153, 204, 51);
+  --calendar-neighbor-color: #757575;
+  --calendar-btn-navigation-color: #0a3d70;
+  --calendar-neighbor-bg: rgb(187, 187, 187);
+  --sidebar-font-color: white;
+  --subtitle-color: rgb(10, 61, 112);
+  /* Light Theme Colors */
+  --primary-color-light: rgb(10, 61, 112);
+  --secondary-color-light: rgb(153, 204, 51);
+  --background-color-light: #fff;
+  --font-color-light: rgb(10, 61, 112);
+  --header-text-color-light: white;
+  --modalidades-border-light: rgb(10, 61, 112);
+  --table-background-light: white;
+  --table-row-hover-color-light: rgb(153, 204, 51);
+  --table-row-hover-bg-light: rgb(10, 61, 112);
+  --header-bg-light: rgba(10,61,112,0.945);
+  --calendar-cell-color-light: rgb(10, 61, 112);
+  --calendar-now-color-light: rgb(153, 204, 51);
+  --calendar-neighbor-color-light: #757575;
+  --calendar-btn-navigation-color-light: rgb(10, 61, 112);
+  --calendar-neighbor-bg-light: rgb(187, 187, 187);
+  --sidebar-font-color-light: white;
+  --subtitle-light: rgb(10, 61, 112);
+  /* Dark Theme Colors */
+  --primary-color-dark: rgb(35, 31, 32);
+  --secondary-color-dark: darkgray;
+  --background-color-dark: rgb(20, 20, 20);
+  --font-color-dark: #d3d3d3;
+  --header-text-color-dark: black;
+  --modalidades-border-dark: rgb(97, 97, 97);
+  --table-background-dark: rgb(20, 20, 20);
+  --table-row-hover-color-dark: rgb(55, 51, 52);
+  --table-row-hover-bg-dark: rgb(97, 97, 97);
+  --header-bg-dark: rgba(35,31,32, 0.945);
+  --calendar-cell-color-dark: rgb(97, 97, 97);
+  --calendar-now-color-dark: white;
+  --calendar-neighbor-color-dark: rgb(26, 26, 26);
+  --calendar-btn-navigation-color-dark: white;
+  --calendar-neighbor-bg-dark: black;
+  --sidebar-font-color-dark: #d3d3d3;
+  --subtitle-dark: darkgray;
+  --default-font: Arial, Helvetica, sans-serif;
+  --default-background: #fff;
+  --default-primary: #000;
+  --default-secondary: #4f4f4f;
+  --default-font-app: var(--default-font);
+}
+
+.header-bg-image {
+  display: inline-table;
+  width: 100%;
+  height: 74.77px;
+  background-image: url("../../assets/financ.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.header-container {
+  display: inline-flex;
+  width: 100%;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.header-bg {
+  width: 100%;
+  color: white;
+  font-weight: bold;
+  display: flex;
+  height: 5em;
+  background-repeat: no-repeat;
+  background-blend-mode: multiply;
+  background-color: var(--header-bg);
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 6px;
+  bottom: 4px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #35495a;
+}
+
+input:checked + .slider:before {
+  transform: translateX(31px);
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 24px;
+}
+
+.switch input {
+  display: none;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  flex-direction: row;
+  padding-left: 10px;
+}
+
+.checkbox-input {
+  display: none; /* Hide the default checkbox */
+}
+
+.checkbox-custom {
+  position: relative;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  margin-right: 8px;
+  border-color: var(--primary-color);
+}
+
+.checkbox-input:checked + .checkbox-custom {
+  border-color: var(--secondary-color);
+  background-color: var(--secondary-color);
+}
+
+.checkbox-icon {
+  position: relative;
+  right: 28.5px;
+  bottom: 1px;
+  margin-right: 8px;
+}
+
+.checkbox-label:hover .checkbox-custom {
+  border-color: #999; /* Change border color on hover */
+}
+
+/* Animation example */
+.checkbox-custom {
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.navbar-customer-wrapper {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  font-size: 0.8em;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.toggle-container {
+  display: flex;
+  align-items: center;
+  padding: 0 5px 0 5px;
+  flex-direction: row;
+  width: 100%;
+  justify-content: flex-start;
+  position: relative;
+}
+
+@media (max-width: 946px) {
+  .toggle-container {
+    left: 50px;
+  }
+}/*# sourceMappingURL=header.css.map */

@@ -1,0 +1,154 @@
+:root {
+  /* Current Theme Colors */
+  --primary-color: rgb(10, 61, 112);
+  --secondary-color: #99cc33;
+  --background-color: #fff;
+  --font-color: #0a3d70;
+  --header-text-color: white;
+  --modalidades-border: rgb(10, 61, 112);
+  --table-background: white;
+  --table-row-hover-color: #99cc33;
+  --table-row-hover-bg: rgb(10, 61, 112);
+  --header-bg: rgba(10,61,112,0.945);
+  --calendar-cell-color: rgb(10, 61, 112);
+  --calendar-now-color: rgb(153, 204, 51);
+  --calendar-neighbor-color: #757575;
+  --calendar-btn-navigation-color: #0a3d70;
+  --calendar-neighbor-bg: rgb(187, 187, 187);
+  --sidebar-font-color: white;
+  --subtitle-color: rgb(10, 61, 112);
+  /* Light Theme Colors */
+  --primary-color-light: rgb(10, 61, 112);
+  --secondary-color-light: rgb(153, 204, 51);
+  --background-color-light: #fff;
+  --font-color-light: rgb(10, 61, 112);
+  --header-text-color-light: white;
+  --modalidades-border-light: rgb(10, 61, 112);
+  --table-background-light: white;
+  --table-row-hover-color-light: rgb(153, 204, 51);
+  --table-row-hover-bg-light: rgb(10, 61, 112);
+  --header-bg-light: rgba(10,61,112,0.945);
+  --calendar-cell-color-light: rgb(10, 61, 112);
+  --calendar-now-color-light: rgb(153, 204, 51);
+  --calendar-neighbor-color-light: #757575;
+  --calendar-btn-navigation-color-light: rgb(10, 61, 112);
+  --calendar-neighbor-bg-light: rgb(187, 187, 187);
+  --sidebar-font-color-light: white;
+  --subtitle-light: rgb(10, 61, 112);
+  /* Dark Theme Colors */
+  --primary-color-dark: rgb(35, 31, 32);
+  --secondary-color-dark: darkgray;
+  --background-color-dark: rgb(20, 20, 20);
+  --font-color-dark: #d3d3d3;
+  --header-text-color-dark: black;
+  --modalidades-border-dark: rgb(97, 97, 97);
+  --table-background-dark: rgb(20, 20, 20);
+  --table-row-hover-color-dark: rgb(55, 51, 52);
+  --table-row-hover-bg-dark: rgb(97, 97, 97);
+  --header-bg-dark: rgba(35,31,32, 0.945);
+  --calendar-cell-color-dark: rgb(97, 97, 97);
+  --calendar-now-color-dark: white;
+  --calendar-neighbor-color-dark: rgb(26, 26, 26);
+  --calendar-btn-navigation-color-dark: white;
+  --calendar-neighbor-bg-dark: black;
+  --sidebar-font-color-dark: #d3d3d3;
+  --subtitle-dark: darkgray;
+  --default-font: Arial, Helvetica, sans-serif;
+  --default-background: #fff;
+  --default-primary: #000;
+  --default-secondary: #4f4f4f;
+  --default-font-app: var(--default-font);
+}
+
+.content-container-modalidade {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+.total-container-modalidade {
+  height: 100px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  text-align: center;
+  font-weight: bold;
+  border-radius: 20px;
+  margin: 5px;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  transition: all 0.4s;
+  color: var(--font-color);
+  background-color: var(--background-color);
+  border: solid #ccc 1px;
+  padding: 5px;
+}
+
+.text-container-modalidade {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.total-container-modalidade > span {
+  color: var(--primary-color);
+  font-size: 2em;
+}
+
+.card-title-modalidade {
+  display: flex;
+}
+
+.title-modalidade {
+  font-size: 0.95em;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  transition: all 0.4s;
+  color: var(--font-color);
+  margin-top: 0.7em;
+}
+
+.green-modalidade {
+  transition: all 0.4s;
+  color: rgb(153, 204, 51);
+  font-weight: bold;
+}
+
+.valor-total {
+  color: white;
+  text-shadow: 1px 2px 2px rgba(0, 0, 0, 0.6);
+}
+
+@media screen and (max-width: 869px) {
+  .title-modalidade {
+    font-size: 0.9em;
+  }
+  .content-container-modalidade {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Creates 2 equal columns */
+    grid-template-rows: repeat(2, 1fr); /* Creates 2 equal rows */
+    gap: 10px;
+  }
+  .total-container-modalidade {
+    padding: 20px;
+    text-align: center;
+    border: 1px solid #ccc;
+  }
+}
+@media screen and (max-width: 412px) {
+  .content-container-modalidade {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Creates 2 equal columns */
+    grid-template-rows: repeat(2, 1fr); /* Creates 2 equal rows */
+    gap: 10px;
+  }
+  .total-container-modalidade {
+    padding: 20px;
+    text-align: center;
+    border: 1px solid #ccc;
+  }
+}/*# sourceMappingURL=totalModalidade.css.map */
