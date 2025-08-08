@@ -1,0 +1,217 @@
+:root {
+  /* Current Theme Colors */
+  --primary-color: rgb(10, 61, 112);
+  --secondary-color: #99cc33;
+  --background-color: #fff;
+  --font-color: #0a3d70;
+  --header-text-color: white;
+  --modalidades-border: rgb(10, 61, 112);
+  --table-background: white;
+  --table-row-hover-color: #99cc33;
+  --table-row-hover-bg: rgb(10, 61, 112);
+  --header-bg: rgba(10,61,112,0.945);
+  --calendar-cell-color: rgb(10, 61, 112);
+  --calendar-now-color: rgb(153, 204, 51);
+  --calendar-neighbor-color: #757575;
+  --calendar-btn-navigation-color: #0a3d70;
+  --calendar-neighbor-bg: rgb(187, 187, 187);
+  --sidebar-font-color: white;
+  --subtitle-color: rgb(10, 61, 112);
+  /* Light Theme Colors */
+  --primary-color-light: rgb(10, 61, 112);
+  --secondary-color-light: rgb(153, 204, 51);
+  --background-color-light: #fff;
+  --font-color-light: rgb(10, 61, 112);
+  --header-text-color-light: white;
+  --modalidades-border-light: rgb(10, 61, 112);
+  --table-background-light: white;
+  --table-row-hover-color-light: rgb(153, 204, 51);
+  --table-row-hover-bg-light: rgb(10, 61, 112);
+  --header-bg-light: rgba(10,61,112,0.945);
+  --calendar-cell-color-light: rgb(10, 61, 112);
+  --calendar-now-color-light: rgb(153, 204, 51);
+  --calendar-neighbor-color-light: #757575;
+  --calendar-btn-navigation-color-light: rgb(10, 61, 112);
+  --calendar-neighbor-bg-light: rgb(187, 187, 187);
+  --sidebar-font-color-light: white;
+  --subtitle-light: rgb(10, 61, 112);
+  /* Dark Theme Colors */
+  --primary-color-dark: rgb(35, 31, 32);
+  --secondary-color-dark: darkgray;
+  --background-color-dark: rgb(20, 20, 20);
+  --font-color-dark: #d3d3d3;
+  --header-text-color-dark: black;
+  --modalidades-border-dark: rgb(97, 97, 97);
+  --table-background-dark: rgb(20, 20, 20);
+  --table-row-hover-color-dark: rgb(55, 51, 52);
+  --table-row-hover-bg-dark: rgb(97, 97, 97);
+  --header-bg-dark: rgba(35,31,32, 0.945);
+  --calendar-cell-color-dark: rgb(97, 97, 97);
+  --calendar-now-color-dark: white;
+  --calendar-neighbor-color-dark: rgb(26, 26, 26);
+  --calendar-btn-navigation-color-dark: white;
+  --calendar-neighbor-bg-dark: black;
+  --sidebar-font-color-dark: #d3d3d3;
+  --subtitle-dark: darkgray;
+  --default-font: Arial, Helvetica, sans-serif;
+  --default-background: #fff;
+  --default-primary: #000;
+  --default-secondary: #4f4f4f;
+  --default-font-app: var(--default-font);
+}
+
+.page-content {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.4s;
+}
+
+.content {
+  height: 100%;
+  width: 100%;
+  padding: 0px;
+}
+
+.app-page-servicos {
+  display: contents;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  transition: all 0.4s;
+}
+
+.page-servicos-background {
+  display: flex;
+  justify-content: center;
+  transition: all 0.4s;
+  background-color: var(--background-color);
+}
+
+.page-content-servicos {
+  width: 80%;
+  padding: 1%;
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  border-radius: 20px;
+  padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 54px;
+  transition: all 0.4s;
+  background-color: var(--background-color);
+}
+
+.servicos-title-container {
+  text-align: center;
+  border-bottom: solid white 1px;
+  transition: all 0.4s;
+  width: 100%;
+  border-radius: 20px;
+  padding: 10px;
+  color: var(--primary-color);
+  background-color: var(--secondary-color);
+}
+
+.servicos-title {
+  margin: 0;
+  transition: all 0.4s;
+  color: var(--font-color);
+}
+
+.hr-recebimentos {
+  margin: 1rem 0;
+  color: white;
+  border: 0;
+  border-top: var(--bs-border-width) solid;
+  opacity: 0.25;
+}
+
+.component-container-servicos {
+  /* height: 100%; */
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+@media screen and (max-width: 869px) {
+  .page-content-servicos {
+    width: 100%;
+    border-radius: 0px;
+  }
+  .page-servicos-background {
+    background-color: var(--background-color);
+  }
+  .header-tabs-container {
+    display: none;
+  }
+  .header-tabs {
+    width: 160px;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: center;
+    transition: all 0.4s;
+    justify-content: flex-end;
+  }
+  .container-ajustes {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: center;
+    align-items: center;
+  }
+  .card-resumo-content-container {
+    height: 100%;
+    width: 100%;
+  }
+  .card-ajuste-container {
+    height: 40%;
+    width: 100%;
+    display: inline-flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: center;
+    align-content: center;
+  }
+  .card-ajuste {
+    display: inline-flex;
+    height: 100%;
+    width: 100%;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    border-radius: 20px;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: center;
+    padding-bottom: 20px;
+  }
+  .filial-container {
+    height: 100%;
+    width: 80%;
+    display: inline-flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-content: center;
+    align-items: stretch;
+    margin-top: 30px;
+  }
+  .card-filial {
+    height: 40%;
+    width: 100%;
+    margin: 1%;
+    display: inline-table;
+    border-radius: 20px;
+  }
+  .card-resumo-total-ajustes {
+    height: 45%;
+    width: 80%;
+    padding: 10px 10px 0 20px;
+    border-radius: 20px;
+    margin: 2%;
+  }
+}/*# sourceMappingURL=servicos.css.map */

@@ -1,5 +1,8 @@
 .subtable {
-  --bs-table-hover-bg: rgba(0, 0, 0, 0.1) !important;
+    --bs-table-hover-bg: rgba(0, 0, 0, 0.1) !important;
+    &:hover  {
+        color: var(--secondary-color-light) !important;
+    }
 }
 
 .mb-1{

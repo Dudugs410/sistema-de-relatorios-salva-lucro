@@ -1,0 +1,225 @@
+:root {
+  /* Current Theme Colors */
+  --primary-color: rgb(10, 61, 112);
+  --secondary-color: #99cc33;
+  --background-color: #fff;
+  --font-color: #0a3d70;
+  --header-text-color: white;
+  --modalidades-border: rgb(10, 61, 112);
+  --table-background: white;
+  --table-row-hover-color: #99cc33;
+  --table-row-hover-bg: rgb(10, 61, 112);
+  --header-bg: rgba(10,61,112,0.945);
+  --calendar-cell-color: rgb(10, 61, 112);
+  --calendar-now-color: rgb(153, 204, 51);
+  --calendar-neighbor-color: #757575;
+  --calendar-btn-navigation-color: #0a3d70;
+  --calendar-neighbor-bg: rgb(187, 187, 187);
+  --sidebar-font-color: white;
+  --subtitle-color: rgb(10, 61, 112);
+  /* Light Theme Colors */
+  --primary-color-light: rgb(10, 61, 112);
+  --secondary-color-light: rgb(153, 204, 51);
+  --background-color-light: #fff;
+  --font-color-light: rgb(10, 61, 112);
+  --header-text-color-light: white;
+  --modalidades-border-light: rgb(10, 61, 112);
+  --table-background-light: white;
+  --table-row-hover-color-light: rgb(153, 204, 51);
+  --table-row-hover-bg-light: rgb(10, 61, 112);
+  --header-bg-light: rgba(10,61,112,0.945);
+  --calendar-cell-color-light: rgb(10, 61, 112);
+  --calendar-now-color-light: rgb(153, 204, 51);
+  --calendar-neighbor-color-light: #757575;
+  --calendar-btn-navigation-color-light: rgb(10, 61, 112);
+  --calendar-neighbor-bg-light: rgb(187, 187, 187);
+  --sidebar-font-color-light: white;
+  --subtitle-light: rgb(10, 61, 112);
+  /* Dark Theme Colors */
+  --primary-color-dark: rgb(35, 31, 32);
+  --secondary-color-dark: darkgray;
+  --background-color-dark: rgb(20, 20, 20);
+  --font-color-dark: #d3d3d3;
+  --header-text-color-dark: black;
+  --modalidades-border-dark: rgb(97, 97, 97);
+  --table-background-dark: rgb(20, 20, 20);
+  --table-row-hover-color-dark: rgb(55, 51, 52);
+  --table-row-hover-bg-dark: rgb(97, 97, 97);
+  --header-bg-dark: rgba(35,31,32, 0.945);
+  --calendar-cell-color-dark: rgb(97, 97, 97);
+  --calendar-now-color-dark: white;
+  --calendar-neighbor-color-dark: rgb(26, 26, 26);
+  --calendar-btn-navigation-color-dark: white;
+  --calendar-neighbor-bg-dark: black;
+  --sidebar-font-color-dark: #d3d3d3;
+  --subtitle-dark: darkgray;
+  --default-font: Arial, Helvetica, sans-serif;
+  --default-background: #fff;
+  --default-primary: #000;
+  --default-secondary: #4f4f4f;
+  --default-font-app: var(--default-font);
+}
+
+.vendas-container {
+  height: 100%;
+  background-color: white;
+  width: 100%;
+  padding: 50px;
+  line-height: 2em;
+}
+
+.vendas-container > .btn-div > .button-container > button {
+  position: relative;
+  bottom: 0px;
+  margin-bottom: 20px;
+}
+
+.total-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  margin-left: 150px;
+  margin-right: 150px;
+}
+
+.det-td {
+  color: white;
+}
+
+.total {
+  font-weight: bold;
+}
+
+.td-btn-details {
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+}
+
+.btn-details {
+  height: 100%;
+  width: 100%;
+  background-color: #181c2e;
+  color: white;
+  border-radius: 10px;
+  border: none;
+  font-weight: bold;
+}
+
+.adm-table {
+  background-color: white;
+  --bs-table-bg: white;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.title-adm {
+  width: 100%;
+  background-color: #444e79;
+  color: white;
+  align-self: center;
+  text-align: center;
+  font-size: 1.3em;
+  font-weight: bold;
+  margin: 0;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.tr-sticky {
+  position: sticky;
+  top: 190px;
+  background-color: #181c2e;
+}
+
+.thead-admin {
+  color: white;
+  text-align: center;
+  border-bottom: solid white 1px;
+  width: 100%;
+  border-radius: 20px;
+  padding: 10px;
+  background-color: var(--primary-color);
+}
+
+.content-adq {
+  height: 300px;
+  background-color: white;
+  width: 100%;
+  padding: 10px;
+  padding-bottom: 10%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.det-tr-top {
+  position: sticky;
+  top: 0;
+  color: white;
+  text-align: center;
+  border-bottom: solid white 1px;
+  width: 100%;
+  border-radius: 20px;
+  padding: 10px;
+  background-color: var(--primary-color);
+}
+
+.det-td--top {
+  position: sticky;
+  top: 0;
+  color: white;
+  background-color: var(--primary-color);
+}
+
+.det-adm {
+  background-color: white;
+  color: var(--font-color);
+  background-color: var(--background-color);
+}
+
+.content {
+  height: 100%;
+  width: 100%;
+  padding: 10px;
+  padding-bottom: 10%;
+  color: white;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.green-tabela-adm {
+  color: rgb(0, 255, 0);
+  text-shadow: 1px 1px 1px #000000;
+}
+
+.span-table-servicos-red.light-theme {
+  color: rgb(218, 100, 100);
+}
+.span-table-servicos-red.dark-theme {
+  color: rgb(218, 100, 100);
+}
+
+.span-table-servicos-green {
+  color: rgb(0, 204, 0);
+  font-weight: bold;
+}
+
+@media screen and (max-width: 869px) {
+  .vendas-container {
+    height: 90%;
+  }
+  .td-btn-details {
+    justify-content: center;
+  }
+  .btn-details {
+    width: 30%;
+    background-color: #181c2e;
+    color: white;
+    border-radius: 10px;
+    border: none;
+    font-weight: bold;
+  }
+}/*# sourceMappingURL=tabelaGenerica.css.map */

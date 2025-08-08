@@ -1,0 +1,13 @@
+.btn-outros-relatorios {
+  border: none;
+  margin: 0;
+  padding: 0;
+  color: var(--secondary-color);
+  background: none;
+}
+
+.btn-outros-relatorios:hover {
+  cursor: pointer;
+  color: green;
+  transition: all 0.4s;
+}/*# sourceMappingURL=outrosRelatorios.css.map */
