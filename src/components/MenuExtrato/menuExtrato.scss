@@ -20,14 +20,23 @@
   margin: 0 auto;
   border: 2px solid var(--primary-color);
   border-radius: 3px;
-  background-color: var(--background-color);
+  background-color: rgb(223, 223, 223) !important;
   position: relative;
   transition: all 0.2s ease;
   padding: 0;
   
+  .icone-global {
+    color: var(--primary-color);
+    transition: color 0.2s ease;
+    font-size: 1.5rem;
+  }
+  
   &:hover, &:focus {
     border-color: var(--secondary-color);
-    color: var(--secondary-color);
+    
+    .icone-global {
+      color: var(--secondary-color-light);
+    }
     
     &::after {
       content: attr(data-tooltip);
@@ -38,7 +47,7 @@
       margin-left: 10px;
       white-space: nowrap;
       background-color: var(--background-color);
-      color: var(--text-color);
+      color: var(--secondary-color-light);
       padding: 5px 10px;
       border-radius: 4px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.2);
@@ -51,7 +60,10 @@
   &.selected-card {
     border-color: var(--secondary-color);
     background-color: rgba(var(--secondary-color-rgb), 0.1);
-    color: var(--secondary-color);
+    
+    .icone-global {
+      color: var(--secondary-color-light);
+    }
   }
 }
 
@@ -61,6 +73,10 @@
     &:active {
       transform: scale(0.95);
       border-color: var(--secondary-color);
+      
+      .icone-global {
+        color: var(--secondary-color-light);
+      }
       
       &::after {
         content: attr(data-tooltip);
@@ -113,9 +129,4 @@
       border-right: 1px solid var(--primary-color);
     }
   }
-}
-
-.icone-global {
-  font-size: 1.5rem;
-  color: inherit;
 }
