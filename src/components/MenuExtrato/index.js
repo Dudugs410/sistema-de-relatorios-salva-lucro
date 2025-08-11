@@ -23,7 +23,7 @@ const MenuExtrato = ({ connectorData, handleProduct }) => {
     TRANSACTIONS: { name: 'Transações', icon: <GrTransaction className='icone-global'/> },
     PAYMENT_DATA: { name: 'Dados de Pagamentos', icon: <LiaFileInvoiceDollarSolid className='icone-global'/> },
     INVESTMENTS: { name: 'Investimentos', icon: <FiTrendingUp className='icone-global'/> },
-    INVESTMENTS_TRANSACTIONS: { name: 'Transações de Investimento', icon: <LiaChartBarSolid className='icone-global'/> },
+    //INVESTMENTS_TRANSACTIONS: { name: 'Transações de Investimento', icon: <LiaChartBarSolid className='icone-global'/> },
     IDENTITY: { name: 'Identidade', icon: <PiIdentificationBadgeLight className='icone-global'/> },
     LOANS: { name: 'Empréstimos', icon: <BsPiggyBank className='icone-global'/> },
     BENEFITS: { name: 'Benefícios', icon: <GoGift className='icone-global'/> },
