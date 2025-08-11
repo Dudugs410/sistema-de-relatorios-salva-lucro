@@ -29,17 +29,17 @@ function PluggyProvider({ children }){
         console.log('loadAccounts: ')
         if(id){
             console.log('ID: ', id)
-
             let params = {
                 itemId: id,
             }
+
             let config = {
                 params: params
             }
 
             let resp = await pluggyApi.get('/accounts', config)
             console.log('accounts response: ', resp.data)
-            return resp.data.results;
+            return resp.data.results
         }
     }
 
@@ -51,13 +51,14 @@ function PluggyProvider({ children }){
             let params = {
                 itemId: id,
             }
+
             let config = {
                 params: params
             }
 
             let resp = await pluggyApi.get('/identity', config)
             console.log('identity response: ', resp.data)
-            return resp.data;
+            return resp.data
         }
     }
 
@@ -75,7 +76,7 @@ function PluggyProvider({ children }){
 
             let resp = await pluggyApi.get('/loans', config)
             console.log('loans response: ', resp.data)
-            return resp.data.results;
+            return resp.data.results
         }
     }
 
@@ -94,7 +95,19 @@ function PluggyProvider({ children }){
 
             let resp = await pluggyApi.get('/investments', config)
             console.log('investments response: ', resp.data)
-            return resp.data.results;
+            return resp.data.results
+        }
+    }
+
+        const loadInvestmentTransactions = async () => {
+        console.log('loadInvestmentTransactions: ')
+        let investmentID = localStorage.getItem('investmentID')
+        if(investmentID){
+            console.log('investmentID: ', investmentID)
+
+            let resp = await pluggyApi.get(`/investments/${investmentID}/transactions`)
+            console.log('investmentTransactions response: ', resp.data)
+            return resp.data
         }
     }
 
@@ -109,10 +122,8 @@ function PluggyProvider({ children }){
         }
 
         let resp = await pluggyApi.get('/items', body)
-            console.log('items response: ', resp.data)
-            return resp.data.results;
-
-
+        console.log('items response: ', resp.data)
+        return resp.data.results
     }
 
     const loadItemByID = async () => {
@@ -120,7 +131,7 @@ function PluggyProvider({ children }){
         if(id) {
             let resp = await pluggyApi.get(`/items/${id}`)
             console.log('items by ID response: ', resp.data)
-            return resp.data.results;
+            return resp.data.results
         }
     }
 
@@ -130,32 +141,32 @@ function PluggyProvider({ children }){
         if(accountID) {
             let resp = await pluggyApi.get(`/transactions`)
             console.log('transactions response: ', resp.data)
-            return resp.data.results;
+            return resp.data.results
         }
     }
 
     const loadBills = async (accountId) => {
-    console.log('loadBills (accountID): ', accountId);
-    if (accountId) {
-        let resp = await pluggyApi.get('/bills', {
-        params: {
-            accountId: accountId
+        console.log('loadBills (accountID): ', accountId)
+        if (accountId) {
+            let resp = await pluggyApi.get('/bills', {
+            params: {
+                accountId: accountId
+            }
+            })
+            console.log('bills response: ', resp.data)
+            return resp.data.results
         }
-        });
-        console.log('bills response: ', resp.data);
-        return resp.data.results;
+        return []
     }
-    return []; // Return empty array if no accountId
-    };
 
     return(
         <PluggyContext.Provider
             value={{
                id, setId,
                itemId, setItemId,
-
                loadAccounts, loadTransactions,
-               loadInvestments, loadIdentity, loadLoans,
+               loadInvestments, loadInvestmentTransactions,
+               loadIdentity, loadLoans,
                loadItem, loadItemByID,
                loadBills,
             }}
@@ -166,12 +177,3 @@ function PluggyProvider({ children }){
 }
 
 export default PluggyProvider
-
-/*
-    pluggyData = {
-        id: int,
-        accounts: [],
-        loans: [],
-        investments: []
-    }
-*/
