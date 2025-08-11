@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { createRoot } from 'react-dom/client' // For React 18+
+import { createRoot } from 'react-dom/client'
 import Cookies from 'js-cookie'
 import PluggyWidget from '../../components/PluggyWidget'
 import './extrato.scss'
@@ -19,30 +19,25 @@ const Extrato = () => {
         setId, itemId, setItemId,
         loadAccounts, loadItem, loadTransactions,
         loadLoans, loadIdentity, loadInvestments,
-        loadBills,
+        loadBills, loadInvestmentTransactions,
     } = useContext(PluggyContext)
 
     const [accounts, setAccounts] = useState(() => {
         const storedAccounts = Cookies.get('accounts');
         return storedAccounts ? JSON.parse(storedAccounts) : [];
-      })
+    })
     const [selectedAccount, setSelectedAccount] = useState(null)
-
     const [responseData, setResponseData] = useState(() => {
         const storedData = localStorage.getItem('pluggyResponseData');
         return storedData ? JSON.parse(storedData) : {}
     })
     const [item, setItem] = useState()
     const [transactions, setTransactions] = useState()
-
     const [clickedRow, setClickedRow] = useState(null)
     const [isClicked, setIsClicked] = useState(false)
-
     const [selected, setSelected] = useState(false)
     const [displayedMenu, setDisplayedMenu] = useState(null)
-
     const [data, setData] = useState([])
-
     const location = useLocation()
     const widgetContainerRef = useRef(null)
 
@@ -50,16 +45,15 @@ const Extrato = () => {
         localStorage.setItem('currentPath', location.pathname)
     }, [location])
 
-    useEffect(()=>{
+    useEffect(() => {
         setIsClicked(false)
-    },[])
+    }, [])
 
-    useEffect(()=>{
+    useEffect(() => {
         if((!responseData || Object.keys(responseData).length === 0)){
             setId(localStorage.getItem('pluggyID'))
         }
-
-    },[responseData])
+    }, [responseData])
 
     const fetchToken = async () => {
         let userId = localStorage.getItem('userID')
@@ -75,19 +69,14 @@ const Extrato = () => {
                 body: JSON.stringify({
                     options: {
                         clientUserId: userId,
-                        //avoidDuplicates: true
                     }
                 })
             }
             
             let response = await fetch('https://api.pluggy.ai/connect_token', options)
             let responseData = await response.json()
-            
-            console.log('response data -> ', responseData)
-            
             Cookies.set('pluggy_connect_token', responseData.accessToken)
             return responseData.accessToken;
-
         } catch (error) {
             console.log('error: ', error)
             throw error
@@ -97,27 +86,21 @@ const Extrato = () => {
     const handleConnectClick = async() => {
         if(!Cookies.get('accessToken')){
             fetchToken()
-                .then(()=>{
+                .then(() => {
                     if (widgetContainerRef.current) {
                         widgetContainerRef.current.innerHTML = ''
                     }
-
                     const container = document.createElement('div')
                     widgetContainerRef.current?.appendChild(container)
-        
                     const root = createRoot(container)
                     root.render(<PluggyWidget setId={setId} setResponseData={setResponseData}/>)   
                 })
-        }
-
-        else{
+        } else {
             if (widgetContainerRef.current) {
                 widgetContainerRef.current.innerHTML = ''
             }
-
             const container = document.createElement('div')
             widgetContainerRef.current?.appendChild(container)
-
             const root = createRoot(container)
             root.render(<PluggyWidget setId={setId} setResponseData={setResponseData}/>)
         }
@@ -134,8 +117,8 @@ const Extrato = () => {
         setClickedRow(row)
         setIsClicked(true)
         setItemId(row.itemId)
+        localStorage.setItem('investmentID', row.id) // Store investment ID
         Cookies.set('accountID', row.id)
-
     }
 
     const fetchClicked = async (row) => {
@@ -143,10 +126,6 @@ const Extrato = () => {
         let billsTemp = fetchBills()
         console.log('billsTemp: ', billsTemp)
     }
-
-    useEffect(()=>{
-        
-    },[itemId])
 
     const fetchAccounts = async () => {
         let pluggyData = JSON.parse(localStorage.getItem('pluggyData'))
@@ -162,12 +141,8 @@ const Extrato = () => {
 
     const fetchIdentity = async () => {
         let pluggyData = JSON.parse(localStorage.getItem('pluggyData'))
-        console.log('pluggyData: ', pluggyData)
-
         if(pluggyData && (pluggyData.identity.length === 0)){
-            console.log('entrou aqui')
             let dataTemp = await loadIdentity()
-            console.log('fetchID: ', dataTemp)
             pluggyData.identity = dataTemp
             localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
             setData(dataTemp)
@@ -202,15 +177,12 @@ const Extrato = () => {
 
     const fetchBills = async () => {
         let pluggyData = JSON.parse(localStorage.getItem('pluggyData'))
-        console.log('fetchBills pluggyData: ', pluggyData)
         if(pluggyData.bills.length === 0){
-            console.log('pluggyData.bills.length === 0')
             let dataTemp = await loadBills()
             pluggyData.bills = dataTemp
             localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
             setData(dataTemp)
         } else {
-            console.log('else')
             setData(pluggyData.bills)
         }
     }
@@ -242,174 +214,146 @@ const Extrato = () => {
         }
     }
 
-    const handleSelectedProduct = (product) =>{
+    const handleSelectedProduct = (product) => {
         switch (product) {
             case 'ACCOUNTS':
                 setData(null)
                 fetchAccounts()
                 setDisplayedMenu('Contas')
-            break;
-            
+                break;
             case 'IDENTITY':
                 setData(null)
                 fetchIdentity()
                 setDisplayedMenu('Identidade')
-            break;
-    
+                break;
             case 'LOANS':
                 setData(null)
                 fetchLoans()
                 setDisplayedMenu('Empréstimos')
-            break;
-    
+                break;
             case 'INVESTMENTS':
                 setData(null)
                 fetchInvestments()
                 setDisplayedMenu('Investimentos')
-            break;
-
+                break;
             case 'CREDIT_CARDS':
                 setData(null)
                 fetchBills();
                 setDisplayedMenu('Cartão de Crédito')
-            break;
-
+                break;
             case 'TRANSACTIONS':
                 setData(null)
                 fetchInvestments()
                 setDisplayedMenu('Transações')
-            break;
-
+                break;
             case 'INVESTMENTS_TRANSACTIONS':
                 setData(null)
                 fetchInvestments()
                 setDisplayedMenu('Transações de Investimento')
-            break;
-
+                break;
             case 'PAYMENT_DATA':
                 setData(null)
                 fetchInvestments()
                 setDisplayedMenu('Dados de Pagamento')
-            break;
-
+                break;
             case 'BROKERAGE_NOTE':
                 setData(null)
                 fetchInvestments()
                 setDisplayedMenu('Nota de Corretagem')
-            break;
-        
+                break;
             default:
-            break;
+                break;
         }
         setSelected(true)
     }
 
-    /* 
-        0:"ACCOUNTS"
-        1:"CREDIT_CARDS"
-        2:"TRANSACTIONS"
-        3:"INVESTMENTS"
-        4:"IDENTITY"
-        5:"INVESTMENTS_TRANSACTIONS"
-        6:"PAYMENT_DATA"
-        7:"BROKERAGE_NOTE"
-        8:"LOANS"
-    */
-
-    useEffect(()=>{
-        if(item){
-            console.log('item', item)
-        }
-    },[item])
-
-    useEffect(()=>{
-        if(responseData){
-            console.log("responseData: ", responseData)
-        }
-    },[responseData])
-
-        const renderTableComponent = () => {
+    const renderTableComponent = () => {
         switch (displayedMenu) {
             case 'Contas':
-                return <TabelaAccounts data={data} clickRow={handleRowClicked} onClickRow={(e)=>{fetchClicked(e)}} loadBills={loadBills}/>;
+                return <TabelaAccounts 
+                         data={data} 
+                         clickRow={handleRowClicked} 
+                         onClickRow={(e) => fetchClicked(e)} 
+                         loadBills={loadBills}
+                       />;
             case 'Investimentos':
-                return <TabelaInvestments data={data} clickRow={handleRowClicked} />;
+                return <TabelaInvestments 
+                         data={data} 
+                         clickRow={handleRowClicked}
+                         loadTransactions={loadInvestmentTransactions}
+                       />;
             case 'Empréstimos':
                 return <TabelaLoans data={data} clickRow={handleRowClicked} />;
             case 'Identidade':
                 return <TabelaIdentity data={data} clickRow={handleRowClicked} />;
-            
-            // Add cases for other menu options as needed
+            case 'Transações':
+            case 'Transações de Investimento':
+                return <TabelaInvestments 
+                         data={data} 
+                         clickRow={handleRowClicked} 
+                         loadTransactions={loadInvestmentTransactions}
+                       />;
             default:
                 return <Tabela data={data} clickRow={handleRowClicked} />;
         }
     }
 
-    useEffect(()=>{
-        if(responseData){
-            console.log('connectorData: ', responseData.connector)            
-        }
-    },[responseData])
-
-return (
-    <div className='appPage'>
-        <div className='page-background-global'>
-            <div className='page-content-global page-content-financeiro'>
-                <div className='title-container-global'>
-                    <h1 className='title-global'>Extrato Bancário</h1>
-                </div>
-                <hr className='hr-global' />
-                <div className='pluggy-container'> 
-                    {(!responseData || Object.keys(responseData).length === 0) && (
-                    <button 
-                        className='btn btn-primary btn-global' 
-                        onClick={handleConnectClick}
-                    >
-                        Conectar
-                    </button>
-                    )}
-                </div>
-                
-                {/* New layout container */}
-                <div className='extrato-layout-container'>
-                    {/* Left sidebar for MenuExtrato */}
-                    <div className='extrato-menu-sidebar'>
-                        {(responseData !== (undefined && {} && [])) && 
-                            <MenuExtrato connectorData={responseData.connector} handleProduct={handleSelectedProduct}/>
-                        }
+    return (
+        <div className='appPage'>
+            <div className='page-background-global'>
+                <div className='page-content-global page-content-financeiro'>
+                    <div className='title-container-global'>
+                        <h1 className='title-global'>Extrato Bancário</h1>
+                    </div>
+                    <hr className='hr-global' />
+                    <div className='pluggy-container'> 
+                        {(!responseData || Object.keys(responseData).length === 0) && (
+                        <button 
+                            className='btn btn-primary btn-global' 
+                            onClick={handleConnectClick}
+                        >
+                            Conectar
+                        </button>
+                        )}
                     </div>
                     
-                    {/* Right content area */}
-                    <div className='extrato-content-area'>
-                        {selected && 
-                            <div className='tabela-extrato-container'> 
-                                <div className='content-header'>
-                                    <h5 className='subtitle-global'>
-                                        {displayedMenu}
-                                    </h5>
-                                    <button 
-                                        className='btn-global btn-refresh-extrato' 
-                                        onClick={refresh}
-                                    >
-                                        <FiRefreshCw />
-                                    </button>
+                    <div className='extrato-layout-container'>
+                        <div className='extrato-menu-sidebar'>
+                            {(responseData !== (undefined && {} && [])) && 
+                                <MenuExtrato connectorData={responseData.connector} handleProduct={handleSelectedProduct}/>
+                            }
+                        </div>
+                        
+                        <div className='extrato-content-area'>
+                            {selected && 
+                                <div className='tabela-extrato-container'> 
+                                    <div className='content-header'>
+                                        <h5 className='subtitle-global'>
+                                            {displayedMenu}
+                                        </h5>
+                                        <button 
+                                            className='btn-global btn-refresh-extrato' 
+                                            onClick={refresh}
+                                        >
+                                            <FiRefreshCw />
+                                        </button>
+                                    </div>
+                                    <div className='table-container'>
+                                        {data && renderTableComponent()}
+                                    </div>
+                                    <div className='table-container'>
+                                        {selectedAccount && renderTableComponent()}
+                                    </div>
                                 </div>
-                                <div className='table-container'>
-                                    {data && renderTableComponent()}
-                                </div>
-                                <div className='table-container'>
-                                    {selectedAccount && renderTableComponent()}
-                                </div>
-                            </div>
-                        }
+                            }
+                        </div>
                     </div>
+                    
+                    <div ref={widgetContainerRef}></div>
                 </div>
-                
-                <div ref={widgetContainerRef}></div>
             </div>
         </div>
-    </div>
-)
+    )
 }
 
 export default Extrato
