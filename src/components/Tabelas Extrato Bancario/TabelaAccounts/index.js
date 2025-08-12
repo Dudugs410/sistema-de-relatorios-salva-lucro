@@ -1,10 +1,12 @@
 import { useState } from "react";
 import './subtable.scss'
 
-const TabelaAccounts = ({ data, clickRow, loadBills }) => {
+const TabelaAccounts = ({ data, clickRow, loadBills, loadTransactions }) => {
   const [expandedRow, setExpandedRow] = useState(null);
-  const [loadingBills, setLoadingBills] = useState({});
+  const [loadingData, setLoadingData] = useState({});
   const [billsData, setBillsData] = useState({});
+  const [transactionsData, setTransactionsData] = useState({});
+  const [activeTab, setActiveTab] = useState({});
   const [error, setError] = useState(null);
 
   const toggleRow = async (row) => {
@@ -12,21 +14,28 @@ const TabelaAccounts = ({ data, clickRow, loadBills }) => {
     const isExpanding = expandedRow !== rowId;
     
     setExpandedRow(isExpanding ? rowId : null);
+    setActiveTab(prev => ({ ...prev, [rowId]: isExpanding ? 'bills' : null }));
     
     if (clickRow) clickRow(row);
 
-    if (isExpanding && !billsData[rowId]) {
+    if (isExpanding) {
       try {
-        setLoadingBills(prev => ({ ...prev, [rowId]: true }));
+        setLoadingData(prev => ({ ...prev, [rowId]: true }));
         setError(null);
         
-        const bills = await loadBills(rowId);
+        // Load both bills and transactions
+        const [bills, transactions] = await Promise.all([
+          loadBills(rowId),
+          loadTransactions(rowId)
+        ]);
+
         setBillsData(prev => ({ ...prev, [rowId]: bills }));
+        setTransactionsData(prev => ({ ...prev, [rowId]: transactions }));
       } catch (err) {
-        console.error('Error loading bills:', err);
-        setError('Failed to load bills data. Please try again.');
+        console.error('Error loading data:', err);
+        setError('Failed to load data. Please try again.');
       } finally {
-        setLoadingBills(prev => ({ ...prev, [rowId]: false }));
+        setLoadingData(prev => ({ ...prev, [rowId]: false }));
       }
     }
   };
@@ -97,6 +106,20 @@ const TabelaAccounts = ({ data, clickRow, loadBills }) => {
     'OTHER': 'Outro'
   };
 
+  const transactionTypes = {
+    'SELL': 'Venda',
+    'BUY': 'Compra',
+    'DIVIDEND': 'Dividendo',
+    'INTEREST': 'Juros',
+    // Add more types as needed
+  };
+
+  const movementTypes = {
+    'DEBIT': 'Débito',
+    'CREDIT': 'Crédito',
+    // Add more types as needed
+  };
+
   const renderBillDetails = (bill) => {
     if (!bill) return <div className="p-3 text-muted">Nenhuma fatura disponível</div>;
 
@@ -156,6 +179,62 @@ const TabelaAccounts = ({ data, clickRow, loadBills }) => {
     );
   };
 
+  const renderTransactionDetails = (transactions) => {
+    if (!transactions || transactions.length === 0) {
+      return <div className="p-3 text-muted">Nenhuma transação disponível</div>;
+    }
+
+    return (
+      <div className="p-3" style={{ backgroundColor: 'rgba(0,0,0,0.03)', width: '100%' }}>
+        <div className="mb-3">
+          <h5 style={{ fontSize: '16px', fontWeight: '600' }}>Transações</h5>
+          <div className="table-responsive">
+            <table className="table table-sm" style={{ backgroundColor: 'white', marginBottom: '0' }}>
+              <thead>
+                <tr>
+                  <th style={{ padding: '8px 12px' }}>Data</th>
+                  <th style={{ padding: '8px 12px' }}>Tipo</th>
+                  <th style={{ padding: '8px 12px' }}>Movimentação</th>
+                  <th style={{ padding: '8px 12px' }}>Valor</th>
+                  <th style={{ padding: '8px 12px' }}>Descrição</th>
+                </tr>
+              </thead>
+              <tbody>
+                {transactions.map((transaction) => (
+                  <tr key={transaction.id}>
+                    <td style={{ padding: '8px 12px' }}>{formatToBrazilianDateTime(transaction.date)}</td>
+                    <td style={{ padding: '8px 12px' }}>{transactionTypes[transaction.type] || transaction.type}</td>
+                    <td style={{ padding: '8px 12px' }}>{movementTypes[transaction.movementType] || transaction.movementType}</td>
+                    <td style={{ padding: '8px 12px' }}>{formatCurrency(transaction.amount, transaction.currencyCode)}</td>
+                    <td style={{ padding: '8px 12px' }}>{transaction.description || '-'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderTabContent = (rowId) => {
+    switch (activeTab[rowId]) {
+      case 'bills':
+        return billsData[rowId] && billsData[rowId].length > 0 ? 
+          billsData[rowId].map((bill, index) => (
+            <div key={bill.id || index}>
+              {renderBillDetails(bill)}
+              {index < billsData[rowId].length - 1 && <hr className="my-3" />}
+            </div>
+          ))
+          : renderBillDetails(null);
+      case 'transactions':
+        return renderTransactionDetails(transactionsData[rowId]);
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className='dropShadow vendas-view'>
       {error && (
@@ -186,8 +265,8 @@ const TabelaAccounts = ({ data, clickRow, loadBills }) => {
             {data.map((row, index) => {
               const rowId = row.id || index;
               const isExpanded = expandedRow === rowId;
-              const isLoading = loadingBills[rowId];
-              const bills = billsData[rowId];
+              const isLoading = loadingData[rowId];
+              const currentTab = activeTab[rowId];
               
               return (
                 <>
@@ -233,23 +312,45 @@ const TabelaAccounts = ({ data, clickRow, loadBills }) => {
                     <tr className="det-tr-global">
                       <td colSpan={headers.length + 1} className="p-0 subtable">
                         <div style={{ width: '100%' }}>
-                          {isLoading ? (
-                            <div className="p-3 text-center">
-                              <div className="spinner-border text-primary" role="status">
-                                <span className="visually-hidden">Loading...</span>
-                              </div>
-                              <p className="mt-2">Carregando faturas...</p>
-                            </div>
-                          ) : (
-                            bills && bills.length > 0 ? 
-                              bills.map((bill, index) => (
-                                <div key={bill.id || index}>
-                                  {renderBillDetails(bill)}
-                                  {index < bills.length - 1 && <hr className="my-3" />}
+                          {/* Tab Navigation */}
+                          <ul className="nav nav-tabs" style={{ paddingLeft: '16px', paddingRight: '16px' }}>
+                            <li className="nav-item">
+                              <button
+                                className={`nav-link ${currentTab === 'bills' ? 'active' : ''}`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setActiveTab(prev => ({ ...prev, [rowId]: 'bills' }));
+                                }}
+                              >
+                                Faturas
+                              </button>
+                            </li>
+                            <li className="nav-item">
+                              <button
+                                className={`nav-link ${currentTab === 'transactions' ? 'active' : ''}`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setActiveTab(prev => ({ ...prev, [rowId]: 'transactions' }));
+                                }}
+                              >
+                                Transações
+                              </button>
+                            </li>
+                          </ul>
+                          
+                          {/* Tab Content */}
+                          <div className="tab-content p-0">
+                            {isLoading ? (
+                              <div className="p-3 text-center">
+                                <div className="spinner-border text-primary" role="status">
+                                  <span className="visually-hidden">Loading...</span>
                                 </div>
-                              ))
-                              : renderBillDetails(null)
-                          )}
+                                <p className="mt-2">Carregando dados...</p>
+                              </div>
+                            ) : (
+                              renderTabContent(rowId)
+                            )}
+                          </div>
                         </div>
                       </td>
                     </tr>

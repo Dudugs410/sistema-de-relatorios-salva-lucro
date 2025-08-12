@@ -135,14 +135,23 @@ function PluggyProvider({ children }){
         }
     }
 
-    const loadTransactions = async () => {
-        console.log('loadTransactions (accountID): ')
-        let accountID = Cookies.get('accountID')
-        if(accountID) {
-            let resp = await pluggyApi.get(`/transactions`)
-            console.log('transactions response: ', resp.data)
-            return resp.data.results
+    const loadTransactions = async (accountId) => {
+        console.log('loadTransactions (accountID): ', accountId)
+        if (accountId) {
+            try {
+                let resp = await pluggyApi.get(`/transactions`, {
+                    params: {
+                        accountId: accountId
+                    }
+                })
+                console.log('transactions response: ', resp.data)
+                return resp.data.results
+            } catch (error) {
+                console.error('Error loading transactions:', error)
+                throw error
+            }
         }
+        return []
     }
 
     const loadBills = async (accountId) => {
