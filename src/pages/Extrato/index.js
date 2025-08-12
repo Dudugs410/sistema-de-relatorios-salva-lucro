@@ -275,6 +275,7 @@ const Extrato = () => {
                          clickRow={handleRowClicked} 
                          onClickRow={(e) => fetchClicked(e)} 
                          loadBills={loadBills}
+                         loadTransactions={loadTransactions}
                        />;
             case 'Investimentos':
                 return <TabelaInvestments 
