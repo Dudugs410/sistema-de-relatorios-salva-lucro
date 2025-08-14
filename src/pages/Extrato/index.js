@@ -6,7 +6,6 @@ import PluggyWidget from '../../components/PluggyWidget'
 import './extrato.scss'
 import { FiRefreshCw } from "react-icons/fi";
 import { PluggyContext } from '../../contexts/pluggyContext'
-import TabelaItem from '../../components/TabelaItem'
 import MenuExtrato from '../../components/MenuExtrato'
 import TabelaAccounts from '../../components/Tabelas Extrato Bancario/TabelaAccounts'
 import TabelaInvestments from '../../components/Tabelas Extrato Bancario/TabelaInvestments'
