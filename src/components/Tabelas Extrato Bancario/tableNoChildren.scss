@@ -1,11 +1,7 @@
-.table-generic{
+.table-no-children{
     --bs-table-hover-color: inherit !important;
     --bs-table-hover-bg: inherit !important;
-}
-
-.row-pluggy{
     :hover{
-        cursor: pointer !important;
+        cursor: inherit !important;
     }
 }
-
