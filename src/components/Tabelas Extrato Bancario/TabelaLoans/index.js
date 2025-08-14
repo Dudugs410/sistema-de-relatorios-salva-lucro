@@ -1,3 +1,5 @@
+import '../tableNoChildren.scss'
+
 const TabelaLoans = ({ data, clickRow }) => {
   // Function to check if a value is an ISO date string
   const isISODate = (value) => {
@@ -73,7 +75,7 @@ const TabelaLoans = ({ data, clickRow }) => {
   return (
     <div className='dropShadow vendas-view'>
       <div className='table-wrapper'>
-        <table className='table table-striped table-hover det-table-global'>
+        <table className='table table-no-children table-striped table-hover det-table-global'>
           <thead>
             <tr className='det-tr-top-global'>
               {headers.map(header => (

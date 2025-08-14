@@ -1,4 +1,5 @@
 import { useEffect } from "react"
+import 'tabelaPluggy.scss'
 
 const Tabela = ({ data, clickRow }) => {
   useEffect(()=>{
@@ -31,7 +32,7 @@ const Tabela = ({ data, clickRow }) => {
   return (
     <div className='dropShadow vendas-view'>
       <div className='table-wrapper'>
-        <table className='table table-striped table-hover det-table-global'>
+        <table className='table table-generic table-striped table-hover det-table-global'>
           <thead>
             <tr className='det-tr-top-global'>
               {headers.map(header => (
