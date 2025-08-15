@@ -91,37 +91,12 @@ const loginApp = async (login, password) => {
                 localUsers = JSON.parse(localStorage.getItem('localUsers'))
             }
             localStorage.setItem('md5Pass', md5(password))
-            
-            // Step 2: Authenticate with Pluggy API
-            try {
-				//////
-				/*
-                let body = {
-                    "clientId": "7cee8f27-cbfa-4a19-b14d-306f9656787a",
-                    "clientSecret": "01e4edaf-639a-40ae-945a-4a04ab652bad",
-                }
-                const response = await pluggyApi.post('auth', body)
-                const pluggyApiKey = response.data
-                console.log("Pluggy Auth Response:", pluggyApiKey)
-                
-                // Store both the API key and clientUserId
-                Cookies.set('apiKey', pluggyApiKey.apiKey)
-                Cookies.set('clientUserId', userId)  // Store the userId we sent
-                */
-				//////
-            } catch (error) {
-                console.error("Pluggy authentication error:", error)
-                // Consider whether you want to continue if Pluggy auth fails
-                // or throw the error to stop the login process
-            }
 
-            // Step 3: Handle user preferences
             let userTemp = {}
             const userExists = localUsers.some(storedUser => storedUser.id === userId)
 			setClientUserId(userId)
   
             if (userExists) {
-                // Handle existing user in localUsers
                 const updatedUsers = localUsers.map(user => {
                     if (user.id === userId) {
                         userTemp = {id: userId, theme: JSON.parse(user.theme)}
@@ -159,7 +134,75 @@ const loginApp = async (login, password) => {
 
 try {
   const clientUserId = userId; // From your auth system
-  
+
+  const loginLog = async () => {
+	function getBrazilianISOTime() {
+		const now = new Date();
+		
+		const dateTimeParts = new Intl.DateTimeFormat('en-US', {
+			timeZone: 'America/Sao_Paulo',
+			year: 'numeric',
+			month: '2-digit',
+			day: '2-digit',
+			hour: '2-digit',
+			minute: '2-digit',
+			second: '2-digit',
+			fractionalSecondDigits: 3,
+			hour12: false,
+		}).formatToParts(now)
+		
+		// Extract values
+		const { year, month, day, hour, minute, second, fractionalSecond } = 
+			dateTimeParts.reduce((acc, part) => {
+			acc[part.type] = part.value
+			return acc
+			}, {})
+
+		// Format as ISO string (e.g., "2025-08-14T18:51:29.107")
+		return `${year}-${month}-${day}T${hour}:${minute}:${second}.${fractionalSecond}`;
+	}
+
+	const currentDateTime = getBrazilianISOTime()
+
+		let body = {
+			USUCODIGO: userId,
+			USULOGIN: login.toUpperCase(),
+			ACESSOPERMITIDO: 'S',
+			APLICACAO: 'ReactApp',
+			DATAHORA: currentDateTime,
+		}
+
+		api.post('/LogAcesso', body)
+		console.log('login registrado')
+	}
+
+	const getLoginLog = async () => {
+		let params = {
+			codigo: userId
+		}
+
+		let config = {
+			params: params
+		}
+
+		let res = await api.get('/LogAcesso', config)
+		console.log(res)
+		return res
+	}
+
+	try {
+		let logTemp
+		await loginLog()
+		.then(
+			//logTemp = getLoginLog()
+		)
+		.finally(
+			//console.log(logTemp)
+		)
+	} catch (error) {
+		console.log(error)
+	}
+	
   const response = await fetch('https://api.pluggy.ai/auth', {
     method: 'POST',
     headers: {

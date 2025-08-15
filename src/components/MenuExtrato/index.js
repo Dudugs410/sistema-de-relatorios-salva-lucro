@@ -3,15 +3,13 @@ import { Container, Row, Col } from 'react-bootstrap'
 import { FiTrendingUp, FiDollarSign } from "react-icons/fi"
 import { BsPiggyBank } from "react-icons/bs"
 import { TbReportAnalytics } from "react-icons/tb"
-import { LiaChartBarSolid, LiaFileInvoiceDollarSolid } from "react-icons/lia"
+import { LiaFileInvoiceDollarSolid } from "react-icons/lia"
 import { PiFoldersLight, PiIdentificationBadgeLight } from "react-icons/pi"
-import { GrTransaction } from "react-icons/gr"
 import { GoGift } from "react-icons/go"
-
 import './menuExtrato.scss'
 import '../../styles/global.scss'
 
-const MenuExtrato = ({ connectorData, handleProduct }) => {
+const MenuExtrato = ({ connectorData, handleProduct, disabled }) => {
   const [selectedProduct, setSelectedProduct] = useState(null)
 
   if (!connectorData) {
@@ -20,10 +18,7 @@ const MenuExtrato = ({ connectorData, handleProduct }) => {
 
   const productInfo = {
     ACCOUNTS: { name: 'Contas', icon: <FiDollarSign className='icone-global'/> },
-    //TRANSACTIONS: { name: 'Transações', icon: <GrTransaction className='icone-global'/> },
-    //PAYMENT_DATA: { name: 'Dados de Pagamentos', icon: <LiaFileInvoiceDollarSolid className='icone-global'/> },
     INVESTMENTS: { name: 'Investimentos', icon: <FiTrendingUp className='icone-global'/> },
-    //INVESTMENTS_TRANSACTIONS: { name: 'Transações de Investimento', icon: <LiaChartBarSolid className='icone-global'/> },
     IDENTITY: { name: 'Identidade', icon: <PiIdentificationBadgeLight className='icone-global'/> },
     LOANS: { name: 'Empréstimos', icon: <BsPiggyBank className='icone-global'/> },
     BENEFITS: { name: 'Benefícios', icon: <GoGift className='icone-global'/> },
@@ -37,6 +32,7 @@ const MenuExtrato = ({ connectorData, handleProduct }) => {
     .filter(productCode => availableProductCodes.includes(productCode))
 
   const handleProductSelect = (product) => {
+    if (disabled) return
     setSelectedProduct(product)
     handleProduct(product)
   }
@@ -55,6 +51,7 @@ const MenuExtrato = ({ connectorData, handleProduct }) => {
               <button 
                 className={`product-icon-button ${selectedProduct === productCode ? 'selected-card' : ''}`}
                 onClick={() => handleProductSelect(productCode)}
+                disabled={disabled}
                 data-tooltip={product.name}
                 aria-label={product.name}
               >
