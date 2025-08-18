@@ -207,6 +207,12 @@ const Extrato = () => {
                 pluggyData.investments = dataTemp
                 localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
                 setData(dataTemp)                
+                break;
+            case 'Identidade':
+                dataTemp = await loadIdentity()
+                pluggyData.identity = dataTemp
+                localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
+                setData(dataTemp)          
                 break;        
             default:
                 break;
