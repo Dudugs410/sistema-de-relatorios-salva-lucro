@@ -74,7 +74,6 @@ function AuthProvider({ children }){
 const loginApp = async (login, password) => {
     resetAppValues()
     try {
-        // Step 1: Authenticate with your main API
         const response = await api.post('token', { client_id: login, client_secret: md5(password) })
         const responseData = response.data
         localStorage.setItem('token', responseData.acess_token)
@@ -109,7 +108,6 @@ const loginApp = async (login, password) => {
                 })
                 localStorage.setItem('localUsers', JSON.stringify(updatedUsers))
             } else {
-                // Add new user to localUsers
                 userTemp = { 
 					id: userId, 
 					theme: false, 
@@ -133,131 +131,125 @@ const loginApp = async (login, password) => {
             }
 
 try {
-  const clientUserId = userId; // From your auth system
+	const clientUserId = userId; // From your auth system
 
-  const loginLog = async () => {
-	function getBrazilianISOTime() {
-		const now = new Date();
+	const loginLog = async () => {
+		function getBrazilianISOTime() {
+			const now = new Date();
+			
+			const dateTimeParts = new Intl.DateTimeFormat('en-US', {
+				timeZone: 'America/Sao_Paulo',
+				year: 'numeric',
+				month: '2-digit',
+				day: '2-digit',
+				hour: '2-digit',
+				minute: '2-digit',
+				second: '2-digit',
+				fractionalSecondDigits: 3,
+				hour12: false,
+			}).formatToParts(now)
+			
+			// Extract values
+			const { year, month, day, hour, minute, second, fractionalSecond } = 
+				dateTimeParts.reduce((acc, part) => {
+				acc[part.type] = part.value
+				return acc
+				}, {})
+
+			// Format as ISO string (e.g., "2025-08-14T18:51:29.107")
+			return `${year}-${month}-${day}T${hour}:${minute}:${second}.${fractionalSecond}`;
+		}
+
+		const currentDateTime = getBrazilianISOTime()
+
+			let body = {
+				USUCODIGO: userId,
+				USULOGIN: login.toUpperCase(),
+				ACESSOPERMITIDO: 'S',
+				APLICACAO: 'ReactApp',
+				DATAHORA: currentDateTime,
+			}
+
+			api.post('/LogAcesso', body)
+			console.log('login registrado')
+		}
+
+		const getLoginLog = async () => {
+			let params = {
+				codigo: userId
+			}
+
+			let config = {
+				params: params
+			}
+
+			let res = await api.get('/LogAcesso', config)
+			console.log(res)
+			return res
+		}
+
+		try {
+			let logTemp
+			await loginLog()
+			.then(
+				//logTemp = getLoginLog()
+			)
+			.finally(
+				//console.log(logTemp)
+			)
+		} catch (error) {
+			console.log(error)
+		}
 		
-		const dateTimeParts = new Intl.DateTimeFormat('en-US', {
-			timeZone: 'America/Sao_Paulo',
-			year: 'numeric',
-			month: '2-digit',
-			day: '2-digit',
-			hour: '2-digit',
-			minute: '2-digit',
-			second: '2-digit',
-			fractionalSecondDigits: 3,
-			hour12: false,
-		}).formatToParts(now)
-		
-		// Extract values
-		const { year, month, day, hour, minute, second, fractionalSecond } = 
-			dateTimeParts.reduce((acc, part) => {
-			acc[part.type] = part.value
-			return acc
-			}, {})
+		const response = await fetch('https://api.pluggy.ai/auth', {
+			method: 'POST',
+			headers: {
+			'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+			clientId: "7cee8f27-cbfa-4a19-b14d-306f9656787a",
+			clientSecret: "01e4edaf-639a-40ae-945a-4a04ab652bad",
+			itemOptions: {
+				clientUserId: clientUserId
+			}
+			})
+		})
 
-		// Format as ISO string (e.g., "2025-08-14T18:51:29.107")
-		return `${year}-${month}-${day}T${hour}:${minute}:${second}.${fractionalSecond}`;
-	}
-
-	const currentDateTime = getBrazilianISOTime()
-
-		let body = {
-			USUCODIGO: userId,
-			USULOGIN: login.toUpperCase(),
-			ACESSOPERMITIDO: 'S',
-			APLICACAO: 'ReactApp',
-			DATAHORA: currentDateTime,
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status}`);
 		}
 
-		api.post('/LogAcesso', body)
-		console.log('login registrado')
-	}
+		const data = await response.json()
 
-	const getLoginLog = async () => {
-		let params = {
-			codigo: userId
-		}
+		Cookies.set('pluggy_api_key', data.apiKey, {
+			expires: 1, // 1 day
+			secure: process.env.NODE_ENV === 'production',
+			sameSite: 'strict'
+		})
 
-		let config = {
-			params: params
-		}
-
-		let res = await api.get('/LogAcesso', config)
-		console.log(res)
-		return res
-	}
-
-	try {
-		let logTemp
-		await loginLog()
-		.then(
-			//logTemp = getLoginLog()
-		)
-		.finally(
-			//console.log(logTemp)
-		)
-	} catch (error) {
-		console.log(error)
-	}
-	
-  const response = await fetch('https://api.pluggy.ai/auth', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      // Add if your API requires it:
-      // 'X-API-KEY': 'your-api-key-here' 
-    },
-    body: JSON.stringify({
-      clientId: "7cee8f27-cbfa-4a19-b14d-306f9656787a",
-      clientSecret: "01e4edaf-639a-40ae-945a-4a04ab652bad",
-      itemOptions: {
-        clientUserId: clientUserId
-      }
-    })
-  });
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  const data = await response.json();
-  //console.log('Auth response:', data);
-
-  // Store tokens with js-cookie
-  Cookies.set('pluggy_api_key', data.apiKey, {
-    expires: 1, // 1 day
-    secure: process.env.NODE_ENV === 'production', // HTTPS only in production
-    sameSite: 'strict'
-  })
-
-  Cookies.set('pluggy_client_id', clientUserId, {
-    expires: 1,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict'
-  })
+		Cookies.set('pluggy_client_id', clientUserId, {
+			expires: 1,
+			secure: process.env.NODE_ENV === 'production',
+			sameSite: 'strict'
+		})
 
 } catch (error) {
-  console.error('Authentication failed:', error)
-  
-  // Cleanup cookies on failure
-  Cookies.remove('pluggy_api_key')
-  Cookies.remove('pluggy_client_id')
-  
-  throw error
-}
+		console.error('Authentication failed:', error)
+		
+		Cookies.remove('pluggy_api_key')
+		Cookies.remove('pluggy_client_id')
+		
+		throw error
+	}
 
-            // Step 4: Load additional data
-            const opt = await loadOptions()
-            localStorage.setItem('options', JSON.stringify(opt))
-            
-            const gru = await loadGroupsList()
-            localStorage.setItem('groupsStorage', JSON.stringify(gru))
-            localStorage.setItem('groupCode', gru[0].CODIGOGRUPO)
-            localStorage.setItem('cnpj', 'todos')
-        }
+	const opt = await loadOptions()
+	localStorage.setItem('options', JSON.stringify(opt))
+	
+	const gru = await loadGroupsList()
+	localStorage.setItem('groupsStorage', JSON.stringify(gru))
+	localStorage.setItem('groupCode', gru[0].CODIGOGRUPO)
+	localStorage.setItem('cnpj', 'todos')
+}
   
         // Step 5: Get user details
         const userResponse = await api.get('/usuario')
@@ -277,7 +269,6 @@ try {
     } catch (error) {
         console.error('Login error:', error)
         alert(error.message)
-        // Consider resetting any partial authentication state here
     }
 }
 
