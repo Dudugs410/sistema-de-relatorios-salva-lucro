@@ -312,11 +312,11 @@ const TabelaAccounts = ({ data, clickRow, loadBills, loadTransactions }) => {
                     <tr className="det-tr-global">
                       <td colSpan={headers.length + 1} className="p-0 subtable">
                         <div style={{ width: '100%' }}>
-                          {/* Tab Navigation */}
-                          <ul className="nav nav-tabs" style={{ paddingLeft: '16px', paddingRight: '16px' }}>
-                            <li className="nav-item">
+                          {/* Tab Navigation with custom classes */}
+                          <ul className="nav nav-tabs accounts-tab custom-tabs-container">
+                            <li className="nav-item custom-tab-item">
                               <button
-                                className={`nav-link ${currentTab === 'bills' ? 'active' : ''}`}
+                                className={`nav-link custom-tab-button ${currentTab === 'bills' ? 'custom-tab-active' : ''}`}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   setActiveTab(prev => ({ ...prev, [rowId]: 'bills' }));
@@ -325,9 +325,9 @@ const TabelaAccounts = ({ data, clickRow, loadBills, loadTransactions }) => {
                                 Faturas
                               </button>
                             </li>
-                            <li className="nav-item">
+                            <li className="nav-item custom-tab-item">
                               <button
-                                className={`nav-link ${currentTab === 'transactions' ? 'active' : ''}`}
+                                className={`nav-link custom-tab-button ${currentTab === 'transactions' ? 'custom-tab-active' : ''}`}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   setActiveTab(prev => ({ ...prev, [rowId]: 'transactions' }));
