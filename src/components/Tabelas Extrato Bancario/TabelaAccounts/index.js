@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import './subtable.scss'
 
 const TabelaAccounts = ({ data, clickRow, loadBills, loadTransactions }) => {
@@ -269,7 +269,7 @@ const TabelaAccounts = ({ data, clickRow, loadBills, loadTransactions }) => {
               const currentTab = activeTab[rowId];
               
               return (
-                <>
+                <React.Fragment key={rowId}>
                   <tr
                     className='det-tr-global row-pluggy' 
                     key={rowId}
@@ -355,7 +355,7 @@ const TabelaAccounts = ({ data, clickRow, loadBills, loadTransactions }) => {
                       </td>
                     </tr>
                   )}
-                </>
+                </React.Fragment>
               );
             })}
           </tbody>
