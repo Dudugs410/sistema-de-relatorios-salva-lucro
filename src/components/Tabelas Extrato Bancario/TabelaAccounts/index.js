@@ -7,6 +7,7 @@ const TabelaAccounts = ({ data, clickRow, loadBills, loadTransactions }) => {
   const [billsData, setBillsData] = useState({});
   const [transactionsData, setTransactionsData] = useState({});
   const [activeTab, setActiveTab] = useState({});
+  const [loadedTabs, setLoadedTabs] = useState({});
   const [error, setError] = useState(null);
 
   const toggleRow = async (row) => {
@@ -14,26 +15,39 @@ const TabelaAccounts = ({ data, clickRow, loadBills, loadTransactions }) => {
     const isExpanding = expandedRow !== rowId;
     
     setExpandedRow(isExpanding ? rowId : null);
-    setActiveTab(prev => ({ ...prev, [rowId]: isExpanding ? 'bills' : null }));
     
     if (clickRow) clickRow(row);
 
     if (isExpanding) {
+      setActiveTab(prev => ({ ...prev, [rowId]: null }));
+    }
+  };
+
+  const handleTabClick = async (rowId, tabType) => {
+    if (activeTab[rowId] === tabType) return;
+    
+    setActiveTab(prev => ({ ...prev, [rowId]: tabType }));
+    
+    if (!loadedTabs[`${rowId}-${tabType}`]) {
       try {
         setLoadingData(prev => ({ ...prev, [rowId]: true }));
         setError(null);
         
-        // Load both bills and transactions
-        const [bills, transactions] = await Promise.all([
-          loadBills(rowId),
-          loadTransactions(rowId)
-        ]);
-
-        setBillsData(prev => ({ ...prev, [rowId]: bills }));
-        setTransactionsData(prev => ({ ...prev, [rowId]: transactions }));
+        let data;
+        if (tabType === 'bills') {
+          data = await loadBills(rowId);
+          setBillsData(prev => ({ ...prev, [rowId]: data }));
+        } else if (tabType === 'transactions') {
+          data = await loadTransactions(rowId);
+          setTransactionsData(prev => ({ ...prev, [rowId]: data }));
+        }
+        
+        setLoadedTabs(prev => ({ ...prev, [`${rowId}-${tabType}`]: true }));
+        
       } catch (err) {
         console.error('Error loading data:', err);
         setError('Failed to load data. Please try again.');
+        setActiveTab(prev => ({ ...prev, [rowId]: null }));
       } finally {
         setLoadingData(prev => ({ ...prev, [rowId]: false }));
       }
@@ -111,30 +125,28 @@ const TabelaAccounts = ({ data, clickRow, loadBills, loadTransactions }) => {
     'BUY': 'Compra',
     'DIVIDEND': 'Dividendo',
     'INTEREST': 'Juros',
-    // Add more types as needed
   };
 
   const movementTypes = {
     'DEBIT': 'Débito',
     'CREDIT': 'Crédito',
-    // Add more types as needed
   };
 
   const renderBillDetails = (bill) => {
     if (!bill) return <div className="p-3 text-muted">Nenhuma fatura disponível</div>;
 
     return (
-      <div className="p-3" style={{ backgroundColor: 'rgba(0,0,0,0.03)', width: '100%' }}>
+      <div className="p-3 mobile-padding" style={{ backgroundColor: 'rgba(0,0,0,0.03)', width: '100%' }}>
         <div className="mb-3">
-          <h5 style={{ fontSize: '16px', fontWeight: '600' }}>Detalhes da Fatura</h5>
-          <div className="row" style={{ marginLeft: 0, marginRight: 0 }}>
-            <div className="col-md-4 p-2">
+          <h5 className="mobile-header">Detalhes da Fatura</h5>
+          <div className="row mobile-row">
+            <div className="col-md-4 p-2 mobile-col">
               <p className="mb-1"><strong>Vencimento:</strong> {formatToBrazilianDateTime(bill.dueDate)}</p>
             </div>
-            <div className="col-md-4 p-2">
+            <div className="col-md-4 p-2 mobile-col">
               <p className="mb-1"><strong>Valor Total:</strong> {formatCurrency(bill.totalAmount, bill.totalAmountCurrencyCode)}</p>
             </div>
-            <div className="col-md-4 p-2">
+            <div className="col-md-4 p-2 mobile-col">
               <p className="mb-1"><strong>Pagamento Mínimo:</strong> {bill.minimumPaymentAmount ? 
                 formatCurrency(bill.minimumPaymentAmount, bill.totalAmountCurrencyCode) : 'Não aplicável'}</p>
             </div>
@@ -143,22 +155,22 @@ const TabelaAccounts = ({ data, clickRow, loadBills, loadTransactions }) => {
 
         {bill.financeCharges && bill.financeCharges.length > 0 && (
           <div className="mt-3">
-            <h6 style={{ fontSize: '14px', fontWeight: '600' }}>Encargos Financeiros</h6>
+            <h6 className="mobile-subheader">Encargos Financeiros</h6>
             <div className="table-responsive">
-              <table className="table table-sm" style={{ backgroundColor: 'white', marginBottom: '0' }}>
+              <table className="table table-sm mobile-table">
                 <thead>
                   <tr>
-                    <th style={{ padding: '8px 12px' }}>Tipo</th>
-                    <th style={{ padding: '8px 12px' }}>Valor</th>
-                    <th style={{ padding: '8px 12px' }}>Informações Adicionais</th>
+                    <th>Tipo</th>
+                    <th>Valor</th>
+                    <th>Informações Adicionais</th>
                   </tr>
                 </thead>
                 <tbody>
                   {bill.financeCharges.map((charge) => (
                     <tr key={charge.id}>
-                      <td style={{ padding: '8px 12px' }}>{financeChargeTypes[charge.type] || charge.type}</td>
-                      <td style={{ padding: '8px 12px' }}>{formatCurrency(charge.amount, charge.currencyCode)}</td>
-                      <td style={{ padding: '8px 12px' }}>{charge.additionalInfo || '-'}</td>
+                      <td>{financeChargeTypes[charge.type] || charge.type}</td>
+                      <td>{formatCurrency(charge.amount, charge.currencyCode)}</td>
+                      <td>{charge.additionalInfo || '-'}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -167,11 +179,11 @@ const TabelaAccounts = ({ data, clickRow, loadBills, loadTransactions }) => {
           </div>
         )}
 
-        <div className="row mt-3" style={{ marginLeft: 0, marginRight: 0 }}>
-          <div className="col-md-6 p-2">
+        <div className="row mt-3 mobile-row">
+          <div className="col-md-6 p-2 mobile-col">
             <p className="mb-1"><small className="text-muted">Criado em: {formatToBrazilianDateTime(bill.createdAt)}</small></p>
           </div>
-          <div className="col-md-6 p-2">
+          <div className="col-md-6 p-2 mobile-col">
             <p className="mb-1"><small className="text-muted">Atualizado em: {formatToBrazilianDateTime(bill.updatedAt)}</small></p>
           </div>
         </div>
@@ -185,40 +197,54 @@ const TabelaAccounts = ({ data, clickRow, loadBills, loadTransactions }) => {
     }
 
     return (
-      <div className="p-3" style={{ backgroundColor: 'rgba(0,0,0,0.03)', width: '100%' }}>
+      <div className="p-3 mobile-padding" style={{ backgroundColor: 'rgba(0,0,0,0.03)', width: '100%' }}>
         <div className="mb-3">
-          <h5 style={{ fontSize: '16px', fontWeight: '600' }}>Transações</h5>
+          <h5 className="mobile-header">Transações</h5>
           <div className="table-responsive">
-            <table className="table table-sm" style={{ backgroundColor: 'white', marginBottom: '0' }}>
+            <table className="table table-sm mobile-table">
               <thead>
                 <tr>
-                  <th style={{ padding: '8px 12px' }}>Data</th>
-                  <th style={{ padding: '8px 12px' }}>Tipo</th>
-                  <th style={{ padding: '8px 12px' }}>Movimentação</th>
-                  <th style={{ padding: '8px 12px' }}>Valor</th>
-                  <th style={{ padding: '8px 12px' }}>Descrição</th>
+                  <th>Data</th>
+                  <th>Tipo</th>
+                  <th>Movimentação</th>
+                  <th>Valor</th>
+                  <th>Descrição</th>
                 </tr>
               </thead>
               <tbody>
                 {transactions.map((transaction) => (
                   <tr key={transaction.id}>
-                    <td style={{ padding: '8px 12px' }}>{formatToBrazilianDateTime(transaction.date)}</td>
-                    <td style={{ padding: '8px 12px' }}>{transactionTypes[transaction.type] || transaction.type}</td>
-                    <td style={{ padding: '8px 12px' }}>{movementTypes[transaction.movementType] || transaction.movementType}</td>
-                    <td style={{ padding: '8px 12px' }}>{formatCurrency(transaction.amount, transaction.currencyCode)}</td>
-                    <td style={{ padding: '8px 12px' }}>{transaction.description || '-'}</td>
+                    <td>{formatToBrazilianDateTime(transaction.date)}</td>
+                    <td>{transactionTypes[transaction.type] || transaction.type}</td>
+                    <td>{movementTypes[transaction.movementType] || transaction.movementType}</td>
+                    <td>{formatCurrency(transaction.amount, transaction.currencyCode)}</td>
+                    <td>{transaction.description || '-'}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          </div>
+            </div>
         </div>
       </div>
     );
   };
 
   const renderTabContent = (rowId) => {
-    switch (activeTab[rowId]) {
+    const currentTab = activeTab[rowId];
+    const isLoading = loadingData[rowId];
+
+    if (isLoading) {
+      return (
+        <div className="p-3 text-center">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+          <p className="mt-2">Carregando dados...</p>
+        </div>
+      );
+    }
+
+    switch (currentTab) {
       case 'bills':
         return billsData[rowId] && billsData[rowId].length > 0 ? 
           billsData[rowId].map((bill, index) => (
@@ -231,14 +257,118 @@ const TabelaAccounts = ({ data, clickRow, loadBills, loadTransactions }) => {
       case 'transactions':
         return renderTransactionDetails(transactionsData[rowId]);
       default:
-        return null;
+        return (
+          <div className="p-3 text-center text-muted">
+            <p>Selecione uma aba para carregar os dados</p>
+          </div>
+        );
     }
+  };
+
+  const MobileCardView = () => {
+    return (
+      <div className="mobile-card-view">
+        {data.map((row, index) => {
+          const rowId = row.id || index;
+          const isExpanded = expandedRow === rowId;
+          const isLoading = loadingData[rowId];
+          const currentTab = activeTab[rowId];
+          
+          return (
+            <div 
+              key={rowId} 
+              className={`mobile-card ${isExpanded ? 'mobile-card-expanded' : ''} touch-feedback`}
+              onClick={() => toggleRow(row)}
+            >
+              <div className="card-header">
+                <div className="card-title">
+                  <h4>{row.name || 'Conta'}</h4>
+                  <p className="card-subtitle">{row.number || 'N/A'}</p>
+                </div>
+                <button 
+                  className="expand-button touch-feedback"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleRow(row);
+                  }}
+                  disabled={isLoading}
+                  aria-label={isExpanded ? "Recolher" : "Expandir"}
+                >
+                  {isLoading ? (
+                    <div className="spinner-border spinner-border-sm text-primary" role="status">
+                      <span className="visually-hidden">Loading...</span>
+                    </div>
+                  ) : (
+                    <i className={`bi bi-chevron-${isExpanded ? 'up' : 'down'}`} />
+                  )}
+                </button>
+              </div>
+              
+              <div className="card-content">
+                <div className="card-field">
+                  <span className="label">Saldo:</span>
+                  <span className="value">{formatCurrency(row.balance, row.currencyCode)}</span>
+                </div>
+                <div className="card-field">
+                  <span className="label">Titular:</span>
+                  <span className="value">{row.owner || '-'}</span>
+                </div>
+                <div className="card-field">
+                  <span className="label">Tipo:</span>
+                  <span className="value">{row.type || '-'}</span>
+                </div>
+                <div className="card-field">
+                  <span className="label">Criado em:</span>
+                  <span className="value">{row.createdAt ? formatToBrazilianDateTime(row.createdAt) : '-'}</span>
+                </div>
+              </div>
+              
+              {isExpanded && (
+                <div 
+                  className="card-expanded"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="mobile-tabs-container">
+                    <div className="mobile-tabs">
+                      <button
+                        className={`mobile-tab ${currentTab === 'bills' ? 'mobile-tab-active' : ''}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleTabClick(rowId, 'bills');
+                        }}
+                        disabled={isLoading}
+                      >
+                        Faturas
+                      </button>
+                      <button
+                        className={`mobile-tab ${currentTab === 'transactions' ? 'mobile-tab-active' : ''}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleTabClick(rowId, 'transactions');
+                        }}
+                        disabled={isLoading}
+                      >
+                        Transações
+                      </button>
+                    </div>
+                    
+                    <div className="mobile-tab-content">
+                      {renderTabContent(rowId)}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    );
   };
 
   return (
     <div className='dropShadow vendas-view'>
       {error && (
-        <div className="alert alert-danger mb-3">
+        <div className="alert alert-danger mb-3 mobile-alert">
           {error}
           <button 
             type="button" 
@@ -249,7 +379,8 @@ const TabelaAccounts = ({ data, clickRow, loadBills, loadTransactions }) => {
         </div>
       )}
       
-      <div className='table-wrapper'>
+      {/* Desktop Table */}
+      <div className='table-wrapper desktop-only'>
         <table className='table table-striped table-hover det-table-global'>
           <thead>
             <tr className='det-tr-top-global'>
@@ -271,8 +402,7 @@ const TabelaAccounts = ({ data, clickRow, loadBills, loadTransactions }) => {
               return (
                 <React.Fragment key={rowId}>
                   <tr
-                    className='det-tr-global row-pluggy' 
-                    key={rowId}
+                    className='det-tr-global row-pluggy touch-feedback' 
                     onClick={() => toggleRow(row)}
                     style={{ cursor: 'pointer' }}
                   >
@@ -312,15 +442,15 @@ const TabelaAccounts = ({ data, clickRow, loadBills, loadTransactions }) => {
                     <tr className="det-tr-global">
                       <td colSpan={headers.length + 1} className="p-0 subtable">
                         <div style={{ width: '100%' }}>
-                          {/* Tab Navigation with custom classes */}
                           <ul className="nav nav-tabs accounts-tab custom-tabs-container">
                             <li className="nav-item custom-tab-item">
                               <button
                                 className={`nav-link custom-tab-button ${currentTab === 'bills' ? 'custom-tab-active' : ''}`}
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  setActiveTab(prev => ({ ...prev, [rowId]: 'bills' }));
+                                  handleTabClick(rowId, 'bills');
                                 }}
+                                disabled={isLoading}
                               >
                                 Faturas
                               </button>
@@ -330,26 +460,17 @@ const TabelaAccounts = ({ data, clickRow, loadBills, loadTransactions }) => {
                                 className={`nav-link custom-tab-button ${currentTab === 'transactions' ? 'custom-tab-active' : ''}`}
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  setActiveTab(prev => ({ ...prev, [rowId]: 'transactions' }));
+                                  handleTabClick(rowId, 'transactions');
                                 }}
+                                disabled={isLoading}
                               >
                                 Transações
                               </button>
                             </li>
                           </ul>
                           
-                          {/* Tab Content */}
                           <div className="tab-content p-0">
-                            {isLoading ? (
-                              <div className="p-3 text-center">
-                                <div className="spinner-border text-primary" role="status">
-                                  <span className="visually-hidden">Loading...</span>
-                                </div>
-                                <p className="mt-2">Carregando dados...</p>
-                              </div>
-                            ) : (
-                              renderTabContent(rowId)
-                            )}
+                            {renderTabContent(rowId)}
                           </div>
                         </div>
                       </td>
@@ -360,6 +481,11 @@ const TabelaAccounts = ({ data, clickRow, loadBills, loadTransactions }) => {
             })}
           </tbody>
         </table>
+      </div>
+      
+      {/* Mobile Card View */}
+      <div className='mobile-only'>
+        <MobileCardView />
       </div>
     </div>
   );
