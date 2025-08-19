@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState } from 'react'
 import { Container, Row, Col } from 'react-bootstrap'
 import { FiTrendingUp, FiDollarSign } from "react-icons/fi"
 import { BsPiggyBank } from "react-icons/bs"
@@ -11,8 +11,6 @@ import '../../styles/global.scss'
 
 const MenuExtrato = ({ connectorData, handleProduct, disabled }) => {
   const [selectedProduct, setSelectedProduct] = useState(null)
-  const [hoveredButton, setHoveredButton] = useState(null)
-  const buttonRefs = useRef({})
 
   if (!connectorData) {
     return <></>
@@ -28,15 +26,8 @@ const MenuExtrato = ({ connectorData, handleProduct, disabled }) => {
     INCOME_REPORTS: { name: 'Relatórios de Renda', icon: <TbReportAnalytics className='icone-global' /> }
   }
 
-  const handleMouseEnter = (productCode) => {
-    setHoveredButton(productCode)
-  }
-
-  const handleMouseLeave = () => {
-    setHoveredButton(null)
-  }
-
   const availableProductCodes = Object.keys(productInfo)
+  
   const filteredProducts = (connectorData.products || [])
     .filter(productCode => availableProductCodes.includes(productCode))
 
@@ -57,32 +48,15 @@ const MenuExtrato = ({ connectorData, handleProduct, disabled }) => {
           const product = productInfo[productCode]
           return (
             <Col key={productCode}>
-              <div className="tooltip-wrapper">
-                <button 
-                  ref={el => buttonRefs.current[productCode] = el}
-                  className={`product-icon-button ${selectedProduct === productCode ? 'selected-card' : ''}`}
-                  onClick={() => handleProductSelect(productCode)}
-                  onMouseEnter={() => handleMouseEnter(productCode)}
-                  onMouseLeave={handleMouseLeave}
-                  disabled={disabled}
-                  aria-label={product.name}
-                >
-                  {product.icon}
-                </button>
-                
-                {hoveredButton === productCode && (
-                  <div 
-                    className="tooltip"
-                    style={{
-                      left: `${buttonRefs.current[productCode]?.getBoundingClientRect().right + 10}px`,
-                      top: `${buttonRefs.current[productCode]?.getBoundingClientRect().top + 
-                            buttonRefs.current[productCode]?.getBoundingClientRect().height / 2}px`
-                    }}
-                  >
-                    {product.name}
-                  </div>
-                )}
-              </div>
+              <button 
+                className={`product-icon-button ${selectedProduct === productCode ? 'selected-card' : ''}`}
+                onClick={() => handleProductSelect(productCode)}
+                disabled={disabled}
+                data-tooltip={product.name}
+                aria-label={product.name}
+              >
+                {product.icon}
+              </button>
             </Col>
           )
         })}
