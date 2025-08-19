@@ -1,5 +1,6 @@
 .subtable {
     --bs-table-hover-bg: rgba(0, 0, 0, 0.1) !important;
+    
     &:hover  {
         color: var(--secondary-color-light) !important;
     }
@@ -7,12 +8,15 @@
 
 .mb-1{
     color: var(--font-color) !important;
+    
     &:hover {
         color: var(--font-color) !important;
     }
 }
 
-// subtable.scss
+.text-muted{
+    color: rgb(143, 143, 143) !important;
+}
 
 // Custom tabs container
 .custom-tabs-container {
@@ -24,7 +28,6 @@
     margin-bottom: -2px;
 
     .custom-tab-button {
-      // Base styles
       border: none;
       background: transparent;
       padding: 0.75rem 1.5rem;
@@ -35,8 +38,6 @@
       transition: all 0.3s ease;
       position: relative;
       margin: 0;
-      
-      // Remove default button styles
       outline: none;
       font-family: inherit;
       font-size: inherit;
@@ -44,88 +45,32 @@
       display: block;
       text-align: center;
 
-      // Hover state
       &:hover:not(.custom-tab-active) {
         color: #495057;
         background-color: #f8f9fa;
         border-color: transparent;
       }
 
-      // Active state
       &.custom-tab-active {
-        color: #007bff;
-        background-color: transparent;
-        border: none;
-        font-weight: 600;
+        color: var(--secondary-color);
+        background-color: var(--background-color);
+        border: solid var(--primary-color) 1px;
+        border-radius: 8px 8px 0 0;
 
         &::after {
-          content: '';
-          position: absolute;
-          bottom: -2px;
-          left: 0;
-          width: 100%;
-          height: 3px;
-          background-color: #007bff;
-          border-radius: 3px 3px 0 0;
+          background-color: var(--background-color);
         }
       }
 
-      // Focus state
       &:focus {
         outline: none;
         box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
       }
 
-      // Disabled state
       &:disabled {
         color: #6c757d;
         pointer-events: none;
         opacity: 0.6;
-      }
-    }
-  }
-}
-
-// Alternative color scheme example
-.custom-tabs-container.alternative {
-  border-bottom-color: #dee2e6;
-
-  .custom-tab-item {
-    .custom-tab-button {
-      color: #495057;
-
-      &:hover:not(.custom-tab-active) {
-        color: #007bff;
-        background-color: #e3f2fd;
-      }
-
-      &.custom-tab-active {
-        color: #ffffff;
-        background-color: #007bff;
-        border-radius: 4px 4px 0 0;
-
-        &::after {
-          background-color: #0056b3;
-        }
-      }
-    }
-  }
-}
-
-// Mobile responsive styles
-@media (max-width: 768px) {
-  .custom-tabs-container {
-    padding: 0 0.5rem;
-
-    .custom-tab-item {
-      flex: 1;
-      
-      .custom-tab-button {
-        padding: 0.5rem 0.75rem;
-        font-size: 0.875rem;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
       }
     }
   }
@@ -144,34 +89,304 @@
   }
 }
 
-// Custom colors using CSS variables
-
-.custom-tabs-container {
-
-  .custom-tab-item {
-    border-bottom: none;
-
-    .custom-tab-button {
-      color: var(--font-color);
-
-      &:hover:not(.custom-tab-active) {
-        color: var(--secondary-color);
+// Mobile Styles
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none !important;
+  }
+  
+  .mobile-only {
+    display: block;
+  }
+  
+  .mobile-alert {
+    margin: 1rem;
+    border-radius: 8px;
+  }
+  
+  // Mobile Card View - ENTIRE CARD CLICKABLE
+  .mobile-card-view {
+    padding: 1rem;
+    
+    .mobile-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border: 1px solid #e9ecef;
+      transition: all 0.3s ease;
+      overflow: hidden;
+      cursor: pointer;
+      
+      &.mobile-card-expanded {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       }
-
-      &.custom-tab-active {
-        color: var(--secondary-color);
-        background-color: var(--background-color);
-        border: solid var(--primary-color) 1px;
-        border-radius: 8px 8px 0 0;
-
-        &::after {
-          background-color: var(--background-color);
+      
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+        pointer-events: none;
+        
+        .card-title {
+          flex: 1;
+          
+          h4 {
+            margin: 0 0 0.25rem 0;
+            font-size: 1.1rem;
+            color: var(--font-color);
+            font-weight: 600;
+          }
+          
+          .card-subtitle {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #6c757d;
+          }
+        }
+        
+        .expand-button {
+          background: none;
+          border: none;
+          font-size: 1.3rem;
+          cursor: pointer;
+          padding: 0.5rem;
+          color: var(--primary-color);
+          border-radius: 6px;
+          transition: background-color 0.2s ease;
+          flex-shrink: 0;
+          margin-left: 0.5rem;
+          pointer-events: auto;
+          
+          &:active {
+            background-color: #f8f9fa;
+          }
+        }
+      }
+      
+      .card-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        pointer-events: none;
+        
+        .card-field {
+          display: flex;
+          flex-direction: column;
+          
+          .label {
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-bottom: 0.25rem;
+          }
+          
+          .value {
+            font-size: 0.95rem;
+            color: var(--font-color);
+            word-break: break-word;
+            font-weight: 500;
+          }
+        }
+      }
+      
+      .card-expanded {
+        margin-top: 1.5rem;
+        border-top: 1px solid #e9ecef;
+        padding-top: 1.5rem;
+        animation: slideDown 0.3s ease;
+        pointer-events: auto;
+        cursor: default;
+        
+        .mobile-tabs-container {
+          .mobile-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 0.25rem;
+            margin-bottom: 1rem;
+            
+            .mobile-tab {
+              flex: 1;
+              padding: 0.75rem 1rem;
+              border: none;
+              background: transparent;
+              border-radius: 6px;
+              cursor: pointer;
+              font-weight: 500;
+              transition: all 0.2s ease;
+              font-size: 0.9rem;
+              
+              &:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+              }
+              
+              &.mobile-tab-active {
+                background: white;
+                color: var(--secondary-color);
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                font-weight: 600;
+              }
+            }
+          }
+          
+          .mobile-tab-content {
+            .mobile-loading {
+              text-align: center;
+              padding: 2rem;
+              color: #6c757d;
+            }
+          }
         }
       }
     }
   }
+  
+  // Mobile table improvements
+  .mobile-padding {
+    padding: 1rem !important;
+  }
+  
+  .mobile-header {
+    font-size: 1.1rem !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  .mobile-subheader {
+    font-size: 1rem !important;
+  }
+  
+  .mobile-row {
+    margin: 0 !important;
+    
+    .mobile-col {
+      width: 100% !important;
+      margin-bottom: 1rem;
+      padding: 0.5rem !important;
+    }
+  }
+  
+  .mobile-table {
+    min-width: 600px;
+    font-size: 0.875rem;
+    
+    th, td {
+      padding: 0.75rem 0.5rem;
+      white-space: nowrap;
+    }
+  }
+  
+  // Hide desktop tabs on mobile
+  .custom-tabs-container {
+    display: none;
+  }
 }
 
-.text-muted{
-    color: rgb(143, 143, 143) !important;
+// Desktop Styles
+@media (min-width: 769px) {
+  .mobile-only {
+    display: none !important;
+  }
+  
+  .desktop-only {
+    display: block;
+  }
+  
+  // Ensure table is scrollable on smaller desktop screens
+  .vendas-view {
+    overflow-x: auto;
+    
+    .det-table-global {
+      min-width: 1000px;
+    }
+  }
+}
+
+// Animation for expanding content
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Ensure proper transitions
+.det-tr-global,
+.mobile-card,
+.custom-tab-button,
+.mobile-tab {
+  transition: all 0.2s ease;
+}
+
+// Touch feedback
+.touch-feedback {
+  &:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+    transition: transform 0.1s ease;
+  }
+}
+
+// Improve accessibility
+button:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+// Loading states
+.spinner-border {
+  border-width: 2px;
+}
+
+// Ensure text contrast
+.value, .label, .mobile-header, .mobile-subheader {
+  color: var(--font-color);
+}
+
+// Responsive typography
+@media (max-width: 480px) {
+  .mobile-card {
+    padding: 1rem;
+    
+    .card-content {
+      grid-template-columns: 1fr !important;
+      gap: 0.75rem;
+    }
+    
+    .card-field {
+      .value {
+        font-size: 0.9rem;
+      }
+    }
+  }
+  
+  .mobile-tabs {
+    .mobile-tab {
+      padding: 0.5rem 0.75rem !important;
+      font-size: 0.85rem !important;
+    }
+  }
+}
+
+// Hover effects for desktop
+@media (hover: hover) {
+  .mobile-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+  }
+  
+  .custom-tab-button:hover:not(.custom-tab-active) {
+    background-color: #f8f9fa;
+  }
+  
+  .mobile-tab:hover:not(.mobile-tab-active) {
+    background-color: #e9ecef;
+  }
 }
