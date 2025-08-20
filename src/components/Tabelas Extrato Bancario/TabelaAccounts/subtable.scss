@@ -109,7 +109,7 @@
     padding: 1rem;
     
     .mobile-card {
-      background: white;
+      background: var(--background-color);
       border-radius: 12px;
       padding: 1.5rem;
       margin-bottom: 1rem;
@@ -161,7 +161,7 @@
           pointer-events: auto;
           
           &:active {
-            background-color: #f8f9fa;
+            background-color: var(--background-color);
           }
         }
       }
@@ -203,7 +203,8 @@
         .mobile-tabs-container {
           .mobile-tabs {
             display: flex;
-            background: #f8f9fa;
+            background: var(--background-color);
+            border: solid #e9ecef 1px;
             border-radius: 8px;
             padding: 0.25rem;
             margin-bottom: 1rem;
@@ -215,6 +216,7 @@
               background: transparent;
               border-radius: 6px;
               cursor: pointer;
+              color: var(--font-color);
               font-weight: 500;
               transition: all 0.2s ease;
               font-size: 0.9rem;
@@ -225,8 +227,8 @@
               }
               
               &.mobile-tab-active {
-                background: white;
-                color: var(--secondary-color);
+                background: var(--background-color);
+                color: var(--secondary-color-light);
                 box-shadow: 0 2px 4px rgba(0,0,0,0.1);
                 font-weight: 600;
               }
@@ -387,6 +389,6 @@ button:focus-visible {
   }
   
   .mobile-tab:hover:not(.mobile-tab-active) {
-    background-color: #e9ecef;
+    background-color: var(--background-color);
   }
 }
