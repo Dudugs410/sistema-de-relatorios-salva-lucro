@@ -15,7 +15,7 @@ const TabelaInvestments = ({ data, clickRow, loadTransactions }) => {
     
     if (clickRow) {
       clickRow(row);
-      localStorage.setItem('investmentID', row.id); // Store investment ID
+      localStorage.setItem('investmentID', row.id);
     }
 
     if (isExpanding && !transactionsData[rowId]) {
@@ -132,45 +132,45 @@ const TabelaInvestments = ({ data, clickRow, loadTransactions }) => {
     if (!transaction) return <div className="p-3 text-muted">Nenhuma transação disponível</div>;
 
     return (
-      <div className="p-3" style={{ backgroundColor: 'rgba(0,0,0,0.03)', width: '100%' }}>
+      <div className="p-3 mobile-padding" style={{ backgroundColor: 'rgba(0,0,0,0.03)', width: '100%' }}>
         <div className="mb-3">
-          <h5 style={{ fontSize: '16px', fontWeight: '600' }}>Detalhes da Transação</h5>
-          <div className="row" style={{ marginLeft: 0, marginRight: 0 }}>
-            <div className="col-md-4 p-2">
+          <h5 className="mobile-header">Detalhes da Transação</h5>
+          <div className="row mobile-row">
+            <div className="col-md-4 p-2 mobile-col">
               <p className="mb-1"><strong>Tipo:</strong> {transactionTypes[transaction.type] || transaction.type}</p>
             </div>
-            <div className="col-md-4 p-2">
+            <div className="col-md-4 p-2 mobile-col">
               <p className="mb-1"><strong>Movimentação:</strong> {movementTypes[transaction.movementType] || transaction.movementType}</p>
             </div>
-            <div className="col-md-4 p-2">
+            <div className="col-md-4 p-2 mobile-col">
               <p className="mb-1"><strong>Valor:</strong> {formatCurrency(transaction.amount, 'BRL')}</p>
             </div>
           </div>
           
-          <div className="row" style={{ marginLeft: 0, marginRight: 0 }}>
-            <div className="col-md-4 p-2">
+          <div className="row mobile-row">
+            <div className="col-md-4 p-2 mobile-col">
               <p className="mb-1"><strong>Data:</strong> {formatDate(transaction.date)}</p>
             </div>
-            <div className="col-md-4 p-2">
+            <div className="col-md-4 p-2 mobile-col">
               <p className="mb-1"><strong>Quantidade:</strong> {transaction.quantity || '-'}</p>
             </div>
-            <div className="col-md-4 p-2">
+            <div className="col-md-4 p-2 mobile-col">
               <p className="mb-1"><strong>Valor Unitário:</strong> {transaction.value ? formatCurrency(transaction.value, 'BRL') : '-'}</p>
             </div>
           </div>
           
-          <div className="row" style={{ marginLeft: 0, marginRight: 0 }}>
-            <div className="col-md-12 p-2">
+          <div className="row mobile-row">
+            <div className="col-md-12 p-2 mobile-col">
               <p className="mb-1"><strong>Descrição:</strong> {transaction.description || '-'}</p>
             </div>
           </div>
         </div>
 
-        <div className="row mt-3" style={{ marginLeft: 0, marginRight: 0 }}>
-          <div className="col-md-6 p-2">
+        <div className="row mt-3 mobile-row">
+          <div className="col-md-6 p-2 mobile-col">
             <p className="mb-1"><small className="text-muted">ID: {transaction.id}</small></p>
           </div>
-          <div className="col-md-6 p-2">
+          <div className="col-md-6 p-2 mobile-col">
             <p className="mb-1"><small className="text-muted">Data da operação: {formatToBrazilianDateTime(transaction.tradeDate)}</small></p>
           </div>
         </div>
@@ -178,10 +178,103 @@ const TabelaInvestments = ({ data, clickRow, loadTransactions }) => {
     );
   };
 
+  const MobileCardView = () => {
+    return (
+      <div className="mobile-card-view">
+        {data.map((row, index) => {
+          const rowId = row.id || index;
+          const isExpanded = expandedRow === rowId;
+          const isLoading = loadingTransactions[rowId];
+          const transactions = transactionsData[rowId];
+          
+          return (
+            <div 
+              key={rowId} 
+              className={`mobile-card ${isExpanded ? 'mobile-card-expanded' : ''} touch-feedback`}
+              onClick={() => toggleRow(row)}
+            >
+              <div className="card-header">
+                <div className="card-title">
+                  <h4>{row.name || 'Investimento'}</h4>
+                  <p className="card-subtitle">{row.type || 'N/A'}</p>
+                </div>
+                <button 
+                  className="expand-button touch-feedback"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleRow(row);
+                  }}
+                  disabled={isLoading}
+                  aria-label={isExpanded ? "Recolher" : "Expandir"}
+                >
+                  {isLoading ? (
+                    <div className="spinner-border spinner-border-sm text-primary" role="status">
+                      <span className="visually-hidden">Loading...</span>
+                    </div>
+                  ) : (
+                    <i className={`bi bi-chevron-${isExpanded ? 'up' : 'down'}`} />
+                  )}
+                </button>
+              </div>
+              
+              <div className="card-content">
+                <div className="card-field">
+                  <span className="label">Saldo:</span>
+                  <span className="value">{formatCurrency(row.balance, row.currencyCode)}</span>
+                </div>
+                <div className="card-field">
+                  <span className="label">Titular:</span>
+                  <span className="value">{row.owner || '-'}</span>
+                </div>
+                <div className="card-field">
+                  <span className="label">Subtipo:</span>
+                  <span className="value">{row.subtype || '-'}</span>
+                </div>
+                <div className="card-field">
+                  <span className="label">Rendimento Anual:</span>
+                  <span className="value">{formatPercentage(row.annualRate)}</span>
+                </div>
+              </div>
+              
+              {isExpanded && (
+                <div 
+                  className="card-expanded"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="mobile-transactions-container">
+                    <h5 className="mobile-subheader">Transações</h5>
+                    
+                    {isLoading ? (
+                      <div className="mobile-loading">
+                        <div className="spinner-border text-primary" role="status">
+                          <span className="visually-hidden">Loading...</span>
+                        </div>
+                        <p>Carregando transações...</p>
+                      </div>
+                    ) : (
+                      transactions && transactions.length > 0 ? 
+                        transactions.map((transaction, index) => (
+                          <div key={transaction.id || index} className="transaction-item">
+                            {renderTransactionDetails(transaction)}
+                            {index < transactions.length - 1 && <hr className="my-3" />}
+                          </div>
+                        ))
+                        : renderTransactionDetails(null)
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
   return (
     <div className='dropShadow vendas-view'>
       {error && (
-        <div className="alert alert-danger mb-3">
+        <div className="alert alert-danger mb-3 mobile-alert">
           {error}
           <button 
             type="button" 
@@ -192,7 +285,8 @@ const TabelaInvestments = ({ data, clickRow, loadTransactions }) => {
         </div>
       )}
       
-      <div className='table-wrapper'>
+      {/* Desktop Table */}
+      <div className='table-wrapper desktop-only'>
         <table className='table table-striped table-hover det-table-global'>
           <thead>
             <tr className='det-tr-top-global'>
@@ -214,8 +308,7 @@ const TabelaInvestments = ({ data, clickRow, loadTransactions }) => {
               return (
                 <React.Fragment key={rowId}>
                   <tr
-                    className='det-tr-global row-pluggy' 
-                    key={rowId}
+                    className='det-tr-global row-pluggy touch-feedback' 
                     onClick={() => toggleRow(row)}
                     style={{ cursor: 'pointer' }}
                   >
@@ -283,6 +376,11 @@ const TabelaInvestments = ({ data, clickRow, loadTransactions }) => {
             })}
           </tbody>
         </table>
+      </div>
+      
+      {/* Mobile Card View */}
+      <div className='mobile-only'>
+        <MobileCardView />
       </div>
     </div>
   );
