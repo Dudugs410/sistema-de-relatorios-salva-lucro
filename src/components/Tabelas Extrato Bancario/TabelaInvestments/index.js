@@ -1,80 +1,80 @@
-import React, { useState } from "react";
+import React, { useState } from "react"
 import '../TabelaAccounts/subtable.scss'
 
 const TabelaInvestments = ({ data, clickRow, loadTransactions }) => {
-  const [expandedRow, setExpandedRow] = useState(null);
-  const [loadingTransactions, setLoadingTransactions] = useState({});
-  const [transactionsData, setTransactionsData] = useState({});
-  const [error, setError] = useState(null);
+  const [expandedRow, setExpandedRow] = useState(null)
+  const [loadingTransactions, setLoadingTransactions] = useState({})
+  const [transactionsData, setTransactionsData] = useState({})
+  const [error, setError] = useState(null)
 
   const toggleRow = async (row) => {
-    const rowId = row.id;
-    const isExpanding = expandedRow !== rowId;
+    const rowId = row.id
+    const isExpanding = expandedRow !== rowId
     
-    setExpandedRow(isExpanding ? rowId : null);
+    setExpandedRow(isExpanding ? rowId : null)
     
     if (clickRow) {
-      clickRow(row);
-      localStorage.setItem('investmentID', row.id);
+      clickRow(row)
+      localStorage.setItem('investmentID', row.id)
     }
 
     if (isExpanding && !transactionsData[rowId]) {
       try {
-        setLoadingTransactions(prev => ({ ...prev, [rowId]: true }));
-        setError(null);
+        setLoadingTransactions(prev => ({ ...prev, [rowId]: true }))
+        setError(null)
         
-        const transactions = await loadTransactions(rowId);
-        setTransactionsData(prev => ({ ...prev, [rowId]: transactions.results }));
+        const transactions = await loadTransactions(rowId)
+        setTransactionsData(prev => ({ ...prev, [rowId]: transactions.results }))
       } catch (err) {
-        console.error('Error loading transactions:', err);
-        setError('Failed to load transactions data. Please try again.');
+        console.error('Error loading transactions:', err)
+        setError('Failed to load transactions data. Please try again.')
       } finally {
-        setLoadingTransactions(prev => ({ ...prev, [rowId]: false }));
+        setLoadingTransactions(prev => ({ ...prev, [rowId]: false }))
       }
     }
-  };
+  }
 
   const isISODate = (value) => {
-    if (typeof value !== 'string') return false;
-    return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/.test(value);
-  };
+    if (typeof value !== 'string') return false
+    return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/.test(value)
+  }
 
   const formatToBrazilianDateTime = (isoString) => {
     try {
-      const date = new Date(isoString);
-      if (isNaN(date.getTime())) return isoString;
+      const date = new Date(isoString)
+      if (isNaN(date.getTime())) return isoString
       
-      const day = date.getDate().toString().padStart(2, '0');
-      const month = (date.getMonth() + 1).toString().padStart(2, '0');
-      const year = date.getFullYear();
-      const hours = date.getHours().toString().padStart(2, '0');
-      const minutes = date.getMinutes().toString().padStart(2, '0');
-      const seconds = date.getSeconds().toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0')
+      const month = (date.getMonth() + 1).toString().padStart(2, '0')
+      const year = date.getFullYear()
+      const hours = date.getHours().toString().padStart(2, '0')
+      const minutes = date.getMinutes().toString().padStart(2, '0')
+      const seconds = date.getSeconds().toString().padStart(2, '0')
       
-      return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+      return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`
     } catch {
-      return isoString;
+      return isoString
     }
-  };
+  }
 
   const formatDate = (isoString) => {
     try {
-      const date = new Date(isoString);
-      if (isNaN(date.getTime())) return isoString;
+      const date = new Date(isoString)
+      if (isNaN(date.getTime())) return isoString
       
-      const day = date.getDate().toString().padStart(2, '0');
-      const month = (date.getMonth() + 1).toString().padStart(2, '0');
-      const year = date.getFullYear();
+      const day = date.getDate().toString().padStart(2, '0')
+      const month = (date.getMonth() + 1).toString().padStart(2, '0')
+      const year = date.getFullYear()
       
-      return `${day}/${month}/${year}`;
+      return `${day}/${month}/${year}`
     } catch {
       return isoString;
     }
-  };
+  }
 
   const formatCurrency = (value, currencyCode) => {
     if (value === undefined || value === null || isNaN(Number(value))) {
-      return '-';
+      return '-'
     }
 
     const numericValue = Number(value);
@@ -83,7 +83,7 @@ const TabelaInvestments = ({ data, clickRow, loadTransactions }) => {
       return new Intl.NumberFormat('pt-BR', {
         style: 'currency',
         currency: 'BRL'
-      }).format(numericValue);
+      }).format(numericValue)
     }
     
     return new Intl.NumberFormat('en-US', {
@@ -91,8 +91,8 @@ const TabelaInvestments = ({ data, clickRow, loadTransactions }) => {
       currency: currencyCode || 'USD',
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
-    }).format(numericValue);
-  };
+    }).format(numericValue)
+  }
 
   const headers = [
     { key: 'balance', label: 'Saldo', isMoney: true },
@@ -106,7 +106,7 @@ const TabelaInvestments = ({ data, clickRow, loadTransactions }) => {
     { key: 'annualRate', label: 'Anual', isPercentage: true },
     { key: 'createdAt', label: 'Criado Em', isDate: true },
     { key: 'updatedAt', label: 'Atualizado Em', isDate: true },
-  ];
+  ]
 
   const transactionTypes = {
     'BUY': 'Compra',
@@ -114,19 +114,19 @@ const TabelaInvestments = ({ data, clickRow, loadTransactions }) => {
     'DIVIDEND': 'Dividendo',
     'INTEREST': 'Juros',
     'OTHER': 'Outro'
-  };
+  }
 
   const movementTypes = {
     'CREDIT': 'Crédito',
     'DEBIT': 'Débito'
-  };
+  }
 
   const formatPercentage = (value) => {
     if (value === undefined || value === null || isNaN(Number(value))) {
-      return '-';
+      return '-'
     }
-    return `${Number(value).toFixed(2)}%`;
-  };
+    return `${Number(value).toFixed(2)}%`
+  }
 
   const renderTransactionDetails = (transaction) => {
     if (!transaction) return <div className="p-3 text-muted">Nenhuma transação disponível</div>;
@@ -182,10 +182,10 @@ const TabelaInvestments = ({ data, clickRow, loadTransactions }) => {
     return (
       <div className="mobile-card-view">
         {data.map((row, index) => {
-          const rowId = row.id || index;
-          const isExpanded = expandedRow === rowId;
-          const isLoading = loadingTransactions[rowId];
-          const transactions = transactionsData[rowId];
+          const rowId = row.id || index
+          const isExpanded = expandedRow === rowId
+          const isLoading = loadingTransactions[rowId]
+          const transactions = transactionsData[rowId]
           
           return (
             <div 
@@ -201,8 +201,8 @@ const TabelaInvestments = ({ data, clickRow, loadTransactions }) => {
                 <button 
                   className="expand-button touch-feedback"
                   onClick={(e) => {
-                    e.stopPropagation();
-                    toggleRow(row);
+                    e.stopPropagation()
+                    toggleRow(row)
                   }}
                   disabled={isLoading}
                   aria-label={isExpanded ? "Recolher" : "Expandir"}
@@ -265,11 +265,11 @@ const TabelaInvestments = ({ data, clickRow, loadTransactions }) => {
                 </div>
               )}
             </div>
-          );
+          )
         })}
       </div>
-    );
-  };
+    )
+  }
 
   return (
     <div className='dropShadow vendas-view'>
@@ -322,10 +322,10 @@ const TabelaInvestments = ({ data, clickRow, loadTransactions }) => {
                       )}
                     </td>
                     {headers.map(header => {
-                      const value = row[header.key];
-                      const currencyCode = row.currencyCode;
+                      const value = row[header.key]
+                      const currencyCode = row.currencyCode
                       
-                      let displayValue = '-';
+                      let displayValue = '-'
                       
                       if (value !== undefined && value !== null) {
                         if (header.isDate && isISODate(value)) {
@@ -335,7 +335,7 @@ const TabelaInvestments = ({ data, clickRow, loadTransactions }) => {
                         } else if (header.isPercentage) {
                           displayValue = formatPercentage(value);
                         } else {
-                          displayValue = value;
+                          displayValue = value
                         }
                       }
                       
@@ -372,7 +372,7 @@ const TabelaInvestments = ({ data, clickRow, loadTransactions }) => {
                     </tr>
                   )}
                 </React.Fragment>
-              );
+              )
             })}
           </tbody>
         </table>
@@ -383,7 +383,7 @@ const TabelaInvestments = ({ data, clickRow, loadTransactions }) => {
         <MobileCardView />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default TabelaInvestments;
+export default TabelaInvestments
