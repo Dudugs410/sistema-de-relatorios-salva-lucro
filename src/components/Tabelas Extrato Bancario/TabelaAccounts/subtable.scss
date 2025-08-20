@@ -99,6 +99,14 @@
     display: block;
   }
   
+  .detail-label{
+    color: var(--font-color) !important;
+  }
+
+  .detail-value{
+    color: rgb(109, 109, 109) !important;
+  }
+
   .mobile-alert {
     margin: 1rem;
     border-radius: 8px;
