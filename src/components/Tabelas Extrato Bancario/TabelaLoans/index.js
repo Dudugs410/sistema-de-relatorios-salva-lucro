@@ -81,7 +81,7 @@ const TabelaLoans = ({ data, clickRow }) => {
     { key: 'createdAt', label: 'Criado Em', isDate: true },
     { key: 'currencyCode', label: 'Moeda' },
     { key: 'date', label: 'Data', isDate: true },
-    { key: 'disbursementDates', label: 'Datas do Desembolso' },
+    { key: 'disbursementDates', label: 'Datas do Desembolso', isDate: true },
     { key: 'dueDate', label: 'Data Limite', isDate: true },
     { key: 'firstInstallmentDueDate', label: 'Data Primeira Parcela', isDate: true },
     { key: 'installmentPeriodicity', label: 'Periodicidade da Parcela' },
@@ -253,7 +253,7 @@ const TabelaLoans = ({ data, clickRow }) => {
                     {row.disbursementDates && (
                       <div className="detail-item">
                         <span className="detail-label">Datas do Desembolso: </span>
-                        <span className="detail-value">{row.disbursementDates}</span>
+                        <span className="detail-value">{row.disbursementDates ? formatToBrazilianDateTime(row.updatedAt) : '-'}</span>
                       </div>
                     )}
                   </div>
