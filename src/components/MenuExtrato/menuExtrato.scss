@@ -20,7 +20,7 @@
   margin: 0 auto;
   border: 2px solid var(--primary-color);
   border-radius: 3px;
-  background-color: rgb(223, 223, 223) !important;
+  background-color: var(--secondary-color) !important;
   position: relative;
   transition: all 0.2s ease;
   padding: 0;
@@ -68,9 +68,15 @@
     background-color: rgba(var(--secondary-color-rgb), 0.1);
     
     .icone-global {
-      color: var(--secondary-color-light);
+      color: var(--primary-color-light);
     }
   }
+
+  &:hover{
+    background-color: var(--primary-color) !important;
+    color: var(--secondary-color);
+  }
+
 }
 
 // Mobile adaptation

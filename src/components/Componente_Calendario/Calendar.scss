@@ -16,6 +16,12 @@
   width: 100%;
 }
 
+.select-elements-container{
+    display: flex;
+    justify-content: space-evenly;
+    gap: 10px;
+}
+
 .select-elements-container-picker{
     display: inline-flex;
     width: 100%;
@@ -224,7 +230,9 @@
 }
 
 .container-select{
-  display: grid;
+    display: grid;
+    width: 100%;
+    max-width: 500px;
 }
 
 .parent-container{

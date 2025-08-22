@@ -75,13 +75,7 @@ const Sidebar = () => {
             { nome: 'Cadastro de Bancos', icone: icones['FiFileText'], rota: '/cadastrodebancos' },
             { nome: 'Taxas', icone: icones['FiPercent'], rota: '/taxas' },
             { nome: 'Extrato Bancário', icone: icones['LiaFileInvoiceDollarSolid'], rota: '/extrato'},
-        ]
-
-        setOptionsWithIcons(orderedOptions)
-    }, [])
-
-    {/*
-        { nome: 'Relatórios', icone: icones['FiFileText'], children: [
+                    { nome: 'Relatórios', icone: icones['FiFileText'], children: [
         { nome: 'Financeiro', rota: '/financeiro' },
         { nome: 'Gerenciais', rota: '/gerenciais' },
         { nome: 'Outros', rota: '/outrosrelatorios'},
@@ -94,7 +88,14 @@ const Sidebar = () => {
         { nome: 'Administração', icone: icones['FiPaperClip'], rota: '/administracao'},
         { nome: 'Suporte', icone: icones['FiSettings'], rota: '/suporte'},
         { nome: 'Delivery', icone: icones['FiTruck'], rota: '/vendasdelivery'},
-        { nome: 'Conciliacao', icone: icones['FiShoppingBag'], rota: '/conciliacao'},    
+        { nome: 'Conciliacao', icone: icones['FiShoppingBag'], rota: '/conciliacao'}, 
+        ]
+
+        setOptionsWithIcons(orderedOptions)
+    }, [])
+
+    {/*
+   
     */}
 
     return (
