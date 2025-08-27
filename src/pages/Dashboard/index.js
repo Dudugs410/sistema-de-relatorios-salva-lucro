@@ -121,7 +121,7 @@ const Dashboard = () => {
   }
 
   useEffect(() => {
-    if(canceled){
+    if(canceled === true){
       setFetchingData(false)
       if(!isLoadedSalesDashboard){
         setCanceledSales(true)
@@ -142,7 +142,7 @@ const Dashboard = () => {
       <div className='graph-data'>
         { !canceledSales ?
           <>
-            { chartDataExists(salesDashboard.sales) && !canceledSales ? 
+            { chartDataExists(salesDashboard.sales) ? 
               <>
                 <PieChart data01={salesDashboard.chart} arrayAdm={salesDashboard.salesByAdmin} tipo='0' dados='vendas' totalAdmin={salesDashboard.totalAdmin}/>
                 <div className='dash-table-container'>
