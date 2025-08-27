@@ -1879,6 +1879,12 @@ try {
 		setErrorSales(false)
 		setErrorCredits(false)
 		setErrorServices(false)
+
+		setCanceled(false)
+		setCanceledSales(false)
+		setCanceledCredits(false)
+		setCanceledServices(false)
+		setIsSignedIn(false)
 	}
 
 	function getUserData() {
@@ -1956,7 +1962,6 @@ try {
 		localStorage.clear()
 		cancelOngoingRequests()
 		resetAppValues()
-		setIsSignedIn(false)
 		localStorage.setItem('localUsers', JSON.stringify(users))
 		localStorage.setItem('isSignedIn', false)
 		navigate('/')
