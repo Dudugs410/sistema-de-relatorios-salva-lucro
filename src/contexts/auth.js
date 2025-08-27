@@ -457,6 +457,109 @@ try {
 			}
 		}
 
+		/*
+		const loadServices = async (startDate, endDate) => {
+			try {
+				setErrorServices(false)
+				const currentUser = JSON.parse(localStorage.getItem('currentUser'))
+				const apiCNPJ = localStorage.getItem('cnpj')
+				const apiGroupCode = localStorage.getItem('groupCode')
+				if(apiCNPJ === ('todos' || 'TODOS') && (apiGroupCode !== 'selecione')){
+					if((currentUser.id === ('168022' || 168022))){
+						let params = {
+							dataInicial: startDate,
+							dataFinal: endDate,
+							codigoGrupo: apiGroupCode
+						}
+			
+						let config = {
+							params: params
+						}
+						const response = await api.get('ajustes', config)
+						const filteredResponse = response.data.filter(item => 
+							item.cnpj === '86.914.942/0001-09' || item.cnpj === '86.914.942/0002-81' || item.cnpj === '86.914.942/0003-62'
+						)
+						console.log('filteredResponse: ', filteredResponse)
+						return filteredResponse
+					} else {
+						let params = {
+							dataInicial: startDate,
+							dataFinal: endDate,
+							codigoGrupo: apiGroupCode
+						}
+			
+						let config = {
+							params: params
+						}
+						const response = await api.get('ajustes', config)
+						return response.data
+					}
+				} else {
+					if (currentUser.id === '168022' || currentUser.id === 168022) {
+					const params = {
+						cnpj: apiCNPJ,
+						dataInicial: startDate,
+						dataFinal: endDate,
+					}
+
+					let config = { params }
+					const response = await api.get('ajustes', config)
+					
+					// ADD THESE DEBUG LINES:
+					console.log('Response data type:', typeof response.data)
+					console.log('Response data length:', response.data.length)
+					console.log('First item:', response.data[0])
+					console.log('First item CNPJ value:', response.data[0]?.cnpj)
+					console.log('First item CNPJ type:', typeof response.data[0]?.cnpj)
+					
+					const filteredResponse = response.data.filter(item => 
+						item.cnpj === '86.914.942/0001-09' || item.cnpj === '86.914.942/0002-81' || item.cnpj === '86.914.942/0003-62'
+					)
+					
+					console.log('Filtered response:', filteredResponse)
+					setBtnDisabledServices(false)
+					return filteredResponse
+					} else {
+						const params = {
+							cnpj: apiCNPJ,
+							dataInicial: startDate,
+							dataFinal: endDate,
+						}
+			
+						let config = {
+							params,
+						}
+						const response = await api.get('ajustes', config)
+						setBtnDisabledServices(false)
+						return response.data
+					}
+				}
+			} catch (error) {
+				setBtnDisabledServices(false)
+					if(error.code === 'ERR_CANCELED'){
+						console.log('canceled')
+						setErrorServices(false)
+					} else if (error.response.status === 401) {
+						toast.error('Sessão Expirada')
+						logout()
+						return
+					} else {
+						console.log('not canceled')
+						toast.error('Erro ao Carregar Serviços: ', error.response.status )
+						console.error('Error fetching serviços:', error)
+						setErrorServices(true)
+					}
+				return []
+			}
+		}
+		*/
+
+		/*
+		const filteredResponse = response.data.filter(item => 
+			item.cnpj === '94.410.628/0002-90' || item.cnpj === '94.410.628/0001-09'
+		)
+		*/
+
 		// retorna Objeto de Taxas
 		const loadTaxes = async () => {
 			setIsLoadingTaxes(true)
