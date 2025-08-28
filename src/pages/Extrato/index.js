@@ -324,33 +324,39 @@ const Extrato = () => {
                     </div>
                     
                     <div className='extrato-layout-container'>
-                        <div className='extrato-menu-sidebar'>
+                        <div className='extrato-menu-sidebar text-global'>
+                            <h4 style={{fontWeight: 'bold'}}>Menu</h4>
                             {(responseData !== (undefined && {} && [])) && 
                                 <MenuExtrato connectorData={responseData.connector} handleProduct={handleSelectedProduct}/>
                             }
                         </div>
                         
                         <div className='extrato-content-area'>
-                            {selected && 
-                                <div className='tabela-extrato-container'> 
-                                    <div className='content-header'>
-                                        <h5 className='subtitle-global'>
-                                            {displayedMenu}
-                                        </h5>
-                                        <button 
-                                            className='btn-global btn-refresh-extrato' 
-                                            onClick={refresh}
-                                        >
-                                            <FiRefreshCw />
-                                        </button>
+                            {selected ? 
+                                <>
+                                    <div className='tabela-extrato-container'>
+                                        <div className='content-header'>
+                                            <h5 className='subtitle-global'>
+                                                {displayedMenu}
+                                            </h5>
+                                            <button 
+                                                className='btn-global btn-refresh-extrato' 
+                                                onClick={refresh}
+                                            >
+                                                <FiRefreshCw />
+                                            </button>
+                                        </div>
+                                        <div className='table-container'>
+                                            {data && renderTableComponent()}
+                                        </div>
+                                        <div className='table-container'>
+                                            {selectedAccount && renderTableComponent()}
+                                        </div>
                                     </div>
-                                    <div className='table-container'>
-                                        {data && renderTableComponent()}
-                                    </div>
-                                    <div className='table-container'>
-                                        {selectedAccount && renderTableComponent()}
-                                    </div>
-                                </div>
+                                </> :
+                                <>
+                                    <h2 className='subtitle-global text-global'>Selecione uma opção para exibir dados</h2>
+                                </>
                             }
                         </div>
                     </div>

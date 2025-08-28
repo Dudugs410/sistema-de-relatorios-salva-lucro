@@ -89,6 +89,11 @@
   }
 }
 
+.subtable-bg{
+  background-color: var(--background-color) !important;
+  width: 100%;
+}
+
 // Mobile Styles
 @media (max-width: 768px) {
   .desktop-only {
