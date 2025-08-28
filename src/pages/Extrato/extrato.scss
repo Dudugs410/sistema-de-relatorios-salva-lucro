@@ -57,16 +57,18 @@
 
 // Sidebar styles
 .extrato-menu-sidebar {
-  width: 80px;
-  flex-shrink: 0;
-  position: sticky;
-  top: 20px;
-  align-self: flex-start;
-  background-color: var(--background-color);
-  border-radius: 8px;
-  padding: 10px 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  height: fit-content;
+    width: 80px;
+    font-weight: bold;
+    text-align: center;
+    flex-shrink: 0;
+    position: sticky;
+    top: 20px;
+    align-self: flex-start;
+    background-color: var(--background-color);
+    border-radius: 8px;
+    padding: 10px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: fit-content;
 
   @media (max-width: 768px) {
     width: 100%;
@@ -74,6 +76,7 @@
     padding: 10px;
   }
 }
+
 
 // Content area styles
 .extrato-content-area {

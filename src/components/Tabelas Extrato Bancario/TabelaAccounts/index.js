@@ -441,7 +441,7 @@ const TabelaAccounts = ({ data, clickRow, loadBills, loadTransactions }) => {
                   {isExpanded && (
                     <tr className="det-tr-global">
                       <td colSpan={headers.length + 1} className="p-0 subtable">
-                        <div style={{ width: '100%' }}>
+                        <div className='subtable-bg'>
                           <ul className="nav nav-tabs accounts-tab custom-tabs-container">
                             <li className="nav-item custom-tab-item">
                               <button
