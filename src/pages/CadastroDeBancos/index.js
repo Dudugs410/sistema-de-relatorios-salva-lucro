@@ -14,6 +14,7 @@ import BanksTable from './BanksTable'
 import ModalNewBank from './ModalNewBank'
 import ModalEditBank from './ModalEditBank'
 import ModalLoading from './ModalLoading'
+import TransferList from '../../components/TransferList/transferList.js'
 
 const CadastroDeBancos = () => {
     const location = useLocation()
@@ -420,6 +421,7 @@ const CadastroDeBancos = () => {
                             />
                         )}
                     </div>
+                    <TransferList/>
                 </div>
             </div>
         </div>

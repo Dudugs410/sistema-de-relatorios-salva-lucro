@@ -254,7 +254,7 @@ const TabelaInvestments = ({ data, clickRow, loadTransactions }) => {
                     ) : (
                       transactions && transactions.length > 0 ? 
                         transactions.map((transaction, index) => (
-                          <div key={transaction.id || index} className="transaction-item">
+                          <div key={transaction.id || index} className="transaction-item subtable-bg">
                             {renderTransactionDetails(transaction)}
                             {index < transactions.length - 1 && <hr className="my-3" />}
                           </div>
