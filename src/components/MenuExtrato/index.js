@@ -44,10 +44,11 @@ const MenuExtrato = ({ connectorData, handleProduct, disabled }) => {
   return (
     <Container className="my-4 products-container">
       <Row xs={4} md={6} lg={8} className="g-3 options_export">
+        <h4 style={{fontWeight: 'bold'}}>Menu</h4>
         {filteredProducts.map((productCode) => {
           const product = productInfo[productCode]
           return (
-            <Col key={productCode}>
+            <Col style={{alignItems: 'center'}} key={productCode}>
               <button 
                 className={`product-icon-button ${selectedProduct === productCode ? 'selected-card' : ''}`}
                 onClick={() => handleProductSelect(productCode)}
