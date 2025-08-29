@@ -325,15 +325,18 @@ const Extrato = () => {
                     
                     <div className='extrato-layout-container'>
                         <div className='extrato-menu-sidebar text-global'>
-                            <h4 style={{fontWeight: 'bold'}}>Menu</h4>
-                            {(responseData !== (undefined && {} && [])) && 
+                            {(responseData !== (undefined && {} && [])) &&
+                            <> 
+                                <h4 style={{fontWeight: 'bold'}}>Menu</h4>
                                 <MenuExtrato connectorData={responseData.connector} handleProduct={handleSelectedProduct}/>
+                            </>
                             }
                         </div>
                         
                         <div className='extrato-content-area'>
-                            {selected ? 
+                            {selected && 
                                 <>
+                                <h2 className='subtitle-global text-global'>Selecione uma opção para exibir dados</h2>
                                     <div className='tabela-extrato-container'>
                                         <div className='content-header'>
                                             <h5 className='subtitle-global'>
@@ -353,9 +356,6 @@ const Extrato = () => {
                                             {selectedAccount && renderTableComponent()}
                                         </div>
                                     </div>
-                                </> :
-                                <>
-                                    <h2 className='subtitle-global text-global'>Selecione uma opção para exibir dados</h2>
                                 </>
                             }
                         </div>

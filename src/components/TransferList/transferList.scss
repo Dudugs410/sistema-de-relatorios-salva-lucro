@@ -1,0 +1,63 @@
+.transferlist-component{
+    display: flex;
+    border: solid var(--secondary-color) 1px;
+    width: 100%;
+    text-align: center;
+    background: rgba(226, 226, 226, 0.829);
+}
+
+.transferlist-container{
+    display: flex;
+    /* align-content: center; */
+    height: 100%;
+    width: 50%;
+    flex-direction: column;
+    color: var(--font-color2)
+}
+
+.transferlist-box-container{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    justify-content: start;
+    margin: 0;
+}
+
+.transferlist-box-content{
+    /* height: 100%; */
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: stretch;
+    color: var(--font-color2);
+}
+
+.transferlist-button-container{
+    display: flex;
+    height: 100%;
+    width: -webkit-fill-available;
+    max-width: 154px;
+    flex-direction: column;
+    /* justify-content: space-evenly; */
+    border: solid var(--secondary-color) 1px;
+    border-top: none;
+    border-bottom: none;
+    /* padding: 2px; */
+    /* padding: 2px; */
+    /* margin: 0 20px !important; */
+    align-content: center;
+    align-items: center;
+}
+
+.btn-transfer{
+    margin: 1%;
+}
+
+.h5-transfer{
+    margin: 0;
+    padding: 1%;
+    border-bottom: solid var(--secondary-color) 1px;
+    color: var(--font-color2)
+}
