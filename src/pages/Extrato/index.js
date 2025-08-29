@@ -327,7 +327,6 @@ const Extrato = () => {
                         <div className='extrato-menu-sidebar text-global'>
                             {(responseData !== (undefined && {} && [])) &&
                             <> 
-                                <h4 style={{fontWeight: 'bold'}}>Menu</h4>
                                 <MenuExtrato connectorData={responseData.connector} handleProduct={handleSelectedProduct}/>
                             </>
                             }
