@@ -13,12 +13,17 @@ import { useLocation } from 'react-router-dom'
 import '../../index.scss'
 import LazyLoader from '../../components/Componente_LazyLoader/index.js'
 import { FiHelpCircle } from 'react-icons/fi'
+import ModalAlerta from './ModalAlerta/index.js'
 
 const Dashboard = () => {
   const location = useLocation()
   const {clientUserId, getUserData, updateUserById} = useContext(AuthContext)
   // Joyride state
   const [runTutorial, setRunTutorial] = useState(false)
+
+  const alerta = true
+  const [modalOpen, setModalOpen] = useState(alerta)
+
   const [steps] = useState([
 	{
       target: '[data-tour="trocar-section"]',
@@ -262,6 +267,9 @@ const Dashboard = () => {
 
   return (
     <>
+  {modalOpen &&
+    <ModalAlerta onClose={()=>{setModalOpen(false)}} />
+  }
 	{ runTutorial &&
       <Joyride
         steps={steps}
