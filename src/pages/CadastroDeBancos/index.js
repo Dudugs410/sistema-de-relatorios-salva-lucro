@@ -371,21 +371,24 @@ const CadastroDeBancos = () => {
                                     : 
                                     <></>
                             }
-                        </div> 
+                        </div>
                     </div>
                     {
                         isLoadingBanks ? 
                             <LazyLoader /> 
                             : ( banksList && banksList.length > 0 ?  
-                                <BanksTable 
-                                    banksList={banksList} 
-                                    adminsList={adminsList} 
-                                    bannersList={bannersList} 
-                                    productList={productList} 
-                                    onAdd={handleAdd} 
-                                    onEdit={handleEdit} 
-                                    onDelete={handleDelete} 
-                                />
+                                <>
+                                    <BanksTable 
+                                        banksList={banksList} 
+                                        adminsList={adminsList} 
+                                        bannersList={bannersList} 
+                                        productList={productList} 
+                                        onAdd={handleAdd} 
+                                        onEdit={handleEdit} 
+                                        onDelete={handleDelete} 
+                                    />
+                                    <TransferList/>
+                                </>
                             : <></> )
                         }
                     <div className='modal-container' style={{ display: (isModalOpen || isModalEditOpen) ? 'block' : 'none' }}>
@@ -421,7 +424,6 @@ const CadastroDeBancos = () => {
                             />
                         )}
                     </div>
-                    <TransferList/>
                 </div>
             </div>
         </div>
