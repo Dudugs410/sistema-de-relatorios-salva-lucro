@@ -4,14 +4,13 @@ import { createRoot } from 'react-dom/client'
 import Cookies from 'js-cookie'
 import PluggyWidget from '../../components/PluggyWidget'
 import './extrato.scss'
-import { FiRefreshCw } from "react-icons/fi";
+import { FiRefreshCw } from "react-icons/fi"
 import { PluggyContext } from '../../contexts/pluggyContext'
 import MenuExtrato from '../../components/MenuExtrato'
 import TabelaAccounts from '../../components/Tabelas Extrato Bancario/TabelaAccounts'
 import TabelaInvestments from '../../components/Tabelas Extrato Bancario/TabelaInvestments'
 import TabelaLoans from '../../components/Tabelas Extrato Bancario/TabelaLoans'
 import TabelaIdentity from '../../components/Tabelas Extrato Bancario/TabelaIdentity'
-
 
 const Extrato = () => {
     const { 
@@ -22,12 +21,12 @@ const Extrato = () => {
     } = useContext(PluggyContext)
 
     const [accounts, setAccounts] = useState(() => {
-        const storedAccounts = Cookies.get('accounts');
-        return storedAccounts ? JSON.parse(storedAccounts) : [];
+        const storedAccounts = Cookies.get('accounts')
+        return storedAccounts ? JSON.parse(storedAccounts) : []
     })
     const [selectedAccount, setSelectedAccount] = useState(null)
     const [responseData, setResponseData] = useState(() => {
-        const storedData = localStorage.getItem('pluggyResponseData');
+        const storedData = localStorage.getItem('pluggyResponseData')
         return storedData ? JSON.parse(storedData) : {}
     })
     const [item, setItem] = useState()
@@ -49,6 +48,7 @@ const Extrato = () => {
     }, [])
 
     useEffect(() => {
+        console.log('responseData: ', responseData)
         if((!responseData || Object.keys(responseData).length === 0)){
             setId(localStorage.getItem('pluggyID'))
         }
@@ -75,7 +75,7 @@ const Extrato = () => {
             let response = await fetch('https://api.pluggy.ai/connect_token', options)
             let responseData = await response.json()
             Cookies.set('pluggy_connect_token', responseData.accessToken)
-            return responseData.accessToken;
+            return responseData.accessToken
         } catch (error) {
             console.log('error: ', error)
             throw error
@@ -116,7 +116,7 @@ const Extrato = () => {
         setClickedRow(row)
         setIsClicked(true)
         setItemId(row.itemId)
-        localStorage.setItem('investmentID', row.id) // Store investment ID
+        localStorage.setItem('investmentID', row.id)
         Cookies.set('accountID', row.id)
     }
 
@@ -195,27 +195,27 @@ const Extrato = () => {
                 pluggyData.accounts = dataTemp
                 localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
                 setData(dataTemp)
-                break;
+                break
             case 'Empréstimos':
                 dataTemp = await loadLoans()
                 pluggyData.loans = dataTemp
                 localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
                 setData(dataTemp)                
-                break;
+                break
             case 'Investimentos':
                 dataTemp = await loadInvestments()
                 pluggyData.investments = dataTemp
                 localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
                 setData(dataTemp)                
-                break;
+                break
             case 'Identidade':
                 dataTemp = await loadIdentity()
                 pluggyData.identity = dataTemp
                 localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
                 setData(dataTemp)          
-                break;        
+                break        
             default:
-                break;
+                break
         }
     }
 
@@ -225,49 +225,49 @@ const Extrato = () => {
                 setData(null)
                 fetchAccounts()
                 setDisplayedMenu('Contas')
-                break;
+                break
             case 'IDENTITY':
                 setData(null)
                 fetchIdentity()
                 setDisplayedMenu('Identidade')
-                break;
+                break
             case 'LOANS':
                 setData(null)
                 fetchLoans()
                 setDisplayedMenu('Empréstimos')
-                break;
+                break
             case 'INVESTMENTS':
                 setData(null)
                 fetchInvestments()
                 setDisplayedMenu('Investimentos')
-                break;
+                break
             case 'CREDIT_CARDS':
                 setData(null)
-                fetchBills();
+                fetchBills()
                 setDisplayedMenu('Cartão de Crédito')
-                break;
+                break
             case 'TRANSACTIONS':
                 setData(null)
                 fetchInvestments()
                 setDisplayedMenu('Transações')
-                break;
+                break
             case 'INVESTMENTS_TRANSACTIONS':
                 setData(null)
                 fetchInvestments()
                 setDisplayedMenu('Transações de Investimento')
-                break;
+                break
             case 'PAYMENT_DATA':
                 setData(null)
                 fetchInvestments()
                 setDisplayedMenu('Dados de Pagamento')
-                break;
+                break
             case 'BROKERAGE_NOTE':
                 setData(null)
                 fetchInvestments()
                 setDisplayedMenu('Nota de Corretagem')
-                break;
+                break
             default:
-                break;
+                break
         }
         setSelected(true)
     }
@@ -281,27 +281,31 @@ const Extrato = () => {
                          onClickRow={(e) => fetchClicked(e)} 
                          loadBills={loadBills}
                          loadTransactions={loadTransactions}
-                       />;
+                       />
             case 'Investimentos':
                 return <TabelaInvestments 
                          data={data} 
                          clickRow={handleRowClicked}
                          loadTransactions={loadInvestmentTransactions}
-                       />;
+                       />
             case 'Empréstimos':
-                return <TabelaLoans data={data} clickRow={handleRowClicked} />;
+                return <TabelaLoans data={data} clickRow={handleRowClicked} />
             case 'Identidade':
-                return <TabelaIdentity data={data} clickRow={handleRowClicked} />;
+                return <TabelaIdentity data={data} clickRow={handleRowClicked} />
             case 'Transações':
             case 'Transações de Investimento':
                 return <TabelaInvestments 
                          data={data} 
                          clickRow={handleRowClicked} 
                          loadTransactions={loadInvestmentTransactions}
-                       />;
+                       />
             default:
-                return <Tabela data={data} clickRow={handleRowClicked} />;
+                return <Tabela data={data} clickRow={handleRowClicked} />
         }
+    }
+
+    const hasResponseData = () => {
+        return responseData && Object.keys(responseData).length > 0
     }
 
     return (
@@ -313,7 +317,7 @@ const Extrato = () => {
                     </div>
                     <hr className='hr-global' />
                     <div className='pluggy-container'> 
-                        {(!responseData || Object.keys(responseData).length === 0) && (
+                        {!hasResponseData() && (
                         <button 
                             className='btn btn-primary btn-global' 
                             onClick={handleConnectClick}
@@ -323,42 +327,48 @@ const Extrato = () => {
                         )}
                     </div>
                     
-                    <div className='extrato-layout-container'>
-                        <div className='extrato-menu-sidebar text-global'>
-                            {(responseData !== (undefined && {} && [])) &&
-                            <> 
+                    {hasResponseData() ? (
+                        <div className='extrato-layout-container'>
+                            <div className='extrato-menu-sidebar text-global'>
                                 <MenuExtrato connectorData={responseData.connector} handleProduct={handleSelectedProduct}/>
-                            </>
-                            }
+                            </div>
+                            
+                            <div className='extrato-content-area'>
+                                {selected ? 
+                                    <>
+                                        <div className='tabela-extrato-container'>
+                                            <div className='content-header'>
+                                                <h5 className='subtitle-global'>
+                                                    {displayedMenu}
+                                                </h5>
+                                                <button 
+                                                    className='btn-global btn-refresh-extrato' 
+                                                    onClick={refresh}
+                                                >
+                                                    <FiRefreshCw />
+                                                </button>
+                                            </div>
+                                            <div className='table-container'>
+                                                {data && renderTableComponent()}
+                                            </div>
+                                            <div className='table-container'>
+                                                {selectedAccount && renderTableComponent()}
+                                            </div>
+                                        </div>
+                                    </>
+                                    :
+                                    <>
+                                        <h2 className='subtitle-global text-global'>Selecione uma opção para exibir dados</h2>
+                                    </>
+                                }
+                            </div>
                         </div>
-                        
-                        <div className='extrato-content-area'>
-                            {selected && 
-                                <>
-                                <h2 className='subtitle-global text-global'>Selecione uma opção para exibir dados</h2>
-                                    <div className='tabela-extrato-container'>
-                                        <div className='content-header'>
-                                            <h5 className='subtitle-global'>
-                                                {displayedMenu}
-                                            </h5>
-                                            <button 
-                                                className='btn-global btn-refresh-extrato' 
-                                                onClick={refresh}
-                                            >
-                                                <FiRefreshCw />
-                                            </button>
-                                        </div>
-                                        <div className='table-container'>
-                                            {data && renderTableComponent()}
-                                        </div>
-                                        <div className='table-container'>
-                                            {selectedAccount && renderTableComponent()}
-                                        </div>
-                                    </div>
-                                </>
-                            }
+                    ) : (
+                        <div className='loading-state' style={{textAlign: 'center', width: '100%'}}>
+                            <br/>
+                            <h2 className='subtitle'>Conecte uma conta para ver os dados</h2>
                         </div>
-                    </div>
+                    )}
                     
                     <div ref={widgetContainerRef}></div>
                 </div>
