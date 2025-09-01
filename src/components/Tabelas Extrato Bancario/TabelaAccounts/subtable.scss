@@ -95,7 +95,7 @@
 }
 
 // Mobile Styles
-@media (max-width: 768px) {
+@media (max-width: 1350px) {
   .desktop-only {
     display: none !important;
   }
@@ -301,7 +301,7 @@
 }
 
 // Desktop Styles
-@media (min-width: 769px) {
+@media (min-width: 1351px) {
   .mobile-only {
     display: none !important;
   }
@@ -366,7 +366,7 @@ button:focus-visible {
 }
 
 // Responsive typography
-@media (max-width: 480px) {
+@media (max-width: 1350px) {
   .mobile-card {
     padding: 1rem;
     
