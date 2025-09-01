@@ -67,7 +67,7 @@
     background-color: var(--background-color);
     border-radius: 8px;
     padding: 10px 0;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    //box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     height: fit-content;
 
   @media (max-width: 768px) {
@@ -84,7 +84,7 @@
   min-width: 0; // Prevent overflow
   background-color: var(--background-color);
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  //box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 20px;
 }
 
