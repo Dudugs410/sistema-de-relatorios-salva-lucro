@@ -65,6 +65,7 @@ function RoutesApp() {
 export default RoutesApp
 
 /*
+<Route path='/extrato' element={<Private><Extrato /></Private>} />
 <Route path='/cadastrodebancos' element={<Private><CadastroDeBancos /></Private>} />
 
 <Route path='/financeiro' element={<Private><Financeiro /></Private>} />
