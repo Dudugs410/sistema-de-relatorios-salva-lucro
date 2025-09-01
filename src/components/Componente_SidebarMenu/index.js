@@ -72,16 +72,13 @@ const Sidebar = () => {
             { nome: 'Vendas', icone: icones['FiDollarSign'], rota: '/vendas' },
             { nome: 'Créditos', icone: icones['FiCreditCard'], rota: '/creditos' },
             { nome: 'Serviços', icone: icones['FiTool'], rota: '/servicos' },
-
             { nome: 'Taxas', icone: icones['FiPercent'], rota: '/taxas' },
-            
+            { nome: 'Extrato Bancário', icone: icones['LiaFileInvoiceDollarSolid'], rota: '/extrato'},
         ]
-
         setOptionsWithIcons(orderedOptions)
     }, [])
 
     {/*
-        { nome: 'Extrato Bancário', icone: icones['LiaFileInvoiceDollarSolid'], rota: '/extrato'},
         
         { nome: 'Cadastro de Bancos', icone: icones['FiFileText'], rota: '/cadastrodebancos' },
         { nome: 'Relatórios', icone: icones['FiFileText'], children: [
