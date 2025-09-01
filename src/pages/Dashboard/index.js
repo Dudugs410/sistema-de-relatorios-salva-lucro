@@ -21,7 +21,7 @@ const Dashboard = () => {
   // Joyride state
   const [runTutorial, setRunTutorial] = useState(false)
 
-  const alerta = true
+  const alerta = false
   const [modalOpen, setModalOpen] = useState(alerta)
 
   const [steps] = useState([
