@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import '../TabelaAccounts/subtable.scss'
+import './investmentsSubtable.scss'
 
 const TabelaInvestments = ({ data, clickRow, loadTransactions }) => {
   const [expandedRow, setExpandedRow] = useState(null)
@@ -132,7 +133,7 @@ const TabelaInvestments = ({ data, clickRow, loadTransactions }) => {
     if (!transaction) return <div className="p-3 text-muted">Nenhuma transação disponível</div>;
 
     return (
-      <div className="p-3 mobile-padding" style={{ backgroundColor: 'rgba(0,0,0,0.03)', width: '100%' }}>
+      <div className="p-3 mobile-padding investimentos-subtable-bg">
         <div className="mb-3">
           <h5 className="mobile-header">Detalhes da Transação</h5>
           <div className="row mobile-row">
