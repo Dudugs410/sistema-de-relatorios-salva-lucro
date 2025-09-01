@@ -74,15 +74,16 @@ const Sidebar = () => {
             { nome: 'Serviços', icone: icones['FiTool'], rota: '/servicos' },
 
             { nome: 'Taxas', icone: icones['FiPercent'], rota: '/taxas' },
-            { nome: 'Extrato Bancário', icone: icones['LiaFileInvoiceDollarSolid'], rota: '/extrato'},
+            
         ]
 
         setOptionsWithIcons(orderedOptions)
     }, [])
 
     {/*
-                    { nome: 'Cadastro de Bancos', icone: icones['FiFileText'], rota: '/cadastrodebancos' },
-
+        { nome: 'Extrato Bancário', icone: icones['LiaFileInvoiceDollarSolid'], rota: '/extrato'},
+        
+        { nome: 'Cadastro de Bancos', icone: icones['FiFileText'], rota: '/cadastrodebancos' },
         { nome: 'Relatórios', icone: icones['FiFileText'], children: [
         { nome: 'Financeiro', rota: '/financeiro' },
         { nome: 'Gerenciais', rota: '/gerenciais' },
