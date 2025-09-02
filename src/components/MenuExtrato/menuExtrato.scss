@@ -32,7 +32,7 @@
   }
   
   .icone-global {
-    color: var(--background-color);
+    color: white;
     transition: color 0.2s ease;
     font-size: 1.5rem;
   }
@@ -42,7 +42,7 @@
     border-color: var(--secondary-color);
     
     .icone-global {
-      color: var(--background-color);
+      color: white;
     }
     
     &::after {
@@ -75,7 +75,7 @@
 
   &:hover{
     background-color: var(--secondary-color);
-    color: var(--background-color);
+    color: white;
   }
 
 }
@@ -88,7 +88,7 @@
       border-color: var(--secondary-color);
       
       .icone-global {
-        color: var(--background-color);
+        color: white;
       }
     }
   }
