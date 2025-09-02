@@ -2,7 +2,7 @@
   padding: 0;
   width: 100%;
   align-items: center;
-  
+  margin: 0 !important;
   .options_export {
     display: flex;
     flex-wrap: nowrap;
@@ -81,7 +81,7 @@
 }
 
 // Mobile adaptation
-@media (max-width: 768px) {
+@media (max-width: 1350px) {
   .product-icon-button {
     &:active:not(:disabled) {
       transform: scale(0.95);
@@ -91,6 +91,10 @@
         color: var(--background-color);
       }
     }
+  }
+
+  .products-menu{
+    display: none;
   }
 }
 
@@ -111,7 +115,7 @@
 }
 
 // Tooltip arrow for mobile
-@media (max-width: 768px) {
+@media (max-width: 1350px) {
   .product-icon-button:active:not(:disabled)::after {
     &::before {
       content: '';
