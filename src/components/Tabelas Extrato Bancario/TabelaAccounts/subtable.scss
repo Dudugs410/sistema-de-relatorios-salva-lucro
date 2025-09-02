@@ -116,10 +116,9 @@
     margin: 1rem;
     border-radius: 8px;
   }
-  
-  // Mobile Card View - ENTIRE CARD CLICKABLE
+
   .mobile-card-view {
-    padding: 1rem;
+    padding: 0;
     
     .mobile-card {
       background: var(--background-color);

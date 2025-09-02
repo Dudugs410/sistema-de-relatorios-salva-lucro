@@ -358,7 +358,7 @@ const Extrato = () => {
                                     </>
                                     :
                                     <>
-                                        <h2 className='subtitle-global text-global'>Selecione uma opção para exibir dados</h2>
+                                        <h4 className='subtitle-global text-global'>Selecione uma opção para exibir dados</h4>
                                     </>
                                 }
                             </div>
