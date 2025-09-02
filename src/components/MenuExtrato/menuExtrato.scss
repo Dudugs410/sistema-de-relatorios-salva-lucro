@@ -2,7 +2,7 @@
   padding: 0;
   width: 100%;
   align-items: center;
-  
+  margin: 0 !important;
   .options_export {
     display: flex;
     flex-wrap: nowrap;
@@ -21,7 +21,7 @@
   margin: 0 auto;
   border: 2px solid var(--primary-color);
   border-radius: 3px;
-  background-color: var(--secondary-color) !important;
+  background-color: var(--primary-color);
   position: relative;
   transition: all 0.2s ease;
   padding: 0;
@@ -32,7 +32,7 @@
   }
   
   .icone-global {
-    color: var(--primary-color);
+    color: var(--background-color);
     transition: color 0.2s ease;
     font-size: 1.5rem;
   }
@@ -66,7 +66,7 @@
   
   &.selected-card {
     border-color: var(--secondary-color);
-    background-color: rgba(var(--secondary-color-rgb), 0.1);
+    background-color: var(--secondary-color);
     
     .icone-global {
       color: var(--primary-color);
@@ -74,23 +74,27 @@
   }
 
   &:hover{
-    background-color: var(--primary-color);
-    color: var(--secondary-color);
+    background-color: var(--secondary-color);
+    color: var(--background-color);
   }
 
 }
 
 // Mobile adaptation
-@media (max-width: 768px) {
+@media (max-width: 1350px) {
   .product-icon-button {
     &:active:not(:disabled) {
       transform: scale(0.95);
       border-color: var(--secondary-color);
       
       .icone-global {
-        color: var(--secondary-color-light);
+        color: var(--background-color);
       }
     }
+  }
+
+  .products-menu{
+    display: none;
   }
 }
 
@@ -104,14 +108,14 @@
     transform: translateY(-50%) rotate(45deg);
     width: 10px;
     height: 10px;
-    background-color: var(--background-color);
+    background-color: var(--secondary-color);
     border-left: 1px solid var(--primary-color);
     border-bottom: 1px solid var(--primary-color);
   }
 }
 
 // Tooltip arrow for mobile
-@media (max-width: 768px) {
+@media (max-width: 1350px) {
   .product-icon-button:active:not(:disabled)::after {
     &::before {
       content: '';
@@ -121,7 +125,7 @@
       transform: translateX(-50%) rotate(45deg);
       width: 10px;
       height: 10px;
-      background-color: var(--background-color);
+      background-color: var(--secondary-color);
       border-top: 1px solid var(--primary-color);
       border-right: 1px solid var(--primary-color);
     }
