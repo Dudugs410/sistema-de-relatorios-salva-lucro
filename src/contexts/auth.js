@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom'
 
 import Cookies from 'js-cookie'
 import api, { cancelOngoingRequests } from '../services/api'
-import pluggyApi from '../services/pluggy'
 
 import md5 from 'md5'
 
@@ -22,6 +21,7 @@ function AuthProvider({ children }){
 	const [accessToken, setAccessToken] = useState(undefined)
 
 	const [clientUserId, setClientUserId] = useState()
+
 	////////////////////////////////////////////////////////////////
 
 	const [salesTableData, setSalesTableData] = useState([])
@@ -131,11 +131,11 @@ const loginApp = async (login, password) => {
             }
 
 try {
-	const clientUserId = userId; // From your auth system
+	const clientUserId = userId
 
 	const loginLog = async () => {
 		function getBrazilianISOTime() {
-			const now = new Date();
+			const now = new Date()
 			
 			const dateTimeParts = new Intl.DateTimeFormat('en-US', {
 				timeZone: 'America/Sao_Paulo',
@@ -149,14 +149,11 @@ try {
 				hour12: false,
 			}).formatToParts(now)
 			
-			// Extract values
 			const { year, month, day, hour, minute, second, fractionalSecond } = 
 				dateTimeParts.reduce((acc, part) => {
 				acc[part.type] = part.value
 				return acc
 				}, {})
-
-			// Format as ISO string (e.g., "2025-08-14T18:51:29.107")
 			return `${year}-${month}-${day}T${hour}:${minute}:${second}.${fractionalSecond}`;
 		}
 
@@ -222,7 +219,7 @@ try {
 		const data = await response.json()
 
 		Cookies.set('pluggy_api_key', data.apiKey, {
-			expires: 1, // 1 day
+			expires: 1,
 			secure: process.env.NODE_ENV === 'production',
 			sameSite: 'strict'
 		})
@@ -250,8 +247,6 @@ try {
 	localStorage.setItem('groupCode', gru[0].CODIGOGRUPO)
 	localStorage.setItem('cnpj', 'todos')
 }
-  
-        // Step 5: Get user details
         const userResponse = await api.get('/usuario')
         const userList = userResponse.data
         const userMatch = userList.find((user) => (user.LOGIN.toLowerCase() === login.toLowerCase()) && (user.SENHA === md5(password)))
@@ -287,7 +282,7 @@ try {
 				if (error.response.status === 401) {
 					logout()
 				}
-				throw new Error(error.message) // Re-throw the error for handling in the caller function
+				throw new Error(error.message)
 			}
 		}
 
@@ -456,109 +451,6 @@ try {
 				return []
 			}
 		}
-
-		/*
-		const loadServices = async (startDate, endDate) => {
-			try {
-				setErrorServices(false)
-				const currentUser = JSON.parse(localStorage.getItem('currentUser'))
-				const apiCNPJ = localStorage.getItem('cnpj')
-				const apiGroupCode = localStorage.getItem('groupCode')
-				if(apiCNPJ === ('todos' || 'TODOS') && (apiGroupCode !== 'selecione')){
-					if((currentUser.id === ('168022' || 168022))){
-						let params = {
-							dataInicial: startDate,
-							dataFinal: endDate,
-							codigoGrupo: apiGroupCode
-						}
-			
-						let config = {
-							params: params
-						}
-						const response = await api.get('ajustes', config)
-						const filteredResponse = response.data.filter(item => 
-							item.cnpj === '86.914.942/0001-09' || item.cnpj === '86.914.942/0002-81' || item.cnpj === '86.914.942/0003-62'
-						)
-						console.log('filteredResponse: ', filteredResponse)
-						return filteredResponse
-					} else {
-						let params = {
-							dataInicial: startDate,
-							dataFinal: endDate,
-							codigoGrupo: apiGroupCode
-						}
-			
-						let config = {
-							params: params
-						}
-						const response = await api.get('ajustes', config)
-						return response.data
-					}
-				} else {
-					if (currentUser.id === '168022' || currentUser.id === 168022) {
-					const params = {
-						cnpj: apiCNPJ,
-						dataInicial: startDate,
-						dataFinal: endDate,
-					}
-
-					let config = { params }
-					const response = await api.get('ajustes', config)
-					
-					// ADD THESE DEBUG LINES:
-					console.log('Response data type:', typeof response.data)
-					console.log('Response data length:', response.data.length)
-					console.log('First item:', response.data[0])
-					console.log('First item CNPJ value:', response.data[0]?.cnpj)
-					console.log('First item CNPJ type:', typeof response.data[0]?.cnpj)
-					
-					const filteredResponse = response.data.filter(item => 
-						item.cnpj === '86.914.942/0001-09' || item.cnpj === '86.914.942/0002-81' || item.cnpj === '86.914.942/0003-62'
-					)
-					
-					console.log('Filtered response:', filteredResponse)
-					setBtnDisabledServices(false)
-					return filteredResponse
-					} else {
-						const params = {
-							cnpj: apiCNPJ,
-							dataInicial: startDate,
-							dataFinal: endDate,
-						}
-			
-						let config = {
-							params,
-						}
-						const response = await api.get('ajustes', config)
-						setBtnDisabledServices(false)
-						return response.data
-					}
-				}
-			} catch (error) {
-				setBtnDisabledServices(false)
-					if(error.code === 'ERR_CANCELED'){
-						console.log('canceled')
-						setErrorServices(false)
-					} else if (error.response.status === 401) {
-						toast.error('Sessão Expirada')
-						logout()
-						return
-					} else {
-						console.log('not canceled')
-						toast.error('Erro ao Carregar Serviços: ', error.response.status )
-						console.error('Error fetching serviços:', error)
-						setErrorServices(true)
-					}
-				return []
-			}
-		}
-		*/
-
-		/*
-		const filteredResponse = response.data.filter(item => 
-			item.cnpj === '94.410.628/0002-90' || item.cnpj === '94.410.628/0001-09'
-		)
-		*/
 
 		// retorna Objeto de Taxas
 		const loadTaxes = async () => {
@@ -744,7 +636,6 @@ try {
 				if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
 					let body = bank
 					const response = await api.post('banco', body)
-					//console.log('response:', response)
 					if (response.data.success) {
 						toast.dismiss()
 						toast.success(response.data.mensagem)
@@ -781,11 +672,8 @@ try {
 					},
 					body: body,
 					})
-
-					//console.log(response)
 			
 					const responseData = await response.json()
-					//console.log('response: ', responseData)
 			
 					if (response.ok) {
 						toast.dismiss()
@@ -882,7 +770,6 @@ try {
 					params: params
 				}
 				const response = await api.get('Subproduto', config)
-				//await refreshSession()
 				return response.data
 			} catch (error) {
 				console.log(error)
@@ -922,7 +809,6 @@ try {
 		const loadMods = async () => {
 			try {
 				const response = await api.get('Modalidade')
-				//await refreshSession()
 				return response.data
 			} catch (error) {
 				console.log(error)
@@ -949,7 +835,6 @@ try {
 				}
 
 				const response = await api.get('Sysmo', config)
-				//await refreshSession()
 				return response.data
 			} catch (error) {
 				setBtnDisabledSysmo(false)
@@ -970,28 +855,25 @@ try {
 			  const refreshToken = localStorage.getItem('refreshToken');
 			  
 			  if (!refreshToken) {
-				console.log('No refresh token available');
-				return;
+				console.log('No refresh token available')
+				return
 			  }
-		  
-			  // Send the refresh token in the body of the POST request
 			  const response = await api.post('token/refresh/', {
 				refresh_token: refreshToken
-			  });
-		  
-			  // Update cookies with the new tokens received
-			  localStorage.setItem('token', response.data.acess_token);
-			  localStorage.setItem('refreshToken', response.data.refresh_token);
+			  })
+
+			  localStorage.setItem('token', response.data.acess_token)
+			  localStorage.setItem('refreshToken', response.data.refresh_token)
 
 			} catch (error) {
-			  console.error('Error refreshing session:', error);
+			  console.error('Error refreshing session:', error)
 		  
 			  if (error.response && error.response.status === 401) {
-				console.log('Unauthorized: logging out');
-				logout(); // Call your logout function here
+				console.log('Unauthorized: logging out')
+				logout()
 			  }
 			}
-		  };
+		  }
 
 	// >>> Dashboard <<< //
 
@@ -1154,23 +1036,19 @@ try {
 					array.forEach((sale) => {
 						sums.total += sale.valorBruto
 						tempSales.push(sale)
-					
-						// Find or create entry in separatedByAdquirente
+
 						let entry = separatedByAdquirente.find(adquirente => adquirente.adminName === sale.adquirente.nomeAdquirente)
 						if (!entry) {
 							entry = {
 								id: separatedByAdquirente.length,
 								adminName: sale.adquirente.nomeAdquirente,
 								total: 0,
-								sales: [] // Initialize vendas array
+								sales: []
 							}
 							separatedByAdquirente.push(entry)
 						}
-					
-						// Push the current venda into the vendas array of the entry
 						entry.sales.push(sale)
 					
-						// Update total for this adquirente
 						entry.total += sale.valorBruto
 					})
 				return separatedByAdquirente
@@ -1185,8 +1063,7 @@ try {
 					salesByAdmin = sortArray(tempAdmin)
 					const chartData = loadChart(salesByAdmin)
 					setChartSales(chartData)
-			
-					// Move the code that depends on chartSales here
+
 					totalSalesLast4 = salesLast4.reduce((total, obj) => total + obj.valorBruto, 0)
 					totalSalesMonth = salesMonth.reduce((total, obj) => total + obj.valorBruto, 0)
 			
@@ -1257,22 +1134,20 @@ try {
 			}
 
 			const loadCreditsNext5 = async () => {
-				// Start from tomorrow
 				let firstDay = new Date()
-				firstDay.setDate(firstDay.getDate() + 1) // Tomorrow: 29th Nov
-			
-				// Calculate the last day: 5 days after tomorrow
-				let lastDay = new Date(firstDay)
-				lastDay.setDate(lastDay.getDate() + 4) // Ends 5 days after firstDay: 3rd Dec
+				firstDay.setDate(firstDay.getDate() + 1)
 
-				firstDay = new Date(firstDay).toISOString().split('T')[0];
-				lastDay = new Date(lastDay).toISOString().split('T')[0];
+				let lastDay = new Date(firstDay)
+				lastDay.setDate(lastDay.getDate() + 4)
+
+				firstDay = new Date(firstDay).toISOString().split('T')[0]
+				lastDay = new Date(lastDay).toISOString().split('T')[0]
 
 				let creditsTemp
 			
 				try {
-					creditsTemp = await loadCredits(firstDay, lastDay) // Load credits for this range
-					creditsNext5 = creditsTemp // Assign to creditsNext5 if no error occurs
+					creditsTemp = await loadCredits(firstDay, lastDay)
+					creditsNext5 = creditsTemp
 				} catch (error) {
 					console.error('Erro: ', error)
 					if (error.response && error.response.status === 401) {
@@ -1309,23 +1184,18 @@ try {
 					array.forEach((sale) => {
 						sums.total += sale.valorLiquido
 						tempSales.push(sale)
-					
-						// Find or create entry in separatedByAdquirente
+
 						let entry = separatedByAdquirente.find(adquirente => adquirente.adminName === sale.adquirente.nomeAdquirente)
 						if (!entry) {
 							entry = {
 								id: separatedByAdquirente.length,
 								adminName: sale.adquirente.nomeAdquirente,
 								total: 0,
-								sales: [] // Initialize vendas array
+								sales: []
 							}
 							separatedByAdquirente.push(entry)
-						}
-					
-						// Push the current venda into the vendas array of the entry
+						}			
 						entry.sales.push(sale)
-					
-						// Update total for this adquirente
 						entry.total += sale.valorLiquido
 					})
 				return separatedByAdquirente
@@ -1436,22 +1306,17 @@ try {
 						sums.total += sale.valor
 						tempSales.push(sale)
 					
-						// Find or create entry in separatedByAdquirente
 						let entry = separatedByAdquirente.find(adquirente => adquirente.adminName === sale.nome_adquirente)
 						if (!entry) {
 							entry = {
 								id: separatedByAdquirente.length,
 								adminName: sale.nome_adquirente,
 								total: 0,
-								sales: [] // Initialize vendas array
+								sales: []
 							}
 							separatedByAdquirente.push(entry)
 						}
-					
-						// Push the current venda into the vendas array of the entry
 						entry.sales.push(sale)
-					
-						// Update total for this adquirente
 						entry.total += sale.valor
 					})
 				return separatedByAdquirente
@@ -1612,23 +1477,18 @@ try {
 			array.forEach((sale) => {
 				sums.total += sale.valorBruto
 				tempSales.push(sale)
-			
-				// Find or create entry in separatedByAdquirente
+
 				let entry = separatedByAdquirente.find(adquirente => adquirente.adminName === sale.adquirente.nomeAdquirente)
 				if (!entry) {
 					entry = {
 						id: separatedByAdquirente.length,
 						adminName: sale.adquirente.nomeAdquirente,
 						total: 0,
-						sales: [] // Initialize vendas array
+						sales: []
 					}
 					separatedByAdquirente.push(entry)
 				}
-			
-				// Push the current venda into the vendas array of the entry
 				entry.sales.push(sale)
-			
-				// Update total for this adquirente
 				entry.total += sale.valorBruto
 			})
 		return separatedByAdquirente
@@ -1646,23 +1506,18 @@ try {
 			array.forEach((sale) => {
 				sums.total += sale.valor
 				tempSales.push(sale)
-			
-				// Find or create entry in separatedByAdquirente
+
 				let entry = separatedByAdquirente.find(adquirente => adquirente.adminName === sale.nome_adquirente)
 				if (!entry) {
 					entry = {
 						id: separatedByAdquirente.length,
 						adminName: sale.nome_adquirente,
 						total: 0,
-						sales: [] // Initialize vendas array
+						sales: []
 					}
 					separatedByAdquirente.push(entry)
 				}
-			
-				// Push the current venda into the vendas array of the entry
 				entry.sales.push(sale)
-			
-				// Update total for this adquirente
 				entry.total += sale.valor
 			})
 		return separatedByAdquirente
@@ -1782,7 +1637,6 @@ try {
 					}
 				}
 				}
-				// eslint-disable-next-line default-case
 				switch(venda.produto.descricaoProduto){
 				case 'Crédito':
 					totalCreditTemp += venda.valorLiquido
@@ -1895,14 +1749,13 @@ try {
 	}
 
 	function updateUserById(userId, newData) {
-	const localUsers = JSON.parse(localStorage.getItem('localUsers')) || [];
-	const userIndex = localUsers.findIndex(user => user.id === userId);
+	const localUsers = JSON.parse(localStorage.getItem('localUsers')) || []
+	const userIndex = localUsers.findIndex(user => user.id === userId)
 		if (userIndex !== -1) {
-			// Deep merge (keeps existing nested data)
 			localUsers[userIndex] = {
-			...localUsers[userIndex],     // Keep existing user data
-			...newData,                   // Apply new top-level data
-			joyrideComplete: {            // Manually merge nested joyrideComplete
+			...localUsers[userIndex], 
+			...newData,                  
+			joyrideComplete: {
 				...localUsers[userIndex].joyrideComplete, // Keep existing nested keys
 				...newData.joyrideComplete, // Apply new nested keys
 			},
@@ -1915,13 +1768,6 @@ try {
 			console.error('User not found!')
 		}
 	}
-
-	////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////
-
-
-	// // // // // // // // // // // // // // // // // // // // // // // // // 
 
 	const navigate = useNavigate()
 
@@ -1943,7 +1789,7 @@ try {
 				logout()
 				return
 			}
-			return null // or handle the error as needed
+			return null
 		}
 	}
 
@@ -2169,18 +2015,6 @@ try {
 				logout,
 				accessToken, setAccessToken,
 				refreshSession,
-
-				////////////////
-
-				//****************************************************//
-				//****************************************************//
-				//****************************************************//
-
-								// *** REFATORAÇÃO *** //
-
-				//****************************************************//
-				//****************************************************//
-				//****************************************************//
 
 				// Dashboard //
 				

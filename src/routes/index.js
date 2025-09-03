@@ -26,7 +26,6 @@ function RoutesApp() {
   const location = useLocation()
   const navigate = useNavigate()
 
-  // Save the current path in localStorage
   useEffect(() => {
     if(location.pathname !== '/'){
       localStorage.setItem('currentPath', location.pathname)
@@ -41,7 +40,6 @@ function RoutesApp() {
     }
   }, [location.pathname])
 
-  // Check and redirect to the saved path on load
   useEffect(() => {
     const savedPath = localStorage.getItem('currentPath')
     if (savedPath && savedPath !== location.pathname) {
@@ -66,9 +64,6 @@ function RoutesApp() {
 export default RoutesApp
 
 /*
-<Route path='/extrato' element={<Private><Extrato /></Private>} />
-<Route path='/cadastrodebancos' element={<Private><CadastroDeBancos /></Private>} />
-
 <Route path='/financeiro' element={<Private><Financeiro /></Private>} />
 <Route path='/gerenciais' element={<Private><Gerenciais /></Private>} />
 <Route path='/outrosrelatorios' element={<Private><OutrosRelatorios /></Private>} />

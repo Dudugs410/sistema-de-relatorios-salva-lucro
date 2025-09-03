@@ -27,11 +27,9 @@ const ConciliacaoBancaria = () => {
                                 ref={fileInputRef}
                                 style={{ display: 'none' }}
                                 onChange={(e) => {
-                                // Handle file selection if needed
                                 console.log(e.target.files[0])
                                 }}
                             />
-                            {/* Visible button to trigger file input */}
                             <button className='btn btn-global' onClick={handleButtonClick}><FiFilePlus /> &nbsp; Arquivo</button>
                         </div>
                         <hr className='hr-global'/>

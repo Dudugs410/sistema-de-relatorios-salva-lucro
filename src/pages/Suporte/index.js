@@ -33,9 +33,9 @@ const Suporte = () =>{
         async function inicializar() {
             try {
                 const response = await loadAdmins()
-                setAdminsList(response) // Update state with the API response
+                setAdminsList(response)
             } catch (error) {
-                console.error('Error loading admins:', error) // Log any errors
+                console.error('Error loading admins:', error)
             }
         }
         inicializar()
@@ -201,7 +201,7 @@ const Suporte = () =>{
                     value: ADQ.codigoAdquirente,
                     label: ADQ.nomeAdquirente,
                 }))
-                .sort((a, b) => a.label.localeCompare(b.label)) // Sort options alphabetically by label
+                .sort((a, b) => a.label.localeCompare(b.label))
             let todos = {value: 'todos', label: 'TODOS'}
             sortedOptions.unshift(todos)
             setAdqFiltradas(sortedOptions)
@@ -253,7 +253,7 @@ const Suporte = () =>{
                     {tipoOpcao && (
                         <div style={{ width: '100%', height: '100%' }}>
                             <h5 style={{ paddingTop: '5px', paddingBottom: '5px' }}>{tipoOpcao.label}</h5>
-                            {tipoOpcao.componente && React.createElement(tipoOpcao.componente, tipoOpcao.props)} {/* Render the component if it exists */}
+                            {tipoOpcao.componente && React.createElement(tipoOpcao.componente, tipoOpcao.props)}
                         </div>
                     )}
                 </div>

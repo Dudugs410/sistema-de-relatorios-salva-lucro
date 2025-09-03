@@ -350,7 +350,7 @@ const TabelaInvestments = ({ data, clickRow, loadTransactions }) => {
                   {isExpanded && (
                     <tr className="det-tr-global">
                       <td colSpan={headers.length + 1} className="p-0 subtable">
-                        <div style={{ width: '100%' }}>
+                        <div style={{ width: '100%', backgroundColor: 'var(--background-color)' }}>
                           {isLoading ? (
                             <div className="p-3 text-center">
                               <div className="spinner-border text-primary" role="status">

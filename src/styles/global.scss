@@ -66,7 +66,6 @@
     margin-top: 10px;
     margin-bottom: 54px;
     transition: all 0.4s;
-    /* flex-direction: column;*/
 }
 
 .css-13cymwt-control{
@@ -222,7 +221,8 @@
 .thead-global{
     background-color: var(--primary-color)
 }
-    //Linhas e Background da tabela
+
+//Linhas e Background da tabela
 .det-table-global{
     min-height:30%;
     --bs-table-striped-color: var(--font-color);
@@ -240,7 +240,8 @@
     
 
 }
-    //Header da tabela
+
+//Header da tabela
 .det-tr-top-global{
     position: sticky;
     top: 0;
@@ -292,42 +293,42 @@ tr{
 
 ///Scrollbar
 
-  /* width */
-  ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-  }
-  
-  /* Track */
-  ::-webkit-scrollbar-track {
+/* width */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
     background: rgba(255, 255, 255, 0.116)
-  }
-   
-  /* Handle */
-  ::-webkit-scrollbar-thumb {
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
     background: #888; 
-  }
-  
-  /* Handle on hover */
-  ::-webkit-scrollbar-thumb:hover {
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
     background: #555; 
-  }
+}
 
-    //icones
+//icones
 
-    .icone-global{
+.icone-global{
+    color: var(--font-color);
+
+    &.active-child {
+        background-color: var(--secondary-color);
         color: var(--font-color);
-
-        &.active-child {
-            background-color: var(--secondary-color);
-            color: var(--font-color);
-            opacity: 0.8;
-        }
-
-        &:hover {
-            cursor: pointer;
-        }
+        opacity: 0.8;
     }
+
+    &:hover {
+        cursor: pointer;
+    }
+}
 
   @media screen and (max-width: 869px){
     .page-content-global {

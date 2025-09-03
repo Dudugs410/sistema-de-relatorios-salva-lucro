@@ -34,9 +34,7 @@ const Taxas = () =>{
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isModalEditOpen, setIsModalEditOpen] = useState(false)
 
-    // Codigo do Cliente, Proveniente do SeletorCliente
     const [clientCode, setClientCode] = useState(localStorage.getItem('clientCode'))
-    // Array de Objetos a Serem Mostrados na Tabela
     const [taxesList, setTaxesList] = useState([])
 
     useEffect(()=>{
@@ -301,18 +299,15 @@ const Taxas = () =>{
         const customStyles = {
             control: (provided, state) => ({
                 ...provided,
-                background: 'white', // Background color of the control
-                color: 'black', // Text color of the control
-                // You can add more styles here as needed
+                background: 'white',
+                color: 'black',
             }),
             menu: (provided, state) => ({
                 ...provided,
-                background: 'white', // Background color of the dropdown menu
-                color: 'black', // Text color of the dropdown menu
-                // You can add more styles here as needed
+                background: 'white',
+                color: 'black',
             }),
-            // Add more styles for other components as needed
-        };
+        }
 
         return(
             <div className='modal-taxas'>
@@ -374,18 +369,16 @@ const Taxas = () =>{
                               value={tax}
                               onChange={(e) => {
                                   const inputValue = e.target.value;
-                                  let formattedValue = inputValue.replace(/[^\d.]/g, ''); // Remove any non-digit characters except period
+                                  let formattedValue = inputValue.replace(/[^\d.]/g, '')
                                   if (formattedValue.length === 3 && !formattedValue.includes('.')) {
-                                      // Insert a period after the first two digits
                                       formattedValue = formattedValue.slice(0, 2) + '.' + formattedValue.slice(2);
                                   }
                                   if (formattedValue.length > 5) {
-                                      // Allow only one digit after the period
-                                      formattedValue = formattedValue.slice(0, 4);
+                                      formattedValue = formattedValue.slice(0, 4)
                                   }
-                                  setTax(formattedValue);
+                                  setTax(formattedValue)
                               }}
-                              maxLength={5} // Maximum length including the decimal point
+                              maxLength={5}
                           />
                       </div>
                     </div>
@@ -425,7 +418,7 @@ const Taxas = () =>{
         };
 
         const handleSubmit = async (e) => {
-            e.preventDefault();
+            e.preventDefault()
             const newTaxObj = {
                 ADQCODIGO: admin.value,
                 BADCODIGO: banner.value,
@@ -446,7 +439,7 @@ const Taxas = () =>{
                     console.log('resetando form...')
                     resetValues()
                   } catch (error) {
-                    console.error('Error handling busca:', error);
+                    console.error('Error handling busca:', error)
                   }
             } else {
                 alert('Todos os Campos devem ser preenchidos')
@@ -468,18 +461,15 @@ const Taxas = () =>{
         const customStyles = {
             control: (provided, state) => ({
                 ...provided,
-                background: 'white', // Background color of the control
-                color: 'black', // Text color of the control
-                // You can add more styles here as needed
+                background: 'white',
+                color: 'black',
             }),
             menu: (provided, state) => ({
                 ...provided,
-                background: 'white', // Background color of the dropdown menu
-                color: 'black', // Text color of the dropdown menu
-                // You can add more styles here as needed
+                background: 'white',
+                color: 'black',
             }),
-            // Add more styles for other components as needed
-        };
+        }
 
         return(
             <div className='modal-taxas'>
@@ -528,19 +518,17 @@ const Taxas = () =>{
                               type="text"
                               value={taxValue}
                               onChange={(e) => {
-                                  const inputValue = e.target.value;
-                                  let formattedValue = inputValue.replace(/[^\d.]/g, ''); // Remove any non-digit characters except period
+                                  const inputValue = e.target.value
+                                  let formattedValue = inputValue.replace(/[^\d.]/g, '')
                                   if (formattedValue.length === 3 && !formattedValue.includes('.')) {
-                                      // Insert a period after the first two digits
-                                      formattedValue = formattedValue.slice(0, 2) + '.' + formattedValue.slice(2);
+                                      formattedValue = formattedValue.slice(0, 2) + '.' + formattedValue.slice(2)
                                   }
                                   if (formattedValue.length > 5) {
-                                      // Allow only one digit after the period
-                                      formattedValue = formattedValue.slice(0, 4);
+                                      formattedValue = formattedValue.slice(0, 4)
                                   }
-                                  setTaxValue(formattedValue);
+                                  setTaxValue(formattedValue)
                               }}
-                              maxLength={5} // Maximum length including the decimal point
+                              maxLength={5}
                           />                      
                         </div>
                       </div>
@@ -557,7 +545,7 @@ const Taxas = () =>{
     }
 
     const Modal = ({ isOpen, onClose, children }) => {
-        if (!isOpen) return null;
+        if (!isOpen) return null
         
         return (
             <div className="modal-layout" onClick={onClose}>
@@ -565,8 +553,8 @@ const Taxas = () =>{
                     {children}
                 </div>
             </div>
-        );
-    };
+        )
+    }
 
     const AddTaxModal = () => { 
         return (
@@ -592,9 +580,6 @@ const Taxas = () =>{
         );
     }
     /////////////////////////////////////////////////////////////////////
-
-
-
     return(
       <div className='appPage'>
         <div className='page-background-global'>
@@ -646,4 +631,4 @@ const Taxas = () =>{
     )
 }
 
-export default Taxas;
+export default Taxas

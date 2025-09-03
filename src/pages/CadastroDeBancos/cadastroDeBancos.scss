@@ -72,7 +72,7 @@
 .sticky-col {
     position: -webkit-sticky;
     position: sticky;
-    background: var(--background-color); /* Adjust this as needed */
+    background: var(--background-color);
     z-index: 1;
 }
 
@@ -85,15 +85,14 @@
 }
 
 .custom-select .react-select__control {
-    background-color: red !important; /* Background color of the control */
-    color: green !important; /* Text color of the control */
-    /* Add more styles as needed */
+    background-color: red !important;
+    color: green !important;
+
 }
 
 .custom-select .react-select__menu {
-    background-color: purple !important; /* Background color of the dropdown menu */
-    color: yellow !important; /* Text color of the dropdown menu */
-    /* Add more styles as needed */
+    background-color: purple !important;
+    color: yellow !important;
 }
 
 .form-group-bancos {
@@ -105,7 +104,7 @@
   
   .group-element-bancos {
     flex: 1;
-    min-width: 200px; /* Adjust as needed */
+    min-width: 200px;
   }
 
   .group-input-bancos{
@@ -134,7 +133,7 @@
   
   .modal-bancos .close-modal-banco {
     position: absolute;
-    right: 20px; /* Adjust this margin as needed */
+    right: 20px;
   }
 
   .close-modal-banco{
@@ -148,7 +147,7 @@
   }
 
   .header-sticky{
-    position: -webkit-sticky; /* For Safari */
+    position: -webkit-sticky;
     position: sticky;
     top: 0;
     padding-top: 60px;
@@ -182,7 +181,7 @@
 
     .modal-bancos .close-modal-banco {
         position: absolute;
-        right: 10px; /* Adjust this margin as needed */
+        right: 10px;
       }
 
     .header-sticky{

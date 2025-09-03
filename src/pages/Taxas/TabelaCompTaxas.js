@@ -15,24 +15,20 @@ const TabelaCompTaxas = ({ array }) => {
     const [expandedRows, setExpandedRows] = useState([]);
 
     useEffect(() => {
-        setCurrentPage(1); // Reset page to 1 when data changes
+        setCurrentPage(1);
     }, [array]);
 
-    // Toggle row expansion
     const toggleRow = (index) => {
         const newExpandedRows = [...expandedRows];
         if (newExpandedRows.includes(index)) {
-            // If row is already expanded, collapse it
             const idx = newExpandedRows.indexOf(index);
             newExpandedRows.splice(idx, 1);
         } else {
-            // If row is not expanded, expand it
             newExpandedRows.push(index);
         }
         setExpandedRows(newExpandedRows);
     };
 
-    // Change page functions
     const goToPrevPage = () => {
         setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
     };
@@ -49,7 +45,6 @@ const TabelaCompTaxas = ({ array }) => {
         setCurrentPage(Math.ceil(dataArray.length / itemsPerPage));
     };
   
-    // Calculate indexes for pagination
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = dataArray.slice(indexOfFirstItem, indexOfLastItem);
@@ -178,7 +173,6 @@ const TabelaCompTaxas = ({ array }) => {
             )}
             <hr className='hr-global'/>
             
-            {/* CSS for the expanded rows */}
             <style jsx>{`
                 .clickable-row {
                     cursor: pointer;

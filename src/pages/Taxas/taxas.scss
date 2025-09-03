@@ -1,4 +1,4 @@
-/* Apply the scrollbar-gutter property to the page content */
+
 .page-content-taxas {
     width: 100%;
     padding: 1%;
@@ -14,24 +14,22 @@
 }
 
 .table-taxas {
-    overflow-x: overlay; /* Use 'auto' instead of 'scroll' */
+    overflow-x: overlay;
 }
 
 .table-wrapper-taxes {
     display: flex;
     overflow-x: overlay;
     overflow-y: overlay;
-    width: 100%; /* Ensure it takes up the full width */
+    width: 100%;
     flex-direction: column;
 }
 
-/* Ensure the table fits within the container */
 .table-taxas table {
     width: 100%;
-    table-layout: auto !important; /* Ensure the table layout is fixed to prevent overflow */
+    table-layout: auto !important;
 }
 
-/* Other styles */
 .form-taxas {
     width: 100%;
     display: flex;
@@ -48,7 +46,7 @@
 .sticky-col {
     position: -webkit-sticky;
     position: sticky;
-    background: var(--background-color); /* Adjust this as needed */
+    background: var(--background-color);
     z-index: 1;
 }
 
@@ -101,13 +99,13 @@
 }
 
 .custom-select .react-select__control {
-    background-color: red !important; /* Background color of the control */
-    color: green !important; /* Text color of the control */
+    background-color: red !important;
+    color: green !important;
 }
 
 .custom-select .react-select__menu {
-    background-color: purple !important; /* Background color of the dropdown menu */
-    color: yellow !important; /* Text color of the dropdown menu */
+    background-color: purple !important;
+    color: yellow !important;
 }
 
 .form-group-taxas {
@@ -119,7 +117,7 @@
   
 .group-element-taxas {
     flex: 1;
-    min-width: 200px; /* Adjust as needed */
+    min-width: 200px;
 }
   
 .group-input-taxa {

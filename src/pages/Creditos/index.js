@@ -69,10 +69,10 @@ async function loadData() {
   try {
     const creditsData = await loadCredits(creditsDateRange[0].toLocaleDateString('pt-BR'), creditsDateRange[1].toLocaleDateString('pt-BR'))
     setCreditsPageArray(creditsData)
-    return creditsData // Resolve the promise with data if successful
+    return creditsData
   } catch (error) {
     console.error('Error fetching credits data:', error)
-    throw error // Throw error to be caught by toast.promise
+    throw error
   }
 }
 
@@ -165,8 +165,7 @@ async function loadData() {
       
       try {
         let userTemp = getUserData()
-        
-        // Check if userTemp exists and has joyrideComplete property
+
         if (!userTemp?.joyrideComplete) {
           console.error('User data or joyrideComplete property is missing')
           return
@@ -175,7 +174,6 @@ async function loadData() {
         const tutorialCompleted = userTemp.joyrideComplete.creditosCalendar
         
         if (!tutorialCompleted) {
-          // Wait a moment for the DOM to fully render
           const timer = setTimeout(() => {
             setRunTutorial(true)
           }, 1000)

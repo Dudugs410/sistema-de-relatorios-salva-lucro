@@ -76,8 +76,6 @@ const Servicos = () =>{
     setServicesDateRange(dateRange)
   }
 
-    // Joyride state
-  
     const [runTutorial, setRunTutorial] = useState(false)
     const [steps, setSteps] = useState([
       {
@@ -146,8 +144,7 @@ const Servicos = () =>{
       
       try {
         let userTemp = getUserData()
-        
-        // Check if userTemp exists and has joyrideComplete property
+
         if (!userTemp?.joyrideComplete) {
           console.error('User data or joyrideComplete property is missing')
           return
@@ -156,7 +153,6 @@ const Servicos = () =>{
         const tutorialCompleted = userTemp.joyrideComplete.servicosCalendar
         
         if (!tutorialCompleted) {
-          // Wait a moment for the DOM to fully render
           const timer = setTimeout(() => {
             setRunTutorial(true)
           }, 1000)
