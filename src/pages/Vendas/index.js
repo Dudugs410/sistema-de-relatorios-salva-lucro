@@ -210,7 +210,6 @@ const handleCheckboxChangeCalendar = () => {
       try {
         let userTemp = getUserData()
         
-        // Check if userTemp exists and has joyrideComplete property
         if (!userTemp?.joyrideComplete) {
           console.error('User data or joyrideComplete property is missing')
           return
@@ -219,7 +218,7 @@ const handleCheckboxChangeCalendar = () => {
         const tutorialCompleted = userTemp.joyrideComplete.vendasCalendar
         
         if (!tutorialCompleted) {
-          // Wait a moment for the DOM to fully render
+
           const timer = setTimeout(() => {
             setRunTutorial(true)
           }, 1000)

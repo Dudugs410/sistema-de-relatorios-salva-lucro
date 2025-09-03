@@ -200,14 +200,11 @@ const Taxas = () => {
             }
         )
     }
-
-        //adicionando páginas à tabela:
-
         const [currentPage, setCurrentPage] = useState(1)
-        const [itemsPerPage] = useState(15) // Number of items per page
+        const [itemsPerPage] = useState(15)
     
         useEffect(() => {
-            setCurrentPage(1) // Reset page to 1 when data changes
+            setCurrentPage(1)
         }, [taxesList])
     
         // Change page functions
@@ -740,82 +737,3 @@ const Taxas = () => {
 }
 
 export default Taxas
-
-/*
-
-taxasComp = [
-        {
-            nomeGrupo: 'nomeGrupo',
-            nomeCliente : 'nomeCliente',
-            periodo: 'periodo',
-            cnpj: 'cnpj',
-            taxas:[
-                {
-                    adquirente: 'relenscard',
-                    bandeira: 'master',
-                    produto: '1',
-                    modalidade: '1',
-                    taxaMediaPenultimoMes: 1.2,
-                    taxaMediaUltimoMes: 1.5,
-                    taxaCadastrada: 1.35,
-                    comparativo: 1.36
-                }
-            ]
-        },
-        {
-            nomeGrupo: 'nomeGrupo',
-            nomeCliente : 'nomeCliente',
-            periodo: 'periodo',
-            cnpj: 'cnpj',
-            taxas:[
-                {
-                    adquirente: 'flibcard',
-                    bandeira: 'master',
-                    produto: '2',
-                    modalidade: '1',
-                    taxaMediaPenultimoMes: 1,
-                    taxaMediaUltimoMes: 0.8,
-                    taxaCadastrada: 1.22,
-                    comparativo: 1.1
-                }
-            ]
-        },
-        {
-            nomeGrupo: 'nomeGrupo',
-            nomeCliente : 'nomeCliente',
-            periodo: 'periodo',
-            cnpj: 'cnpj',
-            taxas:[
-                {
-                    adquirente: 'crelenscred',
-                    bandeira: 'visa',
-                    produto: '3',
-                    modalidade: '2',
-                    taxaMediaPenultimoMes: 0.5,
-                    taxaMediaUltimoMes: 3.1,
-                    taxaCadastrada: 2.55,
-                    comparativo: 2.36
-                }
-            ]
-        },
-        {
-            nomeGrupo: 'nomeGrupo',
-            nomeCliente : 'nomeCliente',
-            periodo: 'periodo',
-            cnpj: 'cnpj',
-            taxas:[
-                {
-                    adquirente: 'adquirente',
-                    bandeira: 'bandeira',
-                    produto: 'produto',
-                    modalidade: 'modalidade',
-                    taxaMediaPenultimoMes: 1.2,
-                    taxaMediaUltimoMes: 1.5,
-                    taxaCadastrada: 1.35,
-                    comparativo: 1.36
-                }
-            ]
-        },
-    ] 
-    
-*/

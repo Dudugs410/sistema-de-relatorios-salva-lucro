@@ -4,7 +4,7 @@ import { AuthContext } from '../contexts/auth'
 import { useUserActivity } from '../util/userActivity'
 import ModalUserActivity from '../components/ModalUserActivity'
 import { useNavigate } from 'react-router-dom'
-import jwtDecode from 'jwt-decode' // Correct import syntax
+import jwtDecode from 'jwt-decode'
 
 export default function Private({ children }) {
   const { logout, refreshSession } = useContext(AuthContext)
@@ -13,7 +13,6 @@ export default function Private({ children }) {
 
   const navigate = useNavigate()
 
-  // Function to validate the token
   const validateToken = (token) => {
     try {
       if (!token) return false;
@@ -21,12 +20,10 @@ export default function Private({ children }) {
       const decoded = jwtDecode(token);
       const currentTime = Date.now() / 1000;
       
-      // Check expiration
       if (decoded.exp < currentTime) {
         return false;
       }
       
-      // Check required claims (adjust based on your token structure)
       if (!decoded.sub || !decoded.id || !decoded.login) {
         return false;
       }
@@ -41,7 +38,6 @@ export default function Private({ children }) {
     const token = localStorage.getItem('token');
     const isSignedIn = localStorage.getItem('isSignedIn') === 'true';
     
-    // Check if user is signed in but token is invalid
     if (isSignedIn && (!token || !validateToken(token))) {
       console.log('Token invalid or expired, logging out');
       logout();
@@ -49,13 +45,11 @@ export default function Private({ children }) {
       return;
     }
     
-    // Check if user is not signed in
     if (!isSignedIn) {
       navigate('/');
       return;
     }
     
-    // Token is valid
     setIsTokenValid(true);
   }, [logout, navigate])
 

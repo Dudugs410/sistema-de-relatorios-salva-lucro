@@ -79,7 +79,6 @@ const VendasDelivery = () => {
                                             />
                                         </div>
                                         <div className='export-container-delivery-child2'>
-                                            {/*<h6><b>Gerar: </b></h6>*/}
                                             <button className='btn btn-global' style={{minWidth: '150px'}}><FiFilePlus /> &nbsp; Excel</button>
                                         </div>
                                     </div>

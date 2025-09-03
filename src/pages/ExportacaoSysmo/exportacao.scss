@@ -1,6 +1,5 @@
 
 .page-content-exportacao{
-    //width: 80%;
     padding: 1%;
     display: flex;
     border-radius: 20px;
@@ -33,8 +32,6 @@
 }
 
 .select-component{
-    /* display: flex; */
-    /* flex-direction: column; */
     width: 48%;
 }
 
@@ -57,7 +54,6 @@
     @media (max-width: 946px){
         display: flex;
         width: 100%;
-        flex-wrap: wrap;
-        
+        flex-wrap: wrap; 
     }
 }

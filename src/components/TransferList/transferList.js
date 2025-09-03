@@ -8,47 +8,42 @@ const TransferList = () => {
   const [selectedLeftItem, setSelectedLeftItem] = useState(null);
   const [selectedRightItem, setSelectedRightItem] = useState(null);
 
-  // Function to move a single item from left to right
   const moveToRight = () => {
-    const itemToMove = selectedLeftItem || leftList[0]; // Default to the first item if none is selected
+    const itemToMove = selectedLeftItem || leftList[0]
     if (itemToMove) {
-      setRightList([...rightList, itemToMove]);
-      setLeftList(leftList.filter(item => item !== itemToMove));
-      setSelectedLeftItem(null);
+      setRightList([...rightList, itemToMove])
+      setLeftList(leftList.filter(item => item !== itemToMove))
+      setSelectedLeftItem(null)
     }
-  };
+  }
 
-  // Function to move a single item from right to left
   const moveToLeft = () => {
-    const itemToMove = selectedRightItem || rightList[0]; // Default to the first item if none is selected
+    const itemToMove = selectedRightItem || rightList[0]
     if (itemToMove) {
-      setLeftList([...leftList, itemToMove]);
-      setRightList(rightList.filter(item => item !== itemToMove));
-      setSelectedRightItem(null);
+      setLeftList([...leftList, itemToMove])
+      setRightList(rightList.filter(item => item !== itemToMove))
+      setSelectedRightItem(null)
     }
-  };
+  }
 
-  // Function to move all items from left to right
   const moveAllToRight = () => {
     if (leftList.length > 0) {
-      setRightList([...rightList, ...leftList]);
-      setLeftList([]);
-      setSelectedLeftItem(null);
+      setRightList([...rightList, ...leftList])
+      setLeftList([])
+      setSelectedLeftItem(null)
     }
-  };
+  }
 
-  // Function to move all items from right to left
   const moveAllToLeft = () => {
     if (rightList.length > 0) {
-      setLeftList([...leftList, ...rightList]);
-      setRightList([]);
-      setSelectedRightItem(null);
+      setLeftList([...leftList, ...rightList])
+      setRightList([])
+      setSelectedRightItem(null)
     }
-  };
+  }
 
   return (
     <div className='transferlist-component'>
-      {/* Left Box */}
       <div className='transferlist-container'>
         <h5 className='h5-transfer'>Clientes Cadastrados</h5>
         <ul className='transferlist-box-container'>
@@ -68,33 +63,32 @@ const TransferList = () => {
         </ul>
       </div>
 
-      {/* Buttons */}
       <div className='transferlist-button-container'>
         <button
           className='btn btn-primary btn-transfer btn-global'
           onClick={moveToRight}
-          disabled={leftList.length === 0} // Disable if no items to move
+          disabled={leftList.length === 0}
         >
           <TbArrowRight />
         </button>
         <button
           className='btn btn-primary btn-transfer btn-global'
           onClick={moveToLeft}
-          disabled={rightList.length === 0} // Disable if no items to move
+          disabled={rightList.length === 0}
         >
           <TbArrowLeft />
         </button>
         <button
           className='btn btn-primary btn-transfer btn-global'
           onClick={moveAllToRight}
-          disabled={leftList.length === 0} // Disable if no items to move
+          disabled={leftList.length === 0}
         >
           <TbArrowBigRightLines />
         </button>
         <button
           className='btn btn-primary btn-transfer btn-global'
           onClick={moveAllToLeft}
-          disabled={rightList.length === 0} // Disable if no items to move
+          disabled={rightList.length === 0}
         >
           <TbArrowBigLeftLines />
         </button>
@@ -123,4 +117,4 @@ const TransferList = () => {
   )
 }
 
-export default TransferList;
+export default TransferList

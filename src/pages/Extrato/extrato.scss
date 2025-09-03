@@ -1,4 +1,3 @@
-// Connection container styles
 .pluggy-container {
   display: flex;
   flex-direction: column;
@@ -16,7 +15,6 @@
   flex-direction: column;
 }
 
-// Modal styles
 .modal-extrato-background {
   background-color: rgba(0, 0, 0, 0.3);
   border: solid red 1px;
@@ -41,13 +39,12 @@
   align-items: center;
 }
 
-// Main layout container
 .extrato-layout-container {
   display: flex;
   gap: 20px;
   margin-top: 20px;
   width: 100%;
-  min-height: 500px; // Ensure minimum height for the content area
+  min-height: 500px;
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -55,7 +52,6 @@
   }
 }
 
-// Sidebar styles
 .extrato-menu-sidebar {
     width: 80px;
     font-weight: bold;
@@ -67,7 +63,6 @@
     background-color: var(--background-color);
     border-radius: 8px;
     padding: 10px 0;
-    //box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     height: fit-content;
 
   @media (max-width: 768px) {
@@ -77,30 +72,25 @@
   }
 }
 
-
-// Content area styles
 .extrato-content-area {
   flex-grow: 1;
-  min-width: 0; // Prevent overflow
+  min-width: 0;
   background-color: var(--background-color);
   border-radius: 8px;
-  //box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 20px;
 }
 
-// Table container styles
 .tabela-extrato-container {
   width: 100%;
   overflow-x: auto;
-  -webkit-overflow-scrolling: touch; // Smooth scrolling on iOS
+  -webkit-overflow-scrolling: touch;
 
   .table {
     width: 100%;
-    min-width: 600px; // Ensure table has minimum width
+    min-width: 600px;
   }
 }
 
-// Content header styles
 .content-header {
   display: flex;
   justify-content: space-between;
@@ -110,18 +100,14 @@
   gap: 10px;
 }
 
-// Refresh button styles
 .btn-refresh-extrato {
   width: auto !important;
   padding: 8px 12px !important;
-  //transition: transform 0.3s ease;
-
   &:hover {
     transform: rotate(180deg);
   }
 }
 
-// Menu products container adjustments
 .products-container {
   padding: 0;
 
@@ -144,7 +130,6 @@
   }
 }
 
-// Table responsive adjustments
 .table-container {
   width: 100%;
   overflow-x: auto;

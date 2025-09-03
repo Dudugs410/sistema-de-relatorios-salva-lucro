@@ -62,21 +62,18 @@ const Dashboard = () => {
     setCanceled(false)
   }, [])
 
-  // Run loadDashboard only once when the component mounts
   useEffect(() => {
     if(isLoadedDashboard === false){
       loadDashboard()
     }
   }, [changedOption])
 
-  // Check if it's the user's first visit
     useEffect(() => {
       localStorage.setItem('currentPath', location.pathname)
       
       try {
         let userTemp = getUserData()
         
-        // Check if userTemp exists and has joyrideComplete property
         if (!userTemp?.joyrideComplete) {
           console.error('User data or joyrideComplete property is missing')
           return
@@ -85,7 +82,6 @@ const Dashboard = () => {
         const tutorialCompleted = userTemp.joyrideComplete.dashboard
         
         if (!tutorialCompleted) {
-          // Wait a moment for the DOM to fully render
           const timer = setTimeout(() => {
             setRunTutorial(true)
           }, 1000)
