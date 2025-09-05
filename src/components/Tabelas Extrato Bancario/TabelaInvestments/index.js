@@ -378,7 +378,6 @@ const TabelaInvestments = ({ data, clickRow, loadTransactions }) => {
           </tbody>
         </table>
       </div>
-      
       {/* Mobile Card View */}
       <div className='mobile-only'>
         <MobileCardView />
