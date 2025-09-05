@@ -36,6 +36,7 @@ const Extrato = () => {
     const [selected, setSelected] = useState(false)
     const [displayedMenu, setDisplayedMenu] = useState(null)
     const [data, setData] = useState([])
+    const [isLoading, setIsLoading] = useState(false)
     const location = useLocation()
     const widgetContainerRef = useRef(null)
 
@@ -127,62 +128,77 @@ const Extrato = () => {
     }
 
     const fetchAccounts = async () => {
+        setIsLoading(true)
         let pluggyData = JSON.parse(localStorage.getItem('pluggyData'))
         if(pluggyData.accounts.length === 0){
             let dataTemp = await loadAccounts()
             pluggyData.accounts = dataTemp
             localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
             setData(dataTemp)
+            setIsLoading(false)
         } else {
             setData(pluggyData.accounts)
+            setIsLoading(false)
         }
     }
 
     const fetchIdentity = async () => {
+        setIsLoading(true)
         let pluggyData = JSON.parse(localStorage.getItem('pluggyData'))
         if(pluggyData && (pluggyData.identity.length === 0)){
             let dataTemp = await loadIdentity()
             pluggyData.identity = dataTemp
             localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
             setData(dataTemp)
+            setIsLoading(false)
         } else {
             setData(pluggyData.identity)
+            setIsLoading(false)
         }
     }
 
     const fetchLoans = async () => {
+        setIsLoading(true)
         let pluggyData = JSON.parse(localStorage.getItem('pluggyData'))
         if(pluggyData.loans.length === 0){
             let dataTemp = await loadLoans()
             pluggyData.loans = dataTemp
             localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
             setData(dataTemp)
+            setIsLoading(false)
         } else {
             setData(pluggyData.loans)
+            setIsLoading(false)
         }
     }
 
     const fetchInvestments = async () => {
+        setIsLoading(true)
         let pluggyData = JSON.parse(localStorage.getItem('pluggyData'))
         if(pluggyData.investments.length === 0){
             let dataTemp = await loadInvestments()
             pluggyData.investments = dataTemp
             localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
             setData(dataTemp)
+            setIsLoading(false)
         } else {
             setData(pluggyData.investments)
+            setIsLoading(false)
         }
     }
 
     const fetchBills = async () => {
+        setIsLoading(true)
         let pluggyData = JSON.parse(localStorage.getItem('pluggyData'))
         if(pluggyData.bills.length === 0){
             let dataTemp = await loadBills()
             pluggyData.bills = dataTemp
             localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
             setData(dataTemp)
+            setIsLoading(false)
         } else {
             setData(pluggyData.bills)
+            setIsLoading(false)
         }
     }
 
@@ -330,7 +346,7 @@ const Extrato = () => {
                     {hasResponseData() ? (
                         <div className='extrato-layout-container'>
                             <div className='extrato-menu-sidebar text-global'>
-                                <MenuExtrato connectorData={responseData.connector} handleProduct={handleSelectedProduct}/>
+                                <MenuExtrato connectorData={responseData.connector} handleProduct={handleSelectedProduct} disabled={isLoading}/>
                             </div>
                             
                             <div className='extrato-content-area'>
