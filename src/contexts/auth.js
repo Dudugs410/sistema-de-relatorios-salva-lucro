@@ -296,1163 +296,1168 @@ try {
 		const [btnDisabledSysmo, setBtnDisabledSysmo] = useState(false)
 
 		// retorna array de vendas //
-		const loadSales = async (startDate, endDate) => {
-			try {
-				setErrorSales(false)
-				const apiCNPJ = localStorage.getItem('cnpj')
-				const apiGroupCode = localStorage.getItem('groupCode')
-				if(apiCNPJ === ('todos' || 'TODOS') && (apiGroupCode !== 'selecione')){
-					let params = {
-						datainicial: startDate,
-						datafinal: endDate,
-						codigoGrupo: apiGroupCode,
-					}
-					let config = {
-						params: params
-					}
-
-					const response = await api.get('vendas', config)
-					return response.data.VENDAS
-
-				} else {
-					let params = {
-						datainicial: startDate,
-						datafinal: endDate,
-						cnpj: apiCNPJ,
-					}
-	
-					let config = {
-						params: params
-					}
-					const response = await api.get('vendas', config)
-					setBtnDisabledSales(false)
-					exportSales(response.data.VENDAS)
-					return response.data.VENDAS
-				}
-			} catch (error) {
-				setBtnDisabledSales(false)
-					if(error.code === 'ERR_CANCELED'){
-						console.log('canceled')
-						setErrorSales(false)
-					} else if (error.response.status === 401) {
-						toast.error('Sessão Expirada')
-						logout()
-						return
-					} else {
-						console.log('not canceled')
-						toast.error('Erro ao Carregar Vendas ', error.response.status )
-						console.error('Error fetching vendas:', error)
-						setErrorSales(true)
-					}
-				return []
-			}
-		}
-
-		// retorna array de créditos/recebimentos
-		const loadCredits = async (startDate, endDate) => {
-			try {
-				setErrorCredits(false)
-				const apiCNPJ = localStorage.getItem('cnpj')
-				const apiGroupCode = localStorage.getItem('groupCode')
-				if(apiCNPJ === ('todos' || 'TODOS') && (apiGroupCode !== 'selecione')){
-					let params = {
-						dataInicial: startDate,
-						dataFinal: endDate,
-						codigoGrupo: apiGroupCode
-					}
-	  
-					let config = {
-						params: params
-					}
-					const response = await api.get('recebimentos', config)
-					return response.data
-	
-				} else {
-					let params = {
-						cnpj: apiCNPJ,
-						dataInicial: startDate,
-						dataFinal: endDate,
-					}
-	  
-					let config = {
-						params: params
-					}
-	  
-					const response = await api.get('recebimentos', config)
-					setBtnDisabledCredits(false)
-					return response.data
-				}
-			} catch (error) {
-				setBtnDisabledCredits(false)
-					if(error.code === 'ERR_CANCELED'){
-						console.log('canceled')
-						setErrorCredits(false)
-					} else if (error.response.status === 401) {
-						toast.error('Sessão Expirada')
-						logout()
-						return
-					} else {
-						console.log('not canceled')
-						toast.error('Erro ao Carregar Créditos: ', error.response.status )
-						console.error('Error fetching vendas:', error)
-						setErrorSales(true)
-					}
-				return []
-			}
-		}
-
-		// retorna array de serviços/ajustes
-		const loadServices = async (startDate, endDate) => {
-			try {
-				setErrorServices(false)
-				const apiCNPJ = localStorage.getItem('cnpj')
-				const apiGroupCode = localStorage.getItem('groupCode')
-				if(apiCNPJ === ('todos' || 'TODOS') && (apiGroupCode !== 'selecione')){
-					let params = {
-						dataInicial: startDate,
-						dataFinal: endDate,
-						codigoGrupo: apiGroupCode
-					}
-		
-					let config = {
-						params: params
-					}
-					const response = await api.get('ajustes', config)
-					return response.data
-				} else {
-					const params = {
-						cnpj: apiCNPJ,
-						dataInicial: startDate,
-						dataFinal: endDate,
-					}
-		
-					let config = {
-						params,
-					}
-					const response = await api.get('ajustes', config)
-					setBtnDisabledServices(false)
-					return response.data
-				}
-			} catch (error) {
-				setBtnDisabledServices(false)
-					if(error.code === 'ERR_CANCELED'){
-						console.log('canceled')
-						setErrorServices(false)
-					} else if (error.response.status === 401) {
-						toast.error('Sessão Expirada')
-						logout()
-						return
-					} else {
-						console.log('not canceled')
-						toast.error('Erro ao Carregar Serviços: ', error.response.status )
-						console.error('Error fetching serviços:', error)
-						setErrorServices(true)
-					}
-				return []
-			}
-		}
-
-		// retorna Objeto de Taxas
-		const loadTaxes = async () => {
-			setIsLoadingTaxes(true)
-			try {
-				const apiClientCode = localStorage.getItem('clientCode')
-				if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
-					let params = {
-						codigo: apiClientCode
-					}
-		
-					let config = {
-						params: params
-					}
-		
-					const response = await api.get('taxas', config)
-					return response.data
-				} else {
-					console.log('Invalid client code:', apiClientCode)
-					return []
-				}
-			} catch (error) {
-				console.error('Error fetching taxas:', error)
-				if (error.response.status === 401) {
-					logout()
-					return
-				}
-				return []
-			} finally {
-				setIsLoadingTaxes(false)
-			}
-		}
-
-		//Adiciona nova Taxa
-		const addTax = async (tax) => {
-			setIsLoadingTaxes(true)
-			try {
-				const apiClientCode = localStorage.getItem('clientCode')
-				if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
-					let body = tax
-					const response = await api.post('taxas', body)
-					console.log('response:', response)
-				} else {
-					console.log('Invalid client code:', apiClientCode)
-				}
-			} catch (error) {
-				toast.alert('Erro ao cadastrar taxa')
-				console.error('Error adding tax:', error)
-				if (error.response.status === 401) {
-					logout()
-					return
-				}
-			} finally {
-				toast.success('Taxa cadastrada com sucesso')
-				setIsLoadingTaxes(false)
-			}
-		}
-
-		//Edita Taxa
-		const editTax = async (tax) => {
-			setIsLoadingTaxes(true)
-			console.log('editTax: ', tax)
-			try {
-			  const apiClientCode = tax.CLICODIGO
-			  if (apiClientCode !== 'todos' && apiClientCode !== 'TODOS' && apiClientCode !== undefined) {
-				let body = JSON.stringify(tax)
-		  
-				const response = await fetch('https://app.salvalucro.com.br/api/v1/taxas', {
-				  method: 'PUT',
-				  headers: {
-					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${localStorage.getItem('token')}`
-				  },
-				  body: body,
-				})
-		  
-				const responseData = await response.json()
-				console.log('response: ', responseData)
-		  
-				if (response.ok) {
-					toast.dismiss()
-				  	toast.success('Taxa alterada com sucesso!')
-				} else {
-					toast.dismiss()
-				  	toast.error('Erro ao alterar taxa!')
-				}
-			  } else {
-				return []
-			  }
-			} catch (error) {
-			  console.error('Error updating tax:', error)
-			  toast.dismiss()
-			  toast.error('Erro ao alterar taxa!')
-			  if (error.response.status === 401) {
-				logout()
-				return
-			}
-			} finally {
-			  setIsLoadingTaxes(false)
-			}
-		  }
-		  
-		//Deleta Taxa
-		const deleteTax = async (tax) => {
-			setIsLoadingTaxes(true)
-			console.log(tax)
-			try {
-				const apiClientCode = localStorage.getItem('clientCode')
-				if(apiClientCode !== 'todos' && apiClientCode !== 'TODOS' && apiClientCode !== undefined) {
-					let body = tax
-					api.delete('taxas', {
-						headers: {
-							'Content-Type': 'application/json'
-						},
-						data: body
-					})
-					.then(response => {
-						console.log('response: ', response)
-						toast.dismiss()
-						toast.success('Taxa deletada com sucesso!')
-					})
-					.catch(error => {
-						console.log('error: ', error)
-						toast.dismiss()
-						toast.error('Erro ao deletar taxa!')
-					})
-				} else {
-					return []
-				}
-				setIsLoadingTaxes(false)
-			} catch (error) {
-				console.error('Error fetching vendas:', error)
-				setIsLoadingTaxes(false)
-				if (error.response.status === 401) {
-					logout()
-					return
-				}
-				return
-			}
-		}
-
-		//Bancos
-		const [isLoadingBanks, setIsLoadingBanks] = useState(false)
-
-		// retorna array de bancos
-		const loadBanks = async () => {
-			setIsLoadingBanks(true)
-			try {
-				const apiClientCode = localStorage.getItem('clientCode')
-				if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
-					let params = {
-						codigo: apiClientCode
-					}
-		
-					let config = {
-						params: params
-					}
-		
-					const response = await api.get('banco', config)
-					return response.data
-				} else {
-					console.log('Invalid client code:', apiClientCode)
-					return []
-				}
-			} catch (error) {
-				console.error('Error fetching banco:', error)
-				if (error.response.status === 401) {
-					logout()
-					return
-				}
-				return []
-			} finally {
-				setIsLoadingBanks(false)
-			}
-		}
-
-		// adiciona novo banco
-		const addBank = async (bank) => {
-			console.log('addBank: ', bank)
-			setIsLoadingBanks(true)
-			try {
-				const apiClientCode = localStorage.getItem('clientCode')
-				if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
-					let body = bank
-					const response = await api.post('banco', body)
-					if (response.data.success) {
-						toast.dismiss()
-						toast.success(response.data.mensagem)
-					} else {
-						toast.dismiss()
-						toast.error('Erro ao adicionar Banco!')
-					}
-				} else {
-					console.log('código do cliente inválido:', apiClientCode)
-				}
-
-			} catch (error) {
-				console.error('Erro ao adicionar banco:', error)
-				if (error.response.status === 401) {
-					logout()
-					return
-				}
-			} finally {
-				setIsLoadingBanks(false)
-			}
-		}
-
-		// edita banco
-		const editBank = async (editedBank) => {
-			console.log('editBank:', editedBank)
-			setIsLoadingBanks(true)
-			try {
-					let body = JSON.stringify(editedBank)
-					const response = await fetch('https://app.salvalucro.com.br/api/v1/banco', {
-					method: 'PUT',
-					headers: {
-						'Content-Type': 'application/json',
-						'Authorization': `Bearer ${localStorage.getItem('token')}`
-					},
-					body: body,
-					})
-			
-					const responseData = await response.json()
-			
-					if (response.ok) {
-						toast.dismiss()
-						toast.success('Banco alterado com sucesso!')
-					} else {
-						toast.dismiss()
-						toast.error('Erro ao alterar Banco!')
-					}
-			} catch (error) {
-				console.error('Erro ao Alterar Banco:', error)
-				toast.dismiss()
-				toast.error('Erro ao alterar banco!')
-				if (error.response.status === 401) {
-					logout()
-					return
-				}
-			} finally {
-				setIsLoadingBanks(false)
-			}	 
-		}
-
-		// deleta banco
-		const deleteBank = async (bankToDelete) => {
-			console.log('deleteBank: ', bankToDelete)
-			setIsLoadingBanks(true)
-			try {
-				let body = bankToDelete
-				api.delete('banco', {
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					data: body
-				})
-				.then(response => {
-					console.log('response: ', response)
-					toast.dismiss()
-					toast.success('Banco deletado com sucesso!')
-				})
-				.catch(error => {
-					console.log('error: ', error)
-					toast.dismiss()
-					toast.error('Erro ao deletar taxa!')
-				})
-				setIsLoadingBanks(false)
-			} catch (error) {
-				console.error('Error fetching vendas:', error)
-				setIsLoadingBanks(false)
-				if (error.response.status === 401) {
-					logout()
-					return
-				}
-				return
-			}
-		}
-
-		const loadCliAdq = async () => {
-			try {
-				let params = {
-					codigoCliente: localStorage.getItem('clientCode'),
-					codigoAdquirente: localStorage.getItem('admCode')
-				}
-
-				let config = {
-					params: params
-				}
-
-				const response = await api.get('clienteAdquirente', config)
-				return response.data
-			} catch (error) {
-				console.log(error)
-			}
-		}
-		
-		const loadProducts = async () => {
-			try {
-				const response = await api.get('produto')
-				return response.data
-			} catch (error) {
-				console.log(error)
-				if (error.response.status === 401) {
-					logout()
-					return
-				}
-			}
-		}
-
-		const loadSubproducts = async () => {
-			try {
-				let params = {
-					codigoAdquirente: localStorage.getItem('admCode')
-				}
-
-				let config = {
-					params: params
-				}
-				const response = await api.get('Subproduto', config)
-				return response.data
-			} catch (error) {
-				console.log(error)
-				if (error.response.status === 401) {
-					logout()
-					return
-				}
-			}
-		}
-
-		// retorna array de bandeiras
-		const loadBanners = async () => {
-			try {
-				const response = await api.get('bandeira')
-				return response.data
-			} catch (error) {
-				console.log(error)
-			}
-		}
-
-		// retorna array de administradoras
-		const loadAdmins = async () => {
-			try {
-				const response = await api.get('adquirente')
-				//await refreshSession()
-				return response.data
-			} catch (error) {
-				console.log(error)
-				if (error.response.status === 401) {
-					logout()
-					return
-				}
-			}
-		}
-
-		// retorna array de modalidades e seus respectivos códigos
-		const loadMods = async () => {
-			try {
-				const response = await api.get('Modalidade')
-				return response.data
-			} catch (error) {
-				console.log(error)
-				if (error.response.status === 401) {
-					logout()
-					return
-				}
-			}
-		}
-
-		// retorna string do arquivo SYSMO
-		const loadSysmo = async (obj) => {
-			setBtnDisabledSysmo(true)
-			try {
-				let params = {
-					tipo: obj.TIPO,
-					bandeira: obj.Bandeira,
-					adquirente: obj.Adquirente,
-					data: obj.Data
-				}
-
-				let config = {
-					params: params
-				}
-
-				const response = await api.get('Sysmo', config)
-				return response.data
-			} catch (error) {
-				setBtnDisabledSysmo(false)
-				console.log(error)
-				if (error.response.status === 401) {
-					logout()
-					return
-				}
-			}
-		} 
-
-		// renova o access token/sessão do usuário
-		const refreshSession = async () => {
-			if(localStorage.getItem('token')){
-				
-			}
-			try {
-			  const refreshToken = localStorage.getItem('refreshToken');
-			  
-			  if (!refreshToken) {
-				console.log('No refresh token available')
-				return
-			  }
-			  const response = await api.post('token/refresh/', {
-				refresh_token: refreshToken
-			  })
-
-			  localStorage.setItem('token', response.data.acess_token)
-			  localStorage.setItem('refreshToken', response.data.refresh_token)
-
-			} catch (error) {
-			  console.error('Error refreshing session:', error)
-		  
-			  if (error.response && error.response.status === 401) {
-				console.log('Unauthorized: logging out')
-				logout()
-			  }
-			}
-		  }
-
-	// >>> Dashboard <<< //
-
-		// *** Definição de consts / useStates *** 
-
-		// const que controla que define se os dados a serem apresentados na
-		// página 'Dashboard' foram carregados ou não. caso seja 'false', será
-		// feita a consulta a API, carregando os dados e seu valor será setado 
-		// para 'true' ao final, evitando que os dados sejam carregados novamente
-		// sem necessidade.
-
-		const resetDashboard = () => {
-			setSalesDashboard(null)
-			setCreditsDashboard(null)
-			setServicesDashboard(null)
-
-		}
-
-		const [isLoadedDashboard, setIsLoadedDashboard] = useState(false) // //
-
-		const [isLoadedSalesDashboard, setIsLoadedSalesDashboard] = useState(false)
-		const [isLoadedCreditsDashboard, setIsLoadedCreditsDashboard] = useState(false)
-		const [isLoadedServicesDashboard, setIsLoadedServicesDashboard] = useState(false)
-				
-		const [canceled, setCanceled] = useState(false)
-		
-		// consts que guardarão os objetos referentes à cada grupo de dados no Dashboard
-				const [salesDashboard, setSalesDashboard] = useState({
-					sales: [], 		// ->	Array com as vendas do Mês 		//
-					totalLast4: 0, 	// ->	Total dos últimos 4 dias 		//
-					totalMonth: 0, 	// ->	Total do mês 					//
-					chart: { 		// ->	Dados referentes ao gráfico 	//
-						data: [], 	// ->	Valores (por administradora) 	//
-						labels: [] 	// ->	Nomes (por administradora) 		//
-					}
-				})
-		
-				const [creditsDashboard, setCreditsDashboard] = useState({
-					credits: [],
-					predictToday: 0,
-					predictNext5: 0,
-					chart: {
-						data: [],
-						labels: []
-					}
-				})
-		
-				const [servicesDashboard, setServicesDashboard] = useState({
-					services: [],
-					totalToday: 0,
-					totalMonth: 0,
-					chart: {
-						data: [],
-						labels: []
-					}
-				})
-
-
-		// consts que guardarão as informações do Gráfico (react-chartjs-2)
-
-		const [chartSales, setChartSales] = useState({data: [], labels: []})
-		const [chartCredits, setChartCredits] = useState({data: [], labels: []})
-		const [chartServices, setChartServices] = useState({data: [], labels: []})
-
-		// funções que gerenciarão o carregamento dos dados referente à cada grupo de dados (vendas, créditos, serviços/ajustes)
-
-		// ---------------------------------------------------------------------------- //
-
-		// ************** //
-		//  >> Vendas <<  //
-		// ************** //
-		const loadSalesGroup = async ()=> {
-			let salesMonth
-			let salesLast4
-			
-			let salesByAdmin
-			let totalAdmin = 0
-			let tempAdmin
-			
-			let totalSalesMonth
-			let totalSalesLast4
-
-			if(!fetchingData){
-				setFetchingData(true)
-			}
-
-			if(canceled){
-				setCanceled(false)
-			}
-			
-			const loadSalesMonth = async () => {
-				let salesTemp = []
-		
-				function getFirstDayOfMonth() {
-					const currentDate = new Date()
-					const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
-					return firstDayOfMonth
-				}
-			
-				function getLastDayOfMonth(){
-					const currentDate = new Date()
-					const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0)
-					return lastDayOfMonth
-				}
-			
-				const firstDay = getFirstDayOfMonth()
-				const lastDay = getLastDayOfMonth()
-			  
-				try {
-					salesTemp = await loadSales(firstDay, lastDay)
-				} catch (error) {
-					console.error('Erro: ', error)
-					if (error.response.status === 401) {
-						logout()
-						return
-					}
-				}
-				salesMonth = salesTemp
-			}
-
-			const loadLast4 = async () =>{
-				let startDate = new Date()
-				let endDate = new Date()
-		
-				startDate.setDate(startDate.getDate() - 4)
-				startDate = converteData(startDate)
-		
-				endDate.setDate(endDate.getDate() -1)
-				endDate = converteData(endDate)
-		
-				const salesTemp = await loadSales(startDate, endDate)
-				
-				salesLast4 = salesTemp
-			}
-
-			function loadChart(array){
-				let label = []
-				let data = []
-				
-				array.forEach((index) => {
-					const sum = index.total
-					const adminName = index.adminName
-					let temp = sum
-					totalAdmin += sum
-					label.push(adminName)
-					data.push(Number(temp))
-				})
-				const obj = {labels: label, data: data}
-				return obj
-			}
-
-			function separateAdmin(array) {
-				let sums = {
-					total: 0
-				}
-				
-				let tempSales = []
-				let separatedByAdquirente = []
-
-					array.forEach((sale) => {
-						sums.total += sale.valorBruto
-						tempSales.push(sale)
-
-						let entry = separatedByAdquirente.find(adquirente => adquirente.adminName === sale.adquirente.nomeAdquirente)
-						if (!entry) {
-							entry = {
-								id: separatedByAdquirente.length,
-								adminName: sale.adquirente.nomeAdquirente,
-								total: 0,
-								sales: []
-							}
-							separatedByAdquirente.push(entry)
-						}
-						entry.sales.push(sale)
-					
-						entry.total += sale.valorBruto
-					})
-				return separatedByAdquirente
-			}
-
-			try {
-				await Promise.all([
-					loadSalesMonth(),
-					loadLast4()
-				]).then(() => {
-					tempAdmin = separateAdmin(salesMonth)
-					salesByAdmin = sortArray(tempAdmin)
-					const chartData = loadChart(salesByAdmin)
-					setChartSales(chartData)
-
-					totalSalesLast4 = salesLast4.reduce((total, obj) => total + obj.valorBruto, 0)
-					totalSalesMonth = salesMonth.reduce((total, obj) => total + obj.valorBruto, 0)
-			
-					setSalesDashboard({
-						sales: salesMonth,
-						salesByAdmin: salesByAdmin,
-						totalLast4: Number(totalSalesLast4),
-						totalMonth: Number(totalSalesMonth),
-						totalAdmin: totalAdmin,
-						chart: chartData
-					})
-					setIsLoadedSalesDashboard(true)
-				})
-			} catch (error) {
-				console.log('Erro: ', error)
-			}
-		}
-		// ************** //
-		// >> Créditos << //
-		// ************** //
-		const loadCreditsGroup = async ()=> {
-			let creditsMonth
-			let creditsNext5
-			
-			let creditsByAdmin
-			let totalAdmin = 0
-			let tempAdmin
-
-			let totalCreditsToday
-			let totalCreditsNext5
-
-			if(!fetchingData){
-				setFetchingData(true)
-			}
-
-			if(canceled){
-				setCanceled(false)
-			}
-			
-			const loadCreditsMonth = async () => {
-				let creditsTemp = []
-		
-				function getFirstDayOfMonth() {
-					const currentDate = new Date()
-					const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
-					return firstDayOfMonth
-				}
-			
-				function getLastDayOfMonth(){
-					const currentDate = new Date()
-					const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0)
-					return lastDayOfMonth
-				}
-			
-				const firstDay = getFirstDayOfMonth()
-				const lastDay = getLastDayOfMonth()
-			  
-				try {
-					creditsTemp = await loadCredits(firstDay, lastDay)
-				} catch (error) {
-					console.error('Erro: ', error)
-					if (error.response.status === 401) {
-						logout()
-						return
-					}
-				}
-				creditsMonth = creditsTemp
-			}
-
-			const loadCreditsNext5 = async () => {
-				let firstDay = new Date()
-				firstDay.setDate(firstDay.getDate() + 1)
-
-				let lastDay = new Date(firstDay)
-				lastDay.setDate(lastDay.getDate() + 4)
-
-				firstDay = new Date(firstDay).toISOString().split('T')[0]
-				lastDay = new Date(lastDay).toISOString().split('T')[0]
-
-				let creditsTemp
-			
-				try {
-					creditsTemp = await loadCredits(firstDay, lastDay)
-					creditsNext5 = creditsTemp
-				} catch (error) {
-					console.error('Erro: ', error)
-					if (error.response && error.response.status === 401) {
-						logout()
-						return
-					}
-				}
-			}
-
-			function loadChart(array){
-				let label = []
-				let data = []
-
-				array.forEach((index) => {
-					const sum = index.total
-					const adminName = index.adminName
-					let temp = sum
-					totalAdmin += sum
-					label.push(adminName)
-					data.push(Number(temp))
-				})
-				const obj = {labels: label, data: data}
-				return obj
-			}
-
-			function separateAdmin(array) {
-				let sums = {
-					total: 0
-				}
-				
-				let tempSales = []
-				let separatedByAdquirente = []
-			
-					array.forEach((sale) => {
-						sums.total += sale.valorLiquido
-						tempSales.push(sale)
-
-						let entry = separatedByAdquirente.find(adquirente => adquirente.adminName === sale.adquirente.nomeAdquirente)
-						if (!entry) {
-							entry = {
-								id: separatedByAdquirente.length,
-								adminName: sale.adquirente.nomeAdquirente,
-								total: 0,
-								sales: []
-							}
-							separatedByAdquirente.push(entry)
-						}			
-						entry.sales.push(sale)
-						entry.total += sale.valorLiquido
-					})
-				return separatedByAdquirente
-			}
-
-			try {
-
-				await Promise.all([
-					loadCreditsMonth(),
-					loadCreditsNext5()
-				]).then(() => {
-					tempAdmin = separateAdmin(creditsMonth)
-					creditsByAdmin = sortArray(tempAdmin)
-					const chartData = loadChart(creditsByAdmin)
-					setChartCredits(chartData)
-			
-					let todayTemp = new Date()
-		
-					todayTemp = converteData(todayTemp)
-					totalCreditsToday = 0
-					
-					creditsMonth.forEach((venda) => {
-						if(venda.dataCredito === todayTemp){
-							totalCreditsToday += venda.valorLiquido
-						}
-					})
-			
-					totalCreditsNext5 = 0
-					totalCreditsNext5 = creditsNext5.reduce((total, venda) => total + venda.valorLiquido, 0);
-			
-					setCreditsDashboard({
-						credits: creditsMonth,
-						creditsByAdmin: creditsByAdmin,
-						totalCreditsNext5: Number(totalCreditsNext5),
-						totalCreditsToday: Number(totalCreditsToday),
-						chart: chartData,
-						totalAdmin: totalAdmin
-					})
-					setIsLoadedCreditsDashboard(true)
-				})
-			} catch (error) {
-				console.log('Erro: ', error)
-			}
-		}
-		// ************** //
-		// >> Serviços << //
-		// ************** //
-		const loadServicesGroup = async ()=> {
-
-			let servicesMonth
-
-			let totalServicesToday = 0
-			let totalServicesMonth = 0
-			let totalAdmin = 0
-
-			if(!fetchingData){
-				setFetchingData(true)
-			}
-
-			if(canceled){
-				setCanceled(false)
-			}
-
-			const loadServicesMonth = async () => {
-				function firstDay() {
-					const today = new Date()
-					const firstDay = new Date(today.getFullYear(), today.getMonth(), 1)
-					
-					return firstDay
-				}
-		
-				function lastDay() {
-					const today = new Date()
-					const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0)
-					
-					return lastDay
-				}
-
-				const servicesTemp = await loadServices(firstDay(), lastDay())
-				servicesMonth = servicesTemp
-			}
-
-			function loadChart(array){
-				let label = []
-				let data = []
-
-				array.forEach((index) => {
-					const sum = index.total
-					const adminName = index.adminName
-					let temp = sum
-					totalAdmin += sum
-					label.push(adminName)
-					data.push(Number(temp))
-				})
-				const obj = {labels: label, data: data}
-				return obj
-			}
-
-			function separateAdmin(array) {
-				let sums = {
-					total: 0
-				}
-				
-				let tempSales = []
-				let separatedByAdquirente = []
-			
-					array.forEach((sale) => {
-						sums.total += sale.valor
-						tempSales.push(sale)
-					
-						let entry = separatedByAdquirente.find(adquirente => adquirente.adminName === sale.nome_adquirente)
-						if (!entry) {
-							entry = {
-								id: separatedByAdquirente.length,
-								adminName: sale.nome_adquirente,
-								total: 0,
-								sales: []
-							}
-							separatedByAdquirente.push(entry)
-						}
-						entry.sales.push(sale)
-						entry.total += sale.valor
-					})
-				return separatedByAdquirente
-			}
-
-			try {
-				await Promise.all([
-					loadServicesMonth()
-				]).then(() => {
-					let temp = []
-					let objAdq = {}
-					servicesMonth.map((service) => {
-						if(temp.length === 0){
-							objAdq = {
-								adminName: service.nome_adquirente,
-								total: service.valor,
-								id: 0,
-								sales: [service]
-							}
-							temp.push(objAdq)
-		
-						} else {
-							const existingObject = temp.find(obj => obj.nomeAdquirente === service.nome_adquirente)
-							if (existingObject) {
-								existingObject.total = (existingObject.total || 0) + service.valor
-								existingObject.total = parseFloat(existingObject.total.toFixed(2)) // Round to 2 decimal places
-								existingObject.vendas.push(service)
-							} else {
-								temp.push({
-									adminName: service.nome_adquirente,
-									total: service.valor,
-									id: temp.length,
-									sales: [service]
-								})
-							}
-						}})
-
-					let tempAdmin = separateAdmin(servicesMonth)
-					const servicesByAdmin = (sortArray(tempAdmin))        
-					const chartData = loadChart(servicesByAdmin)
-
-					setChartServices(chartData)
-
-					const totalMesTemp = servicesMonth.reduce((total, obj) => total + obj.valor, 0)
-					totalServicesMonth = totalMesTemp
-
-					let today = new Date
-					today = converteData(today)
-					servicesMonth.forEach((service) => {
-						if(service.data === today){
-							totalServicesToday += service.valor
-						}
-					})
-					
-					setServicesDashboard({
-						services: servicesMonth,
-						servicesByAdmin: servicesByAdmin,
-						totalServicesMonth: Number(totalServicesMonth),
-						totalServicesToday: Number(totalServicesToday),
-						chart: chartData,
-						totalAdmin: totalAdmin
-					})
-					setIsLoadedServicesDashboard(true)
-				})
-			} catch (error) {
-				console.log('Erro: ', error)
-			}
-		}
-
-		// ----------------------------------------------------------------------------- //
-
-		// função que gerencia o carregamento de tudo que será visto no Dashboard
-
-		const loadDashboard = async () => {	
-			resetDashboard()
-			setIsLoadedSalesDashboard(false)
-			setIsLoadedCreditsDashboard(false)
-			setIsLoadedServicesDashboard(false)
-			setIsLoadedDashboard(false)
-			try {
-				if(!fetchingData){
-					setFetchingData(true)
-				}
-				Promise.all([
-					loadSalesGroup(),
-					loadCreditsGroup(),
-					loadServicesGroup()
-				]).then(()=>{
-					setIsLoadedDashboard(true)
-					setChangedOption(false)
-				})
-			} catch (error) {
-				console.log('erro: ', error)
-				if (error.response.status === 401) {
-					logout()
-					return
-				}
-			}
-		}
-
-		useEffect(()=>{
-			if(isLoadedSalesDashboard && isLoadedCreditsDashboard && isLoadedServicesDashboard){
-				setFetchingData(false)
-			}
-		},[isLoadedSalesDashboard, isLoadedCreditsDashboard, isLoadedServicesDashboard])
-
-		// >>> Página de Vendas <<< //
-		const [salesPageArray, setSalesPageArray] = useState([])
-		const [salesPageAdminArray, setSalesPageAdminArray] =  useState([])
-		const [salesTotal, setSalesTotal] = useState({
-			debit: 0,
-			credit: 0,
-			voucher: 0,
-			total: 0,
-		})
-		const [salesDateRange, setSalesDateRange] = useState([new Date(), new Date()])
-
-		// >>> Página de Créditos <<< //
-		const [creditsPageArray, setCreditsPageArray] = useState([])
-		const [creditsPageAdminArray, setCreditsPageAdminArray] = useState([])
-		const [creditsTotal, setCreditsTotal] = useState({
-			debit: 0,
-			credit: 0,
-			voucher: 0,
-			total: 0,
-		})
-		const [creditsDateRange, setCreditsDateRange] = useState([new Date(), new Date()])
-
-		// >>> Página de Serviços <<< //
-		const [servicesPageArray, setServicesPageArray] = useState([])
-		const [servicesPageAdminArray, setServicesPageAdminArray] = useState([])
-		const [servicesDateRange, setServicesDateRange] = useState([new Date(), new Date()])
-
-		// >>> Página de Taxas <<< //
-		const [isLoadingTaxes, setIsLoadingTaxes] = useState(false)
-		const [taxesPageArray, setTaxesPageArray] = useState([])
+const loadSales = async (startDate, endDate) => {
+  try {
+    setErrorSales(false)
+    const apiCNPJ = localStorage.getItem('cnpj')
+    const apiGroupCode = localStorage.getItem('groupCode')
+    if((apiCNPJ === 'todos' || apiCNPJ === 'TODOS') && (apiGroupCode !== 'selecione')){
+      let params = {
+        datainicial: startDate,
+        datafinal: endDate,
+        codigoGrupo: apiGroupCode,
+      }
+      let config = {
+        params: params
+      }
+
+      const response = await api.get('vendas', config)
+      return response.data.VENDAS
+
+    } else {
+      let params = {
+        datainicial: startDate,
+        datafinal: endDate,
+        cnpj: apiCNPJ,
+      }
+
+      let config = {
+        params: params
+      }
+      const response = await api.get('vendas', config)
+      setBtnDisabledSales(false)
+      exportSales(response.data.VENDAS)
+      return response.data.VENDAS
+    }
+  } catch (error) {
+    setBtnDisabledSales(false)
+    console.log('bomba: ', error)
+    if(error.code === 'ERR_CANCELED'){
+      console.log('canceled')
+      setErrorSales(false)
+    } else if (error.response && error.response.status === 401) {
+      console.log('error response status 401')
+      toast.error('Sessão Expirada')
+      logout()
+      return
+    } else {
+      console.log('not canceled')
+      toast.error('Erro ao Carregar Vendas ', error.response ? error.response.status : 'Unknown error')
+      console.error('Error fetching vendas:', error)
+      setErrorSales(true)
+    }
+    return []
+  }
+}
+
+// retorna array de créditos/recebimentos
+const loadCredits = async (startDate, endDate) => {
+  try {
+    setErrorCredits(false)
+    const apiCNPJ = localStorage.getItem('cnpj')
+    const apiGroupCode = localStorage.getItem('groupCode')
+    if((apiCNPJ === 'todos' || apiCNPJ === 'TODOS') && (apiGroupCode !== 'selecione')){
+      let params = {
+        dataInicial: startDate,
+        dataFinal: endDate,
+        codigoGrupo: apiGroupCode
+      }
+
+      let config = {
+        params: params
+      }
+      const response = await api.get('recebimentos', config)
+      return response.data
+
+    } else {
+      let params = {
+        cnpj: apiCNPJ,
+        dataInicial: startDate,
+        dataFinal: endDate,
+      }
+
+      let config = {
+        params: params
+      }
+
+      const response = await api.get('recebimentos', config)
+      setBtnDisabledCredits(false)
+      return response.data
+    }
+  } catch (error) {
+    setBtnDisabledCredits(false)
+    if(error.code === 'ERR_CANCELED'){
+      console.log('canceled')
+      setErrorCredits(false)
+    } else if (error.response && error.response.status === 401) {
+      toast.error('Sessão Expirada')
+      logout()
+      return
+    } else {
+      console.log('not canceled')
+      toast.error('Erro ao Carregar Créditos: ', error.response ? error.response.status : 'Unknown error')
+      console.error('Error fetching créditos:', error)
+      setErrorCredits(true)
+    }
+    return []
+  }
+}
+
+// retorna array de serviços/ajustes
+const loadServices = async (startDate, endDate) => {
+  try {
+    setErrorServices(false)
+    const apiCNPJ = localStorage.getItem('cnpj')
+    const apiGroupCode = localStorage.getItem('groupCode')
+    if((apiCNPJ === 'todos' || apiCNPJ === 'TODOS') && (apiGroupCode !== 'selecione')){
+      let params = {
+        dataInicial: startDate,
+        dataFinal: endDate,
+        codigoGrupo: apiGroupCode
+      }
+
+      let config = {
+        params: params
+      }
+      const response = await api.get('ajustes', config)
+      return response.data
+    } else {
+      const params = {
+        cnpj: apiCNPJ,
+        dataInicial: startDate,
+        dataFinal: endDate,
+      }
+
+      let config = {
+        params,
+      }
+      const response = await api.get('ajustes', config)
+      setBtnDisabledServices(false)
+      return response.data
+    }
+  } catch (error) {
+    setBtnDisabledServices(false)
+    if(error.code === 'ERR_CANCELED'){
+      console.log('canceled')
+      setErrorServices(false)
+    } else if (error.response && error.response.status === 401) {
+      toast.error('Sessão Expirada')
+      logout()
+      return
+    } else {
+      console.log('not canceled')
+      toast.error('Erro ao Carregar Serviços: ', error.response ? error.response.status : 'Unknown error')
+      console.error('Error fetching serviços:', error)
+      setErrorServices(true)
+    }
+    return []
+  }
+}
+
+// retorna Objeto de Taxas
+const loadTaxes = async () => {
+  setIsLoadingTaxes(true)
+  try {
+    const apiClientCode = localStorage.getItem('clientCode')
+    if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
+      let params = {
+        codigo: apiClientCode
+      }
+
+      let config = {
+        params: params
+      }
+
+      const response = await api.get('taxas', config)
+      return response.data
+    } else {
+      console.log('Invalid client code:', apiClientCode)
+      return []
+    }
+  } catch (error) {
+    console.error('Error fetching taxas:', error)
+    if (error.response && error.response.status === 401) {
+      logout()
+      return
+    }
+    return []
+  } finally {
+    setIsLoadingTaxes(false)
+  }
+}
+
+//Adiciona nova Taxa
+const addTax = async (tax) => {
+  setIsLoadingTaxes(true)
+  try {
+    const apiClientCode = localStorage.getItem('clientCode')
+    if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
+      let body = tax
+      const response = await api.post('taxas', body)
+      console.log('response:', response)
+    } else {
+      console.log('Invalid client code:', apiClientCode)
+    }
+  } catch (error) {
+    toast.alert('Erro ao cadastrar taxa')
+    console.error('Error adding tax:', error)
+    if (error.response && error.response.status === 401) {
+      logout()
+      return
+    }
+  } finally {
+    toast.success('Taxa cadastrada com sucesso')
+    setIsLoadingTaxes(false)
+  }
+}
+
+//Edita Taxa
+const editTax = async (tax) => {
+  setIsLoadingTaxes(true)
+  console.log('editTax: ', tax)
+  try {
+    const apiClientCode = tax.CLICODIGO
+    if (apiClientCode !== 'todos' && apiClientCode !== 'TODOS' && apiClientCode !== undefined) {
+      let body = JSON.stringify(tax)
+
+      const response = await fetch('https://app.salvalucro.com.br/api/v1/taxas', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: body,
+      })
+
+      const responseData = await response.json()
+      console.log('response: ', responseData)
+
+      if (response.ok) {
+        toast.dismiss()
+        toast.success('Taxa alterada com sucesso!')
+      } else {
+        toast.dismiss()
+        toast.error('Erro ao alterar taxa!')
+      }
+    } else {
+      return []
+    }
+  } catch (error) {
+    console.error('Error updating tax:', error)
+    toast.dismiss()
+    toast.error('Erro ao alterar taxa!')
+    if (error.response && error.response.status === 401) {
+      logout()
+      return
+    }
+  } finally {
+    setIsLoadingTaxes(false)
+  }
+}
+
+//Deleta Taxa
+const deleteTax = async (tax) => {
+  setIsLoadingTaxes(true)
+  console.log(tax)
+  try {
+    const apiClientCode = localStorage.getItem('clientCode')
+    if(apiClientCode !== 'todos' && apiClientCode !== 'TODOS' && apiClientCode !== undefined) {
+      let body = tax
+      api.delete('taxas', {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        data: body
+      })
+      .then(response => {
+        console.log('response: ', response)
+        toast.dismiss()
+        toast.success('Taxa deletada com sucesso!')
+      })
+      .catch(error => {
+        console.log('error: ', error)
+        toast.dismiss()
+        toast.error('Erro ao deletar taxa!')
+      })
+    } else {
+      return []
+    }
+    setIsLoadingTaxes(false)
+  } catch (error) {
+    console.error('Error fetching vendas:', error)
+    setIsLoadingTaxes(false)
+    if (error.response && error.response.status === 401) {
+      logout()
+      return
+    }
+    return
+  }
+}
+
+//Bancos
+const [isLoadingBanks, setIsLoadingBanks] = useState(false)
+
+// retorna array de bancos
+const loadBanks = async () => {
+  setIsLoadingBanks(true)
+  try {
+    const apiClientCode = localStorage.getItem('clientCode')
+    if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
+      let params = {
+        codigo: apiClientCode
+      }
+
+      let config = {
+        params: params
+      }
+
+      const response = await api.get('banco', config)
+      return response.data
+    } else {
+      console.log('Invalid client code:', apiClientCode)
+      return []
+    }
+  } catch (error) {
+    console.error('Error fetching banco:', error)
+    if (error.response && error.response.status === 401) {
+      logout()
+      return
+    }
+    return []
+  } finally {
+    setIsLoadingBanks(false)
+  }
+}
+
+// adiciona novo banco
+const addBank = async (bank) => {
+  console.log('addBank: ', bank)
+  setIsLoadingBanks(true)
+  try {
+    const apiClientCode = localStorage.getItem('clientCode')
+    if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
+      let body = bank
+      const response = await api.post('banco', body)
+      if (response.data.success) {
+        toast.dismiss()
+        toast.success(response.data.mensagem)
+      } else {
+        toast.dismiss()
+        toast.error('Erro ao adicionar Banco!')
+      }
+    } else {
+      console.log('código do cliente inválido:', apiClientCode)
+    }
+
+  } catch (error) {
+    console.error('Erro ao adicionar banco:', error)
+    if (error.response && error.response.status === 401) {
+      logout()
+      return
+    }
+  } finally {
+    setIsLoadingBanks(false)
+  }
+}
+
+// edita banco
+const editBank = async (editedBank) => {
+  console.log('editBank:', editedBank)
+  setIsLoadingBanks(true)
+  try {
+      let body = JSON.stringify(editedBank)
+      const response = await fetch('https://app.salvalucro.com.br/api/v1/banco', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      body: body,
+      })
+
+      const responseData = await response.json()
+
+      if (response.ok) {
+        toast.dismiss()
+        toast.success('Banco alterado com sucesso!')
+      } else {
+        toast.dismiss()
+        toast.error('Erro ao alterar Banco!')
+      }
+  } catch (error) {
+    console.error('Erro ao Alterar Banco:', error)
+    toast.dismiss()
+    toast.error('Erro ao alterar banco!')
+    if (error.response && error.response.status === 401) {
+      logout()
+      return
+    }
+  } finally {
+    setIsLoadingBanks(false)
+  }   
+}
+
+// deleta banco
+const deleteBank = async (bankToDelete) => {
+  console.log('deleteBank: ', bankToDelete)
+  setIsLoadingBanks(true)
+  try {
+    let body = bankToDelete
+    api.delete('banco', {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: body
+    })
+    .then(response => {
+      console.log('response: ', response)
+      toast.dismiss()
+      toast.success('Banco deletado com sucesso!')
+    })
+    .catch(error => {
+      console.log('error: ', error)
+      toast.dismiss()
+      toast.error('Erro ao deletar taxa!')
+    })
+    setIsLoadingBanks(false)
+  } catch (error) {
+    console.error('Error fetching vendas:', error)
+    setIsLoadingBanks(false)
+    if (error.response && error.response.status === 401) {
+      logout()
+      return
+    }
+    return
+  }
+}
+
+const loadCliAdq = async () => {
+  try {
+    let params = {
+      codigoCliente: localStorage.getItem('clientCode'),
+      codigoAdquirente: localStorage.getItem('admCode')
+    }
+
+    let config = {
+      params: params
+    }
+
+    const response = await api.get('clienteAdquirente', config)
+    return response.data
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+const loadProducts = async () => {
+  try {
+    const response = await api.get('produto')
+    return response.data
+  } catch (error) {
+    console.log(error)
+    if (error.response && error.response.status === 401) {
+      logout()
+      return
+    }
+  }
+}
+
+const loadSubproducts = async () => {
+  try {
+    let params = {
+      codigoAdquirente: localStorage.getItem('admCode')
+    }
+
+    let config = {
+      params: params
+    }
+    const response = await api.get('Subproduto', config)
+    return response.data
+  } catch (error) {
+    console.log(error)
+    if (error.response && error.response.status === 401) {
+      logout()
+      return
+    }
+  }
+}
+
+// retorna array de bandeiras
+const loadBanners = async () => {
+  try {
+    const response = await api.get('bandeira')
+    return response.data
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+// retorna array de administradoras
+const loadAdmins = async () => {
+  try {
+    const response = await api.get('adquirente')
+    //await refreshSession()
+    return response.data
+  } catch (error) {
+    console.log(error)
+    if (error.response && error.response.status === 401) {
+      logout()
+      return
+    }
+  }
+}
+
+// retorna array de modalidades e seus respectivos códigos
+const loadMods = async () => {
+  try {
+    const response = await api.get('Modalidade')
+    return response.data
+  } catch (error) {
+    console.log(error)
+    if (error.response && error.response.status === 401) {
+      logout()
+      return
+    }
+  }
+}
+
+// retorna string do arquivo SYSMO
+const loadSysmo = async (obj) => {
+  setBtnDisabledSysmo(true)
+  try {
+    let params = {
+      tipo: obj.TIPO,
+      bandeira: obj.Bandeira,
+      adquirente: obj.Adquirente,
+      data: obj.Data
+    }
+
+    let config = {
+      params: params
+    }
+
+    const response = await api.get('Sysmo', config)
+    return response.data
+  } catch (error) {
+    setBtnDisabledSysmo(false)
+    console.log(error)
+    if (error.response && error.response.status === 401) {
+      logout()
+      return
+    }
+  }
+} 
+
+// renova o access token/sessão do usuário
+const refreshSession = async () => {
+  if(localStorage.getItem('token')){
+    
+  }
+  try {
+    const refreshToken = localStorage.getItem('refreshToken');
+    
+    if (!refreshToken) {
+      console.log('No refresh token available')
+      return
+    }
+    const response = await api.post('token/refresh/', {
+      refresh_token: refreshToken
+    })
+
+    localStorage.setItem('token', response.data.acess_token)
+    localStorage.setItem('refreshToken', response.data.refresh_token)
+
+  } catch (error) {
+    console.error('Error refreshing session:', error)
+
+    if (error.response && error.response.status === 401) {
+      console.log('Unauthorized: logging out')
+      logout()
+    }
+  }
+}
+
+// >>> Dashboard <<< //
+
+// *** Definição de consts / useStates *** 
+
+// const que controla que define se os dados a serem apresentados na
+// página 'Dashboard' foram carregados ou não. caso seja 'false', será
+// feita a consulta a API, carregando os dados e seu valor será setado 
+// para 'true' ao final, evitando que os dados sejam carregados novamente
+// sem necessidade.
+
+const resetDashboard = () => {
+  setSalesDashboard(null)
+  setCreditsDashboard(null)
+  setServicesDashboard(null)
+
+}
+
+const [isLoadedDashboard, setIsLoadedDashboard] = useState(false) // //
+
+const [isLoadedSalesDashboard, setIsLoadedSalesDashboard] = useState(false)
+const [isLoadedCreditsDashboard, setIsLoadedCreditsDashboard] = useState(false)
+const [isLoadedServicesDashboard, setIsLoadedServicesDashboard] = useState(false)
+
+const [canceled, setCanceled] = useState(false)
+
+// consts que guardarão os objetos referentes à cada grupo de dados no Dashboard
+    const [salesDashboard, setSalesDashboard] = useState({
+      sales: [],     // ->  Array com as vendas do Mês     //
+      totalLast4: 0,   // ->  Total dos últimos 4 dias     //
+      totalMonth: 0,   // ->  Total do mês           //
+      chart: {     // ->  Dados referentes ao gráfico   //
+        data: [],   // ->  Valores (por administradora)   //
+        labels: []   // ->  Nomes (por administradora)     //
+      }
+    })
+
+    const [creditsDashboard, setCreditsDashboard] = useState({
+      credits: [],
+      predictToday: 0,
+      predictNext5: 0,
+      chart: {
+        data: [],
+        labels: []
+      }
+    })
+
+    const [servicesDashboard, setServicesDashboard] = useState({
+      services: [],
+      totalToday: 0,
+      totalMonth: 0,
+      chart: {
+        data: [],
+        labels: []
+      }
+    })
+
+
+// consts que guardarão as informações do Gráfico (react-chartjs-2)
+
+const [chartSales, setChartSales] = useState({data: [], labels: []})
+const [chartCredits, setChartCredits] = useState({data: [], labels: []})
+const [chartServices, setChartServices] = useState({data: [], labels: []})
+
+// funções que gerenciarão o carregamento dos dados referente à cada grupo de dados (vendas, créditos, serviços/ajustes)
+
+// ---------------------------------------------------------------------------- //
+
+// ************** //
+//  >> Vendas <<  //
+// ************** //
+const loadSalesGroup = async ()=> {
+  let salesMonth
+  let salesLast4
+  
+  let salesByAdmin
+  let totalAdmin = 0
+  let tempAdmin
+  
+  let totalSalesMonth
+  let totalSalesLast4
+
+  if(!fetchingData){
+    setFetchingData(true)
+  }
+
+  if(canceled){
+    setCanceled(false)
+  }
+  
+  const loadSalesMonth = async () => {
+    let salesTemp = []
+
+    function getFirstDayOfMonth() {
+      const currentDate = new Date()
+      const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
+      return firstDayOfMonth
+    }
+
+    function getLastDayOfMonth(){
+      const currentDate = new Date()
+      const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0)
+      return lastDayOfMonth
+    }
+
+    const firstDay = getFirstDayOfMonth()
+    const lastDay = getLastDayOfMonth()
+    
+    try {
+      salesTemp = await loadSales(firstDay, lastDay)
+    } catch (error) {
+      console.error('Erro: ', error)
+      if (error.response && error.response.status === 401) {
+        logout()
+        return
+      }
+    }
+    salesMonth = salesTemp
+  }
+
+  const loadLast4 = async () =>{
+    let startDate = new Date()
+    let endDate = new Date()
+
+    startDate.setDate(startDate.getDate() - 4)
+    startDate = converteData(startDate)
+
+    endDate.setDate(endDate.getDate() -1)
+    endDate = converteData(endDate)
+
+    const salesTemp = await loadSales(startDate, endDate)
+    
+    salesLast4 = salesTemp
+  }
+
+  function loadChart(array){
+    let label = []
+    let data = []
+    
+    array.forEach((index) => {
+      const sum = index.total
+      const adminName = index.adminName
+      let temp = sum
+      totalAdmin += sum
+      label.push(adminName)
+      data.push(Number(temp))
+    })
+    const obj = {labels: label, data: data}
+    return obj
+  }
+
+  function separateAdmin(array) {
+    let sums = {
+      total: 0
+    }
+    
+    let tempSales = []
+    let separatedByAdquirente = []
+
+      array.forEach((sale) => {
+        sums.total += sale.valorBruto
+        tempSales.push(sale)
+
+        let entry = separatedByAdquirente.find(adquirente => adquirente.adminName === sale.adquirente.nomeAdquirente)
+        if (!entry) {
+          entry = {
+            id: separatedByAdquirente.length,
+            adminName: sale.adquirente.nomeAdquirente,
+            total: 0,
+            sales: []
+          }
+          separatedByAdquirente.push(entry)
+        }
+        entry.sales.push(sale)
+      
+        entry.total += sale.valorBruto
+      })
+    return separatedByAdquirente
+  }
+
+  try {
+    await Promise.all([
+      loadSalesMonth(),
+      loadLast4()
+    ]).then(() => {
+      tempAdmin = separateAdmin(salesMonth)
+      salesByAdmin = sortArray(tempAdmin)
+      const chartData = loadChart(salesByAdmin)
+      setChartSales(chartData)
+
+      totalSalesLast4 = salesLast4.reduce((total, obj) => total + obj.valorBruto, 0)
+      totalSalesMonth = salesMonth.reduce((total, obj) => total + obj.valorBruto, 0)
+  
+      setSalesDashboard({
+        sales: salesMonth,
+        salesByAdmin: salesByAdmin,
+        totalLast4: Number(totalSalesLast4),
+        totalMonth: Number(totalSalesMonth),
+        totalAdmin: totalAdmin,
+        chart: chartData
+      })
+      setIsLoadedSalesDashboard(true)
+    })
+  } catch (error) {
+    console.log('Erro: ', error)
+  }
+}
+// ************** //
+// >> Créditos << //
+// ************** //
+const loadCreditsGroup = async ()=> {
+  let creditsMonth
+  let creditsNext5
+  
+  let creditsByAdmin
+  let totalAdmin = 0
+  let tempAdmin
+
+  let totalCreditsToday
+  let totalCreditsNext5
+
+  if(!fetchingData){
+    setFetchingData(true)
+  }
+
+  if(canceled){
+    setCanceled(false)
+  }
+  
+  const loadCreditsMonth = async () => {
+    let creditsTemp = []
+
+    function getFirstDayOfMonth() {
+      const currentDate = new Date()
+      const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
+      return firstDayOfMonth
+    }
+
+    function getLastDayOfMonth(){
+      const currentDate = new Date()
+      const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0)
+      return lastDayOfMonth
+    }
+
+    const firstDay = getFirstDayOfMonth()
+    const lastDay = getLastDayOfMonth()
+    
+    try {
+      creditsTemp = await loadCredits(firstDay, lastDay)
+    } catch (error) {
+      console.error('Erro: ', error)
+      if (error.response && error.response.status === 401) {
+        logout()
+        return
+      }
+    }
+    creditsMonth = creditsTemp
+  }
+
+  const loadCreditsNext5 = async () => {
+    let firstDay = new Date()
+    firstDay.setDate(firstDay.getDate() + 1)
+
+    let lastDay = new Date(firstDay)
+    lastDay.setDate(lastDay.getDate() + 4)
+
+    firstDay = new Date(firstDay).toISOString().split('T')[0]
+    lastDay = new Date(lastDay).toISOString().split('T')[0]
+
+    let creditsTemp
+  
+    try {
+      creditsTemp = await loadCredits(firstDay, lastDay)
+      creditsNext5 = creditsTemp
+    } catch (error) {
+      console.error('Erro: ', error)
+      if (error.response && error.response.status === 401) {
+        logout()
+        return
+      }
+    }
+  }
+
+  function loadChart(array){
+    let label = []
+    let data = []
+
+    array.forEach((index) => {
+      const sum = index.total
+      const adminName = index.adminName
+      let temp = sum
+      totalAdmin += sum
+      label.push(adminName)
+      data.push(Number(temp))
+    })
+    const obj = {labels: label, data: data}
+    return obj
+  }
+
+  function separateAdmin(array) {
+    let sums = {
+      total: 0
+    }
+    
+    let tempSales = []
+    let separatedByAdquirente = []
+  
+      array.forEach((sale) => {
+        sums.total += sale.valorLiquido
+        tempSales.push(sale)
+
+        let entry = separatedByAdquirente.find(adquirente => adquirente.adminName === sale.adquirente.nomeAdquirente)
+        if (!entry) {
+          entry = {
+            id: separatedByAdquirente.length,
+            adminName: sale.adquirente.nomeAdquirente,
+            total: 0,
+            sales: []
+          }
+          separatedByAdquirente.push(entry)
+        }      
+        entry.sales.push(sale)
+        entry.total += sale.valorLiquido
+      })
+    return separatedByAdquirente
+  }
+
+  try {
+
+    await Promise.all([
+      loadCreditsMonth(),
+      loadCreditsNext5()
+    ]).then(() => {
+      tempAdmin = separateAdmin(creditsMonth)
+      creditsByAdmin = sortArray(tempAdmin)
+      const chartData = loadChart(creditsByAdmin)
+      setChartCredits(chartData)
+  
+      let todayTemp = new Date()
+  
+      todayTemp = converteData(todayTemp)
+      totalCreditsToday = 0
+      
+      creditsMonth.forEach((venda) => {
+        if(venda.dataCredito === todayTemp){
+          totalCreditsToday += venda.valorLiquido
+        }
+      })
+  
+      totalCreditsNext5 = 0
+      totalCreditsNext5 = creditsNext5.reduce((total, venda) => total + venda.valorLiquido, 0);
+  
+      setCreditsDashboard({
+        credits: creditsMonth,
+        creditsByAdmin: creditsByAdmin,
+        totalCreditsNext5: Number(totalCreditsNext5),
+        totalCreditsToday: Number(totalCreditsToday),
+        chart: chartData,
+        totalAdmin: totalAdmin
+      })
+      setIsLoadedCreditsDashboard(true)
+    })
+  } catch (error) {
+    console.log('Erro: ', error)
+  }
+}
+// ************** //
+// >> Serviços << //
+// ************** //
+const loadServicesGroup = async ()=> {
+
+  let servicesMonth
+
+  let totalServicesToday = 0
+  let totalServicesMonth = 0
+  let totalAdmin = 0
+
+  if(!fetchingData){
+    setFetchingData(true)
+  }
+
+  if(canceled){
+    setCanceled(false)
+  }
+
+  const loadServicesMonth = async () => {
+    function firstDay() {
+      const today = new Date()
+      const firstDay = new Date(today.getFullYear(), today.getMonth(), 1)
+      
+      return firstDay
+    }
+
+    function lastDay() {
+      const today = new Date()
+      const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0)
+      
+      return lastDay
+    }
+
+    const servicesTemp = await loadServices(firstDay(), lastDay())
+    servicesMonth = servicesTemp
+  }
+
+  function loadChart(array){
+    let label = []
+    let data = []
+
+    array.forEach((index) => {
+      const sum = index.total
+      const adminName = index.adminName
+      let temp = sum
+      totalAdmin += sum
+      label.push(adminName)
+      data.push(Number(temp))
+    })
+    const obj = {labels: label, data: data}
+    return obj
+  }
+
+  function separateAdmin(array) {
+    let sums = {
+      total: 0
+    }
+    
+    let tempSales = []
+    let separatedByAdquirente = []
+  
+      array.forEach((sale) => {
+        sums.total += sale.valor
+        tempSales.push(sale)
+      
+        let entry = separatedByAdquirente.find(adquirente => adquirente.adminName === sale.nome_adquirente)
+        if (!entry) {
+          entry = {
+            id: separatedByAdquirente.length,
+            adminName: sale.nome_adquirente,
+            total: 0,
+            sales: []
+          }
+          separatedByAdquirente.push(entry)
+        }
+        entry.sales.push(sale)
+        entry.total += sale.valor
+      })
+    return separatedByAdquirente
+  }
+
+  try {
+    await Promise.all([
+      loadServicesMonth()
+    ]).then(() => {
+      let temp = []
+      let objAdq = {}
+      servicesMonth.map((service) => {
+        if(temp.length === 0){
+          objAdq = {
+            adminName: service.nome_adquirente,
+            total: service.valor,
+            id: 0,
+            sales: [service]
+          }
+          temp.push(objAdq)
+
+        } else {
+          const existingObject = temp.find(obj => obj.nomeAdquirente === service.nome_adquirente)
+          if (existingObject) {
+            existingObject.total = (existingObject.total || 0) + service.valor
+            existingObject.total = parseFloat(existingObject.total.toFixed(2)) // Round to 2 decimal places
+            existingObject.vendas.push(service)
+          } else {
+            temp.push({
+              adminName: service.nome_adquirente,
+              total: service.valor,
+              id: temp.length,
+              sales: [service]
+            })
+          }
+        }})
+
+      let tempAdmin = separateAdmin(servicesMonth)
+      const servicesByAdmin = (sortArray(tempAdmin))        
+      const chartData = loadChart(servicesByAdmin)
+
+      setChartServices(chartData)
+
+      const totalMesTemp = servicesMonth.reduce((total, obj) => total + obj.valor, 0)
+      totalServicesMonth = totalMesTemp
+
+      let today = new Date
+      today = converteData(today)
+      servicesMonth.forEach((service) => {
+        if(service.data === today){
+          totalServicesToday += service.valor
+        }
+      })
+      
+      setServicesDashboard({
+        services: servicesMonth,
+        servicesByAdmin: servicesByAdmin,
+        totalServicesMonth: Number(totalServicesMonth),
+        totalServicesToday: Number(totalServicesToday),
+        chart: chartData,
+        totalAdmin: totalAdmin
+      })
+      setIsLoadedServicesDashboard(true)
+    })
+  } catch (error) {
+    console.log('Erro: ', error)
+  }
+}
+
+// ----------------------------------------------------------------------------- //
+
+// função que gerencia o carregamento de tudo que será visto no Dashboard
+
+const loadDashboard = async () => {  
+  resetDashboard()
+  setIsLoadedSalesDashboard(false)
+  setIsLoadedCreditsDashboard(false)
+  setIsLoadedServicesDashboard(false)
+  setIsLoadedDashboard(false)
+  try {
+    if(!fetchingData){
+      setFetchingData(true)
+    }
+    Promise.all([
+      loadSalesGroup(),
+      loadCreditsGroup(),
+      loadServicesGroup()
+    ]).then(()=>{
+      setIsLoadedDashboard(true)
+      setChangedOption(false)
+    }).catch(error => {
+      console.log('Error in dashboard loading:', error)
+      setFetchingData(false)
+    })
+  } catch (error) {
+    console.log('erro: ', error)
+    if (error.response && error.response.status === 401) {
+      logout()
+      return
+    }
+  }
+}
+
+useEffect(()=>{
+  if(isLoadedSalesDashboard && isLoadedCreditsDashboard && isLoadedServicesDashboard){
+    setFetchingData(false)
+  }
+},[isLoadedSalesDashboard, isLoadedCreditsDashboard, isLoadedServicesDashboard])
+
+// >>> Página de Vendas <<< //
+const [salesPageArray, setSalesPageArray] = useState([])
+const [salesPageAdminArray, setSalesPageAdminArray] =  useState([])
+const [salesTotal, setSalesTotal] = useState({
+  debit: 0,
+  credit: 0,
+  voucher: 0,
+  total: 0,
+})
+const [salesDateRange, setSalesDateRange] = useState([new Date(), new Date()])
+
+// >>> Página de Créditos <<< //
+const [creditsPageArray, setCreditsPageArray] = useState([])
+const [creditsPageAdminArray, setCreditsPageAdminArray] = useState([])
+const [creditsTotal, setCreditsTotal] = useState({
+  debit: 0,
+  credit: 0,
+  voucher: 0,
+  total: 0,
+})
+const [creditsDateRange, setCreditsDateRange] = useState([new Date(), new Date()])
+
+// >>> Página de Serviços <<< //
+const [servicesPageArray, setServicesPageArray] = useState([])
+const [servicesPageAdminArray, setServicesPageAdminArray] = useState([])
+const [servicesDateRange, setServicesDateRange] = useState([new Date(), new Date()])
+
+// >>> Página de Taxas <<< //
+const [isLoadingTaxes, setIsLoadingTaxes] = useState(false)
+const [taxesPageArray, setTaxesPageArray] = useState([])
 
 	////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////
@@ -1885,12 +1890,13 @@ try {
 		let arrayTemp = []
 		if (array.length > 0) {
 			array.map((venda) => {
+				console.log('venda em questão: ', venda)
 				arrayTemp.push({
 					cnpj: venda.cnpj,
 					adquirente: venda.adquirente.nomeAdquirente,
 					bandeira: venda.bandeira.descricaoBandeira,
 					produto: venda.produto.descricaoProduto,
-					subproduto: venda.modalidade.descricaoModalidade,
+					subproduto: venda.modalidade?.descricaoModalidade || '',
 					valorBruto: venda.valorBruto.toFixed(2),
 					valorLiquido: venda.valorLiquido.toFixed(2),
 					taxa: venda.taxa.toFixed(2),
