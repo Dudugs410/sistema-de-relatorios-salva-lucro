@@ -1890,7 +1890,6 @@ const [taxesPageArray, setTaxesPageArray] = useState([])
 		let arrayTemp = []
 		if (array.length > 0) {
 			array.map((venda) => {
-				console.log('venda em questão: ', venda)
 				arrayTemp.push({
 					cnpj: venda.cnpj,
 					adquirente: venda.adquirente.nomeAdquirente,
@@ -1929,7 +1928,7 @@ const [taxesPageArray, setTaxesPageArray] = useState([])
 					adquirente: venda.adquirente.nomeAdquirente,
 					bandeira: venda.bandeira.descricaoBandeira,
 					produto: venda.produto.descricaoProduto,
-					subproduto: venda.modalidade.descricaoModalidade,
+					subproduto: venda.modalidade?.descricaoModalidade || '',
 					dataCredito: venda.dataCredito,
 					dataVenda: venda.dataVenda,
 					valorBruto: venda.valorBruto,
