@@ -382,7 +382,7 @@ const Extrato = () => {
                     ) : (
                         <div className='loading-state' style={{textAlign: 'center', width: '100%'}}>
                             <br/>
-                            <h2 className='subtitle'>Conecte uma conta para ver os dados</h2>
+                            <h5 className='subtitle'>Conecte uma conta para ver os dados</h5>
                         </div>
                     )}
                     

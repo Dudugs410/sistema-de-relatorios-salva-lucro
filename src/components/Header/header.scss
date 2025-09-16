@@ -1,5 +1,28 @@
 @import '../../styles/variables';
 
+.image {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--secondary-color);
+  transition: filter 0.3s ease, transform 0.2s ease;
+  background-color: white;
+  &:hover{
+    cursor: pointer;
+  }
+}
+
+.header-info-wrapper{
+  padding: 1em;
+}
+
+.user-data{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
 .header-bg-image{
     display: inline-table;
     width: 100%;

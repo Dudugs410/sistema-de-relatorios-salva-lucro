@@ -19,6 +19,9 @@ const Header = () => {
 
     const [showRelatoriosDropdown, setShowRelatoriosDropdown] = useState(false)
     const [showExportacoesDropdown, setShowExportacoesDropdown] = useState(false)
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'))
+    const userData = JSON.parse(localStorage.getItem('userData'))
+
 
     const handleCheckboxChangeCalendar = () => {
 		setIsCheckedCalendar(!isCheckedCalendar) // Toggle the state
@@ -206,7 +209,7 @@ const Header = () => {
         
         <div className="header-container">
             <div className='header-bg-image'>
-                <div className="header-info-wrapper px-4 py-3 header-bg">
+                <div className="header-info-wrapper header-bg">
                     <div className='navbar-customer-wrapper me-2 text-truncate'>
                         <div className="toggle-container me-1">
                             <label className="switch">
@@ -215,10 +218,21 @@ const Header = () => {
                             </label>
                             {/*<CustomCheckbox isChecked={isCheckedCalendar} handleCheckboxChange={handleCheckboxChangeCalendar}/>*/}
                         </div>
-                        <Relogio/>
+                        <div className='user-data'>
+                            <div>{userData.NOME}</div>
+                            <div>{userData.EMAIL}</div>
+                            <Relogio/>
+                        </div>
+                        
                     </div>
                     <div className='btn-container'>
-                        <button type='button' className='btn btn-outline-danger px-2 py-1' onClick={logout}>Sair</button>
+                        <img 
+                            className='image'
+                            src={currentUser.userImg}
+                            alt="User profile"
+                            onClick={() => {navigate('/usuario')}}
+                        />
+                        {/*<button type='button' className='btn btn-outline-danger px-2 py-1' onClick={logout}>Sair</button>*/}
                     </div>
                 </div>
             </div>

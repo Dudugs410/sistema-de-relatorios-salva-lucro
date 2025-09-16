@@ -1,0 +1,170 @@
+.user-card {
+  .image-container {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    cursor: pointer;
+    margin: 0 auto;
+    
+    &:hover {
+      .image {
+        filter: brightness(0.7);
+      }
+    }
+  }
+
+  .image {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--secondary-color);
+    transition: filter 0.3s ease, transform 0.2s ease;
+    
+    &.image-hover {
+      filter: brightness(0.7);
+    }
+    
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+  
+  .image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    animation: fadeIn 0.3s ease;
+  }
+  
+  .overlay-text {
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+    text-align: center;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  }
+  
+  .image-placeholder {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid #ccc;
+    color: #666;
+    cursor: pointer;
+    
+    &:hover {
+      background-color: #e0e0e0;
+    }
+  }
+}
+
+.user-button-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+  
+  .user-btn {
+    width: 200px;
+    padding: 12px;
+    font-size: 14px;
+    
+    &:first-child {
+      background-color: var(--secondary-color);
+      color: white;
+      
+      &:hover {
+        background-color: var(--secondary-color-light);
+      }
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .user-card {
+    .image-container {
+      width: 120px;
+      height: 120px;
+    }
+    
+    .overlay-text {
+      font-size: 12px;
+    }
+  }
+  
+  .user-button-container {
+    .user-btn {
+      width: 180px;
+      padding: 10px;
+      font-size: 13px;
+    }
+  }
+}
+
+.user-content{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.img-container{
+    display: flex;
+    justify-content: center;
+}
+
+.user-card{
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+    border: solid var(--secondary-color) 1px;
+    border-radius: 15px;
+    padding: 20px;
+}
+
+.user-button-container{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+}
+
+.user-btn{
+    width: 100%;
+    max-width: 300px;
+
+    &.user-btn-sair{
+        background-color: rgba(0, 0, 0, 0.0);
+        border: solid red 1px;
+        color: red;
+
+        &:hover{
+            background-color: red;
+            color: white
+        }
+    }
+}                
