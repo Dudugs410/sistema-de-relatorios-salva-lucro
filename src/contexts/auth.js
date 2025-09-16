@@ -11,7 +11,7 @@ import md5 from 'md5'
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import jwtDecode from 'jwt-decode'
-import defaultImg from '../assets/LOGO VERDE.png'
+import defaultImg from '../assets/LOGO AZUL.png'
 import { imageToBase64 } from '../components/utils/base64'
 
 import _ from 'lodash'
@@ -98,51 +98,108 @@ const loginApp = async (login, password) => {
             const userExists = localUsers.some(storedUser => storedUser.id === userId)
 			      setClientUserId(userId)
   
-            if (userExists) {
-                const updatedUsers = localUsers.map(user => {
-                    if (user.id === userId) {
-                        userTemp = {id: userId, theme: JSON.parse(user.theme)}
-                        localStorage.setItem('isDark', JSON.parse(user.theme))
-                        localStorage.setItem('isChecked', JSON.parse(user.theme))
-						            localStorage.setItem('currentUser', JSON.stringify(user))
-                        return { ...user, theme: user.theme }
-                    }
-                    return user
-                })
-                localStorage.setItem('localUsers', JSON.stringify(updatedUsers))
-            } else {
-                userTemp = { 
-                id: userId, 
-                theme: false, 
-                calendar: true,
-                joyrideComplete:{
-                  dashboard: false,
-                  vendasCalendar: false,
-                  vendasTable: false,
-                  creditosCalendar: false,
-                  creditosTable: false,
-                  servicosCalendar: false,
-                  servicosTable: false,
-                }
-              }
-                // caso seja o primeiro login do usuário, ele terá a imagem de usuário padrão
-                const convertImage = async () => {
-                  try {
-                    const base64String = await imageToBase64(defaultImg);
-                    setUserImg(base64String);
-                  } catch (error) {
-                    console.error('Failed to convert image:', error);
-                  }
-                };
-                convertImage();
+if (userExists) {
+    let userNeedsImage = false;
+    let userToUpdate = null;
 
-                localUsers.push(userTemp)
-                localStorage.setItem('isDark', false)
-                localStorage.setItem('isChecked', false)
-                localStorage.setItem('calendar', true)
-                localStorage.setItem('localUsers', JSON.stringify(localUsers))
-				localStorage.setItem('currentUser', JSON.stringify(userTemp))
+    // First, find the user and check if they need an image
+    const updatedUsers = localUsers.map(user => {
+        if (user.id === userId) {
+            userTemp = {id: userId, theme: JSON.parse(user.theme)}
+            localStorage.setItem('isDark', JSON.parse(user.theme))
+            localStorage.setItem('isChecked', JSON.parse(user.theme))
+            
+            if (!user.userImg) {
+                userNeedsImage = true;
+                userToUpdate = user;
+                // Return user without image for now, will update later
+                return user;
+            } else {
+                // User has image, use it
+                setUserImg(user.userImg);
+                localStorage.setItem('userImg', user.userImg);
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                return user;
             }
+        }
+        return user;
+    });
+
+    // Store users immediately
+    localStorage.setItem('localUsers', JSON.stringify(updatedUsers));
+
+    // If user needs image, convert and update asynchronously
+    if (userNeedsImage && userToUpdate) {
+        const convertImage = async () => {
+            try {
+                const base64String = await imageToBase64(defaultImg);
+                
+                // Update the specific user with image
+                const finalUpdatedUsers = updatedUsers.map(user => 
+                    user.id === userId ? { ...user, userImg: base64String } : user
+                );
+                
+                // Update all storage locations
+                localStorage.setItem('localUsers', JSON.stringify(finalUpdatedUsers));
+                localStorage.setItem('currentUser', JSON.stringify({ ...userToUpdate, userImg: base64String }));
+                localStorage.setItem('userImg', base64String);
+                setUserImg(base64String);
+                
+            } catch (error) {
+                console.error('Failed to convert image:', error);
+            }
+        };
+        
+        convertImage();
+    }
+    
+} else {
+    // ... (same as before for new users)
+    userTemp = { 
+        id: userId, 
+        theme: false, 
+        calendar: true,
+        joyrideComplete: {
+            dashboard: false,
+            vendasCalendar: false,
+            vendasTable: false,
+            creditosCalendar: false,
+            creditosTable: false,
+            servicosCalendar: false,
+            servicosTable: false,
+        },
+        userImg: null
+    }
+    
+    const updatedLocalUsers = [...localUsers, userTemp];
+    localStorage.setItem('localUsers', JSON.stringify(updatedLocalUsers));
+    localStorage.setItem('currentUser', JSON.stringify(userTemp));
+    
+    localStorage.setItem('isDark', false)
+    localStorage.setItem('isChecked', false)
+    localStorage.setItem('calendar', true)
+
+    const convertImage = async () => {
+        try {
+            const base64String = await imageToBase64(defaultImg);
+            
+            userTemp.userImg = base64String;
+            setUserImg(base64String);
+            
+            const finalUpdatedUsers = updatedLocalUsers.map(user => 
+                user.id === userId ? { ...user, userImg: base64String } : user
+            );
+            localStorage.setItem('localUsers', JSON.stringify(finalUpdatedUsers));
+            localStorage.setItem('currentUser', JSON.stringify(userTemp));
+            localStorage.setItem('userImg', base64String);
+
+        } catch (error) {
+            console.error('Failed to convert image:', error);
+        }
+    };
+    
+    convertImage();
+}
 
 try {
 	const clientUserId = userId
