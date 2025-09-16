@@ -19,7 +19,7 @@
     height: 100%;
     border-radius: 50%;
     object-fit: cover;
-    border: 3px solid #ccc;
+    border: 3px solid var(--secondary-color);
     transition: filter 0.3s ease, transform 0.2s ease;
     
     &.image-hover {

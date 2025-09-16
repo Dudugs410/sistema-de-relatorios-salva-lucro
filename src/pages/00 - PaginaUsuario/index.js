@@ -4,7 +4,7 @@ import './user.scss'
 import { AuthContext } from '../../contexts/auth'
 
 const Usuario = () => {
-  const { userImg, setUserImg } = useContext(AuthContext)
+  const { userImg, setUserImg, logout } = useContext(AuthContext)
   const [imageSrc, setImageSrc] = useState('')
   const [imageLoading, setImageLoading] = useState(true)
   const [isHovered, setIsHovered] = useState(false)
@@ -165,7 +165,7 @@ const Usuario = () => {
             
             <div className='user-button-container'>
               <button className='btn btn-global user-btn'>Informações do Usuário</button>
-              <button className='btn btn-danger btn-global user-btn user-btn-sair'>Sair</button>
+              <button className='btn btn-danger btn-global user-btn user-btn-sair' onClick={()=>{logout()}}>Sair</button>
             </div>              
           </div>
         </div>

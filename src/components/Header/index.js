@@ -19,6 +19,8 @@ const Header = () => {
 
     const [showRelatoriosDropdown, setShowRelatoriosDropdown] = useState(false)
     const [showExportacoesDropdown, setShowExportacoesDropdown] = useState(false)
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'))
+
 
     const handleCheckboxChangeCalendar = () => {
 		setIsCheckedCalendar(!isCheckedCalendar) // Toggle the state
@@ -218,7 +220,13 @@ const Header = () => {
                         <Relogio/>
                     </div>
                     <div className='btn-container'>
-                        <button type='button' className='btn btn-outline-danger px-2 py-1' onClick={logout}>Sair</button>
+                        <img 
+                            className='image'
+                            src={currentUser.userImg}
+                            alt="User profile"
+                            onClick={() => {navigate('/usuario')}}
+                        />
+                        {/*<button type='button' className='btn btn-outline-danger px-2 py-1' onClick={logout}>Sair</button>*/}
                     </div>
                 </div>
             </div>
