@@ -11,6 +11,8 @@ import md5 from 'md5'
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import jwtDecode from 'jwt-decode'
+import defaultImg from '../assets/LOGO VERDE.png'
+import { imageToBase64 } from '../components/utils/base64'
 
 import _ from 'lodash'
 
@@ -21,6 +23,7 @@ function AuthProvider({ children }){
 	const [accessToken, setAccessToken] = useState(undefined)
 
 	const [clientUserId, setClientUserId] = useState()
+  const [userImg, setUserImg] = useState('')
 
 	////////////////////////////////////////////////////////////////
 
@@ -80,7 +83,7 @@ const loginApp = async (login, password) => {
         localStorage.setItem('refreshToken', responseData.refresh_token)
         const userId = jwtDecode(responseData.acess_token).id
         localStorage.setItem('userID', userId)
-		Cookies.set('userID', userId)
+		    Cookies.set('userID', userId)
         const loggedSuccessfully = JSON.parse(responseData.sucess)
 
         if (loggedSuccessfully) {
@@ -93,7 +96,7 @@ const loginApp = async (login, password) => {
 
             let userTemp = {}
             const userExists = localUsers.some(storedUser => storedUser.id === userId)
-			setClientUserId(userId)
+			      setClientUserId(userId)
   
             if (userExists) {
                 const updatedUsers = localUsers.map(user => {
@@ -101,7 +104,7 @@ const loginApp = async (login, password) => {
                         userTemp = {id: userId, theme: JSON.parse(user.theme)}
                         localStorage.setItem('isDark', JSON.parse(user.theme))
                         localStorage.setItem('isChecked', JSON.parse(user.theme))
-						localStorage.setItem('currentUser', JSON.stringify(user))
+						            localStorage.setItem('currentUser', JSON.stringify(user))
                         return { ...user, theme: user.theme }
                     }
                     return user
@@ -109,19 +112,30 @@ const loginApp = async (login, password) => {
                 localStorage.setItem('localUsers', JSON.stringify(updatedUsers))
             } else {
                 userTemp = { 
-					id: userId, 
-					theme: false, 
-					calendar: true,
-					joyrideComplete:{
-						dashboard: false,
-						vendasCalendar: false,
-						vendasTable: false,
-						creditosCalendar: false,
-						creditosTable: false,
-						servicosCalendar: false,
-						servicosTable: false,
-					}
-				}
+                id: userId, 
+                theme: false, 
+                calendar: true,
+                joyrideComplete:{
+                  dashboard: false,
+                  vendasCalendar: false,
+                  vendasTable: false,
+                  creditosCalendar: false,
+                  creditosTable: false,
+                  servicosCalendar: false,
+                  servicosTable: false,
+                }
+              }
+                // caso seja o primeiro login do usuário, ele terá a imagem de usuário padrão
+                const convertImage = async () => {
+                  try {
+                    const base64String = await imageToBase64(defaultImg);
+                    setUserImg(base64String);
+                  } catch (error) {
+                    console.error('Failed to convert image:', error);
+                  }
+                };
+                convertImage();
+
                 localUsers.push(userTemp)
                 localStorage.setItem('isDark', false)
                 localStorage.setItem('isChecked', false)
@@ -2020,6 +2034,10 @@ const [taxesPageArray, setTaxesPageArray] = useState([])
 				logout,
 				accessToken, setAccessToken,
 				refreshSession,
+
+        // Imagem do Usuário //
+
+        userImg, setUserImg,
 
 				// Dashboard //
 				

@@ -4,6 +4,7 @@ import { Route, Routes, useLocation, useNavigate } from "react-router-dom"
 import Private from "./Private"
 
 import Login from '../pages/Login'
+import Usuario from "../pages/00 - PaginaUsuario"
 import Dashboard from '../pages/Dashboard'
 import Vendas from '../pages/Vendas'
 import Recebiveis from '../pages/Creditos'
@@ -50,12 +51,14 @@ function RoutesApp() {
   return (
     <Routes>
       <Route path='/' element={<Login />} />
+      <Route path='/usuario' element={<Private><Usuario /></Private>} />
       <Route path='/dashboard' element={<Private><Dashboard /></Private>} />
       <Route path='/vendas' element={<Private><Vendas /></Private>} />
       <Route path='/creditos' element={<Private><Recebiveis /></Private>} />
       <Route path='/servicos' element={<Private><Servicos /></Private>} />
       <Route path='/taxas' element={<Private><Taxas /></Private>} />
-
+      <Route path='/extrato' element={<Private><Extrato /></Private>} />
+      <Route path='/cadastrodebancos' element={<Private><CadastroDeBancos /></Private>} />
     </Routes>
   )
 }
@@ -63,8 +66,7 @@ function RoutesApp() {
 export default RoutesApp
 
 /*
-      <Route path='/extrato' element={<Private><Extrato /></Private>} />
-      <Route path='/cadastrodebancos' element={<Private><CadastroDeBancos /></Private>} />
+<Route path='/usuario' element={<Private><Usuario /></Private>} />
 <Route path='/financeiro' element={<Private><Financeiro /></Private>} />
 <Route path='/gerenciais' element={<Private><Gerenciais /></Private>} />
 <Route path='/outrosrelatorios' element={<Private><OutrosRelatorios /></Private>} />
