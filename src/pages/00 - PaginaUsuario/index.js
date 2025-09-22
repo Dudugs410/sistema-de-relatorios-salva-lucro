@@ -4,20 +4,23 @@ import './user.scss'
 import { AuthContext } from '../../contexts/auth'
 
 const Usuario = () => {
-  const { userImg, setUserImg, logout } = useContext(AuthContext)
+  const { userImg, setUserImg, logout, loadUser, updateUser } = useContext(AuthContext)
   const [imageSrc, setImageSrc] = useState('')
   const [imageLoading, setImageLoading] = useState(true)
   const [isHovered, setIsHovered] = useState(false)
+  const [selectedFile, setSelectedFile] = useState(null)
+  const [showConfirmButton, setShowConfirmButton] = useState(false)
   const fileInputRef = useRef(null)
   const currentUser = JSON.parse(localStorage.getItem('currentUser'))
+  let user = JSON.parse(localStorage.getItem('user'))
 
   useEffect(() => {
     console.log('userImg: ', userImg)
-    if (userImg) {
-      setImageSrc(userImg)
+    if (user.IMAGEMBASE64) {
+      setImageSrc(user.IMAGEMBASE64) // Fixed: changed user.IMAGE to user.IMAGEMBASE64
       setImageLoading(false)
     } else {
-      const storedImg = currentUser.userImg
+      const storedImg = user.IMAGEMBASE64
       if (storedImg) {
         setImageSrc(storedImg)
       }
@@ -25,72 +28,97 @@ const Usuario = () => {
     }
   }, [userImg])
 
-  // Function to update user image in localStorage
-  const updateUserImageInStorage = (base64String) => {
-    try {
-      // Update currentUser in localStorage
-      const currentUserStr = localStorage.getItem('currentUser')
-      if (currentUserStr) {
-        const currentUser = JSON.parse(currentUserStr)
-        const updatedCurrentUser = {
-          ...currentUser,
-          userImg: base64String
-        }
-        localStorage.setItem('currentUser', JSON.stringify(updatedCurrentUser))
-      }
-
-      // Update localUsers array in localStorage
-      const localUsersStr = localStorage.getItem('localUsers')
-      if (localUsersStr) {
-        const localUsers = JSON.parse(localUsersStr)
-        const currentUserStr = localStorage.getItem('currentUser')
-        
-        if (currentUserStr) {
-          const currentUser = JSON.parse(currentUserStr)
-          const updatedLocalUsers = localUsers.map(user => 
-            user.id === currentUser.id 
-              ? { ...user, userImg: base64String }
-              : user
-          )
-          localStorage.setItem('localUsers', JSON.stringify(updatedLocalUsers))
-        }
-      }
-
-      localStorage.setItem('userImg', base64String)
-    } catch (error) {
-      console.error('Error updating localStorage:', error)
-    }
-  }
-
   // Function to handle file selection
   const handleFileSelect = (event) => {
     const file = event.target.files[0]
     if (file) {
-      convertImageToBase64(file)
+      if (validateFile(file)) {
+        setSelectedFile(file)
+        previewImage(file)
+        setShowConfirmButton(true)
+      }
     }
   }
 
-  // Function to convert image to base64
-  const convertImageToBase64 = (file) => {
+  // Function to preview image without uploading
+  const previewImage = (file) => {
     setImageLoading(true)
-    
     const reader = new FileReader()
     reader.onloadend = () => {
       const base64String = reader.result
-      
-      setUserImg(base64String)
-      updateUserImageInStorage(base64String)
       setImageSrc(base64String)
       setImageLoading(false)
     }
-    
     reader.onerror = () => {
-      console.error('Error converting image to base64')
+      console.error('Error previewing image')
       setImageLoading(false)
-      alert('Erro ao converter a imagem. Tente novamente.')
     }
-    
     reader.readAsDataURL(file)
+  }
+
+  // Function to update image (runs when "Trocar Foto" button is clicked)
+  const updateImage = async () => {
+    if (!selectedFile) return
+
+    setImageLoading(true)
+    try {
+      const reader = new FileReader()
+      
+      reader.onloadend = async () => {
+        const base64String = reader.result
+        
+        // Update user object with new image
+        const updatedUser = {
+          ...user,
+          IMAGEMBASE64: base64String
+        }
+        
+        // Update context and storage
+        setUserImg(base64String)
+        updateUserImageInStorage(base64String)
+        
+        // Update user in database
+        await updateUser(updatedUser)
+        
+        // Update local storage
+        localStorage.setItem('user', JSON.stringify(updatedUser))
+        user = updatedUser
+        
+        setImageSrc(base64String)
+        setImageLoading(false)
+        setShowConfirmButton(false)
+        setSelectedFile(null)
+        
+        alert('Foto atualizada com sucesso!')
+      }
+      
+      reader.onerror = () => {
+        console.error('Error converting image to base64')
+        setImageLoading(false)
+        alert('Erro ao converter a imagem. Tente novamente.')
+      }
+      
+      reader.readAsDataURL(selectedFile)
+      
+    } catch (error) {
+      console.error('Error updating image:', error)
+      setImageLoading(false)
+      alert('Erro ao atualizar a foto. Tente novamente.')
+    }
+  }
+
+  // Function to cancel image change
+  const cancelImageChange = () => {
+    // Reset to original image
+    const originalImage = user.IMAGEMBASE64
+    setImageSrc(originalImage)
+    setSelectedFile(null)
+    setShowConfirmButton(false)
+    
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
   }
 
   // Function to trigger file input click
@@ -114,6 +142,12 @@ const Usuario = () => {
     }
 
     return true
+  }
+
+  // Function to update image in storage (if it exists elsewhere)
+  const updateUserImageInStorage = (base64String) => {
+    // Update any other storage if needed
+    localStorage.setItem('userImg', base64String)
   }
 
   return(
@@ -153,6 +187,26 @@ const Usuario = () => {
                 </>
               )}
             </div>
+            
+            {/* Confirmation buttons when image is selected */}
+            {showConfirmButton && (
+              <div className="confirmation-buttons">
+                <button 
+                  className="btn btn-confirm btn-global user-btn"
+                  onClick={updateImage}
+                  disabled={imageLoading}
+                >
+                  {imageLoading ? 'Salvando...' : 'Confirmar Foto'}
+                </button>
+                <button 
+                  className="btn btn-cancel btn-global user-btn"
+                  onClick={cancelImageChange}
+                  disabled={imageLoading}
+                >
+                  Cancelar
+                </button>
+              </div>
+            )}
             
             {/* Hidden file input */}
             <input

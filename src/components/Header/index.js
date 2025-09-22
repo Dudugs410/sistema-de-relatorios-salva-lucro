@@ -13,7 +13,8 @@ import './header.scss'
 import SeletorCliente from "../SeletorCliente"
 
 const Header = () => {
-    const { logout, isCheckedCalendar, setIsCheckedCalendar } = useContext(AuthContext)
+    const { logout, isCheckedCalendar, setIsCheckedCalendar, userImg } = useContext(AuthContext)
+    let user = JSON.parse(localStorage.getItem('user'))
 
     const [isChecked, setIsChecked] = useState(localStorage.getItem('isChecked') ? false : true )
 
@@ -200,13 +201,11 @@ const Header = () => {
     }
 
     const navigate = useNavigate()
-
     const handleLogo = () => {
         navigate('/dashboard')
     }
 
-    return (
-        
+    return (  
         <div className="header-container">
             <div className='header-bg-image'>
                 <div className="header-info-wrapper header-bg">
@@ -223,12 +222,11 @@ const Header = () => {
                             <div>{userData.EMAIL}</div>
                             <Relogio/>
                         </div>
-                        
                     </div>
                     <div className='btn-container'>
                         <img 
                             className='image'
-                            src={currentUser.userImg}
+                            src={user.IMAGEMBASE64}
                             alt="User profile"
                             onClick={() => {navigate('/usuario')}}
                         />

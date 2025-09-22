@@ -75,240 +75,159 @@ function AuthProvider({ children }){
 
 	// Função que loga o usuário e gerencia quaisquer dados relevantes à isso
 const loginApp = async (login, password) => {
-    resetAppValues()
+  resetAppValues()
+  try {
+    const response = await api.post('token', { client_id: login, client_secret: md5(password) })
+    const responseData = response.data
+    localStorage.setItem('token', responseData.acess_token)
+    localStorage.setItem('refreshToken', responseData.refresh_token)
+    const userId = jwtDecode(responseData.acess_token).id
+    localStorage.setItem('userID', userId)
+    Cookies.set('userID', userId)
+    const loggedSuccessfully = JSON.parse(responseData.sucess)
+
+    if (loggedSuccessfully) {
+        localStorage.setItem('currentPath', '/dashboard')
+        let localUsers = []
+        if (localStorage.getItem('localUsers') !== null) {
+            localUsers = JSON.parse(localStorage.getItem('localUsers'))
+        }
+        //localStorage.setItem('md5Pass', md5(password))
+        setClientUserId(userId)
+        let user
+
+      try {
+        user = await loadUser(userId)
+        localStorage.setItem('user', JSON.stringify(user))
+      } catch (error) {
+        console.log(error)
+      }
+      console.log(user)
+
+      //checa se o usuário não tem tema e imagem definidos,
+      //seta os que não tem com as definições padrão e
+      //atualiza o usuário no banco
+      if((!user.TEMA) || (!user.IMAGEMBASE64)){
+        if(!user.TEMA){
+          user.TEMA = false
+        }
+        if(!user.IMAGEMBASE64){
+          const base64String = await imageToBase64(defaultImg)
+          user.IMAGEMBASE64 = base64String
+          setUserImg(base64String)
+        }
+        updateUser(user)
+      }
+      const userData = { NOME: user.NOME, EMAIL: user.EMAIL }
+      localStorage.setItem('GRUCODIGO', user.GRUCODIGO)
+      localStorage.setItem('isSignedIn', true)
+      localStorage.setItem('userData', JSON.stringify(userData))
+
     try {
-        const response = await api.post('token', { client_id: login, client_secret: md5(password) })
-        const responseData = response.data
-        localStorage.setItem('token', responseData.acess_token)
-        localStorage.setItem('refreshToken', responseData.refresh_token)
-        const userId = jwtDecode(responseData.acess_token).id
-        localStorage.setItem('userID', userId)
-		    Cookies.set('userID', userId)
-        const loggedSuccessfully = JSON.parse(responseData.sucess)
+      const clientUserId = userId
 
-        if (loggedSuccessfully) {
-            localStorage.setItem('currentPath', '/dashboard')
-            let localUsers = []
-            if (localStorage.getItem('localUsers') !== null) {
-                localUsers = JSON.parse(localStorage.getItem('localUsers'))
-            }
-            localStorage.setItem('md5Pass', md5(password))
-
-            let userTemp = {}
-            const userExists = localUsers.some(storedUser => storedUser.id === userId)
-			      setClientUserId(userId)
-  
-if (userExists) {
-    let userNeedsImage = false;
-    let userToUpdate = null;
-
-    // First, find the user and check if they need an image
-    const updatedUsers = localUsers.map(user => {
-        if (user.id === userId) {
-            userTemp = {id: userId, theme: JSON.parse(user.theme)}
-            localStorage.setItem('isDark', JSON.parse(user.theme))
-            localStorage.setItem('isChecked', JSON.parse(user.theme))
-            
-            if (!user.userImg) {
-                userNeedsImage = true;
-                userToUpdate = user;
-                // Return user without image for now, will update later
-                return user;
-            } else {
-                // User has image, use it
-                setUserImg(user.userImg);
-                localStorage.setItem('userImg', user.userImg);
-                localStorage.setItem('currentUser', JSON.stringify(user));
-                return user;
-            }
+      const loginLog = async () => {
+        function getBrazilianISOTime() {
+          const now = new Date()
+          
+          const dateTimeParts = new Intl.DateTimeFormat('en-US', {
+            timeZone: 'America/Sao_Paulo',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            fractionalSecondDigits: 3,
+            hour12: false,
+          }).formatToParts(now)
+          
+          const { year, month, day, hour, minute, second, fractionalSecond } = 
+            dateTimeParts.reduce((acc, part) => {
+            acc[part.type] = part.value
+            return acc
+            }, {})
+          return `${year}-${month}-${day}T${hour}:${minute}:${second}.${fractionalSecond}`;
         }
-        return user;
-    });
 
-    // Store users immediately
-    localStorage.setItem('localUsers', JSON.stringify(updatedUsers));
+        const currentDateTime = getBrazilianISOTime()
 
-    // If user needs image, convert and update asynchronously
-    if (userNeedsImage && userToUpdate) {
-        const convertImage = async () => {
-            try {
-                const base64String = await imageToBase64(defaultImg);
-                
-                // Update the specific user with image
-                const finalUpdatedUsers = updatedUsers.map(user => 
-                    user.id === userId ? { ...user, userImg: base64String } : user
-                );
-                
-                // Update all storage locations
-                localStorage.setItem('localUsers', JSON.stringify(finalUpdatedUsers));
-                localStorage.setItem('currentUser', JSON.stringify({ ...userToUpdate, userImg: base64String }));
-                localStorage.setItem('userImg', base64String);
-                setUserImg(base64String);
-                
-            } catch (error) {
-                console.error('Failed to convert image:', error);
-            }
-        };
-        
-        convertImage();
-    }
-    
-} else {
-    // ... (same as before for new users)
-    userTemp = { 
-        id: userId, 
-        theme: false, 
-        calendar: true,
-        joyrideComplete: {
-            dashboard: false,
-            vendasCalendar: false,
-            vendasTable: false,
-            creditosCalendar: false,
-            creditosTable: false,
-            servicosCalendar: false,
-            servicosTable: false,
-        },
-        userImg: null
-    }
-    
-    const updatedLocalUsers = [...localUsers, userTemp];
-    localStorage.setItem('localUsers', JSON.stringify(updatedLocalUsers));
-    localStorage.setItem('currentUser', JSON.stringify(userTemp));
-    
-    localStorage.setItem('isDark', false)
-    localStorage.setItem('isChecked', false)
-    localStorage.setItem('calendar', true)
+          let body = {
+            USUCODIGO: userId,
+            USULOGIN: login.toUpperCase(),
+            ACESSOPERMITIDO: 'S',
+            APLICACAO: 'ReactApp',
+            DATAHORA: currentDateTime,
+          }
 
-    const convertImage = async () => {
-        try {
-            const base64String = await imageToBase64(defaultImg);
-            
-            userTemp.userImg = base64String;
-            setUserImg(base64String);
-            
-            const finalUpdatedUsers = updatedLocalUsers.map(user => 
-                user.id === userId ? { ...user, userImg: base64String } : user
-            );
-            localStorage.setItem('localUsers', JSON.stringify(finalUpdatedUsers));
-            localStorage.setItem('currentUser', JSON.stringify(userTemp));
-            localStorage.setItem('userImg', base64String);
-
-        } catch (error) {
-            console.error('Failed to convert image:', error);
+          api.post('/LogAcesso', body)
+          console.log('login registrado')
         }
-    };
-    
-    convertImage();
-}
+      const getLoginLog = async () => {
+        let params = {
+          codigo: userId
+        }
 
-try {
-	const clientUserId = userId
+        let config = {
+          params: params
+        }
 
-	const loginLog = async () => {
-		function getBrazilianISOTime() {
-			const now = new Date()
-			
-			const dateTimeParts = new Intl.DateTimeFormat('en-US', {
-				timeZone: 'America/Sao_Paulo',
-				year: 'numeric',
-				month: '2-digit',
-				day: '2-digit',
-				hour: '2-digit',
-				minute: '2-digit',
-				second: '2-digit',
-				fractionalSecondDigits: 3,
-				hour12: false,
-			}).formatToParts(now)
-			
-			const { year, month, day, hour, minute, second, fractionalSecond } = 
-				dateTimeParts.reduce((acc, part) => {
-				acc[part.type] = part.value
-				return acc
-				}, {})
-			return `${year}-${month}-${day}T${hour}:${minute}:${second}.${fractionalSecond}`;
-		}
+        let res = await api.get('/LogAcesso', config)
+        console.log(res)
+        return res
+      }
 
-		const currentDateTime = getBrazilianISOTime()
+      try {
+        let logTemp
+        await loginLog()
+        .then(
+          //logTemp = getLoginLog()
+        )
+        .finally(
+          //console.log(logTemp)
+        )
+      } catch (error) {
+        console.log(error)
+      }
+	
+    //pluggy
+    const response = await fetch('https://api.pluggy.ai/auth', {
+      method: 'POST',
+      headers: {
+      'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+      clientId: "7cee8f27-cbfa-4a19-b14d-306f9656787a",
+      clientSecret: "01e4edaf-639a-40ae-945a-4a04ab652bad",
+      itemOptions: {
+        clientUserId: clientUserId
+      }
+      })
+    })
 
-			let body = {
-				USUCODIGO: userId,
-				USULOGIN: login.toUpperCase(),
-				ACESSOPERMITIDO: 'S',
-				APLICACAO: 'ReactApp',
-				DATAHORA: currentDateTime,
-			}
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
-			api.post('/LogAcesso', body)
-			console.log('login registrado')
-		}
+    const data = await response.json()
 
-		const getLoginLog = async () => {
-			let params = {
-				codigo: userId
-			}
+    Cookies.set('pluggy_api_key', data.apiKey, {
+      expires: 1,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict'
+    })
 
-			let config = {
-				params: params
-			}
-
-			let res = await api.get('/LogAcesso', config)
-			console.log(res)
-			return res
-		}
-
-		try {
-			let logTemp
-			await loginLog()
-			.then(
-				//logTemp = getLoginLog()
-			)
-			.finally(
-				//console.log(logTemp)
-			)
-		} catch (error) {
-			console.log(error)
-		}
-		
-		const response = await fetch('https://api.pluggy.ai/auth', {
-			method: 'POST',
-			headers: {
-			'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-			clientId: "7cee8f27-cbfa-4a19-b14d-306f9656787a",
-			clientSecret: "01e4edaf-639a-40ae-945a-4a04ab652bad",
-			itemOptions: {
-				clientUserId: clientUserId
-			}
-			})
-		})
-
-		if (!response.ok) {
-			throw new Error(`HTTP error! status: ${response.status}`);
-		}
-
-		const data = await response.json()
-
-		Cookies.set('pluggy_api_key', data.apiKey, {
-			expires: 1,
-			secure: process.env.NODE_ENV === 'production',
-			sameSite: 'strict'
-		})
-
-		Cookies.set('pluggy_client_id', clientUserId, {
-			expires: 1,
-			secure: process.env.NODE_ENV === 'production',
-			sameSite: 'strict'
-		})
-
-} catch (error) {
-		console.error('Authentication failed:', error)
-		
-		Cookies.remove('pluggy_api_key')
-		Cookies.remove('pluggy_client_id')
-		
-		throw error
-	}
+    Cookies.set('pluggy_client_id', clientUserId, {
+      expires: 1,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict'
+    })
+  } catch (error) {
+    console.error('Authentication failed:', error)
+    Cookies.remove('pluggy_api_key')
+    Cookies.remove('pluggy_client_id')
+    throw error
+  }
 
 	const opt = await loadOptions()
 	localStorage.setItem('options', JSON.stringify(opt))
@@ -317,26 +236,69 @@ try {
 	localStorage.setItem('groupsStorage', JSON.stringify(gru))
 	localStorage.setItem('groupCode', gru[0].CODIGOGRUPO)
 	localStorage.setItem('cnpj', 'todos')
-}
-        const userResponse = await api.get('/usuario')
-        const userList = userResponse.data
-        const userMatch = userList.find((user) => (user.LOGIN.toLowerCase() === login.toLowerCase()) && (user.SENHA === md5(password)))
-  
-        if (userMatch) {
-            const userData = { NOME: userMatch.NOME, EMAIL: userMatch.EMAIL }
-            localStorage.setItem('GRUCODIGO', userMatch.GRUCODIGO)
-            localStorage.setItem('isSignedIn', true)
-            localStorage.setItem('userData', JSON.stringify(userData))
-            setIsSignedIn(true)
+  setIsSignedIn(true)
+}  } catch (error) {
+      console.error('Login error:', error)
+      alert(error.message)
+  }}
+
+  const loadUser = async (userId) => {
+    console.log('userID: ', userId)
+    let params = {
+      codigo: userId
+    }
+
+    let config = {
+      params: params
+    }
+
+    try {
+      const response = await api.get('usuario', config)
+      return response.data
+    } catch (error) {
+      console.log(error)
+    }
+
+  }
+
+  const updateUser = async (userObj) => {
+    //setIsLoadingUser(true)
+    console.log('update user: ', userObj)
+    try {
+
+        let body = JSON.stringify(userObj)
+
+        const response = await fetch('https://app.salvalucro.com.br/api/v1/usuario', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          body: body,
+        })
+
+        const responseData = await response.json()
+        console.log('response: ', responseData)
+
+        if (response.ok) {
+          toast.dismiss()
+          toast.success('Usuário atualizado com sucesso!')
         } else {
-            console.log('Usuário não encontrado')
-            throw new Error('Usuário não encontrado após autenticação bem-sucedida')
+          toast.dismiss()
+          toast.error('Erro ao atualizar usuário')
         }
     } catch (error) {
-        console.error('Login error:', error)
-        alert(error.message)
+      console.error('Erro ao atualizar usuário:', error)
+      toast.dismiss()
+      toast.error('Erro ao atualizar usuário!')
+      if (error.response && error.response.status === 401) {
+        logout()
+        return
+      }
+    } finally {
+      //setIsLoadingUser(false)
     }
-}
+  }
 
 	// funções que retornam arrays com Grupos, Clientes, Bandeiras e Adquirentes, respectivamente //
 
@@ -2092,8 +2054,8 @@ const [taxesPageArray, setTaxesPageArray] = useState([])
 				accessToken, setAccessToken,
 				refreshSession,
 
-        // Imagem do Usuário //
-
+        //Usuário //
+        loadUser, updateUser,
         userImg, setUserImg,
 
 				// Dashboard //
