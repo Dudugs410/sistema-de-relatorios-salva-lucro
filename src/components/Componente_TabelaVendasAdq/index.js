@@ -366,7 +366,7 @@ const TabelaVendasAdq = ({array}) =>{
 									<tr key={index} className='det-tr-global'>
 										<td className='det-td-vendas-global'data-label="Adquirente">{venda.adquirente.nomeAdquirente}</td>
 										<td className='det-td-vendas-global'data-label="Bandeira">{venda.bandeira.descricaoBandeira}</td>
-										<td className='det-td-vendas-global'data-label="Subproduto">{venda.modalidade.descricaoModalidade}</td>
+										<td className='det-td-vendas-global'data-label="Subproduto">{venda.modalidade?.descricaoModalidade || ''}</td>
 										<td className='det-td-vendas-global'data-label="Valor Bruto"><span className='green-global'>{Number(venda.valorBruto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
 										<td className='det-td-vendas-global'data-label="Valor Líquido"><span className='green-global'>{Number(venda.valorLiquido).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
 										<td className='det-td-vendas-global'data-label="Valor Desconto"><span className='red-global'>{Number(venda.valorDesconto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>

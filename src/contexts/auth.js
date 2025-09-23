@@ -107,17 +107,29 @@ const loginApp = async (login, password) => {
       //checa se o usuário não tem tema e imagem definidos,
       //seta os que não tem com as definições padrão e
       //atualiza o usuário no banco
-      if((!user.TEMA) || (!user.IMAGEMBASE64)){
-        if(!user.TEMA){
-          user.TEMA = false
+      const handleUpdateUser = async () => {
+        try{
+          if(!user.TEMA){
+            user.TEMA = false
+          }
+          if(!user.IMAGEMBASE64){
+            console.log('user.IMAGEMBASE64')
+            const base64String = await imageToBase64(defaultImg)
+            user.IMAGEMBASE64 = base64String
+            setUserImg(base64String)
+          }
+          updateUser(user)
+          localStorage.setItem('user', JSON.stringify(user))
+        } catch (error){
+          console.log(error)
         }
-        if(!user.IMAGEMBASE64){
-          const base64String = await imageToBase64(defaultImg)
-          user.IMAGEMBASE64 = base64String
-          setUserImg(base64String)
-        }
-        updateUser(user)
       }
+
+      if((!user.TEMA) || (!user.IMAGEMBASE64)){
+        await handleUpdateUser()
+        console.log('userImg64: ', user.IMAGEMBASE64)
+      }
+
       const userData = { NOME: user.NOME, EMAIL: user.EMAIL }
       localStorage.setItem('GRUCODIGO', user.GRUCODIGO)
       localStorage.setItem('isSignedIn', true)
@@ -1927,7 +1939,7 @@ const [taxesPageArray, setTaxesPageArray] = useState([])
 					cnpj: venda.cnpj,
 					adquirente: venda.adquirente.nomeAdquirente,
 					bandeira: venda.bandeira.descricaoBandeira,
-					produto: venda.produto.descricaoProduto,
+					produto: venda.produto?.descricaoProduto || '',
 					subproduto: venda.modalidade?.descricaoModalidade || '',
 					valorBruto: venda.valorBruto.toFixed(2),
 					valorLiquido: venda.valorLiquido.toFixed(2),
@@ -1960,7 +1972,7 @@ const [taxesPageArray, setTaxesPageArray] = useState([])
 					cnpj: venda.cnpj,
 					adquirente: venda.adquirente.nomeAdquirente,
 					bandeira: venda.bandeira.descricaoBandeira,
-					produto: venda.produto.descricaoProduto,
+					produto: venda.produto?.descricaoProduto || '',
 					subproduto: venda.modalidade?.descricaoModalidade || '',
 					dataCredito: venda.dataCredito,
 					dataVenda: venda.dataVenda,
