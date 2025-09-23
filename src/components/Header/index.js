@@ -17,18 +17,18 @@ const Header = () => {
     let user = JSON.parse(localStorage.getItem('user'))
 
     const [isChecked, setIsChecked] = useState(localStorage.getItem('isChecked') ? false : true )
-
     const [showRelatoriosDropdown, setShowRelatoriosDropdown] = useState(false)
     const [showExportacoesDropdown, setShowExportacoesDropdown] = useState(false)
     const currentUser = JSON.parse(localStorage.getItem('currentUser'))
     const userData = JSON.parse(localStorage.getItem('userData'))
-
+    
+    // Use the global userImg directly from context - no local image state needed
 
     const handleCheckboxChangeCalendar = () => {
-		setIsCheckedCalendar(!isCheckedCalendar) // Toggle the state
-	  }
+        setIsCheckedCalendar(!isCheckedCalendar)
+    }
   
-	  useEffect(()=>{
+    useEffect(() => {
         if (localStorage.getItem('localUsers') !== null) {
             let localUsersTemp = JSON.parse(localStorage.getItem('localUsers'))
             localUsersTemp.map(user => {
@@ -43,7 +43,7 @@ const Header = () => {
             localUsersTemp.push(userTemp)
             localStorage.setItem('localUsers', JSON.stringify(localUsersTemp))
         }
-	  },[isCheckedCalendar])
+    },[isCheckedCalendar])
 
     const handleCheckboxChange = () => {
         const updatedChecked = !isChecked
@@ -70,46 +70,46 @@ const Header = () => {
         setIsChecked(JSON.parse(localStorage.getItem('isChecked')))
     }, [])
 
-    useEffect(()=>{
-                // atualiza _variables.scss com as propriedades do tema selecionado
-                const root = document.documentElement
-                if (isChecked) {
-                  root.style.setProperty('--primary-color', 'var(--primary-color-dark)')
-                  root.style.setProperty('--secondary-color', 'var(--secondary-color-dark)')
-                  root.style.setProperty('--background-color', 'var(--background-color-dark)')
-                  root.style.setProperty('--font-color', 'var(--font-color-dark)')
-                  root.style.setProperty('--table-background', 'var(--table-background-dark)')
-                  root.style.setProperty('--header-text-color', 'var(--header-text-color-dark)')
-                  root.style.setProperty('--modalidades-border', 'var(--modalidades-border-dark)')
-                  root.style.setProperty('--table-row-hover-color', 'var(table-row-hover-color-dark)')
-                  root.style.setProperty('--table-row-hover-bg', 'var(--table-row-hover-bg-dark)')
-                  root.style.setProperty('--header-bg', 'var(--header-bg-dark)')
-                  root.style.setProperty('--calendar-cell-color', 'var(--calendar-cell-color-dark)')                  
-                  root.style.setProperty('--calendar-now-color', 'var(--calendar-now-color-dark)')
-                  root.style.setProperty('--calendar-neighbor-color', 'var(--calendar-neighbor-color-dark)')
-                  root.style.setProperty('--calendar-btn-navigation-color', 'var(--calendar-btn-navigation-color-dark)')
-                  root.style.setProperty('--calendar-neighbor-bg', 'var(--calendar-neighbor-bg-dark)')
-                  root.style.setProperty('--subtitle-color', 'var(--subtitle-dark)')
-                  root.style.setProperty('--sidebar-font-color', 'var(sidebar-font-color-dark)')   
-                } else { 
-                  root.style.setProperty('--primary-color', 'var(--primary-color-light)')
-                  root.style.setProperty('--secondary-color', 'var(--secondary-color-light)')
-                  root.style.setProperty('--background-color', 'var(--background-color-light)')
-                  root.style.setProperty('--font-color', 'var(--font-color-light)')
-                  root.style.setProperty('--table-background', 'var(--table-background-light)')
-                  root.style.setProperty('--header-text-color', 'var(--header-text-color-light)')
-                  root.style.setProperty('--modadlidades-border', 'var(modalidades-border-light)')
-                  root.style.setProperty('--table-row-hover-color', 'var(table-row-hover-color-light)')
-                  root.style.setProperty('--table-row-hover-bg', 'var(--table-row-hover-bg-light)')
-                  root.style.setProperty('--header-bg', 'var(--header-bg-light)')
-                  root.style.setProperty('--calendar-cell-color', 'var(--calendar-cell-color-light)')                  
-                  root.style.setProperty('--calendar-now-color', 'var(--calendar-now-color-light)')
-                  root.style.setProperty('--calendar-neighbor-color', 'var(--calendar-neighbor-color-light)')
-                  root.style.setProperty('--calendar-btn-navigation-color', 'var(--calendar-btn-navigation-color-light)')
-                  root.style.setProperty('--calendar-neighbor-bg', 'var(--calendar-neighbor-bg-light)')
-                  root.style.setProperty('--subtitle-color', 'var(--subtitle-light)')
-                  root.style.setProperty('--sidebar-font-color', 'var(sidebar-font-color-light)')
-                }
+    useEffect(() => {
+        // atualiza _variables.scss com as propriedades do tema selecionado
+        const root = document.documentElement
+        if (isChecked) {
+            root.style.setProperty('--primary-color', 'var(--primary-color-dark)')
+            root.style.setProperty('--secondary-color', 'var(--secondary-color-dark)')
+            root.style.setProperty('--background-color', 'var(--background-color-dark)')
+            root.style.setProperty('--font-color', 'var(--font-color-dark)')
+            root.style.setProperty('--table-background', 'var(--table-background-dark)')
+            root.style.setProperty('--header-text-color', 'var(--header-text-color-dark)')
+            root.style.setProperty('--modalidades-border', 'var(--modalidades-border-dark)')
+            root.style.setProperty('--table-row-hover-color', 'var(table-row-hover-color-dark)')
+            root.style.setProperty('--table-row-hover-bg', 'var(--table-row-hover-bg-dark)')
+            root.style.setProperty('--header-bg', 'var(--header-bg-dark)')
+            root.style.setProperty('--calendar-cell-color', 'var(--calendar-cell-color-dark)')                  
+            root.style.setProperty('--calendar-now-color', 'var(--calendar-now-color-dark)')
+            root.style.setProperty('--calendar-neighbor-color', 'var(--calendar-neighbor-color-dark)')
+            root.style.setProperty('--calendar-btn-navigation-color', 'var(--calendar-btn-navigation-color-dark)')
+            root.style.setProperty('--calendar-neighbor-bg', 'var(--calendar-neighbor-bg-dark)')
+            root.style.setProperty('--subtitle-color', 'var(--subtitle-dark)')
+            root.style.setProperty('--sidebar-font-color', 'var(sidebar-font-color-dark)')   
+        } else { 
+            root.style.setProperty('--primary-color', 'var(--primary-color-light)')
+            root.style.setProperty('--secondary-color', 'var(--secondary-color-light)')
+            root.style.setProperty('--background-color', 'var(--background-color-light)')
+            root.style.setProperty('--font-color', 'var(--font-color-light)')
+            root.style.setProperty('--table-background', 'var(--table-background-light)')
+            root.style.setProperty('--header-text-color', 'var(--header-text-color-light)')
+            root.style.setProperty('--modadlidades-border', 'var(modalidades-border-light)')
+            root.style.setProperty('--table-row-hover-color', 'var(table-row-hover-color-light)')
+            root.style.setProperty('--table-row-hover-bg', 'var(--table-row-hover-bg-light)')
+            root.style.setProperty('--header-bg', 'var(--header-bg-light)')
+            root.style.setProperty('--calendar-cell-color', 'var(--calendar-cell-color-light)')                  
+            root.style.setProperty('--calendar-now-color', 'var(--calendar-now-color-light)')
+            root.style.setProperty('--calendar-neighbor-color', 'var(--calendar-neighbor-color-light)')
+            root.style.setProperty('--calendar-btn-navigation-color', 'var(--calendar-btn-navigation-color-light)')
+            root.style.setProperty('--calendar-neighbor-bg', 'var(--calendar-neighbor-bg-light)')
+            root.style.setProperty('--subtitle-color', 'var(--subtitle-light)')
+            root.style.setProperty('--sidebar-font-color', 'var(sidebar-font-color-light)')
+        }
     },[isChecked])
     
     const [optionsWithIcons, setOptionsWithIcons] = useState([])
@@ -156,21 +156,6 @@ const Header = () => {
             { nome: 'Conciliacao', icone: icones['FiShoppingBag'], rota: '/conciliacao'},
         ]
 
-    {/*     { nome: 'Relatórios', icone: icones['FiFileText'], children: [
-            { nome: 'Financeiro', rota: '/financeiro' },
-            { nome: 'Gerenciais', rota: '/gerenciais' },
-            { nome: 'Outros', rota: '/outrosrelatorios'},
-            ]},
-            { nome: 'Exportações', icone: icones['FiDownload'], children: [
-                { nome: 'Sysmo', rota: '/sysmo' },
-                { nome: 'Meta', rota: '/meta' },
-                { nome: 'Meta Sapiranga', rota: '/metasapiranga' },
-            ]},
-           { nome: 'Administração', icone: icones['FiPaperClip'], rota: '/administracao'},
-            { nome: 'Suporte', icone: icones['FiSettings'], rota: '/suporte'},
-            { nome: 'Delivery', icone: icones['FiTruck'], rota: '/vendasdelivery'},
-            { nome: 'Conciliacao', icone: icones['FiShoppingBag'], rota: '/conciliacao'},   */}
-
         let arrayOpcoes = []
 
         orderedOptions.forEach((option, index) => {
@@ -192,7 +177,7 @@ const Header = () => {
                 onChange={handleCheckboxChange}
                 className='checkbox-input'
             />
-            <span className='checkbox-custom'></span> {/* aparencia da checkbox-custom */}
+            <span className='checkbox-custom'></span>
             <span className='checkbox-icon'>
                 <FiCalendar className={`calendar-icon ${isCheckedCalendar ? 'isCheckedCalendar' : ''}`} size={20} />
             </span>
@@ -205,6 +190,15 @@ const Header = () => {
         navigate('/dashboard')
     }
 
+    // Get fallback image from localStorage if userImg is not available
+    const getImageSource = () => {
+        if (userImg) return userImg;
+        
+        // Fallback to localStorage user image
+        const localUser = JSON.parse(localStorage.getItem('user'));
+        return localUser?.IMAGEMBASE64 || '';
+    }
+
     return (  
         <div className="header-container">
             <div className='header-bg-image'>
@@ -215,22 +209,24 @@ const Header = () => {
                                 <input type="checkbox" id="toggleButton" checked={isChecked} onChange={handleCheckboxChange}/>
                                 <span className="slider"><FiMoon/><FiSun/></span>
                             </label>
-                            {/*<CustomCheckbox isChecked={isCheckedCalendar} handleCheckboxChange={handleCheckboxChangeCalendar}/>*/}
                         </div>
                         <div className='user-data'>
-                            <div>{userData.NOME}</div>
-                            <div>{userData.EMAIL}</div>
+                            <div>{userData?.NOME || 'Usuário'}</div>
+                            <div>{userData?.EMAIL || ''}</div>
                             <Relogio/>
                         </div>
                     </div>
                     <div className='btn-container'>
                         <img 
                             className='image'
-                            src={user.IMAGEMBASE64}
+                            src={getImageSource()}
                             alt="User profile"
                             onClick={() => {navigate('/usuario')}}
+                            onError={(e) => {
+                                // Final fallback if image fails to load
+                                e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNEOEQ4RDgiLz4KPHBhdGggZD0iTTIwIDIyQzIyLjIwOTEgMjIgMjQgMjAuMjA5MSAyNCAxOEMyNCAxNS43OTA5IDIyLjIwOTEgMTQgMjAgMTRDMTcuNzkwOSAxNCAxNiAxNS43OTA5IDE2IDE4QzE2IDIwLjIwOTEgMTcuNzkwOSAyMiAyMCAyMloiIGZpbGw9IiM5OTk5OTkiLz4KPHBhdGggZD0iTTIwIDguNUMxOC44OTU0IDguNSAxOC4wMzU3IDkuMzU5NzQgMTguMDM1NyAxMC40NjQzQzE4LjAzNTcgMTEuNTY4OSAxOC44OTU0IDEyLjQyODYgMjAgMTIuNDI4NkMyMS4xMDQ2IDEyLjQyODYgMjEuOTY0MyAxMS41Njg5IDIxLjk2NDMgMTAuNDY0M0MyMS45NjQzIDkuMzU5NzQgMjEuMTA0NiA4LjUgMjAgOC41WiIgZmlsbD0iIzk5OTk5OSIvPgo8L3N2Zz4K';
+                            }}
                         />
-                        {/*<button type='button' className='btn btn-outline-danger px-2 py-1' onClick={logout}>Sair</button>*/}
                     </div>
                 </div>
             </div>
