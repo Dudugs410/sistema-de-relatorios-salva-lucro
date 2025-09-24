@@ -13,7 +13,7 @@ import './header.scss'
 import SeletorCliente from "../SeletorCliente"
 
 const Header = () => {
-    const { logout, isCheckedCalendar, setIsCheckedCalendar, userImg } = useContext(AuthContext)
+    const { logout, isCheckedCalendar, setIsCheckedCalendar, userImg, updateUser } = useContext(AuthContext)
     let user = JSON.parse(localStorage.getItem('user'))
 
     const [isChecked, setIsChecked] = useState(localStorage.getItem('isChecked') ? false : true )
@@ -50,19 +50,11 @@ const Header = () => {
         setIsChecked(updatedChecked)
         localStorage.setItem('isChecked', updatedChecked)
       
-        if (localStorage.getItem('localUsers') !== null) {
-            let localUsersTemp = JSON.parse(localStorage.getItem('localUsers'))
-            localUsersTemp.map(user => {
-                if (user.id === localStorage.getItem('userID')) {
-                    user.theme = updatedChecked
-                }
-            })
-            localStorage.setItem('localUsers', JSON.stringify(localUsersTemp))
-        } else {
-            let localUsersTemp = []
-            let userTemp = { id: localStorage.getItem('userID'), theme: updatedChecked }
-            localUsersTemp.push(userTemp)
-            localStorage.setItem('localUsers', JSON.stringify(localUsersTemp))
+        if (localStorage.getItem('user') !== null) {
+            user = JSON.parse(localStorage.getItem('user'))
+            user.TEMA = updatedChecked
+            localStorage.setItem('user', JSON.stringify(user))
+            updateUser(user)
         }
     }
 
