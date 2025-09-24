@@ -4,29 +4,24 @@ import './user.scss'
 import { AuthContext } from '../../contexts/auth'
 
 const Usuario = () => {
-  const { userImg, setUserImg, logout, loadUser, updateUser } = useContext(AuthContext)
-  const [imageSrc, setImageSrc] = useState('')
-  const [imageLoading, setImageLoading] = useState(true)
+  const { userImg, setUserImg, logout, updateUser } = useContext(AuthContext)
+  const [imageLoading, setImageLoading] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
   const [selectedFile, setSelectedFile] = useState(null)
   const [showConfirmButton, setShowConfirmButton] = useState(false)
+  const [previewUrl, setPreviewUrl] = useState('')
   const fileInputRef = useRef(null)
-  const currentUser = JSON.parse(localStorage.getItem('currentUser'))
-  let user = JSON.parse(localStorage.getItem('user'))
+  
+  const user = JSON.parse(localStorage.getItem('user')) || {}
 
+  // Set initial preview from global context or localStorage
   useEffect(() => {
-    console.log('userImg: ', userImg)
-    if (user.IMAGEMBASE64) {
-      setImageSrc(user.IMAGEMBASE64) // Fixed: changed user.IMAGE to user.IMAGEMBASE64
-      setImageLoading(false)
-    } else {
-      const storedImg = user.IMAGEMBASE64
-      if (storedImg) {
-        setImageSrc(storedImg)
-      }
-      setImageLoading(false)
+    if (userImg) {
+      setPreviewUrl(userImg)
+    } else if (user?.IMAGEMBASE64) {
+      setPreviewUrl(user.IMAGEMBASE64)
     }
-  }, [userImg])
+  }, [userImg, user])
 
   // Function to handle file selection
   const handleFileSelect = (event) => {
@@ -34,26 +29,12 @@ const Usuario = () => {
     if (file) {
       if (validateFile(file)) {
         setSelectedFile(file)
-        previewImage(file)
+        // Create preview URL
+        const url = URL.createObjectURL(file)
+        setPreviewUrl(url)
         setShowConfirmButton(true)
       }
     }
-  }
-
-  // Function to preview image without uploading
-  const previewImage = (file) => {
-    setImageLoading(true)
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      const base64String = reader.result
-      setImageSrc(base64String)
-      setImageLoading(false)
-    }
-    reader.onerror = () => {
-      console.error('Error previewing image')
-      setImageLoading(false)
-    }
-    reader.readAsDataURL(file)
   }
 
   // Function to update image (runs when "Trocar Foto" button is clicked)
@@ -62,44 +43,30 @@ const Usuario = () => {
 
     setImageLoading(true)
     try {
-      const reader = new FileReader()
+      const base64String = await convertFileToBase64(selectedFile)
       
-      reader.onloadend = async () => {
-        const base64String = reader.result
-        
-        // Update user object with new image
-        const updatedUser = {
-          ...user,
-          IMAGEMBASE64: base64String
-        }
-        
-        // Update context and storage
-        setUserImg(base64String)
-        updateUserImageInStorage(base64String)
-        
-        // Update user in database
-        await updateUser(updatedUser)
-        
-        // Update local storage
-        localStorage.setItem('user', JSON.stringify(updatedUser))
-        user = updatedUser
-        
-        setImageSrc(base64String)
-        setImageLoading(false)
-        setShowConfirmButton(false)
-        setSelectedFile(null)
-        
-        alert('Foto atualizada com sucesso!')
+      // Update user object with new image
+      const updatedUser = {
+        ...user,
+        IMAGEMBASE64: base64String
       }
       
-      reader.onerror = () => {
-        console.error('Error converting image to base64')
-        setImageLoading(false)
-        alert('Erro ao converter a imagem. Tente novamente.')
+      // Update global state using context - this will trigger re-renders everywhere
+      setUserImg(base64String)
+      
+      // Update user in database
+      await updateUser(updatedUser)
+      
+      // Clean up preview URL
+      if (previewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(previewUrl)
       }
       
-      reader.readAsDataURL(selectedFile)
+      setImageLoading(false)
+      setShowConfirmButton(false)
+      setSelectedFile(null)
       
+      alert('Foto atualizada com sucesso!')
     } catch (error) {
       console.error('Error updating image:', error)
       setImageLoading(false)
@@ -107,13 +74,27 @@ const Usuario = () => {
     }
   }
 
+  // Helper function to convert file to base64
+  const convertFileToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = () => resolve(reader.result)
+      reader.onerror = error => reject(error)
+    })
+  }
+
   // Function to cancel image change
   const cancelImageChange = () => {
     // Reset to original image
-    const originalImage = user.IMAGEMBASE64
-    setImageSrc(originalImage)
+    setPreviewUrl(userImg || user?.IMAGEMBASE64 || '')
     setSelectedFile(null)
     setShowConfirmButton(false)
+    
+    // Clean up preview URL if it was a blob
+    if (previewUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(previewUrl)
+    }
     
     // Reset file input
     if (fileInputRef.current) {
@@ -144,11 +125,14 @@ const Usuario = () => {
     return true
   }
 
-  // Function to update image in storage (if it exists elsewhere)
-  const updateUserImageInStorage = (base64String) => {
-    // Update any other storage if needed
-    localStorage.setItem('userImg', base64String)
-  }
+  // Clean up blob URLs on unmount
+  useEffect(() => {
+    return () => {
+      if (previewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(previewUrl)
+      }
+    }
+  }, [previewUrl])
 
   return(
     <div className='appPage'>
@@ -167,16 +151,12 @@ const Usuario = () => {
                 <>
                   <img 
                     className={`image ${isHovered ? 'image-hover' : ''}`} 
-                    src={imageSrc} 
+                    src={previewUrl} 
                     alt="User profile"
-                    onLoad={() => setImageLoading(false)}
                     onError={(e) => {
                       console.error('Failed to load image')
-                      setImageLoading(false)
-                      const storedImg = localStorage.getItem('userImg')
-                      if (storedImg) {
-                        setImageSrc(storedImg)
-                      }
+                      // Set a default placeholder if image fails to load
+                      e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDEyMCAxMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiByeD0iNjAiIGZpbGw9IiNEOEQ4RDgiLz4KPHBhdGggZD0iTTYwIDY2QzY2LjYyNzQgNjYgNzIgNjAuNjI3NCA3MiA1NEM3MiA0Ny4zNzI2IDY2LjYyNzQgNDIgNjAgNDJDNTMuMzcyNiA0MiA0OCA0Ny4zNzI2IDQ4IDU0QzQ4IDYwLjYyNzQgNTMuMzcyNiA2NiA2MCA2NloiIGZpbGw9IiM5OTk5OTkiLz4KPHBhdGggZD0iTTYwIDI1LjVDNTYuOTYyNCAyNS41IDU0LjU3MTQgMjcuODkxMSA1NC41NzE0IDMwLjkyODZDNTQuNTcxNCAzMy45NjYxIDU2Ljk2MjQgMzYuMzU3MSA2MCAzNi4zNTcxQzYzLjAzNzYgMzYuMzU3MSA2NS40Mjg2IDMzLjk2NjEgNjUuNDI4NiAzMC45Mjg2QzY1LjQyODYgMjcuODkxMSA2My4wMzc2IDI1LjUgNjAgMjUuNVoiIGZpbGw9IiM5OTk5OTkiLz4KPC9zdmc+'
                     }}
                   />
                   {isHovered && (
@@ -217,9 +197,14 @@ const Usuario = () => {
               style={{ display: 'none' }}
             />
             
+            <div className='user-info'>
+              <h3>{user?.NOME || 'Usuário'}</h3>
+              <p>{user?.EMAIL || ''}</p>
+            </div>
+            
             <div className='user-button-container'>
               <button className='btn btn-global user-btn'>Informações do Usuário</button>
-              <button className='btn btn-danger btn-global user-btn user-btn-sair' onClick={()=>{logout()}}>Sair</button>
+              <button className='btn btn-danger btn-global user-btn user-btn-sair' onClick={() => { logout() }}>Sair</button>
             </div>              
           </div>
         </div>
