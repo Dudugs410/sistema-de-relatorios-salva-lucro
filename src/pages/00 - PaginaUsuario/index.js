@@ -203,6 +203,7 @@ const Usuario = () => {
             </div>
             
             <div className='user-button-container'>
+              <button className='btn btn-global user-btn' onClick={handleImageClick}>Trocar Imagem de Usuário</button>
               <button className='btn btn-global user-btn'>Informações do Usuário</button>
               <button className='btn btn-danger btn-global user-btn user-btn-sair' onClick={() => { logout() }}>Sair</button>
             </div>              
