@@ -15,9 +15,11 @@ function Layout({ children }) {
           <SidebarMenu />
         </div>
         <div className='column-container'>
-          <Header />
-          {/*<SeletorCliente />*/}
-          <DadosGrupoCliente/>
+          <div className='header-container-fixed'>
+            <Header />
+            {/*<SeletorCliente />*/}
+            <DadosGrupoCliente/>
+          </div>
           {children}
         </div>
         <Footer/>

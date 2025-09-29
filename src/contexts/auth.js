@@ -128,7 +128,6 @@ const loginApp = async (login, password) => {
 
       if((!user.TEMA) || (!user.IMAGEMBASE64)){
         await handleUpdateUser()
-        console.log('userImg64: ', user.IMAGEMBASE64)
       }
 
       const userData = { NOME: user.NOME, EMAIL: user.EMAIL }
