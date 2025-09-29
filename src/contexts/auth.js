@@ -99,6 +99,7 @@ const loginApp = async (login, password) => {
       try {
         user = await loadUser(userId)
         localStorage.setItem('user', JSON.stringify(user))
+        localStorage.setItem('isChecked', user.TEMA)
       } catch (error) {
         console.log(error)
       }
@@ -127,7 +128,6 @@ const loginApp = async (login, password) => {
 
       if((!user.TEMA) || (!user.IMAGEMBASE64)){
         await handleUpdateUser()
-        console.log('userImg64: ', user.IMAGEMBASE64)
       }
 
       const userData = { NOME: user.NOME, EMAIL: user.EMAIL }
@@ -277,7 +277,6 @@ const loginApp = async (login, password) => {
     //setIsLoadingUser(true)
     console.log('update user: ', userObj)
     try {
-
         let body = JSON.stringify(userObj)
 
         const response = await fetch('https://app.salvalucro.com.br/api/v1/usuario', {
@@ -291,7 +290,7 @@ const loginApp = async (login, password) => {
 
         const responseData = await response.json()
         console.log('response: ', responseData)
-
+      /*
         if (response.ok) {
           toast.dismiss()
           toast.success('Usuário atualizado com sucesso!')
@@ -299,6 +298,7 @@ const loginApp = async (login, password) => {
           toast.dismiss()
           toast.error('Erro ao atualizar usuário')
         }
+      */
     } catch (error) {
       console.error('Erro ao atualizar usuário:', error)
       toast.dismiss()

@@ -198,8 +198,8 @@ const Usuario = () => {
             />
             
             <div className='user-info'>
-              <h3>{user?.NOME || 'Usuário'}</h3>
-              <p>{user?.EMAIL || ''}</p>
+              <b className='text-global' style={{'margin': '0'}}>{user?.NOME || 'Usuário'}</b>
+              <b className='text-global' style={{'margin': '0'}}>{user?.EMAIL || ''}</b>
             </div>
             
             <div className='user-button-container'>

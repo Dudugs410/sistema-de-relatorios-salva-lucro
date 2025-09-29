@@ -93,7 +93,7 @@ export default function Private({ children }) {
               <div className="container-private-body">
                 <div className="text-container-private">
                   <p className="text-private">
-                    Você está inativo faz um tempo. Deseja continuar logado?
+                    Sessão inativa. Deseja Manter?
                   </p>
                 </div>
                 <div className="btn-container-private">
