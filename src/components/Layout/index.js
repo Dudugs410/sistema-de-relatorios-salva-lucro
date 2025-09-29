@@ -17,9 +17,9 @@ function Layout({ children }) {
         <div className='column-container'>
           <div className='header-container-fixed'>
             <Header />
-            {/*<SeletorCliente />*/}
-            <DadosGrupoCliente/>
           </div>
+                      {/*<SeletorCliente />*/}
+            <DadosGrupoCliente/>
           {children}
         </div>
         <Footer/>
