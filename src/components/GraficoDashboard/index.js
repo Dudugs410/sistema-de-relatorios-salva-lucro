@@ -6,6 +6,7 @@ import './grafico.scss';
 import TabelaVendasDashboard from '../Componente_TabelaVendasDashboard';
 import TabelaCreditosDashboard from '../Componente_TabelaCreditosDashboard';
 import TabelaServicosDashboard from '../Componente_TabelaServicosDashboard';
+import TabelaResponsiva from '../TabelaResponsiva';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -164,9 +165,9 @@ useEffect(() => {
       {showAdmModal && selectedAdm && (
         <Modal onClose={() => setShowAdmModal(false)}>
           {tipo === '0' ? (
-            <TabelaVendasDashboard array={selectedAdm} />
+            <TabelaResponsiva array={selectedAdm} />
           ) : tipo === '1' ? (
-            <TabelaCreditosDashboard array={selectedAdm} />
+            <TabelaResponsiva array={selectedAdm} />
           ) : tipo === '2' ? (
             <TabelaServicosDashboard array={selectedAdm} />
           ) : null}
