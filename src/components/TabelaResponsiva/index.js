@@ -2,6 +2,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import './TabelaResponsiva.scss'
+import './ModalGenerico.scss'
 import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../../contexts/auth'
 import { FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward, FiFilter } from 'react-icons/fi'

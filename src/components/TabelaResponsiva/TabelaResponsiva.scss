@@ -152,6 +152,15 @@
     justify-content: center;
     gap: 0.5rem;
   }
+
+  .card-header{
+    background-color: var(--primary-color);
+    color: white;
+  }
+
+  .sale-card{
+    background-color: var(--background-color);
+  }
 }
 
 @media (max-width: 576px) {
