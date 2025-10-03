@@ -8,7 +8,7 @@ const ModalUserActivity = ({ onClose, children }) => {
   },[onClose])
 
   return (
-    <div className="modal-overlay">
+    <div className="modal-overlay modal-activity">
       <div className='modal-useractivity-container'>
         <div className="modal-useractivity-body">
           {children}
