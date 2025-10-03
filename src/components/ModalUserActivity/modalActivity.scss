@@ -1,22 +1,5 @@
 @import '../../styles/variables';
 
-.modal-overlay{
-    background-color: rgba(0, 0, 0, 0.5);
-    height: 100%;
-    width: 100%;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 9;
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    justify-content: start;
-    align-content: center;
-    margin-top: 40px;
-
-}
-
 .modal-activity{
     background-color: rgba(0, 0, 0, 0.5);
     height: 100%;

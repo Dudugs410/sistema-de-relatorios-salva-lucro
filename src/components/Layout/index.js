@@ -18,7 +18,6 @@ function Layout({ children }) {
           <div className='header-container-fixed'>
             <Header />
           </div>
-                      {/*<SeletorCliente />*/}
             <DadosGrupoCliente/>
           {children}
         </div>

@@ -37,7 +37,7 @@
     margin: 0;
     border: none;
     display: flex;
-    flex-direction: column;
+    flex-direction: column !important;
     flex-wrap: wrap;
     align-content: stretch;
     /* justify-content: flex-end; */
