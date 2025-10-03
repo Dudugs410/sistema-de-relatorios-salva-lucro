@@ -3,146 +3,146 @@
 /* eslint-disable react/prop-types */
 import './TabelaResponsiva.scss'
 import './ModalGenerico.scss'
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState, useMemo } from 'react'
 import { AuthContext } from '../../contexts/auth'
 import { FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward, FiFilter } from 'react-icons/fi'
 
-const TabelaResponsiva = ({ array, dataType = 'sales' }) => {
+// Configuration for different data types - moved outside component to prevent recreation
+const tableConfig = {
+  sales: {
+    dataKey: 'sales',
+    title: 'Vendas',
+    filters: [
+      { key: 'bandeira', label: 'Bandeira', path: 'bandeira.descricaoBandeira' },
+      { key: 'adquirente', label: 'Adquirente', path: 'adquirente.nomeAdquirente' }
+    ],
+    columns: [
+      { key: 'cnpj', label: 'CNPJ' },
+      { key: 'adquirente', label: 'Adquirente', path: 'adquirente.nomeAdquirente' },
+      { key: 'bandeira', label: 'Bandeira', path: 'bandeira.descricaoBandeira' },
+      { key: 'produto', label: 'Produto', path: 'produto.descricaoProduto' },
+      { key: 'modalidade', label: 'Subproduto', path: 'modalidade.descricaoModalidade' },
+      { key: 'valorBruto', label: 'Valor Bruto', format: 'currency', className: 'green-global' },
+      { key: 'valorLiquido', label: 'Valor Líquido', format: 'currency', className: 'green-global' },
+      { key: 'taxa', label: 'Taxa', format: 'percent', className: 'red-global' },
+      { key: 'valorDesconto', label: 'Valor Desconto', format: 'currency', className: 'red-global' },
+      { key: 'nsu', label: 'NSU' },
+      { key: 'dataVenda', label: 'Data Venda', format: 'date' },
+      { key: 'horaVenda', label: 'Hora Venda', format: 'time' },
+      { key: 'dataCredito', label: 'Data Crédito', format: 'date' },
+      { key: 'codigoAutorizacao', label: 'Autorização' },
+      { key: 'quantidadeParcelas', label: 'Parcelas' },
+      { key: 'tid', label: 'TID' }
+    ],
+    mobileCards: [
+      { key: 'adquirente', label: 'Adquirente', path: 'adquirente.nomeAdquirente' },
+      { key: 'bandeira', label: 'Bandeira', path: 'bandeira.descricaoBandeira', badge: true },
+      { key: 'cnpj', label: 'CNPJ' },
+      { key: 'valorBruto', label: 'Valor Bruto', format: 'currency', className: 'green-global' },
+      { key: 'valorLiquido', label: 'Valor Líquido', format: 'currency', className: 'green-global' },
+      { key: 'taxa', label: 'Taxa', format: 'percent', className: 'red-global' },
+      { key: 'dataVenda', label: 'Data Venda', format: 'date' },
+      { key: 'quantidadeParcelas', label: 'Parcelas' },
+      { key: 'nsu', label: 'NSU' },
+      { key: 'tid', label: 'TID' }
+    ]
+  },
+  credits: {
+    dataKey: 'sales',
+    title: 'Créditos',
+    filters: [
+      { key: 'bandeira', label: 'Bandeira', path: 'bandeira.descricaoBandeira' },
+      { key: 'adquirente', label: 'Adquirente', path: 'adquirente.nomeAdquirente' }
+    ],
+    columns: [
+      { key: 'cnpj', label: 'CNPJ' },
+      { key: 'adquirente', label: 'Adquirente', path: 'adquirente.nomeAdquirente' },
+      { key: 'bandeira', label: 'Bandeira', path: 'bandeira.descricaoBandeira' },
+      { key: 'produto', label: 'Produto', path: 'produto.descricaoProduto' },
+      { key: 'modalidade', label: 'Subproduto', path: 'modalidade.descricaoModalidade' },
+      { key: 'valorBruto', label: 'Valor Bruto', format: 'currency', className: 'green-global' },
+      { key: 'valorLiquido', label: 'Valor Líquido', format: 'currency', className: 'green-global' },
+      { key: 'taxa', label: 'Taxa', format: 'percent', className: 'red-global' },
+      { key: 'valorDesconto', label: 'Valor Desconto', format: 'currency', className: 'red-global' },
+      { key: 'nsu', label: 'NSU' },
+      { key: 'dataVenda', label: 'Data Venda', format: 'date' },
+      { key: 'horaVenda', label: 'Hora Venda', format: 'time' },
+      { key: 'dataCredito', label: 'Data Crédito', format: 'date' },
+      { key: 'codigoAutorizacao', label: 'Autorização' },
+      { key: 'quantidadeParcelas', label: 'Parcelas' },
+      { key: 'tid', label: 'TID' }
+    ],
+    mobileCards: [
+      { key: 'adquirente', label: 'Adquirente', path: 'adquirente.nomeAdquirente' },
+      { key: 'bandeira', label: 'Bandeira', path: 'bandeira.descricaoBandeira', badge: true },
+      { key: 'cnpj', label: 'CNPJ' },
+      { key: 'valorBruto', label: 'Valor Bruto', format: 'currency', className: 'green-global' },
+      { key: 'valorLiquido', label: 'Valor Líquido', format: 'currency', className: 'green-global' },
+      { key: 'taxa', label: 'Taxa', format: 'percent', className: 'red-global' },
+      { key: 'dataVenda', label: 'Data Venda', format: 'date' },
+      { key: 'quantidadeParcelas', label: 'Parcelas' },
+      { key: 'nsu', label: 'NSU' },
+      { key: 'tid', label: 'TID' }
+    ]
+  },
+  services: {
+    dataKey: 'sales',
+    title: 'Serviços',
+    filters: [
+      { key: 'servico', label: 'Serviço', path: 'descricao' },
+      { key: 'adquirente', label: 'Adquirente', path: 'nome_adquirente' }
+    ],
+    columns: [
+      { key: 'cnpj', label: 'CNPJ' },
+      { key: 'data', label: 'Data', format: 'date' },
+      { key: 'nome_adquirente', label: 'Adquirente' },
+      { key: 'descricao', label: 'Serviço' },
+      { key: 'valor', label: 'Valor', format: 'currency', className: 'red-global' },
+      { key: 'razao_social', label: 'Razão Social' }
+    ],
+    mobileCards: [
+      { key: 'nome_adquirente', label: 'Adquirente' },
+      { key: 'descricao', label: 'Serviço', badge: true },
+      { key: 'cnpj', label: 'CNPJ' },
+      { key: 'data', label: 'Data', format: 'date' },
+      { key: 'valor', label: 'Valor', format: 'currency', className: 'red-global' },
+      { key: 'razao_social', label: 'Razão Social' }
+    ]
+  }
+}
 
+const TabelaResponsiva = ({ array, dataType = 'sales' }) => {
   const { dateConvert } = useContext(AuthContext)
 
   const [dataArray, setDataArray] = useState([])
-  const [dataToDisplay, setDataToDisplay] = useState([])
   const [filteredData, setFilteredData] = useState([])
-
-  // Filter states
   const [filters, setFilters] = useState({})
   const [availableFilters, setAvailableFilters] = useState({})
   const [allFilters, setAllFilters] = useState({})
   const [showFilters, setShowFilters] = useState(false)
-
-  // Pagination
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage] = useState(15)
 
-  // Configuration for different data types
-  const tableConfig = {
-    sales: {
-      dataKey: 'sales',
-      title: 'Vendas',
-      filters: [
-        { key: 'bandeira', label: 'Bandeira', path: 'bandeira.descricaoBandeira' },
-        { key: 'adquirente', label: 'Adquirente', path: 'adquirente.nomeAdquirente' }
-      ],
-      columns: [
-        { key: 'cnpj', label: 'CNPJ' },
-        { key: 'adquirente', label: 'Adquirente', path: 'adquirente.nomeAdquirente' },
-        { key: 'bandeira', label: 'Bandeira', path: 'bandeira.descricaoBandeira' },
-        { key: 'produto', label: 'Produto', path: 'produto.descricaoProduto' },
-        { key: 'modalidade', label: 'Subproduto', path: 'modalidade.descricaoModalidade' },
-        { key: 'valorBruto', label: 'Valor Bruto', format: 'currency', className: 'green-global' },
-        { key: 'valorLiquido', label: 'Valor Líquido', format: 'currency', className: 'green-global' },
-        { key: 'taxa', label: 'Taxa', format: 'percent', className: 'red-global' },
-        { key: 'valorDesconto', label: 'Valor Desconto', format: 'currency', className: 'red-global' },
-        { key: 'nsu', label: 'NSU' },
-        { key: 'dataVenda', label: 'Data Venda', format: 'date' },
-        { key: 'horaVenda', label: 'Hora Venda', format: 'time' },
-        { key: 'dataCredito', label: 'Data Crédito', format: 'date' },
-        { key: 'codigoAutorizacao', label: 'Autorização' },
-        { key: 'quantidadeParcelas', label: 'Parcelas' },
-        { key: 'tid', label: 'TID' }
-      ],
-      mobileCards: [
-        { key: 'adquirente', label: 'Adquirente', path: 'adquirente.nomeAdquirente' },
-        { key: 'bandeira', label: 'Bandeira', path: 'bandeira.descricaoBandeira', badge: true },
-        { key: 'cnpj', label: 'CNPJ' },
-        { key: 'valorBruto', label: 'Valor Bruto', format: 'currency', className: 'green-global' },
-        { key: 'valorLiquido', label: 'Valor Líquido', format: 'currency', className: 'green-global' },
-        { key: 'taxa', label: 'Taxa', format: 'percent', className: 'red-global' },
-        { key: 'dataVenda', label: 'Data Venda', format: 'date' },
-        { key: 'quantidadeParcelas', label: 'Parcelas' },
-        { key: 'nsu', label: 'NSU' },
-        { key: 'tid', label: 'TID' }
-      ]
-    },
-    credits: {
-      dataKey: 'sales',
-      title: 'Créditos',
-      filters: [
-        { key: 'bandeira', label: 'Bandeira', path: 'bandeira.descricaoBandeira' },
-        { key: 'adquirente', label: 'Adquirente', path: 'adquirente.nomeAdquirente' }
-      ],
-      columns: [
-        { key: 'cnpj', label: 'CNPJ' },
-        { key: 'adquirente', label: 'Adquirente', path: 'adquirente.nomeAdquirente' },
-        { key: 'bandeira', label: 'Bandeira', path: 'bandeira.descricaoBandeira' },
-        { key: 'produto', label: 'Produto', path: 'produto.descricaoProduto' },
-        { key: 'modalidade', label: 'Subproduto', path: 'modalidade.descricaoModalidade' },
-        { key: 'valorBruto', label: 'Valor Bruto', format: 'currency', className: 'green-global' },
-        { key: 'valorLiquido', label: 'Valor Líquido', format: 'currency', className: 'green-global' },
-        { key: 'taxa', label: 'Taxa', format: 'percent', className: 'red-global' },
-        { key: 'valorDesconto', label: 'Valor Desconto', format: 'currency', className: 'red-global' },
-        { key: 'nsu', label: 'NSU' },
-        { key: 'dataVenda', label: 'Data Venda', format: 'date' },
-        { key: 'horaVenda', label: 'Hora Venda', format: 'time' },
-        { key: 'dataCredito', label: 'Data Crédito', format: 'date' },
-        { key: 'codigoAutorizacao', label: 'Autorização' },
-        { key: 'quantidadeParcelas', label: 'Parcelas' },
-        { key: 'tid', label: 'TID' }
-      ],
-      mobileCards: [
-        { key: 'adquirente', label: 'Adquirente', path: 'adquirente.nomeAdquirente' },
-        { key: 'bandeira', label: 'Bandeira', path: 'bandeira.descricaoBandeira', badge: true },
-        { key: 'cnpj', label: 'CNPJ' },
-        { key: 'valorBruto', label: 'Valor Bruto', format: 'currency', className: 'green-global' },
-        { key: 'valorLiquido', label: 'Valor Líquido', format: 'currency', className: 'green-global' },
-        { key: 'taxa', label: 'Taxa', format: 'percent', className: 'red-global' },
-        { key: 'dataVenda', label: 'Data Venda', format: 'date' },
-        { key: 'quantidadeParcelas', label: 'Parcelas' },
-        { key: 'nsu', label: 'NSU' },
-        { key: 'tid', label: 'TID' }
-      ]
-    },
-    services: {
-      dataKey: 'sales',
-      title: 'Serviços',
-      filters: [
-        { key: 'servico', label: 'Serviço', path: 'descricao' },
-        { key: 'adquirente', label: 'Adquirente', path: 'nome_adquirente' }
-      ],
-      columns: [
-        { key: 'cnpj', label: 'CNPJ' },
-        { key: 'data', label: 'Data', format: 'date' },
-        { key: 'nome_adquirente', label: 'Adquirente' },
-        { key: 'descricao', label: 'Serviço' },
-        { key: 'valor', label: 'Valor', format: 'currency', className: 'red-global' },
-        { key: 'razao_social', label: 'Razão Social' }
-      ],
-      mobileCards: [
-        { key: 'nome_adquirente', label: 'Adquirente' },
-        { key: 'descricao', label: 'Serviço', badge: true },
-        { key: 'cnpj', label: 'CNPJ' },
-        { key: 'data', label: 'Data', format: 'date' },
-        { key: 'valor', label: 'Valor', format: 'currency', className: 'red-global' },
-        { key: 'razao_social', label: 'Razão Social' }
-      ]
-    }
-  }
-
-  const config = tableConfig[dataType]
+  // Memoize config and filter keys to prevent unnecessary re-renders
+  const config = useMemo(() => tableConfig[dataType], [dataType])
+  const filterKeys = useMemo(() => config.filters.map(f => f.key), [config])
 
   // Initialize data
   useEffect(() => {
     if (array && array[config.dataKey]) {
-      setDataArray(array[config.dataKey])
-      setDataToDisplay(array[config.dataKey])
-      setFilteredData(array[config.dataKey])
+      const newDataArray = array[config.dataKey]
+      setDataArray(newDataArray)
+      setFilteredData(newDataArray)
+    } else {
+      // Clear data if no array or dataKey
+      setDataArray([])
+      setFilteredData([])
     }
   }, [array, config.dataKey])
 
   // Extract available filter values
   useEffect(() => {
-    if (dataArray.length > 0) {
+    if (dataArray.length > 0 && config.filters.length > 0) {
       const newAvailableFilters = {}
       const newAllFilters = {}
 
@@ -157,45 +157,76 @@ const TabelaResponsiva = ({ array, dataType = 'sales' }) => {
 
       setAvailableFilters(newAvailableFilters)
       setAllFilters(newAllFilters)
+      
+      // Only reset filters if we have new data and no existing filters
+      if (Object.keys(filters).length === 0) {
+        setFilters({})
+      }
+    } else {
+      // Clear filters when no data
+      setAvailableFilters({})
+      setAllFilters({})
       setFilters({})
     }
-  }, [dataArray, config.filters])
+  }, [dataArray, config.filters.length]) // Only depend on filter count, not the array
 
   // Apply filters
   useEffect(() => {
+    if (dataArray.length === 0) {
+      setFilteredData([])
+      return
+    }
+
     let filtered = dataArray
 
     // Apply each filter
     Object.keys(filters).forEach(filterKey => {
       if (filters[filterKey]) {
         const filterConfig = config.filters.find(f => f.key === filterKey)
-        filtered = filtered.filter(item => {
-          const value = filterConfig.path ? getNestedValue(item, filterConfig.path) : item[filterKey]
-          return value === filters[filterKey]
-        })
+        if (filterConfig) {
+          filtered = filtered.filter(item => {
+            const value = filterConfig.path ? getNestedValue(item, filterConfig.path) : item[filterKey]
+            return value === filters[filterKey]
+          })
+        }
       }
     })
 
     setFilteredData(filtered)
-    setCurrentPage(1)
-  }, [filters, dataArray, config.filters])
+    setCurrentPage(1) // Reset to first page when filters change
+  }, [filters, dataArray, filterKeys]) // Use memoized filterKeys
 
   // Update available filters based on selections
   useEffect(() => {
+    if (dataArray.length === 0 || Object.keys(filters).length === 0) {
+      setAvailableFilters(allFilters)
+      return
+    }
+
     const newAvailableFilters = { ...allFilters }
+    let hasActiveFilters = false
 
     config.filters.forEach(filter => {
-      if (Object.keys(filters).some(key => key !== filter.key && filters[key])) {
+      // Check if there are any active filters besides the current one
+      const otherActiveFilters = Object.keys(filters).some(
+        key => key !== filter.key && filters[key]
+      )
+
+      if (otherActiveFilters) {
+        hasActiveFilters = true
         let filteredData = dataArray
 
-        // Apply other filters
+        // Apply other active filters
         Object.keys(filters).forEach(otherFilterKey => {
           if (otherFilterKey !== filter.key && filters[otherFilterKey]) {
             const otherFilterConfig = config.filters.find(f => f.key === otherFilterKey)
-            filteredData = filteredData.filter(item => {
-              const value = otherFilterConfig.path ? getNestedValue(item, otherFilterConfig.path) : item[otherFilterKey]
-              return value === filters[otherFilterKey]
-            })
+            if (otherFilterConfig) {
+              filteredData = filteredData.filter(item => {
+                const value = otherFilterConfig.path ? 
+                  getNestedValue(item, otherFilterConfig.path) : item[otherFilterKey]
+                return value === filters[otherFilterKey]
+              })
+            }
           }
         })
 
@@ -204,13 +235,15 @@ const TabelaResponsiva = ({ array, dataType = 'sales' }) => {
         }))].filter(Boolean).sort()
 
         newAvailableFilters[filter.key] = values
-      } else {
-        newAvailableFilters[filter.key] = allFilters[filter.key]
       }
     })
 
-    setAvailableFilters(newAvailableFilters)
-  }, [filters, dataArray, allFilters, config.filters])
+    if (hasActiveFilters) {
+      setAvailableFilters(newAvailableFilters)
+    } else {
+      setAvailableFilters(allFilters)
+    }
+  }, [filters, dataArray, allFilters, config.filters.length])
 
   // Helper function to get nested object values
   const getNestedValue = (obj, path) => {
@@ -219,6 +252,8 @@ const TabelaResponsiva = ({ array, dataType = 'sales' }) => {
 
   // Helper function to format values
   const formatValue = (value, format) => {
+    if (value === null || value === undefined || value === '') return ''
+    
     switch (format) {
       case 'currency':
         return Number(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
@@ -263,7 +298,7 @@ const TabelaResponsiva = ({ array, dataType = 'sales' }) => {
     <>
       <div className='dropShadow vendas-view'>
         <div className="table-header-responsive">
-          <h3>{array.adminName} - {config.title}</h3>
+          <h3>{array?.adminName} - {config.title}</h3>
           {config.filters.length > 0 && (
             <button 
               className="btn btn-sm btn-outline-primary filter-toggle"
