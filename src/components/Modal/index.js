@@ -23,7 +23,7 @@ const Modal = ({ onClose, children }) => {
         onClose()
       }
     }
-    
+
     document.addEventListener('keydown', handleEscape)
     return () => {
       document.removeEventListener('keydown', handleEscape)
@@ -34,16 +34,16 @@ const Modal = ({ onClose, children }) => {
     <div className="modal-overlay">
       <div className='modal-window-content'>
         <div className="modal-content-adq">
-          <div className='modal-btn-container'>
-            <button 
-              className="btn btn-danger modal-close" 
-              onClick={onClose}
-              aria-label="Fechar modal"
-            >
-              <FiX />
-            </button>
-          </div>
           <div className="modal-content-body">
+            <div className='modal-btn-container'>
+              <button 
+                className="btn btn-danger modal-close" 
+                onClick={onClose}
+                aria-label="Fechar modal"
+              >
+              <FiX />
+              </button>
+            </div>
             {children}
           </div>
         </div>
