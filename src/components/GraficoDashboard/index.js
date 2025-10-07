@@ -165,11 +165,11 @@ useEffect(() => {
       {showAdmModal && selectedAdm && (
         <Modal onClose={() => setShowAdmModal(false)}>
           {tipo === '0' ? (
-            <TabelaResponsiva array={selectedAdm} />
+            <TabelaResponsiva array={selectedAdm} dataType='sales'/>
           ) : tipo === '1' ? (
-            <TabelaResponsiva array={selectedAdm} />
+            <TabelaResponsiva array={selectedAdm} dataType='credits'/>
           ) : tipo === '2' ? (
-            <TabelaServicosDashboard array={selectedAdm} />
+            <TabelaResponsiva array={selectedAdm} dataType='services'/>
           ) : null}
         </Modal>
       )}
