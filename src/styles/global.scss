@@ -230,6 +230,7 @@
     border: none;
     background-color: var(--table-background);
     border-bottom: solid var(--primary-color) 1px;
+    font-size: 0.875rem !important;
     
 }
 
@@ -265,6 +266,7 @@ tr{
 
 .det-th-global, .det-td-global{
     width: 200px;
+    font-weight: 100 !important;
     text-align: center;
     white-space: nowrap;
     border: none;
