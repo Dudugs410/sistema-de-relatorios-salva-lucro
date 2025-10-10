@@ -74,7 +74,7 @@ function AuthProvider({ children }){
 	},[cancelOngoingRequests])
 
 	// Função que loga o usuário e gerencia quaisquer dados relevantes à isso
-const loginApp = async (login, password) => {
+  const loginApp = async (login, password) => {
   resetAppValues()
   try {
     const response = await api.post('token', { client_id: login, client_secret: md5(password) })
@@ -88,14 +88,9 @@ const loginApp = async (login, password) => {
 
     if (loggedSuccessfully) {
         localStorage.setItem('currentPath', '/dashboard')
-        let localUsers = []
-        if (localStorage.getItem('localUsers') !== null) {
-            localUsers = JSON.parse(localStorage.getItem('localUsers'))
-        }
         //localStorage.setItem('md5Pass', md5(password))
         setClientUserId(userId)
         let user
-
       try {
         user = await loadUser(userId)
         localStorage.setItem('user', JSON.stringify(user))
@@ -253,6 +248,14 @@ const loginApp = async (login, password) => {
       console.error('Login error:', error)
       alert(error.message)
   }}
+
+  const getLocalJoyRide = () => {
+    return JSON.parse(localStorage.getItem('joyride'))
+  }
+
+  const setLocalJoyride = (item) => {
+    localStorage.setItem(JSON.stringify(item), 'joyride')
+  }
 
   const loadUser = async (userId) => {
     console.log('userID: ', userId)
@@ -1791,34 +1794,6 @@ const [taxesPageArray, setTaxesPageArray] = useState([])
 		setIsSignedIn(false)
 	}
 
-	function getUserData() {
-		setClientUserId(localStorage.getItem('userID'))
-		const localUsers = JSON.parse(localStorage.getItem('localUsers')) || []
-		const user = localUsers.find(user => user.id === clientUserId)
-		return user || null
-	}
-
-	function updateUserById(userId, newData) {
-	const localUsers = JSON.parse(localStorage.getItem('localUsers')) || []
-	const userIndex = localUsers.findIndex(user => user.id === userId)
-		if (userIndex !== -1) {
-			localUsers[userIndex] = {
-			...localUsers[userIndex], 
-			...newData,                  
-			joyrideComplete: {
-				...localUsers[userIndex].joyrideComplete, // Keep existing nested keys
-				...newData.joyrideComplete, // Apply new nested keys
-			},
-			}
-			localStorage.setItem('localUsers', JSON.stringify(localUsers));
-			let currentUser = getUserData()
-			localStorage.setItem('currentUser', JSON.stringify(currentUser))
-			console.log('User updated successfully!')
-		} else {
-			console.error('User not found!')
-		}
-	}
-
 	const navigate = useNavigate()
 
 	async function loadOptions() {
@@ -1854,11 +1829,9 @@ const [taxesPageArray, setTaxesPageArray] = useState([])
 	/////desloga usuário
 	function logout(){
 		clearCookies()
-		let users = JSON.parse(localStorage.getItem('localUsers'))
 		localStorage.clear()
 		cancelOngoingRequests()
 		resetAppValues()
-		localStorage.setItem('localUsers', JSON.stringify(users))
 		localStorage.setItem('isSignedIn', false)
 		navigate('/')
 	}
@@ -2149,7 +2122,6 @@ const [taxesPageArray, setTaxesPageArray] = useState([])
 				changedOption, setChangedOption,
 				canceled, setCanceled,
 
-				updateUserById, getUserData,
 				resetAppValues,
 
 				clientUserId,

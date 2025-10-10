@@ -17,7 +17,6 @@ import ModalAlerta from './ModalAlerta/index.js'
 
 const Dashboard = () => {
   const location = useLocation()
-  const {clientUserId, getUserData, updateUserById} = useContext(AuthContext)
   // Joyride state
   const [runTutorial, setRunTutorial] = useState(false)
 
@@ -68,37 +67,9 @@ const Dashboard = () => {
     }
   }, [changedOption])
 
-    useEffect(() => {
-      localStorage.setItem('currentPath', location.pathname)
-      
-      try {
-        let userTemp = getUserData()
-        
-        if (!userTemp?.joyrideComplete) {
-          console.error('User data or joyrideComplete property is missing')
-          return
-        }
-        
-        const tutorialCompleted = userTemp.joyrideComplete.dashboard
-        
-        if (!tutorialCompleted) {
-          const timer = setTimeout(() => {
-            setRunTutorial(true)
-          }, 1000)
-          return () => clearTimeout(timer)
-        }
-      } catch (error) {
-        console.error('Error while processing user data:', error)
-      }
-    }, [location])
-
   const handleTutorialEnd = () => {
     setRunTutorial(false)
-    updateUserById(clientUserId, {
-      joyrideComplete: {
-        dashboard: true,
-      },
-    })
+
   }
 
   const chartDataExists = (array) => array.length > 0

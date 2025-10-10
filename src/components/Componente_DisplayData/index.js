@@ -10,7 +10,7 @@ import TabelaServicos from '../Componente_TabelaServicos'
 import { AuthContext } from '../../contexts/auth'
 
 const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutorial, location }) => {
-  const { getUserData, updateUserById, clientUserId } = useContext(AuthContext)
+  const { clientUserId } = useContext(AuthContext)
   
   // State initialization
   const [exportPage, setExportPage] = useState('')
@@ -47,17 +47,7 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutori
         setExportPage('')
         break
     }
-
-    // Handle tutorial logic
-    const pathKey = getPathKey(path)
-    if (pathKey) {
-      const userTemp = getUserData()
-      if (!userTemp?.joyrideComplete?.[pathKey]) {
-        const timer = setTimeout(() => setRunTutorial(true), 1000)
-        return () => clearTimeout(timer)
-      }
-    }
-  }, [location.pathname, getUserData, setRunTutorial])
+  }, [location.pathname, setRunTutorial])
 
   // Component mapping
   const componentMap = {
@@ -72,9 +62,7 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutori
     setRunTutorial(false)
     const pathKey = getPathKey(currentPath)
     if (pathKey && clientUserId) {
-      updateUserById(clientUserId, {
-        joyrideComplete: { [pathKey]: true }
-      })
+
     }
   }
 

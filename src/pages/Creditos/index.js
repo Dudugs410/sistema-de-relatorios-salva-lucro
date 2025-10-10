@@ -24,7 +24,6 @@ const Creditos = () =>{
 	  groupByAdmin, 
     btnDisabledCredits, setBtnDisabledCredits,
     exportCredits, creditsTableData,
-    clientUserId, getUserData, updateUserById,
 	} = useContext(AuthContext)
   
 
@@ -160,44 +159,12 @@ async function loadData() {
       }
     },[creditsPageArray])
   
-    useEffect(() => {
-      localStorage.setItem('currentPath', location.pathname)
-      
-      try {
-        let userTemp = getUserData()
-
-        if (!userTemp?.joyrideComplete) {
-          console.error('User data or joyrideComplete property is missing')
-          return
-        }
-        
-        const tutorialCompleted = userTemp.joyrideComplete.creditosCalendar
-        
-        if (!tutorialCompleted) {
-          const timer = setTimeout(() => {
-            setRunTutorial(true)
-          }, 1000)
-          return () => clearTimeout(timer)
-        }
-      } catch (error) {
-        console.error('Error while processing user data:', error)
-      }
-    }, [location])
-  
   const handleTutorialEnd = () => {
     setRunTutorial(false)
     if (creditsPageArray.length > 0){
-      updateUserById(clientUserId, {
-          joyrideComplete: {
-          creditosTable: true,
-        },
-      })
+
     } else{
-      updateUserById(clientUserId, {
-        joyrideComplete: {
-          creditosCalendar: true,
-        },
-      })      
+   
     }
   }
 
