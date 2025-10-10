@@ -27,23 +27,6 @@ const Header = () => {
     const handleCheckboxChangeCalendar = () => {
         setIsCheckedCalendar(!isCheckedCalendar)
     }
-  
-    useEffect(() => {
-        if (localStorage.getItem('localUsers') !== null) {
-            let localUsersTemp = JSON.parse(localStorage.getItem('localUsers'))
-            localUsersTemp.map(user => {
-                if (user.id === localStorage.getItem('userID')) {
-                    user.calendar = isCheckedCalendar
-                }
-            })
-            localStorage.setItem('localUsers', JSON.stringify(localUsersTemp))
-        } else {
-            let localUsersTemp = []
-            let userTemp = { id: localStorage.getItem('userID'), calendar: isCheckedCalendar }
-            localUsersTemp.push(userTemp)
-            localStorage.setItem('localUsers', JSON.stringify(localUsersTemp))
-        }
-    },[isCheckedCalendar])
 
     const handleCheckboxChange = () => {
         const updatedChecked = !isChecked

@@ -11,11 +11,6 @@ import { FiCalendar, FiHelpCircle } from 'react-icons/fi'
 
 const Vendas = () =>{
   const location = useLocation()
-    const {
-      getUserData, 
-      updateUserById, 
-      clientUserId
-    } = useContext(AuthContext)
 
   useEffect(() => {
       localStorage.setItem('currentPath', location.pathname)
@@ -32,23 +27,6 @@ const Vendas = () =>{
     isCheckedCalendar, setIsCheckedCalendar,
     
   } = useContext(AuthContext)
-
-  useEffect(()=>{
-    if (localStorage.getItem('localUsers') !== null) {
-        let localUsersTemp = JSON.parse(localStorage.getItem('localUsers'))
-        localUsersTemp.map(user => {
-            if (user.id === localStorage.getItem('userID')) {
-                user.calendar = isCheckedCalendar
-            }
-        })
-        localStorage.setItem('localUsers', JSON.stringify(localUsersTemp))
-    } else {
-        let localUsersTemp = []
-        let userTemp = { id: localStorage.getItem('userID'), calendar: isCheckedCalendar }
-        localUsersTemp.push(userTemp)
-        localStorage.setItem('localUsers', JSON.stringify(localUsersTemp))
-    }
-},[isCheckedCalendar])
 
   useEffect(()=>{
     if(salesPageArray && salesPageArray.length > 0){
@@ -122,7 +100,7 @@ const Vendas = () =>{
               onChange={handleCheckboxChange}
               className='checkbox-input'
           />
-          <span className='checkbox-custom'></span> {/* aparencia da checkbox-custom */}
+          <span className='checkbox-custom'></span>
           <span className='checkbox-icon'>
               <FiCalendar className={`calendar-icon ${isCheckedCalendar ? 'isCheckedCalendar' : ''}`} size={20} />
           </span>
@@ -131,10 +109,8 @@ const Vendas = () =>{
 }
 
 const handleCheckboxChangeCalendar = () => {
-  setIsCheckedCalendar(!isCheckedCalendar) // Toggle the state
+  setIsCheckedCalendar(!isCheckedCalendar)
   }
-
-  // Joyride state
 
   const [runTutorial, setRunTutorial] = useState(false)
   const [steps, setSteps] = useState([
@@ -142,12 +118,12 @@ const handleCheckboxChangeCalendar = () => {
       target: '[data-tour="calendario-section"]',
       content: 'Clique em duas vezes em uma data para selecioná-la, ou uma vez em uma data inicial e uma vez em uma data final para selecionar o período começando e terminando nas datas selecionadas.',
       disableBeacon: true,
-      placement: 'bottom'
+      placement: 'center',
     },
     {
       target: '[data-tour="pesquisar-section"]',
       content: 'Tendo a data selecionada, clique em "Pesquisar" para realizar a consulta das vendas da data ou período selecionado.',
-      placement: 'bottom'
+      placement: 'center',
     },
   ])
 
@@ -158,32 +134,32 @@ const handleCheckboxChangeCalendar = () => {
               target: '[data-tour="modalidade-section"]',
               content: 'Valores totais das vendas exibidas, por modalidade.',
               disableBeacon: true,
-              placement: 'bottom'
+              placement: 'bottom',
             },
             {
               target: '[data-tour="exportacao-section"]',
               content: 'Exporta as vendas sendo exibidas para os formatos Excel ou PDF.',
-              placement: 'bottom'
+              placement: 'bottom',
             },
             {
               target: '[data-tour="bandeiraadquirente-section"]',
               content: 'Filtra as vendas de acordo com a combinação de bandeira/adquirente selecionada.',
-              placement: 'bottom'
+              placement: 'bottom',
             },
             {
               target: '[data-tour="tabelavendas-section"]',
               content: 'Vendas do período selecionado. Podem ser filtradas por bandeira/adquirente.',
-              placement: 'bottom'
+              placement: 'bottom',
             },
             {
               target: '[data-tour="totaladq-section"]',
               content: 'Valores totais das vendas sendo exibidas, separadas por adquirente.',
-              placement: 'bottom'
+              placement: 'bottom',
             },
             {
               target: '[data-tour="botaovoltar-section"]',
               content: 'Retorna ao calendário, possibilitando realizar uma nova consulta.',
-              placement: 'bottom'
+              placement: 'bottom',
             },
         ]
         setSteps(stepsTemp)
@@ -193,56 +169,23 @@ const handleCheckboxChangeCalendar = () => {
             target: '[data-tour="calendario-section"]',
             content: 'Clique em duas vezes em uma data para selecioná-la, ou uma vez em uma data inicial e uma vez em uma data final para selecionar o período começando e terminando nas datas selecionadas.',
             disableBeacon: true,
-            placement: 'bottom'
+            placement: 'center',
           },
           {
             target: '[data-tour="pesquisar-section"]',
             content: 'Tendo a data selecionada, clique em "Pesquisar" para realizar a consulta das vendas da data ou período selecionado.',
-            placement: 'bottom'
+            placement: 'center',
           },
         ])
       }
     },[salesPageArray])
 
-    useEffect(() => {
-      localStorage.setItem('currentPath', location.pathname)
-      
-      try {
-        let userTemp = getUserData()
-        
-        if (!userTemp?.joyrideComplete) {
-          console.error('User data or joyrideComplete property is missing')
-          return
-        }
-        
-        const tutorialCompleted = userTemp.joyrideComplete.vendasCalendar
-        
-        if (!tutorialCompleted) {
-
-          const timer = setTimeout(() => {
-            setRunTutorial(true)
-          }, 1000)
-          return () => clearTimeout(timer)
-        }
-      } catch (error) {
-        console.error('Error while processing user data:', error)
-      }
-    }, [location])
-
   const handleTutorialEnd = () => {
     setRunTutorial(false)
     if (salesPageArray.length > 0){
-      updateUserById(clientUserId, {
-          joyrideComplete: {
-          vendasTable: true,
-        },
-      })
+
     } else{
-      updateUserById(clientUserId, {
-        joyrideComplete: {
-          vendasCalendar: true,
-        },
-      })      
+    
     }
   }
 
@@ -253,37 +196,37 @@ const handleCheckboxChangeCalendar = () => {
           <div className='vendas-title-container'>
             <h1 className='vendas-title'>Calendário de Vendas</h1>
           </div>
-          {/*<CustomCheckbox isChecked={isCheckedCalendar} handleCheckboxChange={handleCheckboxChangeCalendar}/>*/}
           <div data-tour="calendario-section" className='component-container-vendas'>
               { runTutorial &&
-                  <Joyride
-                    steps={steps}
-                    run={runTutorial}
-                    continuous={true}
-                    scrollToFirstStep={true}
-                    showProgress={true}
-                    showSkipButton={true}
-                    styles={{
-                      options: {
-                        primaryColor: '#99cc33',
-                        textColor: '#0a3d70',
-                        zIndex: 10000,
-                      }
-                    }}
-                    callback={(data) => {
-                      if (data.status === 'finished' || data.status === 'skipped') {
-                        handleTutorialEnd()
-                      }
-                    }}
-                    locale={{
-                      back: 'Voltar',
-                      close: 'Fechar',
-                      last: 'Finalizar',
-                      next: 'Próximo',
-                      skip: 'Pular',
-                      nextLabelWithProgress: 'Próximo ({step} de {steps})',
-                    }}
-                  />	
+                <Joyride
+                  steps={steps}
+                  run={runTutorial}
+                  continuous={true}
+                  scrollToFirstStep={false}
+                  scrollOffset={80}
+                  showProgress={true}
+                  showSkipButton={true}
+                  styles={{
+                    options: {
+                      primaryColor: '#99cc33',
+                      textColor: '#0a3d70',
+                      zIndex: 10000,
+                    },
+                  }}
+                  callback={(data) => {
+                    if (data.status === 'finished' || data.status === 'skipped') {
+                      handleTutorialEnd()
+                    }
+                  }}
+                  locale={{
+                    back: 'Voltar',
+                    close: 'Fechar',
+                    last: 'Finalizar',
+                    next: 'Próximo',
+                    skip: 'Pular',
+                    nextLabelWithProgress: 'Próximo ({step} de {steps})',
+                  }}
+                />	
               }
             {salesPageArray !== null ? (
               salesPageArray.length > 0 ? (

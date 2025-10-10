@@ -24,7 +24,6 @@ const Servicos = () =>{
     btnDisabledServices, setBtnDisabledServices,
     groupServicesByAdmin,
     exportServices, 
-    clientUserId, getUserData, updateUserById,
 	} = useContext(AuthContext)
 
   useEffect(()=>{
@@ -138,17 +137,11 @@ const Servicos = () =>{
         ])
       }
     },[servicesPageArray])
-  
+/*  
     useEffect(() => {
       localStorage.setItem('currentPath', location.pathname)
       
       try {
-        let userTemp = getUserData()
-
-        if (!userTemp?.joyrideComplete) {
-          console.error('User data or joyrideComplete property is missing')
-          return
-        }
         
         const tutorialCompleted = userTemp.joyrideComplete.servicosCalendar
         
@@ -162,21 +155,13 @@ const Servicos = () =>{
         console.error('Error while processing user data:', error)
       }
     }, [location])
-  
+  */
   const handleTutorialEnd = () => {
     setRunTutorial(false)
     if (servicesPageArray.length > 0){
-      updateUserById(clientUserId, {
-          joyrideComplete: {
-          servicosTable: true,
-        },
-      })
+
     } else{
-      updateUserById(clientUserId, {
-        joyrideComplete: {
-          servicosCalendar: true,
-        },
-      })      
+
     }
   }
 
