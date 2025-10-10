@@ -20,6 +20,8 @@ const colorPool = [
 const labelColorMap = new Map();
 let colorIndex = 0;
 
+Chart.defaults.font.size = 24;
+
 // Function to assign colors in order
 const assignColor = (label) => {
   if (!labelColorMap.has(label)) {
@@ -116,21 +118,25 @@ useEffect(() => {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })
-                const datasetMeta = chart.getDatasetMeta(0); // Assumes single dataset
+                const datasetMeta = chart.getDatasetMeta(0);
                 return {
                   text: `${label}: ${formattedValue}`,
                   fillStyle: data.datasets[0].backgroundColor[index],
                   fontColor: fontColor,
-                  hidden: datasetMeta.data[index]?.hidden || false, // Ensure safe access
-                  index, // Store index to identify the data point
-                  datasetIndex: 0, // Specify dataset
+                  hidden: datasetMeta.data[index]?.hidden || false,
+                  index,
+                  datasetIndex: 0, 
                 }
               })
             }
             return []
           },
-          boxWidth: 20,
-          padding: 10,
+          boxWidth: 10,
+          padding: 5,
+          font: {
+            size: 15,
+            family: "var(--default-font-app, sans-serif)",
+          },
         },
         onClick: function (e, legendItem, legend) {
           const chart = legend.chart;

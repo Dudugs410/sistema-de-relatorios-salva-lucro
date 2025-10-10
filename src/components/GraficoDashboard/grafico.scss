@@ -8,24 +8,47 @@
 }
 
 .chart-container {
-    height: 100%; // Ensure it adapts to its container
-    min-height: 300px; // Minimum height
-    max-height: 500px; // Maximum height
-    width: 100%; /* The container stays unrestricted */
-   //max-width: 500px;
+    height: 100%;
+    min-height: 300px;
+    max-height: 500px;
+    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    //position:relative;
+    
+    // Ensure the container has proper dimensions
+    position: relative;
+    
+    canvas {
+        // We can't control canvas text with CSS, but we can ensure proper sizing
+        width: 100% !important;
+        height: 100% !important;
+    }
 }
 
+// Target Chart.js legend items specifically
+.chartjs-render-monitor {
+    font-family: var(--default-font-app) !important;
+    font-size: 14px !important;
+}
+
+// Specific targeting for legend text
 .chart-legend {
-    flex-shrink: 0; /* Prevent shrinking */
-    overflow: visible; /* Ensure all legend items are shown */
+    flex-shrink: 0;
+    overflow: visible;
+    
+    // This might not work if Chart.js doesn't use this class
 }
 
-.chartjs-render-monitor .chart-legend li span {
-    color: red; /* Change the color here */
+// More specific selectors for Chart.js generated elements
+.chart-container div[style*="position: relative"] {
+    font-family: var(--default-font-app) !important;
+    font-size: 14px !important;
 }
 
-  
+// Direct targeting of legend text elements
+text {
+    font-family: var(--default-font-app) !important;
+    font-size: 14px !important;
+    fill: currentColor !important;
+}
