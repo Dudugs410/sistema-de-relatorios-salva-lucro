@@ -1,8 +1,6 @@
 import { useEffect, useContext, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { AuthContext } from '../../contexts/auth'
-import Cookies from 'js-cookie'
-import Joyride from 'react-joyride'
 import '../../styles/global.scss'
 import './taxas.scss'
 import Select from 'react-select'

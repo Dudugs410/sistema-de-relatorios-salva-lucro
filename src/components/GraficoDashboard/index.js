@@ -131,6 +131,9 @@ useEffect(() => {
           },
           boxWidth: 20,
           padding: 10,
+          font:{
+            size: 16,
+          }
         },
         onClick: function (e, legendItem, legend) {
           const chart = legend.chart;
