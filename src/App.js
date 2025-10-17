@@ -8,7 +8,9 @@ import { ToastContainer } from 'react-toastify'
 
 import './index.scss'
 import PluggyProvider from './contexts/pluggyContext'
+import { initializeContext } from './util/contextInitializer';
 
+initializeContext()
 
 function App() {
 

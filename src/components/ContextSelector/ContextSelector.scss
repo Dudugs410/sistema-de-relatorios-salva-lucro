@@ -1,0 +1,76 @@
+// components/ContextSelector.scss
+.context-selector {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 1000;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+  min-width: 180px;
+
+  &__title {
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #333;
+  }
+
+  &__options {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  &__option {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 4px 0;
+    transition: background-color 0.2s;
+    border-radius: 4px;
+
+    &:hover {
+      background-color: #f5f5f5;
+    }
+  }
+
+  &__radio {
+    margin-right: 8px;
+    cursor: pointer;
+    
+    &:checked {
+      accent-color: #0a3d70; // Your primary color
+    }
+  }
+
+  &__label {
+    font-size: 13px;
+    color: #555;
+    cursor: pointer;
+  }
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+  .context-selector {
+    background: #333;
+    border-color: #555;
+    color: white;
+
+    &__title {
+      color: white;
+    }
+
+    &__label {
+      color: #ddd;
+    }
+
+    &__option:hover {
+      background-color: #444;
+    }
+  }
+}
