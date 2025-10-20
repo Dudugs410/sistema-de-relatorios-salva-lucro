@@ -1,54 +1,70 @@
-.modal-adm{
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    border: solid white 1px;
-}
-
 .chart-container {
-    height: 100%;
-    min-height: 300px;
-    max-height: 500px;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  position: relative;
+  height: 400px;
+  margin-bottom: 20px;
+}
+
+.chart-controls {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 5;
+}
+
+.display-mode-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  
+  &:hover {
+    background: rgba(153, 204, 51, 0.1);
+    border-color: #99cc33;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.toggle-icon {
+  font-size: 16px;
+  color: #99cc33;
+}
+
+.toggle-label {
+  font-weight: 500;
+  color: #333;
+  white-space: nowrap;
+}
+
+// Dark mode support
+[data-theme="dark"] .display-mode-toggle {
+  background: rgba(50, 50, 50, 0.9);
+  border-color: #666;
+  
+  .toggle-label {
+    color: #fff;
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .display-mode-toggle {
+    padding: 6px 10px;
+    font-size: 12px;
     
-    // Ensure the container has proper dimensions
-    position: relative;
-    
-    canvas {
-        // We can't control canvas text with CSS, but we can ensure proper sizing
-        width: 100% !important;
-        height: 100% !important;
+    .toggle-label {
+      display: none; // Hide text on mobile, show only icon
     }
-}
-
-// Target Chart.js legend items specifically
-.chartjs-render-monitor {
-    font-family: var(--default-font-app) !important;
-    font-size: 14px !important;
-}
-
-// Specific targeting for legend text
-.chart-legend {
-    flex-shrink: 0;
-    overflow: visible;
-    
-    // This might not work if Chart.js doesn't use this class
-}
-
-// More specific selectors for Chart.js generated elements
-.chart-container div[style*="position: relative"] {
-    font-family: var(--default-font-app) !important;
-    font-size: 14px !important;
-}
-
-// Direct targeting of legend text elements
-text {
-    font-family: var(--default-font-app) !important;
-    font-size: 14px !important;
-    fill: currentColor !important;
+  }
 }

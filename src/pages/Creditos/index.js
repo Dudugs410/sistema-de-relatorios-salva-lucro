@@ -181,9 +181,10 @@ async function loadData() {
                 steps={steps}
                 run={runTutorial}
                 continuous={true}
-                scrollToFirstStep={true}
+                scrollToFirstStep={false}
                 showProgress={true}
                 showSkipButton={true}
+                scrollOffset={80}
                 styles={{
                   options: {
                     primaryColor: '#99cc33',

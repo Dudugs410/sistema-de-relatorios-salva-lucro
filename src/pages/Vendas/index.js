@@ -203,9 +203,9 @@ const handleCheckboxChangeCalendar = () => {
                   run={runTutorial}
                   continuous={true}
                   scrollToFirstStep={false}
-                  scrollOffset={80}
                   showProgress={true}
                   showSkipButton={true}
+                  scrollOffset={80}
                   styles={{
                     options: {
                       primaryColor: '#99cc33',

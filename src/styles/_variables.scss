@@ -1,112 +1,134 @@
-
 :root {
-    /* Current Theme Colors */
-    --primary-color: rgb(10, 61, 112);        
-    --secondary-color: #99cc33;
-    --background-color: #fff;
-    --font-color: #0a3d70;
-    --header-text-color: white;
+  // Default font and base variables
+  --default-font: Arial, Helvetica, sans-serif;
+  --default-background: #fff;
+  --default-primary: #000;
+  --default-secondary: #4f4f4f;
+  --default-font-app: var(--default-font);
+}
 
-    //total Modalidades
-    --modalidades-border: rgb(10, 61, 112);
+// Salva Lucro Context - Light Theme (default)
+[data-context="SL"] {
+  --primary-color: rgb(10, 61, 112);        
+  --secondary-color: #99cc33;
+  --background-color: #fff;
+  --font-color: #0a3d70;
+  --header-text-color: white;
+  --modalidades-border: rgb(10, 61, 112);
+  --table-background: white;
+  --table-row-hover-color: #99cc33;
+  --table-row-hover-bg: rgb(10, 61, 112);
+  --header-bg: rgba(10,61,112,0.945);
+  --calendar-cell-color: rgb(10, 61, 112);
+  --calendar-now-color: rgb(153, 204, 51);
+  --calendar-neighbor-color: #757575;
+  --calendar-btn-navigation-color: #0a3d70;
+  --calendar-neighbor-bg: rgb(187, 187, 187);
+  --sidebar-font-color: white;
+  --subtitle-color: rgb(10, 61, 112);
+}
 
-    //Table
-    --table-background: white;
-    --table-row-hover-color: #99cc33;
-    --table-row-hover-bg: rgb(10, 61, 112);
+// Salva Lucro Context - Dark Theme
+[data-context="SL"][data-theme="dark"] {
+  --primary-color: rgb(20, 20, 20);
+  --secondary-color: darkgray;
+  --background-color: rgb(35, 31, 32);
+  --font-color: #d3d3d3;
+  --header-text-color: black;
+  --modalidades-border: rgb(97, 97, 97);
+  --table-background: rgb(20, 20, 20);
+  --table-row-hover-color: rgb(55, 51, 52);
+  --table-row-hover-bg: rgb(97, 97, 97);
+  --header-bg: rgba(35,31,32, 0.945);
+  --calendar-cell-color: rgb(97, 97, 97);
+  --calendar-now-color: white;
+  --calendar-neighbor-color: rgb(51, 51, 51);
+  --calendar-btn-navigation-color: white;
+  --calendar-neighbor-bg: black;
+  --sidebar-font-color: #d3d3d3;
+  --subtitle-color: darkgray;
+}
 
-    //header
-    --header-bg: rgba(10,61,112,0.945);
+// Sifra Finanças Context - Light Theme
+[data-context="Sifra"] {
+  --primary-color: #fccd34;        
+  --secondary-color: #6c73d3;
+  --background-color: #f8f9fa;
+  --font-color: #0a1070;
+  --header-text-color: white;
+  --modalidades-border: rgb(252, 205, 52);
+  --table-background: white;
+  --table-row-hover-color: #e74c3c;
+  --table-row-hover-bg: #fccd34;
+  --header-bg: rgba(252, 205, 52, 0.945);
+  --calendar-cell-color: #fccd34;
+  --calendar-now-color: #e74c3c;
+  --calendar-neighbor-color: #7f8c8d;
+  --calendar-btn-navigation-color: #fccd34;
+  --calendar-neighbor-bg: #bdc3c7;
+  --sidebar-font-color: white;
+  --subtitle-color: #fccd34;
+}
 
-    //calendar
-    --calendar-cell-color: rgb(10, 61, 112);
-    --calendar-now-color: rgb(153, 204, 51);
-    --calendar-neighbor-color: #757575;
-    --calendar-btn-navigation-color: #0a3d70;
-    --calendar-neighbor-bg: rgb(187, 187, 187);
+// Sifra Finanças Context - Dark Theme
+[data-context="Sifra"][data-theme="dark"] {
+  --primary-color: #0d2b3d;
+  --secondary-color: #c0392b;
+  --background-color: #1c2833;
+  --font-color: #ecf0f1;
+  --header-text-color: white;
+  --modalidades-border: #34495e;
+  --table-background: #2c3e50;
+  --table-row-hover-color: #c0392b;
+  --table-row-hover-bg: #34495e;
+  --header-bg: rgba(13, 43, 61, 0.945);
+  --calendar-cell-color: #3498db;
+  --calendar-now-color: #c0392b;
+  --calendar-neighbor-color: #566573;
+  --calendar-btn-navigation-color: #3498db;
+  --calendar-neighbor-bg: #34495e;
+  --sidebar-font-color: #ecf0f1;
+  --subtitle-color: #3498db;
+}
 
-    //outros
-    --sidebar-font-color: white;
-    --subtitle-color: rgb(10, 61, 112);
+// MG Soluções Context - Light Theme
+[data-context="MG"] {
+  --primary-color: #5351a8;        
+  --secondary-color: #55da97;
+  --background-color: #ffffff;
+  --font-color: #2c3e50;
+  --header-text-color: white;
+  --modalidades-border: #5351a8;
+  --table-background: white;
+  --table-row-hover-color: #5351a8;
+  --table-row-hover-bg: #55da97;
+  --header-bg: rgba(173, 172, 245, 0.5);
+  --calendar-cell-color: #55da97;
+  --calendar-now-color: #f39c12;
+  --calendar-neighbor-color: #95a5a6;
+  --calendar-btn-navigation-color: #55da97;
+  --calendar-neighbor-bg: #ecf0f1;
+  --sidebar-font-color: white;
+  --subtitle-color: #55da97;
+}
 
-    //-----------------------------------------------------------------//
-
-    /* Light Theme Colors */
-    --primary-color-light: rgb(10, 61, 112);
-    --secondary-color-light: rgb(153, 204, 51);
-    --background-color-light: #fff;
-    --font-color-light: rgb(10, 61, 112);
-    --header-text-color-light: white;
-
-    //total Modalidades
-    --modalidades-border-light: rgb(10, 61, 112);
-
-    //Table
-    --table-background-light: white;
-    --table-row-hover-color-light: rgb(153, 204, 51);
-    --table-row-hover-bg-light: rgb(10, 61, 112);
-    
-    //header
-    --header-bg-light: rgba(10,61,112,0.945);
-
-    //calendar
-    --calendar-cell-color-light: rgb(10, 61, 112);
-    --calendar-now-color-light: rgb(153, 204, 51);
-    --calendar-neighbor-color-light: #757575;
-    --calendar-btn-navigation-color-light: rgb(10, 61, 112);
-    --calendar-neighbor-bg-light: rgb(187, 187, 187);
-
-    //sidebar
-    --sidebar-font-color-light: white;
-
-    //subtitle
-    --subtitle-light: rgb(10, 61, 112);
-
-    //-----------------------------------------------------------------//
-
-    /* Dark Theme Colors */
-    --primary-color-dark: rgb(20, 20, 20);
-    --secondary-color-dark: darkgray;
-    --background-color-dark: rgb(35, 31, 32);
-    --font-color-dark: #d3d3d3;
-    --header-text-color-dark: black;
-    
-    //total Modalidades
-    --modalidades-border-dark: rgb(97, 97, 97);
-    
-    //Table
-    --table-background-dark: rgb(20, 20, 20);
-    --table-row-hover-color-dark: rgb(55, 51, 52);
-    --table-row-hover-bg-dark: rgb(97, 97, 97);
-
-    //header
-    --header-bg-dark: rgba(35,31,32, 0.945);
-    
-    //calendar
-    --calendar-cell-color-dark: rgb(97, 97, 97);
-    --calendar-now-color-dark: white;
-    --calendar-neighbor-color-dark: rgb(51, 51, 51);
-    --calendar-btn-navigation-color-dark: white;
-    --calendar-neighbor-bg-dark: black;
-
-    //sidebar
-    --sidebar-font-color-dark: #d3d3d3;
-
-    //subtitle
-    --subtitle-dark: darkgray;
-
-    //*****************************************************************//
-
-    //fonte
-
-    --default-font: Arial, Helvetica, sans-serif;
-
-    //variáveis padrão do web app
-
-    --default-background: #fff;
-    --default-primary: #000;
-    --default-secondary: #4f4f4f;
-    --default-font-app: var(--default-font);
-    
-  }
-
+// MG Soluções Context - Dark Theme
+[data-context="MG"][data-theme="dark"] {
+  --primary-color: #1e8449;
+  --secondary-color: #b9770e;
+  --background-color: #1a252f;
+  --font-color: #e8f6ef;
+  --header-text-color: white;
+  --modalidades-border: #27ae60;
+  --table-background: #2c3e50;
+  --table-row-hover-color: #f39c12;
+  --table-row-hover-bg: #1e8449;
+  --header-bg: rgba(30, 132, 73, 0.945);
+  --calendar-cell-color: #27ae60;
+  --calendar-now-color: #f39c12;
+  --calendar-neighbor-color: #566573;
+  --calendar-btn-navigation-color: #27ae60;
+  --calendar-neighbor-bg: #34495e;
+  --sidebar-font-color: #e8f6ef;
+  --subtitle-color: #27ae60;
+}
