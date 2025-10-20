@@ -1,15 +1,35 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Pie } from 'react-chartjs-2';
+import { 
+  Chart as ChartJS, 
+  ArcElement, 
+  Tooltip, 
+  Legend,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  PointElement,
+  LineElement,
+  Title
+} from 'chart.js';
+import { Pie, Bar, Line, Doughnut } from 'react-chartjs-2';
 import Modal from '../Modal';
 import './grafico.scss';
 import TabelaVendasDashboard from '../Componente_TabelaVendasDashboard';
 import TabelaCreditosDashboard from '../Componente_TabelaCreditosDashboard';
 import TabelaServicosDashboard from '../Componente_TabelaServicosDashboard';
 import TabelaResponsiva from '../TabelaResponsiva';
-import { FiRefreshCw } from 'react-icons/fi';
+import { FiRefreshCw, FiPieChart, FiBarChart, FiTrendingUp, FiCircle } from 'react-icons/fi';
 
-ChartJS.register(ArcElement, Tooltip, Legend);
+ChartJS.register(
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  PointElement,
+  LineElement
+);
 
 // Global color pool and mapping
 const colorPool = [
@@ -45,6 +65,28 @@ const DISPLAY_MODE_LABELS = {
   [DISPLAY_MODES.SIMPLE]: 'Simples'
 };
 
+// Chart types configuration
+const CHART_TYPES = {
+  PIE: 'pie',
+  DOUGHNUT: 'doughnut',
+  BAR: 'bar',
+  LINE: 'line'
+};
+
+const CHART_TYPE_LABELS = {
+  [CHART_TYPES.PIE]: 'Gráfico de Pizza',
+  [CHART_TYPES.DOUGHNUT]: 'Gráfico de Rosca',
+  [CHART_TYPES.BAR]: 'Gráfico de Barras',
+  [CHART_TYPES.LINE]: 'Gráfico de Linha'
+};
+
+const CHART_TYPE_ICONS = {
+  [CHART_TYPES.PIE]: FiPieChart,
+  [CHART_TYPES.DOUGHNUT]: FiCircle,
+  [CHART_TYPES.BAR]: FiBarChart,
+  [CHART_TYPES.LINE]: FiTrendingUp
+};
+
 const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
   const [selectedAdm, setSelectedAdm] = useState(null);
   const [showAdmModal, setShowAdmModal] = useState(false);
@@ -53,6 +95,7 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
     getComputedStyle(document.documentElement).getPropertyValue('--font-color')
   );
   const [displayMode, setDisplayMode] = useState(DISPLAY_MODES.BOTH);
+  const [chartType, setChartType] = useState(CHART_TYPES.PIE);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -88,6 +131,14 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
     const currentIndex = modes.indexOf(displayMode);
     const nextIndex = (currentIndex + 1) % modes.length;
     setDisplayMode(modes[nextIndex]);
+  };
+
+  // Cycle through chart types
+  const cycleChartType = () => {
+    const types = Object.values(CHART_TYPES);
+    const currentIndex = types.indexOf(chartType);
+    const nextIndex = (currentIndex + 1) % types.length;
+    setChartType(types[nextIndex]);
   };
 
   const handleChartClick = useCallback(
@@ -163,7 +214,6 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
         const { labelPart, valuePart } = formatValueParts(value, label, true);
         
         return {
-          // Return raw text that will be styled in the label callback
           text: `${labelPart}${valuePart}`,
           labelPart,
           valuePart,
@@ -187,12 +237,15 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
           data: data01.data,
           backgroundColor: generateColors(data01.labels.slice()),
           borderWidth: 0.2,
+          // Additional properties for bar and line charts
+          borderColor: chartType === CHART_TYPES.LINE ? generateColors(data01.labels.slice()).map(color => color.replace('rgb', 'rgba').replace(')', ', 1)')) : undefined,
+          tension: chartType === CHART_TYPES.LINE ? 0.1 : undefined,
         },
       ],
     };
-  }, [data01, dado]);
+  }, [data01, dado, chartType]);
 
-  const chartOptions = useMemo(() => ({
+  const commonChartOptions = {
     maintainAspectRatio: false,
     onClick: handleChartClick,
     responsive: true,
@@ -209,21 +262,6 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
           font: {
             size: displayMode === DISPLAY_MODES.BOTH ? 14 : 16,
           },
-          // Use custom render function to style parts differently
-          render: (context) => {
-            const { labelPart, valuePart, text, fillStyle, fontColor, hidden } = context;
-            
-            // Create a span with different styling for label and value
-            return `
-              <span style="
-                color: ${fontColor};
-                text-decoration: ${hidden ? 'line-through' : 'none'};
-                opacity: ${hidden ? 0.5 : 1};
-              ">
-                ${labelPart}<span style="font-weight: bold;">${valuePart}</span>
-              </span>
-            `;
-          }
         },
         onClick: function (e, legendItem, legend) {
           const chart = legend.chart;
@@ -247,12 +285,97 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
         },
       },
     },
-  }), [displayMode, fontColor, handleChartClick, totalAdmin, dado]);
+  };
+
+  // Add specific options for different chart types
+  const chartOptions = useMemo(() => {
+    const options = { ...commonChartOptions };
+    
+    if (chartType === CHART_TYPES.BAR) {
+      options.scales = {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            color: fontColor,
+          },
+          grid: {
+            color: fontColor + '20',
+          }
+        },
+        x: {
+          ticks: {
+            color: fontColor,
+          },
+          grid: {
+            color: fontColor + '20',
+          }
+        }
+      };
+    }
+    
+    if (chartType === CHART_TYPES.LINE) {
+      options.scales = {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            color: fontColor,
+          },
+          grid: {
+            color: fontColor + '20',
+          }
+        },
+        x: {
+          ticks: {
+            color: fontColor,
+          },
+          grid: {
+            color: fontColor + '20',
+          }
+        }
+      };
+    }
+    
+    return options;
+  }, [chartType, displayMode, fontColor, totalAdmin, dado]);
+
+  // Render the appropriate chart component
+  const renderChart = () => {
+    const chartProps = {
+      data: chartData,
+      options: chartOptions
+    };
+
+    switch (chartType) {
+      case CHART_TYPES.PIE:
+        return <Pie {...chartProps} />;
+      case CHART_TYPES.DOUGHNUT:
+        return <Doughnut {...chartProps} />;
+      case CHART_TYPES.BAR:
+        return <Bar {...chartProps} />;
+      case CHART_TYPES.LINE:
+        return <Line {...chartProps} />;
+      default:
+        return <Pie {...chartProps} />;
+    }
+  };
+
+  const ChartIcon = CHART_TYPE_ICONS[chartType];
 
   return (
     <div className="chart-container">
-      {/* Display Mode Toggle Button */}
+      {/* Chart Controls */}
       <div className="chart-controls">
+        <button 
+          className="chart-type-toggle"
+          onClick={cycleChartType}
+          title={`Tipo de gráfico: ${CHART_TYPE_LABELS[chartType]}. Clique para alternar.`}
+        >
+          <ChartIcon className="toggle-icon" />
+          <span className="toggle-label">
+            {CHART_TYPE_LABELS[chartType]}
+          </span>
+        </button>
+        
         <button 
           className="display-mode-toggle"
           onClick={cycleDisplayMode}
@@ -265,7 +388,7 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
         </button>
       </div>
       
-      <Pie data={chartData} options={chartOptions} />
+      {renderChart()}
       
       {showAdmModal && selectedAdm && (
         <Modal onClose={() => setShowAdmModal(false)}>
@@ -282,4 +405,4 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
   );
 };
 
-export default PieChart; 
+export default PieChart;

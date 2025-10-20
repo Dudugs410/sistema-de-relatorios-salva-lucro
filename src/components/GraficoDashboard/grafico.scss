@@ -9,8 +9,11 @@
   top: 10px;
   right: 10px;
   z-index: 5;
+  display: flex;
+  gap: 8px;
 }
 
+.chart-type-toggle,
 .display-mode-toggle {
   display: flex;
   align-items: center;
@@ -48,17 +51,26 @@
 }
 
 // Dark mode support
-[data-theme="dark"] .display-mode-toggle {
-  background: rgba(50, 50, 50, 0.9);
-  border-color: #666;
-  
-  .toggle-label {
-    color: #fff;
+[data-theme="dark"] {
+  .chart-type-toggle,
+  .display-mode-toggle {
+    background: rgba(50, 50, 50, 0.9);
+    border-color: #666;
+    
+    .toggle-label {
+      color: #fff;
+    }
   }
 }
 
 // Responsive design
 @media (max-width: 768px) {
+  .chart-controls {
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .chart-type-toggle,
   .display-mode-toggle {
     padding: 6px 10px;
     font-size: 12px;
@@ -66,5 +78,12 @@
     .toggle-label {
       display: none; // Hide text on mobile, show only icon
     }
+  }
+}
+
+@media (max-width: 480px) {
+  .chart-controls {
+    top: 5px;
+    right: 5px;
   }
 }

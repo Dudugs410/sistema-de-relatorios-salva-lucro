@@ -76,7 +76,7 @@ const Login = () => {
 
     return(
         <div className='appPage'>
-            <ContextSelector/>
+            {/*<ContextSelector/>*/}
             <div className='body-login'> 
                 <div className='bg-login'></div>
                 <form type='submit' className='form-login' onSubmit={handleLogin}>
