@@ -106,7 +106,7 @@ $chart-max-height: 500px;
     @include chart-responsive-sizes;
     position: relative;
     margin: 0 auto;
-    
+    padding-top: 65px;
     canvas {
       width: 100% !important;
       height: 100% !important;
@@ -185,7 +185,7 @@ $chart-max-height: 500px;
 @media screen and (min-width: 1400px) {
   .graph-data {
     .chart-container {
-      max-width: 900px;
+      //max-width: 900px;
       margin: 0 auto;
     }
   }
