@@ -31,6 +31,9 @@ const Login = () => {
             case 'MG':
                 return mgLogo;
             case 'SL':
+                return salvaLucroLogo
+            case '':
+                return salvaLucroLogo
             default:
                 return salvaLucroLogo;
         }
