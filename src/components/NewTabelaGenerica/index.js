@@ -485,9 +485,6 @@ const NewTabelaGenerica = forwardRef(({
                           <option key={option} value={option}>{option}</option>
                         ))}
                       </select>
-                      <div className="select-arrow">
-                        <FiChevronDown />
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -545,7 +542,6 @@ const NewTabelaGenerica = forwardRef(({
                     className="close-filters-btn"
                     onClick={() => setShowMobileFilters(false)}
                   >
-                    <FiChevronDown />
                   </button>
                 </div>
                 {config.filters.map(filter => (
@@ -562,7 +558,6 @@ const NewTabelaGenerica = forwardRef(({
                           <option key={index} value={value}>{value}</option>
                         ))}
                       </select>
-                      <FiChevronDown className="mobile-select-arrow" />
                     </div>
                   </div>
                 ))}
