@@ -8,8 +8,6 @@ const ContextSelector = () => {
   // Available contexts/companies
   const contexts = [
     { id: 'SL', label: 'Salva Lucro' },
-    { id: 'Sifra', label: 'Sifra Finanças' },
-    { id: 'MG', label: 'MG Soluções' }
   ];
 
   // Function to apply context to DOM

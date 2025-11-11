@@ -14,11 +14,8 @@ import {
 import { Pie, Bar, Line, Doughnut } from 'react-chartjs-2';
 import Modal from '../Modal';
 import './grafico.scss';
-import TabelaVendasDashboard from '../Componente_TabelaVendasDashboard';
-import TabelaCreditosDashboard from '../Componente_TabelaCreditosDashboard';
-import TabelaServicosDashboard from '../Componente_TabelaServicosDashboard';
-import TabelaResponsiva from '../TabelaResponsiva';
 import { FiRefreshCw, FiPieChart, FiBarChart, FiTrendingUp, FiCircle } from 'react-icons/fi';
+import NewTabelaGenerica from '../NewTabelaGenerica';
 
 ChartJS.register(
   ArcElement,
@@ -74,10 +71,10 @@ const CHART_TYPES = {
 };
 
 const CHART_TYPE_LABELS = {
-  [CHART_TYPES.PIE]: 'Gráfico de Pizza',
-  [CHART_TYPES.DOUGHNUT]: 'Gráfico de Rosca',
-  [CHART_TYPES.BAR]: 'Gráfico de Barras',
-  [CHART_TYPES.LINE]: 'Gráfico de Linha'
+  [CHART_TYPES.PIE]: 'Pizza',
+  [CHART_TYPES.DOUGHNUT]: 'Doughnut',
+  [CHART_TYPES.BAR]: 'Barras',
+  [CHART_TYPES.LINE]: 'Linha'
 };
 
 const CHART_TYPE_ICONS = {
@@ -85,6 +82,47 @@ const CHART_TYPE_ICONS = {
   [CHART_TYPES.DOUGHNUT]: FiCircle,
   [CHART_TYPES.BAR]: FiBarChart,
   [CHART_TYPES.LINE]: FiTrendingUp
+};
+
+// Column configuration function - MOVED HERE from Modal
+const getTableColumns = (tableType) => {
+  switch(tableType) {
+    case 'vendas':
+      return [
+        { key: 'adquirente.nomeAdquirente', header: 'Adquirente', accessor: (item) => item.adquirente?.nomeAdquirente },
+        { key: 'bandeira.descricaoBandeira', header: 'Bandeira', accessor: (item) => item.bandeira?.descricaoBandeira },
+        { key: 'cnpj', header: 'CNPJ' },
+        { key: 'valorBruto', header: 'Valor Bruto', accessor: (item) => item.valorBruto },
+        { key: 'valorLiquido', header: 'Valor Líquido', accessor: (item) => item.valorLiquido },
+        { key: 'taxa', header: 'Taxa', accessor: (item) => item.taxa },
+        { key: 'dataVenda', header: 'Data Venda', accessor: (item) => item.dataVenda },
+        { key: 'quantidadeParcelas', header: 'Parcelas', accessor: (item) => item.quantidadeParcelas },
+        { key: 'nsu', header: 'NSU' },
+        { key: 'tid', header: 'TID' }
+      ];
+    case 'creditos':
+      return [
+        { key: 'adquirente.nomeAdquirente', header: 'Adquirente', accessor: (item) => item.adquirente?.nomeAdquirente },
+        { key: 'bandeira.descricaoBandeira', header: 'Bandeira', accessor: (item) => item.bandeira?.descricaoBandeira },
+        { key: 'cnpj', header: 'CNPJ' },
+        { key: 'valorBruto', header: 'Valor Bruto', accessor: (item) => item.valorBruto },
+        { key: 'valorLiquido', header: 'Valor Líquido', accessor: (item) => item.valorLiquido },
+        { key: 'taxa', header: 'Taxa', accessor: (item) => item.taxa },
+        { key: 'dataVenda', header: 'Data Venda', accessor: (item) => item.dataVenda },
+        { key: 'quantidadeParcelas', header: 'Parcelas', accessor: (item) => item.quantidadeParcelas }
+      ];
+    case 'servicos':
+      return [
+        { key: 'nome_adquirente', header: 'Adquirente' },
+        { key: 'descricao', header: 'Serviço' },
+        { key: 'cnpj', header: 'CNPJ' },
+        { key: 'data', header: 'Data' },
+        { key: 'valor', header: 'Valor' },
+        { key: 'razao_social', header: 'Razão Social' }
+      ];
+    default:
+      return [];
+  }
 };
 
 const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
@@ -390,15 +428,42 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
       
       {renderChart()}
       
+      {/* Fixed Modal with proper columns */}
       {showAdmModal && selectedAdm && (
         <Modal onClose={() => setShowAdmModal(false)}>
+          {console.log('Selected Admin Data:', selectedAdm)}
+          {console.log('Sales Data:', selectedAdm.sales)}
+          {console.log('Table Type:', tipo)}
+          
           {tipo === '0' ? (
-            <TabelaResponsiva array={selectedAdm} dataType='sales'/>
+            <NewTabelaGenerica
+              array={selectedAdm.sales}
+              tableType="vendas"
+              columns={getTableColumns('vendas')}
+              showFilters={false}
+              enableResponsive={true}
+            />
           ) : tipo === '1' ? (
-            <TabelaResponsiva array={selectedAdm} dataType='credits'/>
+            <NewTabelaGenerica
+              array={selectedAdm.sales}
+              tableType="creditos"
+              columns={getTableColumns('creditos')}
+              showFilters={false}
+              enableResponsive={true}
+            />
           ) : tipo === '2' ? (
-            <TabelaResponsiva array={selectedAdm} dataType='services'/>
-          ) : null}
+            <NewTabelaGenerica
+              array={selectedAdm.sales}
+              tableType="servicos"
+              columns={getTableColumns('servicos')}
+              showFilters={false}
+              enableResponsive={true}
+            />
+          ) : (
+            <div className="no-data-message">
+              Tipo de dados não suportado: {tipo}
+            </div>
+          )}
         </Modal>
       )}
     </div>

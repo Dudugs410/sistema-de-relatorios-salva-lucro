@@ -57,6 +57,8 @@ function RoutesApp() {
       <Route path='/creditos' element={<Private><Recebiveis /></Private>} />
       <Route path='/servicos' element={<Private><Servicos /></Private>} />
       <Route path='/taxas' element={<Private><Taxas /></Private>} />
+      <Route path='/extrato' element={<Private><Extrato /></Private>} />
+      <Route path='/cadastrodebancos' element={<Private><CadastroDeBancos /></Private>} />
 
     </Routes>
   )
@@ -65,8 +67,7 @@ function RoutesApp() {
 export default RoutesApp
 
 /*
-      <Route path='/extrato' element={<Private><Extrato /></Private>} />
-      <Route path='/cadastrodebancos' element={<Private><CadastroDeBancos /></Private>} />
+
 
 <Route path='/usuario' element={<Private><Usuario /></Private>} />
 <Route path='/financeiro' element={<Private><Financeiro /></Private>} />
