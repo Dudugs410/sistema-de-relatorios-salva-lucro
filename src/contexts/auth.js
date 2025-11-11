@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable default-case */
-import { React, createContext, useState, useEffect } from 'react'
+import { React, createContext, useState, useEffect, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import Cookies from 'js-cookie'
@@ -51,6 +51,8 @@ function AuthProvider({ children }){
 	const [canceledServices, setCanceledServices] = useState(false)
 
 	//////////////////////////////////////////////////////////////////
+
+  const navigate = useNavigate()
 
 	// *** Usuário e Login *** //
 
@@ -275,8 +277,20 @@ function AuthProvider({ children }){
     }
 
   }
+	
+  /////desloga usuário
+	// FIXED: Memoized logout function
+	const logout = useCallback(() => {
+		clearCookies()
+		localStorage.clear()
+		cancelOngoingRequests()
+		resetAppValues()
+		localStorage.setItem('isSignedIn', false)
+		navigate('/')
+	}, [navigate])
 
-  const updateUser = async (userObj) => {
+  // FIXED: Memoized updateUser function
+  const updateUser = useCallback(async (userObj) => {
     //setIsLoadingUser(true)
     console.log('update user: ', userObj)
     try {
@@ -313,7 +327,7 @@ function AuthProvider({ children }){
     } finally {
       //setIsLoadingUser(false)
     }
-  }
+  }, [logout]) // Added logout as dependency
 
 	// funções que retornam arrays com Grupos, Clientes, Bandeiras e Adquirentes, respectivamente //
 
@@ -1794,7 +1808,7 @@ const [taxesPageArray, setTaxesPageArray] = useState([])
 		setIsSignedIn(false)
 	}
 
-	const navigate = useNavigate()
+
 
 	async function loadOptions() {
 		try {
@@ -1826,15 +1840,7 @@ const [taxesPageArray, setTaxesPageArray] = useState([])
 		Cookies.remove('itemID')
 	}
 
-	/////desloga usuário
-	function logout(){
-		clearCookies()
-		localStorage.clear()
-		cancelOngoingRequests()
-		resetAppValues()
-		localStorage.setItem('isSignedIn', false)
-		navigate('/')
-	}
+
 
 	//////////////////////////////////////////////////////////////////
 
@@ -1850,17 +1856,28 @@ const [taxesPageArray, setTaxesPageArray] = useState([])
 		return convertedDate
 	}
 
-	function timeConvert(time){
-		if(time){
-			let parts = time.split('-')
-			let hours = parts[0]
-			let minutes = parts[1]
-			let seconds = parts[2]
-	  
-			let convertedTime = hours + ':' + minutes + ':' + seconds
-			return convertedTime
-		}
-	}
+function timeConvert(time){
+    if(!time) return ''
+    
+    try {
+        // Remove any 'undefined' strings and split by '-'
+        const cleanTime = time.replace(/undefined/g, '')
+        const parts = cleanTime.split('-').filter(part => part.trim() !== '')
+        
+        if (parts.length >= 3) {
+            return `${parts[0]}:${parts[1]}:${parts[2]}`
+        } else if (parts.length === 2) {
+            return `${parts[0]}:${parts[1]}`
+        } else if (parts.length === 1) {
+            return parts[0]
+        }
+        
+        return time // Return original if we can't parse it
+    } catch (error) {
+        console.error('Error converting time:', error, time)
+        return time // Return original on error
+    }
+}
 
 	function dateConvertSearch(date) {
 		let newDate = dateConvertYYYYMMDD(date)
@@ -2030,103 +2047,117 @@ const [taxesPageArray, setTaxesPageArray] = useState([])
 		return sortedArray
 	}
 
+	// FIXED: Memoized context value to prevent unnecessary re-renders
+	const contextValue = useMemo(() => ({
+		alerta,
+		isSignedIn, setIsSignedIn,
+		logout,
+		accessToken, setAccessToken,
+		refreshSession,
+
+		//Usuário //
+		loadUser, updateUser,
+		userImg, setUserImg,
+
+		// Dashboard //
+		
+		loadDashboard, isLoadedDashboard, setIsLoadedDashboard,
+		salesDashboard, isLoadedSalesDashboard, setIsLoadedSalesDashboard, loadSalesGroup,
+		creditsDashboard, isLoadedCreditsDashboard, setIsLoadedCreditsDashboard, loadCreditsGroup,
+		servicesDashboard, isLoadedServicesDashboard, setIsLoadedServicesDashboard, loadServicesGroup,
+		canceledSales, setCanceledSales,
+		canceledCredits, setCanceledCredits,
+		canceledServices, setCanceledServices,
+		
+		// Vendas //
+
+		loadSales, loadTotalSales, loadSalesGroup,
+		salesDateRange, setSalesDateRange,
+		salesPageArray, setSalesPageArray,
+		salesPageAdminArray, setSalesPageAdminArray,
+		salesTotal, setSalesTotal,
+		btnDisabledSales, setBtnDisabledSales,
+		salesTableData, setSalesTableData,
+		exportSales, errorSales,
+
+		// Creditos //
+
+		loadCredits, loadTotalCredits, loadCreditsGroup,
+		creditsPageArray, setCreditsPageArray,
+		creditsPageAdminArray, setCreditsPageAdminArray,
+		creditsDateRange, setCreditsDateRange,
+		creditsTotal, setCreditsTotal,
+		btnDisabledCredits, setBtnDisabledCredits,
+		creditsTableData, setCreditsTableData,
+		exportCredits, errorCredits,
+
+		// Serviços //
+
+		loadServices, loadServicesGroup,
+		servicesPageArray, setServicesPageArray,
+		servicesPageAdminArray, setServicesPageAdminArray,
+		servicesDateRange, setServicesDateRange,
+		btnDisabledServices, setBtnDisabledServices,
+		servicesTableData, setServicesTableData,
+		exportServices, errorServices,
+
+		// Taxas
+
+		loadTaxes, isLoadingTaxes, setIsLoadingTaxes,
+		addTax, editTax, deleteTax,
+		taxesTableData, setTaxesTableData, exportTaxes,
+		taxesPageArray, setTaxesPageArray,
+
+		// Bancos
+
+		loadBanks, isLoadingBanks, setIsLoadingBanks,
+		addBank, editBank, deleteBank,
+		loadCliAdq,
+
+		// Sysmo
+
+		loadSysmo,
+		btnDisabledSysmo, setBtnDisabledSysmo,
+
+		// outros / compartilhados //
+
+		loginApp, 
+		loadBanners, loadAdmins, loadMods, loadProducts, loadSubproducts,
+		groupByAdmin, groupServicesByAdmin,
+		exportName, setExportName,
+		isCheckedCalendar, setIsCheckedCalendar,
+		converteData, dateConvert, dateConvertSearch, dateConvertYYYYMMDD,
+
+		fetchingData, setFetchingData,
+
+		groupsList, clientsList,
+		loadGroupsList, setGroupsList,
+		displayClient, displayGroup,
+		setDisplayGroup, setDisplayClient,
+
+		changedOption, setChangedOption,
+		canceled, setCanceled,
+
+		resetAppValues,
+
+		clientUserId,
+	}), [
+		// List all dependencies that should trigger context updates
+		isSignedIn, accessToken, userImg, salesTableData, creditsTableData, servicesTableData, taxesTableData,
+		exportName, isCheckedCalendar, changedOption, errorSales, errorCredits, errorServices, fetchingData,
+		displayGroup, displayClient, canceledSales, canceledCredits, canceledServices, groupsList, clientsList,
+		btnDisabledSales, btnDisabledCredits, btnDisabledServices, btnDisabledSysmo, isLoadingTaxes, isLoadingBanks,
+		isLoadedDashboard, isLoadedSalesDashboard, isLoadedCreditsDashboard, isLoadedServicesDashboard, canceled,
+		salesDashboard, creditsDashboard, servicesDashboard, chartSales, chartCredits, chartServices,
+		salesPageArray, salesPageAdminArray, salesTotal, salesDateRange,
+		creditsPageArray, creditsPageAdminArray, creditsTotal, creditsDateRange,
+		servicesPageArray, servicesPageAdminArray, servicesDateRange,
+		taxesPageArray,
+		logout, updateUser // Add the memoized functions
+	])
+
 	return(
-		<AuthContext.Provider
-			value={{
-				alerta,
-				isSignedIn, setIsSignedIn,
-				logout,
-				accessToken, setAccessToken,
-				refreshSession,
-
-        //Usuário //
-        loadUser, updateUser,
-        userImg, setUserImg,
-
-				// Dashboard //
-				
-				loadDashboard, isLoadedDashboard, setIsLoadedDashboard,
-				salesDashboard, isLoadedSalesDashboard, setIsLoadedSalesDashboard, loadSalesGroup,
-				creditsDashboard, isLoadedCreditsDashboard, setIsLoadedCreditsDashboard, loadCreditsGroup,
-				servicesDashboard, isLoadedServicesDashboard, setIsLoadedServicesDashboard, loadServicesGroup,
-				canceledSales, setCanceledSales,
-				canceledCredits, setCanceledCredits,
-				canceledServices, setCanceledServices,
-				
-				// Vendas //
-
-				loadSales, loadTotalSales, loadSalesGroup,
-				salesDateRange, setSalesDateRange,
-				salesPageArray, setSalesPageArray,
-				salesPageAdminArray, setSalesPageAdminArray,
-				salesTotal, setSalesTotal,
-				btnDisabledSales, setBtnDisabledSales,
-				salesTableData, setSalesTableData,
-				exportSales, errorSales,
-
-				// Creditos //
-
-				loadCredits, loadTotalCredits, loadCreditsGroup,
-				creditsPageArray, setCreditsPageArray,
-				creditsPageAdminArray, setCreditsPageAdminArray,
-				creditsDateRange, setCreditsDateRange,
-				creditsTotal, setCreditsTotal,
-				btnDisabledCredits, setBtnDisabledCredits,
-				creditsTableData, setCreditsTableData,
-				exportCredits, errorCredits,
-
-				// Serviços //
-
-				loadServices, loadServicesGroup,
-				servicesPageArray, setServicesPageArray,
-				servicesPageAdminArray, setServicesPageAdminArray,
-				servicesDateRange, setServicesDateRange,
-				btnDisabledServices, setBtnDisabledServices,
-				servicesTableData, setServicesTableData,
-				exportServices, errorServices,
-
-				// Taxas
-
-				loadTaxes, isLoadingTaxes, setIsLoadingTaxes,
-				addTax, editTax, deleteTax,
-				taxesTableData, setTaxesTableData, exportTaxes,
-				taxesPageArray, setTaxesPageArray,
-
-				// Bancos
-
-				loadBanks, isLoadingBanks, setIsLoadingBanks,
-				addBank, editBank, deleteBank,
-				loadCliAdq,
-
-				// Sysmo
-
-				loadSysmo,
-				btnDisabledSysmo, setBtnDisabledSysmo,
-
-				// outros / compartilhados //
-
-				loginApp, 
-				loadBanners, loadAdmins, loadMods, loadProducts, loadSubproducts,
-				groupByAdmin, groupServicesByAdmin,
-				exportName, setExportName,
-				isCheckedCalendar, setIsCheckedCalendar,
-				converteData, dateConvert, dateConvertSearch, dateConvertYYYYMMDD,
-
-				fetchingData, setFetchingData,
-
-				groupsList, clientsList,
-				loadGroupsList, setGroupsList,
-				displayClient, displayGroup,
-				setDisplayGroup, setDisplayClient,
-
-				changedOption, setChangedOption,
-				canceled, setCanceled,
-
-				resetAppValues,
-
-				clientUserId,
-			}}
-		>
+		<AuthContext.Provider value={contextValue}>
 			{children}
 		</AuthContext.Provider>
 	)

@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom"
 import { FiMoon, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText, FiClipboard, FiDownload, FiCalendar, FiPaperclip, FiSettings, FiTruck, FiShoppingBag, FiTable, FiLink, FiHelpCircle } from "react-icons/fi"
 import { AuthContext } from "../../contexts/auth"
-import React, { useContext, useEffect, useState } from "react"
+import React, { useContext, useEffect, useState, useCallback } from "react"
 import './header.scss'
 import '../../index.scss'
 import Relogio from "../Componente_Relogio"
@@ -27,7 +27,7 @@ const useTheme = (updateUser) => {
         return false;
     });
 
-    const toggleTheme = () => {
+    const toggleTheme = useCallback(() => {
         const updatedChecked = !isChecked;
         console.log('Toggling theme from', isChecked, 'to', updatedChecked);
         setIsChecked(updatedChecked);
@@ -47,14 +47,14 @@ const useTheme = (updateUser) => {
         console.log('Set data-theme to:', updatedChecked ? 'dark' : 'light');
         
         return updatedChecked;
-    };
+    }, [isChecked, updateUser]);
 
     useEffect(() => {
         console.log('=== APPLYING THEME ===');
         console.log('isChecked:', isChecked);
         console.log('Setting data-theme to:', isChecked ? 'dark' : 'light');
         document.documentElement.setAttribute('data-theme', isChecked ? 'dark' : 'light');
-    }, []);
+    }, [isChecked]); // FIXED: Added isChecked dependency
 
     return {
         isChecked,
@@ -66,7 +66,7 @@ const useTheme = (updateUser) => {
 const Header = () => {
     const { logout, isCheckedCalendar, setIsCheckedCalendar, userImg, updateUser } = useContext(AuthContext)
     
-    // Use the custom hook
+    // Use the custom hook with memoized updateUser
     const { isChecked, toggleTheme } = useTheme(updateUser);
 
     const [showRelatoriosDropdown, setShowRelatoriosDropdown] = useState(false)
@@ -74,13 +74,13 @@ const Header = () => {
     const currentUser = JSON.parse(localStorage.getItem('currentUser'))
     const userData = JSON.parse(localStorage.getItem('userData'))
     
-    const handleCheckboxChangeCalendar = () => {
+    const handleCheckboxChangeCalendar = useCallback(() => {
         setIsCheckedCalendar(!isCheckedCalendar)
-    }
+    }, [isCheckedCalendar, setIsCheckedCalendar])
 
-    const handleCheckboxChange = () => {
+    const handleCheckboxChange = useCallback(() => {
         toggleTheme();
-    }
+    }, [toggleTheme])
     
     const [optionsWithIcons, setOptionsWithIcons] = useState([])
 
@@ -138,7 +138,7 @@ const Header = () => {
         setOptionsWithIcons(arrayOpcoes)
     }, [])
 
-    const CustomCheckbox = ({ isChecked, handleCheckboxChange }) => {
+    const CustomCheckbox = React.memo(({ isChecked, handleCheckboxChange }) => {
         return (
             <label className="checkbox-label">
             <input
@@ -153,19 +153,19 @@ const Header = () => {
             </span>
             </label>
         )
-    }
+    })
 
     const navigate = useNavigate()
-    const handleLogo = () => {
+    const handleLogo = useCallback(() => {
         navigate('/dashboard')
-    }
+    }, [navigate])
 
-    const getImageSource = () => {
+    const getImageSource = useCallback(() => {
         if (userImg) return userImg;
         
         const localUser = JSON.parse(localStorage.getItem('user'));
         return localUser?.IMAGEMBASE64 || '';
-    }
+    }, [userImg])
 
     return (  
         <div className="header-container">
