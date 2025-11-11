@@ -661,15 +661,15 @@
     min-width: 40px;
     height: 40px;
     border-radius: 8px;
-    border: 1px solid #ddd;
-    background: white;
-    color: #333;
+    border: var(--secondary-color);
+    background: var(--secondary-color);
+    color: var(--primary-color);
     transition: all 0.3s ease;
 
     &:hover:not(:disabled) {
-      background: #f8f9fa;
-      border-color: #007bff;
-      color: #007bff;
+      background: var(--background-color) !important;
+      border: solid var(--secondary-color) 1px !important;
+      color: var(--secondary-color) !important;
     }
 
     &:disabled {
@@ -704,7 +704,9 @@
 
 // Ensure the pagination is visible
 .hr-global + .container-btn-pagina {
-  display: flex !important;
+    display: flex !important;
+    flex-direction: row;
+    flex-wrap: nowrap;
 }
 
 /* FIXED: Enhanced Responsive Breakpoints */
