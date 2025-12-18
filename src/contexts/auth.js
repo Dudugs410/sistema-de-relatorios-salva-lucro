@@ -359,10 +359,12 @@ function AuthProvider({ children }){
 
 		// retorna array de vendas //
 const loadSales = async (startDate, endDate) => {
+  console.log('carregando vendas: ', startDate, ' até ', endDate)
   try {
     setErrorSales(false)
     const apiCNPJ = localStorage.getItem('cnpj')
     const apiGroupCode = localStorage.getItem('groupCode')
+    console.log('CNPJ: ', apiCNPJ, 'GRUcodigo: ', apiGroupCode)
     if((apiCNPJ === 'todos' || apiCNPJ === 'TODOS') && (apiGroupCode !== 'selecione')){
       let params = {
         datainicial: startDate,
@@ -373,10 +375,13 @@ const loadSales = async (startDate, endDate) => {
         params: params
       }
 
+      console.log('antes da requisição (vendas): ', 'params: ', params, ' config: ', config )
+
       const response = await api.get('vendas', config)
       return response.data.VENDAS
 
     } else {
+      console.log('else')
       let params = {
         datainicial: startDate,
         datafinal: endDate,
@@ -386,12 +391,17 @@ const loadSales = async (startDate, endDate) => {
       let config = {
         params: params
       }
+
+      console.log('antes da requisição (vendas): ', 'params: ', params, ' config: ', config )
       const response = await api.get('vendas', config)
       setBtnDisabledSales(false)
       exportSales(response.data.VENDAS)
+      console.log('response: ', response)
+      console.log('retorna response.data.VENDAS')
       return response.data.VENDAS
     }
   } catch (error) {
+    console.log('erro vendas: ', error)
     setBtnDisabledSales(false)
     console.log('bomba: ', error)
     if(error.code === 'ERR_CANCELED'){
@@ -404,7 +414,7 @@ const loadSales = async (startDate, endDate) => {
       return
     } else {
       console.log('not canceled')
-      toast.error('Erro ao Carregar Vendas ', error.response ? error.response.status : 'Unknown error')
+      toast.error('Erro ao Carregar Vendas ', error.code)
       console.error('Error fetching vendas:', error)
       setErrorSales(true)
     }
@@ -414,10 +424,12 @@ const loadSales = async (startDate, endDate) => {
 
 // retorna array de créditos/recebimentos
 const loadCredits = async (startDate, endDate) => {
+  console.log('carregando créditos/recebimentos: ', startDate, ' até ', endDate)
   try {
     setErrorCredits(false)
     const apiCNPJ = localStorage.getItem('cnpj')
     const apiGroupCode = localStorage.getItem('groupCode')
+    console.log('CNPJ: ', apiCNPJ, 'GRUcodigo: ', apiGroupCode)
     if((apiCNPJ === 'todos' || apiCNPJ === 'TODOS') && (apiGroupCode !== 'selecione')){
       let params = {
         dataInicial: startDate,
@@ -428,6 +440,8 @@ const loadCredits = async (startDate, endDate) => {
       let config = {
         params: params
       }
+
+      console.log('antes da requisição (créditos/recebimentos): ', 'params: ', params, ' config: ', config )
       const response = await api.get('recebimentos', config)
       return response.data
 
@@ -441,12 +455,13 @@ const loadCredits = async (startDate, endDate) => {
       let config = {
         params: params
       }
-
+      console.log('antes da requisição (créditos/recebimentos): ', 'params: ', params, ' config: ', config )
       const response = await api.get('recebimentos', config)
       setBtnDisabledCredits(false)
       return response.data
     }
   } catch (error) {
+    console.log('erro creditos/recebimentos: ', error)
     setBtnDisabledCredits(false)
     if(error.code === 'ERR_CANCELED'){
       console.log('canceled')
@@ -457,8 +472,8 @@ const loadCredits = async (startDate, endDate) => {
       return
     } else {
       console.log('not canceled')
-      toast.error('Erro ao Carregar Créditos: ', error.response ? error.response.status : 'Unknown error')
-      console.error('Error fetching créditos:', error)
+      toast.error('Erro ao Carregar Créditos: ', error.code)
+      console.error('Erro ao carregar créditos/recebimentos:', error)
       setErrorCredits(true)
     }
     return []
