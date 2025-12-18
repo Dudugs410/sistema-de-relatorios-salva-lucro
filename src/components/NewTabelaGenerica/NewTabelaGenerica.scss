@@ -387,11 +387,11 @@
       
       &:hover {
         background-color: var(--table-hover) !important;
-        color: var(--table-hover-color) !important;
+        color: var(--secondary-color) !important;
         transform: translateY(-1px);
         
         .det-td-vendas-global {
-          color: var(--table-hover-color) !important;
+          color: var(--secondary-color) !important;
         }
       }
     }
@@ -1009,17 +1009,18 @@ button:focus-visible {
   }
   
   .det-tr-global.row-pluggy:hover {
-    background-color: var(--table-hover) !important;
+    color: white !important;
+    background-color: var(--primary-color) !important;
     transform: translateY(-1px);
     
     .det-td-vendas-global {
-      color: var(--table-hover-color) !important;
+      color: white !important;
     }
   }
   
   .mobile-tab:hover:not(.mobile-tab-active):not(:disabled) {
     background-color: rgba(0, 0, 0, 0.05);
-    color: var(--text-primary) !important;
+    color: white !important;
   }
 }
 

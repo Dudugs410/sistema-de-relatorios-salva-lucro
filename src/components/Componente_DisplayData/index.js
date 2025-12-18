@@ -381,6 +381,7 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutori
         {tableProps && (
           <NewTabelaGenerica {...tableProps} />
         )}
+        <hr className='hr-global' />
         {adminDataArray && adminDataArray.length > 0 && (
           <TabelaGenericaAdm Array={adminDataArray} />
         )}
