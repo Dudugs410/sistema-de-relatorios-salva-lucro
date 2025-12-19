@@ -84,48 +84,39 @@ const CHART_TYPE_ICONS = {
   [CHART_TYPES.LINE]: FiTrendingUp
 };
 
-// Column configuration function - MOVED HERE from Modal
+// Helper function to get table columns based on type
 const getTableColumns = (tableType) => {
-  switch(tableType) {
+  switch (tableType) {
     case 'vendas':
       return [
-        { key: 'adquirente.nomeAdquirente', header: 'Adquirente', accessor: (item) => item.adquirente?.nomeAdquirente },
-        { key: 'bandeira.descricaoBandeira', header: 'Bandeira', accessor: (item) => item.bandeira?.descricaoBandeira },
-        { key: 'cnpj', header: 'CNPJ' },
-        { key: 'valorBruto', header: 'Valor Bruto', accessor: (item) => item.valorBruto },
-        { key: 'valorLiquido', header: 'Valor Líquido', accessor: (item) => item.valorLiquido },
-        { key: 'taxa', header: 'Taxa', accessor: (item) => item.taxa },
-        { key: 'dataVenda', header: 'Data Venda', accessor: (item) => item.dataVenda },
-        { key: 'quantidadeParcelas', header: 'Parcelas', accessor: (item) => item.quantidadeParcelas },
-        { key: 'nsu', header: 'NSU' },
-        { key: 'tid', header: 'TID' }
+        { key: 'dataVenda', label: 'Data Venda', type: 'date' },
+        { key: 'adquirente', label: 'Adquirente' },
+        { key: 'valorBruto', label: 'Valor Bruto', type: 'currency' },
+        { key: 'valorLiquido', label: 'Valor Líquido', type: 'currency' }
       ];
     case 'creditos':
       return [
-        { key: 'adquirente.nomeAdquirente', header: 'Adquirente', accessor: (item) => item.adquirente?.nomeAdquirente },
-        { key: 'bandeira.descricaoBandeira', header: 'Bandeira', accessor: (item) => item.bandeira?.descricaoBandeira },
-        { key: 'cnpj', header: 'CNPJ' },
-        { key: 'valorBruto', header: 'Valor Bruto', accessor: (item) => item.valorBruto },
-        { key: 'valorLiquido', header: 'Valor Líquido', accessor: (item) => item.valorLiquido },
-        { key: 'taxa', header: 'Taxa', accessor: (item) => item.taxa },
-        { key: 'dataVenda', header: 'Data Venda', accessor: (item) => item.dataVenda },
-        { key: 'quantidadeParcelas', header: 'Parcelas', accessor: (item) => item.quantidadeParcelas }
+        { key: 'dataCredito', label: 'Data Crédito', type: 'date' },
+        { key: 'adquirente', label: 'Adquirente' },
+        { key: 'valor', label: 'Valor', type: 'currency' }
       ];
     case 'servicos':
       return [
-        { key: 'nome_adquirente', header: 'Adquirente' },
-        { key: 'descricao', header: 'Serviço' },
-        { key: 'cnpj', header: 'CNPJ' },
-        { key: 'data', header: 'Data' },
-        { key: 'valor', header: 'Valor' },
-        { key: 'razao_social', header: 'Razão Social' }
+        { key: 'dataServico', label: 'Data Serviço', type: 'date' },
+        { key: 'adquirente', label: 'Adquirente' },
+        { key: 'descricao', label: 'Descrição' },
+        { key: 'valor', label: 'Valor', type: 'currency' }
       ];
     default:
-      return [];
+      return [
+        { key: 'adquirente', label: 'Adquirente' },
+        { key: 'valor', label: 'Valor', type: 'currency' },
+        { key: 'percentual', label: 'Percentual', type: 'percentage' }
+      ];
   }
 };
 
-const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
+const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
   const [selectedAdm, setSelectedAdm] = useState(null);
   const [showAdmModal, setShowAdmModal] = useState(false);
   const [dado, setDado] = useState('');
@@ -181,22 +172,29 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
 
   const handleChartClick = useCallback(
     (event, elements) => {
-      if (elements.length > 0) {
+      if (elements.length > 0 && arrayAdm && arrayAdm.length > 0) {
         const clickedElementIndex = elements[0].index;
-        const selectedAdmData = arrayAdm[clickedElementIndex];
-
-        setSelectedAdm(selectedAdmData);
-        setShowAdmModal(true);
+        const clickedLabel = data01.labels[clickedElementIndex];
+        
+        // Find the selected admin data by matching the label
+        const selectedAdmData = arrayAdm.find(item => item.adquirente === clickedLabel);
+        
+        if (selectedAdmData) {
+          setSelectedAdm(selectedAdmData);
+          setShowAdmModal(true);
+        }
       }
     },
-    [arrayAdm]
+    [arrayAdm, data01?.labels]
   );
 
   const generateColors = (labels) => labels.map(assignColor);
 
   // Format value based on display mode and return parts for styling
   const formatValueParts = (value, label, includeLabel = true) => {
-    const percentage = ((value / totalAdmin) * 100).toFixed(2);
+    if (!value && value !== 0) return { labelPart: '', valuePart: '', fullText: '' };
+    
+    const percentage = totalAdmin > 0 ? ((value / totalAdmin) * 100).toFixed(2) : '0.00';
     const currencyValue = value.toLocaleString("pt-BR", {
       style: "currency",
       currency: "BRL",
@@ -245,7 +243,7 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
   // Create custom legend with bold values
   const createCustomLegend = (chart) => {
     const { data } = chart;
-    if (data.labels.length && data.datasets.length) {
+    if (data.labels && data.labels.length && data.datasets && data.datasets.length) {
       return data.labels.map((label, index) => {
         const value = data.datasets[0].data[index];
         const datasetMeta = chart.getDatasetMeta(0);
@@ -267,6 +265,18 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
   };
 
   const chartData = useMemo(() => {
+    if (!data01 || !data01.labels || !data01.data) {
+      return {
+        labels: [],
+        datasets: [{
+          label: `Total de ${dado}: R$`,
+          data: [],
+          backgroundColor: [],
+          borderWidth: 0.2,
+        }]
+      };
+    }
+
     return {
       labels: data01.labels.slice(),
       datasets: [
@@ -335,6 +345,12 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
           beginAtZero: true,
           ticks: {
             color: fontColor,
+            callback: function(value) {
+              return value.toLocaleString('pt-BR', { 
+                style: 'currency', 
+                currency: 'BRL' 
+              });
+            }
           },
           grid: {
             color: fontColor + '20',
@@ -357,6 +373,12 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
           beginAtZero: true,
           ticks: {
             color: fontColor,
+            callback: function(value) {
+              return value.toLocaleString('pt-BR', { 
+                style: 'currency', 
+                currency: 'BRL' 
+              });
+            }
           },
           grid: {
             color: fontColor + '20',
@@ -374,13 +396,14 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
     }
     
     return options;
-  }, [chartType, displayMode, fontColor, totalAdmin, dado]);
+  }, [chartType, displayMode, fontColor, totalAdmin]);
 
   // Render the appropriate chart component
   const renderChart = () => {
     const chartProps = {
       data: chartData,
-      options: chartOptions
+      options: chartOptions,
+      height: 300
     };
 
     switch (chartType) {
@@ -426,18 +449,20 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
         </button>
       </div>
       
-      {renderChart()}
+      {data01 && data01.labels && data01.labels.length > 0 ? (
+        renderChart()
+      ) : (
+        <div className="no-chart-data">
+          <p>Não há dados disponíveis para exibir no gráfico</p>
+        </div>
+      )}
       
       {/* Fixed Modal with proper columns */}
       {showAdmModal && selectedAdm && (
         <Modal onClose={() => setShowAdmModal(false)}>
-          {console.log('Selected Admin Data:', selectedAdm)}
-          {console.log('Sales Data:', selectedAdm.sales)}
-          {console.log('Table Type:', tipo)}
-          
           {tipo === '0' ? (
             <NewTabelaGenerica
-              array={selectedAdm.sales}
+              array={[selectedAdm]} // Pass as array with single item
               tableType="vendas"
               columns={getTableColumns('vendas')}
               showFilters={false}
@@ -445,7 +470,7 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
             />
           ) : tipo === '1' ? (
             <NewTabelaGenerica
-              array={selectedAdm.sales}
+              array={[selectedAdm]} // Pass as array with single item
               tableType="creditos"
               columns={getTableColumns('creditos')}
               showFilters={false}
@@ -453,7 +478,7 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
             />
           ) : tipo === '2' ? (
             <NewTabelaGenerica
-              array={selectedAdm.sales}
+              array={[selectedAdm]} // Pass as array with single item
               tableType="servicos"
               columns={getTableColumns('servicos')}
               showFilters={false}
@@ -461,7 +486,10 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
             />
           ) : (
             <div className="no-data-message">
-              Tipo de dados não suportado: {tipo}
+              <p>Dados da adquirente:</p>
+              <p><strong>Nome:</strong> {selectedAdm.adquirente}</p>
+              <p><strong>Valor:</strong> {selectedAdm.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
+              <p><strong>Percentual:</strong> {selectedAdm.percentual}%</p>
             </div>
           )}
         </Modal>
