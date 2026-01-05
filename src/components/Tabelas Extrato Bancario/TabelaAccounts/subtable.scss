@@ -188,7 +188,11 @@
         .card-field {
           display: flex;
           flex-direction: column;
-          
+          border-top: solid var(--primary-color) 1px;
+          border-bottom: solid var(--primary-color) 1px;
+          border-right: solid var(--primary-color) 1px;
+          background: var(--background-color);
+
           .label {
             font-weight: 600;
             font-size: 0.8rem;
@@ -220,8 +224,7 @@
             border: solid #e9ecef 1px;
             border-radius: 8px;
             padding: 0.25rem;
-            margin-bottom: 1rem;
-            
+            margin-bottom: 1rem; 
             .mobile-tab {
               flex: 1;
               padding: 0.75rem 1rem;
@@ -233,7 +236,6 @@
               font-weight: 500;
               transition: all 0.2s ease;
               font-size: 0.9rem;
-              
               &:disabled {
                 opacity: 0.6;
                 cursor: not-allowed;

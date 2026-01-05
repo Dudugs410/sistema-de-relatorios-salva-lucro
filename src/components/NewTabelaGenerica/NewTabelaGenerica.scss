@@ -399,7 +399,7 @@
     .det-td-vendas-global {
       padding: 0.875rem 0.75rem;
       color: var(--text-primary) !important; // Fixed: Ensure text color
-      border-bottom: 1px solid var(--table-border);
+      //border-bottom: 1px solid var(--table-border);
       vertical-align: middle;
       background: transparent !important;
       
@@ -693,6 +693,7 @@
     background: #f8f9fa;
     border-radius: 6px;
     font-weight: 500;
+    margin: 0;
 
     .texto-paginacao {
       color: #333;
@@ -939,8 +940,8 @@
       
       // Ensure proper colors in desktop view
       .det-tr-top-global .det-th-global {
-        background: var(--table-header-bg) !important;
-        color: var(--table-header-color) !important;
+        //background: var(--table-header-bg) !important;
+        //color: var(--table-header-color) !important;
       }
       
       .det-tr-global {
@@ -1081,20 +1082,6 @@ button:focus-visible {
 .detail-value,
 .mobile-tab {
   &, &:hover, &:focus, &:active {
-    font-weight: bold;
     color: rgb(16, 167, 16) !important;
-  }
-}
-
-/* FIXED: Ensure header contrast */
-.det-tr-top-global {
-  .det-th-global {
-    //background: var(--table-header-bg) !important;
-    //color: white !important;
-    
-    &:hover {
-      //background: var(--table-header-bg) !important;
-      //color: var(--font-color) !important;
-    }
   }
 }
