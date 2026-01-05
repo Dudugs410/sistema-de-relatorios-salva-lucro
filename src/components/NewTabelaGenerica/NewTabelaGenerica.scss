@@ -109,7 +109,7 @@
   &:hover {
     background: var(--danger-color);
     color: white !important;
-    transform: translateY(-1px);
+    //transform: translateY(-1px);
   }
 }
 
@@ -374,7 +374,7 @@
     
     &:hover:not(.row-pluggy) {
       background-color: var(--table-hover) !important;
-      color: var(--secondary-color) !important;
+      color: white !important;
       
       .det-td-vendas-global {
         color: var(--secondary-color) !important;
@@ -387,8 +387,8 @@
       
       &:hover {
         background-color: var(--table-hover) !important;
-        color: var(--secondary-color) !important;
-        transform: translateY(-1px);
+        color: white !important;
+        //transform: translateY(-1px);
         
         .det-td-vendas-global {
           color: var(--secondary-color) !important;
@@ -798,7 +798,7 @@
     
     span {
       font-size: 0.9rem;
-      color: var(--text-primary) !important;
+      color: var(--primary-color) !important;
     }
   }
 }
@@ -950,7 +950,7 @@
         
         &:hover {
           .det-td-vendas-global {
-            color: var(--table-hover-color) !important;
+            color: white !important;
           }
         }
       }
@@ -1005,13 +1005,13 @@ button:focus-visible {
 @media (hover: hover) {
   .mobile-card:hover {
     box-shadow: var(--card-shadow-hover);
-    transform: translateY(-2px);
+    //transform: translateY(-2px);
   }
   
   .det-tr-global.row-pluggy:hover {
     color: white !important;
     background-color: var(--primary-color) !important;
-    transform: translateY(-1px);
+    //transform: translateY(-1px);
     
     .det-td-vendas-global {
       color: white !important;
@@ -1081,7 +1081,8 @@ button:focus-visible {
 .detail-value,
 .mobile-tab {
   &, &:hover, &:focus, &:active {
-    color: inherit !important;
+    font-weight: bold;
+    color: rgb(16, 167, 16) !important;
   }
 }
 
