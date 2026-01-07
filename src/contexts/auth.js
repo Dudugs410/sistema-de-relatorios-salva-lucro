@@ -191,14 +191,7 @@ function AuthProvider({ children }){
       }
 
       try {
-        let logTemp
         await loginLog()
-        .then(
-          //logTemp = getLoginLog()
-        )
-        .finally(
-          //console.log(logTemp)
-        )
       } catch (error) {
         console.log(error)
       }
@@ -311,15 +304,6 @@ function AuthProvider({ children }){
 
         const responseData = await response.json()
         console.log('response: ', responseData)
-      /*
-        if (response.ok) {
-          toast.dismiss()
-          toast.success('Usuário atualizado com sucesso!')
-        } else {
-          toast.dismiss()
-          toast.error('Erro ao atualizar usuário')
-        }
-      */
     } catch (error) {
       console.error('Erro ao atualizar usuário:', error)
       toast.dismiss()

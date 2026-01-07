@@ -38,6 +38,7 @@
     "react-datepicker": "^4.25.0",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.3",
+    "react-fast-marquee": "^1.6.5",
     "react-icons": "^4.10.1",
     "react-joyride": "^2.9.3",
     "react-loading-icons": "^1.1.0",

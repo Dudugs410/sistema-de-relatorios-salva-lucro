@@ -12,6 +12,7 @@ import {
   FiChevronDown, 
   FiChevronUp 
 } from 'react-icons/fi'
+import Marquee from "react-fast-marquee";
 
 import './NewTabelaGenerica.scss'
 
@@ -70,6 +71,31 @@ const tableConfig = {
     ]
   }
 }
+
+// Helper component for conditional marquee rendering
+const ConditionalMarquee = ({ children, speed = 50, gradient = false, className = "" }) => {
+  const text = typeof children === 'string' ? children : '';
+  
+  // Check if text is longer than 10 characters
+  if (text.length > 10) {
+    return (
+      <div className="marquee-container">
+        <Marquee play={false} speed={speed} gradient={gradient} className={className} delay={1}>
+          {children}
+        </Marquee>
+      </div>
+    );
+  }
+  
+  // If 10 characters or less, render as a regular span
+  return (
+    <div className="marquee-container static-text">
+      <span className={className}>
+        {children}
+      </span>
+    </div>
+  );
+};
 
 const NewTabelaGenerica = forwardRef(({ 
   array, 
@@ -507,71 +533,6 @@ const NewTabelaGenerica = forwardRef(({
               )}
             </div>
 
-            {/* Mobile Filter Toggle */}
-            {enableResponsive && isMobileView && config.filters && config.filters.length > 0 && (
-              <div className="mobile-filter-toggle">
-                <button 
-                  className="mobile-filter-btn"
-                  onClick={() => setShowMobileFilters(!showMobileFilters)}
-                >
-                  <FiFilter /> 
-                  <span>Filtros</span>
-                  {Object.keys(selectedFilters).some(key => selectedFilters[key]) && (
-                    <span className="filter-counter">
-                      {Object.values(selectedFilters).filter(Boolean).length}
-                    </span>
-                  )}
-                </button>
-                {Object.keys(selectedFilters).some(key => selectedFilters[key]) && (
-                  <button 
-                    className="clear-filters-mobile"
-                    onClick={clearFilters}
-                  >
-                    Limpar
-                  </button>
-                )}
-              </div>
-            )}
-
-            {/* Mobile Filters */}
-            {enableResponsive && isMobileView && showMobileFilters && config.filters && (
-              <div className="mobile-filters-panel">
-                <div className="mobile-filters-header">
-                  <h4>Filtros</h4>
-                  <button 
-                    className="close-filters-btn"
-                    onClick={() => setShowMobileFilters(false)}
-                  >
-                  </button>
-                </div>
-                {config.filters.map(filter => (
-                  <div key={filter.key} className="mobile-filter-group">
-                    <label className="mobile-filter-label">{filter.label}</label>
-                    <div className="mobile-select-container">
-                      <select 
-                        value={selectedFilters[filter.key] || ''}
-                        onChange={(e) => handleFilterChange(filter.key, e.target.value)}
-                        className="mobile-select"
-                      >
-                        <option value="">Todos</option>
-                        {getAvailableOptions(filter.key)?.map((value, index) => (
-                          <option key={index} value={value}>{value}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                ))}
-                <div className="mobile-filters-footer">
-                  <button 
-                    className="apply-filters-btn"
-                    onClick={() => setShowMobileFilters(false)}
-                  >
-                    Aplicar Filtros
-                  </button>
-                </div>
-              </div>
-            )}
-
             <hr className='hr-global'/>
             <div className='container-busca'>
               <span className='span-busca'>
@@ -636,7 +597,9 @@ const NewTabelaGenerica = forwardRef(({
                       const formattedValue = formatValue(value, field.format)
                       
                       return field.badge ? (
-                        <span key={field.key} className="badge">{formattedValue}</span>
+                        <ConditionalMarquee key={field.key} className="badge">
+                          {formattedValue}
+                        </ConditionalMarquee>
                       ) : (
                         <strong key={field.key}>{formattedValue}</strong>
                       )
