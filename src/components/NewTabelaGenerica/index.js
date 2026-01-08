@@ -80,7 +80,7 @@ const ConditionalMarquee = ({ children, speed = 50, gradient = false, className 
   if (text.length > 10) {
     return (
       <div className="marquee-container">
-        <Marquee play={false} speed={speed} gradient={gradient} className={className} delay={1}>
+        <Marquee speed={speed} gradient={gradient} className={className} delay={1}>
           {children}
         </Marquee>
       </div>
