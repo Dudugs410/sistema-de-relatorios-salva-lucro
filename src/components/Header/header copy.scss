@@ -173,19 +173,14 @@
     border: solid var(--secondary-color) 1px;
 }
 
-.btn-container{ // ??
+.btn-container{
     align-items: center;
     justify-content: center;
     margin: auto 0;
-    // display: flex; - sem efeito
-    // flex-direction: row;
-    // flex-wrap: wrap;
-    // justify-content: flex-start;
-    // align-content: space-between;
+
 }
 
 .li-button-content{
-    /* padding: 5px; */
     height:100%;
     width: 100%;
     color: white;
@@ -264,11 +259,6 @@
     z-index: 999999999999999999999999;
   }
 
-//   .nav-link{
-//     padding: 0px !important;
-//   }
-
-/* Styles for dropdown menu */
     .dropdown-menu {
         inset: 0px auto auto 0px;
         position: absolute;
@@ -277,7 +267,7 @@
         background: none;
         border: none;
         padding: 0;
-        z-index: 1000; /* Ensure the dropdown menu is above other elements */
+        z-index: 1000;
     }
     
     .dropdown-menu.show {
@@ -292,7 +282,7 @@
         background-color: white;
         border: 1px solid #ccc;
         padding: 5px;
-        z-index: 1000; /* Ensure the dropdown menu is above other elements */
+        z-index: 1000;
     }
   
     .dropdown-menu-normal.show {
@@ -368,7 +358,7 @@
     }
         
     .checkbox-input {
-    display: none; /* Hide the default checkbox */
+    display: none;
     }
         
     .checkbox-custom {
@@ -393,10 +383,9 @@
     }
 
     .checkbox-label:hover .checkbox-custom {
-    border-color: #999; /* Change border color on hover */
+    border-color: #999;
     }
 
-    /* Animation example */
     .checkbox-custom {
     transition: background-color 0.3s, border-color 0.3s;
     }
@@ -503,7 +492,7 @@
 
     .navbar-customer-wrapper{
         display: flex;
-        flex-direction: column; // pro nome cair pra baixo do cnpj
+        flex-direction: column;
         font-size: 0.8em;
     }
 
@@ -532,7 +521,6 @@
     
     .navbar-nav{
         align-items: center;
-        //background-color: rgba(0, 0, 0, 0.5);
         flex-wrap: nowrap;
         justify-content: flex-start;
     }
@@ -563,7 +551,7 @@
     }
 
     .relatorios-child .li-btn-text {
-        display: inline; // Display Relatórios children text
+        display: inline;
     }
 }
 
@@ -590,7 +578,7 @@
     }
 
     .relatorios-child .li-btn-text {
-        display: inline; // Display Relatórios children text
+        display: inline;
     }
 
     .li-button-content{
@@ -621,13 +609,12 @@
             left: 50px;
         }
 
-        /* esconde texto do navbar em telas pequenas*/
         .li-btn-text{
             display: none;
         }
 
         .relatorios-child .li-btn-text {
-            display: inline; // Display Relatórios children text
+            display: inline;
         }
 
         .li-button-content{
@@ -645,28 +632,20 @@
 
     @media only screen and (max-width: 360px) {
         .toggle-container{
-            //border: solid red 1px;
             display: inline-flex;
             align-items: center;
-            /* padding: 0 5px 0 5px; */
             flex-direction: row;
-            /* width: 100%; */
             justify-content: flex-end;
-            /* position: absolute; */
             left: 20px;
         }
     }
   
     @media only screen and (max-width: 412px) {
         .toggle-container{
-            //border: solid red 1px;
             display: inline-flex;
             align-items: center;
-            /* padding: 0 5px 0 5px; */
             flex-direction: row;
-            /* width: 100%; */
             justify-content: flex-end;
-            /* position: absolute; */
             left: 20px;
         }
     }

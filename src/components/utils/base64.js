@@ -1,4 +1,4 @@
-// utils/imageToBase64.js
+
 export const imageToBase64 = (path) => {
   return new Promise((resolve, reject) => {
     const img = new Image()

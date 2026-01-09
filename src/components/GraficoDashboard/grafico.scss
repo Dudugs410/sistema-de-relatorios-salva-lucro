@@ -50,7 +50,6 @@
   white-space: nowrap;
 }
 
-// Dark mode support
 [data-theme="dark"] {
   .chart-type-toggle,
   .display-mode-toggle {
@@ -63,7 +62,6 @@
   }
 }
 
-// Responsive design
 @media (max-width: 768px) {
   .chart-controls {
     gap: 6px;
@@ -75,7 +73,7 @@
     font-size: 12px;
     
     .toggle-label {
-      display: none; // Hide text on mobile, show only icon
+      display: none;
     }
   }
 }

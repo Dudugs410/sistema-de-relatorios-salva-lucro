@@ -80,7 +80,6 @@
 
 }
 
-// Mobile adaptation
 @media (max-width: 1350px) {
   .product-icon-button {
     &:active:not(:disabled) {
@@ -98,7 +97,6 @@
   }
 }
 
-// Tooltip arrow for desktop
 .product-icon-button:hover:not(:disabled)::after {
   &::before {
     content: '';
@@ -114,7 +112,6 @@
   }
 }
 
-// Tooltip arrow for mobile
 @media (max-width: 1350px) {
   .product-icon-button:active:not(:disabled)::after {
     &::before {
