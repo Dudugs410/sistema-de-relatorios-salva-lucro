@@ -174,9 +174,9 @@ const SeletorCliente = ({onClose}) => {
   const customStyles = {
     menu: (provided) => ({
       ...provided,
-      zIndex: 9999, // Set your desired z-index value here
+      zIndex: 9999,
     }),
-    menuPortal: (base) => ({ ...base, zIndex: 9999 }), // If you're using the menuPortal
+    menuPortal: (base) => ({ ...base, zIndex: 9999 }), 
   }
 
   return (

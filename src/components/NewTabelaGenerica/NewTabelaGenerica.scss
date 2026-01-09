@@ -1,9 +1,9 @@
 :root {
   --table-header-bg: #f8f9fa;
-  --table-header-color: #212529; // Explicit header text color
+  --table-header-color: #212529;
   --table-border: #dee2e6;
-  --table-hover: rgba(0, 123, 255, 0.08); // Light blue hover
-  --table-hover-color: #212529; // Ensure text remains readable on hover
+  --table-hover: rgba(0, 123, 255, 0.08);
+  --table-hover-color: #212529;
   --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   --card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.15);
   --text-muted: #6c757d;
@@ -14,7 +14,6 @@
   --info-color: #17a2b8;
 }
 
-// Enhanced Filter Styles
 .desktop-filters {
   display: flex;
   gap: 1rem;
@@ -89,28 +88,26 @@
 }
 
 .clear-filters-btn {
-  padding: 0.75rem 1rem;
+  padding: 5px;
   background: transparent;
-  border: 2px solid var(--danger-color);
+  border: 1px solid var(--danger-color);
   border-radius: 0.5rem;
   color: var(--danger-color) !important;
   font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
+  white-space: nowrap;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
   font-weight: 600;
-  
+
   &:hover {
     background: var(--danger-color);
     color: white !important;
-    //transform: translateY(-1px);
   }
 }
 
-// Mobile Filter Styles
 .mobile-filter-toggle {
   display: flex;
   gap: 0.75rem;
@@ -275,7 +272,6 @@
   }
 }
 
-// Base table improvements
 .table-header-responsive {
   display: flex;
   flex-direction: column;
@@ -328,7 +324,6 @@
   color: var(--text-primary);
 }
 
-/* FIXED: Enhanced Desktop Table with proper colors */
 .table-wrapper {
   width: 100%;
   overflow-x: auto;
@@ -348,11 +343,10 @@
     .det-th-global {
       padding: 1rem 0.75rem;
       font-weight: 600;
-      color: white !important; // Fixed: Explicit dark text
+      color: white !important;
       border-bottom: 2px solid var(--table-border);
       white-space: nowrap;
       position: relative;
-      //background: var(--table-header-bg);
       
       &:first-child {
         border-top-left-radius: 0.5rem;
@@ -395,8 +389,7 @@
     
     .det-td-vendas-global {
       padding: 0.875rem 0.75rem;
-      color: var(--text-primary) !important; // Fixed: Ensure text color
-      //border-bottom: 1px solid var(--table-border);
+      color: var(--text-primary) !important;
       vertical-align: middle;
       background: transparent !important;
       
@@ -411,7 +404,6 @@
   }
 }
 
-/* FIXED: Enhanced Mobile Cards with proper contrast */
 .mobile-cards {
   display: none;
 }
@@ -430,7 +422,6 @@
   }
 }
 
-/* Marquee Container Styles - FIXED WIDTH */
 .marquee-container {
   width: 300px !important;
   max-width: 300px;
@@ -480,7 +471,7 @@
   strong {
     font-size: 1rem;
     font-weight: 600;
-    color: white !important; // Fixed: Ensure white text on colored background
+    color: white !important;
     max-width: 300px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -528,11 +519,10 @@
 .card-col span {
   font-size: 0.95rem;
   font-weight: 500;
-  color: var(--text-primary) !important; // Fixed: Ensure text color
+  color: var(--text-primary) !important;
   line-height: 1.4;
 }
 
-/* FIXED: Enhanced Color classes with !important */
 .green-global {
   color: var(--success-color) !important;
   font-weight: 600;
@@ -553,7 +543,6 @@
   font-weight: 600;
 }
 
-/* FIXED: Enhanced Expandable Sections */
 .subtable {
   background: var(--background-color) !important;
   border-top: 2px solid var(--table-border);
@@ -600,7 +589,6 @@
   }
 }
 
-/* FIXED: Enhanced Mobile Tabs */
 .mobile-tabs-container {
   .mobile-tabs {
     display: flex;
@@ -644,7 +632,6 @@
   }
 }
 
-/* Enhanced Scrollbar */
 .table-wrapper::-webkit-scrollbar {
   height: 8px;
 }
@@ -731,14 +718,12 @@
   }
 }
 
-// Ensure the pagination is visible
 .hr-global + .container-btn-pagina {
     display: flex !important;
     flex-direction: row;
     flex-wrap: nowrap;
 }
 
-/* FIXED: Enhanced Responsive Breakpoints */
 @media (max-width: 768px) {
   .table-header-responsive {
     flex-direction: column;
@@ -853,7 +838,6 @@
   }
 }
 
-/* FIXED: Enhanced Mobile Card View for Expandable Tables */
 @media (max-width: 1350px) {
   .desktop-only {
     display: none !important;
@@ -971,7 +955,6 @@
   }
 }
 
-/* FIXED: Enhanced Desktop Styles */
 @media (min-width: 1351px) {
   .mobile-only {
     display: none !important;
@@ -986,12 +969,6 @@
     
     .det-table-global {
       min-width: 1000px;
-      
-      // Ensure proper colors in desktop view
-      .det-tr-top-global .det-th-global {
-        //background: var(--table-header-bg) !important;
-        //color: var(--table-header-color) !important;
-      }
       
       .det-tr-global {
         .det-td-vendas-global {
@@ -1008,7 +985,6 @@
   }
 }
 
-/* Enhanced Animations */
 @keyframes slideDown {
   from {
     opacity: 0;
@@ -1031,37 +1007,31 @@
   }
 }
 
-/* Enhanced Loading States */
 .spinner-border {
   border-width: 2px;
   animation-duration: 0.75s;
 }
 
-/* Enhanced Accessibility */
 button:focus-visible {
   outline: 3px solid var(--primary-color);
   outline-offset: 2px;
   border-radius: 0.25rem;
 }
 
-/* Enhanced Empty States */
 .det-td-vendas-global:empty::before {
   content: "-";
   color: var(--text-muted);
   opacity: 0.6;
 }
 
-/* Enhanced Hover Effects */
 @media (hover: hover) {
   .mobile-card:hover {
     box-shadow: var(--card-shadow-hover);
-    //transform: translateY(-2px);
   }
   
   .det-tr-global.row-pluggy:hover {
     color: white !important;
     background-color: var(--primary-color) !important;
-    //transform: translateY(-1px);
     
     .det-td-vendas-global {
       color: white !important;
@@ -1074,7 +1044,6 @@ button:focus-visible {
   }
 }
 
-/* Enhanced Typography Hierarchy */
 .mobile-header {
   font-size: 1.25rem !important;
   font-weight: 700 !important;
@@ -1088,7 +1057,6 @@ button:focus-visible {
   color: var(--text-primary) !important;
 }
 
-/* Enhanced Responsive Spacing */
 @media (max-width: 480px) {
   .mobile-card {
     padding: 1rem;
@@ -1142,7 +1110,6 @@ button:focus-visible {
   }
 }
 
-/* FIXED: Force proper text colors in all states */
 .det-td-vendas-global,
 .det-th-global,
 .card-col span,

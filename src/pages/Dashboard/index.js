@@ -370,7 +370,7 @@ const Dashboard = () => {
           cursor: 'pointer'
         }}
       >
-        <FiHelpCircle size={24} />
+        <FiHelpCircle />
       </button>
     </>  
   );

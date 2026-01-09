@@ -18,7 +18,6 @@
     color: rgb(143, 143, 143) !important;
 }
 
-// Custom tabs container
 .custom-tabs-container {
   border-bottom: 2px solid #e9ecef;
   margin-bottom: 1rem;
@@ -76,7 +75,6 @@
   }
 }
 
-// Animation for tab indicator
 .custom-tab-button {
   &::after {
     transition: all 0.3s ease;
@@ -94,7 +92,6 @@
   width: 100%;
 }
 
-// Mobile Styles
 @media (max-width: 1350px) {
   .desktop-only {
     display: none !important;
@@ -262,7 +259,6 @@
     }
   }
   
-  // Mobile table improvements
   .mobile-padding {
     padding: 1rem !important;
   }
@@ -296,13 +292,11 @@
     }
   }
   
-  // Hide desktop tabs on mobile
   .custom-tabs-container {
     display: none;
   }
 }
 
-// Desktop Styles
 @media (min-width: 1351px) {
   .mobile-only {
     display: none !important;
@@ -312,7 +306,6 @@
     display: block;
   }
   
-  // Ensure table is scrollable on smaller desktop screens
   .vendas-view {
     overflow-x: auto;
     
@@ -322,19 +315,15 @@
   }
 }
 
-// Animation for expanding content
 @keyframes slideDown {
   from {
     opacity: 0;
-    //transform: translateY(-10px);
   }
   to {
     opacity: 1;
-    //transform: translateY(0);
   }
 }
 
-// Ensure proper transitions
 .det-tr-global,
 .mobile-card,
 .custom-tab-button,
@@ -342,7 +331,6 @@
   transition: all 0.2s ease;
 }
 
-// Touch feedback
 .touch-feedback {
   &:active {
     transform: scale(0.98);
@@ -351,23 +339,19 @@
   }
 }
 
-// Improve accessibility
 button:focus-visible {
   outline: 2px solid var(--primary-color);
   outline-offset: 2px;
 }
 
-// Loading states
 .spinner-border {
   border-width: 2px;
 }
 
-// Ensure text contrast
 .value, .label, .mobile-header, .mobile-subheader {
   color: var(--font-color);
 }
 
-// Responsive typography
 @media (max-width: 1350px) {
   .mobile-card {
     padding: 1rem;
@@ -392,11 +376,9 @@ button:focus-visible {
   }
 }
 
-// Hover effects for desktop
 @media (hover: hover) {
   .mobile-card:hover {
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    //transform: translateY(-2px);
   }
   
   .custom-tab-button:hover:not(.custom-tab-active) {

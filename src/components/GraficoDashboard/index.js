@@ -28,7 +28,6 @@ ChartJS.register(
   LineElement
 );
 
-// Global color pool and mapping
 const colorPool = [
   'rgb(244, 67, 54)', 'rgb(76, 175, 80)', 'rgb(33, 150, 243)', 'rgb(255, 152, 0)',
   'rgb(156, 39, 176)', 'rgb(0, 188, 212)', 'rgb(63, 81, 181)', 'rgb(139, 195, 74)',
@@ -38,7 +37,6 @@ const colorPool = [
 const labelColorMap = new Map();
 let colorIndex = 0;
 
-// Function to assign colors in order
 const assignColor = (label) => {
   if (!labelColorMap.has(label)) {
     labelColorMap.set(label, colorPool[colorIndex % colorPool.length]);
@@ -47,7 +45,6 @@ const assignColor = (label) => {
   return labelColorMap.get(label);
 };
 
-// Display modes configuration
 const DISPLAY_MODES = {
   PERCENTAGE: 'percentage',
   CURRENCY: 'currency',
@@ -62,7 +59,6 @@ const DISPLAY_MODE_LABELS = {
   [DISPLAY_MODES.SIMPLE]: 'Simples'
 };
 
-// Chart types configuration
 const CHART_TYPES = {
   PIE: 'pie',
   DOUGHNUT: 'doughnut',
@@ -84,7 +80,6 @@ const CHART_TYPE_ICONS = {
   [CHART_TYPES.LINE]: FiTrendingUp
 };
 
-// Helper function to get table columns based on type
 const getTableColumns = (tableType) => {
   switch (tableType) {
     case 'vendas':
@@ -154,7 +149,6 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
     }
   }, [dados]);
 
-  // Cycle through display modes
   const cycleDisplayMode = () => {
     const modes = Object.values(DISPLAY_MODES);
     const currentIndex = modes.indexOf(displayMode);
@@ -162,7 +156,6 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
     setDisplayMode(modes[nextIndex]);
   };
 
-  // Cycle through chart types
   const cycleChartType = () => {
     const types = Object.values(CHART_TYPES);
     const currentIndex = types.indexOf(chartType);
@@ -175,8 +168,7 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
       if (elements.length > 0 && arrayAdm && arrayAdm.length > 0) {
         const clickedElementIndex = elements[0].index;
         const clickedLabel = data01.labels[clickedElementIndex];
-        
-        // Find the selected admin data by matching the label
+
         const selectedAdmData = arrayAdm.find(item => item.adquirente === clickedLabel);
         
         if (selectedAdmData) {
@@ -190,7 +182,6 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
 
   const generateColors = (labels) => labels.map(assignColor);
 
-  // Format value based on display mode and return parts for styling
   const formatValueParts = (value, label, includeLabel = true) => {
     if (!value && value !== 0) return { labelPart: '', valuePart: '', fullText: '' };
     
@@ -240,7 +231,6 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
     }
   };
 
-  // Create custom legend with bold values
   const createCustomLegend = (chart) => {
     const { data } = chart;
     if (data.labels && data.labels.length && data.datasets && data.datasets.length) {
@@ -285,7 +275,7 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
           data: data01.data,
           backgroundColor: generateColors(data01.labels.slice()),
           borderWidth: 0.2,
-          // Additional properties for bar and line charts
+
           borderColor: chartType === CHART_TYPES.LINE ? generateColors(data01.labels.slice()).map(color => color.replace('rgb', 'rgba').replace(')', ', 1)')) : undefined,
           tension: chartType === CHART_TYPES.LINE ? 0.1 : undefined,
         },
@@ -335,7 +325,6 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
     },
   };
 
-  // Add specific options for different chart types
   const chartOptions = useMemo(() => {
     const options = { ...commonChartOptions };
     
@@ -398,7 +387,6 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
     return options;
   }, [chartType, displayMode, fontColor, totalAdmin]);
 
-  // Render the appropriate chart component
   const renderChart = () => {
     const chartProps = {
       data: chartData,
@@ -457,12 +445,11 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
         </div>
       )}
       
-      {/* Fixed Modal with proper columns */}
       {showAdmModal && selectedAdm && (
         <Modal onClose={() => setShowAdmModal(false)}>
           {tipo === '0' ? (
             <NewTabelaGenerica
-              array={[selectedAdm]} // Pass as array with single item
+              array={[selectedAdm]}
               tableType="vendas"
               columns={getTableColumns('vendas')}
               showFilters={false}
@@ -470,7 +457,7 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
             />
           ) : tipo === '1' ? (
             <NewTabelaGenerica
-              array={[selectedAdm]} // Pass as array with single item
+              array={[selectedAdm]}
               tableType="creditos"
               columns={getTableColumns('creditos')}
               showFilters={false}
@@ -478,7 +465,7 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
             />
           ) : tipo === '2' ? (
             <NewTabelaGenerica
-              array={[selectedAdm]} // Pass as array with single item
+              array={[selectedAdm]}
               tableType="servicos"
               columns={getTableColumns('servicos')}
               showFilters={false}

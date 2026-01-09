@@ -55,7 +55,7 @@ function Layout({ children }) {
   const [enviar, setEnviar] = useState(false)
 
   const handleSubmit = (e) => {
-    e.preventDefault() // Prevent form submission
+    e.preventDefault()
     let objTemp = { nome: nomeTemp, email: emailTemp, mensagem: mensagemTemp }
     setFormData(objTemp)
     setEnviar(true)
