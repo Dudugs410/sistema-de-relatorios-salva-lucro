@@ -4,9 +4,8 @@ import { AuthContext } from '../../contexts/auth'
 import '../../styles/global.scss'
 import './taxas.scss'
 import Select from 'react-select'
-import { FiEdit, FiPlus, FiTrash, FiX } from 'react-icons/fi'
+import { FiEdit, FiPlus, FiTrash, FiX, FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward, FiPercent, FiCreditCard, FiFlag, FiDollarSign } from 'react-icons/fi'
 import { toast } from 'react-toastify'
-import { FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward } from 'react-icons/fi'
 import ConfirmDelete from '../../components/Componente_ConfirmDelete'
 import LazyLoader from '../../components/Componente_LazyLoader/index.js'
 import Overlay from '../../components/Component_Overlay/index.js'
@@ -26,6 +25,7 @@ const Taxas = () => {
         isLoadingTaxes,
         taxesPageArray,
         setTaxesTableData,
+        exportTaxes
     } = useContext(AuthContext)
 
     const [bannersList, setBannersList] = useState([])
@@ -44,14 +44,12 @@ const Taxas = () => {
     const [clientCode, setClientCode] = useState(localStorage.getItem('clientCode'))
     const [taxesList, setTaxesList] = useState([])
 
-    const taxasComp = [
- 
-    ]
+    const taxasComp = []
 
     useEffect(() => {
         if (taxasComp && taxasComp.length > 0) {
-            const allTaxas = taxasComp.flatMap(item => item.taxas || []);
-            setTaxesTableData(allTaxas);
+            const allTaxas = taxasComp.flatMap(item => item.taxas || [])
+            setTaxesTableData(allTaxas)
         }
     }, [])
 
@@ -85,15 +83,19 @@ const Taxas = () => {
     }, [])
 
     useEffect(()=>{
-    if(taxesPageArray.length > 0){
-        exportTaxes(taxesPageArray)
-    }
+        if(taxesPageArray.length > 0){
+            exportTaxes(taxesPageArray)
+        }
     },[taxesPageArray, localStorage.getItem('currentPath')])
 
     useEffect(() => {
         if (bannersList) {
             if (bannersList.length > 0) {
-                const bannersListOptions = bannersList.map(banner => ({ value: banner.codigoBandeira, label: banner.descricaoBandeira }))
+                const bannersListOptions = bannersList.map(banner => ({ 
+                    value: banner.codigoBandeira, 
+                    label: banner.descricaoBandeira,
+                    iconType: 'flag'
+                }))
                 setBanOptions(bannersListOptions)
             }
         }
@@ -102,7 +104,11 @@ const Taxas = () => {
     useEffect(() => {
         if (adminsList) {
             if (adminsList.length > 0) {
-                const adminsListOptions = adminsList.map(admin => ({ value: admin.codigoAdquirente, label: admin.nomeAdquirente }))
+                const adminsListOptions = adminsList.map(admin => ({ 
+                    value: admin.codigoAdquirente, 
+                    label: admin.nomeAdquirente,
+                    iconType: 'creditCard'
+                }))
                 setAdmOptions(adminsListOptions)
             }
         }
@@ -111,7 +117,11 @@ const Taxas = () => {
     useEffect(() => {
         if (modsList) {
             if (modsList.length > 0) {
-                const modsListOptions = modsList.map(mod => ({ value: mod.codigoModalidade, label: mod.descricaoModalidade }))
+                const modsListOptions = modsList.map(mod => ({ 
+                    value: mod.codigoModalidade, 
+                    label: mod.descricaoModalidade,
+                    iconType: 'dollar'
+                }))
                 setModOptions(modsListOptions)
             }
         }
@@ -139,10 +149,22 @@ const Taxas = () => {
     const handleEdit = (object) => {
         setEditableTax({
             CODIGO: object.CODIGO,
-            BANDEIRA: { label: object.BADDESCRICAO, value: object.BADCODIGO },
-            ADQUIRENTE: { label: object.ADQUIRENTE.nomeAdquirente, value: object.ADQCODIGO },
+            BANDEIRA: { 
+                label: object.BADDESCRICAO, 
+                value: object.BADCODIGO,
+                iconType: 'flag'
+            },
+            ADQUIRENTE: { 
+                label: object.ADQUIRENTE.nomeAdquirente, 
+                value: object.ADQCODIGO,
+                iconType: 'creditCard'
+            },
             CLICODIGO: object.CLICODIGO,
-            MODALIDADE: { label: object.MODDESCRICAO, value: object.MODCODIGO },
+            MODALIDADE: { 
+                label: object.MODDESCRICAO, 
+                value: object.MODCODIGO,
+                iconType: 'dollar'
+            },
             TAXAPERCENTUAL: parseFloat(object.TAXAPERCENTUAL),
         })
         setIsModalEditOpen(true)
@@ -198,209 +220,164 @@ const Taxas = () => {
             }
         )
     }
-        const [currentPage, setCurrentPage] = useState(1)
-        const [itemsPerPage] = useState(15)
-    
-        useEffect(() => {
-            setCurrentPage(1)
-        }, [taxesList])
-    
-        // Change page functions
-        const goToPrevPage = () => {
-            setCurrentPage((prevPage) => Math.max(prevPage - 1, 1)) // Decrease page by 1, minimum page is 1
-        }
-    
-        const goToNextPage = () => {
-            setCurrentPage((prevPage) => Math.min(prevPage + 1, Math.ceil(taxesList.length / itemsPerPage))) // Increase page by 1, maximum page is calculated based on array length
-        }
-    
-        const goToFirstPage = () => {
-            setCurrentPage(1) // Go to the first page
-        }
-    
-        const goToLastPage = () => {
-            setCurrentPage(Math.ceil(taxesList.length / itemsPerPage)) // Go to the last page
-        }
-    
-        // Calculate indexes for pagination
-        const indexOfLastItem = currentPage * itemsPerPage
-        const indexOfFirstItem = indexOfLastItem - itemsPerPage
-        const currentItems = taxesList.slice(indexOfFirstItem, indexOfLastItem)
 
-    const TaxesTable = () => {
-
-        const [filter, setFilter] = useState('')
-        const [filteredItems, setFilteredItems] = useState([])
-        const [currentPage, setCurrentPage] = useState(1)
-        const [itemsPerPage] = useState(15) // Number of items per page
-    
-        useEffect(() => {
-            setFilteredItems(taxesList) // Initialize with all items
-        }, [taxesList])
-    
-        useEffect(() => {
-            setCurrentPage(1) // Reset page to 1 when filter changes
-            filterItems()
-        }, [filter])
-
-        // Change page functions
-        const goToPrevPage = () => {
-            setCurrentPage((prevPage) => Math.max(prevPage - 1, 1)) // Decrease page by 1, minimum page is 1
-        }
-
-        const goToNextPage = () => {
-            setCurrentPage((prevPage) => Math.min(prevPage + 1, Math.ceil(banksList.length / itemsPerPage))) // Increase page by 1, maximum page is calculated based on array length
-        }
-
-        const goToFirstPage = () => {
-            setCurrentPage(1) // Go to the first page
-        }
-
-        const goToLastPage = () => {
-            setCurrentPage(Math.ceil(filteredItems.length / itemsPerPage)) // Go to the last page
-        }
-
-        const indexOfLastItem = currentPage * itemsPerPage
-        const indexOfFirstItem = indexOfLastItem - itemsPerPage
-        const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem)
-
-       const filterItems = () => {
-            if(filter === ''){
-                setFilteredItems(taxesList)
-            } else {
-                const filtered = taxesList.filter(item =>
-                    item.BADDESCRICAO.toLowerCase().includes(filter.toLowerCase()) ||
-                    item.ADQUIRENTE.nomeAdquirente.toLowerCase().includes(filter.toLowerCase()) ||
-                    item.MODDESCRICAO.toLowerCase().includes(filter.toLowerCase()) ||
-                    item.TIPOTAXA.toString().toLowerCase().includes(filter.toLowerCase()) ||
-                    item.TAXAPERCENTUAL.toString().toLowerCase().includes(filter.toLowerCase())
-                )
-                setFilteredItems(filtered)
+    // Custom styling for react-select to match SeletorCliente
+    const customStyles = {
+        control: (provided, state) => ({
+            ...provided,
+            backgroundColor: '#fff',
+            borderColor: state.isFocused ? '#99cc33' : '#d1d5db',
+            borderRadius: '8px',
+            padding: '4px 8px',
+            minHeight: '48px',
+            boxShadow: state.isFocused ? '0 0 0 3px rgba(153, 204, 51, 0.1)' : 'none',
+            '&:hover': {
+                borderColor: '#99cc33'
             }
+        }),
+        option: (provided, state) => ({
+            ...provided,
+            backgroundColor: state.isSelected ? '#99cc33' : 
+                            state.isFocused ? '#f0f7e6' : 'white',
+            color: state.isSelected ? 'white' : '#1f2937',
+            padding: '12px 16px',
+            fontSize: '14px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+        }),
+        placeholder: (provided) => ({
+            ...provided,
+            color: '#9ca3af',
+            fontSize: '14px'
+        }),
+        singleValue: (provided) => ({
+            ...provided,
+            color: '#1f2937',
+            fontSize: '14px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+        }),
+        menu: (provided) => ({
+            ...provided,
+            borderRadius: '8px',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
+            zIndex: 9999
+        }),
+        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+        dropdownIndicator: (provided) => ({
+            ...provided,
+            color: '#6b7280',
+            '&:hover': {
+                color: '#99cc33'
+            }
+        })
+    }
+
+    // Helper function to get icon component based on type
+    const getIconComponent = (iconType) => {
+        switch(iconType) {
+            case 'flag':
+                return <FiFlag size={16} />;
+            case 'creditCard':
+                return <FiCreditCard size={16} />;
+            case 'dollar':
+                return <FiDollarSign size={16} />;
+            case 'percent':
+                return <FiPercent size={16} />;
+            default:
+                return null;
         }
-
-        return (
-            <>
-                <div>
-                    <input
-                        type="text"
-                        placeholder="Digite para Filtrar..."
-                        value={filter}
-                        onChange={(e) => setFilter(e.target.value)}
-                        style={{ marginBottom: '10px' }}
-                    />
-                </div>
-                <div className='dropShadow vendas-view'>
-                    <div className='table-wrapper table-wrapper-taxes'>
-                        <table className="table table-striped table-hover table-bordered table-bancos det-table-global">
-                            <thead>
-                                <tr className='det-tr-top-global'>
-                                    <th className='det-th-global sticky-col start-col' scope="col" style={{ width: '2%', textAlign: 'center' }}>
-                                        <button data-tour="cadastrar-taxa-section" className="btn btn-primary btn-global" style={{ width: '100%' }} onClick={() => { setIsModalOpen(true) }}>
-                                            <FiPlus size={25} className="icon" />
-                                        </button>
-                                    </th>
-                                    <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Bandeira</th>
-                                    <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Adquirente</th>
-                                    <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Modalidade</th>
-                                    <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Tipo Taxa</th>
-                                    <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>% Taxa</th>
-                                    <th className='det-th-global sticky-col end-col' scope="col" style={{ width: '2%', textAlign: 'center' }}></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {currentItems.length > 0 &&
-                                    currentItems.map((object, index) => (
-                                        <tr key={index} className="det-tr-global tr-taxas">
-                                            <th data-tour="editar-taxa-section" className='sticky-col start-col' scope="row" style={{ textAlign: 'center' }} onClick={() => { handleEdit(object) }}>
-                                                <FiEdit style={{ color: "green" }}className="icon" />
-                                            </th>
-                                            <td className="det-td-vendas-global" data-label="BADDESCRICAO">{object.BADDESCRICAO}</td>
-                                            <td className="det-td-vendas-global" data-label="nomeAdquirente">{object.ADQUIRENTE.nomeAdquirente}</td>
-                                            <td className="det-td-vendas-global" data-label="MODDESCRICAO">{object.MODDESCRICAO}</td>
-                                            <td className="det-td-vendas-global" data-label="TIPOTAXA">{object.TIPOTAXA}</td>
-                                            <td className="det-td-vendas-global" data-label="TAXAPERCENTUAL">{object.TAXAPERCENTUAL} %</td>
-                                            <th data-tour="deletar-taxa-section" className='sticky-col end-col' scope="row" style={{ textAlign: 'center' }} onClick={() => handleDelete(object)}>
-                                                <FiTrash style={{ color: "red" }} className="icon" />
-                                            </th>
-                                        </tr>
-                                    ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <hr className='hr-global'/>
-                { filteredItems.length > itemsPerPage && (
-                    <div className="container-btn-pagina">
-                        <button
-                            className='btn btn-primary btn-global btn-skip'
-                            onClick={goToFirstPage}
-                            disabled={currentPage === 1} // Disable if already on the first page
-                        >
-                            <FiSkipBack />
-                        </button>
-                        <button
-                            className='btn btn-primary btn-global btn-navigate'
-                            onClick={goToPrevPage}
-                            disabled={currentPage === 1} // Disable if it's the first page
-                        >
-                            <FiChevronLeft/> {/* Left arrow */}
-                        </button>
-                        <div className='pagina-atual'>
-                            <span className='texto-paginacao'>Página </span>
-                            <span className='texto-paginacao'>{currentPage}</span>
-                        </div>
-                        <button
-                            className='btn btn-primary btn-global btn-navigate'
-                            onClick={goToNextPage}
-                            disabled={currentPage === Math.ceil(taxesList.length / itemsPerPage)} // Disable if it's the last page
-                        >
-                            <FiChevronRight/> {/* Right arrow */}
-                        </button>
-                        <button
-                            className='btn btn-primary btn-global btn-skip'
-                            onClick={goToLastPage}
-                            disabled={currentPage === Math.ceil(taxesList.length / itemsPerPage)} // Disable if already on the last page
-                        >
-                            <FiSkipForward />
-                        </button>
-                    </div>
-                )}
-                { taxesList.length > itemsPerPage ? (<hr className='hr-global'/>) : (<></>) }
-            </>
-        )
     }
 
-    const closeModal = () => {
-        setIsModalOpen(false)
-        setIsModalEditOpen(false)
+    const formatOptionLabel = ({ label, iconType }) => (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {getIconComponent(iconType)}
+            <span>{label}</span>
+        </div>
+    )
+
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1)
+    const [itemsPerPage] = useState(15)
+    const [filter, setFilter] = useState('')
+    const [filteredItems, setFilteredItems] = useState([])
+
+    useEffect(() => {
+        setFilteredItems(taxesList)
+    }, [taxesList])
+
+    useEffect(() => {
+        setCurrentPage(1)
+        if (filter === '') {
+            setFilteredItems(taxesList)
+        } else {
+            const filtered = taxesList.filter(item =>
+                item.BADDESCRICAO.toLowerCase().includes(filter.toLowerCase()) ||
+                (item.ADQUIRENTE?.nomeAdquirente || '').toLowerCase().includes(filter.toLowerCase()) ||
+                item.MODDESCRICAO.toLowerCase().includes(filter.toLowerCase()) ||
+                (item.TIPOTAXA?.toString() || '').toLowerCase().includes(filter.toLowerCase()) ||
+                (item.TAXAPERCENTUAL?.toString() || '').toLowerCase().includes(filter.toLowerCase())
+            )
+            setFilteredItems(filtered)
+        }
+    }, [filter, taxesList])
+
+    const goToPrevPage = () => {
+        setCurrentPage((prevPage) => Math.max(prevPage - 1, 1))
     }
 
-    const isObjectFullyPopulated = (obj) => {
-        return obj && Object.values(obj).every(value => value !== null && value !== 0 && value !== '' && value !== 'Selecione')
+    const goToNextPage = () => {
+        setCurrentPage((prevPage) => Math.min(prevPage + 1, Math.ceil(filteredItems.length / itemsPerPage)))
     }
 
+    const goToFirstPage = () => {
+        setCurrentPage(1)
+    }
+
+    const goToLastPage = () => {
+        setCurrentPage(Math.ceil(filteredItems.length / itemsPerPage))
+    }
+
+    const indexOfLastItem = currentPage * itemsPerPage
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage
+    const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem)
+
+    // Modal Components
     const ModalNewTax = () => {
         const [selectedCli, setSelectedCli] = useState(() => {
             const cookieValue = localStorage.getItem('selectedClient')
-            return cookieValue ? JSON.parse(cookieValue) : { label: 'Selecione', value: 0 }
+            return cookieValue ? JSON.parse(cookieValue) : null
         })
-        const [selectedBan, setSelectedBan] = useState({ label: 'Selecione', value: 0 })
-        const [selectedAdm, setSelectedAdm] = useState({ label: 'Selecione', value: 0 })
-        const [selectedMod, setSelectedMod] = useState({ label: 'Selecione', value: 0 })
+        const [selectedBan, setSelectedBan] = useState(null)
+        const [selectedAdm, setSelectedAdm] = useState(null)
+        const [selectedMod, setSelectedMod] = useState(null)
         const [tax, setTax] = useState('')
-    
-        const resetValues = () => {
-            setSelectedCli({ label: 'Selecione', value: 0 })
-            setSelectedBan({ label: 'Selecione', value: 0 })
-            setSelectedAdm({ label: 'Selecione', value: 0 })
-            setSelectedMod({ label: 'Selecione', value: 0 })
+        const [isSubmitting, setIsSubmitting] = useState(false)
+
+        const resetForm = () => {
+            setSelectedBan(null)
+            setSelectedAdm(null)
+            setSelectedMod(null)
             setTax('')
+        }
+
+        const closeModal = () => {
+            resetForm()
             setIsModalOpen(false)
         }
-    
+
         const handleSubmit = async (e) => {
             e.preventDefault()
+            
+            if (!selectedCli || !selectedBan || !selectedAdm || !selectedMod || !tax) {
+                toast.warning('Preencha todos os campos obrigatórios')
+                return
+            }
+
+            setIsSubmitting(true)
+            
             const newTaxObj = {
                 ADQCODIGO: selectedAdm.value,
                 BADCODIGO: selectedBan.value,
@@ -409,276 +386,392 @@ const Taxas = () => {
                 TAXAPERCENTUAL: parseFloat(tax),
             }
         
-            if (isObjectFullyPopulated(newTaxObj)) {
-                try {
-                    toast.dismiss()
-                    await toast.promise(addTax(newTaxObj), {
-                        pending: 'Carregando...',
-                        error: 'Erro ao adicionar Taxa',
-                    })
-                    const updatedTaxes = await loadTaxes()
-                    setTaxesList(updatedTaxes)
-                    resetValues()
-                } catch (error) {
-                    console.error('Error handling submit:', error)
-                }
-            } else {
+            try {
                 toast.dismiss()
-                toast.warning('Todos os Campos devem ser preenchidos')
+                await toast.promise(addTax(newTaxObj), {
+                    pending: 'Salvando taxa...',
+                    success: 'Taxa cadastrada com sucesso!',
+                    error: 'Erro ao cadastrar taxa'
+                })
+                const updatedTaxes = await loadTaxes()
+                setTaxesList(updatedTaxes)
+                resetForm()
+                setIsModalOpen(false)
+            } catch (error) {
+                console.error('Error handling submit:', error)
+                toast.error('Erro ao cadastrar taxa')
+            } finally {
+                setIsSubmitting(false)
             }
         }
 
+        if (!isModalOpen) return null
+
         return (
-            <div className={`modal-taxas modal ${isModalOpen ? 'modal-open' : ''}`} style={{ display: isModalOpen ? 'block' : 'none' }}>
-                <div className='header-sticky' style={{paddingTop: '0'}}>
-                    <div className='header-container-taxa'>
-                        <div className='title-container-global title-container-banco title-container-contato' style={{ marginTop: '5%' }}>
-                            <h3 className='title-global' style={{ margin: '0', height: 'auto' }}>Cadastrar Taxa</h3>
+            <div className="modal-overlay" onClick={closeModal}>
+                <div className="modal-container-taxas" onClick={(e) => e.stopPropagation()}>
+                    <div className="modal-header">
+                        <div className="modal-header-content">
+                            <FiPercent className="modal-title-icon" />
+                            <h2 className="modal-title">Cadastrar Nova Taxa</h2>
                         </div>
+                        <button className="modal-close-btn" onClick={closeModal}>
+                            <FiX size={24} />
+                        </button>
                     </div>
-                    <hr className='hr-global'/>
+
+                    <form className="modal-form" onSubmit={handleSubmit}>
+                        <div className="modal-fields">
+                            <div className="modal-field">
+                                <label className="modal-label">
+                                    <FiCreditCard className="modal-label-icon" />
+                                    Cliente/Filial
+                                </label>
+                                <Select
+                                    styles={customStyles}
+                                    options={cliOptions ? cliOptions.map(opt => ({
+                                        ...opt,
+                                        iconType: 'creditCard'
+                                    })) : []}
+                                    value={selectedCli ? {
+                                        ...selectedCli,
+                                        iconType: 'creditCard'
+                                    } : null}
+                                    formatOptionLabel={formatOptionLabel}
+                                    isDisabled={true}
+                                    menuPortalTarget={document.body}
+                                    menuPosition="fixed"
+                                />
+                            </div>
+
+                            <div className="modal-field">
+                                <label className="modal-label">
+                                    <FiCreditCard className="modal-label-icon" />
+                                    Adquirente
+                                </label>
+                                <Select
+                                    styles={customStyles}
+                                    options={admOptions}
+                                    value={selectedAdm}
+                                    onChange={setSelectedAdm}
+                                    formatOptionLabel={formatOptionLabel}
+                                    menuPortalTarget={document.body}
+                                    menuPosition="fixed"
+                                    placeholder="Selecione o adquirente..."
+                                    noOptionsMessage={() => "Nenhum adquirente disponível"}
+                                    isSearchable
+                                />
+                            </div>
+
+                            <div className="modal-field">
+                                <label className="modal-label">
+                                    <FiFlag className="modal-label-icon" />
+                                    Bandeira
+                                </label>
+                                <Select
+                                    styles={customStyles}
+                                    options={banOptions}
+                                    value={selectedBan}
+                                    onChange={setSelectedBan}
+                                    formatOptionLabel={formatOptionLabel}
+                                    menuPortalTarget={document.body}
+                                    menuPosition="fixed"
+                                    placeholder="Selecione a bandeira..."
+                                    noOptionsMessage={() => "Nenhuma bandeira disponível"}
+                                    isSearchable
+                                />
+                            </div>
+
+                            <div className="modal-field">
+                                <label className="modal-label">
+                                    <FiDollarSign className="modal-label-icon" />
+                                    Modalidade
+                                </label>
+                                <Select
+                                    styles={customStyles}
+                                    options={modOptions}
+                                    value={selectedMod}
+                                    onChange={setSelectedMod}
+                                    formatOptionLabel={formatOptionLabel}
+                                    menuPortalTarget={document.body}
+                                    menuPosition="fixed"
+                                    placeholder="Selecione a modalidade..."
+                                    noOptionsMessage={() => "Nenhuma modalidade disponível"}
+                                    isSearchable
+                                />
+                            </div>
+
+                            <div className="modal-field">
+                                <label className="modal-label">
+                                    <FiPercent className="modal-label-icon" />
+                                    Taxa (%)
+                                </label>
+                                <div className="tax-input-container">
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        min="0"
+                                        max="100"
+                                        value={tax}
+                                        onChange={(e) => {
+                                            let value = e.target.value
+                                            if (value !== '' && (parseFloat(value) < 0 || parseFloat(value) > 100)) {
+                                                toast.warning('A taxa deve estar entre 0% e 100%')
+                                                return
+                                            }
+                                            setTax(value)
+                                        }}
+                                        placeholder="0.00"
+                                        className="tax-input"
+                                    />
+                                    <span className="tax-suffix">%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="modal-actions">
+                            <button
+                                type="button"
+                                className="modal-btn modal-btn-secondary"
+                                onClick={closeModal}
+                                disabled={isSubmitting}
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                type="submit"
+                                className="modal-btn modal-btn-primary"
+                                disabled={isSubmitting || !selectedBan || !selectedAdm || !selectedMod || !tax}
+                            >
+                                {isSubmitting ? (
+                                    <>
+                                        <span className="modal-spinner" />
+                                        Salvando...
+                                    </>
+                                ) : (
+                                    <>
+                                        <FiPlus className="me-2" />
+                                        Cadastrar Taxa
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                <form className='select-container-taxas' onSubmit={handleSubmit}>
-                    <div className='form-group-taxas'>
-                        <div className='group-element-taxas'>
-                            <label className='span-picker'>Cliente</label>
-                            <Select
-                                id="cliSelect"
-                                options={cliOptions}
-                                value={selectedCli}
-                                onChange={(selected) => setSelectedCli(selected)}
-                                isDisabled={true}
-                            />
-                        </div>
-                        <div className='group-element-taxas'>
-                            <label className='span-picker'>Adquirente</label>
-                            <Select
-                                id="admSelect"
-                                options={admOptions}
-                                value={selectedAdm}
-                                onChange={(selected) => setSelectedAdm(selected)}
-                                menuPortalTarget={document.body}
-                                menuPosition="fixed"
-                                styles={{
-                                    menuPortal: base => ({ ...base, zIndex: 9999 })
-                                }}
-                            />
-                        </div>
-                    </div>
-                    <div className='form-group-taxas'>
-                        <div className='group-element-taxas'>
-                            <label className='span-picker'>Bandeira</label>
-                            <Select
-                                id="banSelect"
-                                options={banOptions}
-                                value={selectedBan}
-                                onChange={(selected) => setSelectedBan(selected)}
-                                menuPortalTarget={document.body}
-                                menuPosition="fixed"
-                                styles={{
-                                    menuPortal: base => ({ ...base, zIndex: 9999 })
-                                }}
-                            />
-                        </div>
-                        <div className='group-element-taxas'>
-                            <label className='span-picker'>Modalidade</label>
-                            <Select
-                                id="modSelect"
-                                options={modOptions}
-                                value={selectedMod}
-                                onChange={(selected) => setSelectedMod(selected)}
-                                menuPortalTarget={document.body}
-                                menuPosition="fixed"
-                                styles={{
-                                    menuPortal: base => ({ ...base, zIndex: 9999 })
-                                }}
-                            />
-                        </div>
-                    </div>
-                    <div className='group-input-taxa'>
-                        <label className='span-picker'>Taxa (%)</label>
-                        <input
-                            style={{height: '100%'}}
-                            type="number"
-                            id="taxInput"
-                            pattern="[0-9\-]*"
-                            value={tax}
-                            onChange={(e) => {
-                                const inputValue = e.target.value
-                                let formattedValue = inputValue.replace(/[^\d.]/g, '') // Remove any non-digit characters except period
-                                if (formattedValue.length === 3 && !formattedValue.includes('.')) {
-                                    // Insert a period after the first two digits
-                                    formattedValue = formattedValue.slice(0, 2) + '.' + formattedValue.slice(2)
-                                }
-                                if (formattedValue.length > 5) {
-                                    // Allow only one digit after the period
-                                    formattedValue = formattedValue.slice(0, 4)
-                                }
-                                setTax(formattedValue)
-                            }}
-                            maxLength={5} // Maximum length including the decimal point
-                        />
-                    </div>
-                    <hr className='hr-global'/>
-                    <div className='group-element-taxas'>
-                        <div className='btn-container-modal-taxas'>
-                            <button className='btn-global btn-taxas' disabled={isLoadingTaxes}>Cadastrar Taxa</button>
-                            <button className='btn btn-danger' onClick={closeModal} style={{height: '35.19px', borderRadius: '10px'}}>Voltar</button>
-                        </div>
-                    </div>
-                </form>
             </div>
         )
     }
-    
 
     const ModalEditTax = () => {
-        const [selectedBan, setSelectedBan] = useState(editableTax?.BANDEIRA || { label: 'Selecione', value: 0 })
-        const [selectedAdm, setSelectedAdm] = useState(editableTax?.ADQUIRENTE || { label: 'Selecione', value: 0 })
-        const [selectedMod, setSelectedMod] = useState(editableTax?.MODALIDADE || { label: 'Selecione', value: 0 })
-        const [tax, setTax] = useState(editableTax?.TAXAPERCENTUAL || '')
-    
-        const resetValues = () => {
-            setSelectedBan({ label: 'Selecione', value: 0 })
-            setSelectedAdm({ label: 'Selecione', value: 0 })
-            setSelectedMod({ label: 'Selecione', value: 0 })
-            setTax('')
+        const [selectedBan, setSelectedBan] = useState(editableTax?.BANDEIRA || null)
+        const [selectedAdm, setSelectedAdm] = useState(editableTax?.ADQUIRENTE || null)
+        const [selectedMod, setSelectedMod] = useState(editableTax?.MODALIDADE || null)
+        const [tax, setTax] = useState(editableTax?.TAXAPERCENTUAL?.toString() || '')
+        const [isSubmitting, setIsSubmitting] = useState(false)
+
+        const closeModal = () => {
             setIsModalEditOpen(false)
         }
-    
+
         const handleEditTax = async (e) => {
             e.preventDefault()
-            if (isObjectFullyPopulated({ selectedBan, selectedAdm, selectedMod, tax })) {
-                const updatedTax = {
-                    CODIGO: editableTax.CODIGO,
-                    BADCODIGO: selectedBan.value,
-                    ADQCODIGO: selectedAdm.value,
-                    CLICODIGO: editableTax.CLICODIGO,
-                    MODCODIGO: selectedMod.value,
-                    TAXAPERCENTUAL: parseFloat(tax)
-                }
-                try {
-                    await editTax(updatedTax)
-                    const response = await loadTaxes()
-                    setTaxesList(response)
-                    resetValues()
-                } catch (error) {
-                    console.error('Erro ao editar taxa:', error)
-                }
-            } else {
-                toast.dismiss()
-                toast.error('Preencha todos os campos obrigatórios')
+            
+            if (!selectedBan || !selectedAdm || !selectedMod || !tax) {
+                toast.warning('Preencha todos os campos obrigatórios')
+                return
+            }
+
+            setIsSubmitting(true)
+            
+            const updatedTax = {
+                CODIGO: editableTax.CODIGO,
+                BADCODIGO: selectedBan.value,
+                ADQCODIGO: selectedAdm.value,
+                CLICODIGO: editableTax.CLICODIGO,
+                MODCODIGO: selectedMod.value,
+                TAXAPERCENTUAL: parseFloat(tax)
+            }
+            
+            try {
+                await toast.promise(editTax(updatedTax), {
+                    pending: 'Atualizando taxa...',
+                    success: 'Taxa atualizada com sucesso!',
+                    error: 'Erro ao atualizar taxa'
+                })
+                const response = await loadTaxes()
+                setTaxesList(response)
+                closeModal()
+            } catch (error) {
+                console.error('Erro ao editar taxa:', error)
+                toast.error('Erro ao atualizar taxa')
+            } finally {
+                setIsSubmitting(false)
             }
         }
-    
-        const handleBan = (selected) => {
-            setSelectedBan(selected)
-        }
-    
-        const handleAdq = (selected) => {
-            setSelectedAdm(selected)
-        }
-    
-        const handleMod = (selected) => {
-            setSelectedMod(selected)
-        }
-    
+
+        if (!isModalEditOpen) return null
+
         return (
-            <div className={`modal-taxas modal ${isModalEditOpen ? 'modal-open' : ''}`} style={{ display: isModalEditOpen ? 'block' : 'none' }}>
-                <div className='header-sticky' style={{paddingTop: '0'}}>
-                    <div className='header-container-taxa'>
-                        <div className='title-container-global title-container-banco title-container-contato' style={{ marginTop: '5%' }}>
-                            <h3 className='title-global' style={{ margin: '0', height: 'auto' }}>Cadastrar Taxa</h3>
+            <div className="modal-overlay" onClick={closeModal}>
+                <div className="modal-container-taxas" onClick={(e) => e.stopPropagation()}>
+                    <div className="modal-header">
+                        <div className="modal-header-content">
+                            <FiEdit className="modal-title-icon" />
+                            <h2 className="modal-title">Editar Taxa</h2>
                         </div>
+                        <button className="modal-close-btn" onClick={closeModal}>
+                            <FiX size={24} />
+                        </button>
                     </div>
-                    <hr className='hr-global'/>
+
+                    <form className="modal-form" onSubmit={handleEditTax}>
+                        <div className="modal-fields">
+                            <div className="modal-field">
+                                <label className="modal-label">
+                                    <FiCreditCard className="modal-label-icon" />
+                                    Cliente/Filial
+                                </label>
+                                <Select
+                                    styles={customStyles}
+                                    options={cliOptions ? cliOptions.map(opt => ({
+                                        ...opt,
+                                        iconType: 'creditCard'
+                                    })) : []}
+                                    value={editableTax?.CLICODIGO ? {
+                                        ...(cliOptions?.find(opt => opt.value === editableTax.CLICODIGO) || {}),
+                                        iconType: 'creditCard'
+                                    } : null}
+                                    formatOptionLabel={formatOptionLabel}
+                                    isDisabled={true}
+                                    menuPortalTarget={document.body}
+                                    menuPosition="fixed"
+                                />
+                            </div>
+
+                            <div className="modal-field">
+                                <label className="modal-label">
+                                    <FiCreditCard className="modal-label-icon" />
+                                    Adquirente
+                                </label>
+                                <Select
+                                    styles={customStyles}
+                                    options={admOptions}
+                                    value={selectedAdm}
+                                    onChange={setSelectedAdm}
+                                    formatOptionLabel={formatOptionLabel}
+                                    menuPortalTarget={document.body}
+                                    menuPosition="fixed"
+                                    placeholder="Selecione o adquirente..."
+                                    noOptionsMessage={() => "Nenhum adquirente disponível"}
+                                    isSearchable
+                                />
+                            </div>
+
+                            <div className="modal-field">
+                                <label className="modal-label">
+                                    <FiFlag className="modal-label-icon" />
+                                    Bandeira
+                                </label>
+                                <Select
+                                    styles={customStyles}
+                                    options={banOptions}
+                                    value={selectedBan}
+                                    onChange={setSelectedBan}
+                                    formatOptionLabel={formatOptionLabel}
+                                    menuPortalTarget={document.body}
+                                    menuPosition="fixed"
+                                    placeholder="Selecione a bandeira..."
+                                    noOptionsMessage={() => "Nenhuma bandeira disponível"}
+                                    isSearchable
+                                />
+                            </div>
+
+                            <div className="modal-field">
+                                <label className="modal-label">
+                                    <FiDollarSign className="modal-label-icon" />
+                                    Modalidade
+                                </label>
+                                <Select
+                                    styles={customStyles}
+                                    options={modOptions}
+                                    value={selectedMod}
+                                    onChange={setSelectedMod}
+                                    formatOptionLabel={formatOptionLabel}
+                                    menuPortalTarget={document.body}
+                                    menuPosition="fixed"
+                                    placeholder="Selecione a modalidade..."
+                                    noOptionsMessage={() => "Nenhuma modalidade disponível"}
+                                    isSearchable
+                                />
+                            </div>
+
+                            <div className="modal-field">
+                                <label className="modal-label">
+                                    <FiPercent className="modal-label-icon" />
+                                    Taxa (%)
+                                </label>
+                                <div className="tax-input-container">
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        min="0"
+                                        max="100"
+                                        value={tax}
+                                        onChange={(e) => {
+                                            let value = e.target.value
+                                            if (value !== '' && (parseFloat(value) < 0 || parseFloat(value) > 100)) {
+                                                toast.warning('A taxa deve estar entre 0% e 100%')
+                                                return
+                                            }
+                                            setTax(value)
+                                        }}
+                                        placeholder="0.00"
+                                        className="tax-input"
+                                    />
+                                    <span className="tax-suffix">%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="modal-actions">
+                            <button
+                                type="button"
+                                className="modal-btn modal-btn-secondary"
+                                onClick={closeModal}
+                                disabled={isSubmitting}
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                type="submit"
+                                className="modal-btn modal-btn-primary"
+                                disabled={isSubmitting || !selectedBan || !selectedAdm || !selectedMod || !tax}
+                            >
+                                {isSubmitting ? (
+                                    <>
+                                        <span className="modal-spinner" />
+                                        Atualizando...
+                                    </>
+                                ) : (
+                                    <>
+                                        <FiEdit className="me-2" />
+                                        Atualizar Taxa
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                <form className='select-container-taxas' onSubmit={handleEditTax}>
-                    <div className='form-group-taxas'>
-                        <div className='group-element-taxas'>
-                            <label className='span-picker'>Adquirente</label>
-                            <Select
-                                id="admSelectEdit"
-                                options={admOptions}
-                                value={selectedAdm}
-                                onChange={handleAdq}
-                                menuPortalTarget={document.body}
-                                menuPosition="fixed"
-                                styles={{
-                                    menuPortal: base => ({ ...base, zIndex: 9999 })
-                                }}
-                            />
-                        </div>
-                        <div className='group-element-taxas'>
-                            <label className='span-picker'>Bandeira</label>
-                            <Select
-                                id="banSelectEdit"
-                                options={banOptions}
-                                value={selectedBan}
-                                onChange={handleBan}
-                                menuPortalTarget={document.body}
-                                menuPosition="fixed"
-                                styles={{
-                                    menuPortal: base => ({ ...base, zIndex: 9999 })
-                                }}
-                            />
-                        </div>
-                    </div>
-                    <div className='form-group-taxas'>
-                        <div className='group-element-taxas'>
-                            <label className='span-picker'>Modalidade</label>
-                            <Select
-                                id="modSelectEdit"
-                                options={modOptions}
-                                value={selectedMod}
-                                onChange={handleMod}
-                                menuPortalTarget={document.body}
-                                menuPosition="fixed"
-                                styles={{
-                                    menuPortal: base => ({ ...base, zIndex: 9999 })
-                                }}
-                            />
-                        </div>
-                        <div className='group-input-taxa'>
-                            <label className='span-picker'>Taxa (%)</label>
-                            <input
-                                style={{height: '100%'}}
-                                type="number"
-                                id="taxInput"
-                                pattern="[0-9\-]*"
-                                value={tax}
-                                onChange={(e) => {
-                                const inputValue = e.target.value
-                                let formattedValue = inputValue.replace(/[^\d.]/g, '') // Remove any non-digit characters except period
-                                if (formattedValue.length === 3 && !formattedValue.includes('.')) {
-                                    // Insert a period after the first two digits
-                                    formattedValue = formattedValue.slice(0, 2) + '.' + formattedValue.slice(2)
-                                }
-                                if (formattedValue.length > 5) {
-                                    // Allow only one digit after the period
-                                    formattedValue = formattedValue.slice(0, 4)
-                                }
-                                setTax(formattedValue)
-                            }}
-                            maxLength={5} // Maximum length including the decimal point
-                            />
-                        </div>
-                    </div>
-                    <hr className='hr-global'/>
-                    <div className='group-element-taxas'>
-                        <div className='btn-container-modal-taxas'>
-                            <button className='btn-global btn-taxas' disabled={isLoadingTaxes}>Atualizar Taxa</button>
-                            <button className='btn btn-danger' onClick={closeModal} style={{height: '35.19px', borderRadius: '10px'}}>Voltar</button>
-                        </div>
-                    </div>
-                </form>
             </div>
         )
     }
-    
+
     return (
         <div className='appPage'>
             <Overlay isVisible={isOverlayVisible}/>
+            <ModalNewTax />
+            <ModalEditTax />
+            
             <div className='page-background-global'>
                 <div className='page-content-global'>
                     <div className='page-content-taxas'>
@@ -708,26 +801,118 @@ const Taxas = () => {
                             }
                         </div>
                     </div>
-                        {
-                            isLoadingTaxes ? (
-                                <LazyLoader />
-                            ) : taxesList && taxesList.length > 0 ? (
+                    
+                    {isLoadingTaxes ? (
+                        <LazyLoader />
+                    ) : taxesList && taxesList.length > 0 ? (
+                        <>
+                            <div style={{ marginBottom: '20px' }}>
+                                <input
+                                    type="text"
+                                    placeholder="Filtrar por bandeira, adquirente, modalidade ou taxa..."
+                                    value={filter}
+                                    onChange={(e) => setFilter(e.target.value)}
+                                    className="filter-input"
+                                    style={{
+                                        width: '100%',
+                                        padding: '12px 16px',
+                                        border: '1px solid #d1d5db',
+                                        borderRadius: '8px',
+                                        fontSize: '14px'
+                                    }}
+                                />
+                            </div>
+                            
+                            <div className='dropShadow vendas-view'>
+                                <div className='table-wrapper table-wrapper-taxes'>
+                                    <table className="table table-striped table-hover table-bordered table-bancos det-table-global">
+                                        <thead>
+                                            <tr className='det-tr-top-global'>
+                                                <th className='det-th-global sticky-col start-col' scope="col" style={{ width: '2%', textAlign: 'center' }}>
+                                                    <button data-tour="cadastrar-taxa-section" className="btn btn-primary btn-global" style={{ width: '100%' }} onClick={() => { setIsModalOpen(true) }}>
+                                                        <FiPlus size={25} className="icon" />
+                                                    </button>
+                                                </th>
+                                                <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Bandeira</th>
+                                                <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Adquirente</th>
+                                                <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Modalidade</th>
+                                                <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Tipo Taxa</th>
+                                                <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>% Taxa</th>
+                                                <th className='det-th-global sticky-col end-col' scope="col" style={{ width: '2%', textAlign: 'center' }}></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {currentItems.length > 0 &&
+                                                currentItems.map((object, index) => (
+                                                    <tr key={index} className="det-tr-global tr-taxas">
+                                                        <th data-tour="editar-taxa-section" className='sticky-col start-col' scope="row" style={{ textAlign: 'center', cursor: 'pointer' }} onClick={() => { handleEdit(object) }}>
+                                                            <FiEdit style={{ color: "green" }} className="icon" />
+                                                        </th>
+                                                        <td className="det-td-vendas-global" data-label="BADDESCRICAO">{object.BADDESCRICAO}</td>
+                                                        <td className="det-td-vendas-global" data-label="nomeAdquirente">{object.ADQUIRENTE?.nomeAdquirente || 'N/A'}</td>
+                                                        <td className="det-td-vendas-global" data-label="MODDESCRICAO">{object.MODDESCRICAO}</td>
+                                                        <td className="det-td-vendas-global" data-label="TIPOTAXA">{object.TIPOTAXA || 'N/A'}</td>
+                                                        <td className="det-td-vendas-global" data-label="TAXAPERCENTUAL">{object.TAXAPERCENTUAL} %</td>
+                                                        <th data-tour="deletar-taxa-section" className='sticky-col end-col' scope="row" style={{ textAlign: 'center', cursor: 'pointer' }} onClick={() => handleDelete(object)}>
+                                                            <FiTrash style={{ color: "red" }} className="icon" />
+                                                        </th>
+                                                    </tr>
+                                                ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            {filteredItems.length > itemsPerPage && (
                                 <>
-                                    <TaxesTable />
-                                    {taxasComp && taxasComp.length > 0 ? (
-                                        <TabelaCompTaxas array={taxasComp} />
-                                    ) : (
-                                        <div style={{width: '100%'}}>
-                                            <div className='subtitle-global text-global'>Sem dados de comparativo de taxas a serem exibidos ( <b style={{'color': 'orange'}}>Funcionalidade em Desenvolvimento</b> )</div>
+                                    <hr className='hr-global'/>
+                                    <div className="container-btn-pagina">
+                                        <button
+                                            className='btn btn-primary btn-global btn-skip'
+                                            onClick={goToFirstPage}
+                                            disabled={currentPage === 1}
+                                        >
+                                            <FiSkipBack />
+                                        </button>
+                                        <button
+                                            className='btn btn-primary btn-global btn-navigate'
+                                            onClick={goToPrevPage}
+                                            disabled={currentPage === 1}
+                                        >
+                                            <FiChevronLeft/>
+                                        </button>
+                                        <div className='pagina-atual'>
+                                            <span className='texto-paginacao'>Página </span>
+                                            <span className='texto-paginacao'>{currentPage} de {Math.ceil(filteredItems.length / itemsPerPage)}</span>
                                         </div>
-                                    )}
+                                        <button
+                                            className='btn btn-primary btn-global btn-navigate'
+                                            onClick={goToNextPage}
+                                            disabled={currentPage === Math.ceil(filteredItems.length / itemsPerPage)}
+                                        >
+                                            <FiChevronRight/>
+                                        </button>
+                                        <button
+                                            className='btn btn-primary btn-global btn-skip'
+                                            onClick={goToLastPage}
+                                            disabled={currentPage === Math.ceil(filteredItems.length / itemsPerPage)}
+                                        >
+                                            <FiSkipForward />
+                                        </button>
+                                    </div>
+                                    <hr className='hr-global'/>
                                 </>
-                            ) : null
-                        }
-                    <div className='modal-container' style={{ display: (isModalOpen || isModalEditOpen) ? 'block' : 'none' }}>
-                        <ModalNewTax />
-                        <ModalEditTax />
-                    </div>
+                            )}
+                            
+                            {taxasComp && taxasComp.length > 0 ? (
+                                <TabelaCompTaxas array={taxasComp} />
+                            ) : (
+                                <div style={{width: '100%'}}>
+                                    <div className='subtitle-global text-global'>Sem dados de comparativo de taxas a serem exibidos ( <b style={{'color': 'orange'}}>Funcionalidade em Desenvolvimento</b> )</div>
+                                </div>
+                            )}
+                        </>
+                    ) : null}
                 </div>
             </div>
         </div>

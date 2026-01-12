@@ -191,8 +191,8 @@ const handleCheckboxChangeCalendar = () => {
 
   return(
     <div className='appPage'>
-      <div className='page-vendas-background'>
-        <div className='page-content-vendas'>
+      <div className='page-background-global'>
+        <div className='page-content-global'>
           <div className='vendas-title-container'>
             <h1 className='vendas-title'>Calendário de Vendas</h1>
           </div>
