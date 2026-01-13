@@ -221,60 +221,6 @@ const Taxas = () => {
         )
     }
 
-    // Custom styling for react-select to match SeletorCliente
-    const customStyles = {
-        control: (provided, state) => ({
-            ...provided,
-            backgroundColor: '#fff',
-            borderColor: state.isFocused ? '#99cc33' : '#d1d5db',
-            borderRadius: '8px',
-            padding: '4px 8px',
-            minHeight: '48px',
-            boxShadow: state.isFocused ? '0 0 0 3px rgba(153, 204, 51, 0.1)' : 'none',
-            '&:hover': {
-                borderColor: '#99cc33'
-            }
-        }),
-        option: (provided, state) => ({
-            ...provided,
-            backgroundColor: state.isSelected ? '#99cc33' : 
-                            state.isFocused ? '#f0f7e6' : 'white',
-            color: state.isSelected ? 'white' : '#1f2937',
-            padding: '12px 16px',
-            fontSize: '14px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-        }),
-        placeholder: (provided) => ({
-            ...provided,
-            color: '#9ca3af',
-            fontSize: '14px'
-        }),
-        singleValue: (provided) => ({
-            ...provided,
-            color: '#1f2937',
-            fontSize: '14px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-        }),
-        menu: (provided) => ({
-            ...provided,
-            borderRadius: '8px',
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
-            zIndex: 9999
-        }),
-        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-        dropdownIndicator: (provided) => ({
-            ...provided,
-            color: '#6b7280',
-            '&:hover': {
-                color: '#99cc33'
-            }
-        })
-    }
-
     // Helper function to get icon component based on type
     const getIconComponent = (iconType) => {
         switch(iconType) {
@@ -823,9 +769,9 @@ const Taxas = () => {
                                 />
                             </div>
                             
-                            <div className='dropShadow vendas-view'>
+                            <div className='dropShadow vendas-view' style={{ overflow: 'hidden' }}>
                                 <div className='table-wrapper table-wrapper-taxes'>
-                                    <table className="table table-striped table-hover table-bordered table-bancos det-table-global">
+                                    <table className="table table-striped table-hover table-bordered table-bancos det-table-global table-taxas">
                                         <thead>
                                             <tr className='det-tr-top-global'>
                                                 <th className='det-th-global sticky-col start-col' scope="col" style={{ width: '2%', textAlign: 'center' }}>
@@ -848,11 +794,11 @@ const Taxas = () => {
                                                         <th data-tour="editar-taxa-section" className='sticky-col start-col' scope="row" style={{ textAlign: 'center', cursor: 'pointer' }} onClick={() => { handleEdit(object) }}>
                                                             <FiEdit style={{ color: "green" }} className="icon" />
                                                         </th>
-                                                        <td className="det-td-vendas-global" data-label="BADDESCRICAO">{object.BADDESCRICAO}</td>
-                                                        <td className="det-td-vendas-global" data-label="nomeAdquirente">{object.ADQUIRENTE?.nomeAdquirente || 'N/A'}</td>
-                                                        <td className="det-td-vendas-global" data-label="MODDESCRICAO">{object.MODDESCRICAO}</td>
-                                                        <td className="det-td-vendas-global" data-label="TIPOTAXA">{object.TIPOTAXA || 'N/A'}</td>
-                                                        <td className="det-td-vendas-global" data-label="TAXAPERCENTUAL">{object.TAXAPERCENTUAL} %</td>
+                                                        <td className="det-td-vendas-global">{object.BADDESCRICAO}</td>
+                                                        <td className="det-td-vendas-global">{object.ADQUIRENTE?.nomeAdquirente || 'N/A'}</td>
+                                                        <td className="det-td-vendas-global">{object.MODDESCRICAO}</td>
+                                                        <td className="det-td-vendas-global">{object.TIPOTAXA || 'N/A'}</td>
+                                                        <td className="det-td-vendas-global">{object.TAXAPERCENTUAL} %</td>
                                                         <th data-tour="deletar-taxa-section" className='sticky-col end-col' scope="row" style={{ textAlign: 'center', cursor: 'pointer' }} onClick={() => handleDelete(object)}>
                                                             <FiTrash style={{ color: "red" }} className="icon" />
                                                         </th>
