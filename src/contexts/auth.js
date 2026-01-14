@@ -1466,14 +1466,40 @@ const loadDashboard = async () => {
   setIsLoadedCreditsDashboard(false);
   setIsLoadedServicesDashboard(false);
   setIsLoadedDashboard(false);
+
+  const apiCNPJ = localStorage.getItem('cnpj')
   
+  let dashboardData
+
   try {
     if (!fetchingData) {
       setFetchingData(true);
     }
     
-    // API call here api.get('/dashboard')
-    const mockData = mockDashboard
+    if((apiCNPJ !== 'todos') && (apiCNPJ !== 'TODOS') && (apiCNPJ !== 'Todos')){
+      const params = {
+        cnpj: apiCNPJ,
+      }
+
+      let config = {
+        params,
+      }
+      const response = await api.get('dashboard', config)
+      dashboardData = response.data // Changed from response to response.data
+    } else if ((apiCNPJ === 'todos') || (apiCNPJ === 'TODOS') || (apiCNPJ === 'Todos')){
+      const params = {
+        usuario: localStorage.getItem('userID'),
+      }
+
+      let config = {
+        params,
+      }
+      const response = await api.get('dashboard', config)
+      dashboardData = response.data // Changed from response to response.data
+    }
+    
+    // Transform API data to match the expected structure
+    const transformedData = transformApiData(dashboardData);
     
     const transformAdquirentesForChart = (adquirentesArray) => {
       const labels = []
@@ -1487,48 +1513,48 @@ const loadDashboard = async () => {
       return { labels, data }
     }
     
-    const vendasChartData = transformAdquirentesForChart(mockData.vendas.totalAdquirentes);
-    const creditsChartData = transformAdquirentesForChart(mockData.creditos.totalAdquirentes);
-    const ajustesChartData = transformAdquirentesForChart(mockData.ajustes.totalAdquirentes);
+    const vendasChartData = transformAdquirentesForChart(transformedData.vendas.totalAdquirentes); // Using transformedData
+    const creditsChartData = transformAdquirentesForChart(transformedData.creditos.totalAdquirentes); // Using transformedData
+    const ajustesChartData = transformAdquirentesForChart(transformedData.ajustes.totalAdquirentes); // Using transformedData
     
-    const totalVendas = mockData.vendas.totalAdquirentes.reduce((sum, item) => sum + item.valor, 0);
-    const totalCredits = mockData.creditos.totalAdquirentes.reduce((sum, item) => sum + item.valor, 0);
-    const totalAjustes = mockData.ajustes.totalAdquirentes.reduce((sum, item) => sum + item.valor, 0);
+    const totalVendas = transformedData.vendas.totalAdquirentes.reduce((sum, item) => sum + item.valor, 0); // Using transformedData
+    const totalCredits = transformedData.creditos.totalAdquirentes.reduce((sum, item) => sum + item.valor, 0); // Using transformedData
+    const totalAjustes = transformedData.ajustes.totalAdquirentes.reduce((sum, item) => sum + item.valor, 0); // Using transformedData
     
-    setDashboardData(mockData);
+    setDashboardData(transformedData); // Setting transformedData instead of raw API data
     
     setSalesDashboard({
-      totalLast4: mockData.vendas.valorTotaldias,
-      totalMonth: mockData.vendas.valorTotalMes,
+      totalLast4: transformedData.vendas.valorTotaldias, // Using transformedData
+      totalMonth: transformedData.vendas.valorTotalMes, // Using transformedData
       chart: {
         data: vendasChartData.data,
         labels: vendasChartData.labels
       },
-      sales: mockData.vendas.totalAdquirentes,
+      sales: transformedData.vendas.totalAdquirentes, // Using transformedData
       totalAdmin: totalVendas
     });
     setIsLoadedSalesDashboard(true);
     
     setCreditsDashboard({
-      totalCreditsToday: mockData.creditos.valorTotaldias,
-      totalCreditsNext5: mockData.creditos.valorTotalMes,
+      totalCreditsToday: transformedData.creditos.valorTotaldias, // Using transformedData
+      totalCreditsNext5: transformedData.creditos.valorTotalMes, // Using transformedData
       chart: {
         data: creditsChartData.data,
         labels: creditsChartData.labels
       },
-      credits: mockData.creditos.totalAdquirentes,
+      credits: transformedData.creditos.totalAdquirentes, // Using transformedData
       totalAdmin: totalCredits
     })
     setIsLoadedCreditsDashboard(true)
     
     setServicesDashboard({
-      totalServicesToday: mockData.ajustes.valorTotaldias,
-      totalServicesMonth: mockData.ajustes.valorTotalMes,
+      totalServicesToday: transformedData.ajustes.valorTotaldias, // Using transformedData
+      totalServicesMonth: transformedData.ajustes.valorTotalMes, // Using transformedData
       chart: {
         data: ajustesChartData.data,
         labels: ajustesChartData.labels
       },
-      services: mockData.ajustes.totalAdquirentes,
+      services: transformedData.ajustes.totalAdquirentes, // Using transformedData
       totalAdmin: totalAjustes
     })
     setIsLoadedServicesDashboard(true)
@@ -1537,7 +1563,7 @@ const loadDashboard = async () => {
     setChangedOption(false)
     setFetchingData(false)
     
-    return mockData
+    return transformedData // Return transformed data
   } catch (error) {
     console.log('Error in dashboard loading:', error)
     setFetchingData(false)
@@ -1547,6 +1573,56 @@ const loadDashboard = async () => {
       return
     }
   }
+}
+
+// Add the transformation function (you can place it above loadDashboard or in a separate file)
+function transformApiData(apiData) {
+  const result = {
+    vendas: {
+      valorTotaldias: apiData.vendas?.valorTotaldias || 0,
+      valorTotalMes: apiData.vendas?.valorTotalMes || 0,
+      totalAdquirentes: []
+    },
+    creditos: {
+      valorTotaldias: apiData.creditos?.valorTotaldias || 0,
+      valorTotalMes: apiData.creditos?.valorTotalMes || 0,
+      totalAdquirentes: []
+    },
+    ajustes: {
+      valorTotaldias: apiData.ajustes?.valorTotaldias || 0,
+      valorTotalMes: apiData.ajustes?.valorTotalMes || 0,
+      totalAdquirentes: []
+    }
+  };
+
+  // Transform vendas
+  if (apiData.vendas?.resumo_Adquirentes_vendas) {
+    result.vendas.totalAdquirentes = apiData.vendas.resumo_Adquirentes_vendas.map(item => ({
+      adquirente: item.adquirente,
+      valor: item.valor || 0,
+      percentual: item.percentual || 0
+    }));
+  }
+
+  // Transform creditos
+  if (apiData.creditos?.resumo_Adquirentes_recebimentos) {
+    result.creditos.totalAdquirentes = apiData.creditos.resumo_Adquirentes_recebimentos.map(item => ({
+      adquirente: item.adquirente,
+      valor: item.valor || 0,
+      percentual: item.percentual || 0
+    }));
+  }
+
+  // Transform ajustes
+  if (apiData.ajustes?.resumo_Adquirentes_ajustes) {
+    result.ajustes.totalAdquirentes = apiData.ajustes.resumo_Adquirentes_ajustes.map(item => ({
+      adquirente: item.adquirente,
+      valor: item.valor || 0,
+      percentual: item.percentual || 0
+    }));
+  }
+
+  return result;
 }
 
 useEffect(()=>{

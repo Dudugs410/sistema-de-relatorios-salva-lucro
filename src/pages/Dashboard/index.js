@@ -111,58 +111,27 @@ const Dashboard = () => {
   const DisplaySales = () => {
     return (
       <div className='graph-data'>
-        {!canceledSales ? (
           <>
-            {chartDataExists(salesDashboard.sales) ? (
-              <>
-                <PieChart 
-                  data01={salesDashboard.chart} 
-                  arrayAdm={salesDashboard.sales} 
-                  totalAdmin={salesDashboard.totalAdmin}
-                  tipo='0' 
-                  dados='vendas'
-                />
-                <div className='dash-table-container'>
-                  <TabelaHorizontal 
-                    header='Total Últimos 4 dias' 
-                    valor={salesDashboard.totalLast4} 
-                    isCurrency={true}
-                  />
-                  <TabelaHorizontal 
-                    header='Total do Mês' 
-                    valor={salesDashboard.totalMonth} 
-                    isCurrency={true}
-                  /> 
-                </div>
-              </>
-            ) : (
-              <div>
-                {errorSales || salesDashboard.sales === null ? (
-                  <div className='dash-table-container'>
-                    <h3 className='subtitle-global'>Ocorreu um erro</h3>
-                    <button className='btn btn-global' onClick={reloadSales}>
-                      Recarregar
-                    </button>
-                  </div>
-                ) : (
-                  <div className='dash-table-container'>
-                    <h3 className='subtitle-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>
-                    <button className='btn btn-global' onClick={reloadSales}>
-                      Recarregar
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
+            <PieChart 
+              data01={salesDashboard.chart} 
+              arrayAdm={salesDashboard.sales} 
+              totalAdmin={salesDashboard.totalAdmin}
+              tipo='0' 
+              dados='vendas'
+            />
+            <div className='dash-table-container'>
+              <TabelaHorizontal 
+                header='Total Últimos 4 dias' 
+                valor={salesDashboard.totalLast4} 
+                isCurrency={true}
+              />
+              <TabelaHorizontal 
+                header='Total do Mês' 
+                valor={salesDashboard.totalMonth} 
+                isCurrency={true}
+              /> 
+            </div>
           </>
-        ) : (
-          <div className='dash-table-container'>
-            <h3 className='subtitle-global'>Carregamento Cancelado</h3>
-            <button className='btn btn-global' onClick={reloadSales}>
-              Recarregar
-            </button>
-          </div>
-        )}
       </div>
     );
   };
@@ -170,120 +139,58 @@ const Dashboard = () => {
   const DisplayCredits = () => {
     return (
       <div className='graph-data'>
-        {!canceledCredits ? (
-          <>
-            {chartDataExists(creditsDashboard.credits) ? (
-              <>
-                <PieChart 
-                  data01={creditsDashboard.chart} 
-                  arrayAdm={creditsDashboard.credits} 
-                  totalAdmin={creditsDashboard.totalAdmin}
-                  tipo='1' 
-                  dados='creditos'
-                />
-                <div className='dash-table-container'>
-                  <TabelaHorizontal 
-                    header='Previsão de Hoje' 
-                    valor={creditsDashboard.totalCreditsToday} 
-                    isCurrency={true}
-                  />
-                  <TabelaHorizontal 
-                    header='Previsão Próx 5 Dias' 
-                    valor={creditsDashboard.totalCreditsNext5} 
-                    isCurrency={true}
-                  />
-                </div> 
-              </>
-            ) : (
-              <div>
-                {errorCredits ? (
-                  <div className='dash-table-container'>
-                    <h3 className='subtitle-global'>Ocorreu um erro</h3>
-                    <button className='btn btn-global' onClick={reloadCredits}>
-                      Recarregar
-                    </button>
-                  </div>
-                ) : (
-                  <div className='dash-table-container'>
-                    <h3 className='subtitle-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>
-                    <button className='btn btn-global' onClick={reloadCredits}>
-                      Recarregar
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-          </>
-        ) : (
+        <>
+          <PieChart 
+            data01={creditsDashboard.chart} 
+            arrayAdm={creditsDashboard.credits} 
+            totalAdmin={creditsDashboard.totalAdmin}
+            tipo='1' 
+            dados='creditos'
+          />
           <div className='dash-table-container'>
-            <h3 className='subtitle-global'>Carregamento Cancelado</h3>
-            <button className='btn btn-global' onClick={reloadCredits}>
-              Recarregar
-            </button>
-          </div>
-        )}
+            <TabelaHorizontal 
+              header='Previsão de Hoje' 
+              valor={creditsDashboard.totalCreditsToday} 
+              isCurrency={true}
+            />
+            <TabelaHorizontal 
+              header='Previsão Próx 5 Dias' 
+              valor={creditsDashboard.totalCreditsNext5} 
+              isCurrency={true}
+            />
+          </div> 
+        </>
       </div>
-    );
-  };
+    )
+  }
 
   const DisplayServices = () => {
     return (
       <div className='graph-data'>
-        {!canceledServices ? (
-          <>
-            {chartDataExists(servicesDashboard.services) ? (
-              <>
-                <PieChart 
-                  data01={servicesDashboard.chart} 
-                  arrayAdm={servicesDashboard.services} 
-                  totalAdmin={servicesDashboard.totalAdmin}
-                  tipo='2' 
-                  dados='servicos'
-                /> 
-                <div className='dash-table-container'>
-                  <TabelaHorizontal 
-                    header='Total de Hoje' 
-                    valor={servicesDashboard.totalServicesToday} 
-                    isCurrency={true}
-                  />
-                  <TabelaHorizontal 
-                    header='Total do Mês' 
-                    valor={servicesDashboard.totalServicesMonth} 
-                    isCurrency={true}
-                  /> 
-                </div>
-              </>
-            ) : (
-              <div>
-                {errorServices ? (
-                  <div className='dash-table-container'>
-                    <h3 className='subtitle-global'>Ocorreu um erro</h3>
-                    <button className='btn btn-global' onClick={reloadServices}>
-                      Recarregar
-                    </button>
-                  </div>
-                ) : (
-                  <div className='dash-table-container'>
-                    <h3 className='subtitle-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>
-                    <button className='btn btn-global' onClick={reloadServices}>
-                      Recarregar
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-          </>
-        ) : (
+        <>
+          <PieChart 
+            data01={servicesDashboard.chart} 
+            arrayAdm={servicesDashboard.services} 
+            totalAdmin={servicesDashboard.totalAdmin}
+            tipo='2' 
+            dados='servicos'
+          /> 
           <div className='dash-table-container'>
-            <h3 className='subtitle-global'>Carregamento Cancelado</h3>
-            <button className='btn btn-global' onClick={reloadServices}>
-              Recarregar
-            </button>
+            <TabelaHorizontal 
+              header='Total de Hoje' 
+              valor={servicesDashboard.totalServicesToday} 
+              isCurrency={true}
+            />
+            <TabelaHorizontal 
+              header='Total do Mês' 
+              valor={servicesDashboard.totalServicesMonth} 
+              isCurrency={true}
+            /> 
           </div>
-        )}
+        </>
       </div>
-    );
-  };
+    )
+  }
 
   return (
     <>

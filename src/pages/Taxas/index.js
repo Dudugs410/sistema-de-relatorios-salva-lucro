@@ -221,6 +221,60 @@ const Taxas = () => {
         )
     }
 
+    // Fixed: Correct syntax for react-select custom styles
+    const customStyles = {
+        control: (provided, state) => ({
+            ...provided,
+            backgroundColor: '#fff',
+            borderColor: state.isFocused ? '#99cc33' : '#d1d5db',
+            borderRadius: '8px',
+            padding: '4px 8px',
+            minHeight: '48px',
+            boxShadow: state.isFocused ? '0 0 0 3px rgba(153, 204, 51, 0.1)' : 'none',
+            '&:hover': {
+                borderColor: '#99cc33'
+            }
+        }),
+        option: (provided, state) => ({
+            ...provided,
+            backgroundColor: state.isSelected ? '#99cc33' : 
+                            state.isFocused ? '#f0f7e6' : 'white',
+            color: state.isSelected ? 'white' : '#1f2937',
+            padding: '12px 16px',
+            fontSize: '14px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+        }),
+        placeholder: (provided) => ({
+            ...provided,
+            color: '#9ca3af',
+            fontSize: '14px'
+        }),
+        singleValue: (provided) => ({
+            ...provided,
+            color: '#1f2937',
+            fontSize: '14px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+        }),
+        menu: (provided) => ({
+            ...provided,
+            borderRadius: '8px',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)', // Fixed: Changed from box-shadow to boxShadow
+            zIndex: 9999
+        }),
+        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+        dropdownIndicator: (provided) => ({
+            ...provided,
+            color: '#6b7280',
+            '&:hover': {
+                color: '#99cc33'
+            }
+        })
+    }
+
     // Helper function to get icon component based on type
     const getIconComponent = (iconType) => {
         switch(iconType) {
