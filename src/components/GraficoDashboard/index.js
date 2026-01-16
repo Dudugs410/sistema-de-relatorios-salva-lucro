@@ -445,6 +445,7 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
         </div>
       )}
       
+{/*
       {showAdmModal && selectedAdm && (
         <Modal onClose={() => setShowAdmModal(false)}>
           {tipo === '0' ? (
@@ -481,6 +482,7 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
           )}
         </Modal>
       )}
+*/}
     </div>
   );
 };
