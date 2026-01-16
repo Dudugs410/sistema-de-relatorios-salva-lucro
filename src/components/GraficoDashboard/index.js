@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import { 
   Chart as ChartJS, 
   ArcElement, 
@@ -120,6 +120,9 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
   );
   const [displayMode, setDisplayMode] = useState(DISPLAY_MODES.BOTH);
   const [chartType, setChartType] = useState(CHART_TYPES.PIE);
+  const [legendItems, setLegendItems] = useState([]);
+  const [originalDataOrder, setOriginalDataOrder] = useState([]); // Store original order for chart
+  const chartRef = useRef(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -149,6 +152,47 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
     }
   }, [dados]);
 
+  // Initialize legend when data changes - SORTED ALPHABETICALLY
+  useEffect(() => {
+    if (data01 && data01.labels && data01.data && data01.labels.length > 0) {
+      // Create an array of indices and sort them based on label
+      const indices = data01.labels.map((_, index) => index);
+      const sortedIndices = [...indices].sort((a, b) => {
+        const labelA = data01.labels[a].toLowerCase();
+        const labelB = data01.labels[b].toLowerCase();
+        return labelA.localeCompare(labelB);
+      });
+      
+      // Store original order for chart data
+      setOriginalDataOrder(sortedIndices);
+      
+      // Create sorted legend items
+      const sortedLegendItems = sortedIndices.map((originalIndex, sortedIndex) => {
+        const label = data01.labels[originalIndex];
+        const value = data01.data[originalIndex];
+        const { labelPart, valuePart, fullText } = formatValueParts(value, label, true);
+        const color = assignColor(label);
+        
+        return {
+          text: fullText,
+          labelPart,
+          valuePart,
+          color,
+          hidden: false,
+          originalIndex, // Store original index for chart interaction
+          sortedIndex, // Store sorted position
+          label,
+          value,
+        };
+      });
+      
+      setLegendItems(sortedLegendItems);
+    } else {
+      setLegendItems([]);
+      setOriginalDataOrder([]);
+    }
+  }, [data01, displayMode, totalAdmin]);
+
   const cycleDisplayMode = () => {
     const modes = Object.values(DISPLAY_MODES);
     const currentIndex = modes.indexOf(displayMode);
@@ -167,7 +211,10 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
     (event, elements) => {
       if (elements.length > 0 && arrayAdm && arrayAdm.length > 0) {
         const clickedElementIndex = elements[0].index;
-        const clickedLabel = data01.labels[clickedElementIndex];
+        
+        // Find the original label from the clicked element index
+        const originalIndex = originalDataOrder[clickedElementIndex];
+        const clickedLabel = data01.labels[originalIndex];
 
         const selectedAdmData = arrayAdm.find(item => item.adquirente === clickedLabel);
         
@@ -177,7 +224,7 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
         }
       }
     },
-    [arrayAdm, data01?.labels]
+    [arrayAdm, data01?.labels, originalDataOrder]
   );
 
   const generateColors = (labels) => labels.map(assignColor);
@@ -231,27 +278,29 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
     }
   };
 
-  const createCustomLegend = (chart) => {
-    const { data } = chart;
-    if (data.labels && data.labels.length && data.datasets && data.datasets.length) {
-      return data.labels.map((label, index) => {
-        const value = data.datasets[0].data[index];
-        const datasetMeta = chart.getDatasetMeta(0);
-        const { labelPart, valuePart } = formatValueParts(value, label, true);
+  const handleLegendClick = (originalIndex) => {
+    if (!chartRef.current) return;
+    
+    const chart = chartRef.current;
+    // Find the sorted position of this item in the chart
+    const sortedChartIndex = originalDataOrder.indexOf(originalIndex);
+    
+    if (sortedChartIndex !== -1) {
+      const datasetMeta = chart.getDatasetMeta(0);
+      
+      if (datasetMeta.data[sortedChartIndex]) {
+        datasetMeta.data[sortedChartIndex].hidden = !datasetMeta.data[sortedChartIndex].hidden;
+        chart.update();
         
-        return {
-          text: `${labelPart}${valuePart}`,
-          labelPart,
-          valuePart,
-          fillStyle: data.datasets[0].backgroundColor[index],
-          fontColor: fontColor,
-          hidden: datasetMeta.data[index]?.hidden || false,
-          index,
-          datasetIndex: 0,
-        };
-      });
+        // Update legend items after hiding/showing
+        const updatedItems = legendItems.map(item => 
+          item.originalIndex === originalIndex 
+            ? { ...item, hidden: !item.hidden }
+            : item
+        );
+        setLegendItems(updatedItems);
+      }
     }
-    return [];
   };
 
   const chartData = useMemo(() => {
@@ -267,6 +316,28 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
       };
     }
 
+    // If we have a sort order, apply it to the chart data
+    if (originalDataOrder.length > 0 && originalDataOrder.length === data01.labels.length) {
+      const sortedLabels = originalDataOrder.map(index => data01.labels[index]);
+      const sortedData = originalDataOrder.map(index => data01.data[index]);
+      
+      return {
+        labels: sortedLabels,
+        datasets: [
+          {
+            label: `Total de ${dado}: R$`,
+            data: sortedData,
+            backgroundColor: generateColors(sortedLabels), // Generate colors for sorted labels
+            borderWidth: 0.2,
+
+            borderColor: chartType === CHART_TYPES.LINE ? generateColors(sortedLabels).map(color => color.replace('rgb', 'rgba').replace(')', ', 1)')) : undefined,
+            tension: chartType === CHART_TYPES.LINE ? 0.1 : undefined,
+          },
+        ],
+      };
+    }
+
+    // Default: return original data
     return {
       labels: data01.labels.slice(),
       datasets: [
@@ -281,7 +352,7 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
         },
       ],
     };
-  }, [data01, dado, chartType]);
+  }, [data01, dado, chartType, originalDataOrder]);
 
   const commonChartOptions = {
     maintainAspectRatio: false,
@@ -289,36 +360,22 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
     responsive: true,
     plugins: {
       legend: {
-        display: true,
-        position: 'left',
-        labels: {
-          generateLabels: createCustomLegend,
-          usePointStyle: true,
-          pointStyle: 'circle',
-          boxWidth: 20,
-          padding: 10,
-          font: {
-            size: displayMode === DISPLAY_MODES.BOTH ? 14 : 16,
-          },
-        },
-        onClick: function (e, legendItem, legend) {
-          const chart = legend.chart;
-          const datasetMeta = chart.getDatasetMeta(legendItem.datasetIndex);
-          const index = legendItem.index;
-
-          datasetMeta.data[index].hidden = !datasetMeta.data[index].hidden;
-          chart.update();
-        },
+        display: false, // Disable built-in legend
       },
       tooltip: {
         callbacks: {
           label: (context) => {
             const value = context.dataset.data[context.dataIndex];
-            const { valuePart } = formatValueParts(value, '', false);
+            // Get the original label for this sorted position
+            const originalIndex = originalDataOrder[context.dataIndex];
+            const label = data01?.labels?.[originalIndex] || '';
+            const { valuePart } = formatValueParts(value, label, false);
             return valuePart;
           },
           title: (tooltipItems) => {
-            return tooltipItems[0].label;
+            // Get the original label for this sorted position
+            const originalIndex = originalDataOrder[tooltipItems[0].dataIndex];
+            return data01?.labels?.[originalIndex] || '';
           }
         },
       },
@@ -385,10 +442,11 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
     }
     
     return options;
-  }, [chartType, displayMode, fontColor, totalAdmin]);
+  }, [chartType, displayMode, fontColor, totalAdmin, data01?.labels, originalDataOrder]);
 
   const renderChart = () => {
     const chartProps = {
+      ref: chartRef,
       data: chartData,
       options: chartOptions,
       height: 300
@@ -437,13 +495,50 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
         </button>
       </div>
       
-      {data01 && data01.labels && data01.labels.length > 0 ? (
-        renderChart()
-      ) : (
-        <div className="no-chart-data">
-          <p>Não há dados disponíveis para exibir no gráfico</p>
+      <div className="chart-wrapper">
+        {/* Custom Legend - Vertical list with scroll, SORTED ALPHABETICALLY */}
+        {legendItems.length > 0 ? (
+          <div className="custom-legend">
+            <div className="legend-scroll-container">
+              {legendItems.map((item, index) => (
+                <div 
+                  key={item.originalIndex}
+                  className={`legend-item ${item.hidden ? 'hidden' : ''}`}
+                  onClick={() => handleLegendClick(item.originalIndex)}
+                  title="Clique para mostrar/esconder"
+                >
+                  <span 
+                    className="legend-color"
+                    style={{ backgroundColor: item.color }}
+                  />
+                  <span className="legend-text">
+                    {item.text}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="custom-legend empty">
+            <div className="legend-scroll-container">
+              <div className="no-legend-data">
+                Sem dados para legenda
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* Chart Area */}
+        <div className="chart-area">
+          {data01 && data01.labels && data01.labels.length > 0 ? (
+            renderChart()
+          ) : (
+            <div className="no-chart-data">
+              <p>Não há dados disponíveis para exibir no gráfico</p>
+            </div>
+          )}
         </div>
-      )}
+      </div>
       
     {/* Função: Exibir modal ao clicar em uma fatia do gráfico
       {showAdmModal && selectedAdm && (
