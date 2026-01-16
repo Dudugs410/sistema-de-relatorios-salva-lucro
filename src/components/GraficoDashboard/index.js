@@ -539,7 +539,8 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
           )}
         </div>
       </div>
-      
+
+
     {/* Função: Exibir modal ao clicar em uma fatia do gráfico
       {showAdmModal && selectedAdm && (
         <Modal onClose={() => setShowAdmModal(false)}>
@@ -578,6 +579,7 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
         </Modal>
       )}
     */}
+
     </div>
   );
 };
