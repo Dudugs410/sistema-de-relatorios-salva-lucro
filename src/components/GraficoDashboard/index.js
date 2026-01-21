@@ -45,18 +45,15 @@ const assignColor = (label) => {
   return labelColorMap.get(label);
 };
 
+// Simplified to only 2 display modes
 const DISPLAY_MODES = {
-  PERCENTAGE: 'percentage',
   CURRENCY: 'currency',
-  BOTH: 'both',
-  SIMPLE: 'simple'
+  BOTH: 'both'
 };
 
 const DISPLAY_MODE_LABELS = {
-  [DISPLAY_MODES.PERCENTAGE]: 'Porcentagem',
-  [DISPLAY_MODES.CURRENCY]: 'Valor em R$',
-  [DISPLAY_MODES.BOTH]: 'Ambos',
-  [DISPLAY_MODES.SIMPLE]: 'Simples'
+  [DISPLAY_MODES.CURRENCY]: 'Valor',
+  [DISPLAY_MODES.BOTH]: 'Valor + %'
 };
 
 const CHART_TYPES = {
@@ -121,8 +118,9 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
   const [displayMode, setDisplayMode] = useState(DISPLAY_MODES.BOTH);
   const [chartType, setChartType] = useState(CHART_TYPES.PIE);
   const [legendItems, setLegendItems] = useState([]);
-  const [originalDataOrder, setOriginalDataOrder] = useState([]); // Store original order for chart
+  const [originalDataOrder, setOriginalDataOrder] = useState([]);
   const chartRef = useRef(null);
+  const legendContainerRef = useRef(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -152,10 +150,8 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
     }
   }, [dados]);
 
-  // Initialize legend when data changes - SORTED ALPHABETICALLY
   useEffect(() => {
     if (data01 && data01.labels && data01.data && data01.labels.length > 0) {
-      // Create an array of indices and sort them based on label
       const indices = data01.labels.map((_, index) => index);
       const sortedIndices = [...indices].sort((a, b) => {
         const labelA = data01.labels[a].toLowerCase();
@@ -163,10 +159,8 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
         return labelA.localeCompare(labelB);
       });
       
-      // Store original order for chart data
       setOriginalDataOrder(sortedIndices);
       
-      // Create sorted legend items
       const sortedLegendItems = sortedIndices.map((originalIndex, sortedIndex) => {
         const label = data01.labels[originalIndex];
         const value = data01.data[originalIndex];
@@ -179,8 +173,8 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
           valuePart,
           color,
           hidden: false,
-          originalIndex, // Store original index for chart interaction
-          sortedIndex, // Store sorted position
+          originalIndex,
+          sortedIndex,
           label,
           value,
         };
@@ -211,8 +205,6 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
     (event, elements) => {
       if (elements.length > 0 && arrayAdm && arrayAdm.length > 0) {
         const clickedElementIndex = elements[0].index;
-        
-        // Find the original label from the clicked element index
         const originalIndex = originalDataOrder[clickedElementIndex];
         const clickedLabel = data01.labels[originalIndex];
 
@@ -241,13 +233,6 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
     });
 
     switch (displayMode) {
-      case DISPLAY_MODES.PERCENTAGE:
-        return {
-          labelPart: includeLabel ? `${label}: ` : '',
-          valuePart: `${percentage}%`,
-          fullText: includeLabel ? `${label}: ${percentage}%` : `${percentage}%`
-        };
-      
       case DISPLAY_MODES.CURRENCY:
         return {
           labelPart: includeLabel ? `${label}: ` : '',
@@ -256,24 +241,11 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
         };
       
       case DISPLAY_MODES.BOTH:
+      default:
         return {
           labelPart: includeLabel ? `${label}: ` : '',
           valuePart: `${currencyValue} (${percentage}%)`,
           fullText: includeLabel ? `${label}: ${currencyValue} (${percentage}%)` : `${currencyValue} (${percentage}%)`
-        };
-      
-      case DISPLAY_MODES.SIMPLE:
-        return {
-          labelPart: includeLabel ? label : '',
-          valuePart: '',
-          fullText: includeLabel ? label : ''
-        };
-      
-      default:
-        return {
-          labelPart: includeLabel ? `${label}: ` : '',
-          valuePart: currencyValue,
-          fullText: includeLabel ? `${label}: ${currencyValue}` : currencyValue
         };
     }
   };
@@ -282,7 +254,6 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
     if (!chartRef.current) return;
     
     const chart = chartRef.current;
-    // Find the sorted position of this item in the chart
     const sortedChartIndex = originalDataOrder.indexOf(originalIndex);
     
     if (sortedChartIndex !== -1) {
@@ -292,7 +263,6 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
         datasetMeta.data[sortedChartIndex].hidden = !datasetMeta.data[sortedChartIndex].hidden;
         chart.update();
         
-        // Update legend items after hiding/showing
         const updatedItems = legendItems.map(item => 
           item.originalIndex === originalIndex 
             ? { ...item, hidden: !item.hidden }
@@ -316,7 +286,6 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
       };
     }
 
-    // If we have a sort order, apply it to the chart data
     if (originalDataOrder.length > 0 && originalDataOrder.length === data01.labels.length) {
       const sortedLabels = originalDataOrder.map(index => data01.labels[index]);
       const sortedData = originalDataOrder.map(index => data01.data[index]);
@@ -327,7 +296,7 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
           {
             label: `Total de ${dado}: R$`,
             data: sortedData,
-            backgroundColor: generateColors(sortedLabels), // Generate colors for sorted labels
+            backgroundColor: generateColors(sortedLabels),
             borderWidth: 0.2,
 
             borderColor: chartType === CHART_TYPES.LINE ? generateColors(sortedLabels).map(color => color.replace('rgb', 'rgba').replace(')', ', 1)')) : undefined,
@@ -337,7 +306,6 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
       };
     }
 
-    // Default: return original data
     return {
       labels: data01.labels.slice(),
       datasets: [
@@ -360,20 +328,18 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
     responsive: true,
     plugins: {
       legend: {
-        display: false, // Disable built-in legend
+        display: false,
       },
       tooltip: {
         callbacks: {
           label: (context) => {
             const value = context.dataset.data[context.dataIndex];
-            // Get the original label for this sorted position
             const originalIndex = originalDataOrder[context.dataIndex];
             const label = data01?.labels?.[originalIndex] || '';
             const { valuePart } = formatValueParts(value, label, false);
             return valuePart;
           },
           title: (tooltipItems) => {
-            // Get the original label for this sorted position
             const originalIndex = originalDataOrder[tooltipItems[0].dataIndex];
             return data01?.labels?.[originalIndex] || '';
           }
@@ -470,7 +436,6 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
 
   return (
     <div className="chart-container">
-      {/* Chart Controls */}
       <div className="chart-controls">
         <button 
           className="chart-type-toggle"
@@ -496,9 +461,8 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
       </div>
       
       <div className="chart-wrapper">
-        {/* Custom Legend - Vertical list with scroll, SORTED ALPHABETICALLY */}
         {legendItems.length > 0 ? (
-          <div className="custom-legend">
+          <div className="custom-legend" ref={legendContainerRef}>
             <div className="legend-scroll-container">
               {legendItems.map((item, index) => (
                 <div 
@@ -528,7 +492,6 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
           </div>
         )}
         
-        {/* Chart Area */}
         <div className="chart-area">
           {data01 && data01.labels && data01.labels.length > 0 ? (
             renderChart()
@@ -539,8 +502,7 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
           )}
         </div>
       </div>
-
-
+      
     {/* Função: Exibir modal ao clicar em uma fatia do gráfico
       {showAdmModal && selectedAdm && (
         <Modal onClose={() => setShowAdmModal(false)}>
@@ -579,7 +541,6 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
         </Modal>
       )}
     */}
-
     </div>
   );
 };

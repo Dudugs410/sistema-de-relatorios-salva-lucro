@@ -119,7 +119,6 @@ const Dashboard = () => {
               tipo='0' 
               dados='vendas'
             />
-            <hr/>
             <div className='dash-table-container'>
               <TabelaHorizontal 
                 header='Total Últimos 4 dias' 
@@ -148,7 +147,6 @@ const Dashboard = () => {
             tipo='1' 
             dados='creditos'
           />
-          <hr/>
           <div className='dash-table-container'>
             <TabelaHorizontal 
               header='Previsão de Hoje' 
@@ -177,7 +175,6 @@ const Dashboard = () => {
             tipo='2' 
             dados='servicos'
           />
-          <hr/>
           <div className='dash-table-container'>
             <TabelaHorizontal 
               header='Total de Hoje' 
@@ -262,8 +259,7 @@ const Dashboard = () => {
             )}
           </div>
         </div>		
-      </div>   
-      
+      </div>    
       <button 
         className='btn btn-success-dados btn-tutorial px-2 py-1'
         onClick={() => setRunTutorial(true)}
@@ -283,7 +279,7 @@ const Dashboard = () => {
         <FiHelpCircle />
       </button>
     </>  
-  );
-};
+  )
+}
 
 export default Dashboard;
