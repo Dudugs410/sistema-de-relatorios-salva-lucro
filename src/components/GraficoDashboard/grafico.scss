@@ -125,12 +125,13 @@
 }
 
 .chart-controls {
-  position: absolute;
-  top: -40px; // MOVE ABOVE the chart container
-  right: 0;
-  z-index: 5; // Lower z-index than SeletorCliente
-  display: flex;
-  gap: 8px;
+    /* position: absolute; */
+    /* top: -40px; */
+    /* right: 0; */
+    /* z-index: 5; */
+    display: flex;
+    gap: 8px;
+    flex-direction: row-reverse;
   
   @media (max-width: 768px) {
     top: -35px;
