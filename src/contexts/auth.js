@@ -1485,18 +1485,28 @@ const loadDashboard = async () => {
         params,
       }
       const response = await api.get('dashboard', config)
-      dashboardData = response.data // Changed from response to response.data
+      dashboardData = response.data
     } else if ((apiCNPJ === 'todos') || (apiCNPJ === 'TODOS') || (apiCNPJ === 'Todos')){
       const params = {
-        usuario: localStorage.getItem('userID'),
+        grupo: localStorage.getItem('groupCode'),
       }
 
       let config = {
         params,
       }
       const response = await api.get('dashboard', config)
-      dashboardData = response.data // Changed from response to response.data
-    }
+      dashboardData = response.data
+    } else {
+        const params = {
+          usuario: localStorage.getItem('userID'),
+        }
+
+        let config = {
+          params,
+        }
+        const response = await api.get('dashboard', config)
+        dashboardData = response.data // Changed from response to response.data
+      }
     
     // Transform API data to match the expected structure
     const transformedData = transformApiData(dashboardData);
