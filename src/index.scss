@@ -2,7 +2,7 @@
 
 * {
   font-family: var(--default-font-app);
-  box-sizing: border-box; /* Add this line */
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
@@ -60,23 +60,20 @@ td, th {
   background-color: red;
 }
 
-/* Customize the thumb */
 ::-webkit-scrollbar-thumb {
   background-color: #888;
   border-radius: 5px;
 }
 
-/* Customize the thumb on hover */
 ::-webkit-scrollbar-thumb:hover {
   background-color: #555;
 }
 
 table {
   line-height: 1.5em;
-  width: 100%; /* Ensure tables do not overflow */
+  width: 100%;
 }
 
-/* Optional: Apply flexbox to manage layout and prevent overflow */
 body, .app, #root, .appPage, .app-page {
   display: contents;
   flex-direction: column;
@@ -86,25 +83,25 @@ body, .app, #root, .appPage, .app-page {
 
 @media (max-width: 412px) {
   table {
-    table-layout: auto !important; /* Adjust cell width based on content */
-    border-collapse: separate !important; /* Use separate border model to allow cell spacing */
-    border-spacing: 5px !important; /* Adjust the spacing between cells */
+    table-layout: auto !important;
+    border-collapse: separate !important;
+    border-spacing: 5px !important;
   }
 
   table td, table th {
-    padding: 2px 5px !important; /* Small padding for spacing */
-    white-space: nowrap !important; /* Prevent text wrapping */
+    padding: 2px 5px !important; 
+    white-space: nowrap !important; 
     min-width: auto !important;
   }
 
   table th, table td {
-    border: 1px solid var(--primary-color); /* Optional: border color */
-    text-align: left !important; /* Adjust text alignment as needed */
+    border: 1px solid var(--primary-color);
+    text-align: left !important;
   }
 
   table th {
-    background-color: var(--secondary-color); /* Optional: header background color */
-    color: white; /* Optional: header text color */
+    background-color: var(--secondary-color);
+    color: white;
   }
 }
 

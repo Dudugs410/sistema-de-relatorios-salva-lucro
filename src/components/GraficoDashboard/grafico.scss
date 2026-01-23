@@ -2,15 +2,140 @@
   position: relative;
   height: 400px;
   margin-bottom: 20px;
+  
+  .chart-wrapper {
+    display: flex;
+    height: calc(100% - 40px);
+    gap: 20px;
+  }
+}
+
+.custom-legend {
+  width: 250px;
+  min-width: 250px;
+  max-height: 100%;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  
+  &.empty {
+    opacity: 0.7;
+    
+    .no-legend-data {
+      padding: 20px;
+      text-align: center;
+      color: #666;
+      font-style: italic;
+    }
+  }
+  
+  .legend-scroll-container {
+    flex: 1;
+    min-height: 200px !important;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 12px;
+    
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 3px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 3px;
+      
+      &:hover {
+        background: rgba(0, 0, 0, 0.3);
+      }
+    }
+  }
+  
+  .legend-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px;
+    margin-bottom: 6px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    user-select: none;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+    
+    &:hover {
+      background-color: rgba(153, 204, 51, 0.1);
+    }
+    
+    &.hidden {
+      opacity: 0.5;
+      
+      .legend-text {
+        text-decoration: line-through;
+      }
+    }
+    
+    .legend-color {
+      width: 14px;
+      height: 14px;
+      min-width: 14px;
+      border-radius: 50%;
+      border: 1px solid white;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+    
+    .legend-text {
+      font-size: 13px;
+      line-height: 1.4;
+      color: #333;
+      word-break: break-word;
+      flex: 1;
+      overflow-wrap: break-word;
+    }
+  }
+}
+
+.chart-area {
+  flex: 1;
+  position: relative;
+  min-width: 0;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  
+  canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
 }
 
 .chart-controls {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 5;
+  top: -40px; // MOVE ABOVE the chart container
+  right: 0;
+  z-index: 5; // Lower z-index than SeletorCliente
   display: flex;
   gap: 8px;
+  
+  @media (max-width: 768px) {
+    top: -35px;
+    right: 0;
+  }
 }
 
 .chart-type-toggle,
@@ -19,7 +144,7 @@
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.95);
   border: 1px solid #ddd;
   border-radius: 6px;
   cursor: pointer;
@@ -50,39 +175,156 @@
   white-space: nowrap;
 }
 
-// Dark mode support
-[data-theme="dark"] {
-  .chart-type-toggle,
-  .display-mode-toggle {
-    background: rgba(50, 50, 50, 0.9);
-    border-color: #666;
-    
-    .toggle-label {
-      color: #fff;
-    }
-  }
+.no-chart-data {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #666;
+  font-style: italic;
+  padding: 20px;
+  text-align: center;
 }
 
-// Responsive design
-@media (max-width: 768px) {
-  .chart-controls {
-    gap: 6px;
+[data-theme="dark"] {
+  .custom-legend {
+    background: rgba(30, 30, 30, 0.95);
+    border-color: #444;
+    
+    &.empty {
+      .no-legend-data {
+        color: #aaa;
+      }
+    }
+    
+    .legend-item {
+      .legend-text {
+        color: #fff;
+      }
+      
+      &:hover {
+        background-color: rgba(153, 204, 51, 0.2);
+      }
+    }
+    
+    .legend-scroll-container {
+      &::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+      }
+      
+      &::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        
+        &:hover {
+          background: rgba(255, 255, 255, 0.3);
+        }
+      }
+    }
   }
   
-  .chart-type-toggle,
-  .display-mode-toggle {
-    padding: 6px 10px;
-    font-size: 12px;
+  .chart-area {
+    background: rgba(30, 30, 30, 0.95);
+    border-color: #444;
+  }
+  
+  .chart-controls {
+    .chart-type-toggle,
+    .display-mode-toggle {
+      background: rgba(50, 50, 50, 0.95);
+      border-color: #666;
+      
+      .toggle-label {
+        color: #fff;
+      }
+    }
+  }
+  
+  .no-chart-data {
+    color: #aaa;
+  }
+}
+
+// ALL SIZES UP TO 1399px - SAME STYLING
+// This includes desktop, tablets, and mobile
+
+// Tablet and smaller desktop
+@media (max-width: 992px) {
+  .chart-container {
+    height: 450px;
+  }
+  
+  .custom-legend {
+    width: 220px;
+    min-width: 220px;
+  }
+}
+
+// Mobile (stack layout)
+@media (max-width: 768px) {
+  .chart-container {
+    height: 550px;
     
-    .toggle-label {
-      display: none; // Hide text on mobile, show only icon
+    .chart-wrapper {
+      flex-direction: column;
+      height: calc(100% - 40px);
+      gap: 15px;
+    }
+    
+    .custom-legend {
+      width: 100%;
+      min-width: 100%;
+      max-height: 200px;
+      order: 1;
+      
+      .legend-item {
+        .legend-text {
+          font-size: 11px; // Smaller for mobile
+        }
+      }
+    }
+    
+    .chart-area {
+      order: 2;
+      flex: none;
+      height: 280px;
+      min-height: 280px;
+    }
+  }
+  
+  .chart-controls {
+    .chart-type-toggle,
+    .display-mode-toggle {
+      padding: 6px 10px;
+      font-size: 12px;
+      
+      .toggle-label {
+        display: none;
+      }
     }
   }
 }
 
+// Extra small mobile (≤480px)
 @media (max-width: 480px) {
-  .chart-controls {
-    top: 5px;
-    right: 5px;
+  .chart-container {
+    height: 600px;
+    
+    .custom-legend {
+      max-height: 220px;
+      
+      .legend-item {
+        .legend-text {
+          font-size: 10px; // Extra small for very small screens
+        }
+      }
+    }
+    
+    .chart-area {
+      height: 300px;
+      min-height: 300px;
+    }
   }
 }
+
+// Large screens (≥1400px) - KEEP SAME AS UP TO 1399px
+// No special styling needed - same as desktop

@@ -101,12 +101,12 @@ const Servicos = () =>{
             },
             {
               target: '[data-tour="bandeiraadquirente-section"]',
-              content: 'Filtra os ajustes/serviços de acordo com a combinação de bandeira/adquirente selecionada.',
+              content: 'Filtra os ajustes/serviços de acordo com a combinação de adquirente/tipo de serviço selecionada.',
               placement: 'bottom'
             },
             {
               target: '[data-tour="tabelavendas-section"]',
-              content: 'Serviços/Ajustes do período selecionado. Podem ser filtrados por bandeira/adquirente.',
+              content: 'Serviços/Ajustes do período selecionado. Podem ser filtrados por adquirente/tipo de serviço.',
               placement: 'bottom'
             },
             {

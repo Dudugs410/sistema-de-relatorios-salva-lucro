@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import { 
   Chart as ChartJS, 
   ArcElement, 
@@ -28,7 +28,6 @@ ChartJS.register(
   LineElement
 );
 
-// Global color pool and mapping
 const colorPool = [
   'rgb(244, 67, 54)', 'rgb(76, 175, 80)', 'rgb(33, 150, 243)', 'rgb(255, 152, 0)',
   'rgb(156, 39, 176)', 'rgb(0, 188, 212)', 'rgb(63, 81, 181)', 'rgb(139, 195, 74)',
@@ -38,7 +37,6 @@ const colorPool = [
 const labelColorMap = new Map();
 let colorIndex = 0;
 
-// Function to assign colors in order
 const assignColor = (label) => {
   if (!labelColorMap.has(label)) {
     labelColorMap.set(label, colorPool[colorIndex % colorPool.length]);
@@ -47,22 +45,17 @@ const assignColor = (label) => {
   return labelColorMap.get(label);
 };
 
-// Display modes configuration
+// Simplified to only 2 display modes
 const DISPLAY_MODES = {
-  PERCENTAGE: 'percentage',
   CURRENCY: 'currency',
-  BOTH: 'both',
-  SIMPLE: 'simple'
+  BOTH: 'both'
 };
 
 const DISPLAY_MODE_LABELS = {
-  [DISPLAY_MODES.PERCENTAGE]: 'Porcentagem',
-  [DISPLAY_MODES.CURRENCY]: 'Valor em R$',
-  [DISPLAY_MODES.BOTH]: 'Ambos',
-  [DISPLAY_MODES.SIMPLE]: 'Simples'
+  [DISPLAY_MODES.CURRENCY]: 'Valor',
+  [DISPLAY_MODES.BOTH]: 'Valor + %'
 };
 
-// Chart types configuration
 const CHART_TYPES = {
   PIE: 'pie',
   DOUGHNUT: 'doughnut',
@@ -84,48 +77,38 @@ const CHART_TYPE_ICONS = {
   [CHART_TYPES.LINE]: FiTrendingUp
 };
 
-// Column configuration function - MOVED HERE from Modal
 const getTableColumns = (tableType) => {
-  switch(tableType) {
+  switch (tableType) {
     case 'vendas':
       return [
-        { key: 'adquirente.nomeAdquirente', header: 'Adquirente', accessor: (item) => item.adquirente?.nomeAdquirente },
-        { key: 'bandeira.descricaoBandeira', header: 'Bandeira', accessor: (item) => item.bandeira?.descricaoBandeira },
-        { key: 'cnpj', header: 'CNPJ' },
-        { key: 'valorBruto', header: 'Valor Bruto', accessor: (item) => item.valorBruto },
-        { key: 'valorLiquido', header: 'Valor Líquido', accessor: (item) => item.valorLiquido },
-        { key: 'taxa', header: 'Taxa', accessor: (item) => item.taxa },
-        { key: 'dataVenda', header: 'Data Venda', accessor: (item) => item.dataVenda },
-        { key: 'quantidadeParcelas', header: 'Parcelas', accessor: (item) => item.quantidadeParcelas },
-        { key: 'nsu', header: 'NSU' },
-        { key: 'tid', header: 'TID' }
+        { key: 'dataVenda', label: 'Data Venda', type: 'date' },
+        { key: 'adquirente', label: 'Adquirente' },
+        { key: 'valorBruto', label: 'Valor Bruto', type: 'currency' },
+        { key: 'valorLiquido', label: 'Valor Líquido', type: 'currency' }
       ];
     case 'creditos':
       return [
-        { key: 'adquirente.nomeAdquirente', header: 'Adquirente', accessor: (item) => item.adquirente?.nomeAdquirente },
-        { key: 'bandeira.descricaoBandeira', header: 'Bandeira', accessor: (item) => item.bandeira?.descricaoBandeira },
-        { key: 'cnpj', header: 'CNPJ' },
-        { key: 'valorBruto', header: 'Valor Bruto', accessor: (item) => item.valorBruto },
-        { key: 'valorLiquido', header: 'Valor Líquido', accessor: (item) => item.valorLiquido },
-        { key: 'taxa', header: 'Taxa', accessor: (item) => item.taxa },
-        { key: 'dataVenda', header: 'Data Venda', accessor: (item) => item.dataVenda },
-        { key: 'quantidadeParcelas', header: 'Parcelas', accessor: (item) => item.quantidadeParcelas }
+        { key: 'dataCredito', label: 'Data Crédito', type: 'date' },
+        { key: 'adquirente', label: 'Adquirente' },
+        { key: 'valor', label: 'Valor', type: 'currency' }
       ];
     case 'servicos':
       return [
-        { key: 'nome_adquirente', header: 'Adquirente' },
-        { key: 'descricao', header: 'Serviço' },
-        { key: 'cnpj', header: 'CNPJ' },
-        { key: 'data', header: 'Data' },
-        { key: 'valor', header: 'Valor' },
-        { key: 'razao_social', header: 'Razão Social' }
+        { key: 'dataServico', label: 'Data Serviço', type: 'date' },
+        { key: 'adquirente', label: 'Adquirente' },
+        { key: 'descricao', label: 'Descrição' },
+        { key: 'valor', label: 'Valor', type: 'currency' }
       ];
     default:
-      return [];
+      return [
+        { key: 'adquirente', label: 'Adquirente' },
+        { key: 'valor', label: 'Valor', type: 'currency' },
+        { key: 'percentual', label: 'Percentual', type: 'percentage' }
+      ];
   }
 };
 
-const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
+const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
   const [selectedAdm, setSelectedAdm] = useState(null);
   const [showAdmModal, setShowAdmModal] = useState(false);
   const [dado, setDado] = useState('');
@@ -134,6 +117,10 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
   );
   const [displayMode, setDisplayMode] = useState(DISPLAY_MODES.BOTH);
   const [chartType, setChartType] = useState(CHART_TYPES.PIE);
+  const [legendItems, setLegendItems] = useState([]);
+  const [originalDataOrder, setOriginalDataOrder] = useState([]);
+  const chartRef = useRef(null);
+  const legendContainerRef = useRef(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -163,7 +150,43 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
     }
   }, [dados]);
 
-  // Cycle through display modes
+  useEffect(() => {
+    if (data01 && data01.labels && data01.data && data01.labels.length > 0) {
+      const indices = data01.labels.map((_, index) => index);
+      const sortedIndices = [...indices].sort((a, b) => {
+        const labelA = data01.labels[a].toLowerCase();
+        const labelB = data01.labels[b].toLowerCase();
+        return labelA.localeCompare(labelB);
+      });
+      
+      setOriginalDataOrder(sortedIndices);
+      
+      const sortedLegendItems = sortedIndices.map((originalIndex, sortedIndex) => {
+        const label = data01.labels[originalIndex];
+        const value = data01.data[originalIndex];
+        const { labelPart, valuePart, fullText } = formatValueParts(value, label, true);
+        const color = assignColor(label);
+        
+        return {
+          text: fullText,
+          labelPart,
+          valuePart,
+          color,
+          hidden: false,
+          originalIndex,
+          sortedIndex,
+          label,
+          value,
+        };
+      });
+      
+      setLegendItems(sortedLegendItems);
+    } else {
+      setLegendItems([]);
+      setOriginalDataOrder([]);
+    }
+  }, [data01, displayMode, totalAdmin]);
+
   const cycleDisplayMode = () => {
     const modes = Object.values(DISPLAY_MODES);
     const currentIndex = modes.indexOf(displayMode);
@@ -171,7 +194,6 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
     setDisplayMode(modes[nextIndex]);
   };
 
-  // Cycle through chart types
   const cycleChartType = () => {
     const types = Object.values(CHART_TYPES);
     const currentIndex = types.indexOf(chartType);
@@ -181,22 +203,28 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
 
   const handleChartClick = useCallback(
     (event, elements) => {
-      if (elements.length > 0) {
+      if (elements.length > 0 && arrayAdm && arrayAdm.length > 0) {
         const clickedElementIndex = elements[0].index;
-        const selectedAdmData = arrayAdm[clickedElementIndex];
+        const originalIndex = originalDataOrder[clickedElementIndex];
+        const clickedLabel = data01.labels[originalIndex];
 
-        setSelectedAdm(selectedAdmData);
-        setShowAdmModal(true);
+        const selectedAdmData = arrayAdm.find(item => item.adquirente === clickedLabel);
+        
+        if (selectedAdmData) {
+          setSelectedAdm(selectedAdmData);
+          setShowAdmModal(true);
+        }
       }
     },
-    [arrayAdm]
+    [arrayAdm, data01?.labels, originalDataOrder]
   );
 
   const generateColors = (labels) => labels.map(assignColor);
 
-  // Format value based on display mode and return parts for styling
   const formatValueParts = (value, label, includeLabel = true) => {
-    const percentage = ((value / totalAdmin) * 100).toFixed(2);
+    if (!value && value !== 0) return { labelPart: '', valuePart: '', fullText: '' };
+    
+    const percentage = totalAdmin > 0 ? ((value / totalAdmin) * 100).toFixed(2) : '0.00';
     const currencyValue = value.toLocaleString("pt-BR", {
       style: "currency",
       currency: "BRL",
@@ -205,13 +233,6 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
     });
 
     switch (displayMode) {
-      case DISPLAY_MODES.PERCENTAGE:
-        return {
-          labelPart: includeLabel ? `${label}: ` : '',
-          valuePart: `${percentage}%`,
-          fullText: includeLabel ? `${label}: ${percentage}%` : `${percentage}%`
-        };
-      
       case DISPLAY_MODES.CURRENCY:
         return {
           labelPart: includeLabel ? `${label}: ` : '',
@@ -220,53 +241,71 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
         };
       
       case DISPLAY_MODES.BOTH:
+      default:
         return {
           labelPart: includeLabel ? `${label}: ` : '',
           valuePart: `${currencyValue} (${percentage}%)`,
           fullText: includeLabel ? `${label}: ${currencyValue} (${percentage}%)` : `${currencyValue} (${percentage}%)`
         };
-      
-      case DISPLAY_MODES.SIMPLE:
-        return {
-          labelPart: includeLabel ? label : '',
-          valuePart: '',
-          fullText: includeLabel ? label : ''
-        };
-      
-      default:
-        return {
-          labelPart: includeLabel ? `${label}: ` : '',
-          valuePart: currencyValue,
-          fullText: includeLabel ? `${label}: ${currencyValue}` : currencyValue
-        };
     }
   };
 
-  // Create custom legend with bold values
-  const createCustomLegend = (chart) => {
-    const { data } = chart;
-    if (data.labels.length && data.datasets.length) {
-      return data.labels.map((label, index) => {
-        const value = data.datasets[0].data[index];
-        const datasetMeta = chart.getDatasetMeta(0);
-        const { labelPart, valuePart } = formatValueParts(value, label, true);
+  const handleLegendClick = (originalIndex) => {
+    if (!chartRef.current) return;
+    
+    const chart = chartRef.current;
+    const sortedChartIndex = originalDataOrder.indexOf(originalIndex);
+    
+    if (sortedChartIndex !== -1) {
+      const datasetMeta = chart.getDatasetMeta(0);
+      
+      if (datasetMeta.data[sortedChartIndex]) {
+        datasetMeta.data[sortedChartIndex].hidden = !datasetMeta.data[sortedChartIndex].hidden;
+        chart.update();
         
-        return {
-          text: `${labelPart}${valuePart}`,
-          labelPart,
-          valuePart,
-          fillStyle: data.datasets[0].backgroundColor[index],
-          fontColor: fontColor,
-          hidden: datasetMeta.data[index]?.hidden || false,
-          index,
-          datasetIndex: 0,
-        };
-      });
+        const updatedItems = legendItems.map(item => 
+          item.originalIndex === originalIndex 
+            ? { ...item, hidden: !item.hidden }
+            : item
+        );
+        setLegendItems(updatedItems);
+      }
     }
-    return [];
   };
 
   const chartData = useMemo(() => {
+    if (!data01 || !data01.labels || !data01.data) {
+      return {
+        labels: [],
+        datasets: [{
+          label: `Total de ${dado}: R$`,
+          data: [],
+          backgroundColor: [],
+          borderWidth: 0.2,
+        }]
+      };
+    }
+
+    if (originalDataOrder.length > 0 && originalDataOrder.length === data01.labels.length) {
+      const sortedLabels = originalDataOrder.map(index => data01.labels[index]);
+      const sortedData = originalDataOrder.map(index => data01.data[index]);
+      
+      return {
+        labels: sortedLabels,
+        datasets: [
+          {
+            label: `Total de ${dado}: R$`,
+            data: sortedData,
+            backgroundColor: generateColors(sortedLabels),
+            borderWidth: 0.2,
+
+            borderColor: chartType === CHART_TYPES.LINE ? generateColors(sortedLabels).map(color => color.replace('rgb', 'rgba').replace(')', ', 1)')) : undefined,
+            tension: chartType === CHART_TYPES.LINE ? 0.1 : undefined,
+          },
+        ],
+      };
+    }
+
     return {
       labels: data01.labels.slice(),
       datasets: [
@@ -275,13 +314,13 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
           data: data01.data,
           backgroundColor: generateColors(data01.labels.slice()),
           borderWidth: 0.2,
-          // Additional properties for bar and line charts
+
           borderColor: chartType === CHART_TYPES.LINE ? generateColors(data01.labels.slice()).map(color => color.replace('rgb', 'rgba').replace(')', ', 1)')) : undefined,
           tension: chartType === CHART_TYPES.LINE ? 0.1 : undefined,
         },
       ],
     };
-  }, [data01, dado, chartType]);
+  }, [data01, dado, chartType, originalDataOrder]);
 
   const commonChartOptions = {
     maintainAspectRatio: false,
@@ -289,43 +328,26 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
     responsive: true,
     plugins: {
       legend: {
-        display: true,
-        position: 'left',
-        labels: {
-          generateLabels: createCustomLegend,
-          usePointStyle: true,
-          pointStyle: 'circle',
-          boxWidth: 20,
-          padding: 10,
-          font: {
-            size: displayMode === DISPLAY_MODES.BOTH ? 14 : 16,
-          },
-        },
-        onClick: function (e, legendItem, legend) {
-          const chart = legend.chart;
-          const datasetMeta = chart.getDatasetMeta(legendItem.datasetIndex);
-          const index = legendItem.index;
-
-          datasetMeta.data[index].hidden = !datasetMeta.data[index].hidden;
-          chart.update();
-        },
+        display: false,
       },
       tooltip: {
         callbacks: {
           label: (context) => {
             const value = context.dataset.data[context.dataIndex];
-            const { valuePart } = formatValueParts(value, '', false);
+            const originalIndex = originalDataOrder[context.dataIndex];
+            const label = data01?.labels?.[originalIndex] || '';
+            const { valuePart } = formatValueParts(value, label, false);
             return valuePart;
           },
           title: (tooltipItems) => {
-            return tooltipItems[0].label;
+            const originalIndex = originalDataOrder[tooltipItems[0].dataIndex];
+            return data01?.labels?.[originalIndex] || '';
           }
         },
       },
     },
   };
 
-  // Add specific options for different chart types
   const chartOptions = useMemo(() => {
     const options = { ...commonChartOptions };
     
@@ -335,6 +357,12 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
           beginAtZero: true,
           ticks: {
             color: fontColor,
+            callback: function(value) {
+              return value.toLocaleString('pt-BR', { 
+                style: 'currency', 
+                currency: 'BRL' 
+              });
+            }
           },
           grid: {
             color: fontColor + '20',
@@ -357,6 +385,12 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
           beginAtZero: true,
           ticks: {
             color: fontColor,
+            callback: function(value) {
+              return value.toLocaleString('pt-BR', { 
+                style: 'currency', 
+                currency: 'BRL' 
+              });
+            }
           },
           grid: {
             color: fontColor + '20',
@@ -374,13 +408,14 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
     }
     
     return options;
-  }, [chartType, displayMode, fontColor, totalAdmin, dado]);
+  }, [chartType, displayMode, fontColor, totalAdmin, data01?.labels, originalDataOrder]);
 
-  // Render the appropriate chart component
   const renderChart = () => {
     const chartProps = {
+      ref: chartRef,
       data: chartData,
-      options: chartOptions
+      options: chartOptions,
+      height: 300
     };
 
     switch (chartType) {
@@ -401,7 +436,6 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
 
   return (
     <div className="chart-container">
-      {/* Chart Controls */}
       <div className="chart-controls">
         <button 
           className="chart-type-toggle"
@@ -426,18 +460,55 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
         </button>
       </div>
       
-      {renderChart()}
+      <div className="chart-wrapper">
+        {legendItems.length > 0 ? (
+          <div className="custom-legend" ref={legendContainerRef}>
+            <div className="legend-scroll-container">
+              {legendItems.map((item, index) => (
+                <div 
+                  key={item.originalIndex}
+                  className={`legend-item ${item.hidden ? 'hidden' : ''}`}
+                  onClick={() => handleLegendClick(item.originalIndex)}
+                  title="Clique para mostrar/esconder"
+                >
+                  <span 
+                    className="legend-color"
+                    style={{ backgroundColor: item.color }}
+                  />
+                  <span className="legend-text">
+                    {item.text}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="custom-legend empty">
+            <div className="legend-scroll-container">
+              <div className="no-legend-data">
+                Sem dados para legenda
+              </div>
+            </div>
+          </div>
+        )}
+        
+        <div className="chart-area">
+          {data01 && data01.labels && data01.labels.length > 0 ? (
+            renderChart()
+          ) : (
+            <div className="no-chart-data">
+              <p>Não há dados disponíveis para exibir no gráfico</p>
+            </div>
+          )}
+        </div>
+      </div>
       
-      {/* Fixed Modal with proper columns */}
+    {/* Função: Exibir modal ao clicar em uma fatia do gráfico
       {showAdmModal && selectedAdm && (
         <Modal onClose={() => setShowAdmModal(false)}>
-          {console.log('Selected Admin Data:', selectedAdm)}
-          {console.log('Sales Data:', selectedAdm.sales)}
-          {console.log('Table Type:', tipo)}
-          
           {tipo === '0' ? (
             <NewTabelaGenerica
-              array={selectedAdm.sales}
+              array={[selectedAdm]}
               tableType="vendas"
               columns={getTableColumns('vendas')}
               showFilters={false}
@@ -445,7 +516,7 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
             />
           ) : tipo === '1' ? (
             <NewTabelaGenerica
-              array={selectedAdm.sales}
+              array={[selectedAdm]}
               tableType="creditos"
               columns={getTableColumns('creditos')}
               showFilters={false}
@@ -453,7 +524,7 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
             />
           ) : tipo === '2' ? (
             <NewTabelaGenerica
-              array={selectedAdm.sales}
+              array={[selectedAdm]}
               tableType="servicos"
               columns={getTableColumns('servicos')}
               showFilters={false}
@@ -461,11 +532,15 @@ const PieChart = ({ data01, arrayAdm, tipo, dados, totalAdmin }) => {
             />
           ) : (
             <div className="no-data-message">
-              Tipo de dados não suportado: {tipo}
+              <p>Dados da adquirente:</p>
+              <p><strong>Nome:</strong> {selectedAdm.adquirente}</p>
+              <p><strong>Valor:</strong> {selectedAdm.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
+              <p><strong>Percentual:</strong> {selectedAdm.percentual}%</p>
             </div>
           )}
         </Modal>
       )}
+    */}
     </div>
   );
 };

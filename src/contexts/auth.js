@@ -50,6 +50,10 @@ function AuthProvider({ children }){
 	const [canceledCredits, setCanceledCredits] = useState(false)
 	const [canceledServices, setCanceledServices] = useState(false)
 
+  const [chartSales, setChartSales] = useState()
+  const [chartCredits, setChartCredits] = useState()
+  const [chartServices, setChartServices] = useState()
+
 	//////////////////////////////////////////////////////////////////
 
   const navigate = useNavigate()
@@ -187,14 +191,7 @@ function AuthProvider({ children }){
       }
 
       try {
-        let logTemp
         await loginLog()
-        .then(
-          //logTemp = getLoginLog()
-        )
-        .finally(
-          //console.log(logTemp)
-        )
       } catch (error) {
         console.log(error)
       }
@@ -307,15 +304,6 @@ function AuthProvider({ children }){
 
         const responseData = await response.json()
         console.log('response: ', responseData)
-      /*
-        if (response.ok) {
-          toast.dismiss()
-          toast.success('Usuário atualizado com sucesso!')
-        } else {
-          toast.dismiss()
-          toast.error('Erro ao atualizar usuário')
-        }
-      */
     } catch (error) {
       console.error('Erro ao atualizar usuário:', error)
       toast.dismiss()
@@ -1009,14 +997,6 @@ const [canceled, setCanceled] = useState(false)
         labels: []
       }
     })
-
-
-// consts que guardarão as informações do Gráfico (react-chartjs-2)
-
-const [chartSales, setChartSales] = useState({data: [], labels: []})
-const [chartCredits, setChartCredits] = useState({data: [], labels: []})
-const [chartServices, setChartServices] = useState({data: [], labels: []})
-
 // funções que gerenciarão o carregamento dos dados referente à cada grupo de dados (vendas, créditos, serviços/ajustes)
 
 // ---------------------------------------------------------------------------- //
@@ -1024,479 +1004,635 @@ const [chartServices, setChartServices] = useState({data: [], labels: []})
 // ************** //
 //  >> Vendas <<  //
 // ************** //
-const loadSalesGroup = async ()=> {
-  let salesMonth
-  let salesLast4
-  
-  let salesByAdmin
-  let totalAdmin = 0
-  let tempAdmin
-  
-  let totalSalesMonth
-  let totalSalesLast4
 
-  if(!fetchingData){
-    setFetchingData(true)
-  }
-
-  if(canceled){
-    setCanceled(false)
-  }
-  
-  const loadSalesMonth = async () => {
-    let salesTemp = []
-
-    function getFirstDayOfMonth() {
-      const currentDate = new Date()
-      const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
-      return firstDayOfMonth
-    }
-
-    function getLastDayOfMonth(){
-      const currentDate = new Date()
-      const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0)
-      return lastDayOfMonth
-    }
-
-    const firstDay = getFirstDayOfMonth()
-    const lastDay = getLastDayOfMonth()
-    
-    try {
-      salesTemp = await loadSales(firstDay, lastDay)
-    } catch (error) {
-      console.error('Erro: ', error)
-      if (error.response && error.response.status === 401) {
-        logout()
-        return
-      }
-    }
-    salesMonth = salesTemp
-  }
-
-  const loadLast4 = async () =>{
-    let startDate = new Date()
-    let endDate = new Date()
-
-    startDate.setDate(startDate.getDate() - 4)
-    startDate = converteData(startDate)
-
-    endDate.setDate(endDate.getDate() -1)
-    endDate = converteData(endDate)
-
-    const salesTemp = await loadSales(startDate, endDate)
-    
-    salesLast4 = salesTemp
-  }
-
-  function loadChart(array){
-    let label = []
-    let data = []
-    
-    array.forEach((index) => {
-      const sum = index.total
-      const adminName = index.adminName
-      let temp = sum
-      totalAdmin += sum
-      label.push(adminName)
-      data.push(Number(temp))
-    })
-    const obj = {labels: label, data: data}
-    return obj
-  }
-
-  function separateAdmin(array) {
-    let sums = {
-      total: 0
-    }
-    
-    let tempSales = []
-    let separatedByAdquirente = []
-
-      array.forEach((sale) => {
-        sums.total += sale.valorBruto
-        tempSales.push(sale)
-
-        let entry = separatedByAdquirente.find(adquirente => adquirente.adminName === sale.adquirente.nomeAdquirente)
-        if (!entry) {
-          entry = {
-            id: separatedByAdquirente.length,
-            adminName: sale.adquirente.nomeAdquirente,
-            total: 0,
-            sales: []
-          }
-          separatedByAdquirente.push(entry)
-        }
-        entry.sales.push(sale)
-      
-        entry.total += sale.valorBruto
-      })
-    return separatedByAdquirente
-  }
-
-  try {
-    await Promise.all([
-      loadSalesMonth(),
-      loadLast4()
-    ]).then(() => {
-      tempAdmin = separateAdmin(salesMonth)
-      salesByAdmin = sortArray(tempAdmin)
-      const chartData = loadChart(salesByAdmin)
-      setChartSales(chartData)
-
-      totalSalesLast4 = salesLast4.reduce((total, obj) => total + obj.valorBruto, 0)
-      totalSalesMonth = salesMonth.reduce((total, obj) => total + obj.valorBruto, 0)
-  
-      setSalesDashboard({
-        sales: salesMonth,
-        salesByAdmin: salesByAdmin,
-        totalLast4: Number(totalSalesLast4),
-        totalMonth: Number(totalSalesMonth),
-        totalAdmin: totalAdmin,
-        chart: chartData
-      })
-      setIsLoadedSalesDashboard(true)
-    })
-  } catch (error) {
-    console.log('Erro: ', error)
-  }
-}
 // ************** //
 // >> Créditos << //
 // ************** //
-const loadCreditsGroup = async ()=> {
-  let creditsMonth
-  let creditsNext5
-  
-  let creditsByAdmin
-  let totalAdmin = 0
-  let tempAdmin
 
-  let totalCreditsToday
-  let totalCreditsNext5
-
-  if(!fetchingData){
-    setFetchingData(true)
-  }
-
-  if(canceled){
-    setCanceled(false)
-  }
-  
-  const loadCreditsMonth = async () => {
-    let creditsTemp = []
-
-    function getFirstDayOfMonth() {
-      const currentDate = new Date()
-      const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
-      return firstDayOfMonth
-    }
-
-    function getLastDayOfMonth(){
-      const currentDate = new Date()
-      const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0)
-      return lastDayOfMonth
-    }
-
-    const firstDay = getFirstDayOfMonth()
-    const lastDay = getLastDayOfMonth()
-    
-    try {
-      creditsTemp = await loadCredits(firstDay, lastDay)
-    } catch (error) {
-      console.error('Erro: ', error)
-      if (error.response && error.response.status === 401) {
-        logout()
-        return
-      }
-    }
-    creditsMonth = creditsTemp
-  }
-
-  const loadCreditsNext5 = async () => {
-    let firstDay = new Date()
-    firstDay.setDate(firstDay.getDate() + 1)
-
-    let lastDay = new Date(firstDay)
-    lastDay.setDate(lastDay.getDate() + 4)
-
-    firstDay = new Date(firstDay).toISOString().split('T')[0]
-    lastDay = new Date(lastDay).toISOString().split('T')[0]
-
-    let creditsTemp
-  
-    try {
-      creditsTemp = await loadCredits(firstDay, lastDay)
-      creditsNext5 = creditsTemp
-    } catch (error) {
-      console.error('Erro: ', error)
-      if (error.response && error.response.status === 401) {
-        logout()
-        return
-      }
-    }
-  }
-
-  function loadChart(array){
-    let label = []
-    let data = []
-
-    array.forEach((index) => {
-      const sum = index.total
-      const adminName = index.adminName
-      let temp = sum
-      totalAdmin += sum
-      label.push(adminName)
-      data.push(Number(temp))
-    })
-    const obj = {labels: label, data: data}
-    return obj
-  }
-
-  function separateAdmin(array) {
-    let sums = {
-      total: 0
-    }
-    
-    let tempSales = []
-    let separatedByAdquirente = []
-  
-      array.forEach((sale) => {
-        sums.total += sale.valorLiquido
-        tempSales.push(sale)
-
-        let entry = separatedByAdquirente.find(adquirente => adquirente.adminName === sale.adquirente.nomeAdquirente)
-        if (!entry) {
-          entry = {
-            id: separatedByAdquirente.length,
-            adminName: sale.adquirente.nomeAdquirente,
-            total: 0,
-            sales: []
-          }
-          separatedByAdquirente.push(entry)
-        }      
-        entry.sales.push(sale)
-        entry.total += sale.valorLiquido
-      })
-    return separatedByAdquirente
-  }
-
-  try {
-
-    await Promise.all([
-      loadCreditsMonth(),
-      loadCreditsNext5()
-    ]).then(() => {
-      tempAdmin = separateAdmin(creditsMonth)
-      creditsByAdmin = sortArray(tempAdmin)
-      const chartData = loadChart(creditsByAdmin)
-      setChartCredits(chartData)
-  
-      let todayTemp = new Date()
-  
-      todayTemp = converteData(todayTemp)
-      totalCreditsToday = 0
-      
-      creditsMonth.forEach((venda) => {
-        if(venda.dataCredito === todayTemp){
-          totalCreditsToday += venda.valorLiquido
-        }
-      })
-  
-      totalCreditsNext5 = 0
-      totalCreditsNext5 = creditsNext5.reduce((total, venda) => total + venda.valorLiquido, 0);
-  
-      setCreditsDashboard({
-        credits: creditsMonth,
-        creditsByAdmin: creditsByAdmin,
-        totalCreditsNext5: Number(totalCreditsNext5),
-        totalCreditsToday: Number(totalCreditsToday),
-        chart: chartData,
-        totalAdmin: totalAdmin
-      })
-      setIsLoadedCreditsDashboard(true)
-    })
-  } catch (error) {
-    console.log('Erro: ', error)
-  }
-}
 // ************** //
 // >> Serviços << //
 // ************** //
-const loadServicesGroup = async ()=> {
 
-  let servicesMonth
-
-  let totalServicesToday = 0
-  let totalServicesMonth = 0
-  let totalAdmin = 0
-
-  if(!fetchingData){
-    setFetchingData(true)
-  }
-
-  if(canceled){
-    setCanceled(false)
-  }
-
-  const loadServicesMonth = async () => {
-    function firstDay() {
-      const today = new Date()
-      const firstDay = new Date(today.getFullYear(), today.getMonth(), 1)
-      
-      return firstDay
-    }
-
-    function lastDay() {
-      const today = new Date()
-      const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0)
-      
-      return lastDay
-    }
-
-    const servicesTemp = await loadServices(firstDay(), lastDay())
-    servicesMonth = servicesTemp
-  }
-
-  function loadChart(array){
-    let label = []
-    let data = []
-
-    array.forEach((index) => {
-      const sum = index.total
-      const adminName = index.adminName
-      let temp = sum
-      totalAdmin += sum
-      label.push(adminName)
-      data.push(Number(temp))
-    })
-    const obj = {labels: label, data: data}
-    return obj
-  }
-
-  function separateAdmin(array) {
-    let sums = {
-      total: 0
-    }
-    
-    let tempSales = []
-    let separatedByAdquirente = []
-  
-      array.forEach((sale) => {
-        sums.total += sale.valor
-        tempSales.push(sale)
-      
-        let entry = separatedByAdquirente.find(adquirente => adquirente.adminName === sale.nome_adquirente)
-        if (!entry) {
-          entry = {
-            id: separatedByAdquirente.length,
-            adminName: sale.nome_adquirente,
-            total: 0,
-            sales: []
-          }
-          separatedByAdquirente.push(entry)
-        }
-        entry.sales.push(sale)
-        entry.total += sale.valor
-      })
-    return separatedByAdquirente
-  }
-
-  try {
-    await Promise.all([
-      loadServicesMonth()
-    ]).then(() => {
-      let temp = []
-      let objAdq = {}
-      servicesMonth.map((service) => {
-        if(temp.length === 0){
-          objAdq = {
-            adminName: service.nome_adquirente,
-            total: service.valor,
-            id: 0,
-            sales: [service]
-          }
-          temp.push(objAdq)
-
-        } else {
-          const existingObject = temp.find(obj => obj.nomeAdquirente === service.nome_adquirente)
-          if (existingObject) {
-            existingObject.total = (existingObject.total || 0) + service.valor
-            existingObject.total = parseFloat(existingObject.total.toFixed(2)) // Round to 2 decimal places
-            existingObject.vendas.push(service)
-          } else {
-            temp.push({
-              adminName: service.nome_adquirente,
-              total: service.valor,
-              id: temp.length,
-              sales: [service]
-            })
-          }
-        }})
-
-      let tempAdmin = separateAdmin(servicesMonth)
-      const servicesByAdmin = (sortArray(tempAdmin))        
-      const chartData = loadChart(servicesByAdmin)
-
-      setChartServices(chartData)
-
-      const totalMesTemp = servicesMonth.reduce((total, obj) => total + obj.valor, 0)
-      totalServicesMonth = totalMesTemp
-
-      let today = new Date
-      today = converteData(today)
-      servicesMonth.forEach((service) => {
-        if(service.data === today){
-          totalServicesToday += service.valor
-        }
-      })
-      
-      setServicesDashboard({
-        services: servicesMonth,
-        servicesByAdmin: servicesByAdmin,
-        totalServicesMonth: Number(totalServicesMonth),
-        totalServicesToday: Number(totalServicesToday),
-        chart: chartData,
-        totalAdmin: totalAdmin
-      })
-      setIsLoadedServicesDashboard(true)
-    })
-  } catch (error) {
-    console.log('Erro: ', error)
-  }
-}
 
 // ----------------------------------------------------------------------------- //
-
+/*Mock Dashboard*/
+const mockDashboard = 
+{
+    "vendas": {
+        "valorTotaldias": 0.0,
+        "valorTotalMes": 0.0,
+        "totalAdquirentes": [
+            {
+                "adquirente": "Izi",
+                "valor": 845.01,
+                "percentual": 0.0
+            },
+            {
+                "adquirente": "Maxiscard",
+                "valor": 10661.65,
+                "percentual": 0.02
+            },
+            {
+                "adquirente": "TecBiz",
+                "valor": 1551.0,
+                "percentual": 0.0
+            },
+            {
+                "adquirente": "Triocard",
+                "valor": 19821.42,
+                "percentual": 0.05
+            },
+            {
+                "adquirente": "ViaSoft Pay",
+                "valor": 284.01,
+                "percentual": 0.0
+            },
+            {
+                "adquirente": "Alelo",
+                "valor": 898892.19,
+                "percentual": 2.08
+            },
+            {
+                "adquirente": "Verdecard",
+                "valor": 30262.55,
+                "percentual": 0.07
+            },
+            {
+                "adquirente": "VR",
+                "valor": 326399.44,
+                "percentual": 0.76
+            },
+            {
+                "adquirente": "Cielo",
+                "valor": 28440337.57,
+                "percentual": 65.88
+            },
+            {
+                "adquirente": "Vero",
+                "valor": 7448248.2,
+                "percentual": 17.25
+            },
+            {
+                "adquirente": "O2PlusCard",
+                "valor": 11946.71,
+                "percentual": 0.03
+            },
+            {
+                "adquirente": "Personal Card",
+                "valor": 540.66,
+                "percentual": 0.0
+            },
+            {
+                "adquirente": "Pluxee",
+                "valor": 513954.53,
+                "percentual": 1.19
+            },
+            {
+                "adquirente": "Onecard",
+                "valor": 669275.15,
+                "percentual": 1.55
+            },
+            {
+                "adquirente": "Valecard",
+                "valor": 5375.21,
+                "percentual": 0.01
+            },
+            {
+                "adquirente": "Tricard",
+                "valor": 8728.31,
+                "percentual": 0.02
+            },
+            {
+                "adquirente": "PicPay",
+                "valor": 626.97,
+                "percentual": 0.0
+            },
+            {
+                "adquirente": "Facecard",
+                "valor": 85434.2,
+                "percentual": 0.2
+            },
+            {
+                "adquirente": "Senff",
+                "valor": 4141146.5,
+                "percentual": 9.59
+            },
+            {
+                "adquirente": "Greencard",
+                "valor": 151183.95,
+                "percentual": 0.35
+            },
+            {
+                "adquirente": "Goodcard",
+                "valor": 1824.03,
+                "percentual": 0.0
+            },
+            {
+                "adquirente": "Romcard",
+                "valor": 815.76,
+                "percentual": 0.0
+            },
+            {
+                "adquirente": "Lecard",
+                "valor": 947.03,
+                "percentual": 0.0
+            },
+            {
+                "adquirente": "Flexocard",
+                "valor": 8224.92,
+                "percentual": 0.02
+            },
+            {
+                "adquirente": "Ticket",
+                "valor": 383152.84,
+                "percentual": 0.89
+            },
+            {
+                "adquirente": "Cooper Card",
+                "valor": 2114.66,
+                "percentual": 0.0
+            },
+            {
+                "adquirente": "Policard",
+                "valor": 7357.3,
+                "percentual": 0.02
+            },
+            {
+                "adquirente": "Vegascard",
+                "valor": 254.2,
+                "percentual": 0.0
+            }
+        ]
+    },
+    "creditos":{
+        "valorTotaldias": 0.0,
+        "valorTotalMes": 0.0,
+        "totalAdquirentes": [
+            {
+                "adquirente": "Izi",
+                "valor": 845.01,
+                "percentual": 0.0
+            },
+            {
+                "adquirente": "Maxiscard",
+                "valor": 10661.65,
+                "percentual": 0.02
+            },
+            {
+                "adquirente": "TecBiz",
+                "valor": 1551.0,
+                "percentual": 0.0
+            },
+            {
+                "adquirente": "Triocard",
+                "valor": 19821.42,
+                "percentual": 0.05
+            },
+            {
+                "adquirente": "ViaSoft Pay",
+                "valor": 284.01,
+                "percentual": 0.0
+            },
+            {
+                "adquirente": "Alelo",
+                "valor": 898892.19,
+                "percentual": 2.08
+            },
+            {
+                "adquirente": "Verdecard",
+                "valor": 30262.55,
+                "percentual": 0.07
+            },
+            {
+                "adquirente": "VR",
+                "valor": 326399.44,
+                "percentual": 0.76
+            },
+            {
+                "adquirente": "Cielo",
+                "valor": 28440337.57,
+                "percentual": 65.88
+            },
+            {
+                "adquirente": "Vero",
+                "valor": 7448248.2,
+                "percentual": 17.25
+            },
+            {
+                "adquirente": "O2PlusCard",
+                "valor": 11946.71,
+                "percentual": 0.03
+            },
+            {
+                "adquirente": "Personal Card",
+                "valor": 540.66,
+                "percentual": 0.0
+            },
+            {
+                "adquirente": "Pluxee",
+                "valor": 513954.53,
+                "percentual": 1.19
+            },
+            {
+                "adquirente": "Onecard",
+                "valor": 669275.15,
+                "percentual": 1.55
+            },
+            {
+                "adquirente": "Valecard",
+                "valor": 5375.21,
+                "percentual": 0.01
+            },
+            {
+                "adquirente": "Tricard",
+                "valor": 8728.31,
+                "percentual": 0.02
+            },
+            {
+                "adquirente": "PicPay",
+                "valor": 626.97,
+                "percentual": 0.0
+            },
+            {
+                "adquirente": "Facecard",
+                "valor": 85434.2,
+                "percentual": 0.2
+            },
+            {
+                "adquirente": "Senff",
+                "valor": 4141146.5,
+                "percentual": 9.59
+            },
+            {
+                "adquirente": "Greencard",
+                "valor": 151183.95,
+                "percentual": 0.35
+            },
+            {
+                "adquirente": "Goodcard",
+                "valor": 1824.03,
+                "percentual": 0.0
+            },
+            {
+                "adquirente": "Romcard",
+                "valor": 815.76,
+                "percentual": 0.0
+            },
+            {
+                "adquirente": "Lecard",
+                "valor": 947.03,
+                "percentual": 0.0
+            },
+            {
+                "adquirente": "Flexocard",
+                "valor": 8224.92,
+                "percentual": 0.02
+            },
+            {
+                "adquirente": "Ticket",
+                "valor": 383152.84,
+                "percentual": 0.89
+            },
+            {
+                "adquirente": "Cooper Card",
+                "valor": 2114.66,
+                "percentual": 0.0
+            },
+            {
+                "adquirente": "Policard",
+                "valor": 7357.3,
+                "percentual": 0.02
+            },
+            {
+                "adquirente": "Vegascard",
+                "valor": 254.2,
+                "percentual": 0.0
+            }
+        ]
+    },
+    "ajustes":{
+        "valorTotaldias": 0.0,
+        "valorTotalMes": 0.0,
+        "totalAdquirentes": [
+            {
+                "adquirente": "Izi",
+                "valor": 845.01,
+                "percentual": 0.0
+            },
+            {
+                "adquirente": "Maxiscard",
+                "valor": 10661.65,
+                "percentual": 0.02
+            },
+            {
+                "adquirente": "TecBiz",
+                "valor": 1551.0,
+                "percentual": 0.0
+            },
+            {
+                "adquirente": "Triocard",
+                "valor": 19821.42,
+                "percentual": 0.05
+            },
+            {
+                "adquirente": "ViaSoft Pay",
+                "valor": 284.01,
+                "percentual": 0.0
+            },
+            {
+                "adquirente": "Alelo",
+                "valor": 898892.19,
+                "percentual": 2.08
+            },
+            {
+                "adquirente": "Verdecard",
+                "valor": 30262.55,
+                "percentual": 0.07
+            },
+            {
+                "adquirente": "VR",
+                "valor": 326399.44,
+                "percentual": 0.76
+            },
+            {
+                "adquirente": "Cielo",
+                "valor": 28440337.57,
+                "percentual": 65.88
+            },
+            {
+                "adquirente": "Vero",
+                "valor": 7448248.2,
+                "percentual": 17.25
+            },
+            {
+                "adquirente": "O2PlusCard",
+                "valor": 11946.71,
+                "percentual": 0.03
+            },
+            {
+                "adquirente": "Personal Card",
+                "valor": 540.66,
+                "percentual": 0.0
+            },
+            {
+                "adquirente": "Pluxee",
+                "valor": 513954.53,
+                "percentual": 1.19
+            },
+            {
+                "adquirente": "Onecard",
+                "valor": 669275.15,
+                "percentual": 1.55
+            },
+            {
+                "adquirente": "Valecard",
+                "valor": 5375.21,
+                "percentual": 0.01
+            },
+            {
+                "adquirente": "Tricard",
+                "valor": 8728.31,
+                "percentual": 0.02
+            },
+            {
+                "adquirente": "PicPay",
+                "valor": 626.97,
+                "percentual": 0.0
+            },
+            {
+                "adquirente": "Facecard",
+                "valor": 85434.2,
+                "percentual": 0.2
+            },
+            {
+                "adquirente": "Senff",
+                "valor": 4141146.5,
+                "percentual": 9.59
+            },
+            {
+                "adquirente": "Greencard",
+                "valor": 151183.95,
+                "percentual": 0.35
+            },
+            {
+                "adquirente": "Goodcard",
+                "valor": 1824.03,
+                "percentual": 0.0
+            },
+            {
+                "adquirente": "Romcard",
+                "valor": 815.76,
+                "percentual": 0.0
+            },
+            {
+                "adquirente": "Lecard",
+                "valor": 947.03,
+                "percentual": 0.0
+            },
+            {
+                "adquirente": "Flexocard",
+                "valor": 8224.92,
+                "percentual": 0.02
+            },
+            {
+                "adquirente": "Ticket",
+                "valor": 383152.84,
+                "percentual": 0.89
+            },
+            {
+                "adquirente": "Cooper Card",
+                "valor": 2114.66,
+                "percentual": 0.0
+            },
+            {
+                "adquirente": "Policard",
+                "valor": 7357.3,
+                "percentual": 0.02
+            },
+            {
+                "adquirente": "Vegascard",
+                "valor": 254.2,
+                "percentual": 0.0
+            }
+        ]
+    }
+}
+const [dashboardData, setDashboardData] = useState([])
 // função que gerencia o carregamento de tudo que será visto no Dashboard
 
 const loadDashboard = async () => {  
-  resetDashboard()
-  setIsLoadedSalesDashboard(false)
-  setIsLoadedCreditsDashboard(false)
-  setIsLoadedServicesDashboard(false)
-  setIsLoadedDashboard(false)
+  resetDashboard();
+  setIsLoadedSalesDashboard(false);
+  setIsLoadedCreditsDashboard(false);
+  setIsLoadedServicesDashboard(false);
+  setIsLoadedDashboard(false);
+
+  const apiCNPJ = localStorage.getItem('cnpj')
+  
+  let dashboardData
+
   try {
-    if(!fetchingData){
-      setFetchingData(true)
+    if (!fetchingData) {
+      setFetchingData(true);
     }
-    Promise.all([
-      loadSalesGroup(),
-      loadCreditsGroup(),
-      loadServicesGroup()
-    ]).then(()=>{
-      setIsLoadedDashboard(true)
-      setChangedOption(false)
-    }).catch(error => {
-      console.log('Error in dashboard loading:', error)
-      setFetchingData(false)
+    
+    if((apiCNPJ !== 'todos') && (apiCNPJ !== 'TODOS') && (apiCNPJ !== 'Todos')){
+      const params = {
+        cnpj: apiCNPJ,
+      }
+
+      let config = {
+        params,
+      }
+      const response = await api.get('dashboard', config)
+      dashboardData = response.data
+    } else if ((apiCNPJ === 'todos') || (apiCNPJ === 'TODOS') || (apiCNPJ === 'Todos')){
+      const params = {
+        grupo: localStorage.getItem('groupCode'),
+      }
+
+      let config = {
+        params,
+      }
+      const response = await api.get('dashboard', config)
+      dashboardData = response.data
+    } else {
+        const params = {
+          usuario: localStorage.getItem('userID'),
+        }
+
+        let config = {
+          params,
+        }
+        const response = await api.get('dashboard', config)
+        dashboardData = response.data // Changed from response to response.data
+      }
+    
+    // Transform API data to match the expected structure
+    const transformedData = transformApiData(dashboardData);
+    
+    const transformAdquirentesForChart = (adquirentesArray) => {
+      const labels = []
+      const data = []
+      
+      adquirentesArray.forEach(item => {
+        labels.push(item.adquirente)
+        data.push(item.valor)
+      })
+      
+      return { labels, data }
+    }
+    
+    const vendasChartData = transformAdquirentesForChart(transformedData.vendas.totalAdquirentes); // Using transformedData
+    const creditsChartData = transformAdquirentesForChart(transformedData.creditos.totalAdquirentes); // Using transformedData
+    const ajustesChartData = transformAdquirentesForChart(transformedData.ajustes.totalAdquirentes); // Using transformedData
+    
+    const totalVendas = transformedData.vendas.totalAdquirentes.reduce((sum, item) => sum + item.valor, 0); // Using transformedData
+    const totalCredits = transformedData.creditos.totalAdquirentes.reduce((sum, item) => sum + item.valor, 0); // Using transformedData
+    const totalAjustes = transformedData.ajustes.totalAdquirentes.reduce((sum, item) => sum + item.valor, 0); // Using transformedData
+    
+    setDashboardData(transformedData); // Setting transformedData instead of raw API data
+    
+    setSalesDashboard({
+      totalLast4: transformedData.vendas.valorTotaldias, // Using transformedData
+      totalMonth: transformedData.vendas.valorTotalMes, // Using transformedData
+      chart: {
+        data: vendasChartData.data,
+        labels: vendasChartData.labels
+      },
+      sales: transformedData.vendas.totalAdquirentes, // Using transformedData
+      totalAdmin: totalVendas
+    });
+    setIsLoadedSalesDashboard(true);
+    
+    setCreditsDashboard({
+      totalCreditsToday: transformedData.creditos.valorTotaldias, // Using transformedData
+      totalCreditsNext5: transformedData.creditos.valorTotalMes, // Using transformedData
+      chart: {
+        data: creditsChartData.data,
+        labels: creditsChartData.labels
+      },
+      credits: transformedData.creditos.totalAdquirentes, // Using transformedData
+      totalAdmin: totalCredits
     })
+    setIsLoadedCreditsDashboard(true)
+    
+    setServicesDashboard({
+      totalServicesToday: transformedData.ajustes.valorTotaldias, // Using transformedData
+      totalServicesMonth: transformedData.ajustes.valorTotalMes, // Using transformedData
+      chart: {
+        data: ajustesChartData.data,
+        labels: ajustesChartData.labels
+      },
+      services: transformedData.ajustes.totalAdquirentes, // Using transformedData
+      totalAdmin: totalAjustes
+    })
+    setIsLoadedServicesDashboard(true)
+    
+    setIsLoadedDashboard(true)
+    setChangedOption(false)
+    setFetchingData(false)
+    
+    return transformedData // Return transformed data
   } catch (error) {
-    console.log('erro: ', error)
+    console.log('Error in dashboard loading:', error)
+    setFetchingData(false)
+    
     if (error.response && error.response.status === 401) {
       logout()
       return
     }
   }
+}
+
+// Add the transformation function (you can place it above loadDashboard or in a separate file)
+function transformApiData(apiData) {
+  const result = {
+    vendas: {
+      valorTotaldias: apiData.vendas?.valorTotaldias || 0,
+      valorTotalMes: apiData.vendas?.valorTotalMes || 0,
+      totalAdquirentes: []
+    },
+    creditos: {
+      valorTotaldias: apiData.creditos?.valorTotaldias || 0,
+      valorTotalMes: apiData.creditos?.valorTotalMes || 0,
+      totalAdquirentes: []
+    },
+    ajustes: {
+      valorTotaldias: apiData.ajustes?.valorTotaldias || 0,
+      valorTotalMes: apiData.ajustes?.valorTotalMes || 0,
+      totalAdquirentes: []
+    }
+  };
+
+  // Transform vendas
+  if (apiData.vendas?.resumo_Adquirentes_vendas) {
+    result.vendas.totalAdquirentes = apiData.vendas.resumo_Adquirentes_vendas.map(item => ({
+      adquirente: item.adquirente,
+      valor: item.valor || 0,
+      percentual: item.percentual || 0
+    }));
+  }
+
+  // Transform creditos
+  if (apiData.creditos?.resumo_Adquirentes_recebimentos) {
+    result.creditos.totalAdquirentes = apiData.creditos.resumo_Adquirentes_recebimentos.map(item => ({
+      adquirente: item.adquirente,
+      valor: item.valor || 0,
+      percentual: item.percentual || 0
+    }));
+  }
+
+  // Transform ajustes
+  if (apiData.ajustes?.resumo_Adquirentes_ajustes) {
+    result.ajustes.totalAdquirentes = apiData.ajustes.resumo_Adquirentes_ajustes.map(item => ({
+      adquirente: item.adquirente,
+      valor: item.valor || 0,
+      percentual: item.percentual || 0
+    }));
+  }
+
+  return result;
 }
 
 useEffect(()=>{
@@ -2077,16 +2213,16 @@ function timeConvert(time){
 		// Dashboard //
 		
 		loadDashboard, isLoadedDashboard, setIsLoadedDashboard,
-		salesDashboard, isLoadedSalesDashboard, setIsLoadedSalesDashboard, loadSalesGroup,
-		creditsDashboard, isLoadedCreditsDashboard, setIsLoadedCreditsDashboard, loadCreditsGroup,
-		servicesDashboard, isLoadedServicesDashboard, setIsLoadedServicesDashboard, loadServicesGroup,
+		salesDashboard, isLoadedSalesDashboard, setIsLoadedSalesDashboard,
+		creditsDashboard, isLoadedCreditsDashboard, setIsLoadedCreditsDashboard,
+		servicesDashboard, isLoadedServicesDashboard, setIsLoadedServicesDashboard,
 		canceledSales, setCanceledSales,
 		canceledCredits, setCanceledCredits,
 		canceledServices, setCanceledServices,
 		
 		// Vendas //
 
-		loadSales, loadTotalSales, loadSalesGroup,
+		loadSales, loadTotalSales,
 		salesDateRange, setSalesDateRange,
 		salesPageArray, setSalesPageArray,
 		salesPageAdminArray, setSalesPageAdminArray,
@@ -2097,7 +2233,7 @@ function timeConvert(time){
 
 		// Creditos //
 
-		loadCredits, loadTotalCredits, loadCreditsGroup,
+		loadCredits, loadTotalCredits,
 		creditsPageArray, setCreditsPageArray,
 		creditsPageAdminArray, setCreditsPageAdminArray,
 		creditsDateRange, setCreditsDateRange,
@@ -2108,7 +2244,7 @@ function timeConvert(time){
 
 		// Serviços //
 
-		loadServices, loadServicesGroup,
+		loadServices,
 		servicesPageArray, setServicesPageArray,
 		servicesPageAdminArray, setServicesPageAdminArray,
 		servicesDateRange, setServicesDateRange,

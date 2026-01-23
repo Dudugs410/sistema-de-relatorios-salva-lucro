@@ -12,6 +12,7 @@ import {
   FiChevronDown, 
   FiChevronUp 
 } from 'react-icons/fi'
+import Marquee from "react-fast-marquee";
 
 import './NewTabelaGenerica.scss'
 
@@ -71,6 +72,28 @@ const tableConfig = {
   }
 }
 
+const ConditionalMarquee = ({ children, speed = 50, gradient = false, className = "" }) => {
+  const text = typeof children === 'string' ? children : '';
+  
+  if (text.length > 10) {
+    return (
+      <div className="marquee-container">
+        <Marquee speed={speed} gradient={gradient} className={className} delay={1}>
+          {children}
+        </Marquee>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="marquee-container static-text">
+      <span className={className}>
+        {children}
+      </span>
+    </div>
+  );
+};
+
 const NewTabelaGenerica = forwardRef(({ 
   array, 
   tableType,
@@ -96,7 +119,6 @@ const NewTabelaGenerica = forwardRef(({
     dateConvert
   } = useContext(AuthContext)
 
-  // Use useMemo for derived data to prevent unnecessary re-renders
   const dataArray = useMemo(() => array || [], [array])
 
   const [dataExibicao, setDataExibicao] = useState([])
@@ -114,17 +136,14 @@ const NewTabelaGenerica = forwardRef(({
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage] = useState(15)
 
-  // Add a ref to track last filtered data
   const lastFilteredDataRef = useRef(null)
 
   const config = useMemo(() => tableConfig[tableType] || {}, [tableType])
 
-  // FIXED: Expose filtered data via ref
   useImperativeHandle(ref, () => ({
     getFilteredData: () => dataExibicao
   }), [dataExibicao])
 
-  // Check for mobile view - fixed with proper cleanup
   useEffect(() => {
     const checkMobile = () => {
       setIsMobileView(window.innerWidth < 768)
@@ -136,12 +155,10 @@ const NewTabelaGenerica = forwardRef(({
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
-  // Reset page when array changes
   useEffect(() => {
     setCurrentPage(1)
   }, [array])
 
-  // Initialize expanded rows if expandAll is true
   useEffect(() => {
     if (expandAll && dataArray && dataArray.length > 0) {
       const allRowIds = dataArray.map((item, index) => 
@@ -151,7 +168,6 @@ const NewTabelaGenerica = forwardRef(({
     }
   }, [dataArray, expandAll])
 
-  // Stable filter configuration
   const getFilterConfig = useCallback(() => {
     if (customFilterConfig) return customFilterConfig
     
@@ -188,13 +204,10 @@ const NewTabelaGenerica = forwardRef(({
     }
   }, [tableType, customFilterConfig])
 
-  // Use either provided columns or generated columns
   const tableColumns = useMemo(() => columns || [], [columns])
 
-  // Check if table should be expandable
   const isExpandable = expandable || config.expandable
 
-  // FIXED: Simplified filter options calculation - no infinite loops
   useEffect(() => {
     if (!showFilters || dataArray.length === 0) {
       setDataExibicao(dataArray)
@@ -204,7 +217,6 @@ const NewTabelaGenerica = forwardRef(({
 
     const filterConfig = getFilterConfig()
     
-    // Calculate all possible values
     const allOptions = {}
     Object.keys(filterConfig).forEach(filterKey => {
       const uniqueValues = new Set()
@@ -222,7 +234,6 @@ const NewTabelaGenerica = forwardRef(({
     setAllFilterOptions(allOptions)
   }, [dataArray, tableType, showFilters, getFilterConfig])
 
-  // FIXED: Separate effect for filtering data with duplicate prevention
   useEffect(() => {
     if (dataArray.length === 0) {
       setDataExibicao([])
@@ -245,14 +256,12 @@ const NewTabelaGenerica = forwardRef(({
       })
     }
     
-    // FIXED: Only update if data actually changed
     const filteredDataSignature = JSON.stringify(filteredData)
     if (filteredDataSignature !== lastFilteredDataRef.current) {
       lastFilteredDataRef.current = filteredDataSignature
       setDataExibicao(filteredData)
-      setCurrentPage(1) // Reset to first page when filters change
+      setCurrentPage(1)
       
-      // Call onTotalUpdate only when data actually changes
       if (onTotalUpdate && filteredData.length !== dataExibicao.length) {
         console.log('Calling onTotalUpdate with filtered data:', filteredData.length)
         onTotalUpdate(filteredData)
@@ -260,7 +269,6 @@ const NewTabelaGenerica = forwardRef(({
     }
   }, [dataArray, selectedFilters, getFilterConfig, onTotalUpdate, dataExibicao.length])
 
-  // Enhanced expandable rows functions
   const toggleRow = useCallback(async (row) => {
     const rowId = row.id || row.document || row.contractNumber || Math.random()
     
@@ -290,7 +298,6 @@ const NewTabelaGenerica = forwardRef(({
     return expandAll ? expandedRows.has(rowId) : expandedRow === rowId
   }, [expandAll, expandedRows, expandedRow])
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       setLoadingData({})
@@ -299,7 +306,6 @@ const NewTabelaGenerica = forwardRef(({
     }
   }, [])
 
-  // Pagination functions
   const goToPrevPage = useCallback(() => {
     setCurrentPage(prev => Math.max(prev - 1, 1))
   }, [])
@@ -315,7 +321,6 @@ const NewTabelaGenerica = forwardRef(({
   const indexOfFirstItem = indexOfLastItem - itemsPerPage
   const currentItems = dataExibicao.slice(indexOfFirstItem, indexOfLastItem)
 
-  // Get date range text as React elements
   const getDateRangeText = useCallback(() => {
     if (!dateRange || dateRange.length < 2) return ''
     
@@ -352,7 +357,6 @@ const NewTabelaGenerica = forwardRef(({
     }
   }, [dateRange, tableType])
 
-  // FIXED: Simple filter change handler - no complex dependencies
   const handleFilterChange = useCallback((filterKey, value) => {
     setSelectedFilters(prev => ({
       ...prev,
@@ -360,12 +364,10 @@ const NewTabelaGenerica = forwardRef(({
     }))
   }, [])
 
-  // Clear all filters
   const clearFilters = useCallback(() => {
     setSelectedFilters({})
   }, [])
 
-  // FIXED: Get available options for dropdown based on current selections
   const getAvailableOptions = useCallback((filterKey) => {
     if (!enableDependentFilters) {
       return allFilterOptions[filterKey] || []
@@ -375,12 +377,10 @@ const NewTabelaGenerica = forwardRef(({
     const dependentKey = filterConfig[filterKey]?.dependentKey
     const currentDependentValue = selectedFilters[dependentKey]
 
-    // If dependent filter is not selected or is "Todas", show all options
     if (!currentDependentValue) {
       return allFilterOptions[filterKey] || []
     }
 
-    // Calculate available options based on the dependent filter
     const availableValues = new Set()
     const filteredData = dataArray.filter(item => {
       return filterConfig[dependentKey].accessor(item) === currentDependentValue
@@ -396,12 +396,10 @@ const NewTabelaGenerica = forwardRef(({
     return [...availableValues].sort((a, b) => a.localeCompare(b))
   }, [enableDependentFilters, allFilterOptions, getFilterConfig, selectedFilters, dataArray])
 
-  // Helper function to get nested object values
   const getNestedValue = useCallback((obj, path) => {
     return path.split('.').reduce((acc, part) => acc && acc[part], obj)
   }, [])
 
-  // Helper function to format values
   const formatValue = useCallback((value, format) => {
     if (value === null || value === undefined || value === '') return ''
     
@@ -419,7 +417,6 @@ const NewTabelaGenerica = forwardRef(({
     }
   }, [dateConvert])
 
-  // Helper function to chunk array for mobile cards
   const chunkArray = useCallback((array, size) => {
     const chunks = []
     for (let i = 0; i < array.length; i += size) {
@@ -507,71 +504,6 @@ const NewTabelaGenerica = forwardRef(({
               )}
             </div>
 
-            {/* Mobile Filter Toggle */}
-            {enableResponsive && isMobileView && config.filters && config.filters.length > 0 && (
-              <div className="mobile-filter-toggle">
-                <button 
-                  className="mobile-filter-btn"
-                  onClick={() => setShowMobileFilters(!showMobileFilters)}
-                >
-                  <FiFilter /> 
-                  <span>Filtros</span>
-                  {Object.keys(selectedFilters).some(key => selectedFilters[key]) && (
-                    <span className="filter-counter">
-                      {Object.values(selectedFilters).filter(Boolean).length}
-                    </span>
-                  )}
-                </button>
-                {Object.keys(selectedFilters).some(key => selectedFilters[key]) && (
-                  <button 
-                    className="clear-filters-mobile"
-                    onClick={clearFilters}
-                  >
-                    Limpar
-                  </button>
-                )}
-              </div>
-            )}
-
-            {/* Mobile Filters */}
-            {enableResponsive && isMobileView && showMobileFilters && config.filters && (
-              <div className="mobile-filters-panel">
-                <div className="mobile-filters-header">
-                  <h4>Filtros</h4>
-                  <button 
-                    className="close-filters-btn"
-                    onClick={() => setShowMobileFilters(false)}
-                  >
-                  </button>
-                </div>
-                {config.filters.map(filter => (
-                  <div key={filter.key} className="mobile-filter-group">
-                    <label className="mobile-filter-label">{filter.label}</label>
-                    <div className="mobile-select-container">
-                      <select 
-                        value={selectedFilters[filter.key] || ''}
-                        onChange={(e) => handleFilterChange(filter.key, e.target.value)}
-                        className="mobile-select"
-                      >
-                        <option value="">Todos</option>
-                        {getAvailableOptions(filter.key)?.map((value, index) => (
-                          <option key={index} value={value}>{value}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                ))}
-                <div className="mobile-filters-footer">
-                  <button 
-                    className="apply-filters-btn"
-                    onClick={() => setShowMobileFilters(false)}
-                  >
-                    Aplicar Filtros
-                  </button>
-                </div>
-              </div>
-            )}
-
             <hr className='hr-global'/>
             <div className='container-busca'>
               <span className='span-busca'>
@@ -636,7 +568,9 @@ const NewTabelaGenerica = forwardRef(({
                       const formattedValue = formatValue(value, field.format)
                       
                       return field.badge ? (
-                        <span key={field.key} className="badge">{formattedValue}</span>
+                        <ConditionalMarquee key={field.key} className="badge">
+                          {formattedValue}
+                        </ConditionalMarquee>
                       ) : (
                         <strong key={field.key}>{formattedValue}</strong>
                       )

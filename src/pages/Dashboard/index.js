@@ -2,32 +2,32 @@
 /* eslint-disable react/react-in-jsx-scope */
 /* eslint-disable default-case */
 
-import './dashboard.scss'
-import { useContext, useEffect, useState } from 'react'
-import Joyride from 'react-joyride'
-import { AuthContext } from '../../contexts/auth'
-import { cancelOngoingRequests } from '../../services/api.js'
-import TabelaHorizontal from '../../components/Componente_TabelaHorizontal'
-import PieChart from '../../components/GraficoDashboard'
-import { useLocation } from 'react-router-dom'
-import '../../index.scss'
-import LazyLoader from '../../components/Componente_LazyLoader/index.js'
-import { FiHelpCircle } from 'react-icons/fi'
-import ModalAlerta from './ModalAlerta/index.js'
+import './dashboard.scss';
+import { useContext, useEffect, useState } from 'react';
+import Joyride from 'react-joyride';
+import { AuthContext } from '../../contexts/auth';
+import { cancelOngoingRequests } from '../../services/api.js';
+import TabelaHorizontal from '../../components/Componente_TabelaHorizontal';
+import PieChart from '../../components/GraficoDashboard';
+import { useLocation } from 'react-router-dom';
+import '../../index.scss';
+import LazyLoader from '../../components/Componente_LazyLoader/index.js';
+import { FiHelpCircle } from 'react-icons/fi';
+import ModalAlerta from './ModalAlerta/index.js';
 
 const Dashboard = () => {
-  const location = useLocation()
+  const location = useLocation();
   // Joyride state
-  const [runTutorial, setRunTutorial] = useState(false)
+  const [runTutorial, setRunTutorial] = useState(false);
 
-  const alerta = false
-  const [modalOpen, setModalOpen] = useState(alerta)
+  const alerta = false;
+  const [modalOpen, setModalOpen] = useState(alerta);
 
   const [steps] = useState([
-	{
+    {
       target: '[data-tour="trocar-section"]',
       content: 'Este botão permite trocar o Cliente/Filial, caso exista mais de um. O que for selecionado terá seus dados exibidos nos gráficos do dashboard',
-	  disableBeacon: true,
+      disableBeacon: true,
       placement: 'bottom'
     },
     {
@@ -45,7 +45,7 @@ const Dashboard = () => {
       content: 'Esta seção exibe dados de serviços com o total de hoje e o resumo mensal.',
       placement: 'bottom'
     },
-  ])
+  ]);
 
   const {  
     loadDashboard, isLoadedDashboard,
@@ -55,138 +55,111 @@ const Dashboard = () => {
     changedOption, canceled, fetchingData, setFetchingData, setCanceled,
     canceledSales, canceledCredits, canceledServices,
     setCanceledSales, setCanceledCredits, setCanceledServices,
-  } = useContext(AuthContext)
+  } = useContext(AuthContext);
 
   useEffect(() => {
-    setCanceled(false)
-  }, [])
+    setCanceled(false);
+  }, []);
 
   useEffect(() => {
-    if(isLoadedDashboard === false){
-      loadDashboard()
+    if (isLoadedDashboard === false) {
+      loadDashboard();
     }
-  }, [changedOption])
+  }, [changedOption]);
 
   const handleTutorialEnd = () => {
-    setRunTutorial(false)
+    setRunTutorial(false);
+  };
 
-  }
-
-  const chartDataExists = (array) => array.length > 0
+  const chartDataExists = (array) => array && array.length > 0;
 
   const reloadSales = () => {
-    setIsLoadedSalesDashboard(false)
-    setCanceledSales(false)
-    loadSalesGroup()
-  }
+    setIsLoadedSalesDashboard(false);
+    setCanceledSales(false);
+    loadSalesGroup();
+  };
 
   const reloadCredits = () => {
-    setIsLoadedCreditsDashboard(false)
-    setCanceledCredits(false)
-    loadCreditsGroup()
-  }
+    setIsLoadedCreditsDashboard(false);
+    setCanceledCredits(false);
+    loadCreditsGroup();
+  };
 
   const reloadServices = () => {
-    setIsLoadedServicesDashboard(false)
-    setCanceledServices(false)
-    loadServicesGroup()
-  }
+    setIsLoadedServicesDashboard(false);
+    setCanceledServices(false);
+    loadServicesGroup();
+  };
 
   useEffect(() => {
-    if(canceled === true){
-      setFetchingData(false)
-      if(!isLoadedSalesDashboard){
-        setCanceledSales(true)
+    if (canceled === true) {
+      setFetchingData(false);
+      if (!isLoadedSalesDashboard) {
+        setCanceledSales(true);
       }
 
-      if(!isLoadedCreditsDashboard){
-        setCanceledCredits(true)
+      if (!isLoadedCreditsDashboard) {
+        setCanceledCredits(true);
       }
 
-      if(!isLoadedServicesDashboard){
-        setCanceledServices(true)
+      if (!isLoadedServicesDashboard) {
+        setCanceledServices(true);
       }
     }
-  }, [canceled])
+  }, [canceled]);
 
   const DisplaySales = () => {
     return (
       <div className='graph-data'>
-        { !canceledSales ?
           <>
-            { chartDataExists(salesDashboard.sales) ? 
-              <>
-                <PieChart data01={salesDashboard.chart} arrayAdm={salesDashboard.salesByAdmin} tipo='0' dados='vendas' totalAdmin={salesDashboard.totalAdmin}/>
-                <div className='dash-table-container'>
-                  <TabelaHorizontal header='Total Últimos 4 dias' valor={salesDashboard.totalLast4} />
-                  <TabelaHorizontal header='Total do Mês' valor={salesDashboard.totalMonth} /> 
-                </div>
-              </>
-              : 
-              <div>
-                { errorSales || salesDashboard.sales === null ? 
-                  <div className='dash-table-container'>
-                    <h3 className='subtitle-global'>Ocorreu um erro</h3>
-                    <button className='btn btn-global' onClick={reloadSales}>Recarregar</button>
-                  </div>
-                  :
-                  <div className='dash-table-container'>
-                    <h3 className='subtitle-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>
-                    <button className='btn btn-global' onClick={reloadSales}>Recarregar</button>
-                  </div>					
-                  }
-              </div>
-            }
-          </>
-            :
-          <>
+            <PieChart 
+              data01={salesDashboard.chart} 
+              arrayAdm={salesDashboard.sales} 
+              totalAdmin={salesDashboard.totalAdmin}
+              tipo='0' 
+              dados='vendas'
+            />
             <div className='dash-table-container'>
-              <h3 className='subtitle-global'>Carregamento Cancelado</h3>
-              <button className='btn btn-global' onClick={reloadSales}>Recarregar</button>
-            </div>	
+              <TabelaHorizontal 
+                header='Total Últimos 4 dias' 
+                valor={salesDashboard.totalLast4} 
+                isCurrency={true}
+              />
+              <TabelaHorizontal 
+                header='Total do Mês' 
+                valor={salesDashboard.totalMonth} 
+                isCurrency={true}
+              /> 
+            </div>
           </>
-        }
       </div>
-    )
-  }
+    );
+  };
 
   const DisplayCredits = () => {
     return (
       <div className='graph-data'>
-        { !canceledCredits ?
-          <>
-            { chartDataExists(creditsDashboard.credits) && !canceledCredits ? 
-              <>
-                <PieChart data01={creditsDashboard.chart} arrayAdm={creditsDashboard.creditsByAdmin} tipo='1' dados='creditos' totalAdmin={creditsDashboard.totalAdmin}/>
-                <div className='dash-table-container'>
-                  <TabelaHorizontal header='Previsão de Hoje' valor={creditsDashboard.totalCreditsToday} />
-                  <TabelaHorizontal header='Previsão Próx 5 Dias' valor={creditsDashboard.totalCreditsNext5} />
-                </div> 
-              </>
-            : 
-              <div>
-                { errorCredits ? 
-                  <div className='dash-table-container'>
-                    <h3 className='subtitle-global'>Ocorreu um erro</h3>
-                    <button className='btn btn-global' onClick={reloadCredits}>Recarregar</button>
-                  </div>
-                  :
-                  <div className='dash-table-container'>
-                    <h3 className='subtitle-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>
-                    <button className='btn btn-global' onClick={reloadCredits}>Recarregar</button>
-                  </div>
-                }
-              </div>
-            }
-          </>
-            :
-          <>
-            <div className='dash-table-container'>
-              <h3 className='subtitle-global'>Carregamento Cancelado</h3>
-              <button className='btn btn-global' onClick={reloadCredits}>Recarregar</button>
-            </div>	
-          </>
-        }
+        <>
+          <PieChart 
+            data01={creditsDashboard.chart} 
+            arrayAdm={creditsDashboard.credits} 
+            totalAdmin={creditsDashboard.totalAdmin}
+            tipo='1' 
+            dados='creditos'
+          />
+          <div className='dash-table-container'>
+            <TabelaHorizontal 
+              header='Previsão de Hoje' 
+              valor={creditsDashboard.totalCreditsToday} 
+              isCurrency={true}
+            />
+            <TabelaHorizontal 
+              header='Previsão Próx 5 Dias' 
+              valor={creditsDashboard.totalCreditsNext5} 
+              isCurrency={true}
+            />
+          </div> 
+        </>
       </div>
     )
   }
@@ -194,130 +167,119 @@ const Dashboard = () => {
   const DisplayServices = () => {
     return (
       <div className='graph-data'>
-        { !canceledServices ?
-          <>
-            { chartDataExists(servicesDashboard.services) && !canceledServices ? 
-              <>
-                <PieChart data01={servicesDashboard.chart} arrayAdm={servicesDashboard.servicesByAdmin} tipo='2' dados='servicos' totalAdmin={servicesDashboard.totalAdmin}/> 
-                <div className='dash-table-container'>
-                  <TabelaHorizontal header='Total de Hoje' valor={servicesDashboard.totalServicesToday} />
-                  <TabelaHorizontal header='Total do Mês' valor={servicesDashboard.totalServicesMonth} /> 
-                </div>
-              </>
-            : 
-              <div>
-                { errorServices ? 
-                  <div className='dash-table-container'>
-                    {<h3 className='subtitle-global'>Ocorreu um erro</h3>}
-                    <button className='btn btn-global' onClick={reloadServices}>Recarregar</button>
-                  </div>
-                  :
-                  <div className='dash-table-container'>
-                    <h3 className='subtitle-global'>Ainda não existem dados a serem exibidos para o mês atual</h3>
-                    <button className='btn btn-global ' onClick={reloadServices}>Recarregar</button>
-                  </div>
-                }
-              </div>
-            }
-          </>
-            :
-          <>
-            <div className='dash-table-container'>
-              <h3 className='subtitle-global'>Carregamento Cancelado</h3>
-              <button className='btn btn-global' onClick={reloadServices}>Recarregar</button>
-            </div>	
-          </>
-        }
+        <>
+          <PieChart 
+            data01={servicesDashboard.chart} 
+            arrayAdm={servicesDashboard.services} 
+            totalAdmin={servicesDashboard.totalAdmin}
+            tipo='2' 
+            dados='servicos'
+          />
+          <div className='dash-table-container'>
+            <TabelaHorizontal 
+              header='Total de Hoje' 
+              valor={servicesDashboard.totalServicesToday} 
+              isCurrency={true}
+            />
+            <TabelaHorizontal 
+              header='Total do Mês' 
+              valor={servicesDashboard.totalServicesMonth} 
+              isCurrency={true}
+            /> 
+          </div>
+        </>
       </div>
     )
   }
 
   return (
     <>
-  {modalOpen &&
-    <ModalAlerta onClose={()=>{setModalOpen(false)}} />
-  }
-	{ runTutorial &&
-      <Joyride
-        steps={steps}
-        run={runTutorial}
-        continuous={true}
-        scrollToFirstStep={false}
-        showProgress={true}
-        showSkipButton={true}
-        scrollOffset={80}
-        styles={{
-          options: {
-            primaryColor: '#99cc33',
-            textColor: '#0a3d70',
-            zIndex: 10000,
-          }
-        }}
-        callback={(data) => {
-          if (data.status === 'finished' || data.status === 'skipped') {
-            handleTutorialEnd()
-          }
-        }}
-        locale={{
-          back: 'Voltar',
-          close: 'Fechar',
-          last: 'Finalizar',
-          next: 'Próximo',
-          skip: 'Pular',
-          nextLabelWithProgress: 'Próximo ({step} de {steps})',
-        }}
-      />	
-	}
+      {modalOpen && (
+        <ModalAlerta onClose={() => { setModalOpen(false); }} />
+      )}
+      
+      {runTutorial && (
+        <Joyride
+          steps={steps}
+          run={runTutorial}
+          continuous={true}
+          scrollToFirstStep={false}
+          showProgress={true}
+          showSkipButton={true}
+          scrollOffset={80}
+          styles={{
+            options: {
+              primaryColor: '#99cc33',
+              textColor: '#0a3d70',
+              zIndex: 10000,
+            }
+          }}
+          callback={(data) => {
+            if (data.status === 'finished' || data.status === 'skipped') {
+              handleTutorialEnd();
+            }
+          }}
+          locale={{
+            back: 'Voltar',
+            close: 'Fechar',
+            last: 'Finalizar',
+            next: 'Próximo',
+            skip: 'Pular',
+            nextLabelWithProgress: 'Próximo ({step} de {steps})',
+          }}
+        />	
+      )}
+      
       <div className='appPage'>
         <div className='content-area dash'>
           <div className='data-group-area' data-tour="sales-section">
             <h1 className='title-chart'>Vendas:</h1>
-            {isLoadedSalesDashboard === false  ? 
+            {isLoadedSalesDashboard === false ? (
               <LazyLoader /> 
-            : 
+            ) : (
               <DisplaySales />
-            }
+            )}
           </div>
           
           <div className='data-group-area' data-tour="credits-section">
             <h1 className='title-chart'>Créditos:</h1>			
-            { isLoadedCreditsDashboard === false ? 
+            {isLoadedCreditsDashboard === false ? (
               <LazyLoader /> 
-            : 
+            ) : (
               <DisplayCredits />
-            }
+            )}
           </div>
           
           <div className='data-group-area' data-tour="services-section">
             <h1 className='title-chart'>Serviços:</h1>
-            { isLoadedServicesDashboard === false ? 
+            {isLoadedServicesDashboard === false ? (
               <LazyLoader />
-            : 
+            ) : (
               <DisplayServices />
-            }
+            )}
           </div>
         </div>		
-      </div>   
+      </div>    
       <button 
         className='btn btn-success-dados btn-tutorial px-2 py-1'
-            onClick={() => setRunTutorial(true)}
-            style={{
-            position: 'relative',
-            bottom: '0px',
-            right: '-10px',
-            zIndex: 10,
-            padding: '10px 15px',
-            background: 'none',
-            color: '#99cc33',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer'
-            }}
-        >
+        onClick={() => setRunTutorial(true)}
+        style={{
+          position: 'fixed',
+          bottom: '20px',
+          right: '20px',
+          zIndex: 10,
+          padding: '10px 15px',
+          background: 'none',
+          color: '#99cc33',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer'
+        }}
+      >
         <FiHelpCircle />
-    </button>
+      </button>
     </>  
   )
 }
 
-export default Dashboard
+export default Dashboard;

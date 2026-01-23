@@ -4,23 +4,17 @@
     height: 100vh;
     display: flex;
     flex-direction: column;
-    overflow-x: hidden; /* Prevent horizontal scroll */
+    overflow-x: hidden;
   }
   
   .layout-content {
     display: flex;
     flex: 1;
-    overflow-x: hidden; /* Prevent horizontal scroll */
+    overflow-x: hidden;
   }
 
   .navbar-title{
     display: flex;
-    /* flex-direction: column; */
-    /* align-self: start; */
-    /* padding-left: 20px; */
-    /* padding-top: 15px; */
-    /* font-size: x-large; */
-    /* z-index: 1; */
     justify-content: center;
     align-items: center;
     align-content: center;
@@ -49,16 +43,16 @@ img.img-header:hover{
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    overflow-x: hidden; /* Prevent horizontal scroll */
-    overflow-y: auto; /* Allow vertical scroll */
+    overflow-x: hidden;
+    overflow-y: auto;
   }
   
   .children-content {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    overflow-y: auto; /* Allow vertical scroll */
-    width: 100%; /* Ensure full width is used */
+    overflow-y: auto;
+    width: 100%;
   }
 
   .header-container-fixed{

@@ -22,8 +22,8 @@ function App() {
         </PluggyProvider>
       </AuthProvider>
       <ToastContainer
-        position="bottom-right" // Set position to bottom right
-        autoClose={5000} // Adjust as per your requirements
+        position="bottom-right"
+        autoClose={5000}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick
