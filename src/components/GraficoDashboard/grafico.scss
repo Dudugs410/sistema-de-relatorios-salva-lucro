@@ -125,13 +125,14 @@
 }
 
 .chart-controls {
-    /* position: absolute; */
-    /* top: -40px; */
-    /* right: 0; */
-    /* z-index: 5; */
-    display: flex;
-    gap: 8px;
-    flex-direction: row-reverse;
+  /* position: absolute; */
+  /* top: -40px; */
+  /* right: 0; */
+  /* z-index: 5; */
+  display: flex;
+  gap: 8px;
+  flex-direction: row-reverse;
+  margin-bottom: 8px;
   
   @media (max-width: 768px) {
     top: -35px;
