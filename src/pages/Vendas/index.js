@@ -1,4 +1,5 @@
 import { useEffect, useContext, useState } from 'react'
+import Select from 'react-select'
 import './vendas.scss'
 import Joyride from 'react-joyride'
 import { AuthContext } from '../../contexts/auth'
@@ -16,13 +17,43 @@ const Vendas = () =>{
       localStorage.setItem('currentPath', location.pathname)
   }, [location])
 
+  const [bandeira, setBandeira] = useState('')
+  const [administradora, setAdministradora] = useState('')
+
+  const [listaBandeiras, setListaBandeiras] = useState([])
+  const [listaAdministradoras, setListaAdministradoras] = useState([])
+
+  useEffect(()=>{
+    const inicializar = async () =>{
+      setListaBandeiras(await loadBanners())
+      setListaAdministradoras(await loadAdmins())
+    }
+    inicializar()
+  },[])
+
+  useEffect(()=>{
+    if(listaBandeiras.length>0){
+      console.log('bandeiras: ', listaBandeiras)
+    }
+  },[listaBandeiras])
+
+  useEffect(()=>{
+    if(listaAdministradoras>0){
+      console.log('administradoras: ', listaAdministradoras)
+    }
+  },[listaAdministradoras])
+
+  const handleAdmin = () => {
+    console.log('executou função')  
+  }
+
   const {
     salesPageArray, setSalesPageArray,
     salesPageAdminArray, setSalesPageAdminArray,
     salesDateRange, setSalesDateRange,
     loadSales, loadTotalSales, salesTotal, setSalesTotal, salesTableData,
     btnDisabledSales, setBtnDisabledSales,
-    groupByAdmin,
+    groupByAdmin, loadBanners, loadAdmins,
     exportSales, 
     isCheckedCalendar, setIsCheckedCalendar,
     
@@ -196,6 +227,7 @@ const handleCheckboxChangeCalendar = () => {
           <div className='vendas-title-container'>
             <h1 className='vendas-title'>Calendário de Vendas</h1>
           </div>
+          <hr className='hr-global'/>
           <div data-tour="calendario-section" className='component-container-vendas'>
               { runTutorial &&
                 <Joyride
@@ -239,11 +271,47 @@ const handleCheckboxChangeCalendar = () => {
                     location={location}
                   />
                 ) : (
-                  <MyCalendar
-                    onLoadData={handleLoadData}
-                    getCalendarDate={handleDateRangeChange}
-                    btnDisabled={btnDisabledSales}
-                  />
+                  <>
+                    <div className='select-container-calendario'>
+                      <div>
+                        <h5>Adquirente</h5>
+                        <Select 
+                          className='seletor-adq-select' 
+                          id='adquirente'
+                          options={listaAdministradoras}
+                          getOptionLabel={(option) => option.nomeAdquirente} // This defines what to show as label
+                          getOptionValue={(option) => option.codigoAdquirente} // This defines the unique value
+                          onChange={handleAdmin}
+                          value={bandeira ? listaAdministradoras.find(option => option.codigoAdquirente === bandeira) : null}
+                          menuPortalTarget={document.body}
+                          menuPosition="fixed"
+                          placeholder="Selecione uma adquirente..."
+                          isClearable={true}
+                        />
+                      </div>
+                      <div>
+                        <h5>Bandeira</h5>
+                        <Select 
+                          className='seletor-adq-select' 
+                          id='bandeira'
+                          options={listaBandeiras}
+                          getOptionLabel={(option) => option.descricaoBandeira} // This defines what to show as label
+                          getOptionValue={(option) => option.codigoBandeira} // This defines the unique value
+                          onChange={handleAdmin}
+                          value={administradora ? listaBandeiras.find(option => option.codigoBandeira === administradora) : null}
+                          menuPortalTarget={document.body}
+                          menuPosition="fixed"
+                          placeholder="Selecione uma bandeira..."
+                          isClearable={true}
+                        />
+                      </div>
+                    </div>
+                    <MyCalendar
+                      onLoadData={handleLoadData}
+                      getCalendarDate={handleDateRangeChange}
+                      btnDisabled={btnDisabledSales}
+                    />
+                  </>
                 )
               ) : null }
               <button 
