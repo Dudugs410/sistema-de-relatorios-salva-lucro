@@ -29,11 +29,11 @@ const tableConfig = {
       { key: 'cnpj', label: 'CNPJ' },
       { key: 'valorBruto', label: 'Valor Bruto', format: 'currency', className: 'green-global' },
       { key: 'valorLiquido', label: 'Valor Líquido', format: 'currency', className: 'green-global' },
+      { key: 'cartao', label: 'Cartão'},
       { key: 'taxa', label: 'Taxa', format: 'percent', className: 'red-global' },
       { key: 'dataVenda', label: 'Data Venda', format: 'date' },
       { key: 'quantidadeParcelas', label: 'Parcelas' },
       { key: 'nsu', label: 'NSU' },
-      { key: 'tid', label: 'TID' }
     ]
   },
   creditos: {
@@ -52,7 +52,6 @@ const tableConfig = {
       { key: 'dataVenda', label: 'Data Venda', format: 'date' },
       { key: 'quantidadeParcelas', label: 'Parcelas' },
       { key: 'nsu', label: 'NSU' },
-      { key: 'tid', label: 'TID' }
     ]
   },
   servicos: {

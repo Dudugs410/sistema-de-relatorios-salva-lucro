@@ -1667,6 +1667,7 @@ const [creditsDateRange, setCreditsDateRange] = useState([new Date(), new Date()
 const [servicesPageArray, setServicesPageArray] = useState([])
 const [servicesPageAdminArray, setServicesPageAdminArray] = useState([])
 const [servicesDateRange, setServicesDateRange] = useState([new Date(), new Date()])
+const [servicesTotal, setServicesTotal] = useState(0);
 
 // >>> Página de Taxas <<< //
 const [isLoadingTaxes, setIsLoadingTaxes] = useState(false)
@@ -2302,7 +2303,7 @@ function timeConvert(time){
 		salesDashboard, creditsDashboard, servicesDashboard, chartSales, chartCredits, chartServices,
 		salesPageArray, salesPageAdminArray, salesTotal, salesDateRange,
 		creditsPageArray, creditsPageAdminArray, creditsTotal, creditsDateRange,
-		servicesPageArray, servicesPageAdminArray, servicesDateRange,
+		servicesPageArray, servicesPageAdminArray, servicesDateRange, servicesTotal,
 		taxesPageArray,
 		logout, updateUser // Add the memoized functions
 	])

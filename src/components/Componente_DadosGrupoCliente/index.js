@@ -107,6 +107,8 @@ const DadosGrupoCliente = () => {
       localStorage.setItem('clientCode', 'todos')
       setExportName(selectedGroup ? `${selectedGroup.label} - Todas Filiais` : '')
     }
+    console.log('selectedClient: ', selectedClient)
+    console.log('selectedGroup: ', selectedGroup)
   }, [selectedClient, selectedGroup])
 
   const getClientOptions = (group) => {

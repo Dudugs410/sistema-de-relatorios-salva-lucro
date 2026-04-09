@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { AuthContext } from "../../contexts/auth"
-import salvaLucroLogo from '../../assets/logoSalvaLucro.png'
+import salvaLucroLogo from '../../assets/LogoTopo.png'
 import sifraLogo from '../../assets/logoSifra.png'
 import mgLogo from '../../assets/logoMG.png'
 import './login.css'

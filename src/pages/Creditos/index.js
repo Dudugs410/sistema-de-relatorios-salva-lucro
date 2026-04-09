@@ -13,12 +13,35 @@ import { FiHelpCircle } from 'react-icons/fi'
 const Creditos = () =>{
 	const location = useLocation()
 
+  const resetValues = () => {
+    setCreditsPageArray([])
+    setCreditsPageAdminArray([])
+    setBtnDisabledCredits(false)
+    setCreditsTotal({
+      debit: 0,
+      credit: 0,
+      voucher: 0,
+      total: 0
+    })
+    creditsTableData.length = 0
+    // Clear select states
+    setAdministradora(null)
+    setBandeira(null)
+    // Clear localStorage items
+    localStorage.removeItem('selectedAdmCredits')
+    localStorage.removeItem('selectedBanCredits')
+  }
+
+  useEffect(()=>{
+    resetValues()
+  },[])
+
 	useEffect(() => {
 		localStorage.setItem('currentPath', location.pathname)
 	}, [location])
 
-    const [bandeira, setBandeira] = useState('')
-    const [administradora, setAdministradora] = useState('')
+    const [bandeira, setBandeira] = useState(null)
+    const [administradora, setAdministradora] = useState(null)
   
     const [listaBandeiras, setListaBandeiras] = useState([])
     const [listaAdministradoras, setListaAdministradoras] = useState([])
@@ -38,13 +61,21 @@ const Creditos = () =>{
     },[listaBandeiras])
   
     useEffect(()=>{
-      if(listaAdministradoras>0){
+      if(listaAdministradoras.length>0){
         console.log('administradoras: ', listaAdministradoras)
       }
     },[listaAdministradoras])
   
-    const handleAdmin = () => {
-      console.log('executou função')  
+    const handleAdmin = (option) => {
+      console.log('executou função', option)
+      setAdministradora(option?.codigoAdquirente || null)
+      localStorage.setItem('selectedAdmCredits', JSON.stringify(option))
+    }
+  
+    const handleBan = (option) => {
+      console.log('executou função', option)
+      setBandeira(option?.codigoBandeira || null)
+      localStorage.setItem('selectedBanCredits', JSON.stringify(option))
     }
   
 	const {
@@ -64,19 +95,6 @@ const Creditos = () =>{
 		  loadTotalCredits(creditsPageArray)
 		}
 	  },[creditsPageArray])
-	  
-  const resetValues = () => {
-    setCreditsPageArray([])
-    setCreditsPageAdminArray([])
-    setBtnDisabledCredits(false)
-    setCreditsTotal({
-      debit: 0,
-      credit: 0,
-      voucher: 0,
-      total: 0
-    })
-    creditsTableData.length = 0
-  }
 
 async function handleLoadData(e) {
   e.preventDefault()
@@ -118,6 +136,18 @@ async function loadData() {
 
   const handleGoBack = () => {
 	  resetValues()
+  }
+
+  // Get the selected option object for Adquirente
+  const getSelectedAdminOption = () => {
+    if (!administradora || listaAdministradoras.length === 0) return null
+    return listaAdministradoras.find(option => option.codigoAdquirente === administradora)
+  }
+
+  // Get the selected option object for Bandeira
+  const getSelectedBanOption = () => {
+    if (!bandeira || listaBandeiras.length === 0) return null
+    return listaBandeiras.find(option => option.codigoBandeira === bandeira)
   }
 
     // Joyride state
@@ -252,36 +282,86 @@ async function loadData() {
               ) : (
                 <>
                   <div className='select-container-calendario'>
-                    <div>
+                    <div className='select-wrapper'>
                       <h5>Adquirente</h5>
                       <Select 
-                        className='seletor-adq-select' 
+                        className='seletor-adq-select fixed-width-select' 
                         id='adquirente'
                         options={listaAdministradoras}
-                        getOptionLabel={(option) => option.nomeAdquirente} // This defines what to show as label
-                        getOptionValue={(option) => option.codigoAdquirente} // This defines the unique value
-                        onChange={handleAdmin}
-                        value={bandeira ? listaAdministradoras.find(option => option.codigoAdquirente === bandeira) : null}
+                        getOptionLabel={(option) => option.nomeAdquirente}
+                        getOptionValue={(option) => option.codigoAdquirente}
+                        onChange={(option) => handleAdmin(option)}
+                        value={getSelectedAdminOption()}
                         menuPortalTarget={document.body}
                         menuPosition="fixed"
                         placeholder="Selecione uma adquirente..."
                         isClearable={true}
+                        styles={{
+                          control: (base) => ({
+                            ...base,
+                            minWidth: 250,
+                            width: '100%',
+                          }),
+                          menu: (base) => ({
+                            ...base,
+                            minWidth: 250,
+                            width: '100%',
+                          }),
+                          valueContainer: (base) => ({
+                            ...base,
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }),
+                          singleValue: (base) => ({
+                            ...base,
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            maxWidth: '90%',
+                          }),
+                        }}
                       />
                     </div>
-                    <div>
+                    <div className='select-wrapper'>
                       <h5>Bandeira</h5>
                       <Select 
-                        className='seletor-adq-select' 
+                        className='seletor-adq-select fixed-width-select' 
                         id='bandeira'
                         options={listaBandeiras}
-                        getOptionLabel={(option) => option.descricaoBandeira} // This defines what to show as label
-                        getOptionValue={(option) => option.codigoBandeira} // This defines the unique value
-                        onChange={handleAdmin}
-                        value={administradora ? listaBandeiras.find(option => option.codigoBandeira === administradora) : null}
+                        getOptionLabel={(option) => option.descricaoBandeira}
+                        getOptionValue={(option) => option.codigoBandeira}
+                        onChange={(option) => handleBan(option)}
+                        value={getSelectedBanOption()}
                         menuPortalTarget={document.body}
                         menuPosition="fixed"
                         placeholder="Selecione uma bandeira..."
                         isClearable={true}
+                        styles={{
+                          control: (base) => ({
+                            ...base,
+                            minWidth: 250,
+                            width: '100%',
+                          }),
+                          menu: (base) => ({
+                            ...base,
+                            minWidth: 250,
+                            width: '100%',
+                          }),
+                          valueContainer: (base) => ({
+                            ...base,
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }),
+                          singleValue: (base) => ({
+                            ...base,
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            maxWidth: '90%',
+                          }),
+                        }}
                       />
                     </div>
                   </div>
