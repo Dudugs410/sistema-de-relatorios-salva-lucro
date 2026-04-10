@@ -375,6 +375,20 @@ const getTotalUpdateFunction = useCallback(() => {
     }
   }, [exportPage, dataArray, getTableColumns, getDateRange, getExportFunction, handleTotalUpdate, getFilterConfig])
 
+  // Determine button text based on page type
+  const getButtonText = () => {
+    switch(currentPath) {
+      case '/vendas':
+        return 'Nova Consulta de Vendas'
+      case '/creditos':
+        return 'Nova Consulta de Créditos'
+      case '/servicos':
+        return 'Nova Consulta de Serviços'
+      default:
+        return 'Nova Pesquisa'
+    }
+  }
+
   return (
     <>
       {totals && <TotalModalidadesComp totals={totals} type={exportPage} />}
@@ -397,18 +411,14 @@ const getTotalUpdateFunction = useCallback(() => {
         )}
         <hr className='hr-global' />
       </div>
-      <div className='search-bar'>
-        <form className='date-container-vendas'>
-          <div className='submit-container select-align voltar-align'>
-            <button 
-              data-tour="botaovoltar-section" 
-              className='btn btn-secondary btn-global btn-pesquisar' 
-              onClick={onGoBack}
-            >
-              Voltar
-            </button>
-          </div>
-        </form>
+      <div data-tour="botaovoltar-section" className='floating-button-container'>
+        <button 
+          className='btn-floating-new-search' 
+          onClick={onGoBack}
+        >
+          <span className='floating-button-icon'>🔍</span>
+          <span className='floating-button-text'>{getButtonText()}</span>
+        </button>
       </div>
     </>
   )
