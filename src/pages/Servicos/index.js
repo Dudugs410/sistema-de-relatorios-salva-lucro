@@ -12,6 +12,17 @@ import { FiHelpCircle } from 'react-icons/fi'
 const Servicos = () =>{
   const location = useLocation()
 
+    const resetValues = () => {
+    setServicesPageArray([])
+    setServicesPageAdminArray([])
+    setBtnDisabledServices(false)
+    servicesTableData.length = 0
+  }
+
+  useEffect(()=>{
+    resetValues()
+  },[])
+
   useEffect(() => {
       localStorage.setItem('currentPath', location.pathname)
   }, [location])
@@ -31,13 +42,6 @@ const Servicos = () =>{
       setServicesPageAdminArray(groupServicesByAdmin(servicesPageArray))
     }
   },[servicesPageArray])
-
-  const resetValues = () => {
-    setServicesPageArray([])
-    setServicesPageAdminArray([])
-    setBtnDisabledServices(false)
-    servicesTableData.length = 0
-  }
 
   async function handleLoadData(e) {
     e.preventDefault()
@@ -165,6 +169,11 @@ const Servicos = () =>{
     }
   }
 
+  const calculateServicesTotal = (servicesArray) => {
+    if (!servicesArray || servicesArray.length === 0) return 0
+    return servicesArray.reduce((total, service) => total + Math.abs(service.valor), 0)
+  }
+
 	return(
 		<div className='appPage'>
 		  <div className='page-vendas-background'>
@@ -205,23 +214,22 @@ const Servicos = () =>{
             />	
           }
           { servicesPageArray !== null ?
-            (servicesPageArray.length > 0 ? (
-              <DisplayData 
-                dataArray={servicesPageArray} 
-                adminDataArray={servicesPageAdminArray} 
-                totals={null} 
-                onGoBack={resetValues}
-                setRunTutorial={setRunTutorial}
-                location={location}
-              />
+              servicesPageArray.length > 0 ? (
+                <DisplayData 
+                  dataArray={servicesPageArray} 
+                  adminDataArray={servicesPageAdminArray} 
+                  totals={{ total: calculateServicesTotal(servicesPageArray) }} 
+                  onGoBack={resetValues}
+                  setRunTutorial={setRunTutorial}
+                  location={location}
+                />
               ) : (
-              <MyCalendar 
-                onLoadData={handleLoadData} 
-                getCalendarDate={handleDateRangeChange} 
-                btnDisabled={btnDisabledServices}
-              />
+                <MyCalendar 
+                  onLoadData={handleLoadData} 
+                  getCalendarDate={handleDateRangeChange} 
+                  btnDisabled={btnDisabledServices}
+                />
               )
-            )
           : null }
               <button 
                 className='btn btn-success-dados btn-tutorial px-2 py-1'

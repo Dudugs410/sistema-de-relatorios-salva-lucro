@@ -58,6 +58,7 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutori
             render: (item) => <span className='red-global'>{Number(item.valorDesconto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span>
           },
           { key: 'nsu', header: 'NSU' },
+          { key: 'cartao', header: 'Cartão'},
           { 
             key: 'dataVenda', 
             header: 'Data da Venda',
@@ -75,7 +76,6 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutori
           },
           { key: 'codigoAutorizacao', header: 'Autorização' },
           { key: 'quantidadeParcelas', header: 'QTD Parcelas' },
-          { key: 'tid', header: 'TID' }
         ]
       
       case 'creditos':
@@ -122,7 +122,6 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutori
           { key: 'banco', header: 'Banco' },
           { key: 'agencia', header: 'Agência' },
           { key: 'conta', header: 'Conta' },
-          { key: 'tid', header: 'TID' }
         ]
       
       case 'servicos':
@@ -193,15 +192,22 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutori
     return exportData
   }, [currentPath, exportSales, exportCredits, exportServices, dataArray])
 
-  const getTotalUpdateFunction = useCallback(() => {
-    switch(currentPath) {
-      case '/vendas': return setSalesTotal
-      case '/creditos': return setCreditsTotal
-      default: return null
+const getTotalUpdateFunction = useCallback(() => {
+  switch(currentPath) {
+    case '/vendas': return setSalesTotal
+    case '/creditos': return setCreditsTotal
+    case '/servicos': return (total) => {
+      // For services, we'll store it in state or just use it directly
+      // You might want to add a servicesTotal state in your AuthContext
+      console.log('Services total:', total)
+      // If you have setServicesTotal in context, use it here
+      // return setServicesTotal
+      return null
     }
-  }, [currentPath, setSalesTotal, setCreditsTotal])
+    default: return null
+  }
+}, [currentPath, setSalesTotal, setCreditsTotal])
 
-  // FIXED: Enhanced loadTotals to handle filtered data without infinite loops
   const loadTotals = useCallback((array, tableType) => {
     if(array && array.length > 0){
       let temp = []
@@ -214,7 +220,7 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutori
         if(temp.length === 0){
           let newObj = {
             adminName: tableType === 'servicos' ? venda.nome_adquirente : venda.adquirente.nomeAdquirente,
-            total: tableType === 'vendas' ? venda.valorBruto : venda.valorLiquido,
+            total: tableType === 'servicos' ? Math.abs(venda.valor) : (tableType === 'vendas' ? venda.valorBruto : venda.valorLiquido),
             id: 0,
             sales: []
           }
@@ -222,7 +228,7 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutori
         }else{
           let newObj = {
             adminName: tableType === 'servicos' ? venda.nome_adquirente : venda.adquirente.nomeAdquirente,
-            total: tableType === 'vendas' ? venda.valorBruto : venda.valorLiquido,
+            total: tableType === 'servicos' ? Math.abs(venda.valor) : (tableType === 'vendas' ? venda.valorBruto : venda.valorLiquido),
             id: 0,
             sales: []
           }
@@ -253,7 +259,12 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutori
           }
         }
         
-        totalTemp += tableType === 'vendas' ? venda.valorBruto : venda.valorLiquido
+        // For services, sum the absolute values
+        if (tableType === 'servicos') {
+          totalTemp += Math.abs(venda.valor)
+        } else {
+          totalTemp += tableType === 'vendas' ? venda.valorBruto : venda.valorLiquido
+        }
       })
 
       let totalResult = tableType === 'servicos' 
@@ -262,7 +273,6 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutori
       
       const updateFunction = getTotalUpdateFunction()
       if (updateFunction) {
-        // FIXED: Use setTimeout to break potential synchronous update chain
         setTimeout(() => {
           updateFunction(totalResult)
         }, 0)
@@ -367,7 +377,7 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutori
 
   return (
     <>
-      {totals && <TotalModalidadesComp totals={totals} />}
+      {totals && <TotalModalidadesComp totals={totals} type={exportPage} />}
       {currentPath === '/servicos' && <hr className='hr-global' />}
       
       {/* Pass the export function and filtered data to GerarRelatorio */}

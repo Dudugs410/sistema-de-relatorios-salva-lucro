@@ -7,6 +7,17 @@
     justify-content: flex-start;
 }
 
+// Add specific class for single box (services)
+.content-container-modalidade.single-box {
+    justify-content: center;
+    
+    .total-container-modalidade {
+        max-width: 400px;
+        width: 100%;
+        margin: 5px auto;
+    }
+}
+
 .total-container-modalidade{
     height: 100px;
     width: 100%;
@@ -35,7 +46,6 @@
 
 .total-container-modalidade>span{
     color: var(--primary-color);
-//  font-family: $default-font;
     font-size: 2em;
 }
 
@@ -57,7 +67,6 @@
     transition: all .4s;
     color: rgb(153, 204, 51);
     font-weight: bold;
-
 }
 
 .valor-total{
@@ -65,41 +74,134 @@
     text-shadow: 1px 2px 2px rgba(0,0,0,0.6);
 }
 
-@media screen and (max-width: 869px){
-
-    .title-modalidade{
+// Tablet responsive (769px to 1024px)
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+    .content-container-modalidade {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .total-container-modalidade {
+        flex: 1;
+        min-width: 200px;
+        max-width: calc(25% - 10px);
+    }
+    
+    // For services single box
+    .content-container-modalidade.single-box {
+        .total-container-modalidade {
+            max-width: 350px;
+            min-width: 250px;
+        }
+    }
+    
+    .title-modalidade {
         font-size: 0.9em;
     }
-
-    .content-container-modalidade{
-        display: grid;
-        grid-template-columns: repeat(2, 1fr); /* Creates 2 equal columns */
-        grid-template-rows: repeat(2, 1fr);    /* Creates 2 equal rows */
-        gap: 10px;  
-    }
-
-    .total-container-modalidade{
-        //background-color: #f0f0f0;
-        padding: 20px;
-        text-align: center;
-        border: 1px solid #ccc;
-    }
-
-
 }
 
-@media screen and (max-width: 412px){
-    .content-container-modalidade{
+// Mobile landscape (481px to 768px)
+@media screen and (min-width: 481px) and (max-width: 768px) {
+    .content-container-modalidade {
         display: grid;
-        grid-template-columns: repeat(2, 1fr); /* Creates 2 equal columns */
-        grid-template-rows: repeat(2, 1fr);    /* Creates 2 equal rows */
-        gap: 10px;  
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
     }
-
-    .total-container-modalidade{
-        //background-color: #f0f0f0;
-        padding: 20px;
+    
+    .total-container-modalidade {
+        margin: 0;
+        height: auto;
+        min-height: 90px;
+        padding: 10px;
+    }
+    
+    // For services single box - center it and make it full width on mobile
+    .content-container-modalidade.single-box {
+        display: flex;
+        justify-content: center;
+        
+        .total-container-modalidade {
+            width: 90%;
+            max-width: 350px;
+            margin: 0 auto;
+        }
+    }
+    
+    .title-modalidade {
+        font-size: 0.85em;
+        white-space: normal;
         text-align: center;
-        border: 1px solid #ccc;
+        word-break: break-word;
+    }
+    
+    .text-modalidade {
+        font-size: 0.9em;
+        margin: 5px 0;
+    }
+}
+
+// Mobile portrait (up to 480px)
+@media screen and (max-width: 480px) {
+    .content-container-modalidade {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    
+    .total-container-modalidade {
+        margin: 0;
+        height: auto;
+        min-height: 80px;
+        padding: 8px;
+    }
+    
+    // For services single box - full width on small screens
+    .content-container-modalidade.single-box {
+        display: flex;
+        justify-content: center;
+        
+        .total-container-modalidade {
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+    }
+    
+    .title-modalidade {
+        font-size: 0.75em;
+        white-space: normal;
+        text-align: center;
+        word-break: break-word;
+        margin-top: 0;
+    }
+    
+    .text-modalidade {
+        font-size: 0.8em;
+        margin: 3px 0;
+    }
+    
+    .green-modalidade {
+        font-size: 0.9em;
+    }
+}
+
+// Small mobile (up to 360px)
+@media screen and (max-width: 360px) {
+    .total-container-modalidade {
+        min-height: 70px;
+        padding: 6px;
+    }
+    
+    .title-modalidade {
+        font-size: 0.7em;
+    }
+    
+    .text-modalidade {
+        font-size: 0.75em;
+    }
+    
+    .green-modalidade {
+        font-size: 0.85em;
     }
 }

@@ -8,7 +8,9 @@ const Footer = () =>{
 		<>
 			<div className='footer-main'>
 				<div className='footer-container'>
-					<div className='footer-content'>SalvaLucro 2025</div>
+					<div className='footer-content'>
+						Salva Lucro 2026
+					</div>
 				</div>
 			</div>
 		</>
