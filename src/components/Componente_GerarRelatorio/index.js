@@ -196,7 +196,7 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 	const getHeadersLength = () => {
 		switch (tipo) {
 			case 'vendas': return 16
-			case 'creditos': return 15
+			case 'creditos': return 18 // Updated from 15 to 18 for banco, agencia, conta
 			case 'servicos': return 7
 			case 'taxas': return 8
 			default: return 0
@@ -204,8 +204,9 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 	}
 
 	// EXCEL ////////////////////////////////////////////////////////////
-	
+
 	const exportToExcel = () => {
+
 		// Use the current tableData which now includes filtered data
 		if (!tableData || tableData.length === 0) {
 			alert('Sem dados para a exportação.')
@@ -234,7 +235,7 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 		if (tipo === 'vendas') {
 			headers = ['CNPJ', 'Adquirente', 'Bandeira', 'Produto', 'Subproduto', 'Valor Bruto', 'Valor Líquido', 'Taxa', 'Valor Desconto', 'Cartão', 'NSU', 'Data Venda', 'Hora Venda', 'Data Crédito', 'Código Autorização', 'QTD PARC']
 		} else if (tipo === 'creditos') {
-			headers = ['CNPJ', 'Adquirente', 'Bandeira', 'Produto', 'Subproduto', 'Data do Crédito', 'Data da Venda', 'Valor Bruto', 'Valor Líquido', 'Taxa', 'Valor Desconto', 'NSU', 'Código Autorização', 'Parcela', 'QTD Parc']
+			headers = ['CNPJ', 'Adquirente', 'Bandeira', 'Produto', 'Subproduto', 'Data do Crédito', 'Data da Venda', 'Valor Bruto', 'Valor Líquido', 'Taxa', 'Valor Desconto', 'Banco', 'Agência', 'Conta', 'NSU', 'Código Autorização', 'Parcela', 'QTD Parc']
 		} else if (tipo === 'servicos') {
 			headers = ['CNPJ', 'Razão Social', 'Código do estabelecimento', 'Adquirente', 'Valor', 'Data', 'Descrição']
 		} else if (tipo === 'taxas') {
@@ -258,7 +259,9 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 				right: { style: 'thin' }
 			}
 		})
-    
+		
+    	const columnWidth = 20
+		
 		if(tipo === 'vendas'){
 			// Add data rows
 			tableData.forEach((rowData, index) => {
@@ -286,22 +289,22 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 
 			// Format columns
 			worksheet.columns = [
-				{ key: 'cnpj', width: 20 },
-				{ key: 'adquirente', width: 15 },
-				{ key: 'bandeira', width: 15 },
-				{ key: 'produto', width: 15 },
-				{ key: 'subproduto', width: 15 },
-				{ key: 'valorBruto', width: 12 },
-				{ key: 'valorLiquido', width: 12 },
-				{ key: 'taxa', width: 10 },
-				{ key: 'valorDesconto', width: 12 },
-				{ key: 'cartao', width: 20},
-				{ key: 'nsu', width: 15 },
-				{ key: 'dataVenda', width: 12 },
-				{ key: 'horaVenda', width: 10 },
-				{ key: 'dataCredito', width: 12 },
-				{ key: 'codigoAutorizacao', width: 15 },
-				{ key: 'quantidadeParcelas', width: 10 }
+				{ key: 'cnpj', width: columnWidth },
+				{ key: 'adquirente', width: columnWidth },
+				{ key: 'bandeira', width: columnWidth },
+				{ key: 'produto', width: columnWidth },
+				{ key: 'subproduto', width: columnWidth },
+				{ key: 'valorBruto', width: columnWidth },
+				{ key: 'valorLiquido', width: columnWidth },
+				{ key: 'taxa', width: columnWidth },
+				{ key: 'valorDesconto', width: columnWidth },
+				{ key: 'cartao', width: columnWidth},
+				{ key: 'nsu', width: columnWidth },
+				{ key: 'dataVenda', width: columnWidth },
+				{ key: 'horaVenda', width: columnWidth },
+				{ key: 'dataCredito', width: columnWidth },
+				{ key: 'codigoAutorizacao', width: columnWidth },
+				{ key: 'quantidadeParcelas', width: columnWidth }
 			]
 
 			// Format currency and percentage columns
@@ -315,7 +318,7 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 			worksheet.getColumn('dataCredito').numFmt = 'dd/mm/yyyy'
 		
 		} else if (tipo === 'creditos'){
-			// Add data rows
+			// Add data rows with banco, agencia, conta after Valor Desconto
 			tableData.forEach((rowData, index) => {
 				const values = [
 					rowData.cnpj,
@@ -329,6 +332,9 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 					Number(rowData.valorLiquido),
 					Number(rowData.taxa),
 					Number(rowData.valorDesconto),
+					rowData.banco || '',
+					rowData.agencia || '',
+					rowData.conta || '',
 					rowData.nsu,
 					rowData.codigoAutorizacao,
 					rowData.parcela || '',
@@ -338,23 +344,26 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 				worksheet.addRow(values)
 			})
 
-			// Format columns for creditos
+			// Format columns for creditos with additional columns after Valor Desconto
 			worksheet.columns = [
-				{ key: 'cnpj', width: 20 },
-				{ key: 'adquirente', width: 15 },
-				{ key: 'bandeira', width: 15 },
-				{ key: 'produto', width: 15 },
-				{ key: 'subproduto', width: 15 },
-				{ key: 'dataCredito', width: 12 },
-				{ key: 'dataVenda', width: 12 },
-				{ key: 'valorBruto', width: 12 },
-				{ key: 'valorLiquido', width: 12 },
-				{ key: 'taxa', width: 10 },
-				{ key: 'valorDesconto', width: 12 },
-				{ key: 'nsu', width: 15 },
-				{ key: 'codigoAutorizacao', width: 15 },
-				{ key: 'parcela', width: 10 },
-				{ key: 'quantidadeParcelas', width: 10 }
+				{ key: 'cnpj', width: columnWidth },
+				{ key: 'adquirente', width: columnWidth },
+				{ key: 'bandeira', width: columnWidth },
+				{ key: 'produto', width: columnWidth },
+				{ key: 'subproduto', width: columnWidth },
+				{ key: 'dataCredito', width: columnWidth },
+				{ key: 'dataVenda', width: columnWidth },
+				{ key: 'valorBruto', width: columnWidth },
+				{ key: 'valorLiquido', width: columnWidth },
+				{ key: 'taxa', width: columnWidth },
+				{ key: 'valorDesconto', width: columnWidth },
+				{ key: 'banco', width: columnWidth },
+				{ key: 'agencia', width: columnWidth },
+				{ key: 'conta', width: columnWidth },
+				{ key: 'nsu', width: columnWidth },
+				{ key: 'codigoAutorizacao', width: columnWidth },
+				{ key: 'parcela', width: columnWidth },
+				{ key: 'quantidadeParcelas', width: columnWidth }
 			]
 
 			// Format currency and percentage columns
@@ -385,13 +394,13 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 
 			// Format columns for servicos
 			worksheet.columns = [
-				{ key: 'cnpj', width: 20 },
-				{ key: 'razao_social', width: 25 },
-				{ key: 'codigo_estabelecimento', width: 15 },
-				{ key: 'nome_adquirente', width: 15 },
-				{ key: 'valor', width: 12 },
-				{ key: 'data', width: 12 },
-				{ key: 'descricao', width: 25 }
+				{ key: 'cnpj', width: columnWidth },
+				{ key: 'razao_social', width: (columnWidth * 2) + 10 },
+				{ key: 'codigo_estabelecimento', width: (columnWidth * 2) + 10 },
+				{ key: 'nome_adquirente', width: columnWidth },
+				{ key: 'valor', width: columnWidth },
+				{ key: 'data', width: columnWidth },
+				{ key: 'descricao', width: (columnWidth * 2) + 10 }
 			]
 
 			// Format currency column
@@ -417,14 +426,14 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 
 			// Format columns for taxas
 			worksheet.columns = [
-				{ key: 'adquirente', width: 15 },
-				{ key: 'bandeira', width: 15 },
-				{ key: 'produto', width: 15 },
-				{ key: 'modalidade', width: 15 },
-				{ key: 'taxaPenultimoMes', width: 15 },
-				{ key: 'taxaUltimoMes', width: 15 },
-				{ key: 'taxaCadastrada', width: 15 },
-				{ key: 'comparativo', width: 15 }
+				{ key: 'adquirente', width: columnWidth },
+				{ key: 'bandeira', width: columnWidth },
+				{ key: 'produto', width: columnWidth },
+				{ key: 'modalidade', width: columnWidth },
+				{ key: 'taxaPenultimoMes', width: columnWidth },
+				{ key: 'taxaUltimoMes', width: columnWidth },
+				{ key: 'taxaCadastrada', width: columnWidth },
+				{ key: 'comparativo', width: columnWidth }
 			]
 
 			// Format percentage columns
@@ -556,7 +565,7 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 				]
 			})
 		} else if (tipo === 'creditos') {
-			columns = ['CNPJ', 'Adquirente', 'Bandeira', 'Produto', 'Subproduto', 'Data do Crédito', 'Data da Venda', 'Valor Bruto', 'Valor Líquido', 'Taxa', 'Valor Desconto', 'NSU', 'Código Autorização', 'Parcela', 'QTD Parc'];
+			columns = ['CNPJ', 'Adquirente', 'Bandeira', 'Produto', 'Subproduto', 'Data do Crédito', 'Data da Venda', 'Valor Bruto', 'Valor Líquido', 'Taxa', 'Valor Desconto', 'Banco', 'Agência', 'Conta', 'NSU', 'Código Autorização', 'Parcela', 'QTD Parc'];
 			rows = tableData.map(rowData => {
 				const valorBruto = Number(rowData.valorBruto)
 				const valorLiquido = Number(rowData.valorLiquido)
@@ -578,6 +587,9 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 					`R$ ${valorLiquido.toFixed(2)}`,
 					`${Number(rowData.taxa).toFixed(2)}%`,
 					`R$ ${valorDesconto.toFixed(2)}`,
+					rowData.banco || '',
+					rowData.agencia || '',
+					rowData.conta || '',
 					rowData.nsu,
 					rowData.codigoAutorizacao,
 					rowData.parcela || '',
