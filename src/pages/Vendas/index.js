@@ -9,6 +9,7 @@ import MyCalendar from '../../components/Componente_Calendario'
 import DisplayData from '../../components/Componente_DisplayData'
 import { toast } from 'react-toastify'
 import { FiCalendar, FiHelpCircle } from 'react-icons/fi'
+import Teste from '../../components/000_ComponenteTeste'
 
 const Vendas = () =>{
   const location = useLocation()
@@ -286,6 +287,7 @@ const handleCheckboxChangeCalendar = () => {
               }
             {salesPageArray !== null ? (
               salesPageArray.length > 0 ? (
+                <>
                   <DisplayData
                     dataArray={salesPageArray}
                     adminDataArray={salesPageAdminArray}
@@ -294,6 +296,8 @@ const handleCheckboxChangeCalendar = () => {
                     setRunTutorial={setRunTutorial}
                     location={location}
                   />
+                  <Teste/>
+                </>
                 ) : (
                   <>
                     <div className='select-container-calendario'>
@@ -388,7 +392,8 @@ const handleCheckboxChangeCalendar = () => {
                   </>
                 )
               ) : null }
-              <button 
+              <>
+                <button 
                 className='btn btn-success-dados btn-tutorial px-2 py-1'
                     onClick={() => setRunTutorial(true)}
                     style={{
@@ -405,7 +410,9 @@ const handleCheckboxChangeCalendar = () => {
                     }}
                 >
                 <FiHelpCircle />
-            </button>
+                </button>
+                <Teste/>
+              </>
           </div>
         </div>
       </div>
