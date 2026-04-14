@@ -183,7 +183,7 @@ const SeletorCliente = ({ onClose }) => {
     if (selectedGroup) {
       const options = getClientOptions(selectedGroup)
       setClientOptions(options)
-
+      localStorage.setItem('selectedGroupBody', JSON.stringify(selectedGroup))
       if (!localStorage.getItem('selectedClient')) {
         setSelectedClient({
           ...options[0],
@@ -212,6 +212,7 @@ const SeletorCliente = ({ onClose }) => {
     setSalesPageArray([])
     setCreditsPageArray([])
     setServicesPageArray([])
+    localStorage.setItem('selectedClientBody', JSON.stringify(selectedClient))
     if (selectedClient && selectedClient.label !== 'TODOS') {
       localStorage.setItem('cnpj', selectedClient.value)
       localStorage.setItem('clientCode', selectedClient.cod)

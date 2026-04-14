@@ -51,25 +51,46 @@ const Teste = () => {
   const [error, setError] = useState(null);
   const [responseMessage, setResponseMessage] = useState(null);
 
-  const object = {
-    dataInicial: "2026-04-01",
-    dataFinal: "2026-04-03",
-    clientes: "4496",
-    nomeGrupo: "3 AMORES",
-    bandeira: "",
-    adquirente: "",
-    produto: "",
-    modalidade: "",
-    arquivo: "JSON",
-    modelo: "VENDA"
-  };
-
   const Testar = async () => {
-    console.log('executou funcao');
-    setLoading(true);
-    setError(null);
-    setPdfBase64(null);
-    setResponseMessage(null);
+    console.log('executou funcao')
+    setLoading(true)
+    setError(null)
+    setPdfBase64(null)
+    setResponseMessage(null)
+
+    const cliente = JSON.parse(localStorage.getItem('selectedClientBody'))
+    const grupo = JSON.parse(localStorage.getItem('selectedGroupBody'))
+
+    const dataInicial = localStorage.getItem('dataInicial')
+    const dataFinal = localStorage.getItem('dataFinal')
+    let clientes;
+
+    if (selectedCliente === 'todos') {
+      clientes = gruposBodyData.clients;
+    } else {
+      clientes = gruposBodyData.clients.filter(c => c.CODIGOCLIENTE === selectedCliente);
+    }
+
+    const nomeGrupo = grupo.label
+    const bandeira = JSON.parse(localStorage.getItem('selectedBan')) || {};
+    const adquirente = JSON.parse(localStorage.getItem('selectedAdm')) || {};
+    const produto = ''
+    const modalidade = ''
+    const arquivo = 'PDF'
+    const modelo = 'VENDA'
+
+    const object = {
+      dataInicial: dataInicial,
+      dataFinal: dataFinal,
+      clientes: clientes,
+      nomeGrupo: nomeGrupo,
+      bandeira: bandeira,
+      adquirente: adquirente,
+      produto: produto,
+      modalidade: modalidade,
+      arquivo: arquivo,
+      modelo: modelo
+    }
     
     try {
       const response = await api.post('relatorios/detalhado', object);
@@ -88,7 +109,7 @@ const Teste = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   return (
     <div style={{ padding: '20px' }}>
