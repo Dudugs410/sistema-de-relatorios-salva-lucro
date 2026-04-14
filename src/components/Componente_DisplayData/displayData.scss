@@ -5,8 +5,8 @@
 
 .floating-button-container {
   position: fixed;
-  bottom: 50px;
-  left: 30px;
+  bottom: 45px;
+  left: 20px;
   z-index: 1000;
   
   @media (max-width: 768px) {
@@ -79,18 +79,18 @@
 // Floating button styles - Left side
 .floating-button-container {
   position: fixed;
-  bottom: 25px;
-  left: 30px;
+  bottom: 45px;
+  left: 20px;
   z-index: 1000;
   
   @media (max-width: 768px) {
-    bottom: 15px;
-    left: 20px;
+  bottom: 45px;
+  left: 20px;
   }
   
   @media (max-width: 480px) {
-    bottom: 10px;
-    left: 15px;
+  bottom: 45px;
+  left: 20px;
   }
 }
 

@@ -282,6 +282,9 @@ function AuthProvider({ children }){
 		localStorage.clear()
 		cancelOngoingRequests()
 		resetAppValues()
+    localStorage.removeItem('isSignedIn')
+    localStorage.removeItem('selectedContext')
+    sessionStorage.removeItem('currentPath')
 		localStorage.setItem('isSignedIn', false)
 		navigate('/')
 	}, [navigate])
@@ -345,7 +348,24 @@ function AuthProvider({ children }){
 		const [btnDisabledServices, setBtnDisabledServices] = useState(false)
 		const [btnDisabledSysmo, setBtnDisabledSysmo] = useState(false)
 
-		// retorna array de vendas //
+// Relatórios:
+
+/*
+{
+    "dataInicial": "2026-04-01",
+    "dataFinal":"2026-04-03",
+    "clientes" : "5261",  --Se tiver mais que um : "5261,5262,5263"
+    "nomeGrupo" : "CELIO SUPERMERCADO",
+    "bandeira" : "", --um código apenas Ex. "23" 
+    "adquirente" : "",--um código apenas Ex. "23" 
+    "produto" : "",--um código apenas Ex. "23" 
+    "modalidade" : "",--um código apenas Ex. "23" 
+    "arquivo" : "PDF", Pode ser : PDF/XLSX/JSON 
+    "modelo" : "VENDA_DETALHADO"   Pode ser RECEBIMENTO_DETALHADO OU AJUSTE_DETALHADO
+}
+*/
+  
+// retorna array de vendas //
 const loadSales = async (startDate, endDate) => {
   console.log('carregando vendas: ', startDate, ' até ', endDate)
   try {
