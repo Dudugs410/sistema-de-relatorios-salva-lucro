@@ -12,7 +12,7 @@ import './GerarRelatorio.scss'
 import { imgExport } from '../../contexts/images'
 import { AuthContext } from '../../contexts/auth'
 
-// Helper function to get nested object values
+// Helper function to get nested object values (for old structure)
 const getNestedValue = (obj, path) => {
   return path.split('.').reduce((acc, part) => acc && acc[part], obj)
 }
@@ -30,41 +30,30 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 	const [tipo, setTipo] = useState('')
 	const [tableData, setTableData] = useState([])
 
-	// FIXED: Prevent infinite loops in datetime update
+	// Update datetime
 	useEffect(() => {
 		const updateDateTime = () => {
 		  const now = new Date()
-
-		  // Format date components
 		  const day = ('0' + now.getDate()).slice(-2)
 		  const month = ('0' + (now.getMonth() + 1)).slice(-2)
 		  const year = now.getFullYear()
 		  const formattedDate = `${day}-${month}-${year}`
-
-		  // Format time components
 		  const hour = ('0' + now.getHours()).slice(-2)
 		  const minute = ('0' + now.getMinutes()).slice(-2)
 		  const second = ('0' + now.getSeconds()).slice(-2)
 		  const formattedTime = `${hour}.${minute}.${second}`
 		  const formattedDateTime = `${formattedDate} ${formattedTime}`
 
-		  // FIXED: Only update if the value actually changed
 		  if (formattedDateTime !== currentDateTime) {
 			setCurrentDateTime(formattedDateTime)
 		  }
 		}
 
-		// Update the date and time initially
 		updateDateTime()
-	
-		// FIXED: Update less frequently (every 30 seconds instead of every second)
 		const intervalId = setInterval(updateDateTime, 30000)
-	
-		// Cleanup the interval on component unmount
 		return () => clearInterval(intervalId)
-	}, [currentDateTime]) // FIXED: Add currentDateTime as dependency
+	}, [currentDateTime])
 
-	// FIXED: Separate effects to prevent infinite loops
 	useEffect(() => {
 		const currentPath = localStorage.getItem('currentPath')
 		
@@ -88,11 +77,10 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 			default:
 			break
 		}
-	}, []) // FIXED: Empty dependency array - runs only once
+	}, [])
 
-	// FIXED: Separate effect for setting tableData
 	useEffect(() => {
-		if (!tipo) return // Wait until tipo is set
+		if (!tipo) return
 		
 		let newTableData = []
 		
@@ -113,13 +101,11 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 			return
 		}
 
-		// FIXED: Only update if the data actually changed
 		if (JSON.stringify(newTableData) !== JSON.stringify(tableData)) {
 			setTableData(newTableData)
 		}
 	}, [tipo, salesTableData, creditsTableData, servicesTableData, taxesTableData, filteredData, tableData])
 
-	// Helper function to get date range string
 	const getDateRangeString = () => {
 		const currentPath = localStorage.getItem('currentPath')
 		let dateRange = null
@@ -133,7 +119,6 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 		}
 		
 		if (dateRange && dateRange[0] && dateRange[1]) {
-			// Convert Date objects to strings in the format expected by dateConvert
 			const formatDateForConvert = (date) => {
 				if (date instanceof Date) {
 					const day = ('0' + date.getDate()).slice(-2)
@@ -141,7 +126,7 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 					const year = date.getFullYear()
 					return `${day}/${month}/${year}`
 				}
-				return date // If it's already a string, return as is
+				return date
 			}
 			
 			const startDate = formatDateForConvert(dateRange[0])
@@ -155,48 +140,41 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 		return ''
 	}
 
-	// Helper function to add formatted header to worksheet
 	const addExcelHeader = (worksheet, title, dateRangeStr) => {
-		// Merge cells for title (A1 to last column)
 		const headersLength = getHeadersLength()
 		const lastColumnLetter = String.fromCharCode(64 + headersLength)
 		
-		// Add company name
 		worksheet.mergeCells(`A1:${lastColumnLetter}1`)
 		const titleRow1 = worksheet.getCell('A1')
 		titleRow1.value = 'SALVALUCRO 3.0'
 		titleRow1.font = { bold: true, size: 14 }
 		titleRow1.alignment = { horizontal: 'center', vertical: 'middle' }
 		
-		// Add report title
 		worksheet.mergeCells(`A2:${lastColumnLetter}2`)
 		const titleRow2 = worksheet.getCell('A2')
 		titleRow2.value = title
 		titleRow2.font = { bold: true, size: 12 }
 		titleRow2.alignment = { horizontal: 'center', vertical: 'middle' }
 		
-		// Add date range
 		worksheet.mergeCells(`A3:${lastColumnLetter}3`)
 		const titleRow3 = worksheet.getCell('A3')
 		titleRow3.value = dateRangeStr ? `Período: ${dateRangeStr}` : `Data de Exportação: ${currentDateTime}`
 		titleRow3.font = { size: 10 }
 		titleRow3.alignment = { horizontal: 'center', vertical: 'middle' }
 		
-		// Add generation date
 		worksheet.mergeCells(`A4:${lastColumnLetter}4`)
 		const titleRow4 = worksheet.getCell('A4')
 		titleRow4.value = `Gerado em: ${currentDateTime}`
 		titleRow4.font = { size: 9, italic: true }
 		titleRow4.alignment = { horizontal: 'center', vertical: 'middle' }
 		
-		// Add empty row as separator
 		worksheet.addRow([])
 	}
 	
 	const getHeadersLength = () => {
 		switch (tipo) {
-			case 'vendas': return 16
-			case 'creditos': return 18 // Updated from 15 to 18 for banco, agencia, conta
+			case 'vendas': return 19 // Added more columns for new structure
+			case 'creditos': return 18
 			case 'servicos': return 7
 			case 'taxas': return 8
 			default: return 0
@@ -206,8 +184,6 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 	// EXCEL ////////////////////////////////////////////////////////////
 
 	const exportToExcel = () => {
-
-		// Use the current tableData which now includes filtered data
 		if (!tableData || tableData.length === 0) {
 			alert('Sem dados para a exportação.')
 			return
@@ -223,17 +199,14 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 		
 		const worksheet = workbook.addWorksheet(tipoRelatorio)
 		
-		// Get date range for header
 		const dateRangeStr = getDateRangeString()
 		const reportTitle = `${exportName} - ${tipoRelatorio}`
 		
-		// Add formatted header
 		addExcelHeader(worksheet, reportTitle, dateRangeStr)
     
-		// Define headers based on table type
 		let headers = []
 		if (tipo === 'vendas') {
-			headers = ['CNPJ', 'Adquirente', 'Bandeira', 'Produto', 'Subproduto', 'Valor Bruto', 'Valor Líquido', 'Taxa', 'Valor Desconto', 'Cartão', 'NSU', 'Data Venda', 'Hora Venda', 'Data Crédito', 'Código Autorização', 'QTD PARC']
+			headers = ['CNPJ', 'Adquirente', 'Bandeira', 'Produto', 'Subproduto', 'Valor Bruto', 'Valor Líquido', 'Taxa', 'Desconto %', 'Cartão', 'NSU', 'Data Venda', 'Hora Venda', 'Data Crédito', 'Código Autorização', 'QTD PARC', 'Status', 'Número PV', 'RO']
 		} else if (tipo === 'creditos') {
 			headers = ['CNPJ', 'Adquirente', 'Bandeira', 'Produto', 'Subproduto', 'Data do Crédito', 'Data da Venda', 'Valor Bruto', 'Valor Líquido', 'Taxa', 'Valor Desconto', 'Banco', 'Agência', 'Conta', 'NSU', 'Código Autorização', 'Parcela', 'QTD Parc']
 		} else if (tipo === 'servicos') {
@@ -242,7 +215,6 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 			headers = ['Adquirente', 'Bandeira', 'Produto', 'Modalidade', 'Taxa Penúltimo Mês', 'Taxa Último Mês', 'Taxa Cadastrada', 'Comparativo']
 		}
 		
-		// Add header row with styling
 		const headerRow = worksheet.addRow(headers)
 		headerRow.eachCell((cell) => {
 			cell.font = { bold: true, color: { argb: 'FFFFFFFF' } }
@@ -263,31 +235,33 @@ export default function GerarRelatorio({ onExport, filteredData }) {
     	const columnWidth = 20
 		
 		if(tipo === 'vendas'){
-			// Add data rows
+			// Add data rows with new structure
 			tableData.forEach((rowData, index) => {
 				const values = [
-					rowData.cnpj,
-					getNestedValue(rowData, 'adquirente.nomeAdquirente'),
-					getNestedValue(rowData, 'bandeira.descricaoBandeira'),
-					getNestedValue(rowData, 'produto.descricaoProduto'),
-					getNestedValue(rowData, 'modalidade.descricaoModalidade'),
-					Number(rowData.valorBruto),
-					Number(rowData.valorLiquido),
-					Number(rowData.taxa),
-					Number(rowData.valorDesconto),
-					rowData.cartao,
-					rowData.nsu,
-					new Date(rowData.dataVenda),
-					rowData.horaVenda,
-					new Date(rowData.dataCredito),
-					rowData.codigoAutorizacao,
-					rowData.quantidadeParcelas
+					rowData.CNPJ,
+					rowData.ADMINISTRADORA,
+					rowData.BANDEIRA,
+					(rowData.PRODUTO || "").trim(),
+					rowData.MODALIDADE,
+					Number(rowData.VALORBRUTO),
+					Number(rowData.VALORLIQUIDO),
+					Number(rowData.TAXA),
+					Number(rowData.DESCONTO),
+					rowData.CARTAO,
+					rowData.NSU,
+					new Date(rowData.DATAVENDA),
+					rowData.HORAVENDA || 'N/A',
+					new Date(rowData.DATACREDITO),
+					rowData.AUTORIZACAO,
+					rowData.PARCELA,
+					rowData.STATUS,
+					rowData.NUMEROPV,
+					rowData.RO
 				]
 			
 				worksheet.addRow(values)
 			})
 
-			// Format columns
 			worksheet.columns = [
 				{ key: 'cnpj', width: columnWidth },
 				{ key: 'adquirente', width: columnWidth },
@@ -297,28 +271,28 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 				{ key: 'valorBruto', width: columnWidth },
 				{ key: 'valorLiquido', width: columnWidth },
 				{ key: 'taxa', width: columnWidth },
-				{ key: 'valorDesconto', width: columnWidth },
+				{ key: 'desconto', width: columnWidth },
 				{ key: 'cartao', width: columnWidth},
 				{ key: 'nsu', width: columnWidth },
 				{ key: 'dataVenda', width: columnWidth },
 				{ key: 'horaVenda', width: columnWidth },
 				{ key: 'dataCredito', width: columnWidth },
 				{ key: 'codigoAutorizacao', width: columnWidth },
-				{ key: 'quantidadeParcelas', width: columnWidth }
+				{ key: 'quantidadeParcelas', width: columnWidth },
+				{ key: 'status', width: columnWidth },
+				{ key: 'numeroPV', width: columnWidth },
+				{ key: 'ro', width: columnWidth }
 			]
 
-			// Format currency and percentage columns
 			worksheet.getColumn('valorBruto').numFmt = '"R$"#,##0.00'
 			worksheet.getColumn('valorLiquido').numFmt = '"R$"#,##0.00'
-			worksheet.getColumn('valorDesconto').numFmt = '"R$"#,##0.00'
 			worksheet.getColumn('taxa').numFmt = '0.00"%'
-
-			// Format date columns
+			worksheet.getColumn('desconto').numFmt = '0.00"%'
 			worksheet.getColumn('dataVenda').numFmt = 'dd/mm/yyyy'
 			worksheet.getColumn('dataCredito').numFmt = 'dd/mm/yyyy'
 		
 		} else if (tipo === 'creditos'){
-			// Add data rows with banco, agencia, conta after Valor Desconto
+			// Keep old structure for credits for now
 			tableData.forEach((rowData, index) => {
 				const values = [
 					rowData.cnpj,
@@ -344,7 +318,6 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 				worksheet.addRow(values)
 			})
 
-			// Format columns for creditos with additional columns after Valor Desconto
 			worksheet.columns = [
 				{ key: 'cnpj', width: columnWidth },
 				{ key: 'adquirente', width: columnWidth },
@@ -366,18 +339,15 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 				{ key: 'quantidadeParcelas', width: columnWidth }
 			]
 
-			// Format currency and percentage columns
 			worksheet.getColumn('valorBruto').numFmt = '"R$"#,##0.00'
 			worksheet.getColumn('valorLiquido').numFmt = '"R$"#,##0.00'
 			worksheet.getColumn('valorDesconto').numFmt = '"R$"#,##0.00'
 			worksheet.getColumn('taxa').numFmt = '0.00"%'
-
-			// Format date columns
 			worksheet.getColumn('dataCredito').numFmt = 'dd/mm/yyyy'
 			worksheet.getColumn('dataVenda').numFmt = 'dd/mm/yyyy'
 		
 		} else if (tipo === 'servicos'){
-			// Add data rows
+			// Keep old structure for services for now
 			tableData.forEach((rowData, index) => {
 				const values = [
 					rowData.cnpj,
@@ -392,7 +362,6 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 				worksheet.addRow(values)
 			})
 
-			// Format columns for servicos
 			worksheet.columns = [
 				{ key: 'cnpj', width: columnWidth },
 				{ key: 'razao_social', width: (columnWidth * 2) + 10 },
@@ -403,12 +372,10 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 				{ key: 'descricao', width: (columnWidth * 2) + 10 }
 			]
 
-			// Format currency column
 			worksheet.getColumn('valor').numFmt = '"R$"#,##0.00'
 			worksheet.getColumn('data').numFmt = 'dd/mm/yyyy'
 		
 		} else if (tipo === 'taxas'){
-			// Add data rows
 			tableData.forEach((rowData, index) => {
 				const values = [
 					rowData.adquirente,
@@ -424,7 +391,6 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 				worksheet.addRow(values)
 			})
 
-			// Format columns for taxas
 			worksheet.columns = [
 				{ key: 'adquirente', width: columnWidth },
 				{ key: 'bandeira', width: columnWidth },
@@ -436,16 +402,13 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 				{ key: 'comparativo', width: columnWidth }
 			]
 
-			// Format percentage columns
 			worksheet.getColumn('taxaPenultimoMes').numFmt = '0.00"%'
 			worksheet.getColumn('taxaUltimoMes').numFmt = '0.00"%'
 			worksheet.getColumn('taxaCadastrada').numFmt = '0.00"%'
 			worksheet.getColumn('comparativo').numFmt = '0.00"%'
 		}
 
-		// Style all data rows with borders and alignment
 		worksheet.eachRow((row, rowNumber) => {
-			// Skip header rows (first 5 rows are header info)
 			if (rowNumber > 5) {
 				row.eachCell((cell) => {
 					cell.alignment = { horizontal: 'center', vertical: 'middle' }
@@ -459,28 +422,23 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 			}
 		})
 		
-		// Add totals row at the bottom
 		if (tipo !== 'taxas') {
-			const lastRow = worksheet.rowCount
 			const totalsRow = worksheet.addRow([])
 			
-			// Calculate totals
 			let totalValue = 0
 			if (tipo === 'vendas') {
-				totalValue = tableData.reduce((sum, row) => sum + Number(row.valorBruto), 0)
+				totalValue = tableData.reduce((sum, row) => sum + Number(row.VALORBRUTO), 0)
 			} else if (tipo === 'creditos') {
 				totalValue = tableData.reduce((sum, row) => sum + Number(row.valorLiquido), 0)
 			} else if (tipo === 'servicos') {
 				totalValue = tableData.reduce((sum, row) => sum + Math.abs(Number(row.valor)), 0)
 			}
 			
-			// Add total label and value
 			const totalLabelCell = totalsRow.getCell(1)
 			totalLabelCell.value = 'TOTAL GERAL'
 			totalLabelCell.font = { bold: true }
 			totalLabelCell.alignment = { horizontal: 'right' }
 			
-			// Find the value column index
 			let valueColIndex = tipo === 'vendas' ? 6 : (tipo === 'creditos' ? 8 : 5)
 			const totalValueCell = totalsRow.getCell(valueColIndex)
 			totalValueCell.value = totalValue
@@ -489,7 +447,6 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 			totalValueCell.alignment = { horizontal: 'center' }
 		}
 		
-		// Generate Excel file
 		workbook.xlsx.writeBuffer()
 			.then((buffer) => {
 				saveExcelFile(buffer, `${tipoRelatorio} - ${exportName} - ${currentDateTime}.xlsx`)
@@ -511,7 +468,6 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 	// PDF ////////////////////////////////////////////////////////////
 
 	const generatePdf = () => {
-		// Use the current tableData which now includes filtered data
 		if (!tableData || tableData.length === 0) {
 			alert('Sem dados para exportar')
 			return
@@ -535,33 +491,34 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 		let totalServicos = 0
 
 		if (tipo === 'vendas') {
-			columns = ['CNPJ', 'Adquirente', 'Bandeira', 'Produto', 'Subproduto', 'Valor Bruto', 'Valor Líquido', 'Taxa', 'Valor Desconto', 'Cartão', 'NSU', 'Data Venda', 'Hora Venda', 'Data Crédito', 'Código Autorização', 'QTD PARC'];
+			columns = ['CNPJ', 'Adquirente', 'Bandeira', 'Produto', 'Subproduto', 'Valor Bruto', 'Valor Líquido', 'Taxa', 'Desconto %', 'Cartão', 'NSU', 'Data Venda', 'Hora Venda', 'Data Crédito', 'Código Autorização', 'QTD PARC', 'Status', 'Número PV'];
 			rows = tableData.map(rowData => {
-				const valorBruto = Number(rowData.valorBruto)
-				const valorLiquido = Number(rowData.valorLiquido)
-				const valorDesconto = Number(rowData.valorDesconto)
+				const valorBruto = Number(rowData.VALORBRUTO)
+				const valorLiquido = Number(rowData.VALORLIQUIDO)
+				const desconto = Number(rowData.DESCONTO)
 
 				totalBruto += valorBruto
 				totalLiquido += valorLiquido
-				totalDesconto += valorDesconto
 
 				return [
-					rowData.cnpj,
-					getNestedValue(rowData, 'adquirente.nomeAdquirente'),
-					getNestedValue(rowData, 'bandeira.descricaoBandeira'),
-					getNestedValue(rowData, 'produto.descricaoProduto'),
-					getNestedValue(rowData, 'modalidade.descricaoModalidade'),
+					rowData.CNPJ,
+					rowData.ADMINISTRADORA,
+					rowData.BANDEIRA,
+					(rowData.PRODUTO || "").trim(),
+					rowData.MODALIDADE,
 					`R$ ${valorBruto.toFixed(2)}`,
 					`R$ ${valorLiquido.toFixed(2)}`,
-					`${Number(rowData.taxa).toFixed(2)}%`,
-					`R$ ${valorDesconto.toFixed(2)}`,
-					getNestedValue(rowData, 'cartao'),
-					rowData.nsu,
-					dateConvert(rowData.dataVenda),
-					rowData.horaVenda,
-					dateConvert(rowData.dataCredito),
-					rowData.codigoAutorizacao,
-					rowData.quantidadeParcelas
+					`${Number(rowData.TAXA).toFixed(2)}%`,
+					`${desconto.toFixed(2)}%`,
+					rowData.CARTAO,
+					rowData.NSU,
+					dateConvert(rowData.DATAVENDA),
+					rowData.HORAVENDA || 'N/A',
+					dateConvert(rowData.DATACREDITO),
+					rowData.AUTORIZACAO,
+					rowData.PARCELA,
+					rowData.STATUS,
+					rowData.NUMEROPV
 				]
 			})
 		} else if (tipo === 'creditos') {
@@ -627,7 +584,6 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 			})
 		}
 
-		// Get date range for header
 		const dateRangeStr = getDateRangeString()
 		const headerText = dateRangeStr ? `${exportName} - ${tipoRelatorio} - ${dateRangeStr}` : `${exportName} - ${tipoRelatorio} - ${currentDateTime.replace(/-/g, '/').replace(/\./g, ':')}`
 
@@ -671,30 +627,25 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 		})
 
 		if(tipo !== 'taxas'){
-		// Add totals to the last page
-		doc.addPage()
-		doc.setFontSize(12)
+			doc.addPage()
+			doc.setFontSize(12)
 
-		// Draw horizontal line further down
-		doc.setLineWidth(0.5)
-		const pageWidth = doc.internal.pageSize.getWidth()
-		const margin = 10
-		doc.line(margin, 30, pageWidth - margin, 30)
+			doc.setLineWidth(0.5)
+			const pageWidth = doc.internal.pageSize.getWidth()
+			const margin = 10
+			doc.line(margin, 30, pageWidth - margin, 30)
 
-		// Add some spacing for totals
-		const totals = []
-		if(tipo !== 'servicos'){
+			const totals = []
+			if(tipo !== 'servicos'){
 				totals.push(['Total Bruto', `R$ ${totalBruto.toFixed(2)}`])
-				totals.push(['Total Desconto', `R$ ${totalDesconto.toFixed(2)}`])
 				totals.push(['Total Líquido', `R$ ${totalLiquido.toFixed(2)}`])
 			} else {
 				totals.push(['Total', `R$ ${totalServicos.toFixed(2)}`])
 			}
 	
-			// Draw totals without header
 			doc.autoTable({
 				body: totals,
-				startY: 35,  // Adjusted Y coordinate for the table start position
+				startY: 35,
 				styles: {
 					cellPadding: 2,
 					align: 'center',

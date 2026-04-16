@@ -58,34 +58,81 @@ const Teste = () => {
     setPdfBase64(null)
     setResponseMessage(null)
 
+    const formatDateToYYYYMMDD = (date) => {
+      if (!date) return ''
+      
+      // If it's already a string in YYYY-MM-DD format, return it
+      if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        return date
+      }
+      
+      // If it's a Date object
+      if (date instanceof Date) {
+        const year = date.getFullYear()
+        const month = String(date.getMonth() + 1).padStart(2, '0')
+        const day = String(date.getDate()).padStart(2, '0')
+        return `${year}-${month}-${day}`
+      }
+      
+      // If it's a string in Brazilian format (dd/mm/yyyy)
+      if (typeof date === 'string' && date.includes('/')) {
+        const [day, month, year] = date.split('/')
+        return `${year}-${month}-${day}`
+      }
+      
+      // Try to parse as Date
+      const dateObj = new Date(date)
+      if (!isNaN(dateObj.getTime())) {
+        const year = dateObj.getFullYear()
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0')
+        const day = String(dateObj.getDate()).padStart(2, '0')
+        return `${year}-${month}-${day}`
+      }
+      
+      return ''
+    }
+
     const cliente = JSON.parse(localStorage.getItem('selectedClientBody'))
     const grupo = JSON.parse(localStorage.getItem('selectedGroupBody'))
 
     const dataInicial = localStorage.getItem('dataInicial')
     const dataFinal = localStorage.getItem('dataFinal')
-    let clientes;
-
-    if (selectedCliente === 'todos') {
-      clientes = gruposBodyData.clients;
+    
+    // Convert clientes to comma-separated string
+    let clientesString;
+    
+    if (cliente && cliente.label === 'TODOS') {
+      // Extract all client codes from the group and join with comma and space
+      const clientCodes = grupo?.clients?.map(client => client.CODIGOCLIENTE) || [];
+      clientesString = clientCodes.join(', ');
+      console.log('All client codes (TODOS):', clientesString);
+    } else if (cliente && cliente.cod) {
+      // Individual client - just the single code as string
+      clientesString = String(cliente.cod);
+      console.log('Single client code:', clientesString);
     } else {
-      clientes = gruposBodyData.clients.filter(c => c.CODIGOCLIENTE === selectedCliente);
+      // Fallback
+      clientesString = "";
     }
 
-    const nomeGrupo = grupo.label
-    const bandeira = JSON.parse(localStorage.getItem('selectedBan')) || {};
-    const adquirente = JSON.parse(localStorage.getItem('selectedAdm')) || {};
+    const nomeGrupo = grupo?.label || ""
+    const bandeira = JSON.parse(localStorage.getItem('selectedBan')) || '';
+    const adquirente = JSON.parse(localStorage.getItem('selectedAdm')) || '';
     const produto = ''
     const modalidade = ''
-    const arquivo = 'PDF'
+    const arquivo = 'PDF' // Or 'JSON' depending on what you need
     const modelo = 'VENDA'
 
+    let ban = bandeira?.codigoBandeira || ''
+    let adq = adquirente?.codigoAdquirente || ''
+
     const object = {
-      dataInicial: dataInicial,
-      dataFinal: dataFinal,
-      clientes: clientes,
+      dataInicial: formatDateToYYYYMMDD(dataInicial),
+      dataFinal: formatDateToYYYYMMDD(dataFinal),
+      clientes: clientesString, // Now this is a string like "2420, 2419, 2421, 4660" or "2420"
       nomeGrupo: nomeGrupo,
-      bandeira: bandeira,
-      adquirente: adquirente,
+      bandeira: ban,
+      adquirente: adq,
       produto: produto,
       modalidade: modalidade,
       arquivo: arquivo,

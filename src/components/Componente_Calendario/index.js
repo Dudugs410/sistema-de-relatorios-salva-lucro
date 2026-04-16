@@ -33,7 +33,14 @@ const MyCalendar = (props) => {
     },[location])
 
     useEffect(()=>{
+      localStorage.setItem('dataInicial', dateRange[0])
+      localStorage.setItem('dataFinal', dateRange[1])
+    },[])
+
+    useEffect(()=>{
       getCalendarDate(dateRange)
+      localStorage.setItem('dataInicial', dateRange[0])
+      localStorage.setItem('dataFinal', dateRange[1])
     },[dateRange])
 
     const handleDateChange = (date) =>{

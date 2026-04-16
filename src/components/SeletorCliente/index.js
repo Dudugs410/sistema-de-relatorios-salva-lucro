@@ -142,6 +142,11 @@ const SeletorCliente = ({ onClose }) => {
     }
   }
 
+  useEffect(()=>{
+    localStorage.setItem('selectedGroupBody', JSON.stringify(selectedGroup))
+    localStorage.setItem('selectedClientBody', JSON.stringify(selectedClient))
+  },[])
+
   useEffect(() => {
     if (selectorGroupList && selectorGroupList.length > 0) {
       const sortedOptions = selectorGroupList
