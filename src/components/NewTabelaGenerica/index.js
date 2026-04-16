@@ -72,6 +72,72 @@ const tableConfig = {
   }
 }
 
+// IMPROVED: Helper function to find the full bandeira/adquirente object from the data array
+const findFilterObject = (value, filterKey, dataArray, tableType) => {
+  if (!value || !dataArray || dataArray.length === 0) return null
+  
+  // Create a map to store unique objects by their code
+  const uniqueMap = new Map()
+  
+  dataArray.forEach(item => {
+    let displayName = null
+    let code = null
+    
+    if (tableType === 'vendas') {
+      if (filterKey === 'bandeira') {
+        displayName = item.BANDEIRA
+        code = item.CODIGOBANDEIRA
+        if (displayName === value && code && !uniqueMap.has(code)) {
+          uniqueMap.set(code, {
+            codigoBandeira: code,
+            descricaoBandeira: displayName
+          })
+        }
+      } else if (filterKey === 'adquirente') {
+        displayName = item.ADMINISTRADORA
+        code = item.CODIGOADMINISTRADORA
+        if (displayName === value && code && !uniqueMap.has(code)) {
+          uniqueMap.set(code, {
+            codigoAdquirente: code,
+            nomeAdquirente: displayName
+          })
+        }
+      }
+    } else if (tableType === 'creditos') {
+      if (filterKey === 'bandeira' && item.bandeira) {
+        displayName = item.bandeira.descricaoBandeira
+        code = item.bandeira.codigoBandeira
+        if (displayName === value && code && !uniqueMap.has(code)) {
+          uniqueMap.set(code, {
+            codigoBandeira: code,
+            descricaoBandeira: displayName
+          })
+        }
+      } else if (filterKey === 'adquirente' && item.adquirente) {
+        displayName = item.adquirente.nomeAdquirente
+        code = item.adquirente.codigoAdquirente
+        if (displayName === value && code && !uniqueMap.has(code)) {
+          uniqueMap.set(code, {
+            codigoAdquirente: code,
+            nomeAdquirente: displayName
+          })
+        }
+      }
+    }
+  })
+  
+  const result = uniqueMap.size > 0 ? Array.from(uniqueMap.values())[0] : null
+  
+  // Debug logging
+  if (result) {
+    console.log(`Found ${filterKey} object for "${value}":`, result)
+  } else {
+    console.log(`No ${filterKey} object found for "${value}"`)
+  }
+  
+  return result
+}
+
 const ConditionalMarquee = ({ children, speed = 50, gradient = false, className = "" }) => {
   const text = typeof children === 'string' ? children : '';
   
@@ -172,6 +238,84 @@ const NewTabelaGenerica = forwardRef(({
     }
   }, [dataArray, expandAll])
 
+  // Load saved filters from localStorage on component mount
+  useEffect(() => {
+    const savedBandeira = localStorage.getItem('selectedBan')
+    const savedAdquirente = localStorage.getItem('selectedAdm')
+    
+    const initialFilters = {}
+    
+    if (savedBandeira && savedBandeira !== 'null' && savedBandeira !== 'undefined') {
+      try {
+        const parsedBandeira = JSON.parse(savedBandeira)
+        if (parsedBandeira && parsedBandeira.descricaoBandeira) {
+          initialFilters.bandeira = parsedBandeira.descricaoBandeira
+          console.log('Loaded saved bandeira filter:', parsedBandeira.descricaoBandeira)
+        }
+      } catch (e) {
+        console.error('Error parsing saved bandeira:', e)
+      }
+    }
+    
+    if (savedAdquirente && savedAdquirente !== 'null' && savedAdquirente !== 'undefined') {
+      try {
+        const parsedAdquirente = JSON.parse(savedAdquirente)
+        if (parsedAdquirente && parsedAdquirente.nomeAdquirente) {
+          initialFilters.adquirente = parsedAdquirente.nomeAdquirente
+          console.log('Loaded saved adquirente filter:', parsedAdquirente.nomeAdquirente)
+        }
+      } catch (e) {
+        console.error('Error parsing saved adquirente:', e)
+      }
+    }
+    
+    if (Object.keys(initialFilters).length > 0) {
+      setSelectedFilters(prev => ({ ...prev, ...initialFilters }))
+    }
+  }, [])
+
+  // Update localStorage when bandeira filter changes
+  useEffect(() => {
+    const bandeiraValue = selectedFilters.bandeira
+    
+    console.log('Bandeira filter changed to:', bandeiraValue)
+    
+    if (bandeiraValue && dataArray && dataArray.length > 0) {
+      const bandeiraObject = findFilterObject(bandeiraValue, 'bandeira', dataArray, tableType)
+      if (bandeiraObject) {
+        localStorage.setItem('selectedBan', JSON.stringify(bandeiraObject))
+        console.log('✅ Updated selectedBan in localStorage:', bandeiraObject)
+      } else {
+        console.log('❌ No bandeira object found for:', bandeiraValue)
+        localStorage.removeItem('selectedBan')
+      }
+    } else if (!bandeiraValue) {
+      console.log('Clearing selectedBan from localStorage')
+      localStorage.removeItem('selectedBan')
+    }
+  }, [selectedFilters.bandeira, dataArray, tableType])
+
+  // Update localStorage when adquirente filter changes
+  useEffect(() => {
+    const adquirenteValue = selectedFilters.adquirente
+    
+    console.log('Adquirente filter changed to:', adquirenteValue)
+    
+    if (adquirenteValue && dataArray && dataArray.length > 0) {
+      const adquirenteObject = findFilterObject(adquirenteValue, 'adquirente', dataArray, tableType)
+      if (adquirenteObject) {
+        localStorage.setItem('selectedAdm', JSON.stringify(adquirenteObject))
+        console.log('✅ Updated selectedAdm in localStorage:', adquirenteObject)
+      } else {
+        console.log('❌ No adquirente object found for:', adquirenteValue)
+        localStorage.removeItem('selectedAdm')
+      }
+    } else if (!adquirenteValue) {
+      console.log('Clearing selectedAdm from localStorage')
+      localStorage.removeItem('selectedAdm')
+    }
+  }, [selectedFilters.adquirente, dataArray, tableType])
+
   const getFilterConfig = useCallback(() => {
     if (customFilterConfig) return customFilterConfig
     
@@ -224,7 +368,7 @@ const NewTabelaGenerica = forwardRef(({
 
   const isExpandable = expandable || config.expandable
 
-  // Initialize filter options - FIXED: Only runs when dataArray actually changes
+  // Initialize filter options
   useEffect(() => {
     if (!showFilters || dataArray.length === 0) {
       if (Object.keys(allFilterOptions).length > 0) {
@@ -232,18 +376,6 @@ const NewTabelaGenerica = forwardRef(({
       }
       return
     }
-
-    // Check if dataArray actually changed
-    const dataArraySignature = JSON.stringify(dataArray.map(item => ({
-      ADMINISTRADORA: item.ADMINISTRADORA,
-      BANDEIRA: item.BANDEIRA
-    })))
-    
-    if (dataArraySignature === lastDataArrayRef.current) {
-      return // No change, skip update
-    }
-    
-    lastDataArrayRef.current = dataArraySignature
 
     const filterConfig = getFilterConfig()
     
@@ -262,9 +394,9 @@ const NewTabelaGenerica = forwardRef(({
     })
 
     setAllFilterOptions(allOptions)
-  }, [dataArray, showFilters, getFilterConfig, allFilterOptions.length])
+  }, [dataArray, showFilters, getFilterConfig])
 
-  // Main filtering logic - FIXED to prevent infinite loops
+  // Main filtering logic
   useEffect(() => {
     if (isUpdatingRef.current) return
     
@@ -300,7 +432,6 @@ const NewTabelaGenerica = forwardRef(({
       setDataExibicao(filteredData)
       setCurrentPage(1)
       
-      // Only call onTotalUpdate after data is processed and not on initial load
       if (onTotalUpdate && isDataProcessed && filteredData.length !== dataExibicao.length) {
         onTotalUpdate(filteredData)
       }
@@ -404,6 +535,7 @@ const NewTabelaGenerica = forwardRef(({
   }, [dateRange, tableType])
 
   const handleFilterChange = useCallback((filterKey, value) => {
+    console.log(`Changing filter ${filterKey} to:`, value)
     setSelectedFilters(prev => ({
       ...prev,
       [filterKey]: value || ''
@@ -411,7 +543,10 @@ const NewTabelaGenerica = forwardRef(({
   }, [])
 
   const clearFilters = useCallback(() => {
+    console.log('Clearing all filters')
     setSelectedFilters({})
+    localStorage.removeItem('selectedBan')
+    localStorage.removeItem('selectedAdm')
   }, [])
 
   const getAvailableOptions = useCallback((filterKey) => {
