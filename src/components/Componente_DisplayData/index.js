@@ -32,50 +32,53 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutori
     switch(tableType) {
       case 'vendas':
         return [
-          { key: 'cnpj', header: 'CNPJ' },
-          { key: 'adquirente.nomeAdquirente', header: 'Adquirente' },
-          { key: 'bandeira.descricaoBandeira', header: 'Bandeira' },
-          { key: 'produto.descricaoProduto', header: 'Produto' },
-          { key: 'modalidade.descricaoModalidade', header: 'Subproduto' },
+          { key: 'CNPJ', header: 'CNPJ' },
+          { key: 'ADMINISTRADORA', header: 'Adquirente' },
+          { key: 'BANDEIRA', header: 'Bandeira' },
+          { key: 'PRODUTO', header: 'Produto' },
+          { key: 'MODALIDADE', header: 'Subproduto' },
           { 
-            key: 'valorBruto', 
+            key: 'VALORBRUTO', 
             header: 'Valor Bruto',
-            render: (item) => <span className='green-global'>{Number(item.valorBruto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span>
+            render: (item) => <span className='green-global'>{Number(item.VALORBRUTO).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span>
           },
           { 
-            key: 'valorLiquido', 
+            key: 'VALORLIQUIDO', 
             header: 'Valor Líquido',
-            render: (item) => <span className='green-global'>{Number(item.valorLiquido).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span>
+            render: (item) => <span className='green-global'>{Number(item.VALORLIQUIDO).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span>
           },
           { 
-            key: 'taxa', 
+            key: 'TAXA', 
             header: 'Taxa',
-            render: (item) => <span className='red-global'>{Number(item.taxa).toFixed(2)}%</span>
+            render: (item) => <span className='red-global'>{Number(item.TAXA).toFixed(2)}%</span>
           },
           { 
-            key: 'valorDesconto', 
-            header: 'Valor Desconto',
-            render: (item) => <span className='red-global'>{Number(item.valorDesconto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span>
+            key: 'DESCONTO', 
+            header: 'Desconto (%)',
+            render: (item) => <span className='red-global'>{Number(item.DESCONTO).toFixed(2)}%</span>
           },
-          { key: 'nsu', header: 'NSU' },
-          { key: 'cartao', header: 'Cartão'},
+          { key: 'NSU', header: 'NSU' },
+          { key: 'CARTAO', header: 'Cartão'},
           { 
-            key: 'dataVenda', 
+            key: 'DATAVENDA', 
             header: 'Data da Venda',
-            accessor: (item) => dateConvert(item.dataVenda)
+            accessor: (item) => dateConvert(item.DATAVENDA)
           },
           { 
-            key: 'horaVenda', 
+            key: 'HORAVENDA', 
             header: 'Hora da Venda',
-            accessor: (item) => item.horaVenda?.replaceAll('-', ':')
+            accessor: (item) => item.HORAVENDA || 'N/A'
           },
           { 
-            key: 'dataCredito', 
+            key: 'DATACREDITO', 
             header: 'Data do Crédito',
-            accessor: (item) => dateConvert(item.dataCredito)
+            accessor: (item) => dateConvert(item.DATACREDITO)
           },
-          { key: 'codigoAutorizacao', header: 'Autorização' },
-          { key: 'quantidadeParcelas', header: 'QTD Parcelas' },
+          { key: 'AUTORIZACAO', header: 'Autorização' },
+          { key: 'PARCELA', header: 'QTD Parcelas' },
+          { key: 'STATUS', header: 'Status' },
+          { key: 'NUMEROPV', header: 'Número PV' },
+          { key: 'RO', header: 'RO' }
         ]
       
       case 'creditos':
@@ -197,11 +200,7 @@ const getTotalUpdateFunction = useCallback(() => {
     case '/vendas': return setSalesTotal
     case '/creditos': return setCreditsTotal
     case '/servicos': return (total) => {
-      // For services, we'll store it in state or just use it directly
-      // You might want to add a servicesTotal state in your AuthContext
       console.log('Services total:', total)
-      // If you have setServicesTotal in context, use it here
-      // return setServicesTotal
       return null
     }
     default: return null
@@ -219,16 +218,16 @@ const getTotalUpdateFunction = useCallback(() => {
       array.forEach((venda)=>{
         if(temp.length === 0){
           let newObj = {
-            adminName: tableType === 'servicos' ? venda.nome_adquirente : venda.adquirente.nomeAdquirente,
-            total: tableType === 'servicos' ? Math.abs(venda.valor) : (tableType === 'vendas' ? venda.valorBruto : venda.valorLiquido),
+            adminName: tableType === 'servicos' ? venda.nome_adquirente : venda.ADMINISTRADORA,
+            total: tableType === 'servicos' ? Math.abs(venda.valor) : venda.VALORBRUTO,
             id: 0,
             sales: []
           }
           temp.push(newObj)
         }else{
           let newObj = {
-            adminName: tableType === 'servicos' ? venda.nome_adquirente : venda.adquirente.nomeAdquirente,
-            total: tableType === 'servicos' ? Math.abs(venda.valor) : (tableType === 'vendas' ? venda.valorBruto : venda.valorLiquido),
+            adminName: tableType === 'servicos' ? venda.nome_adquirente : venda.ADMINISTRADORA,
+            total: tableType === 'servicos' ? Math.abs(venda.valor) : venda.VALORBRUTO,
             id: 0,
             sales: []
           }
@@ -246,25 +245,27 @@ const getTotalUpdateFunction = useCallback(() => {
         }
 
         if (tableType !== 'servicos') {
-          switch(venda.produto.descricaoProduto){
+          const produto = (venda.PRODUTO || "").trim()
+          switch(produto){
             case 'Crédito':
-              totalCreditoTemp += tableType === 'vendas' ? venda.valorBruto : venda.valorLiquido
+              totalCreditoTemp += venda.VALORBRUTO
               break
             case 'Débito':
-              totalDebitoTemp += tableType === 'vendas' ? venda.valorBruto : venda.valorLiquido
+              totalDebitoTemp += venda.VALORBRUTO
               break
             case 'Voucher':
-              totalVoucherTemp += tableType === 'vendas' ? venda.valorBruto : venda.valorLiquido
+              totalVoucherTemp += venda.VALORBRUTO
+              break
+            default:
+              // If produto contains Voucher, add to voucher
+              if (produto.includes('Voucher')) {
+                totalVoucherTemp += venda.VALORBRUTO
+              }
               break
           }
         }
         
-        // For services, sum the absolute values
-        if (tableType === 'servicos') {
-          totalTemp += Math.abs(venda.valor)
-        } else {
-          totalTemp += tableType === 'vendas' ? venda.valorBruto : venda.valorLiquido
-        }
+        totalTemp += venda.VALORBRUTO
       })
 
       let totalResult = tableType === 'servicos' 
@@ -280,12 +281,9 @@ const getTotalUpdateFunction = useCallback(() => {
     }
   }, [getTotalUpdateFunction])
 
-  // FIXED: Enhanced onTotalUpdate to also update filtered data state without infinite loops
   const handleTotalUpdate = useCallback((data) => {
     if (exportPage) {
-      // Update the filtered data state
       setCurrentFilteredData(data)
-      // Load totals with the filtered data
       loadTotals(data, exportPage)
     }
   }, [exportPage, loadTotals])
@@ -296,6 +294,18 @@ const getTotalUpdateFunction = useCallback(() => {
     
     switch(exportPage) {
       case 'vendas':
+        return {
+          adquirente: {
+            label: 'Adquirente',
+            accessor: (item) => item.ADMINISTRADORA || '',
+            dependentKey: 'bandeira'
+          },
+          bandeira: {
+            label: 'Bandeira', 
+            accessor: (item) => item.BANDEIRA || '',
+            dependentKey: 'adquirente'
+          }
+        }
       case 'creditos':
         return {
           adquirente: {

@@ -34,6 +34,9 @@ const DadosGrupoCliente = () => {
     if(selectedGroup && selectedClient){
       setDisplayGroup(selectedGroup.label)
       setDisplayClient(selectedClient.label)
+
+      localStorage.setItem('selectedGroupBody', JSON.stringify(selectedGroup))
+      localStorage.setItem('selectedClientBody', JSON.stringify(selectedClient))
     }
   },[selectedGroup, selectedClient])
 

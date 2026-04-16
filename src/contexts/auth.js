@@ -430,6 +430,273 @@ const loadSales = async (startDate, endDate) => {
   }
 }
 
+// Add these helper functions at the top of your AuthContext component
+
+const formatDateToYYYYMMDD = (date) => {
+  if (!date) return ''
+  
+  // If it's already a string in YYYY-MM-DD format, return it
+  if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    return date
+  }
+  
+  // If it's a Date object
+  if (date instanceof Date) {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+  
+  // If it's a string in Brazilian format (dd/mm/yyyy)
+  if (typeof date === 'string' && date.includes('/')) {
+    const [day, month, year] = date.split('/')
+    return `${year}-${month}-${day}`
+  }
+  
+  // Try to parse as Date
+  const dateObj = new Date(date)
+  if (!isNaN(dateObj.getTime())) {
+    const year = dateObj.getFullYear()
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0')
+    const day = String(dateObj.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+  
+  return ''
+}
+
+// In AuthContext.js - Updated newLoadSales function
+
+const newLoadSales = async (startDate, endDate, additionalFilters = {}) => {
+  console.log('carregando vendas: ', startDate, ' até ', endDate)
+  try {
+    setErrorSales(false)
+    
+    // Format dates to YYYY-MM-DD
+    const formatDateToYYYYMMDD = (date) => {
+      if (!date) return ''
+      
+      if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        return date
+      }
+      
+      if (date instanceof Date) {
+        const year = date.getFullYear()
+        const month = String(date.getMonth() + 1).padStart(2, '0')
+        const day = String(date.getDate()).padStart(2, '0')
+        return `${year}-${month}-${day}`
+      }
+      
+      if (typeof date === 'string' && date.includes('/')) {
+        const [day, month, year] = date.split('/')
+        return `${year}-${month}-${day}`
+      }
+      
+      const dateObj = new Date(date)
+      if (!isNaN(dateObj.getTime())) {
+        const year = dateObj.getFullYear()
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0')
+        const day = String(dateObj.getDate()).padStart(2, '0')
+        return `${year}-${month}-${day}`
+      }
+      
+      return ''
+    }
+    
+    const formattedStartDate = formatDateToYYYYMMDD(startDate)
+    const formattedEndDate = formatDateToYYYYMMDD(endDate)
+    
+    console.log('Formatted dates:', formattedStartDate, formattedEndDate)
+    
+    // Get stored data from localStorage
+    const cliente = JSON.parse(localStorage.getItem('selectedClientBody'))
+    const grupo = JSON.parse(localStorage.getItem('selectedGroupBody'))
+    const selectedBan = JSON.parse(localStorage.getItem('selectedBan'))
+    const selectedAdm = JSON.parse(localStorage.getItem('selectedAdm'))
+    
+    // Store formatted dates in localStorage
+    localStorage.setItem('dataInicial', formattedStartDate)
+    localStorage.setItem('dataFinal', formattedEndDate)
+    
+    // Determine client codes as a comma-separated string
+    let clientesString = "";
+    
+    if (cliente && cliente.label === 'TODOS') {
+      const clientCodes = grupo?.clients?.map(client => client.CODIGOCLIENTE) || [];
+      clientesString = clientCodes.join(', ');
+      console.log('All client codes (TODOS):', clientesString);
+    } else if (cliente && cliente.cod) {
+      clientesString = String(cliente.cod);
+      console.log('Single client code:', clientesString);
+    } else if (cliente && cliente.value) {
+      clientesString = String(cliente.value);
+    } else {
+      const apiCNPJ = localStorage.getItem('cnpj')
+      const apiGroupCode = localStorage.getItem('groupCode')
+      clientesString = apiCNPJ === 'todos' ? String(apiGroupCode) : String(apiCNPJ)
+    }
+    
+    // Get filter values
+    const bandeira = selectedBan?.value || additionalFilters.bandeira || "";
+    const adquirente = selectedAdm?.value || additionalFilters.adquirente || "";
+    const nomeGrupo = grupo?.label || localStorage.getItem('clientName') || "";
+    
+    // Build the request object
+    const requestObject = {
+      dataInicial: formattedStartDate,
+      dataFinal: formattedEndDate,
+      clientes: clientesString,
+      nomeGrupo: nomeGrupo,
+      bandeira: bandeira,
+      adquirente: adquirente,
+      produto: additionalFilters.produto || "",
+      modalidade: additionalFilters.modalidade || "",
+      arquivo: "JSON",
+      modelo: "VENDA"
+    }
+    
+    console.log('Final request object:', requestObject)
+    
+    const response = await api.post('relatorios/detalhado', requestObject)
+    
+    console.log('Full API Response:', response.data)
+    console.log('Response success type:', typeof response.data.success)
+    console.log('Response success value:', response.data.success)
+    console.log('Response dados length:', response.data.dados?.length)
+    
+    setBtnDisabledSales(false)
+    
+    // Fix: Check boolean, not string comparison
+    if (response.data.success === true && response.data.dados && response.data.dados.length > 0) {
+      console.log('Vendas data received:', response.data.dados.length, 'records')
+      console.log('First record sample:', response.data.dados[0])
+      
+      // Store in localStorage for export
+      localStorage.setItem('salesData', JSON.stringify(response.data.dados))
+      
+      return response.data.dados
+    } else if (response.data.success === true && (!response.data.dados || response.data.dados.length === 0)) {
+      console.log('Success true but no data in dados array')
+      toast.info(response.data.mensagem || "Nenhum dado encontrado para o período selecionado")
+      return []
+    } else {
+      console.log('Unsuccessful response:', response.data)
+      toast.error(response.data.mensagem || "Erro ao carregar dados")
+      return []
+    }
+    
+  } catch (error) {
+    console.error('Error in newLoadSales:', error)
+    setBtnDisabledSales(false)
+    
+    if(error.code === 'ERR_CANCELED'){
+      console.log('Request canceled')
+      setErrorSales(false)
+    } else if (error.response && error.response.status === 401) {
+      console.log('Session expired')
+      toast.error('Sessão Expirada')
+      logout()
+      return
+    } else {
+      toast.error('Erro ao Carregar Vendas: ' + (error.response?.data?.mensagem || error.message))
+      console.error('Error fetching vendas:', error)
+      setErrorSales(true)
+    }
+    return []
+  }
+}
+
+// Update groupByAdmin function for new structure
+// In AuthContext.js - Updated newGroupByAdmin
+
+const newGroupByAdmin = (salesArray) => {
+  if (!salesArray || salesArray.length === 0) return []
+  
+  console.log('newGroupByAdmin called with:', salesArray.length, 'records')
+  
+  const adminMap = new Map()
+  
+  salesArray.forEach(sale => {
+    const adminName = sale.ADMINISTRADORA || 'Unknown'
+    const total = sale.VALORBRUTO || 0
+    
+    if (adminMap.has(adminName)) {
+      adminMap.set(adminName, adminMap.get(adminName) + total)
+    } else {
+      adminMap.set(adminName, total)
+    }
+  })
+  
+  const result = []
+  let id = 0
+  adminMap.forEach((total, adminName) => {
+    result.push({
+      id: id++,
+      adminName: adminName,
+      total: total,
+      sales: []
+    })
+  })
+  
+  console.log('newGroupByAdmin result:', result)
+  return result
+}
+
+const newLoadTotalSales = (salesArray) => {
+  if (!salesArray || salesArray.length === 0) {
+    // Only reset if values are not already zero
+    const currentTotal = salesTotal;
+    if (currentTotal.debit !== 0 || currentTotal.credit !== 0 || currentTotal.voucher !== 0 || currentTotal.total !== 0) {
+      setSalesTotal({ debit: 0, credit: 0, voucher: 0, total: 0 })
+    }
+    return
+  }
+  
+  console.log('newLoadTotalSales called with:', salesArray.length, 'records')
+  
+  let totalCredito = 0
+  let totalDebito = 0
+  let totalVoucher = 0
+  let totalGeral = 0
+  
+  salesArray.forEach(sale => {
+    const valor = sale.VALORBRUTO || 0
+    const produto = (sale.PRODUTO || "").trim()
+    
+    totalGeral += valor
+    
+    if (produto === 'Crédito') {
+      totalCredito += valor
+    } else if (produto === 'Débito') {
+      totalDebito += valor
+    } else {
+      totalVoucher += valor
+    }
+  })
+  
+  const result = {
+    debit: totalDebito,
+    credit: totalCredito,
+    voucher: totalVoucher,
+    total: totalGeral
+  }
+  
+  console.log('newLoadTotalSales result:', result)
+  
+  // Only update if values actually changed
+  const currentTotal = salesTotal;
+  if (currentTotal.debit !== result.debit ||
+      currentTotal.credit !== result.credit ||
+      currentTotal.voucher !== result.voucher ||
+      currentTotal.total !== result.total) {
+    console.log('Updating sales total')
+    setSalesTotal(result)
+  } else {
+    console.log('Sales total unchanged, skipping update')
+  }
+}
+
 // retorna array de créditos/recebimentos
 const loadCredits = async (startDate, endDate) => {
   console.log('carregando créditos/recebimentos: ', startDate, ' até ', endDate)
@@ -2089,38 +2356,136 @@ function timeConvert(time){
 		})
 	}
 
-	function exportSales(array){
-		if(array.length === 0){
-			return
-		}
-		setSalesTableData([])
-		let arrayTemp = []
-		if (array.length > 0) {
-			array.map((venda) => {
-				arrayTemp.push({
-					cnpj: venda.cnpj,
-					adquirente: venda.adquirente.nomeAdquirente,
-					bandeira: venda.bandeira.descricaoBandeira,
-					produto: venda.produto?.descricaoProduto || '',
-					subproduto: venda.modalidade?.descricaoModalidade || '',
-					valorBruto: venda.valorBruto.toFixed(2),
-					valorLiquido: venda.valorLiquido.toFixed(2),
-					taxa: venda.taxa.toFixed(2),
-					valorDesconto: venda.valorDesconto.toFixed(2),
-					nsu: venda.nsu,
-					dataVenda: venda.dataVenda,
-					horaVenda: timeConvert(venda.horaVenda),
-					dataCredito: venda.dataCredito,
-					numeroPV: venda.numeroPV,
-					cartao: venda.cartao,
-					codigoAutorizacao: venda.codigoAutorizacao,
-					quantidadeParcelas: venda.quantidadeParcelas,
-					tid: venda.tid,
-				})
-			})
-			setSalesTableData(arrayTemp)
-		} 
-	}
+  const exportSales = (data) => {
+    try {
+      console.log('exportSales called with data type:', Array.isArray(data))
+      console.log('Data length:', data?.length)
+      
+      if (!data || data.length === 0) {
+        console.log('No data to export')
+        // Only clear if not already empty
+        if (salesTableData.length > 0) {
+          setSalesTableData([])
+        }
+        return
+      }
+      
+      console.log('First item in exportSales:', data[0])
+      console.log('First item keys:', Object.keys(data[0]))
+      
+      // Check if data is from new API (has uppercase fields like CNPJ, ADMINISTRADORA)
+      const isNewApiData = data[0] && data[0].CNPJ !== undefined
+      
+      let transformedData = []
+      
+      if (isNewApiData) {
+        console.log('Detected NEW API data structure in exportSales - transforming...')
+        
+        // Transform new API data to match expected export structure
+        transformedData = data.map((item, index) => {
+          // Safely extract values with fallbacks
+          const cnpj = item.CNPJ || ''
+          const razaosocial = item.RAZAOSOCIAL || ''
+          const administradora = item.ADMINISTRADORA || ''
+          const bandeira = item.BANDEIRA || ''
+          const produto = (item.PRODUTO || '').trim()
+          const modalidade = item.MODALIDADE || ''
+          const valorBruto = item.VALORBRUTO || 0
+          const valorLiquido = item.VALORLIQUIDO || 0
+          const taxa = item.TAXA || 0
+          const desconto = item.DESCONTO || 0
+          const cartao = item.CARTAO || ''
+          const nsu = item.NSU || ''
+          const dataVenda = item.DATAVENDA || ''
+          const horaVenda = item.HORAVENDA || ''
+          const dataCredito = item.DATACREDITO || ''
+          const codigoAutorizacao = item.AUTORIZACAO || ''
+          const parcela = item.PARCELA || '0'
+          const status = item.STATUS || ''
+          const numeroPV = item.NUMEROPV || ''
+          const ro = item.RO || ''
+          
+          return {
+            // Basic fields
+            cnpj: cnpj,
+            razaosocial: razaosocial,
+            numeroPV: numeroPV,
+            
+            // Nested objects to maintain compatibility with existing components
+            adquirente: {
+              codigoAdquirente: null,
+              nomeAdquirente: administradora
+            },
+            produto: {
+              codigoProduto: null,
+              descricaoProduto: produto
+            },
+            bandeira: {
+              codigoBandeira: null,
+              descricaoBandeira: bandeira
+            },
+            modalidade: {
+              codigoModalidade: null,
+              descricaoModalidade: modalidade
+            },
+            
+            // Financial fields
+            valorBruto: valorBruto,
+            valorLiquido: valorLiquido,
+            valorDesconto: desconto,
+            taxa: taxa,
+            
+            // Date fields
+            dataVenda: dataVenda,
+            dataCredito: dataCredito,
+            horaVenda: horaVenda,
+            
+            // Other fields
+            nsu: nsu,
+            cartao: cartao,
+            codigoAutorizacao: codigoAutorizacao,
+            quantidadeParcelas: parseInt(parcela) || 0,
+            status: status,
+            ro: ro
+          }
+        })
+        
+        console.log('Transformed NEW data for export:', transformedData.length, 'records')
+        
+      } else {
+        console.log('Detected OLD API data structure in exportSales - using as is')
+        
+        // For old API data, ensure it has the required structure
+        transformedData = data.map((item, index) => ({
+          ...item,
+          adquirente: item.adquirente || { codigoAdquirente: null, nomeAdquirente: '' },
+          produto: item.produto || { codigoProduto: null, descricaoProduto: '' },
+          bandeira: item.bandeira || { codigoBandeira: null, descricaoBandeira: '' },
+          modalidade: item.modalidade || { codigoModalidade: null, descricaoModalidade: '' },
+          valorDesconto: item.valorDesconto || 0,
+          quantidadeParcelas: item.quantidadeParcelas || 0
+        }))
+      }
+      
+      // Compare with current salesTableData to prevent unnecessary updates
+      const currentData = salesTableData
+      const isDataSame = JSON.stringify(currentData) === JSON.stringify(transformedData)
+      
+      if (!isDataSame) {
+        console.log('Data changed, updating salesTableData')
+        setSalesTableData(transformedData)
+      } else {
+        console.log('Data unchanged, skipping update')
+      }
+      
+    } catch (error) {
+      console.error('Error in exportSales:', error)
+      console.error('Error stack:', error.stack)
+      if (salesTableData.length > 0) {
+        setSalesTableData([])
+      }
+    }
+  }
 
 	function exportCredits(array){
 		if(array.length === 0){
@@ -2243,7 +2608,7 @@ function timeConvert(time){
 		
 		// Vendas //
 
-		loadSales, loadTotalSales,
+		loadSales, loadTotalSales, newLoadSales, newLoadTotalSales,
 		salesDateRange, setSalesDateRange,
 		salesPageArray, setSalesPageArray,
 		salesPageAdminArray, setSalesPageAdminArray,
@@ -2295,7 +2660,7 @@ function timeConvert(time){
 
 		loginApp, 
 		loadBanners, loadAdmins, loadMods, loadProducts, loadSubproducts,
-		groupByAdmin, groupServicesByAdmin,
+		groupByAdmin, newGroupByAdmin, groupServicesByAdmin,
 		exportName, setExportName,
 		isCheckedCalendar, setIsCheckedCalendar,
 		converteData, dateConvert, dateConvertSearch, dateConvertYYYYMMDD,

@@ -20,20 +20,21 @@ const tableConfig = {
   vendas: {
     title: 'Vendas',
     filters: [
-      { key: 'bandeira', label: 'Bandeira', path: 'bandeira.descricaoBandeira' },
-      { key: 'adquirente', label: 'Adquirente', path: 'adquirente.nomeAdquirente' }
+      { key: 'bandeira', label: 'Bandeira', path: 'BANDEIRA' },
+      { key: 'adquirente', label: 'Adquirente', path: 'ADMINISTRADORA' }
     ],
     mobileCards: [
-      { key: 'adquirente', label: 'Adquirente', path: 'adquirente.nomeAdquirente' },
-      { key: 'bandeira', label: 'Bandeira', path: 'bandeira.descricaoBandeira', badge: true },
-      { key: 'cnpj', label: 'CNPJ' },
-      { key: 'valorBruto', label: 'Valor Bruto', format: 'currency', className: 'green-global' },
-      { key: 'valorLiquido', label: 'Valor Líquido', format: 'currency', className: 'green-global' },
-      { key: 'cartao', label: 'Cartão'},
-      { key: 'taxa', label: 'Taxa', format: 'percent', className: 'red-global' },
-      { key: 'dataVenda', label: 'Data Venda', format: 'date' },
-      { key: 'quantidadeParcelas', label: 'Parcelas' },
-      { key: 'nsu', label: 'NSU' },
+      { key: 'adquirente', label: 'Adquirente', path: 'ADMINISTRADORA' },
+      { key: 'bandeira', label: 'Bandeira', path: 'BANDEIRA', badge: true },
+      { key: 'cnpj', label: 'CNPJ', path: 'CNPJ' },
+      { key: 'valorBruto', label: 'Valor Bruto', path: 'VALORBRUTO', format: 'currency', className: 'green-global' },
+      { key: 'valorLiquido', label: 'Valor Líquido', path: 'VALORLIQUIDO', format: 'currency', className: 'green-global' },
+      { key: 'cartao', label: 'Cartão', path: 'CARTAO'},
+      { key: 'taxa', label: 'Taxa', path: 'TAXA', format: 'percent', className: 'red-global' },
+      { key: 'dataVenda', label: 'Data Venda', path: 'DATAVENDA', format: 'date' },
+      { key: 'parcela', label: 'Parcelas', path: 'PARCELA' },
+      { key: 'nsu', label: 'NSU', path: 'NSU' },
+      { key: 'status', label: 'Status', path: 'STATUS' }
     ]
   },
   creditos: {
@@ -118,6 +119,7 @@ const NewTabelaGenerica = forwardRef(({
     dateConvert
   } = useContext(AuthContext)
 
+  // Memoize dataArray to prevent unnecessary re-renders
   const dataArray = useMemo(() => array || [], [array])
 
   const [dataExibicao, setDataExibicao] = useState([])
@@ -134,8 +136,11 @@ const NewTabelaGenerica = forwardRef(({
   const [error, setError] = useState(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage] = useState(15)
+  const [isDataProcessed, setIsDataProcessed] = useState(false)
 
   const lastFilteredDataRef = useRef(null)
+  const lastDataArrayRef = useRef(null)
+  const isUpdatingRef = useRef(false)
 
   const config = useMemo(() => tableConfig[tableType] || {}, [tableType])
 
@@ -172,6 +177,18 @@ const NewTabelaGenerica = forwardRef(({
     
     switch(tableType) {
       case 'vendas':
+        return {
+          adquirente: {
+            label: 'Adquirente',
+            accessor: (item) => item.ADMINISTRADORA || '',
+            dependentKey: 'bandeira'
+          },
+          bandeira: {
+            label: 'Bandeira', 
+            accessor: (item) => item.BANDEIRA || '',
+            dependentKey: 'adquirente'
+          }
+        }
       case 'creditos':
         return {
           adquirente: {
@@ -207,12 +224,26 @@ const NewTabelaGenerica = forwardRef(({
 
   const isExpandable = expandable || config.expandable
 
+  // Initialize filter options - FIXED: Only runs when dataArray actually changes
   useEffect(() => {
     if (!showFilters || dataArray.length === 0) {
-      setDataExibicao(dataArray)
-      setAllFilterOptions({})
+      if (Object.keys(allFilterOptions).length > 0) {
+        setAllFilterOptions({})
+      }
       return
     }
+
+    // Check if dataArray actually changed
+    const dataArraySignature = JSON.stringify(dataArray.map(item => ({
+      ADMINISTRADORA: item.ADMINISTRADORA,
+      BANDEIRA: item.BANDEIRA
+    })))
+    
+    if (dataArraySignature === lastDataArrayRef.current) {
+      return // No change, skip update
+    }
+    
+    lastDataArrayRef.current = dataArraySignature
 
     const filterConfig = getFilterConfig()
     
@@ -231,12 +262,18 @@ const NewTabelaGenerica = forwardRef(({
     })
 
     setAllFilterOptions(allOptions)
-  }, [dataArray, tableType, showFilters, getFilterConfig])
+  }, [dataArray, showFilters, getFilterConfig, allFilterOptions.length])
 
+  // Main filtering logic - FIXED to prevent infinite loops
   useEffect(() => {
+    if (isUpdatingRef.current) return
+    
     if (dataArray.length === 0) {
-      setDataExibicao([])
-      lastFilteredDataRef.current = null
+      if (dataExibicao.length !== 0) {
+        setDataExibicao([])
+        lastFilteredDataRef.current = null
+        setIsDataProcessed(false)
+      }
       return
     }
 
@@ -256,17 +293,27 @@ const NewTabelaGenerica = forwardRef(({
     }
     
     const filteredDataSignature = JSON.stringify(filteredData)
+    
     if (filteredDataSignature !== lastFilteredDataRef.current) {
+      isUpdatingRef.current = true
       lastFilteredDataRef.current = filteredDataSignature
       setDataExibicao(filteredData)
       setCurrentPage(1)
       
-      if (onTotalUpdate && filteredData.length !== dataExibicao.length) {
-        console.log('Calling onTotalUpdate with filtered data:', filteredData.length)
+      // Only call onTotalUpdate after data is processed and not on initial load
+      if (onTotalUpdate && isDataProcessed && filteredData.length !== dataExibicao.length) {
         onTotalUpdate(filteredData)
       }
+      
+      setTimeout(() => {
+        isUpdatingRef.current = false
+      }, 100)
     }
-  }, [dataArray, selectedFilters, getFilterConfig, onTotalUpdate, dataExibicao.length])
+    
+    if (!isDataProcessed && dataArray.length > 0) {
+      setIsDataProcessed(true)
+    }
+  }, [dataArray, selectedFilters, getFilterConfig, onTotalUpdate, dataExibicao.length, isDataProcessed])
 
   const toggleRow = useCallback(async (row) => {
     const rowId = row.id || row.document || row.contractNumber || Math.random()
@@ -464,7 +511,6 @@ const NewTabelaGenerica = forwardRef(({
       {showFilters && (
         <>
           <div className='date-container'>
-            {/* Desktop Filters */}
             <div data-tour="bandeiraadquirente-section" className='container desktop-filters'>
               {Object.keys(getFilterConfig()).map(filterKey => (
                 <div key={filterKey} className='export-column'>
@@ -486,7 +532,6 @@ const NewTabelaGenerica = forwardRef(({
                 </div>
               ))}
               
-              {/* Clear filters button */}
               {Object.keys(selectedFilters).some(key => selectedFilters[key]) && (
                 <div className="export-column">
                   <div className='filter-card'>
@@ -528,7 +573,6 @@ const NewTabelaGenerica = forwardRef(({
 
       <div data-tour="tabelavendas-section" className='dropShadow vendas-view'>
         <div className='table-wrapper'>
-          {/* Desktop view */}
           {!isMobileView && (
             <table className='table table-striped table-hover det-table-global desktop-table'>
               <thead>
@@ -556,14 +600,22 @@ const NewTabelaGenerica = forwardRef(({
             </table>
           )}
 
-          {/* Mobile view with cards */}
           {isMobileView && config.mobileCards && (
             <div className="mobile-cards">
               {currentItems.map((item, index) => (
                 <div key={index} className="sale-card">
                   <div className="card-header">
                     {config.mobileCards.slice(0, 2).map((field, idx) => {
-                      const value = field.path ? getNestedValue(item, field.path) : item[field.key]
+                      let value
+                      if (field.path) {
+                        if (field.path.includes('.')) {
+                          value = getNestedValue(item, field.path)
+                        } else {
+                          value = item[field.path]
+                        }
+                      } else {
+                        value = item[field.key]
+                      }
                       const formattedValue = formatValue(value, field.format)
                       
                       return field.badge ? (
@@ -579,7 +631,16 @@ const NewTabelaGenerica = forwardRef(({
                     {chunkArray(config.mobileCards.slice(2), 2).map((row, rowIndex) => (
                       <div key={rowIndex} className="card-row">
                         {row.map(field => {
-                          const value = field.path ? getNestedValue(item, field.path) : item[field.key]
+                          let value
+                          if (field.path) {
+                            if (field.path.includes('.')) {
+                              value = getNestedValue(item, field.path)
+                            } else {
+                              value = item[field.path]
+                            }
+                          } else {
+                            value = item[field.key]
+                          }
                           const formattedValue = formatValue(value, field.format)
                           
                           return (
@@ -601,7 +662,6 @@ const NewTabelaGenerica = forwardRef(({
             </div>
           )}
 
-          {/* Mobile view fallback to table if no mobile cards config */}
           {isMobileView && !config.mobileCards && (
             <table className='table table-striped table-hover det-table-global desktop-table'>
               <thead>
