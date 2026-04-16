@@ -142,6 +142,7 @@ function Base64ExcelViewer({ base64String }) {
 const Teste = () => {
   const [fileBase64, setFileBase64] = useState(null);
   const [fileFormat, setFileFormat] = useState(null); // 'PDF' or 'XLSX'
+  const [selectedFormat, setSelectedFormat] = useState('XLSX'); // User selected format
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [responseMessage, setResponseMessage] = useState(null);
@@ -207,7 +208,7 @@ const Teste = () => {
     const adquirente = JSON.parse(localStorage.getItem('selectedAdm')) || '';
     const produto = '';
     const modalidade = '';
-    const arquivo = 'PDF'; // PDF, XLSX ou JSON
+    const arquivo = selectedFormat; // Use the user's selected format
     const modelo = 'VENDA';
 
     let ban = bandeira?.codigoBandeira || '';
@@ -255,7 +256,7 @@ const Teste = () => {
     }
   };
 
-  // Function to download the file (optional)
+  // Function to download the file
   const downloadFile = () => {
     if (!fileBase64 || !fileFormat) return;
     
@@ -282,6 +283,42 @@ const Teste = () => {
 
   return (
     <div style={{ padding: '20px' }}>
+      {/* Format Selection Section */}
+      <div style={{ 
+        marginBottom: '20px', 
+        padding: '15px', 
+        backgroundColor: '#f8f9fa', 
+        borderRadius: '4px',
+        border: '1px solid #dee2e6'
+      }}>
+        <label style={{ marginRight: '15px', fontWeight: 'bold' }}>
+          Select Report Format:
+        </label>
+        <div style={{ display: 'inline-flex', gap: '10px' }}>
+          <label style={{ cursor: 'pointer' }}>
+            <input
+              type="radio"
+              value="PDF"
+              checked={selectedFormat === 'PDF'}
+              onChange={(e) => setSelectedFormat(e.target.value)}
+              style={{ marginRight: '5px' }}
+            />
+            PDF
+          </label>
+          <label style={{ cursor: 'pointer' }}>
+            <input
+              type="radio"
+              value="XLSX"
+              checked={selectedFormat === 'XLSX'}
+              onChange={(e) => setSelectedFormat(e.target.value)}
+              style={{ marginRight: '5px' }}
+            />
+            Excel (XLSX)
+          </label>
+        </div>
+      </div>
+
+      {/* Generate Button */}
       <div style={{ marginBottom: '20px' }}>
         <button 
           type="button" 
@@ -297,10 +334,11 @@ const Teste = () => {
             borderRadius: '4px'
           }}
         >
-          {loading ? 'Generating Report...' : 'Generate Report'}
+          {loading ? `Generating ${selectedFormat} Report...` : `Generate ${selectedFormat} Report`}
         </button>
       </div>
 
+      {/* Response Message */}
       {responseMessage && (
         <div style={{ 
           padding: '10px', 
@@ -313,6 +351,7 @@ const Teste = () => {
         </div>
       )}
 
+      {/* Error Message */}
       {error && (
         <div style={{ 
           padding: '10px', 
@@ -325,12 +364,14 @@ const Teste = () => {
         </div>
       )}
 
+      {/* Loading Indicator */}
       {loading && (
         <div style={{ textAlign: 'center', padding: '40px' }}>
-          <p>Loading {fileFormat || 'report'}...</p>
+          <p>Loading {selectedFormat} report...</p>
         </div>
       )}
 
+      {/* File Preview */}
       {fileBase64 && !loading && (
         <div style={{ marginTop: '20px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
@@ -358,12 +399,15 @@ const Teste = () => {
         </div>
       )}
       
-      {/* Debug info */}
-      <div style={{ marginTop: '20px', padding: '10px', backgroundColor: '#f0f0f0', fontSize: '12px' }}>
-        <strong>Debug:</strong> File Base64 exists: {fileBase64 ? 'YES (length: ' + fileBase64.length + ')' : 'NO'} | 
-        Format: {fileFormat || 'None'} | 
-        Loading: {loading ? 'YES' : 'NO'}
-      </div>
+      {/* Debug info - optional, remove in production */}
+      {process.env.NODE_ENV === 'development' && (
+        <div style={{ marginTop: '20px', padding: '10px', backgroundColor: '#f0f0f0', fontSize: '12px' }}>
+          <strong>Debug:</strong> File Base64 exists: {fileBase64 ? 'YES (length: ' + fileBase64.length + ')' : 'NO'} | 
+          Format: {fileFormat || 'None'} | 
+          Selected Format: {selectedFormat} |
+          Loading: {loading ? 'YES' : 'NO'}
+        </div>
+      )}
     </div>
   );
 };
