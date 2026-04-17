@@ -58,8 +58,8 @@ const tableConfig = {
   servicos: {
     title: 'Serviços',
     filters: [
-      { key: 'servico', label: 'Serviço', path: 'descricao' },
-      { key: 'adquirente', label: 'Adquirente', path: 'nome_adquirente' }
+      { key: 'adquirente', label: 'Adquirente', path: 'nome_adquirente' },
+      { key: 'servico', label: 'Serviço', path: 'descricao' }
     ],
     mobileCards: [
       { key: 'nome_adquirente', label: 'Adquirente' },
@@ -72,7 +72,7 @@ const tableConfig = {
   }
 }
 
-// IMPROVED: Helper function to find the full bandeira/adquirente object from the data array
+// Helper function to find the full bandeira/adquirente/servico object from the data array
 const findFilterObject = (value, filterKey, dataArray, tableType) => {
   if (!value || !dataArray || dataArray.length === 0) return null
   
@@ -116,6 +116,27 @@ const findFilterObject = (value, filterKey, dataArray, tableType) => {
       } else if (filterKey === 'adquirente' && item.adquirente) {
         displayName = item.adquirente.nomeAdquirente
         code = item.adquirente.codigoAdquirente
+        if (displayName === value && code && !uniqueMap.has(code)) {
+          uniqueMap.set(code, {
+            codigoAdquirente: code,
+            nomeAdquirente: displayName
+          })
+        }
+      }
+    } else if (tableType === 'servicos') {
+      if (filterKey === 'servico') {
+        displayName = item.descricao
+        // Generate a hash code for the service description if no code exists
+        code = item.codigoServico || Math.abs(displayName.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0))
+        if (displayName === value && !uniqueMap.has(code)) {
+          uniqueMap.set(code, {
+            codigoServico: code,
+            descricaoServico: displayName
+          })
+        }
+      } else if (filterKey === 'adquirente') {
+        displayName = item.nome_adquirente
+        code = item.codigoAdquirente
         if (displayName === value && code && !uniqueMap.has(code)) {
           uniqueMap.set(code, {
             codigoAdquirente: code,
@@ -214,6 +235,34 @@ const NewTabelaGenerica = forwardRef(({
     getFilteredData: () => dataExibicao
   }), [dataExibicao])
 
+  // Get localStorage keys based on table type
+  const getStorageKeys = useCallback(() => {
+    switch(tableType) {
+      case 'vendas':
+        return { filter1: 'selectedBan', filter2: 'selectedAdm' }
+      case 'creditos':
+        return { filter1: 'selectedBanCredits', filter2: 'selectedAdmCredits' }
+      case 'servicos':
+        return { filter1: 'selectedBanServices', filter2: 'selectedAdmServices' }
+      default:
+        return { filter1: 'selectedBan', filter2: 'selectedAdm' }
+    }
+  }, [tableType])
+
+  // Get the appropriate filter key names based on table type
+  const getFilterKeys = useCallback(() => {
+    switch(tableType) {
+      case 'vendas':
+        return { first: 'bandeira', second: 'adquirente' }
+      case 'creditos':
+        return { first: 'bandeira', second: 'adquirente' }
+      case 'servicos':
+        return { first: 'servico', second: 'adquirente' }
+      default:
+        return { first: 'bandeira', second: 'adquirente' }
+    }
+  }, [tableType])
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobileView(window.innerWidth < 768)
@@ -240,81 +289,97 @@ const NewTabelaGenerica = forwardRef(({
 
   // Load saved filters from localStorage on component mount
   useEffect(() => {
-    const savedBandeira = localStorage.getItem('selectedBan')
-    const savedAdquirente = localStorage.getItem('selectedAdm')
+    const storageKeys = getStorageKeys()
+    const filterKeys = getFilterKeys()
+    const savedFirstFilter = localStorage.getItem(storageKeys.filter1)
+    const savedSecondFilter = localStorage.getItem(storageKeys.filter2)
     
     const initialFilters = {}
     
-    if (savedBandeira && savedBandeira !== 'null' && savedBandeira !== 'undefined') {
+    // Load first filter (bandeira for vendas/creditos, servico for servicos)
+    if (savedFirstFilter && savedFirstFilter !== 'null' && savedFirstFilter !== 'undefined') {
       try {
-        const parsedBandeira = JSON.parse(savedBandeira)
-        if (parsedBandeira && parsedBandeira.descricaoBandeira) {
-          initialFilters.bandeira = parsedBandeira.descricaoBandeira
-          console.log('Loaded saved bandeira filter:', parsedBandeira.descricaoBandeira)
+        const parsedFilter = JSON.parse(savedFirstFilter)
+        let filterValue = null
+        
+        if (tableType === 'servicos') {
+          filterValue = parsedFilter.descricaoServico
+        } else {
+          filterValue = parsedFilter.descricaoBandeira
+        }
+        
+        if (filterValue) {
+          initialFilters[filterKeys.first] = filterValue
+          console.log(`Loaded saved ${storageKeys.filter1} filter:`, filterValue)
         }
       } catch (e) {
-        console.error('Error parsing saved bandeira:', e)
+        console.error('Error parsing saved filter:', e)
       }
     }
     
-    if (savedAdquirente && savedAdquirente !== 'null' && savedAdquirente !== 'undefined') {
+    // Load second filter (adquirente)
+    if (savedSecondFilter && savedSecondFilter !== 'null' && savedSecondFilter !== 'undefined') {
       try {
-        const parsedAdquirente = JSON.parse(savedAdquirente)
-        if (parsedAdquirente && parsedAdquirente.nomeAdquirente) {
-          initialFilters.adquirente = parsedAdquirente.nomeAdquirente
-          console.log('Loaded saved adquirente filter:', parsedAdquirente.nomeAdquirente)
+        const parsedFilter = JSON.parse(savedSecondFilter)
+        if (parsedFilter && parsedFilter.nomeAdquirente) {
+          initialFilters[filterKeys.second] = parsedFilter.nomeAdquirente
+          console.log(`Loaded saved ${storageKeys.filter2} filter:`, parsedFilter.nomeAdquirente)
         }
       } catch (e) {
-        console.error('Error parsing saved adquirente:', e)
+        console.error('Error parsing saved filter:', e)
       }
     }
     
     if (Object.keys(initialFilters).length > 0) {
       setSelectedFilters(prev => ({ ...prev, ...initialFilters }))
     }
-  }, [])
+  }, [getStorageKeys, getFilterKeys, tableType])
 
-  // Update localStorage when bandeira filter changes
+  // Update localStorage when first filter changes
   useEffect(() => {
-    const bandeiraValue = selectedFilters.bandeira
+    const storageKeys = getStorageKeys()
+    const filterKeys = getFilterKeys()
+    const filterValue = selectedFilters[filterKeys.first]
     
-    console.log('Bandeira filter changed to:', bandeiraValue)
+    console.log(`${filterKeys.first} filter changed to:`, filterValue)
     
-    if (bandeiraValue && dataArray && dataArray.length > 0) {
-      const bandeiraObject = findFilterObject(bandeiraValue, 'bandeira', dataArray, tableType)
-      if (bandeiraObject) {
-        localStorage.setItem('selectedBan', JSON.stringify(bandeiraObject))
-        console.log('✅ Updated selectedBan in localStorage:', bandeiraObject)
+    if (filterValue && dataArray && dataArray.length > 0) {
+      const filterObject = findFilterObject(filterValue, filterKeys.first, dataArray, tableType)
+      if (filterObject) {
+        localStorage.setItem(storageKeys.filter1, JSON.stringify(filterObject))
+        console.log(`✅ Updated ${storageKeys.filter1} in localStorage:`, filterObject)
       } else {
-        console.log('❌ No bandeira object found for:', bandeiraValue)
-        localStorage.removeItem('selectedBan')
+        console.log(`❌ No ${filterKeys.first} object found for:`, filterValue)
+        localStorage.removeItem(storageKeys.filter1)
       }
-    } else if (!bandeiraValue) {
-      console.log('Clearing selectedBan from localStorage')
-      localStorage.removeItem('selectedBan')
+    } else if (!filterValue) {
+      console.log(`Clearing ${storageKeys.filter1} from localStorage`)
+      localStorage.removeItem(storageKeys.filter1)
     }
-  }, [selectedFilters.bandeira, dataArray, tableType])
+  }, [selectedFilters, dataArray, tableType, getStorageKeys, getFilterKeys])
 
-  // Update localStorage when adquirente filter changes
+  // Update localStorage when second filter (adquirente) changes
   useEffect(() => {
-    const adquirenteValue = selectedFilters.adquirente
+    const storageKeys = getStorageKeys()
+    const filterKeys = getFilterKeys()
+    const filterValue = selectedFilters[filterKeys.second]
     
-    console.log('Adquirente filter changed to:', adquirenteValue)
+    console.log(`${filterKeys.second} filter changed to:`, filterValue)
     
-    if (adquirenteValue && dataArray && dataArray.length > 0) {
-      const adquirenteObject = findFilterObject(adquirenteValue, 'adquirente', dataArray, tableType)
-      if (adquirenteObject) {
-        localStorage.setItem('selectedAdm', JSON.stringify(adquirenteObject))
-        console.log('✅ Updated selectedAdm in localStorage:', adquirenteObject)
+    if (filterValue && dataArray && dataArray.length > 0) {
+      const filterObject = findFilterObject(filterValue, filterKeys.second, dataArray, tableType)
+      if (filterObject) {
+        localStorage.setItem(storageKeys.filter2, JSON.stringify(filterObject))
+        console.log(`✅ Updated ${storageKeys.filter2} in localStorage:`, filterObject)
       } else {
-        console.log('❌ No adquirente object found for:', adquirenteValue)
-        localStorage.removeItem('selectedAdm')
+        console.log(`❌ No ${filterKeys.second} object found for:`, filterValue)
+        localStorage.removeItem(storageKeys.filter2)
       }
-    } else if (!adquirenteValue) {
-      console.log('Clearing selectedAdm from localStorage')
-      localStorage.removeItem('selectedAdm')
+    } else if (!filterValue) {
+      console.log(`Clearing ${storageKeys.filter2} from localStorage`)
+      localStorage.removeItem(storageKeys.filter2)
     }
-  }, [selectedFilters.adquirente, dataArray, tableType])
+  }, [selectedFilters.adquirente, dataArray, tableType, getStorageKeys, getFilterKeys])
 
   const getFilterConfig = useCallback(() => {
     if (customFilterConfig) return customFilterConfig
@@ -544,10 +609,11 @@ const NewTabelaGenerica = forwardRef(({
 
   const clearFilters = useCallback(() => {
     console.log('Clearing all filters')
+    const storageKeys = getStorageKeys()
     setSelectedFilters({})
-    localStorage.removeItem('selectedBan')
-    localStorage.removeItem('selectedAdm')
-  }, [])
+    localStorage.removeItem(storageKeys.filter1)
+    localStorage.removeItem(storageKeys.filter2)
+  }, [getStorageKeys])
 
   const getAvailableOptions = useCallback((filterKey) => {
     if (!enableDependentFilters) {
