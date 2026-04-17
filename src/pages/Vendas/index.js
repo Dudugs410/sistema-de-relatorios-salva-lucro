@@ -8,7 +8,6 @@ import '../../index.scss'
 import MyCalendar from '../../components/Componente_Calendario'
 import { toast } from 'react-toastify'
 import { FiCalendar, FiHelpCircle } from 'react-icons/fi'
-import Teste from '../../components/000_ComponenteTeste'
 import NewDisplayData from '../../components/Component_NewDisplayData'
 
 const Vendas = () =>{
@@ -402,17 +401,14 @@ const Vendas = () =>{
             }
             {salesPageArray !== null ? (
               salesPageArray.length > 0 ? (
-                <>
-                  <NewDisplayData
-                    dataArray={salesPageArray}
-                    adminDataArray={salesPageAdminArray}
-                    totals={salesTotal}
-                    onGoBack={resetValues}
-                    setRunTutorial={setRunTutorial}
-                    location={location}
-                  />
-                  <Teste/>
-                </>
+                <NewDisplayData
+                  dataArray={salesPageArray}
+                  adminDataArray={salesPageAdminArray}
+                  totals={salesTotal}
+                  onGoBack={resetValues}
+                  setRunTutorial={setRunTutorial}
+                  location={location}
+                />
               ) : (
                 <>
                   <div className='select-container-calendario'>
@@ -526,7 +522,6 @@ const Vendas = () =>{
               >
                 <FiHelpCircle />
               </button>
-              <Teste/>
             </>
           </div>
         </div>

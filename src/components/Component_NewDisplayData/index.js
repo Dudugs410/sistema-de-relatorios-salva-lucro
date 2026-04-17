@@ -1,14 +1,25 @@
-// NewDisplayData.jsx - Fixed infinite loop
+// NewDisplayData.jsx - Fixed with correct imports
 import { useContext, useEffect, useState, useCallback, useMemo, useRef } from 'react'
 import NewTabelaGenerica from '../../components/NewTabelaGenerica'
 import TabelaGenericaAdm from '../../components/Componente_TabelaAdm'
 import TotalModalidadesComp from '../../components/Componente_TotalModalidades'
-import GerarRelatorio from "../../components/Componente_GerarRelatorio"
+import GerarRelatorio from "../../components/Componente_GerarRelatorio" // Add this import back
 import '../../index.scss'
 import './displayData.scss'
 import { AuthContext } from '../../contexts/auth'
+import { FiFilePlus } from 'react-icons/fi'
 
-const NewDisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutorial, location }) => {
+const NewDisplayData = ({ 
+  dataArray, 
+  adminDataArray, 
+  totals, 
+  onGoBack, 
+  setRunTutorial, 
+  location,
+  onExcelDownload,  // New prop for custom Excel download
+  onPDFDownload,    // New prop for custom PDF download
+  downloading       // New prop to show loading state
+}) => {
   const { 
     clientUserId, 
     dateConvert,
@@ -25,7 +36,7 @@ const NewDisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTut
   const [exportPage, setExportPage] = useState('')
   const [currentPath, setCurrentPath] = useState(location.pathname)
   const [currentFilteredData, setCurrentFilteredData] = useState(dataArray)
-  const [hasLoadedTotals, setHasLoadedTotals] = useState(false) // Add this flag
+  const [hasLoadedTotals, setHasLoadedTotals] = useState(false)
   
   const tabelaGenericaRef = useRef(null)
 
@@ -83,6 +94,52 @@ const NewDisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTut
           { key: 'RO', header: 'RO' }
         ]
       
+      case 'creditos':
+        return [
+          { key: 'cnpj', header: 'CNPJ' },
+          { key: 'adquirente', header: 'Adquirente', accessor: (item) => item.adquirente?.nomeAdquirente },
+          { key: 'bandeira', header: 'Bandeira', accessor: (item) => item.bandeira?.descricaoBandeira },
+          { key: 'produto', header: 'Produto', accessor: (item) => item.produto?.descricaoProduto },
+          { key: 'modalidade', header: 'Subproduto', accessor: (item) => item.modalidade?.descricaoModalidade },
+          { 
+            key: 'dataCredito', 
+            header: 'Data do Crédito',
+            accessor: (item) => dateConvert(item.dataCredito)
+          },
+          { 
+            key: 'dataVenda', 
+            header: 'Data da Venda',
+            accessor: (item) => dateConvert(item.dataVenda)
+          },
+          { 
+            key: 'valorBruto', 
+            header: 'Valor Bruto',
+            render: (item) => <span className='green-global'>{Number(item.valorBruto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span>
+          },
+          { 
+            key: 'valorLiquido', 
+            header: 'Valor Líquido',
+            render: (item) => <span className='green-global'>{Number(item.valorLiquido).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span>
+          },
+          { 
+            key: 'taxa', 
+            header: 'Taxa',
+            render: (item) => <span className='red-global'>{Number(item.taxa).toFixed(2)}%</span>
+          },
+          { 
+            key: 'valorDesconto', 
+            header: 'Valor Desconto',
+            render: (item) => <span className='red-global'>{Number(item.valorDesconto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span>
+          },
+          { key: 'banco', header: 'Banco' },
+          { key: 'agencia', header: 'Agência' },
+          { key: 'conta', header: 'Conta' },
+          { key: 'nsu', header: 'NSU' },
+          { key: 'codigoAutorizacao', header: 'Autorização' },
+          { key: 'parcela', header: 'Parcela' },
+          { key: 'quantidadeParcelas', header: 'QTD Parcelas' }
+        ]
+      
       default:
         return []
     }
@@ -114,6 +171,12 @@ const NewDisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTut
           case '/vendas': 
             await exportSales(dataToExport)
             break
+          case '/creditos':
+            await exportCredits(dataToExport)
+            break
+          case '/servicos':
+            await exportServices(dataToExport)
+            break
           default: 
             console.warn('No export function for current path:', currentPath)
         }
@@ -123,49 +186,72 @@ const NewDisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTut
     }
 
     return exportData
-  }, [currentPath, exportSales, dataArray])
+  }, [currentPath, exportSales, exportCredits, exportServices, dataArray])
 
   const getTotalUpdateFunction = useCallback(() => {
     switch(currentPath) {
       case '/vendas': return setSalesTotal
+      case '/creditos': return setCreditsTotal
       default: return null
     }
-  }, [currentPath, setSalesTotal])
+  }, [currentPath, setSalesTotal, setCreditsTotal])
 
   // Memoize loadTotals to prevent recreation
   const loadTotals = useCallback((array, tableType) => {
     if(!array || array.length === 0) return
     
-    let totalCreditoTemp = 0
-    let totalDebitoTemp = 0
-    let totalVoucherTemp = 0
-    let totalTemp = 0
+    if (tableType === 'vendas') {
+      let totalCreditoTemp = 0
+      let totalDebitoTemp = 0
+      let totalVoucherTemp = 0
+      let totalTemp = 0
 
-    array.forEach((venda) => {
-      const produto = (venda.PRODUTO || "").trim()
-      const valor = venda.VALORBRUTO || 0
-      
-      totalTemp += valor
-      
-      if (produto === 'Crédito') {
-        totalCreditoTemp += valor
-      } else if (produto === 'Débito') {
-        totalDebitoTemp += valor
-      } else {
-        totalVoucherTemp += valor
+      array.forEach((venda) => {
+        const produto = (venda.PRODUTO || "").trim()
+        const valor = venda.VALORBRUTO || 0
+        
+        totalTemp += valor
+        
+        if (produto === 'Crédito') {
+          totalCreditoTemp += valor
+        } else if (produto === 'Débito') {
+          totalDebitoTemp += valor
+        } else {
+          totalVoucherTemp += valor
+        }
+      })
+
+      const totalResult = { 
+        debit: totalDebitoTemp, 
+        credit: totalCreditoTemp, 
+        voucher: totalVoucherTemp, 
+        total: totalTemp 
       }
-    })
-
-    const totalResult = { 
-      debit: totalDebitoTemp, 
-      credit: totalCreditoTemp, 
-      voucher: totalVoucherTemp, 
-      total: totalTemp 
-    }
-    
-    const updateFunction = getTotalUpdateFunction()
-    if (updateFunction) {
-      updateFunction(totalResult)
+      
+      const updateFunction = getTotalUpdateFunction()
+      if (updateFunction) {
+        updateFunction(totalResult)
+      }
+    } else if (tableType === 'creditos') {
+      // For credits, we might have different total calculation
+      let totalBruto = 0
+      let totalLiquido = 0
+      
+      array.forEach((credito) => {
+        totalBruto += Number(credito.valorBruto) || 0
+        totalLiquido += Number(credito.valorLiquido) || 0
+      })
+      
+      const totalResult = {
+        totalBruto: totalBruto,
+        totalLiquido: totalLiquido,
+        total: totalLiquido
+      }
+      
+      const updateFunction = getTotalUpdateFunction()
+      if (updateFunction) {
+        updateFunction(totalResult)
+      }
     }
   }, [getTotalUpdateFunction])
 
@@ -193,6 +279,19 @@ const NewDisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTut
             dependentKey: 'adquirente'
           }
         }
+      case 'creditos':
+        return {
+          adquirente: {
+            label: 'Adquirente',
+            accessor: (item) => item.adquirente?.nomeAdquirente || '',
+            dependentKey: 'bandeira'
+          },
+          bandeira: {
+            label: 'Bandeira', 
+            accessor: (item) => item.bandeira?.descricaoBandeira || '',
+            dependentKey: 'adquirente'
+          }
+        }
       default:
         return {}
     }
@@ -206,22 +305,24 @@ const NewDisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTut
 
     if (path === '/vendas') {
       setExportPage('vendas')
+    } else if (path === '/creditos') {
+      setExportPage('creditos')
     } else {
       setExportPage('')
     }
-  }, [location.pathname]) // Only depends on location.pathname
+  }, [location.pathname])
 
-  // Handle dataArray changes - FIXED: Added condition to prevent infinite loop
+  // Handle dataArray changes
   useEffect(() => {
     if (dataArray && dataArray.length > 0 && !hasLoadedTotals) {
       console.log('NewDisplayData received dataArray:', dataArray.length, 'records')
       setCurrentFilteredData(dataArray)
-      loadTotals(dataArray, 'vendas')
-      setHasLoadedTotals(true) // Mark that we've loaded totals
+      loadTotals(dataArray, exportPage)
+      setHasLoadedTotals(true)
     } else if (dataArray && dataArray.length === 0) {
-      setHasLoadedTotals(false) // Reset flag when data is cleared
+      setHasLoadedTotals(false)
     }
-  }, [dataArray, loadTotals, hasLoadedTotals])
+  }, [dataArray, loadTotals, hasLoadedTotals, exportPage])
 
   // Reset hasLoadedTotals when dataArray becomes empty
   useEffect(() => {
@@ -254,20 +355,58 @@ const NewDisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTut
     switch(currentPath) {
       case '/vendas':
         return 'Nova Consulta de Vendas'
+      case '/creditos':
+        return 'Nova Consulta de Créditos'
       default:
         return 'Nova Pesquisa'
     }
   }
 
+  // Determine if we should use custom download handlers or the old GerarRelatorio
+  const useCustomDownloads = onExcelDownload && onPDFDownload
+
   return (
     <>
       {totals && <TotalModalidadesComp totals={totals} type={exportPage} />}
       
-      <GerarRelatorio 
-        className='export' 
-        onExport={getExportFunction()}
-        filteredData={currentFilteredData}
-      />
+      {useCustomDownloads ? (
+        // Use custom download buttons for Credits/Services
+        <div className="export-buttons-container" style={{ display: 'flex', gap: '10px', marginBottom: '20px', justifyContent: 'flex-end' }}>
+          <button 
+            className="btn btn-exportar btn-exportar-excel" 
+            onClick={onExcelDownload}
+            disabled={downloading}
+            style={{
+              padding: '10px 20px',
+              fontSize: '14px',
+              cursor: downloading ? 'not-allowed' : 'pointer',
+              opacity: downloading ? 0.6 : 1
+            }}
+          >
+            {downloading ? 'Gerando...' : 'Download Excel'} <FiFilePlus />
+          </button>
+          <button 
+            className="btn btn-exportar btn-exportar-pdf" 
+            onClick={onPDFDownload}
+            disabled={downloading}
+            style={{
+              padding: '10px 20px',
+              fontSize: '14px',
+              cursor: downloading ? 'not-allowed' : 'pointer',
+              opacity: downloading ? 0.6 : 1
+            }}
+          >
+            {downloading ? 'Gerando...' : 'Download PDF'} <FiFilePlus />
+          </button>
+        </div>
+      ) : (
+        // Use old GerarRelatorio component for Vendas
+        <GerarRelatorio 
+          className='export' 
+          onExport={getExportFunction()}
+          filteredData={currentFilteredData}
+        />
+      )}
       
       <div className='component-container-vendas'>
         {tableProps && (
