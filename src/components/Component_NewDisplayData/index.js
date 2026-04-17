@@ -1,25 +1,14 @@
-// NewDisplayData.jsx - Fixed with correct imports
+// NewDisplayData.jsx - Fixed infinite loop
 import { useContext, useEffect, useState, useCallback, useMemo, useRef } from 'react'
 import NewTabelaGenerica from '../../components/NewTabelaGenerica'
 import TabelaGenericaAdm from '../../components/Componente_TabelaAdm'
 import TotalModalidadesComp from '../../components/Componente_TotalModalidades'
-import GerarRelatorio from "../../components/Componente_GerarRelatorio" // Add this import back
+import GerarRelatorio from "../../components/Componente_GerarRelatorio"
 import '../../index.scss'
 import './displayData.scss'
 import { AuthContext } from '../../contexts/auth'
-import { FiFilePlus } from 'react-icons/fi'
 
-const NewDisplayData = ({ 
-  dataArray, 
-  adminDataArray, 
-  totals, 
-  onGoBack, 
-  setRunTutorial, 
-  location,
-  onExcelDownload,  // New prop for custom Excel download
-  onPDFDownload,    // New prop for custom PDF download
-  downloading       // New prop to show loading state
-}) => {
+const NewDisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutorial, location }) => {
   const { 
     clientUserId, 
     dateConvert,
@@ -140,6 +129,25 @@ const NewDisplayData = ({
           { key: 'quantidadeParcelas', header: 'QTD Parcelas' }
         ]
       
+      case 'servicos':
+        return [
+          { key: 'cnpj', header: 'CNPJ' },
+          { key: 'razao_social', header: 'Razão Social' },
+          { key: 'codigo_estabelecimento', header: 'Código Estabelecimento' },
+          { key: 'nome_adquirente', header: 'Adquirente' },
+          { 
+            key: 'valor', 
+            header: 'Valor',
+            render: (item) => <span className='red-global'>{Math.abs(Number(item.valor)).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span>
+          },
+          { 
+            key: 'data', 
+            header: 'Data',
+            accessor: (item) => dateConvert(item.data)
+          },
+          { key: 'descricao', header: 'Descrição' }
+        ]
+      
       default:
         return []
     }
@@ -233,7 +241,6 @@ const NewDisplayData = ({
         updateFunction(totalResult)
       }
     } else if (tableType === 'creditos') {
-      // For credits, we might have different total calculation
       let totalBruto = 0
       let totalLiquido = 0
       
@@ -252,6 +259,19 @@ const NewDisplayData = ({
       if (updateFunction) {
         updateFunction(totalResult)
       }
+    } else if (tableType === 'servicos') {
+      let total = 0
+      
+      array.forEach((servico) => {
+        total += Math.abs(Number(servico.valor)) || 0
+      })
+      
+      const totalResult = {
+        total: total
+      }
+      
+      // For services, we might not have a setter, just use it for display
+      console.log('Services total:', totalResult)
     }
   }, [getTotalUpdateFunction])
 
@@ -292,6 +312,19 @@ const NewDisplayData = ({
             dependentKey: 'adquirente'
           }
         }
+      case 'servicos':
+        return {
+          adquirente: {
+            label: 'Adquirente',
+            accessor: (item) => item.nome_adquirente || '',
+            dependentKey: 'servico'
+          },
+          servico: {
+            label: 'Serviço',
+            accessor: (item) => item.descricao || '',
+            dependentKey: 'adquirente'
+          }
+        }
       default:
         return {}
     }
@@ -307,6 +340,8 @@ const NewDisplayData = ({
       setExportPage('vendas')
     } else if (path === '/creditos') {
       setExportPage('creditos')
+    } else if (path === '/servicos') {
+      setExportPage('servicos')
     } else {
       setExportPage('')
     }
@@ -357,56 +392,22 @@ const NewDisplayData = ({
         return 'Nova Consulta de Vendas'
       case '/creditos':
         return 'Nova Consulta de Créditos'
+      case '/servicos':
+        return 'Nova Consulta de Serviços'
       default:
         return 'Nova Pesquisa'
     }
   }
 
-  // Determine if we should use custom download handlers or the old GerarRelatorio
-  const useCustomDownloads = onExcelDownload && onPDFDownload
-
   return (
     <>
       {totals && <TotalModalidadesComp totals={totals} type={exportPage} />}
       
-      {useCustomDownloads ? (
-        // Use custom download buttons for Credits/Services
-        <div className="export-buttons-container" style={{ display: 'flex', gap: '10px', marginBottom: '20px', justifyContent: 'flex-end' }}>
-          <button 
-            className="btn btn-exportar btn-exportar-excel" 
-            onClick={onExcelDownload}
-            disabled={downloading}
-            style={{
-              padding: '10px 20px',
-              fontSize: '14px',
-              cursor: downloading ? 'not-allowed' : 'pointer',
-              opacity: downloading ? 0.6 : 1
-            }}
-          >
-            {downloading ? 'Gerando...' : 'Download Excel'} <FiFilePlus />
-          </button>
-          <button 
-            className="btn btn-exportar btn-exportar-pdf" 
-            onClick={onPDFDownload}
-            disabled={downloading}
-            style={{
-              padding: '10px 20px',
-              fontSize: '14px',
-              cursor: downloading ? 'not-allowed' : 'pointer',
-              opacity: downloading ? 0.6 : 1
-            }}
-          >
-            {downloading ? 'Gerando...' : 'Download PDF'} <FiFilePlus />
-          </button>
-        </div>
-      ) : (
-        // Use old GerarRelatorio component for Vendas
-        <GerarRelatorio 
-          className='export' 
-          onExport={getExportFunction()}
-          filteredData={currentFilteredData}
-        />
-      )}
+      <GerarRelatorio 
+        className='export' 
+        onExport={getExportFunction()}
+        filteredData={currentFilteredData}
+      />
       
       <div className='component-container-vendas'>
         {tableProps && (
