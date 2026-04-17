@@ -697,6 +697,443 @@ const newLoadTotalSales = (salesArray) => {
   }
 }
 
+// In AuthContext.js - Add this new function alongside newLoadSales
+
+const newLoadCredits = async (startDate, endDate, additionalFilters = {}) => {
+  console.log('carregando créditos/recebimentos: ', startDate, ' até ', endDate)
+  try {
+    setErrorCredits(false)
+    
+    // Format dates to YYYY-MM-DD
+    const formatDateToYYYYMMDD = (date) => {
+      if (!date) return ''
+      
+      if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        return date
+      }
+      
+      if (date instanceof Date) {
+        const year = date.getFullYear()
+        const month = String(date.getMonth() + 1).padStart(2, '0')
+        const day = String(date.getDate()).padStart(2, '0')
+        return `${year}-${month}-${day}`
+      }
+      
+      if (typeof date === 'string' && date.includes('/')) {
+        const [day, month, year] = date.split('/')
+        return `${year}-${month}-${day}`
+      }
+      
+      const dateObj = new Date(date)
+      if (!isNaN(dateObj.getTime())) {
+        const year = dateObj.getFullYear()
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0')
+        const day = String(dateObj.getDate()).padStart(2, '0')
+        return `${year}-${month}-${day}`
+      }
+      
+      return ''
+    }
+    
+    const formattedStartDate = formatDateToYYYYMMDD(startDate)
+    const formattedEndDate = formatDateToYYYYMMDD(endDate)
+    
+    console.log('Formatted dates:', formattedStartDate, formattedEndDate)
+    
+    // Get stored data from localStorage
+    const cliente = JSON.parse(localStorage.getItem('selectedClientBody'))
+    const grupo = JSON.parse(localStorage.getItem('selectedGroupBody'))
+    const selectedBan = JSON.parse(localStorage.getItem('selectedBanCredits')) // Note: different key for credits
+    const selectedAdm = JSON.parse(localStorage.getItem('selectedAdmCredits')) // Note: different key for credits
+    
+    // Store formatted dates in localStorage
+    localStorage.setItem('dataInicial', formattedStartDate)
+    localStorage.setItem('dataFinal', formattedEndDate)
+    
+    // Determine client codes as a comma-separated string
+    let clientesString = "";
+    
+    if (cliente && cliente.label === 'TODOS') {
+      const clientCodes = grupo?.clients?.map(client => client.CODIGOCLIENTE) || [];
+      clientesString = clientCodes.join(', ');
+      console.log('All client codes (TODOS):', clientesString);
+    } else if (cliente && cliente.cod) {
+      clientesString = String(cliente.cod);
+      console.log('Single client code:', clientesString);
+    } else if (cliente && cliente.value) {
+      clientesString = String(cliente.value);
+    } else {
+      const apiCNPJ = localStorage.getItem('cnpj')
+      const apiGroupCode = localStorage.getItem('groupCode')
+      clientesString = apiCNPJ === 'todos' ? String(apiGroupCode) : String(apiCNPJ)
+    }
+    
+    // Get filter values from localStorage or additionalFilters
+    const bandeira = selectedBan?.codigoBandeira || additionalFilters.bandeira || "";
+    const adquirente = selectedAdm?.codigoAdquirente || additionalFilters.adquirente || "";
+    const nomeGrupo = grupo?.label || localStorage.getItem('clientName') || "";
+    
+    // Build the request object - NOTE: modelo is "RECEBIMENTO" for credits
+    const requestObject = {
+      dataInicial: formattedStartDate,
+      dataFinal: formattedEndDate,
+      clientes: clientesString,
+      nomeGrupo: nomeGrupo,
+      bandeira: bandeira,
+      adquirente: adquirente,
+      produto: additionalFilters.produto || "",
+      modalidade: additionalFilters.modalidade || "",
+      arquivo: "JSON", // Always JSON for data loading
+      modelo: "RECEBIMENTO" // Changed from "VENDA" to "RECEBIMENTO"
+    }
+    
+    console.log('Final request object for credits:', requestObject)
+    
+    const response = await api.post('relatorios/detalhado', requestObject)
+    
+    console.log('Full API Response for credits:', response.data)
+    console.log('Response success type:', typeof response.data.success)
+    console.log('Response success value:', response.data.success)
+    console.log('Response dados length:', response.data.dados?.length)
+    
+    setBtnDisabledCredits(false)
+    
+    // Fix: Check boolean, not string comparison
+    if (response.data.success === true && response.data.dados && response.data.dados.length > 0) {
+      console.log('Credits data received:', response.data.dados.length, 'records')
+      console.log('First record sample:', response.data.dados[0])
+      
+      // Store in localStorage for export
+      localStorage.setItem('creditsData', JSON.stringify(response.data.dados))
+      
+      return response.data.dados
+    } else if (response.data.success === true && (!response.data.dados || response.data.dados.length === 0)) {
+      console.log('Success true but no data in dados array')
+      toast.info(response.data.mensagem || "Nenhum dado encontrado para o período selecionado")
+      return []
+    } else {
+      console.log('Unsuccessful response:', response.data)
+      toast.error(response.data.mensagem || "Erro ao carregar dados de créditos")
+      return []
+    }
+    
+  } catch (error) {
+    console.error('Error in newLoadCredits:', error)
+    setBtnDisabledCredits(false)
+    
+    if(error.code === 'ERR_CANCELED'){
+      console.log('Request canceled')
+      setErrorCredits(false)
+    } else if (error.response && error.response.status === 401) {
+      console.log('Session expired')
+      toast.error('Sessão Expirada')
+      logout()
+      return
+    } else {
+      toast.error('Erro ao Carregar Créditos: ' + (error.response?.data?.mensagem || error.message))
+      console.error('Error fetching credits:', error)
+      setErrorCredits(true)
+    }
+    return []
+  }
+}
+
+// Also create a new group by admin function for credits if needed
+const newGroupByAdminCredits = (creditsArray) => {
+  if (!creditsArray || creditsArray.length === 0) return []
+  
+  console.log('newGroupByAdminCredits called with:', creditsArray.length, 'records')
+  
+  const adminMap = new Map()
+  
+  creditsArray.forEach(credit => {
+    // For credits, the structure might be different
+    // Adjust based on your actual data structure from the API
+    const adminName = credit.adquirente?.nomeAdquirente || credit.ADMINISTRADORA || 'Unknown'
+    const total = credit.valorBruto || credit.VALORBRUTO || 0
+    
+    if (adminMap.has(adminName)) {
+      adminMap.set(adminName, adminMap.get(adminName) + total)
+    } else {
+      adminMap.set(adminName, total)
+    }
+  })
+  
+  const result = []
+  let id = 0
+  adminMap.forEach((total, adminName) => {
+    result.push({
+      id: id++,
+      adminName: adminName,
+      total: total,
+      credits: []
+    })
+  })
+  
+  console.log('newGroupByAdminCredits result:', result)
+  return result
+}
+
+// Create a new load total function for credits
+const newLoadTotalCredits = (creditsArray) => {
+  if (!creditsArray || creditsArray.length === 0) {
+    // Only reset if values are not already zero
+    const currentTotal = creditsTotal;
+    if (currentTotal.totalBruto !== 0 || currentTotal.totalLiquido !== 0 || currentTotal.total !== 0) {
+      setCreditsTotal({ totalBruto: 0, totalLiquido: 0, total: 0 })
+    }
+    return
+  }
+  
+  console.log('newLoadTotalCredits called with:', creditsArray.length, 'records')
+  
+  let totalBruto = 0
+  let totalLiquido = 0
+  
+  creditsArray.forEach(credit => {
+    const bruto = credit.valorBruto || credit.VALORBRUTO || 0
+    const liquido = credit.valorLiquido || credit.VALORLIQUIDO || 0
+    
+    totalBruto += bruto
+    totalLiquido += liquido
+  })
+  
+  const result = {
+    totalBruto: totalBruto,
+    totalLiquido: totalLiquido,
+    total: totalLiquido // Use líquido as the main total
+  }
+  
+  console.log('newLoadTotalCredits result:', result)
+  
+  // Only update if values actually changed
+  const currentTotal = creditsTotal;
+  if (currentTotal.totalBruto !== result.totalBruto ||
+      currentTotal.totalLiquido !== result.totalLiquido ||
+      currentTotal.total !== result.total) {
+    console.log('Updating credits total')
+    setCreditsTotal(result)
+  } else {
+    console.log('Credits total unchanged, skipping update')
+  }
+}
+
+// In AuthContext.js - Add this new function alongside newLoadSales and newLoadCredits
+
+const newLoadServices = async (startDate, endDate, additionalFilters = {}) => {
+  console.log('carregando serviços/ajustes: ', startDate, ' até ', endDate)
+  try {
+    setErrorServices(false)
+    
+    // Format dates to YYYY-MM-DD
+    const formatDateToYYYYMMDD = (date) => {
+      if (!date) return ''
+      
+      if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        return date
+      }
+      
+      if (date instanceof Date) {
+        const year = date.getFullYear()
+        const month = String(date.getMonth() + 1).padStart(2, '0')
+        const day = String(date.getDate()).padStart(2, '0')
+        return `${year}-${month}-${day}`
+      }
+      
+      if (typeof date === 'string' && date.includes('/')) {
+        const [day, month, year] = date.split('/')
+        return `${year}-${month}-${day}`
+      }
+      
+      const dateObj = new Date(date)
+      if (!isNaN(dateObj.getTime())) {
+        const year = dateObj.getFullYear()
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0')
+        const day = String(dateObj.getDate()).padStart(2, '0')
+        return `${year}-${month}-${day}`
+      }
+      
+      return ''
+    }
+    
+    const formattedStartDate = formatDateToYYYYMMDD(startDate)
+    const formattedEndDate = formatDateToYYYYMMDD(endDate)
+    
+    console.log('Formatted dates for services:', formattedStartDate, formattedEndDate)
+    
+    // Get stored data from localStorage
+    const cliente = JSON.parse(localStorage.getItem('selectedClientBody'))
+    const grupo = JSON.parse(localStorage.getItem('selectedGroupBody'))
+    const selectedBan = JSON.parse(localStorage.getItem('selectedBanServices')) || '' // Optional: create specific key for services filters
+    const selectedAdm = JSON.parse(localStorage.getItem('selectedAdmServices')) || '' // Optional: create specific key for services filters
+    
+    // Store formatted dates in localStorage
+    localStorage.setItem('dataInicial', formattedStartDate)
+    localStorage.setItem('dataFinal', formattedEndDate)
+    
+    // Determine client codes as a comma-separated string
+    let clientesString = "";
+    
+    if (cliente && cliente.label === 'TODOS') {
+      const clientCodes = grupo?.clients?.map(client => client.CODIGOCLIENTE) || [];
+      clientesString = clientCodes.join(', ');
+      console.log('All client codes (TODOS):', clientesString);
+    } else if (cliente && cliente.cod) {
+      clientesString = String(cliente.cod);
+      console.log('Single client code:', clientesString);
+    } else if (cliente && cliente.value) {
+      clientesString = String(cliente.value);
+    } else {
+      const apiCNPJ = localStorage.getItem('cnpj')
+      const apiGroupCode = localStorage.getItem('groupCode')
+      clientesString = apiCNPJ === 'todos' ? String(apiGroupCode) : String(apiCNPJ)
+    }
+    
+    // Get filter values from localStorage or additionalFilters
+    const bandeira = selectedBan?.codigoBandeira || additionalFilters.bandeira || "";
+    const adquirente = selectedAdm?.codigoAdquirente || additionalFilters.adquirente || "";
+    const nomeGrupo = grupo?.label || localStorage.getItem('clientName') || "";
+    
+    // Build the request object - NOTE: modelo is "AJUSTE" for services
+    const requestObject = {
+      dataInicial: formattedStartDate,
+      dataFinal: formattedEndDate,
+      clientes: clientesString,
+      nomeGrupo: nomeGrupo,
+      bandeira: bandeira,
+      adquirente: adquirente,
+      produto: additionalFilters.produto || "",
+      modalidade: additionalFilters.modalidade || "",
+      arquivo: "JSON", // Always JSON for data loading
+      modelo: "AJUSTE" // Changed from "VENDA"/"RECEBIMENTO" to "AJUSTE"
+    }
+    
+    console.log('Final request object for services:', requestObject)
+    
+    const response = await api.post('relatorios/detalhado', requestObject)
+    
+    console.log('Full API Response for services:', response.data)
+    console.log('Response success type:', typeof response.data.success)
+    console.log('Response success value:', response.data.success)
+    console.log('Response dados length:', response.data.dados?.length)
+    
+    setBtnDisabledServices(false)
+    
+    // Fix: Check boolean, not string comparison
+    if (response.data.success === true && response.data.dados && response.data.dados.length > 0) {
+      console.log('Services data received:', response.data.dados.length, 'records')
+      console.log('First record sample:', response.data.dados[0])
+      
+      // Store in localStorage for export
+      localStorage.setItem('servicesData', JSON.stringify(response.data.dados))
+      
+      return response.data.dados
+    } else if (response.data.success === true && (!response.data.dados || response.data.dados.length === 0)) {
+      console.log('Success true but no data in dados array')
+      toast.info(response.data.mensagem || "Nenhum serviço/ajuste encontrado para o período selecionado")
+      return []
+    } else {
+      console.log('Unsuccessful response:', response.data)
+      toast.error(response.data.mensagem || "Erro ao carregar dados de serviços/ajustes")
+      return []
+    }
+    
+  } catch (error) {
+    console.error('Error in newLoadServices:', error)
+    setBtnDisabledServices(false)
+    
+    if(error.code === 'ERR_CANCELED'){
+      console.log('Request canceled')
+      setErrorServices(false)
+    } else if (error.response && error.response.status === 401) {
+      console.log('Session expired')
+      toast.error('Sessão Expirada')
+      logout()
+      return
+    } else {
+      toast.error('Erro ao Carregar Serviços/Ajustes: ' + (error.response?.data?.mensagem || error.message))
+      console.error('Error fetching services:', error)
+      setErrorServices(true)
+    }
+    return []
+  }
+}
+
+// Create a new group by admin function for services if needed
+const newGroupByAdminServices = (servicesArray) => {
+  if (!servicesArray || servicesArray.length === 0) return []
+  
+  console.log('newGroupByAdminServices called with:', servicesArray.length, 'records')
+  
+  const adminMap = new Map()
+  
+  servicesArray.forEach(service => {
+    // For services, adjust based on your actual data structure from the API
+    const adminName = service.nome_adquirente || service.ADMINISTRADORA || 'Unknown'
+    const valor = Math.abs(service.valor || service.VALOR || 0) // Use absolute value for services
+    
+    if (adminMap.has(adminName)) {
+      adminMap.set(adminName, adminMap.get(adminName) + valor)
+    } else {
+      adminMap.set(adminName, valor)
+    }
+  })
+  
+  const result = []
+  let id = 0
+  adminMap.forEach((total, adminName) => {
+    result.push({
+      id: id++,
+      adminName: adminName,
+      total: total,
+      services: []
+    })
+  })
+  
+  console.log('newGroupByAdminServices result:', result)
+  return result
+}
+
+// Create a new load total function for services
+const newLoadTotalServices = (servicesArray) => {
+  if (!servicesArray || servicesArray.length === 0) {
+    // Only reset if values are not already zero
+    const currentTotal = servicesTotal;
+    if (currentTotal.total !== 0) {
+      setServicesTotal({ total: 0 })
+    }
+    return
+  }
+  
+  console.log('newLoadTotalServices called with:', servicesArray.length, 'records')
+  
+  let total = 0
+  
+  servicesArray.forEach(service => {
+    const valor = Math.abs(service.valor || service.VALOR || 0) // Use absolute value for services
+    total += valor
+  })
+  
+  const result = {
+    total: total
+  }
+  
+  console.log('newLoadTotalServices result:', result)
+  
+  // Only update if values actually changed
+  const currentTotal = servicesTotal;
+  if (currentTotal.total !== result.total) {
+    console.log('Updating services total')
+    setServicesTotal(result)
+  } else {
+    console.log('Services total unchanged, skipping update')
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+
 // retorna array de créditos/recebimentos
 const loadCredits = async (startDate, endDate) => {
   console.log('carregando créditos/recebimentos: ', startDate, ' até ', endDate)
@@ -2619,7 +3056,7 @@ function timeConvert(time){
 
 		// Creditos //
 
-		loadCredits, loadTotalCredits,
+		loadCredits, loadTotalCredits, newLoadCredits, newGroupByAdminCredits, newLoadTotalCredits,
 		creditsPageArray, setCreditsPageArray,
 		creditsPageAdminArray, setCreditsPageAdminArray,
 		creditsDateRange, setCreditsDateRange,
@@ -2630,7 +3067,7 @@ function timeConvert(time){
 
 		// Serviços //
 
-		loadServices,
+		loadServices, newLoadServices, newGroupByAdminServices, newLoadTotalServices,
 		servicesPageArray, setServicesPageArray,
 		servicesPageAdminArray, setServicesPageAdminArray,
 		servicesDateRange, setServicesDateRange,
