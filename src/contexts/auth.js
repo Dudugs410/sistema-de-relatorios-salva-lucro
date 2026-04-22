@@ -2924,40 +2924,56 @@ function timeConvert(time){
     }
   }
 
-	function exportCredits(array){
-		if(array.length === 0){
-			return
-		}
-		let arrayTemp = []
-		setCreditsTableData([])
-		if (array.length > 0) {
-			array.map((venda) => {
-				arrayTemp.push({
-					cnpj: venda.cnpj,
-					adquirente: venda.adquirente.nomeAdquirente,
-					bandeira: venda.bandeira.descricaoBandeira,
-					produto: venda.produto?.descricaoProduto || '',
-					subproduto: venda.modalidade?.descricaoModalidade || '',
-					dataCredito: venda.dataCredito,
-					dataVenda: venda.dataVenda,
-					valorBruto: venda.valorBruto,
-					valorLiquido: venda.valorLiquido,
-					taxa: venda.taxa,
-					valorDesconto: venda.valorDesconto,
-					nsu: venda.nsu,
-					cartao: venda.cartao,
-					codigoAutorizacao: venda.codigoAutorizacao,
-					parcela: venda.parcela,
-					totalParcelas: venda.totalParcelas,
-					banco: venda.banco,
-					agencia: venda.agencia,
-					conta: venda.conta,
-					tid: venda.tid,
-				})
-			})
-		}
-		setCreditsTableData(arrayTemp)
-	}
+const exportCredits = (data) => {
+  if (!data || data.length === 0) {
+    console.log('No credits data to export')
+    return []
+  }
+
+  console.log('Exporting credits data:', data.length, 'records')
+  console.log('Sample data structure:', data[0])
+
+  // Transform the data for export - using flat structure
+  const transformedData = data.map(item => {
+    return {
+      cnpj: item.CNPJ || '',
+      adquirente: item.ADMINISTRADORA || '',
+      bandeira: item.BANDEIRA || '',
+      produto: (item.PRODUTO || "").trim(),
+      modalidade: item.MODALIDADE || '',
+      dataCredito: item.DATACREDITO || '',
+      dataVenda: item.DATAVENDA || '',
+      valorBruto: item.VALORBRUTO || 0,
+      valorLiquido: item.VALORLIQUIDO || 0,
+      taxa: item.TAXA || 0,
+      valorDesconto: item.DESCONTO || 0,
+      banco: item.BANCO || '',
+      agencia: item.AGENCIA || '',
+      conta: item.CONTA || '',
+      nsu: item.NSU || '',
+      codigoAutorizacao: item.AUTORIZACAO || '',
+      parcela: item.PARCELA || '',
+      quantidadeParcelas: item.TOTALPARCELA || '',
+      cartao: item.CARTAO || '',
+      status: item.STATUS || '',
+      numeroPV: item.NUMEROPV || '',
+      ro: item.RO || '',
+      razaoSocial: item.RAZAOSOCIAL || ''
+    }
+  })
+
+  console.log('Transformed data for export:', transformedData.length, 'records')
+  
+  // Store in localStorage for the GerarRelatorio component to use
+  localStorage.setItem('creditsTableData', JSON.stringify(transformedData))
+  
+  // If you have a state setter for creditsTableData, use it
+  if (typeof setCreditsTableData === 'function') {
+    setCreditsTableData(transformedData)
+  }
+  
+  return transformedData
+}
 
 	function exportServices(array){
 		servicesTableData.length = 0

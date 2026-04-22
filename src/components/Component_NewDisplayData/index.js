@@ -83,50 +83,61 @@ const NewDisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTut
           { key: 'RO', header: 'RO' }
         ]
       
+      // In NewDisplayData.jsx - Update the creditos case in getTableColumns
       case 'creditos':
         return [
-          { key: 'cnpj', header: 'CNPJ' },
-          { key: 'adquirente', header: 'Adquirente', accessor: (item) => item.adquirente?.nomeAdquirente },
-          { key: 'bandeira', header: 'Bandeira', accessor: (item) => item.bandeira?.descricaoBandeira },
-          { key: 'produto', header: 'Produto', accessor: (item) => item.produto?.descricaoProduto },
-          { key: 'modalidade', header: 'Subproduto', accessor: (item) => item.modalidade?.descricaoModalidade },
+          { key: 'CNPJ', header: 'CNPJ' },
+          { key: 'ADMINISTRADORA', header: 'Adquirente' },
+          { key: 'BANDEIRA', header: 'Bandeira' },
+          { key: 'PRODUTO', header: 'Produto', render: (item) => (item.PRODUTO || "").trim() },
+          { key: 'MODALIDADE', header: 'Subproduto' },
           { 
-            key: 'dataCredito', 
-            header: 'Data do Crédito',
-            accessor: (item) => dateConvert(item.dataCredito)
-          },
-          { 
-            key: 'dataVenda', 
-            header: 'Data da Venda',
-            accessor: (item) => dateConvert(item.dataVenda)
-          },
-          { 
-            key: 'valorBruto', 
+            key: 'VALORBRUTO', 
             header: 'Valor Bruto',
-            render: (item) => <span className='green-global'>{Number(item.valorBruto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span>
+            render: (item) => <span className='green-global'>{Number(item.VALORBRUTO).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span>
           },
           { 
-            key: 'valorLiquido', 
+            key: 'VALORLIQUIDO', 
             header: 'Valor Líquido',
-            render: (item) => <span className='green-global'>{Number(item.valorLiquido).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span>
+            render: (item) => <span className='green-global'>{Number(item.VALORLIQUIDO).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span>
           },
           { 
-            key: 'taxa', 
+            key: 'TAXA', 
             header: 'Taxa',
-            render: (item) => <span className='red-global'>{Number(item.taxa).toFixed(2)}%</span>
+            render: (item) => <span className='red-global'>{Number(item.TAXA).toFixed(2)}%</span>
           },
           { 
-            key: 'valorDesconto', 
-            header: 'Valor Desconto',
-            render: (item) => <span className='red-global'>{Number(item.valorDesconto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span>
+            key: 'DESCONTO', 
+            header: 'Desconto (%)',
+            render: (item) => <span className='red-global'>{Number(item.DESCONTO).toFixed(2)}%</span>
           },
-          { key: 'banco', header: 'Banco' },
-          { key: 'agencia', header: 'Agência' },
-          { key: 'conta', header: 'Conta' },
-          { key: 'nsu', header: 'NSU' },
-          { key: 'codigoAutorizacao', header: 'Autorização' },
-          { key: 'parcela', header: 'Parcela' },
-          { key: 'quantidadeParcelas', header: 'QTD Parcelas' }
+          { key: 'CARTAO', header: 'Cartão'},
+          { key: 'NSU', header: 'NSU' },
+          { 
+            key: 'DATAVENDA', 
+            header: 'Data da Venda',
+            accessor: (item) => dateConvert(item.DATAVENDA)
+          },
+          { 
+            key: 'HORAVENDA', 
+            header: 'Hora da Venda',
+            accessor: (item) => item.HORAVENDA || 'N/A'
+          },
+          { 
+            key: 'DATACREDITO', 
+            header: 'Data do Crédito',
+            accessor: (item) => dateConvert(item.DATACREDITO)
+          },
+          { key: 'AUTORIZACAO', header: 'Autorização' },
+          { key: 'PARCELA', header: 'Parcela' },
+          { key: 'TOTALPARCELA', header: 'QTD Parcelas' },
+          { key: 'STATUS', header: 'Status' },
+          { key: 'NUMEROPV', header: 'Número PV' },
+          { key: 'RO', header: 'RO' },
+          { key: 'BANCO', header: 'Banco' },
+          { key: 'AGENCIA', header: 'Agência' },
+          { key: 'CONTA', header: 'Conta' },
+          { key: 'RAZAOSOCIAL', header: 'Razão Social' }
         ]
       
       case 'servicos':
@@ -243,15 +254,18 @@ const NewDisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTut
     } else if (tableType === 'creditos') {
       let totalBruto = 0
       let totalLiquido = 0
+      let totalDesconto = 0
       
       array.forEach((credito) => {
-        totalBruto += Number(credito.valorBruto) || 0
-        totalLiquido += Number(credito.valorLiquido) || 0
+        totalBruto += Number(credito.VALORBRUTO) || 0
+        totalLiquido += Number(credito.VALORLIQUIDO) || 0
+        totalDesconto += Number(credito.DESCONTO) || 0
       })
       
       const totalResult = {
         totalBruto: totalBruto,
         totalLiquido: totalLiquido,
+        totalDesconto: totalDesconto,
         total: totalLiquido
       }
       
@@ -303,12 +317,12 @@ const NewDisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTut
         return {
           adquirente: {
             label: 'Adquirente',
-            accessor: (item) => item.adquirente?.nomeAdquirente || '',
+            accessor: (item) => item.ADMINISTRADORA || '',
             dependentKey: 'bandeira'
           },
           bandeira: {
             label: 'Bandeira', 
-            accessor: (item) => item.bandeira?.descricaoBandeira || '',
+            accessor: (item) => item.BANDEIRA || '',
             dependentKey: 'adquirente'
           }
         }

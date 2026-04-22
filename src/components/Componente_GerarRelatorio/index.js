@@ -46,28 +46,58 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 		return () => clearInterval(intervalId)
 	}, [currentDateTime])
 
+	// Get the modelo based on current path
+	const getModelo = () => {
+		const currentPath = localStorage.getItem('currentPath')
+		switch (currentPath) {
+			case '/vendas':
+				return 'VENDA'
+			case '/creditos':
+				return 'RECEBIMENTO'
+			case '/servicos':
+				return 'AJUSTE'
+			default:
+				return 'VENDA'
+		}
+	}
+
+	// Get the storage keys based on current path
+	const getStorageKeys = () => {
+		const currentPath = localStorage.getItem('currentPath')
+		switch (currentPath) {
+			case '/vendas':
+				return { ban: 'selectedBan', adm: 'selectedAdm' }
+			case '/creditos':
+				return { ban: 'selectedBanCredits', adm: 'selectedAdmCredits' }
+			case '/servicos':
+				return { ban: 'selectedBanServices', adm: 'selectedAdmServices' }
+			default:
+				return { ban: 'selectedBan', adm: 'selectedAdm' }
+		}
+	}
+
 	useEffect(() => {
 		const currentPath = localStorage.getItem('currentPath')
 		
 		switch (currentPath) {
 			case '/vendas':
-			setTipoRelatorio('Relatório de Vendas')
-			setTipo('vendas')
-			break
+				setTipoRelatorio('Relatório de Vendas')
+				setTipo('vendas')
+				break
 			case '/creditos':
-			setTipoRelatorio('Relatório de Créditos')
-			setTipo('creditos')
-			break
+				setTipoRelatorio('Relatório de Créditos')
+				setTipo('creditos')
+				break
 			case '/servicos':
-			setTipoRelatorio('Relatório de Serviços')
-			setTipo('servicos')
-			break
+				setTipoRelatorio('Relatório de Serviços')
+				setTipo('servicos')
+				break
 			case '/taxas':
-			setTipoRelatorio('Relatório de Taxas')
-			setTipo('taxas')
-			break
+				setTipoRelatorio('Relatório de Taxas')
+				setTipo('taxas')
+				break
 			default:
-			break
+				break
 		}
 	}, [])
 
@@ -78,19 +108,19 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 		
 		switch (tipo) {
 			case 'vendas':
-			newTableData = filteredData && filteredData.length > 0 ? filteredData : salesTableData
-			break
+				newTableData = filteredData && filteredData.length > 0 ? filteredData : salesTableData
+				break
 			case 'creditos':
-			newTableData = filteredData && filteredData.length > 0 ? filteredData : creditsTableData
-			break
+				newTableData = filteredData && filteredData.length > 0 ? filteredData : creditsTableData
+				break
 			case 'servicos':
-			newTableData = filteredData && filteredData.length > 0 ? filteredData : servicesTableData
-			break
+				newTableData = filteredData && filteredData.length > 0 ? filteredData : servicesTableData
+				break
 			case 'taxas':
-			newTableData = filteredData && filteredData.length > 0 ? filteredData : taxesTableData
-			break
+				newTableData = filteredData && filteredData.length > 0 ? filteredData : taxesTableData
+				break
 			default:
-			return
+				return
 		}
 
 		if (JSON.stringify(newTableData) !== JSON.stringify(tableData)) {
@@ -133,13 +163,16 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 	}
 
 	// Helper function to get the request object for the API
-	const getRequestObject = () => {
+	const getRequestObject = (format) => {
 		const cliente = JSON.parse(localStorage.getItem('selectedClientBody'))
 		const grupo = JSON.parse(localStorage.getItem('selectedGroupBody'))
 		const dataInicial = localStorage.getItem('dataInicial')
 		const dataFinal = localStorage.getItem('dataFinal')
-		const bandeira = JSON.parse(localStorage.getItem('selectedBan')) || ''
-		const adquirente = JSON.parse(localStorage.getItem('selectedAdm')) || ''
+		
+		// Get dynamic storage keys based on current path
+		const storageKeys = getStorageKeys()
+		const bandeira = JSON.parse(localStorage.getItem(storageKeys.ban)) || ''
+		const adquirente = JSON.parse(localStorage.getItem(storageKeys.adm)) || ''
 		
 		// Format date function
 		const formatDateToYYYYMMDD = (date) => {
@@ -196,18 +229,17 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 			adquirente: adq,
 			produto: '',
 			modalidade: '',
-			arquivo: '', // Will be set by the download function
-			modelo: 'VENDA'
+			arquivo: format, // 'PDF' or 'XLSX'
+			modelo: getModelo() // 'VENDA', 'RECEBIMENTO', or 'AJUSTE'
 		}
 	}
 
 	// Generic download function using the API
-	const downloadReport = async (format, tipo) => {
+	const downloadReport = async (format) => {
 		setDownloading(true)
 		
 		try {
-			const requestObject = getRequestObject()
-			requestObject.arquivo = format // 'PDF' or 'XLSX'
+			const requestObject = getRequestObject(format)
 			
 			console.log(`Downloading ${format} report with request:`, requestObject)
 			
@@ -260,7 +292,7 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 			alert('Sem dados para a exportação.')
 			return
 		}
-		await downloadReport('XLSX', tipo)
+		await downloadReport('XLSX')
 	}
 
 	// PDF download handler
@@ -269,7 +301,7 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 			alert('Sem dados para exportar')
 			return
 		}
-		await downloadReport('PDF', tipo)
+		await downloadReport('PDF')
 	}
 
 	return(
