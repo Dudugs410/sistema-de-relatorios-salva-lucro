@@ -40,19 +40,21 @@ const tableConfig = {
   creditos: {
     title: 'Créditos',
     filters: [
-      { key: 'bandeira', label: 'Bandeira', path: 'bandeira.descricaoBandeira' },
-      { key: 'adquirente', label: 'Adquirente', path: 'adquirente.nomeAdquirente' }
+      { key: 'bandeira', label: 'Bandeira', path: 'BANDEIRA' },
+      { key: 'adquirente', label: 'Adquirente', path: 'ADMINISTRADORA' }
     ],
     mobileCards: [
-      { key: 'adquirente', label: 'Adquirente', path: 'adquirente.nomeAdquirente' },
-      { key: 'bandeira', label: 'Bandeira', path: 'bandeira.descricaoBandeira', badge: true },
-      { key: 'cnpj', label: 'CNPJ' },
-      { key: 'valorBruto', label: 'Valor Bruto', format: 'currency', className: 'green-global' },
-      { key: 'valorLiquido', label: 'Valor Líquido', format: 'currency', className: 'green-global' },
-      { key: 'taxa', label: 'Taxa', format: 'percent', className: 'red-global' },
-      { key: 'dataVenda', label: 'Data Venda', format: 'date' },
-      { key: 'quantidadeParcelas', label: 'Parcelas' },
-      { key: 'nsu', label: 'NSU' },
+      { key: 'ADMINISTRADORA', label: 'Adquirente' },
+      { key: 'BANDEIRA', label: 'Bandeira', badge: true },
+      { key: 'CNPJ', label: 'CNPJ' },
+      { key: 'VALORBRUTO', label: 'Valor Bruto', format: 'currency', className: 'green-global' },
+      { key: 'VALORLIQUIDO', label: 'Valor Líquido', format: 'currency', className: 'green-global' },
+      { key: 'CARTAO', label: 'Cartão'},
+      { key: 'TAXA', label: 'Taxa', format: 'percent', className: 'red-global' },
+      { key: 'DATAVENDA', label: 'Data Venda', format: 'date' },
+      { key: 'PARCELA', label: 'Parcela' },
+      { key: 'NSU', label: 'NSU' },
+      { key: 'STATUS', label: 'Status' }
     ]
   },
   servicos: {
@@ -93,14 +95,25 @@ const findFilterObject = (value, filterKey, dataArray, tableType) => {
             descricaoBandeira: displayName
           })
         }
-      } else if (filterKey === 'adquirente') {
-        displayName = item.ADMINISTRADORA
-        code = item.CODIGOADMINISTRADORA
-        if (displayName === value && code && !uniqueMap.has(code)) {
-          uniqueMap.set(code, {
-            codigoAdquirente: code,
-            nomeAdquirente: displayName
-          })
+      } else if (tableType === 'creditos') {
+        if (filterKey === 'bandeira') {
+          displayName = item.BANDEIRA
+          code = item.CODIGOBANDEIRA
+          if (displayName === value && code && !uniqueMap.has(code)) {
+            uniqueMap.set(code, {
+              codigoBandeira: code,
+              descricaoBandeira: displayName
+            })
+          }
+        } else if (filterKey === 'adquirente') {
+          displayName = item.ADMINISTRADORA
+          code = item.CODIGOADMINISTRADORA
+          if (displayName === value && code && !uniqueMap.has(code)) {
+            uniqueMap.set(code, {
+              codigoAdquirente: code,
+              nomeAdquirente: displayName
+            })
+          }
         }
       }
     } else if (tableType === 'creditos') {
