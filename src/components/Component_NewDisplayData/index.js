@@ -254,18 +254,16 @@ const NewDisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTut
     } else if (tableType === 'creditos') {
       let totalBruto = 0
       let totalLiquido = 0
-      let totalDesconto = 0
       
       array.forEach((credito) => {
         totalBruto += Number(credito.VALORBRUTO) || 0
         totalLiquido += Number(credito.VALORLIQUIDO) || 0
-        totalDesconto += Number(credito.DESCONTO) || 0
       })
       
       const totalResult = {
-        totalBruto: totalBruto,
-        totalLiquido: totalLiquido,
-        totalDesconto: totalDesconto,
+        debit: 0,
+        credit: totalLiquido,
+        voucher: 0,
         total: totalLiquido
       }
       

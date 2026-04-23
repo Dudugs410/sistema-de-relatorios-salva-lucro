@@ -21,8 +21,9 @@ const Creditos = () => {
     setCreditsPageAdminArray([])
     setBtnDisabledCredits(false)
     setCreditsTotal({
-      totalBruto: 0,
-      totalLiquido: 0,
+      debit: 0,
+      credit: 0,
+      voucher: 0,
       total: 0
     })
     // Clear select states
@@ -141,19 +142,54 @@ const Creditos = () => {
       console.log('Credits data loaded:', creditsData?.length || 0, 'records')
       
       if (creditsData && creditsData.length > 0) {
+        // Calculate totals by produto
+        let totalCredito = 0
+        let totalDebito = 0
+        let totalVoucher = 0
+        let totalGeral = 0
+        
+        creditsData.forEach(credit => {
+          const valor = Number(credit.VALORLIQUIDO) || 0
+          const produto = (credit.PRODUTO || "").trim()
+          
+          totalGeral += valor
+          
+          if (produto === 'Crédito') {
+            totalCredito += valor
+          } else if (produto === 'Débito') {
+            totalDebito += valor
+          } else if (produto === 'Voucher') {
+            totalVoucher += valor
+          }
+        })
+        
+        const totals = {
+          debit: totalDebito,
+          credit: totalCredito,
+          voucher: totalVoucher,
+          total: totalGeral
+        }
+        
+        console.log('Calculated credits totals:', totals)
+        console.log(`Crédito: ${totalCredito}, Débito: ${totalDebito}, Voucher: ${totalVoucher}, Total: ${totalGeral}`)
+        
+        setCreditsTotal(totals)
+        
         // Group by admin for the admin table
         const groupedData = newGroupByAdminCredits(creditsData)
         setCreditsPageAdminArray(groupedData)
-        
-        // Load totals
-        newLoadTotalCredits(creditsData)
         
         // Set the main data array
         setCreditsPageArray(creditsData)
       } else {
         setCreditsPageArray([])
         setCreditsPageAdminArray([])
-        newLoadTotalCredits([])
+        setCreditsTotal({
+          debit: 0,
+          credit: 0,
+          voucher: 0,
+          total: 0
+        })
       }
       
       initialLoadDoneRef.current = true
@@ -165,16 +201,15 @@ const Creditos = () => {
     }
   }
 
-  // Update admin array and totals when creditsPageArray changes - ONLY ONCE
+  // Update admin array when creditsPageArray changes - ONLY ONCE
   useEffect(() => {
     if (creditsPageArray && creditsPageArray.length > 0 && !initialLoadDoneRef.current) {
-      console.log('Processing initial credits data...')
+      console.log('Processing initial credits data in useEffect...')
       const groupedData = newGroupByAdminCredits(creditsPageArray)
       setCreditsPageAdminArray(groupedData)
-      newLoadTotalCredits(creditsPageArray)
       initialLoadDoneRef.current = true
     }
-  }, [creditsPageArray, newGroupByAdminCredits, newLoadTotalCredits])
+  }, [creditsPageArray, newGroupByAdminCredits])
 
   const handleDateRangeChange = (dateRange) => {
     setCreditsDateRange(dateRange)
@@ -213,7 +248,7 @@ const Creditos = () => {
       let stepsTemp = [
         {
           target: '[data-tour="modalidade-section"]',
-          content: 'Valores totais dos créditos exibidos, por modalidade.',
+          content: 'Valores totais dos créditos exibidos.',
           disableBeacon: true,
           placement: 'bottom'
         },
@@ -265,27 +300,6 @@ const Creditos = () => {
     setRunTutorial(false)
   }
 
-  // Calculate totals for display
-  const calculateCreditsTotal = (creditsArray) => {
-    if (!creditsArray || creditsArray.length === 0) {
-      return { totalBruto: 0, totalLiquido: 0, total: 0 }
-    }
-    
-    let totalBruto = 0
-    let totalLiquido = 0
-    
-    creditsArray.forEach(credit => {
-      totalBruto += Number(credit.VALORBRUTO) || 0
-      totalLiquido += Number(credit.VALORLIQUIDO) || 0
-    })
-    
-    return {
-      totalBruto: totalBruto,
-      totalLiquido: totalLiquido,
-      total: totalLiquido
-    }
-  }
-
   return (
     <div className='appPage'>
       <div className='page-vendas-background'>
@@ -331,7 +345,7 @@ const Creditos = () => {
                 <NewDisplayData
                   dataArray={creditsPageArray}
                   adminDataArray={creditsPageAdminArray}
-                  totals={calculateCreditsTotal(creditsPageArray)}
+                  totals={creditsTotal}
                   onGoBack={resetValues}
                   setRunTutorial={setRunTutorial}
                   location={location}
