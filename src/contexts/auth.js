@@ -318,7 +318,7 @@ function AuthProvider({ children }){
     } finally {
       //setIsLoadingUser(false)
     }
-  }, [logout]) // Added logout as dependency
+  }, [logout])
 
 	// funções que retornam arrays com Grupos, Clientes, Bandeiras e Adquirentes, respectivamente //
 
@@ -432,12 +432,10 @@ const loadSales = async (startDate, endDate) => {
 const formatDateToYYYYMMDD = (date) => {
   if (!date) return ''
   
-  // If it's already a string in YYYY-MM-DD format, return it
   if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
     return date
   }
   
-  // If it's a Date object
   if (date instanceof Date) {
     const year = date.getFullYear()
     const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -445,13 +443,11 @@ const formatDateToYYYYMMDD = (date) => {
     return `${year}-${month}-${day}`
   }
   
-  // If it's a string in Brazilian format (dd/mm/yyyy)
   if (typeof date === 'string' && date.includes('/')) {
     const [day, month, year] = date.split('/')
     return `${year}-${month}-${day}`
   }
   
-  // Try to parse as Date
   const dateObj = new Date(date)
   if (!isNaN(dateObj.getTime())) {
     const year = dateObj.getFullYear()
@@ -828,7 +824,6 @@ const newLoadCredits = async (startDate, endDate, additionalFilters = {}) => {
   }
 }
 
-// In AuthContext.js - Update newGroupByAdminCredits
 const newGroupByAdminCredits = (creditsArray) => {
   if (!creditsArray || creditsArray.length === 0) return []
   
@@ -912,7 +907,6 @@ const newLoadServices = async (startDate, endDate, additionalFilters = {}) => {
   try {
     setErrorServices(false)
     
-    // Format dates to YYYY-MM-DD
     const formatDateToYYYYMMDD = (date) => {
       if (!date) return ''
       
