@@ -108,6 +108,41 @@ const Dashboard = () => {
     }
   }, [canceled]);
 
+  const formatDateRange = () => {
+  // Get current date
+  const currentDate = new Date()
+  
+  // Calculate final date (current date - 2 days)
+  const finalDate = new Date(currentDate)
+  finalDate.setDate(currentDate.getDate() - 2)
+  
+  // Calculate initial date (final date - 3 days)
+  const initialDate = new Date(finalDate)
+  initialDate.setDate(finalDate.getDate() - 3)
+  
+  // Format dates to Brazilian format (dd/mm/yyyy)
+  const formatToBrazilian = (date) => {
+    const day = String(date.getDate()).padStart(2, '0')
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const year = date.getFullYear()
+    return `${day}/${month}/${year}`
+  }
+  
+  const initialDay = formatToBrazilian(initialDate)
+  const finalDay = formatToBrazilian(finalDate)
+  
+  // Check if same month/year to show abbreviated format
+  if (initialDate.getMonth() === finalDate.getMonth() && 
+      initialDate.getFullYear() === finalDate.getFullYear()) {
+    // Same month, show as "01 a 05/04/2024"
+    const initialDayOnly = String(initialDate.getDate()).padStart(2, '0')
+    return `${initialDayOnly} a ${finalDay}`
+  }
+  
+  // Different months, show full dates
+  return `${initialDay} a ${finalDay}`
+}
+
   const DisplaySales = () => {
     return (
       <div className='graph-data'>
@@ -122,7 +157,7 @@ const Dashboard = () => {
             <hr className='hr-global'/>
             <div className='dash-table-container'>
               <TabelaHorizontal 
-                header='Total Últimos 4 dias' 
+                header={`Total últimos dias (${formatDateRange()})`}
                 valor={salesDashboard.totalLast4} 
                 isCurrency={true}
               />
@@ -151,12 +186,12 @@ const Dashboard = () => {
           <hr className='hr-global'/>
           <div className='dash-table-container'>
             <TabelaHorizontal 
-              header='Previsão de Hoje' 
+              header='Previsão Próx 4 Dias' 
               valor={creditsDashboard.totalCreditsToday} 
               isCurrency={true}
             />
             <TabelaHorizontal 
-              header='Previsão Próx 5 Dias' 
+              header='Previsão de Hoje' 
               valor={creditsDashboard.totalCreditsNext5} 
               isCurrency={true}
             />

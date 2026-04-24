@@ -318,7 +318,7 @@ function AuthProvider({ children }){
     } finally {
       //setIsLoadingUser(false)
     }
-  }, [logout]) // Added logout as dependency
+  }, [logout])
 
 	// funções que retornam arrays com Grupos, Clientes, Bandeiras e Adquirentes, respectivamente //
 
@@ -364,8 +364,7 @@ function AuthProvider({ children }){
     "modelo" : "VENDA_DETALHADO"   Pode ser RECEBIMENTO_DETALHADO OU AJUSTE_DETALHADO
 }
 */
-  
-// retorna array de vendas //
+
 const loadSales = async (startDate, endDate) => {
   console.log('carregando vendas: ', startDate, ' até ', endDate)
   try {
@@ -430,17 +429,13 @@ const loadSales = async (startDate, endDate) => {
   }
 }
 
-// Add these helper functions at the top of your AuthContext component
-
 const formatDateToYYYYMMDD = (date) => {
   if (!date) return ''
   
-  // If it's already a string in YYYY-MM-DD format, return it
   if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
     return date
   }
   
-  // If it's a Date object
   if (date instanceof Date) {
     const year = date.getFullYear()
     const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -448,13 +443,11 @@ const formatDateToYYYYMMDD = (date) => {
     return `${year}-${month}-${day}`
   }
   
-  // If it's a string in Brazilian format (dd/mm/yyyy)
   if (typeof date === 'string' && date.includes('/')) {
     const [day, month, year] = date.split('/')
     return `${year}-${month}-${day}`
   }
   
-  // Try to parse as Date
   const dateObj = new Date(date)
   if (!isNaN(dateObj.getTime())) {
     const year = dateObj.getFullYear()
@@ -465,8 +458,6 @@ const formatDateToYYYYMMDD = (date) => {
   
   return ''
 }
-
-// In AuthContext.js - Updated newLoadSales function
 
 const newLoadSales = async (startDate, endDate, additionalFilters = {}) => {
   console.log('carregando vendas: ', startDate, ' até ', endDate)
@@ -573,7 +564,7 @@ const newLoadSales = async (startDate, endDate, additionalFilters = {}) => {
       console.log('First record sample:', response.data.dados[0])
       
       // Store in localStorage for export
-      localStorage.setItem('salesData', JSON.stringify(response.data.dados))
+      //localStorage.setItem('salesData', JSON.stringify(response.data.dados))
       
       return response.data.dados
     } else if (response.data.success === true && (!response.data.dados || response.data.dados.length === 0)) {
@@ -606,9 +597,6 @@ const newLoadSales = async (startDate, endDate, additionalFilters = {}) => {
     return []
   }
 }
-
-// Update groupByAdmin function for new structure
-// In AuthContext.js - Updated newGroupByAdmin
 
 const newGroupByAdmin = (salesArray) => {
   if (!salesArray || salesArray.length === 0) return []
@@ -696,8 +684,6 @@ const newLoadTotalSales = (salesArray) => {
     console.log('Sales total unchanged, skipping update')
   }
 }
-
-// In AuthContext.js - Add this new function alongside newLoadSales
 
 const newLoadCredits = async (startDate, endDate, additionalFilters = {}) => {
   console.log('carregando créditos/recebimentos: ', startDate, ' até ', endDate)
@@ -804,7 +790,7 @@ const newLoadCredits = async (startDate, endDate, additionalFilters = {}) => {
       console.log('First record sample:', response.data.dados[0])
       
       // Store in localStorage for export
-      localStorage.setItem('creditsData', JSON.stringify(response.data.dados))
+      //localStorage.setItem('creditsData', JSON.stringify(response.data.dados))
       
       return response.data.dados
     } else if (response.data.success === true && (!response.data.dados || response.data.dados.length === 0)) {
@@ -838,7 +824,6 @@ const newLoadCredits = async (startDate, endDate, additionalFilters = {}) => {
   }
 }
 
-// Also create a new group by admin function for credits if needed
 const newGroupByAdminCredits = (creditsArray) => {
   if (!creditsArray || creditsArray.length === 0) return []
   
@@ -847,10 +832,8 @@ const newGroupByAdminCredits = (creditsArray) => {
   const adminMap = new Map()
   
   creditsArray.forEach(credit => {
-    // For credits, the structure might be different
-    // Adjust based on your actual data structure from the API
-    const adminName = credit.adquirente?.nomeAdquirente || credit.ADMINISTRADORA || 'Unknown'
-    const total = credit.valorBruto || credit.VALORBRUTO || 0
+    const adminName = credit.ADMINISTRADORA || 'Unknown'
+    const total = Number(credit.VALORLIQUIDO) || 0  // Use VALORLIQUIDO instead of VALORBRUTO
     
     if (adminMap.has(adminName)) {
       adminMap.set(adminName, adminMap.get(adminName) + total)
@@ -874,58 +857,56 @@ const newGroupByAdminCredits = (creditsArray) => {
   return result
 }
 
-// Create a new load total function for credits
 const newLoadTotalCredits = (creditsArray) => {
   if (!creditsArray || creditsArray.length === 0) {
-    // Only reset if values are not already zero
-    const currentTotal = creditsTotal;
-    if (currentTotal.totalBruto !== 0 || currentTotal.totalLiquido !== 0 || currentTotal.total !== 0) {
-      setCreditsTotal({ totalBruto: 0, totalLiquido: 0, total: 0 })
-    }
+    console.log('newLoadTotalCredits: No data, resetting totals')
+    setCreditsTotal({ 
+      debit: 0, 
+      credit: 0, 
+      voucher: 0, 
+      total: 0 
+    })
     return
   }
   
   console.log('newLoadTotalCredits called with:', creditsArray.length, 'records')
   
-  let totalBruto = 0
-  let totalLiquido = 0
+  let totalCredito = 0
+  let totalDebito = 0
+  let totalVoucher = 0
+  let totalGeral = 0
   
   creditsArray.forEach(credit => {
-    const bruto = credit.valorBruto || credit.VALORBRUTO || 0
-    const liquido = credit.valorLiquido || credit.VALORLIQUIDO || 0
+    const valor = Number(credit.VALORLIQUIDO) || 0
+    const produto = (credit.PRODUTO || "").trim()
     
-    totalBruto += bruto
-    totalLiquido += liquido
+    totalGeral += valor
+    
+    if (produto === 'Crédito') {
+      totalCredito += valor
+    } else if (produto === 'Débito') {
+      totalDebito += valor
+    } else if (produto === 'Voucher') {
+      totalVoucher += valor
+    }
   })
   
   const result = {
-    totalBruto: totalBruto,
-    totalLiquido: totalLiquido,
-    total: totalLiquido // Use líquido as the main total
+    debit: totalDebito,
+    credit: totalCredito,
+    voucher: totalVoucher,
+    total: totalGeral
   }
   
   console.log('newLoadTotalCredits result:', result)
-  
-  // Only update if values actually changed
-  const currentTotal = creditsTotal;
-  if (currentTotal.totalBruto !== result.totalBruto ||
-      currentTotal.totalLiquido !== result.totalLiquido ||
-      currentTotal.total !== result.total) {
-    console.log('Updating credits total')
-    setCreditsTotal(result)
-  } else {
-    console.log('Credits total unchanged, skipping update')
-  }
+  setCreditsTotal(result)
 }
-
-// In AuthContext.js - Add this new function alongside newLoadSales and newLoadCredits
 
 const newLoadServices = async (startDate, endDate, additionalFilters = {}) => {
   console.log('carregando serviços/ajustes: ', startDate, ' até ', endDate)
   try {
     setErrorServices(false)
     
-    // Format dates to YYYY-MM-DD
     const formatDateToYYYYMMDD = (date) => {
       if (!date) return ''
       
