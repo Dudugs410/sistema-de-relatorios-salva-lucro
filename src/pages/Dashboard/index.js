@@ -2,6 +2,9 @@
 /* eslint-disable react/react-in-jsx-scope */
 /* eslint-disable default-case */
 
+//revisar retorno da API, valores totais devem bater com os períodos 
+// correspondentes nas páginas de vendas, créditos e serviços.
+
 import './dashboard.scss';
 import { useContext, useEffect, useState } from 'react';
 import Joyride from 'react-joyride';
@@ -296,7 +299,7 @@ const Dashboard = () => {
               <DisplayServices />
             )}
           </div>
-        </div>		
+        </div>
       </div>    
       <button 
         className='btn btn-success-dados btn-tutorial px-2 py-1'
