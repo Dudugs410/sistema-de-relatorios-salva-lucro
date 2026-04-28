@@ -22,10 +22,16 @@ const MyCalendar = (props) => {
     const [allowRange, setAllowRange] = useState(true)
     const [showPesquisar, setShowPesquisar] = useState(true)
 
+    // Check if we're on the CreditosDataBanco page
+    const isCreditosDataBanco = location.pathname === '/creditos-data-banco'
+
     useEffect(()=>{
       if(location.pathname === ('/sysmo') || location.pathname === '/metasapiranga' || location.pathname === '/meta' || location.pathname === ('/vendasdelivery')){
         setAllowRange(false)
         setShowPesquisar(false)
+      } else if (location.pathname === '/creditos-data-banco') {
+        setAllowRange(true)
+        setShowPesquisar(false) // Hide search button for CreditosDataBanco
       } else {
         setAllowRange(true)
         setShowPesquisar(true)
@@ -49,6 +55,23 @@ const MyCalendar = (props) => {
 
     const handleDateChangeSysmo = (date) =>{
       setDateSysmo(date)
+    }
+
+    // Get the text for the info message
+    const getInfoText = () => {
+      if (isCreditosDataBanco) {
+        if (dateRange[0].toLocaleDateString('pt-BR') !== dateRange[1].toLocaleDateString('pt-BR')) {
+          return `Exportar relatório do dia <strong>${dateRange[0].toLocaleDateString('pt-BR')}</strong> ao dia <strong>${dateRange[1].toLocaleDateString('pt-BR')}</strong>`
+        } else {
+          return `Exportar relatório do dia <strong>${dateRange[0].toLocaleDateString('pt-BR')}</strong>`
+        }
+      } else {
+        if (dateRange[0].toLocaleDateString('pt-BR') !== dateRange[1].toLocaleDateString('pt-BR')) {
+          return `Executar busca do dia <strong>${dateRange[0].toLocaleDateString('pt-BR')}</strong> ao dia <strong>${dateRange[1].toLocaleDateString('pt-BR')}</strong>`
+        } else {
+          return `Executar busca do dia <strong>${dateRange[0].toLocaleDateString('pt-BR')}</strong>`
+        }
+      }
     }
 
     //date-range-picker
@@ -115,10 +138,7 @@ const MyCalendar = (props) => {
           <hr className='hr-global'/>
           <div className='container-busca'>
             <span className='span-busca'>
-              {dateRange[0].toLocaleDateString('pt-BR') !== dateRange[1].toLocaleDateString('pt-BR') ? 
-                <span dangerouslySetInnerHTML={{__html: `Executar busca do dia <strong>${dateRange[0].toLocaleDateString('pt-BR')}</strong> ao dia <strong>${dateRange[1].toLocaleDateString('pt-BR')}</strong>`}} /> : 
-                <span dangerouslySetInnerHTML={{__html: `Executar busca do dia <strong>${dateRange[0].toLocaleDateString('pt-BR')}</strong>`}} />
-              }
+              <span dangerouslySetInnerHTML={{__html: getInfoText()}} />
             </span>
           </div>
           <hr className='hr-global'/>

@@ -902,6 +902,226 @@ const newLoadTotalCredits = (creditsArray) => {
   setCreditsTotal(result)
 }
 
+const newLoadCreditsDataBanco = async (startDate, endDate, additionalFilters = {}) => {
+  console.log('carregando créditos por banco: ', startDate, ' até ', endDate)
+  try {
+    setErrorCredits(false)
+    
+    // Format dates to YYYY-MM-DD
+    const formatDateToYYYYMMDD = (date) => {
+      if (!date) return ''
+      
+      if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        return date
+      }
+      
+      if (date instanceof Date) {
+        const year = date.getFullYear()
+        const month = String(date.getMonth() + 1).padStart(2, '0')
+        const day = String(date.getDate()).padStart(2, '0')
+        return `${year}-${month}-${day}`
+      }
+      
+      if (typeof date === 'string' && date.includes('/')) {
+        const [day, month, year] = date.split('/')
+        return `${year}-${month}-${day}`
+      }
+      
+      const dateObj = new Date(date)
+      if (!isNaN(dateObj.getTime())) {
+        const year = dateObj.getFullYear()
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0')
+        const day = String(dateObj.getDate()).padStart(2, '0')
+        return `${year}-${month}-${day}`
+      }
+      
+      return ''
+    }
+    
+    const formattedStartDate = formatDateToYYYYMMDD(startDate)
+    const formattedEndDate = formatDateToYYYYMMDD(endDate)
+    
+    console.log('Formatted dates for DATA_BANCO:', formattedStartDate, formattedEndDate)
+    
+    // Get stored data from localStorage
+    const cliente = JSON.parse(localStorage.getItem('selectedClientBody'))
+    const grupo = JSON.parse(localStorage.getItem('selectedGroupBody'))
+    const selectedBan = JSON.parse(localStorage.getItem('selectedBanCredits')) || ''
+    const selectedAdm = JSON.parse(localStorage.getItem('selectedAdmCredits')) || ''
+    
+    // Store formatted dates in localStorage
+    localStorage.setItem('dataInicial', formattedStartDate)
+    localStorage.setItem('dataFinal', formattedEndDate)
+    
+    // Determine client codes as a comma-separated string
+    let clientesString = "";
+    
+    if (cliente && cliente.label === 'TODOS') {
+      const clientCodes = grupo?.clients?.map(client => client.CODIGOCLIENTE) || [];
+      clientesString = clientCodes.join(', ');
+      console.log('All client codes (TODOS):', clientesString);
+    } else if (cliente && cliente.cod) {
+      clientesString = String(cliente.cod);
+      console.log('Single client code:', clientesString);
+    } else if (cliente && cliente.value) {
+      clientesString = String(cliente.value);
+    } else {
+      const apiCNPJ = localStorage.getItem('cnpj')
+      const apiGroupCode = localStorage.getItem('groupCode')
+      clientesString = apiCNPJ === 'todos' ? String(apiGroupCode) : String(apiCNPJ)
+    }
+    
+    // Get filter values from localStorage or additionalFilters
+    const bandeira = selectedBan?.codigoBandeira || additionalFilters.bandeira || "";
+    const adquirente = selectedAdm?.codigoAdquirente || additionalFilters.adquirente || "";
+    const nomeGrupo = grupo?.label || localStorage.getItem('clientName') || "";
+    const produto = additionalFilters.produto || "";
+    const modalidade = additionalFilters.modalidade || "";
+    
+    // Build the request object - NOTE: modelo is "DATA_BANCO" for credits by bank
+    const requestObject = {
+      dataInicial: formattedStartDate,
+      dataFinal: formattedEndDate,
+      clientes: clientesString,
+      nomeGrupo: nomeGrupo,
+      bandeira: bandeira,
+      adquirente: adquirente,
+      produto: produto,
+      modalidade: modalidade,
+      arquivo: "PDF", // Always JSON for data loading
+      modelo: "DATA_BANCO" // Changed from "RECEBIMENTO" to "DATA_BANCO"
+    }
+    
+    console.log('Final request object for DATA_BANCO:', requestObject)
+    
+    const response = await api.post('relatorios/detalhado', requestObject)
+    
+    console.log('Full API Response for DATA_BANCO:', response.data)
+    console.log('Response success type:', typeof response.data.success)
+    console.log('Response success value:', response.data.success)
+    console.log('Response dados length:', response.data.dados?.length)
+    
+    setBtnDisabledCredits(false)
+    
+    // Check if response is successful and has data
+    if (response.data.success === true && response.data.dados && response.data.dados.length > 0) {
+      console.log('DATA_BANCO data received:', response.data.dados.length, 'records')
+      console.log('First record sample:', response.data.dados[0])
+      
+      // Store in localStorage for export
+      localStorage.setItem('creditsDataBanco', JSON.stringify(response.data.dados))
+      
+      return response.data.dados
+    } else if (response.data.success === true && (!response.data.dados || response.data.dados.length === 0)) {
+      console.log('Success true but no data in dados array')
+      toast.info(response.data.mensagem || "Nenhum dado encontrado para o período selecionado")
+      return []
+    } else {
+      console.log('Unsuccessful response:', response.data)
+      toast.error(response.data.mensagem || "Erro ao carregar dados de créditos por banco")
+      return []
+    }
+    
+  } catch (error) {
+    console.error('Error in newLoadCreditsDataBanco:', error)
+    setBtnDisabledCredits(false)
+    
+    if(error.code === 'ERR_CANCELED'){
+      console.log('Request canceled')
+      setErrorCredits(false)
+    } else if (error.response && error.response.status === 401) {
+      console.log('Session expired')
+      toast.error('Sessão Expirada')
+      logout()
+      return
+    } else {
+      toast.error('Erro ao Carregar Créditos por Banco: ' + (error.response?.data?.mensagem || error.message))
+      console.error('Error fetching credits by bank:', error)
+      setErrorCredits(true)
+    }
+    return []
+  }
+}
+
+const groupByBank = (creditsArray) => {
+  if (!creditsArray || creditsArray.length === 0) return []
+  
+  console.log('groupByBank called with:', creditsArray.length, 'records')
+  
+  const bankMap = new Map()
+  
+  creditsArray.forEach(credit => {
+    // Use BANCO field from the response
+    const bankName = credit.BANCO || 'Sem Banco'
+    const total = Number(credit.VALORLIQUIDO) || 0
+    
+    if (bankMap.has(bankName)) {
+      bankMap.set(bankName, bankMap.get(bankName) + total)
+    } else {
+      bankMap.set(bankName, total)
+    }
+  })
+  
+  const result = []
+  let id = 0
+  bankMap.forEach((total, bankName) => {
+    result.push({
+      id: id++,
+      adminName: bankName,
+      total: total,
+      credits: []
+    })
+  })
+  
+  console.log('groupByBank result:', result)
+  return result
+}
+
+const newLoadTotalCreditsDataBanco = (creditsArray) => {
+  if (!creditsArray || creditsArray.length === 0) {
+    console.log('newLoadTotalCreditsDataBanco: No data, resetting totals')
+    setCreditsTotal({ 
+      debit: 0, 
+      credit: 0, 
+      voucher: 0, 
+      total: 0 
+    })
+    return
+  }
+  
+  console.log('newLoadTotalCreditsDataBanco called with:', creditsArray.length, 'records')
+  
+  let totalCredito = 0
+  let totalDebito = 0
+  let totalVoucher = 0
+  let totalGeral = 0
+  
+  creditsArray.forEach(credit => {
+    const valor = Number(credit.VALORLIQUIDO) || 0
+    const produto = (credit.PRODUTO || "").trim()
+    
+    totalGeral += valor
+    
+    if (produto === 'Crédito') {
+      totalCredito += valor
+    } else if (produto === 'Débito') {
+      totalDebito += valor
+    } else if (produto === 'Voucher') {
+      totalVoucher += valor
+    }
+  })
+  
+  const result = {
+    debit: totalDebito,
+    credit: totalCredito,
+    voucher: totalVoucher,
+    total: totalGeral
+  }
+  
+  console.log('newLoadTotalCreditsDataBanco result:', result)
+  setCreditsTotal(result)
+}
+
 const newLoadServices = async (startDate, endDate, additionalFilters = {}) => {
   console.log('carregando serviços/ajustes: ', startDate, ' até ', endDate)
   try {
@@ -3053,7 +3273,7 @@ const exportCredits = (data) => {
 
 		// Creditos //
 
-		loadCredits, loadTotalCredits, newLoadCredits, newGroupByAdminCredits, newLoadTotalCredits,
+		loadCredits, loadTotalCredits, newLoadCredits, newLoadCreditsDataBanco, newGroupByAdminCredits, newLoadTotalCredits,
 		creditsPageArray, setCreditsPageArray,
 		creditsPageAdminArray, setCreditsPageAdminArray,
 		creditsDateRange, setCreditsDateRange,

@@ -1,4 +1,4 @@
-// NewDisplayData.jsx - Fixed infinite loop
+// NewDisplayData.jsx - Full component with hideTables and hideTotals props
 import { useContext, useEffect, useState, useCallback, useMemo, useRef } from 'react'
 import NewTabelaGenerica from '../../components/NewTabelaGenerica'
 import TabelaGenericaAdm from '../../components/Componente_TabelaAdm'
@@ -8,7 +8,16 @@ import '../../index.scss'
 import './displayData.scss'
 import { AuthContext } from '../../contexts/auth'
 
-const NewDisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutorial, location }) => {
+const NewDisplayData = ({ 
+  dataArray, 
+  adminDataArray, 
+  totals, 
+  onGoBack, 
+  setRunTutorial, 
+  location,
+  hideTables = false,    // New prop - hides tables when true
+  hideTotals = false     // New prop - hides totals when true
+}) => {
   const { 
     clientUserId, 
     dateConvert,
@@ -83,7 +92,6 @@ const NewDisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTut
           { key: 'RO', header: 'RO' }
         ]
       
-      // In NewDisplayData.jsx - Update the creditos case in getTableColumns
       case 'creditos':
         return [
           { key: 'CNPJ', header: 'CNPJ' },
@@ -168,6 +176,7 @@ const NewDisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTut
     switch(currentPath) {
       case '/vendas': return salesDateRange
       case '/creditos': return creditsDateRange
+      case '/creditos-data-banco': return creditsDateRange
       case '/servicos': return servicesDateRange
       default: return []
     }
@@ -175,14 +184,18 @@ const NewDisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTut
 
   const getExportFunction = useCallback(() => {
     const exportData = async () => {
-      if (!tabelaGenericaRef.current) {
+      if (!tabelaGenericaRef.current && !hideTables) {
         console.warn('Table reference not available')
         return
       }
 
       try {
-        const currentFilteredData = tabelaGenericaRef.current.getFilteredData()
-        const dataToExport = currentFilteredData && currentFilteredData.length > 0 ? currentFilteredData : dataArray
+        let dataToExport = dataArray
+        
+        if (!hideTables && tabelaGenericaRef.current) {
+          const currentFilteredData = tabelaGenericaRef.current.getFilteredData()
+          dataToExport = currentFilteredData && currentFilteredData.length > 0 ? currentFilteredData : dataArray
+        }
         
         console.log(`Exporting ${dataToExport.length} records for ${currentPath}`)
         
@@ -191,6 +204,9 @@ const NewDisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTut
             await exportSales(dataToExport)
             break
           case '/creditos':
+            await exportCredits(dataToExport)
+            break
+          case '/creditos-data-banco':
             await exportCredits(dataToExport)
             break
           case '/servicos':
@@ -205,12 +221,13 @@ const NewDisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTut
     }
 
     return exportData
-  }, [currentPath, exportSales, exportCredits, exportServices, dataArray])
+  }, [currentPath, exportSales, exportCredits, exportServices, dataArray, hideTables])
 
   const getTotalUpdateFunction = useCallback(() => {
     switch(currentPath) {
       case '/vendas': return setSalesTotal
       case '/creditos': return setCreditsTotal
+      case '/creditos-data-banco': return setCreditsTotal
       default: return null
     }
   }, [currentPath, setSalesTotal, setCreditsTotal])
@@ -252,19 +269,31 @@ const NewDisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTut
         updateFunction(totalResult)
       }
     } else if (tableType === 'creditos') {
-      let totalBruto = 0
-      let totalLiquido = 0
+      let totalCredito = 0
+      let totalDebito = 0
+      let totalVoucher = 0
+      let totalGeral = 0
       
       array.forEach((credito) => {
-        totalBruto += Number(credito.VALORBRUTO) || 0
-        totalLiquido += Number(credito.VALORLIQUIDO) || 0
+        const valor = Number(credito.VALORLIQUIDO) || 0
+        const produto = (credito.PRODUTO || "").trim()
+        
+        totalGeral += valor
+        
+        if (produto === 'Crédito') {
+          totalCredito += valor
+        } else if (produto === 'Débito') {
+          totalDebito += valor
+        } else if (produto === 'Voucher') {
+          totalVoucher += valor
+        }
       })
       
       const totalResult = {
-        debit: 0,
-        credit: totalLiquido,
-        voucher: 0,
-        total: totalLiquido
+        debit: totalDebito,
+        credit: totalCredito,
+        voucher: totalVoucher,
+        total: totalGeral
       }
       
       const updateFunction = getTotalUpdateFunction()
@@ -282,7 +311,6 @@ const NewDisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTut
         total: total
       }
       
-      // For services, we might not have a setter, just use it for display
       console.log('Services total:', totalResult)
     }
   }, [getTotalUpdateFunction])
@@ -352,6 +380,8 @@ const NewDisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTut
       setExportPage('vendas')
     } else if (path === '/creditos') {
       setExportPage('creditos')
+    } else if (path === '/creditos-data-banco') {
+      setExportPage('creditos')
     } else if (path === '/servicos') {
       setExportPage('servicos')
     } else {
@@ -361,7 +391,7 @@ const NewDisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTut
 
   // Handle dataArray changes
   useEffect(() => {
-    if (dataArray && dataArray.length > 0 && !hasLoadedTotals) {
+    if (dataArray && dataArray.length > 0 && !hasLoadedTotals && !hideTotals) {
       console.log('NewDisplayData received dataArray:', dataArray.length, 'records')
       setCurrentFilteredData(dataArray)
       loadTotals(dataArray, exportPage)
@@ -369,7 +399,7 @@ const NewDisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTut
     } else if (dataArray && dataArray.length === 0) {
       setHasLoadedTotals(false)
     }
-  }, [dataArray, loadTotals, hasLoadedTotals, exportPage])
+  }, [dataArray, loadTotals, hasLoadedTotals, exportPage, hideTotals])
 
   // Reset hasLoadedTotals when dataArray becomes empty
   useEffect(() => {
@@ -378,8 +408,9 @@ const NewDisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTut
     }
   }, [dataArray])
 
-  // Memoize table props
+  // Memoize table props - only if tables are not hidden
   const tableProps = useMemo(() => {
+    if (hideTables) return null
     if (!exportPage || !dataArray || dataArray.length === 0) return null
     
     return {
@@ -396,7 +427,7 @@ const NewDisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTut
       filterConfig: getFilterConfig(),
       enableDependentFilters: true
     }
-  }, [exportPage, dataArray, getTableColumns, getDateRange, getExportFunction, handleTotalUpdate, getFilterConfig])
+  }, [exportPage, dataArray, getTableColumns, getDateRange, getExportFunction, handleTotalUpdate, getFilterConfig, hideTables])
 
   const getButtonText = () => {
     switch(currentPath) {
@@ -404,6 +435,8 @@ const NewDisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTut
         return 'Nova Consulta de Vendas'
       case '/creditos':
         return 'Nova Consulta de Créditos'
+      case '/creditos-data-banco':
+        return 'Nova Consulta de Créditos por Banco'
       case '/servicos':
         return 'Nova Consulta de Serviços'
       default:
@@ -413,7 +446,7 @@ const NewDisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTut
 
   return (
     <>
-      {totals && <TotalModalidadesComp totals={totals} type={exportPage} />}
+      {!hideTotals && totals && <TotalModalidadesComp totals={totals} type={exportPage} />}
       
       <GerarRelatorio 
         className='export' 
@@ -421,16 +454,19 @@ const NewDisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTut
         filteredData={currentFilteredData}
       />
       
-      <div className='component-container-vendas'>
-        {tableProps && (
-          <NewTabelaGenerica {...tableProps} />
-        )}
-        <hr className='hr-global' />
-        {adminDataArray && adminDataArray.length > 0 && (
-          <TabelaGenericaAdm Array={adminDataArray} />
-        )}
-        <hr className='hr-global' />
-      </div>
+      {!hideTables && (
+        <div className='component-container-vendas'>
+          {tableProps && (
+            <NewTabelaGenerica {...tableProps} />
+          )}
+          <hr className='hr-global' />
+          {adminDataArray && adminDataArray.length > 0 && (
+            <TabelaGenericaAdm Array={adminDataArray} />
+          )}
+          <hr className='hr-global' />
+        </div>
+      )}
+      
       <div data-tour="botaovoltar-section" className='floating-button-container'>
         <button 
           className='btn-floating-new-search' 

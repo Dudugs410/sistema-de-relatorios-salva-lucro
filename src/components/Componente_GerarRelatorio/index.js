@@ -46,34 +46,38 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 		return () => clearInterval(intervalId)
 	}, [currentDateTime])
 
-	// Get the modelo based on current path
+	// In GerarRelatorio.jsx - Update getModelo function
 	const getModelo = () => {
-		const currentPath = localStorage.getItem('currentPath')
-		switch (currentPath) {
-			case '/vendas':
-				return 'VENDA'
-			case '/creditos':
-				return 'RECEBIMENTO'
-			case '/servicos':
-				return 'AJUSTE'
-			default:
-				return 'VENDA'
-		}
+	const currentPath = localStorage.getItem('currentPath')
+	switch (currentPath) {
+		case '/vendas':
+		return 'VENDA'
+		case '/creditos':
+		return 'RECEBIMENTO'
+		case '/creditos-data-banco':  // Add this case
+		return 'DATA_BANCO'
+		case '/servicos':
+		return 'AJUSTE'
+		default:
+		return 'VENDA'
+	}
 	}
 
-	// Get the storage keys based on current path
+	// Update getStorageKeys function to include DATA_BANCO
 	const getStorageKeys = () => {
-		const currentPath = localStorage.getItem('currentPath')
-		switch (currentPath) {
-			case '/vendas':
-				return { ban: 'selectedBan', adm: 'selectedAdm' }
-			case '/creditos':
-				return { ban: 'selectedBanCredits', adm: 'selectedAdmCredits' }
-			case '/servicos':
-				return { ban: 'selectedBanServices', adm: 'selectedAdmServices' }
-			default:
-				return { ban: 'selectedBan', adm: 'selectedAdm' }
-		}
+	const currentPath = localStorage.getItem('currentPath')
+	switch (currentPath) {
+		case '/vendas':
+		return { ban: 'selectedBan', adm: 'selectedAdm' }
+		case '/creditos':
+		return { ban: 'selectedBanCredits', adm: 'selectedAdmCredits' }
+		case '/creditos-data-banco':  // Add this case
+		return { ban: 'selectedBanCredits', adm: 'selectedAdmCredits' }  // Reuse same keys or create new ones
+		case '/servicos':
+		return { ban: 'selectedBanServices', adm: 'selectedAdmServices' }
+		default:
+		return { ban: 'selectedBan', adm: 'selectedAdm' }
+	}
 	}
 
 	useEffect(() => {
