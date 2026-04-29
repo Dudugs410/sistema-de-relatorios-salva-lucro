@@ -903,7 +903,7 @@ const newLoadTotalCredits = (creditsArray) => {
 }
 
 const newLoadCreditsDataBanco = async (startDate, endDate, additionalFilters = {}) => {
-  console.log('carregando créditos por banco: ', startDate, ' até ', endDate)
+  console.log('carregando créditos por data e banco: ', startDate, ' até ', endDate)
   try {
     setErrorCredits(false)
     
@@ -1018,7 +1018,7 @@ const newLoadCreditsDataBanco = async (startDate, endDate, additionalFilters = {
       return []
     } else {
       console.log('Unsuccessful response:', response.data)
-      toast.error(response.data.mensagem || "Erro ao carregar dados de créditos por banco")
+      toast.error(response.data.mensagem || "Erro ao carregar dados de créditos por data e banco")
       return []
     }
     
@@ -1035,7 +1035,7 @@ const newLoadCreditsDataBanco = async (startDate, endDate, additionalFilters = {
       logout()
       return
     } else {
-      toast.error('Erro ao Carregar Créditos por Banco: ' + (error.response?.data?.mensagem || error.message))
+      toast.error('Erro ao Carregar Créditos por Data e Banco: ' + (error.response?.data?.mensagem || error.message))
       console.error('Error fetching credits by bank:', error)
       setErrorCredits(true)
     }

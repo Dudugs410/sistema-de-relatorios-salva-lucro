@@ -256,7 +256,7 @@ const CreditosDataBanco = () => {
       <div className='page-vendas-background'>
         <div className='page-content-vendas'>
           <div className='vendas-title-container'>
-            <h1 className='vendas-title'>Créditos por Banco</h1>
+            <h1 className='vendas-title'>Créditos por Data e Banco</h1>
           </div>
           <hr className='hr-global' />
           

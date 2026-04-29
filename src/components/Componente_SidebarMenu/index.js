@@ -89,7 +89,7 @@ const Sidebar = () => {
                 icone: icones['FiCreditCard'], 
                 children: [
                     { nome: 'Resumo de Créditos', rota: '/creditos' },
-                    { nome: 'Créditos por Banco', rota: '/creditos-data-banco' }
+                    { nome: 'Créditos por Data e Banco', rota: '/creditos-data-banco' }
                 ]
             },
             { nome: 'Serviços', icone: icones['FiTool'], rota: '/servicos' },

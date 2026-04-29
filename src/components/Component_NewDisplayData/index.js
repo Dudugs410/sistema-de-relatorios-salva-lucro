@@ -436,7 +436,7 @@ const NewDisplayData = ({
       case '/creditos':
         return 'Nova Consulta de Créditos'
       case '/creditos-data-banco':
-        return 'Nova Consulta de Créditos por Banco'
+        return 'Nova Consulta de Créditos por Data e Banco'
       case '/servicos':
         return 'Nova Consulta de Serviços'
       default:
