@@ -4,7 +4,7 @@ import './Sidebar.scss'
 import salvaLucroLogoBranco from '../../assets/LogoTopo.png'
 import sifra from '../../assets/logoSifra.png'
 import MG from '../../assets/logoMG.png'
-import { FiPercent, FiMoon, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText, FiClipboard, FiDownload, FiCalendar, FiPaperclip, FiSettings, FiTruck, FiShoppingBag, FiTable, FiLink } from "react-icons/fi"
+import { FiPercent, FiMoon, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText, FiClipboard, FiDownload, FiCalendar, FiPaperclip, FiSettings, FiTruck, FiShoppingBag, FiTable, FiLink, FiDatabase } from "react-icons/fi"
 import { LiaFileInvoiceDollarSolid } from "react-icons/lia";
 import { Collapse, Nav, Navbar, NavItem, NavLink, Button } from 'reactstrap'
 import { AuthContext } from '../../contexts/auth'
@@ -77,21 +77,25 @@ const Sidebar = () => {
             'FiShoppingBag': FiShoppingBag,
             'FiTable': FiTable,
             'FiPercent': FiPercent,
+            'FiDatabase': FiDatabase,
             'LiaFileInvoiceDollarSolid': LiaFileInvoiceDollarSolid,
         }
 
         const orderedOptions = [
             { nome: 'Início', icone: icones['FiHome'], rota: '/dashboard' },
             { nome: 'Vendas', icone: icones['FiDollarSign'], rota: '/vendas' },
-            { nome: 'Créditos', icone: icones['FiCreditCard'], rota: '/creditos' },
+            { 
+                nome: 'Créditos', 
+                icone: icones['FiCreditCard'], 
+                children: [
+                    { nome: 'Resumo de Créditos', rota: '/creditos' },
+                    { nome: 'Créditos por Data e Banco', rota: '/creditos-data-banco' }
+                ]
+            },
             { nome: 'Serviços', icone: icones['FiTool'], rota: '/servicos' },
         ]
         setOptionsWithIcons(orderedOptions)
     }, [])
-
-            {/*{ nome: 'Taxas', icone: icones['FiPercent'], rota: '/taxas' },
-            { nome: 'Extrato Bancário', icone: icones['LiaFileInvoiceDollarSolid'], rota: '/extrato' },
-            */}
 
     return (
         <>

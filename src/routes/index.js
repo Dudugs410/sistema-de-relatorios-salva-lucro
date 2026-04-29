@@ -8,6 +8,7 @@ import Usuario from "../pages/00 - PaginaUsuario"
 import Dashboard from '../pages/Dashboard'
 import Vendas from '../pages/Vendas'
 import Recebiveis from '../pages/Creditos'
+import CreditosDataBanco from '../pages/CreditosDataBanco' // Add this import
 import Servicos from '../pages/Servicos'
 import CadastroDeBancos from '../pages/CadastroDeBancos'
 import Financeiro from '../pages/Financeiro'
@@ -55,6 +56,7 @@ function RoutesApp() {
       <Route path='/dashboard' element={<Private><Dashboard /></Private>} />
       <Route path='/vendas' element={<Private><Vendas /></Private>} />
       <Route path='/creditos' element={<Private><Recebiveis /></Private>} />
+      <Route path='/creditos-data-banco' element={<Private><CreditosDataBanco /></Private>} /> {/* Add this route */}
       <Route path='/servicos' element={<Private><Servicos /></Private>} />
       {/*<Route path='/taxas' element={<Private><Taxas /></Private>} />
       <Route path='/extrato' element={<Private><Extrato /></Private>} />
