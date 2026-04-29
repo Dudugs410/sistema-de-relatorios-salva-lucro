@@ -160,7 +160,7 @@ const Dashboard = () => {
             <hr className='hr-global'/>
             <div className='dash-table-container'>
               <TabelaHorizontal 
-                header={`Total últimos dias (${formatDateRange()})`}
+                header={`Total últimos 4 dias`} /*(${formatDateRange()})*/
                 valor={salesDashboard.totalLast4} 
                 isCurrency={true}
               />
@@ -189,7 +189,7 @@ const Dashboard = () => {
           <hr className='hr-global'/>
           <div className='dash-table-container'>
             <TabelaHorizontal 
-              header='Previsão Próx 4 Dias' 
+              header='Previsão Próx 5 Dias' 
               valor={creditsDashboard.totalCreditsToday} 
               isCurrency={true}
             />

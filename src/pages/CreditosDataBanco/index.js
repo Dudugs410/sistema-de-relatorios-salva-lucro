@@ -379,8 +379,6 @@ const CreditosDataBanco = () => {
               </div>
             </div>
 
-            <hr className='hr-global' />
-
             {/* Calendar Section */}
             <div data-tour="calendario-section">
               <MyCalendar 
