@@ -1206,7 +1206,7 @@ const newLoadServices = async (startDate, endDate, additionalFilters = {}) => {
       produto: additionalFilters.produto || "",
       modalidade: additionalFilters.modalidade || "",
       arquivo: "JSON", // Always JSON for data loading
-      modelo: "AJUSTE" // Changed from "VENDA"/"RECEBIMENTO" to "AJUSTE"
+      modelo: "AJUSTES" // Changed from "VENDA"/"RECEBIMENTO" to "AJUSTE"
     }
     
     console.log('Final request object for services:', requestObject)
@@ -1269,9 +1269,28 @@ const newGroupByAdminServices = (servicesArray) => {
   const adminMap = new Map()
   
   servicesArray.forEach(service => {
-    // For services, adjust based on your actual data structure from the API
-    const adminName = service.nome_adquirente || service.ADMINISTRADORA || 'Unknown'
-    const valor = Math.abs(service.valor || service.VALOR || 0) // Use absolute value for services
+    if (!service) return
+    
+    // Safe extraction of admin name with multiple fallbacks
+    const adminName = service.nome_adquirente || 
+                     service.ADMINISTRADORA || 
+                     service.adquirente || 
+                     'Unknown'
+    
+    // Safe extraction of value with multiple fallbacks
+    let valor = 0
+    if (service.valor !== undefined && service.valor !== null) {
+      valor = Math.abs(Number(service.valor))
+    } else if (service.VALOR !== undefined && service.VALOR !== null) {
+      valor = Math.abs(Number(service.VALOR))
+    } else if (service.valorLiquido !== undefined && service.valorLiquido !== null) {
+      valor = Math.abs(Number(service.valorLiquido))
+    } else if (service.VALORLIQUIDO !== undefined && service.VALORLIQUIDO !== null) {
+      valor = Math.abs(Number(service.VALORLIQUIDO))
+    }
+    
+    // Skip if valor is invalid
+    if (isNaN(valor)) return
     
     if (adminMap.has(adminName)) {
       adminMap.set(adminName, adminMap.get(adminName) + valor)
@@ -1297,13 +1316,14 @@ const newGroupByAdminServices = (servicesArray) => {
 
 // Create a new load total function for services
 const newLoadTotalServices = (servicesArray) => {
+  // Safe check for empty or invalid data
   if (!servicesArray || servicesArray.length === 0) {
-    // Only reset if values are not already zero
+    console.log('newLoadTotalServices: No data, resetting totals')
     const currentTotal = servicesTotal;
     if (currentTotal.total !== 0) {
       setServicesTotal({ total: 0 })
     }
-    return
+    return { total: 0 }
   }
   
   console.log('newLoadTotalServices called with:', servicesArray.length, 'records')
@@ -1311,9 +1331,32 @@ const newLoadTotalServices = (servicesArray) => {
   let total = 0
   
   servicesArray.forEach(service => {
-    const valor = Math.abs(service.valor || service.VALOR || 0) // Use absolute value for services
+    // Safe value extraction with multiple fallbacks
+    let valor = 0
+    
+    // Try different possible field names
+    if (service.valor !== undefined && service.valor !== null) {
+      valor = Math.abs(Number(service.valor))
+    } else if (service.VALOR !== undefined && service.VALOR !== null) {
+      valor = Math.abs(Number(service.VALOR))
+    } else if (service.valorLiquido !== undefined && service.valorLiquido !== null) {
+      valor = Math.abs(Number(service.valorLiquido))
+    } else if (service.VALORLIQUIDO !== undefined && service.VALORLIQUIDO !== null) {
+      valor = Math.abs(Number(service.VALORLIQUIDO))
+    }
+    
+    // Ensure it's a valid number
+    if (isNaN(valor)) {
+      valor = 0
+    }
+    
     total += valor
   })
+  
+  // Ensure total is a valid number
+  if (isNaN(total)) {
+    total = 0
+  }
   
   const result = {
     total: total
@@ -1324,11 +1367,13 @@ const newLoadTotalServices = (servicesArray) => {
   // Only update if values actually changed
   const currentTotal = servicesTotal;
   if (currentTotal.total !== result.total) {
-    console.log('Updating services total')
+    console.log('Updating services total from', currentTotal.total, 'to', result.total)
     setServicesTotal(result)
   } else {
     console.log('Services total unchanged, skipping update')
   }
+  
+  return result
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -2589,10 +2634,11 @@ const [creditsTotal, setCreditsTotal] = useState({
 const [creditsDateRange, setCreditsDateRange] = useState([new Date(), new Date()])
 
 // >>> Página de Serviços <<< //
+// FIXED: Changed servicesTotal from number to object to match newLoadTotalServices
 const [servicesPageArray, setServicesPageArray] = useState([])
 const [servicesPageAdminArray, setServicesPageAdminArray] = useState([])
 const [servicesDateRange, setServicesDateRange] = useState([new Date(), new Date()])
-const [servicesTotal, setServicesTotal] = useState(0);
+const [servicesTotal, setServicesTotal] = useState({ total: 0 }); // FIXED: Now an object with total property
 
 // >>> Página de Taxas <<< //
 const [isLoadingTaxes, setIsLoadingTaxes] = useState(false)
@@ -2639,33 +2685,39 @@ const [taxesPageArray, setTaxesPageArray] = useState([])
 	}
 
 	function groupServicesByAdmin(array) {
+    // Early return for invalid input
+    if (!array || !Array.isArray(array) || array.length === 0) {
+      return []
+    }
 
-		let sums = {
-			total: 0
-		}
-		
-		let tempSales = []
-		let separatedByAdquirente = []
+    let separatedByAdquirente = []
 
-			array.forEach((sale) => {
-				sums.total += sale.valor
-				tempSales.push(sale)
+    array.forEach((sale) => {
+      // Skip if sale or required fields are missing
+      if (!sale) return
+      
+      const adminName = sale.nome_adquirente || sale.ADMINISTRADORA || sale.adquirente || 'Unknown'
+      const valor = Math.abs(Number(sale.valor || sale.VALOR || 0))
+      
+      // Skip if valor is invalid
+      if (isNaN(valor)) return
 
-				let entry = separatedByAdquirente.find(adquirente => adquirente.adminName === sale.nome_adquirente)
-				if (!entry) {
-					entry = {
-						id: separatedByAdquirente.length,
-						adminName: sale.nome_adquirente,
-						total: 0,
-						sales: []
-					}
-					separatedByAdquirente.push(entry)
-				}
-				entry.sales.push(sale)
-				entry.total += sale.valor
-			})
-		return separatedByAdquirente
-	}
+      let entry = separatedByAdquirente.find(adq => adq.adminName === adminName)
+      if (!entry) {
+        entry = {
+          id: separatedByAdquirente.length,
+          adminName: adminName,
+          total: 0,
+          sales: []
+        }
+        separatedByAdquirente.push(entry)
+      }
+      entry.sales.push(sale)
+      entry.total += valor
+    })
+    
+    return separatedByAdquirente
+  }
 
 	////////////////////////////////////////////////////////////////////////////////////////
 
@@ -2843,6 +2895,7 @@ const [taxesPageArray, setTaxesPageArray] = useState([])
 		setServicesPageArray([])
 		setServicesPageAdminArray([])
 		setServicesDateRange([new Date(), new Date()])
+		setServicesTotal({ total: 0 }) // FIXED: Now an object instead of number
 		setSalesDashboard({
 			sales: [],
 			totalLast4: 0,
@@ -2923,15 +2976,58 @@ const [taxesPageArray, setTaxesPageArray] = useState([])
 
 	// funções de Manipulação de formato de Data
 
-	function dateConvert(date) {
-		let parts = date.split('-')
-		let year = parts[0]
-		let month = parts[1]
-		let day = parts[2]
+function dateConvert(date) {
+  // Check if date is undefined, null, or empty
+  if (!date) {
+    console.warn('dateConvert received undefined or null date')
+    return ''
+  }
   
-		let convertedDate = day + '/' + month + '/' + year
-		return convertedDate
-	}
+  // Ensure date is a string
+  if (typeof date !== 'string') {
+    // If it's a Date object, convert it
+    if (date instanceof Date && !isNaN(date.getTime())) {
+      const day = String(date.getDate()).padStart(2, '0')
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const year = date.getFullYear()
+      return `${day}/${month}/${year}`
+    }
+    console.warn('dateConvert received non-string, non-Date value:', date)
+    return ''
+  }
+  
+  // Check if the string has the expected format (YYYY-MM-DD)
+  if (!date.includes('-')) {
+    console.warn('dateConvert received unexpected format:', date)
+    return date // Return as-is if it's already in another format
+  }
+  
+  try {
+    let parts = date.split('-')
+    
+    // Validate that we have exactly 3 parts
+    if (parts.length !== 3) {
+      console.warn('dateConvert received invalid date parts:', parts)
+      return date
+    }
+    
+    let year = parts[0]
+    let month = parts[1]
+    let day = parts[2]
+    
+    // Validate that all parts exist
+    if (!year || !month || !day) {
+      console.warn('dateConvert received incomplete date:', { year, month, day })
+      return date
+    }
+    
+    let convertedDate = day + '/' + month + '/' + year
+    return convertedDate
+  } catch (error) {
+    console.error('Error in dateConvert:', error)
+    return ''
+  }
+}
 
 function timeConvert(time){
     if(!time) return ''
@@ -3238,6 +3334,42 @@ const exportCredits = (data) => {
 		return sortedArray
 	}
 
+	// Safe number formatting helper functions
+	const safeToFixed = (value, decimals = 2) => {
+		// Handle undefined, null, or invalid values
+		if (value === undefined || value === null) {
+			return (0).toFixed(decimals)
+		}
+		
+		// Convert to number if it's a string
+		let numValue = typeof value === 'string' ? parseFloat(value) : value
+		
+		// Check if conversion was successful
+		if (isNaN(numValue)) {
+			return (0).toFixed(decimals)
+		}
+		
+		return numValue.toFixed(decimals)
+	}
+
+	// Safe currency formatting
+	const safeCurrencyFormat = (value) => {
+		if (value === undefined || value === null) {
+			return 'R$ 0,00'
+		}
+		
+		let numValue = typeof value === 'string' ? parseFloat(value) : value
+		
+		if (isNaN(numValue)) {
+			return 'R$ 0,00'
+		}
+		
+		return numValue.toLocaleString('pt-BR', {
+			style: 'currency',
+			currency: 'BRL'
+		})
+	}
+
 	// FIXED: Memoized context value to prevent unnecessary re-renders
 	const contextValue = useMemo(() => ({
 		alerta,
@@ -3332,6 +3464,10 @@ const exportCredits = (data) => {
 		resetAppValues,
 
 		clientUserId,
+		
+		// Safe number formatting helpers
+		safeToFixed,
+		safeCurrencyFormat,
 	}), [
 		// List all dependencies that should trigger context updates
 		isSignedIn, accessToken, userImg, salesTableData, creditsTableData, servicesTableData, taxesTableData,
