@@ -1,4 +1,4 @@
-// NewDisplayData.jsx - Full component with hideTables and hideTotals props
+// NewDisplayData.jsx - Updated to handle AJUSTES data structure
 import { useContext, useEffect, useState, useCallback, useMemo, useRef } from 'react'
 import NewTabelaGenerica from '../../components/NewTabelaGenerica'
 import TabelaGenericaAdm from '../../components/Componente_TabelaAdm'
@@ -8,6 +8,55 @@ import '../../index.scss'
 import './displayData.scss'
 import { AuthContext } from '../../contexts/auth'
 
+// Safe number formatting utilities
+const safeToFixed = (value, decimals = 2) => {
+  if (value === undefined || value === null || value === '') {
+    return (0).toFixed(decimals)
+  }
+  
+  let numValue = typeof value === 'string' ? parseFloat(value) : Number(value)
+  
+  if (isNaN(numValue)) {
+    return (0).toFixed(decimals)
+  }
+  
+  return numValue.toFixed(decimals)
+}
+
+const formatCurrency = (value) => {
+  if (value === undefined || value === null || value === '') {
+    return 'R$ 0,00'
+  }
+  
+  let numValue = typeof value === 'string' ? parseFloat(value) : Number(value)
+  
+  if (isNaN(numValue)) {
+    return 'R$ 0,00'
+  }
+  
+  return numValue.toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL'
+  })
+}
+
+// Safe date conversion
+const formatDate = (date) => {
+  if (!date) return 'N/A'
+  // If it's already in DD/MM/YYYY format, return as is
+  if (typeof date === 'string' && date.includes('/')) {
+    return date
+  }
+  // If it's a Date object
+  if (date instanceof Date && !isNaN(date.getTime())) {
+    const day = String(date.getDate()).padStart(2, '0')
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const year = date.getFullYear()
+    return `${day}/${month}/${year}`
+  }
+  return date || 'N/A'
+}
+
 const NewDisplayData = ({ 
   dataArray, 
   adminDataArray, 
@@ -15,8 +64,8 @@ const NewDisplayData = ({
   onGoBack, 
   setRunTutorial, 
   location,
-  hideTables = false,    // New prop - hides tables when true
-  hideTotals = false     // New prop - hides totals when true
+  hideTables = false,
+  hideTotals = false
 }) => {
   const { 
     clientUserId, 
@@ -38,6 +87,17 @@ const NewDisplayData = ({
   
   const tabelaGenericaRef = useRef(null)
 
+  // Safe date conversion wrapper
+  const safeDateConvert = useCallback((date) => {
+    if (!date) return 'N/A'
+    try {
+      return formatDate(date)
+    } catch (error) {
+      console.error('Error converting date:', error)
+      return 'N/A'
+    }
+  }, [])
+
   // Memoize this to prevent recreation
   const getTableColumns = useCallback((tableType) => {
     switch(tableType) {
@@ -46,44 +106,44 @@ const NewDisplayData = ({
           { key: 'CNPJ', header: 'CNPJ' },
           { key: 'ADMINISTRADORA', header: 'Adquirente' },
           { key: 'BANDEIRA', header: 'Bandeira' },
-          { key: 'PRODUTO', header: 'Produto', render: (item) => (item.PRODUTO || "").trim() },
+          { key: 'PRODUTO', header: 'Produto', render: (item) => (item?.PRODUTO || "").trim() },
           { key: 'MODALIDADE', header: 'Subproduto' },
           { 
             key: 'VALORBRUTO', 
             header: 'Valor Bruto',
-            render: (item) => <span className='green-global'>{Number(item.VALORBRUTO).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span>
+            render: (item) => <span className={Number(item?.VALORBRUTO) >= 0 ? 'green-global' : 'red-global'}>{formatCurrency(item?.VALORBRUTO)}</span>
           },
           { 
             key: 'VALORLIQUIDO', 
             header: 'Valor Líquido',
-            render: (item) => <span className='green-global'>{Number(item.VALORLIQUIDO).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span>
+            render: (item) => <span className={Number(item?.VALORLIQUIDO) >= 0 ? 'green-global' : 'red-global'}>{formatCurrency(item?.VALORLIQUIDO)}</span>
           },
           { 
             key: 'TAXA', 
             header: 'Taxa',
-            render: (item) => <span className='red-global'>{Number(item.TAXA).toFixed(2)}%</span>
+            render: (item) => <span className='red-global'>{safeToFixed(item?.TAXA, 2)}%</span>
           },
           { 
             key: 'DESCONTO', 
             header: 'Desconto (%)',
-            render: (item) => <span className='red-global'>{Number(item.DESCONTO).toFixed(2)}%</span>
+            render: (item) => <span className='red-global'>{safeToFixed(item?.DESCONTO, 2)}%</span>
           },
           { key: 'NSU', header: 'NSU' },
           { key: 'CARTAO', header: 'Cartão'},
           { 
             key: 'DATAVENDA', 
             header: 'Data da Venda',
-            accessor: (item) => dateConvert(item.DATAVENDA)
+            accessor: (item) => safeDateConvert(item?.DATAVENDA)
           },
           { 
             key: 'HORAVENDA', 
             header: 'Hora da Venda',
-            accessor: (item) => item.HORAVENDA || 'N/A'
+            accessor: (item) => item?.HORAVENDA || 'N/A'
           },
           { 
             key: 'DATACREDITO', 
             header: 'Data do Crédito',
-            accessor: (item) => dateConvert(item.DATACREDITO)
+            accessor: (item) => safeDateConvert(item?.DATACREDITO)
           },
           { key: 'AUTORIZACAO', header: 'Autorização' },
           { key: 'PARCELA', header: 'QTD Parcelas' },
@@ -97,44 +157,44 @@ const NewDisplayData = ({
           { key: 'CNPJ', header: 'CNPJ' },
           { key: 'ADMINISTRADORA', header: 'Adquirente' },
           { key: 'BANDEIRA', header: 'Bandeira' },
-          { key: 'PRODUTO', header: 'Produto', render: (item) => (item.PRODUTO || "").trim() },
+          { key: 'PRODUTO', header: 'Produto', render: (item) => (item?.PRODUTO || "").trim() },
           { key: 'MODALIDADE', header: 'Subproduto' },
           { 
             key: 'VALORBRUTO', 
             header: 'Valor Bruto',
-            render: (item) => <span className='green-global'>{Number(item.VALORBRUTO).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span>
+            render: (item) => <span className={Number(item?.VALORBRUTO) >= 0 ? 'green-global' : 'red-global'}>{formatCurrency(item?.VALORBRUTO)}</span>
           },
           { 
             key: 'VALORLIQUIDO', 
             header: 'Valor Líquido',
-            render: (item) => <span className='green-global'>{Number(item.VALORLIQUIDO).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span>
+            render: (item) => <span className={Number(item?.VALORLIQUIDO) >= 0 ? 'green-global' : 'red-global'}>{formatCurrency(item?.VALORLIQUIDO)}</span>
           },
           { 
             key: 'TAXA', 
             header: 'Taxa',
-            render: (item) => <span className='red-global'>{Number(item.TAXA).toFixed(2)}%</span>
+            render: (item) => <span className='red-global'>{safeToFixed(item?.TAXA, 2)}%</span>
           },
           { 
             key: 'DESCONTO', 
             header: 'Desconto (%)',
-            render: (item) => <span className='red-global'>{Number(item.DESCONTO).toFixed(2)}%</span>
+            render: (item) => <span className='red-global'>{safeToFixed(item?.DESCONTO, 2)}%</span>
           },
           { key: 'CARTAO', header: 'Cartão'},
           { key: 'NSU', header: 'NSU' },
           { 
             key: 'DATAVENDA', 
             header: 'Data da Venda',
-            accessor: (item) => dateConvert(item.DATAVENDA)
+            accessor: (item) => safeDateConvert(item?.DATAVENDA)
           },
           { 
             key: 'HORAVENDA', 
             header: 'Hora da Venda',
-            accessor: (item) => item.HORAVENDA || 'N/A'
+            accessor: (item) => item?.HORAVENDA || 'N/A'
           },
           { 
             key: 'DATACREDITO', 
             header: 'Data do Crédito',
-            accessor: (item) => dateConvert(item.DATACREDITO)
+            accessor: (item) => safeDateConvert(item?.DATACREDITO)
           },
           { key: 'AUTORIZACAO', header: 'Autorização' },
           { key: 'PARCELA', header: 'Parcela' },
@@ -149,28 +209,60 @@ const NewDisplayData = ({
         ]
       
       case 'servicos':
+      case 'ajustes':
         return [
-          { key: 'cnpj', header: 'CNPJ' },
-          { key: 'razao_social', header: 'Razão Social' },
-          { key: 'codigo_estabelecimento', header: 'Código Estabelecimento' },
-          { key: 'nome_adquirente', header: 'Adquirente' },
+          { key: 'CNPJ', header: 'CNPJ' },
+          { key: 'RAZAOSOCIAL', header: 'Razão Social' },
+          { key: 'NUMEROPV', header: 'Número PV' },
+          { key: 'ADMINISTRADORA', header: 'Adquirente' },
+          { key: 'TIPOAJUSTE', header: 'Tipo de Ajuste' },
+          { key: 'DESCRICAOAJUSTE', header: 'Descrição' },
+          { key: 'CODIGOAJUSTE', header: 'Código Ajuste' },
           { 
-            key: 'valor', 
-            header: 'Valor',
-            render: (item) => <span className='red-global'>{Math.abs(Number(item.valor)).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span>
+            key: 'VALORBRUTO', 
+            header: 'Valor Bruto',
+            render: (item) => <span className={Number(item?.VALORBRUTO) >= 0 ? 'green-global' : 'red-global'}>{formatCurrency(item?.VALORBRUTO)}</span>
           },
           { 
-            key: 'data', 
-            header: 'Data',
-            accessor: (item) => dateConvert(item.data)
+            key: 'VALORLIQUIDO', 
+            header: 'Valor Líquido',
+            render: (item) => <span className={Number(item?.VALORLIQUIDO) >= 0 ? 'green-global' : 'red-global'}>{formatCurrency(item?.VALORLIQUIDO)}</span>
           },
-          { key: 'descricao', header: 'Descrição' }
+          { key: 'NSU', header: 'NSU' },
+          { 
+            key: 'DATAVENDA', 
+            header: 'Data da Venda',
+            accessor: (item) => safeDateConvert(item?.DATAVENDA)
+          },
+          { 
+            key: 'DATACREDITO', 
+            header: 'Data do Crédito',
+            accessor: (item) => safeDateConvert(item?.DATACREDITO)
+          },
+          { 
+            key: 'DATAPAGAMENTO', 
+            header: 'Data Pagamento',
+            accessor: (item) => safeDateConvert(item?.DATAPAGAMENTO)
+          },
+          { key: 'AUTORIZACAO', header: 'Autorização' },
+          { key: 'STATUS', header: 'Status' },
+          { key: 'RO', header: 'RO' },
+          { key: 'NUMEROTERMINAL', header: 'Terminal' },
+          { key: 'TID', header: 'TID' },
+          { key: 'TRANSACAO', header: 'Transação' },
+          { key: 'BANDEIRA', header: 'Bandeira' },
+          { key: 'CARTAO', header: 'Cartão' },
+          { key: 'PRODUTO', header: 'Produto' },
+          { key: 'MODALIDADE', header: 'Modalidade' },
+          { key: 'PARCELA', header: 'Parcela' },
+          { key: 'TAXA', header: 'Taxa', render: (item) => item?.TAXA ? `${safeToFixed(item.TAXA, 2)}%` : 'N/A' },
+          { key: 'DESCONTO', header: 'Desconto', render: (item) => item?.DESCONTO ? `${safeToFixed(item.DESCONTO, 2)}%` : 'N/A' }
         ]
       
       default:
         return []
     }
-  }, [dateConvert])
+  }, [safeDateConvert])
 
   const getDateRange = useCallback(() => {
     switch(currentPath) {
@@ -197,7 +289,7 @@ const NewDisplayData = ({
           dataToExport = currentFilteredData && currentFilteredData.length > 0 ? currentFilteredData : dataArray
         }
         
-        console.log(`Exporting ${dataToExport.length} records for ${currentPath}`)
+        console.log(`Exporting ${dataToExport?.length || 0} records for ${currentPath}`)
         
         switch(currentPath) {
           case '/vendas': 
@@ -243,8 +335,9 @@ const NewDisplayData = ({
       let totalTemp = 0
 
       array.forEach((venda) => {
+        if (!venda) return
         const produto = (venda.PRODUTO || "").trim()
-        const valor = venda.VALORBRUTO || 0
+        const valor = Number(venda.VALORBRUTO) || 0
         
         totalTemp += valor
         
@@ -275,6 +368,7 @@ const NewDisplayData = ({
       let totalGeral = 0
       
       array.forEach((credito) => {
+        if (!credito) return
         const valor = Number(credito.VALORLIQUIDO) || 0
         const produto = (credito.PRODUTO || "").trim()
         
@@ -300,18 +394,25 @@ const NewDisplayData = ({
       if (updateFunction) {
         updateFunction(totalResult)
       }
-    } else if (tableType === 'servicos') {
-      let total = 0
+    } else if (tableType === 'servicos' || tableType === 'ajustes') {
+      let totalBruto = 0
+      let totalLiquido = 0
       
-      array.forEach((servico) => {
-        total += Math.abs(Number(servico.valor)) || 0
+      array.forEach((item) => {
+        if (!item) return
+        const valorBruto = Number(item.VALORBRUTO) || 0
+        const valorLiquido = Number(item.VALORLIQUIDO) || 0
+        totalBruto += Math.abs(valorBruto)
+        totalLiquido += Math.abs(valorLiquido)
       })
       
       const totalResult = {
-        total: total
+        totalBruto: totalBruto,
+        totalLiquido: totalLiquido,
+        total: totalLiquido // For compatibility with existing code
       }
       
-      console.log('Services total:', totalResult)
+      console.log('Services/Ajustes total:', totalResult)
     }
   }, [getTotalUpdateFunction])
 
@@ -330,12 +431,12 @@ const NewDisplayData = ({
         return {
           adquirente: {
             label: 'Adquirente',
-            accessor: (item) => item.ADMINISTRADORA || '',
+            accessor: (item) => item?.ADMINISTRADORA || '',
             dependentKey: 'bandeira'
           },
           bandeira: {
             label: 'Bandeira', 
-            accessor: (item) => item.BANDEIRA || '',
+            accessor: (item) => item?.BANDEIRA || '',
             dependentKey: 'adquirente'
           }
         }
@@ -343,25 +444,31 @@ const NewDisplayData = ({
         return {
           adquirente: {
             label: 'Adquirente',
-            accessor: (item) => item.ADMINISTRADORA || '',
+            accessor: (item) => item?.ADMINISTRADORA || '',
             dependentKey: 'bandeira'
           },
           bandeira: {
             label: 'Bandeira', 
-            accessor: (item) => item.BANDEIRA || '',
+            accessor: (item) => item?.BANDEIRA || '',
             dependentKey: 'adquirente'
           }
         }
       case 'servicos':
+      case 'ajustes':
         return {
           adquirente: {
             label: 'Adquirente',
-            accessor: (item) => item.nome_adquirente || '',
-            dependentKey: 'servico'
+            accessor: (item) => item?.ADMINISTRADORA || '',
+            dependentKey: 'tipoAjuste'
           },
-          servico: {
-            label: 'Serviço',
-            accessor: (item) => item.descricao || '',
+          tipoAjuste: {
+            label: 'Tipo de Ajuste',
+            accessor: (item) => item?.TIPOAJUSTE || '',
+            dependentKey: 'adquirente'
+          },
+          descricao: {
+            label: 'Descrição',
+            accessor: (item) => item?.DESCRICAOAJUSTE || '',
             dependentKey: 'adquirente'
           }
         }
@@ -383,7 +490,7 @@ const NewDisplayData = ({
     } else if (path === '/creditos-data-banco') {
       setExportPage('creditos')
     } else if (path === '/servicos') {
-      setExportPage('servicos')
+      setExportPage('ajustes')
     } else {
       setExportPage('')
     }
@@ -416,8 +523,8 @@ const NewDisplayData = ({
     return {
       ref: tabelaGenericaRef,
       array: dataArray,
-      tableType: exportPage,
-      columns: getTableColumns(exportPage),
+      tableType: exportPage === 'ajustes' ? 'servicos' : exportPage,
+      columns: getTableColumns(exportPage === 'ajustes' ? 'servicos' : exportPage),
       dateRange: getDateRange(),
       onExport: getExportFunction(),
       onTotalUpdate: handleTotalUpdate,
@@ -438,7 +545,7 @@ const NewDisplayData = ({
       case '/creditos-data-banco':
         return 'Nova Consulta de Créditos por Data e Banco'
       case '/servicos':
-        return 'Nova Consulta de Serviços'
+        return 'Nova Consulta de Serviços/Ajustes'
       default:
         return 'Nova Pesquisa'
     }
@@ -446,7 +553,17 @@ const NewDisplayData = ({
 
   return (
     <>
-      {!hideTotals && totals && <TotalModalidadesComp totals={totals} type={exportPage} />}
+      {!hideTotals && totals && (
+        <TotalModalidadesComp 
+          totals={{
+            debit: totals?.debit ?? 0,
+            credit: totals?.credit ?? 0,
+            voucher: totals?.voucher ?? 0,
+            total: totals?.total ?? totals?.totalLiquido ?? 0
+          }} 
+          type={exportPage} 
+        />
+      )}
       
       <GerarRelatorio 
         className='export' 

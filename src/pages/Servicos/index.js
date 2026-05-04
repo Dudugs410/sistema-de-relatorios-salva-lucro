@@ -6,7 +6,7 @@ import { AuthContext } from '../../contexts/auth'
 import { useLocation } from 'react-router-dom'
 import MyCalendar from '../../components/Componente_Calendario'
 import { toast } from 'react-toastify'
-import DisplayData from '../../components/Componente_DisplayData'
+import NewDisplayData from '../../components/Component_NewDisplayData'  // Changed from DisplayData to NewDisplayData
 import { FiHelpCircle } from 'react-icons/fi'
 import api from '../../services/api'
 
@@ -79,77 +79,114 @@ const Servicos = () => {
     }
   }, [servicesPageArray, newGroupByAdminServices, newLoadTotalServices])
 
-  // Helper function to format date to YYYY-MM-DD
+  // Helper function to format date to YYYY-MM-DD with error handling
   const formatDateToYYYYMMDD = (date) => {
+    // Early return for null, undefined, or empty values
     if (!date) return ''
     
+    // If it's already in YYYY-MM-DD format
     if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
       return date
     }
     
-    if (date instanceof Date) {
+    // If it's a Date object
+    if (date instanceof Date && !isNaN(date.getTime())) {
       const year = date.getFullYear()
       const month = String(date.getMonth() + 1).padStart(2, '0')
       const day = String(date.getDate()).padStart(2, '0')
       return `${year}-${month}-${day}`
     }
     
+    // If it's a string with DD/MM/YYYY format
     if (typeof date === 'string' && date.includes('/')) {
-      const [day, month, year] = date.split('/')
-      return `${year}-${month}-${day}`
+      try {
+        const [day, month, year] = date.split('/')
+        if (day && month && year) {
+          return `${year}-${month}-${day}`
+        }
+      } catch (e) {
+        console.error('Error parsing date string:', e)
+        return ''
+      }
     }
     
-    const dateObj = new Date(date)
-    if (!isNaN(dateObj.getTime())) {
-      const year = dateObj.getFullYear()
-      const month = String(dateObj.getMonth() + 1).padStart(2, '0')
-      const day = String(dateObj.getDate()).padStart(2, '0')
-      return `${year}-${month}-${day}`
+    // Try to create a Date object from the value
+    try {
+      const dateObj = new Date(date)
+      if (!isNaN(dateObj.getTime())) {
+        const year = dateObj.getFullYear()
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0')
+        const day = String(dateObj.getDate()).padStart(2, '0')
+        return `${year}-${month}-${day}`
+      }
+    } catch (e) {
+      console.error('Error creating date object:', e)
     }
     
     return ''
   }
 
-  // Get the request object for API downloads
+  // Get the request object for API downloads with safe handling
   const getRequestObject = (format) => {
-    const cliente = JSON.parse(localStorage.getItem('selectedClientBody'))
-    const grupo = JSON.parse(localStorage.getItem('selectedGroupBody'))
-    const dataInicial = localStorage.getItem('dataInicial')
-    const dataFinal = localStorage.getItem('dataFinal')
-    
-    const bandeiraObj = JSON.parse(localStorage.getItem('selectedBanServices')) || ''
-    const adquirenteObj = JSON.parse(localStorage.getItem('selectedAdmServices')) || ''
-    
-    let clientesString = ""
-    
-    if (cliente && cliente.label === 'TODOS') {
-      const clientCodes = grupo?.clients?.map(client => client.CODIGOCLIENTE) || []
-      clientesString = clientCodes.join(', ')
-    } else if (cliente && cliente.cod) {
-      clientesString = String(cliente.cod)
-    } else if (cliente && cliente.value) {
-      clientesString = String(cliente.value)
-    } else {
-      const apiCNPJ = localStorage.getItem('cnpj')
-      const apiGroupCode = localStorage.getItem('groupCode')
-      clientesString = apiCNPJ === 'todos' ? String(apiGroupCode) : String(apiCNPJ)
-    }
+    try {
+      const cliente = JSON.parse(localStorage.getItem('selectedClientBody') || '{}')
+      const grupo = JSON.parse(localStorage.getItem('selectedGroupBody') || '{}')
+      const dataInicial = localStorage.getItem('dataInicial')
+      const dataFinal = localStorage.getItem('dataFinal')
+      
+      const bandeiraObj = JSON.parse(localStorage.getItem('selectedBanServices') || '{}')
+      const adquirenteObj = JSON.parse(localStorage.getItem('selectedAdmServices') || '{}')
+      
+      let clientesString = ""
+      
+      if (cliente && cliente.label === 'TODOS') {
+        const clientCodes = grupo?.clients?.map(client => client.CODIGOCLIENTE) || []
+        clientesString = clientCodes.join(', ')
+      } else if (cliente && cliente.cod) {
+        clientesString = String(cliente.cod)
+      } else if (cliente && cliente.value) {
+        clientesString = String(cliente.value)
+      } else {
+        const apiCNPJ = localStorage.getItem('cnpj')
+        const apiGroupCode = localStorage.getItem('groupCode')
+        clientesString = apiCNPJ === 'todos' ? String(apiGroupCode) : String(apiCNPJ)
+      }
 
-    const nomeGrupo = grupo?.label || localStorage.getItem('clientName') || ""
-    const ban = bandeiraObj?.codigoBandeira || ''
-    const adq = adquirenteObj?.codigoAdquirente || ''
+      const nomeGrupo = grupo?.label || localStorage.getItem('clientName') || ""
+      const ban = bandeiraObj?.codigoBandeira || ''
+      const adq = adquirenteObj?.codigoAdquirente || ''
 
-    return {
-      dataInicial: formatDateToYYYYMMDD(dataInicial),
-      dataFinal: formatDateToYYYYMMDD(dataFinal),
-      clientes: clientesString,
-      nomeGrupo: nomeGrupo,
-      bandeira: ban,
-      adquirente: adq,
-      produto: '',
-      modalidade: '',
-      arquivo: format,
-      modelo: 'AJUSTE'
+      // Safe date formatting with fallback
+      const formattedStartDate = formatDateToYYYYMMDD(dataInicial)
+      const formattedEndDate = formatDateToYYYYMMDD(dataFinal)
+
+      return {
+        dataInicial: formattedStartDate,
+        dataFinal: formattedEndDate,
+        clientes: clientesString,
+        nomeGrupo: nomeGrupo,
+        bandeira: ban,
+        adquirente: adq,
+        produto: '',
+        modalidade: '',
+        arquivo: format,
+        modelo: 'AJUSTE'
+      }
+    } catch (error) {
+      console.error('Error in getRequestObject:', error)
+      // Return default values if something goes wrong
+      return {
+        dataInicial: '',
+        dataFinal: '',
+        clientes: '',
+        nomeGrupo: '',
+        bandeira: '',
+        adquirente: '',
+        produto: '',
+        modalidade: '',
+        arquivo: format,
+        modelo: 'AJUSTE'
+      }
     }
   }
 
@@ -159,6 +196,12 @@ const Servicos = () => {
     
     try {
       const requestObject = getRequestObject(format)
+      
+      // Validate dates before sending
+      if (!requestObject.dataInicial || !requestObject.dataFinal) {
+        toast.warning('Please select valid dates before downloading')
+        return
+      }
       
       const response = await api.post('relatorios/detalhado', requestObject)
       
@@ -180,8 +223,8 @@ const Servicos = () => {
         const a = document.createElement('a')
         a.href = url
         
-        const startDate = formatDateToYYYYMMDD(servicesDateRange[0])
-        const endDate = formatDateToYYYYMMDD(servicesDateRange[1])
+        const startDate = formatDateToYYYYMMDD(servicesDateRange?.[0])
+        const endDate = formatDateToYYYYMMDD(servicesDateRange?.[1])
         const dateRangeStr = startDate === endDate ? startDate : `${startDate}_a_${endDate}`
         const fileName = `Relatorio_Servicos_${dateRangeStr}.${fileExtension}`
         
@@ -196,6 +239,7 @@ const Servicos = () => {
         toast.error(response.data.mensagem || `Failed to generate ${format} report`)
       }
     } catch (err) {
+      console.error('Download error:', err)
       toast.error(err.response?.data?.mensagem || err.message || `An error occurred while generating the ${format} report`)
     } finally {
       setDownloading(false)
@@ -236,8 +280,13 @@ const Servicos = () => {
   
   async function loadData() {
     try {
-      const startDate = servicesDateRange[0]
-      const endDate = servicesDateRange[1]
+      const startDate = servicesDateRange?.[0]
+      const endDate = servicesDateRange?.[1]
+      
+      if (!startDate || !endDate) {
+        toast.warning('Por favor, selecione um período de datas')
+        throw new Error('Date range not selected')
+      }
       
       const formattedStartDate = startDate instanceof Date 
         ? startDate.toLocaleDateString('pt-BR')
@@ -259,13 +308,18 @@ const Servicos = () => {
   }
 
   useEffect(() => {
-    if (servicesPageArray.length > 0) {
+    if (servicesPageArray && servicesPageArray.length > 0) {
       exportServices(servicesPageArray)
     }
   }, [servicesPageArray, localStorage.getItem('currentPath')])
 
   const handleDateRangeChange = (dateRange) => {
-    setServicesDateRange(dateRange)
+    // Validate dateRange before setting
+    if (dateRange && Array.isArray(dateRange) && dateRange.length === 2) {
+      setServicesDateRange(dateRange)
+    } else {
+      console.warn('Invalid date range received:', dateRange)
+    }
   }
 
   const getSelectedAdminOption = () => {
@@ -299,7 +353,7 @@ const Servicos = () => {
   ])
 
   useEffect(() => {
-    if (servicesPageArray.length > 0) {
+    if (servicesPageArray && servicesPageArray.length > 0) {
       let stepsTemp = [
         {
           target: '[data-tour="exportacao-section"]',
@@ -336,8 +390,9 @@ const Servicos = () => {
   }
 
   const calculateServicesTotal = (servicesArray) => {
-    if (!servicesArray || servicesArray.length === 0) return 0
-    return servicesArray.reduce((total, service) => total + Math.abs(service.valor || 0), 0)
+    if (!servicesArray || servicesArray.length === 0) return { total: 0 }
+    const total = servicesArray.reduce((sum, service) => sum + Math.abs(service.valor || 0), 0)
+    return { total: total }
   }
 
   return (
@@ -384,16 +439,13 @@ const Servicos = () => {
             
             {servicesPageArray !== null ?
               servicesPageArray.length > 0 ? (
-                <DisplayData 
+                <NewDisplayData 
                   dataArray={servicesPageArray} 
                   adminDataArray={servicesPageAdminArray} 
-                  totals={{ total: calculateServicesTotal(servicesPageArray) }} 
+                  totals={calculateServicesTotal(servicesPageArray)} 
                   onGoBack={resetValues}
                   setRunTutorial={setRunTutorial}
                   location={location}
-                  onExcelDownload={handleExcelDownload}
-                  onPDFDownload={handlePDFDownload}
-                  downloading={downloading}
                 />
               ) : (
                 <>
