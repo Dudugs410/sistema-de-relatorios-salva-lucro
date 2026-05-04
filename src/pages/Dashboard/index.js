@@ -2,9 +2,6 @@
 /* eslint-disable react/react-in-jsx-scope */
 /* eslint-disable default-case */
 
-//revisar retorno da API, valores totais devem bater com os períodos 
-// correspondentes nas páginas de vendas, créditos e serviços.
-
 import './dashboard.scss';
 import { useContext, useEffect, useState } from 'react';
 import Joyride from 'react-joyride';
@@ -15,13 +12,14 @@ import PieChart from '../../components/GraficoDashboard';
 import { useLocation } from 'react-router-dom';
 import '../../index.scss';
 import LazyLoader from '../../components/Componente_LazyLoader/index.js';
-import { FiHelpCircle } from 'react-icons/fi';
+import { FiHelpCircle, FiSun, FiMoon } from 'react-icons/fi';
 import ModalAlerta from './ModalAlerta/index.js';
 
 const Dashboard = () => {
   const location = useLocation();
   // Joyride state
   const [runTutorial, setRunTutorial] = useState(false);
+  const [activeDataType, setActiveDataType] = useState('vendas'); // 'vendas', 'creditos', 'servicos'
 
   const alerta = false;
   const [modalOpen, setModalOpen] = useState(alerta);
@@ -112,39 +110,97 @@ const Dashboard = () => {
   }, [canceled]);
 
   const formatDateRange = () => {
-  // Get current date
-  const currentDate = new Date()
-  
-  // Calculate final date (current date - 2 days)
-  const finalDate = new Date(currentDate)
-  finalDate.setDate(currentDate.getDate() - 2)
-  
-  // Calculate initial date (final date - 3 days)
-  const initialDate = new Date(finalDate)
-  initialDate.setDate(finalDate.getDate() - 3)
-  
-  // Format dates to Brazilian format (dd/mm/yyyy)
-  const formatToBrazilian = (date) => {
-    const day = String(date.getDate()).padStart(2, '0')
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const year = date.getFullYear()
-    return `${day}/${month}/${year}`
+    // Get current date
+    const currentDate = new Date()
+    
+    // Calculate final date (current date - 2 days)
+    const finalDate = new Date(currentDate)
+    finalDate.setDate(currentDate.getDate() - 2)
+    
+    // Calculate initial date (final date - 3 days)
+    const initialDate = new Date(finalDate)
+    initialDate.setDate(finalDate.getDate() - 3)
+    
+    // Format dates to Brazilian format (dd/mm/yyyy)
+    const formatToBrazilian = (date) => {
+      const day = String(date.getDate()).padStart(2, '0')
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const year = date.getFullYear()
+      return `${day}/${month}/${year}`
+    }
+    
+    const initialDay = formatToBrazilian(initialDate)
+    const finalDay = formatToBrazilian(finalDate)
+    
+    // Check if same month/year to show abbreviated format
+    if (initialDate.getMonth() === finalDate.getMonth() && 
+        initialDate.getFullYear() === finalDate.getFullYear()) {
+      // Same month, show as "01 a 05/04/2024"
+      const initialDayOnly = String(initialDate.getDate()).padStart(2, '0')
+      return `${initialDayOnly} a ${finalDay}`
+    }
+    
+    // Different months, show full dates
+    return `${initialDay} a ${finalDay}`
   }
-  
-  const initialDay = formatToBrazilian(initialDate)
-  const finalDay = formatToBrazilian(finalDate)
-  
-  // Check if same month/year to show abbreviated format
-  if (initialDate.getMonth() === finalDate.getMonth() && 
-      initialDate.getFullYear() === finalDate.getFullYear()) {
-    // Same month, show as "01 a 05/04/2024"
-    const initialDayOnly = String(initialDate.getDate()).padStart(2, '0')
-    return `${initialDayOnly} a ${finalDay}`
+
+  // Get current active dashboard data
+  const getCurrentDashboardData = () => {
+    switch(activeDataType) {
+      case 'vendas':
+        return {
+          dashboard: salesDashboard,
+          isLoaded: isLoadedSalesDashboard,
+          title: 'Vendas',
+          icon: '💰',
+          color: 'var(--secondary-color)', // Using CSS variable for lime green
+          tipo: '0',
+          dados: 'vendas'
+        }
+      case 'creditos':
+        return {
+          dashboard: creditsDashboard,
+          isLoaded: isLoadedCreditsDashboard,
+          title: 'Créditos',
+          icon: '💳',
+          color: 'var(--secondary-color)', // Using CSS variable for lime green
+          tipo: '1',
+          dados: 'creditos'
+        }
+      case 'servicos':
+        return {
+          dashboard: servicesDashboard,
+          isLoaded: isLoadedServicesDashboard,
+          title: 'Serviços',
+          icon: '🛠️',
+          color: 'var(--secondary-color)', // Using CSS variable for lime green
+          tipo: '2',
+          dados: 'servicos'
+        }
+      default:
+        return null
+    }
   }
-  
-  // Different months, show full dates
-  return `${initialDay} a ${finalDay}`
-}
+
+  const currentData = getCurrentDashboardData()
+
+  // Calculate total for summary cards
+  const getTotalValue = () => {
+    if (!currentData?.dashboard?.chart?.data) return 0
+    return currentData.dashboard.chart.data.reduce((sum, val) => sum + val, 0)
+  }
+
+  // Get summary data for current type
+  const getSummaryData = () => {
+    if (!currentData?.dashboard?.chart) return []
+    const { labels, data } = currentData.dashboard.chart
+    const total = getTotalValue()
+    return labels?.map((label, index) => ({
+      label,
+      value: data[index],
+      percentage: total > 0 ? ((data[index] / total) * 100).toFixed(1) : 0
+    })) || []
+  }
 
   const DisplaySales = () => {
     return (
@@ -160,15 +216,15 @@ const Dashboard = () => {
             <hr className='hr-global'/>
             <div className='dash-table-container'>
               <TabelaHorizontal 
-                header={`Total últimos 4 dias`} /*(${formatDateRange()})*/
+                header={`Total últimos 4 dias (${formatDateRange()})`}
                 valor={salesDashboard.totalLast4} 
                 isCurrency={true}
               />
               <TabelaHorizontal 
-                header='Total do Mês' 
+                header='Total do Mês'
                 valor={salesDashboard.totalMonth} 
                 isCurrency={true}
-              /> 
+              />
             </div>
           </>
       </div>
@@ -189,12 +245,12 @@ const Dashboard = () => {
           <hr className='hr-global'/>
           <div className='dash-table-container'>
             <TabelaHorizontal 
-              header='Previsão Próx 5 Dias' 
+              header='Previsão de Hoje' 
               valor={creditsDashboard.totalCreditsToday} 
               isCurrency={true}
             />
             <TabelaHorizontal 
-              header='Previsão de Hoje' 
+              header='Previsão Próx 5 Dias' 
               valor={creditsDashboard.totalCreditsNext5} 
               isCurrency={true}
             />
@@ -230,6 +286,179 @@ const Dashboard = () => {
           </div>
         </>
       </div>
+    )
+  }
+
+  // Render modern unified view
+  const renderModernView = () => {
+    if (!currentData) return null
+
+    const { dashboard, isLoaded, title, icon, color, tipo, dados } = currentData
+    const totalValue = getTotalValue()
+    const summaryData = getSummaryData()
+
+    if (!isLoaded) {
+      return (
+        <div className='chart-main-section'>
+          <LazyLoader />
+        </div>
+      )
+    }
+
+    return (
+      <>
+        {/* Chart Type Selector Cards */}
+        <div className="chart-type-selector">
+          <div 
+            className={`selector-card ${activeDataType === 'vendas' ? 'active' : ''}`}
+            onClick={() => setActiveDataType('vendas')}
+          >
+            <div className="card-icon">💰</div>
+            <div className="card-title">Vendas</div>
+            <div className="card-value">
+              {salesDashboard?.totalMonth?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) || 'R$ 0,00'}
+            </div>
+          </div>
+          
+          <div 
+            className={`selector-card ${activeDataType === 'creditos' ? 'active' : ''}`}
+            onClick={() => setActiveDataType('creditos')}
+          >
+            <div className="card-icon">💳</div>
+            <div className="card-title">Créditos</div>
+            <div className="card-value">
+              {creditsDashboard?.totalCreditsToday?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) || 'R$ 0,00'}
+            </div>
+          </div>
+          
+          <div 
+            className={`selector-card ${activeDataType === 'servicos' ? 'active' : ''}`}
+            onClick={() => setActiveDataType('servicos')}
+          >
+            <div className="card-icon">🛠️</div>
+            <div className="card-title">Serviços</div>
+            <div className="card-value">
+              {servicesDashboard?.totalServicesToday?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) || 'R$ 0,00'}
+            </div>
+          </div>
+        </div>
+
+        {/* Main Chart Section */}
+        <div className="chart-main-section">
+          <div className="chart-header">
+            <h2>
+              <span className="section-icon">{icon}</span>
+              {title} por {dados === 'servicos' ? 'Tipo' : 'Adquirente'}
+            </h2>
+            <div className="total-info">
+              <span className="total-label">Total Geral:</span>
+              <span className="total-value">
+                {totalValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+              </span>
+            </div>
+          </div>
+          
+          <div className="chart-wrapper-enhanced">
+            <PieChart 
+              data01={dashboard.chart} 
+              arrayAdm={tipo === '0' ? dashboard.sales : tipo === '1' ? dashboard.credits : dashboard.services} 
+              totalAdmin={dashboard.totalAdmin}
+              tipo={tipo} 
+              dados={dados}
+            />
+          </div>
+        </div>
+
+        {/* Métricas Adicionais - Right below chart section */}
+        <div className="additional-metrics">
+          <div className='subtitle-container-global'>
+            <h3 className='subtitle'>Métricas Adicionais</h3>
+          </div>
+          <hr className='hr-global'/>
+          <div className="metrics-grid">
+            {tipo === '0' && (
+              <>
+                <div className="metric-card">
+                  <div className="metric-label">Total últimos 4 dias</div>
+                  <div className="metric-value">
+                    {dashboard.totalLast4?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                  </div>
+                  <div className="metric-period">{formatDateRange()}</div>
+                </div>
+                <div className="metric-card">
+                  <div className="metric-label">Total do Mês</div>
+                  <div className="metric-value">
+                    {dashboard.totalMonth?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                  </div>
+                </div>
+              </>
+            )}
+            {tipo === '1' && (
+              <>
+                <div className="metric-card">
+                  <div className="metric-label">Previsão de Hoje</div>
+                  <div className="metric-value">
+                    {dashboard.totalCreditsToday?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                  </div>
+                </div>
+                <div className="metric-card">
+                  <div className="metric-label">Previsão Próx 5 Dias</div>
+                  <div className="metric-value">
+                    {dashboard.totalCreditsNext5?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                  </div>
+                </div>
+              </>
+            )}
+            {tipo === '2' && (
+              <>
+                <div className="metric-card">
+                  <div className="metric-label">Total de Hoje</div>
+                  <div className="metric-value">
+                    {dashboard.totalServicesToday?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                  </div>
+                </div>
+                <div className="metric-card">
+                  <div className="metric-label">Total do Mês</div>
+                  <div className="metric-value">
+                    {dashboard.totalServicesMonth?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Summary Section */}
+        <div className="summary-section">
+          <div className='subtitle-container-global'>
+            <h3 className='subtitle'>Resumo por {dados === 'servicos' ? 'Tipo de Serviço' : 'Adquirente'}</h3>
+          </div>
+          <hr className='hr-global'/>
+          <div className="summary-cards">
+            {summaryData.map((item, index) => (
+              <div key={item.label} className="summary-card">
+                <div className="summary-card-header">
+                  <span className="summary-label">{item.label}</span>
+                  <span className="summary-percentage">{item.percentage}%</span>
+                </div>
+                <div className="summary-value">
+                  {item.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                </div>
+                <div className="progress-bar">
+                  <div 
+                    className="progress-fill" 
+                    style={{ 
+                      width: `${item.percentage}%`,
+                      backgroundColor: 'var(--secondary-color)'
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <hr className='hr-global'/>
+      </>
     )
   }
 
@@ -273,34 +502,22 @@ const Dashboard = () => {
       
       <div className='appPage'>
         <div className='content-area dash'>
-          <div className='data-group-area' data-tour="sales-section">
-            <h1 className='title-chart'>Vendas:</h1>
-            {isLoadedSalesDashboard === false ? (
-              <LazyLoader /> 
-            ) : (
-              <DisplaySales />
-            )}
+          {/* Modern Unified View */}
+          <div className="modern-dashboard-view">
+            {renderModernView()}
           </div>
-          
-          <div className='data-group-area' data-tour="credits-section">
-            <h1 className='title-chart'>Créditos:</h1>			
-            {isLoadedCreditsDashboard === false ? (
-              <LazyLoader /> 
-            ) : (
-              <DisplayCredits />
-            )}
+
+          {/* Original Separate Views (commented - can be toggled) */}
+          {/*
+          <div className="original-views">
+            {renderSalesSection()}
+            {renderCreditsSection()}
+            {renderServicesSection()}
           </div>
-          
-          <div className='data-group-area' data-tour="services-section">
-            <h1 className='title-chart'>Serviços:</h1>
-            {isLoadedServicesDashboard === false ? (
-              <LazyLoader />
-            ) : (
-              <DisplayServices />
-            )}
-          </div>
+          */}
         </div>
       </div>    
+      
       <button 
         className='btn btn-success-dados btn-tutorial px-2 py-1'
         onClick={() => setRunTutorial(true)}
