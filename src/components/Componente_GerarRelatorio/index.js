@@ -57,7 +57,7 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 		case '/creditos-data-banco':  // Add this case
 		return 'DATA_BANCO'
 		case '/servicos':
-		return 'AJUSTE'
+		return 'AJUSTES'
 		default:
 		return 'VENDA'
 	}
