@@ -95,40 +95,29 @@ const findFilterObject = (value, filterKey, dataArray, tableType) => {
             descricaoBandeira: displayName
           })
         }
-      } else if (tableType === 'creditos') {
-        if (filterKey === 'bandeira') {
-          displayName = item.BANDEIRA
-          code = item.CODIGOBANDEIRA
-          if (displayName === value && code && !uniqueMap.has(code)) {
-            uniqueMap.set(code, {
-              codigoBandeira: code,
-              descricaoBandeira: displayName
-            })
-          }
-        } else if (filterKey === 'adquirente') {
-          displayName = item.ADMINISTRADORA
-          code = item.CODIGOADMINISTRADORA
-          if (displayName === value && code && !uniqueMap.has(code)) {
-            uniqueMap.set(code, {
-              codigoAdquirente: code,
-              nomeAdquirente: displayName
-            })
-          }
+      } else if (filterKey === 'adquirente') {
+        displayName = item.ADMINISTRADORA
+        code = item.CODIGOADMINISTRADORA
+        if (displayName === value && code && !uniqueMap.has(code)) {
+          uniqueMap.set(code, {
+            codigoAdquirente: code,
+            nomeAdquirente: displayName
+          })
         }
       }
     } else if (tableType === 'creditos') {
-      if (filterKey === 'bandeira' && item.bandeira) {
-        displayName = item.bandeira.descricaoBandeira
-        code = item.bandeira.codigoBandeira
+      if (filterKey === 'bandeira') {
+        displayName = item.BANDEIRA
+        code = item.CODIGOBANDEIRA
         if (displayName === value && code && !uniqueMap.has(code)) {
           uniqueMap.set(code, {
             codigoBandeira: code,
             descricaoBandeira: displayName
           })
         }
-      } else if (filterKey === 'adquirente' && item.adquirente) {
-        displayName = item.adquirente.nomeAdquirente
-        code = item.adquirente.codigoAdquirente
+      } else if (filterKey === 'adquirente') {
+        displayName = item.ADMINISTRADORA
+        code = item.CODIGOADMINISTRADORA
         if (displayName === value && code && !uniqueMap.has(code)) {
           uniqueMap.set(code, {
             codigoAdquirente: code,
@@ -239,8 +228,24 @@ const NewTabelaGenerica = forwardRef(({
   const [isDataProcessed, setIsDataProcessed] = useState(false)
 
   const lastFilteredDataRef = useRef(null)
-  const lastDataArrayRef = useRef(null)
   const isUpdatingRef = useRef(false)
+  const onTotalUpdateRef = useRef(onTotalUpdate)
+  const lastNotifiedDataRef = useRef(null)
+
+  useEffect(() => {
+    onTotalUpdateRef.current = onTotalUpdate
+  }, [onTotalUpdate])
+
+useEffect(() => {
+  if (onTotalUpdateRef.current && dataExibicao && dataExibicao.length > 0) {
+    // Only call if data actually changed
+    const dataSignature = JSON.stringify(dataExibicao)
+    if (dataSignature !== lastNotifiedDataRef.current) {
+      lastNotifiedDataRef.current = dataSignature
+      onTotalUpdateRef.current(dataExibicao)
+    }
+  }
+}, [dataExibicao])
 
   const config = useMemo(() => tableConfig[tableType] || {}, [tableType])
 
@@ -392,7 +397,7 @@ const NewTabelaGenerica = forwardRef(({
       console.log(`Clearing ${storageKeys.filter2} from localStorage`)
       localStorage.removeItem(storageKeys.filter2)
     }
-  }, [selectedFilters.adquirente, dataArray, tableType, getStorageKeys, getFilterKeys])
+  }, [selectedFilters, dataArray, tableType, getStorageKeys, getFilterKeys])
 
   const getFilterConfig = useCallback(() => {
     if (customFilterConfig) return customFilterConfig
@@ -415,12 +420,12 @@ const NewTabelaGenerica = forwardRef(({
         return {
           adquirente: {
             label: 'Adquirente',
-            accessor: (item) => item.adquirente?.nomeAdquirente || '',
+            accessor: (item) => item.ADMINISTRADORA || '',
             dependentKey: 'bandeira'
           },
           bandeira: {
             label: 'Bandeira', 
-            accessor: (item) => item.bandeira?.descricaoBandeira || '',
+            accessor: (item) => item.BANDEIRA || '',
             dependentKey: 'adquirente'
           }
         }
@@ -474,8 +479,9 @@ const NewTabelaGenerica = forwardRef(({
     setAllFilterOptions(allOptions)
   }, [dataArray, showFilters, getFilterConfig])
 
-  // Main filtering logic
+  // FIX: Main filtering logic - prevent infinite loop
   useEffect(() => {
+    // Skip if already updating
     if (isUpdatingRef.current) return
     
     if (dataArray.length === 0) {
@@ -502,6 +508,7 @@ const NewTabelaGenerica = forwardRef(({
       })
     }
     
+    // FIX: Use string comparison to check if data actually changed
     const filteredDataSignature = JSON.stringify(filteredData)
     
     if (filteredDataSignature !== lastFilteredDataRef.current) {
@@ -510,10 +517,12 @@ const NewTabelaGenerica = forwardRef(({
       setDataExibicao(filteredData)
       setCurrentPage(1)
       
-      if (onTotalUpdate && isDataProcessed && filteredData.length !== dataExibicao.length) {
-        onTotalUpdate(filteredData)
+      // FIX: Only call onTotalUpdate if data length changed and data is processed
+      if (onTotalUpdateRef.current && isDataProcessed && filteredData.length !== dataExibicao.length) {
+        onTotalUpdateRef.current(filteredData)
       }
       
+      // Reset updating flag after a delay
       setTimeout(() => {
         isUpdatingRef.current = false
       }, 100)
@@ -522,7 +531,7 @@ const NewTabelaGenerica = forwardRef(({
     if (!isDataProcessed && dataArray.length > 0) {
       setIsDataProcessed(true)
     }
-  }, [dataArray, selectedFilters, getFilterConfig, onTotalUpdate, dataExibicao.length, isDataProcessed])
+  }, [dataArray, selectedFilters, getFilterConfig, dataExibicao.length, isDataProcessed])
 
   const toggleRow = useCallback(async (row) => {
     const rowId = row.id || row.document || row.contractNumber || Math.random()
@@ -660,10 +669,10 @@ const NewTabelaGenerica = forwardRef(({
     return path.split('.').reduce((acc, part) => acc && acc[part], obj)
   }, [])
 
-  const formatValue = useCallback((value, format) => {
+  const formatValue = useCallback((value, formatType) => {
     if (value === null || value === undefined || value === '') return ''
     
-    switch (format) {
+    switch (formatType) {
       case 'currency':
         return Number(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
       case 'percent':
@@ -677,10 +686,10 @@ const NewTabelaGenerica = forwardRef(({
     }
   }, [dateConvert])
 
-  const chunkArray = useCallback((array, size) => {
+  const chunkArray = useCallback((arrayToChunk, size) => {
     const chunks = []
-    for (let i = 0; i < array.length; i += size) {
-      chunks.push(array.slice(i, i + size))
+    for (let i = 0; i < arrayToChunk.length; i += size) {
+      chunks.push(arrayToChunk.slice(i, i + size))
     }
     return chunks
   }, [])
@@ -688,7 +697,7 @@ const NewTabelaGenerica = forwardRef(({
   if (tableType === 'admin') {
     return (
       <div data-tour="totaladq-section" className="tabela-generica-container">
-        {dataExibicao && (
+        {dataExibicao && dataExibicao.length > 0 && (
           <div className='content tabela-adm-content'>
             <div className='table-responsive-md'>
               <table className='table table-striped table-hover det-table-global elemento-table'>
@@ -781,7 +790,9 @@ const NewTabelaGenerica = forwardRef(({
             className="btn-close" 
             onClick={() => setError(null)}
             aria-label="Close"
-          ></button>
+          >
+            ×
+          </button>
         </div>
       )}
 
@@ -948,5 +959,7 @@ const NewTabelaGenerica = forwardRef(({
     </>
   )
 })
+
+NewTabelaGenerica.displayName = 'NewTabelaGenerica'
 
 export default NewTabelaGenerica

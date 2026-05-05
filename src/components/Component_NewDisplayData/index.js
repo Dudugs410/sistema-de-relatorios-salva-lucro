@@ -1,4 +1,4 @@
-// NewDisplayData.jsx - Updated to handle AJUSTES data structure
+// NewDisplayData.jsx - Complete fixed version with infinite loop prevention
 import { useContext, useEffect, useState, useCallback, useMemo, useRef } from 'react'
 import NewTabelaGenerica from '../../components/NewTabelaGenerica'
 import TabelaGenericaAdm from '../../components/Componente_TabelaAdm'
@@ -43,11 +43,9 @@ const formatCurrency = (value) => {
 // Safe date conversion
 const formatDate = (date) => {
   if (!date) return 'N/A'
-  // If it's already in DD/MM/YYYY format, return as is
   if (typeof date === 'string' && date.includes('/')) {
     return date
   }
-  // If it's a Date object
   if (date instanceof Date && !isNaN(date.getTime())) {
     const day = String(date.getDate()).padStart(2, '0')
     const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -86,6 +84,11 @@ const NewDisplayData = ({
   const [hasLoadedTotals, setHasLoadedTotals] = useState(false)
   
   const tabelaGenericaRef = useRef(null)
+  
+  // Refs to prevent infinite loop
+  const isProcessingRef = useRef(false)
+  const lastDataArrayRef = useRef(null)
+  const lastTotalsCallRef = useRef(null)
 
   // Safe date conversion wrapper
   const safeDateConvert = useCallback((date) => {
@@ -285,8 +288,8 @@ const NewDisplayData = ({
         let dataToExport = dataArray
         
         if (!hideTables && tabelaGenericaRef.current) {
-          const currentFilteredData = tabelaGenericaRef.current.getFilteredData()
-          dataToExport = currentFilteredData && currentFilteredData.length > 0 ? currentFilteredData : dataArray
+          const currentFilteredDataFromTable = tabelaGenericaRef.current.getFilteredData()
+          dataToExport = currentFilteredDataFromTable && currentFilteredDataFromTable.length > 0 ? currentFilteredDataFromTable : dataArray
         }
         
         console.log(`Exporting ${dataToExport?.length || 0} records for ${currentPath}`)
@@ -409,18 +412,33 @@ const NewDisplayData = ({
       const totalResult = {
         totalBruto: totalBruto,
         totalLiquido: totalLiquido,
-        total: totalLiquido // For compatibility with existing code
+        total: totalLiquido
       }
       
       console.log('Services/Ajustes total:', totalResult)
     }
   }, [getTotalUpdateFunction])
 
+  // FIXED: handleTotalUpdate - NO STATE UPDATES to prevent loop
   const handleTotalUpdate = useCallback((data) => {
-    if (exportPage && data) {
-      setCurrentFilteredData(data)
-      loadTotals(data, exportPage)
-    }
+    // Prevent processing if already processing or no data
+    if (isProcessingRef.current || !exportPage || !data) return
+    
+    // Check if this exact data was already processed
+    const dataSignature = JSON.stringify(data)
+    if (dataSignature === lastTotalsCallRef.current) return
+    
+    isProcessingRef.current = true
+    lastTotalsCallRef.current = dataSignature
+    
+    // Only call loadTotals, don't update currentFilteredData
+    // This prevents the loop because currentFilteredData doesn't change
+    loadTotals(data, exportPage)
+    
+    // Reset processing flag after a short delay
+    setTimeout(() => {
+      isProcessingRef.current = false
+    }, 100)
   }, [exportPage, loadTotals])
 
   const getFilterConfig = useCallback(() => {
@@ -496,26 +514,30 @@ const NewDisplayData = ({
     }
   }, [location.pathname])
 
-  // Handle dataArray changes
+  // Handle dataArray changes - only update when actually changed
   useEffect(() => {
     if (dataArray && dataArray.length > 0 && !hasLoadedTotals && !hideTotals) {
-      console.log('NewDisplayData received dataArray:', dataArray.length, 'records')
-      setCurrentFilteredData(dataArray)
+      const dataSignature = JSON.stringify(dataArray)
+      if (dataSignature !== lastDataArrayRef.current) {
+        console.log('NewDisplayData received dataArray:', dataArray.length, 'records')
+        setCurrentFilteredData(dataArray)
+        lastDataArrayRef.current = dataSignature
+      }
+    }
+  }, [dataArray, hasLoadedTotals, hideTotals])
+
+  // Separate effect for loading totals - only runs when dataArray changes
+  useEffect(() => {
+    if (dataArray && dataArray.length > 0 && !hasLoadedTotals && !hideTotals) {
       loadTotals(dataArray, exportPage)
       setHasLoadedTotals(true)
     } else if (dataArray && dataArray.length === 0) {
       setHasLoadedTotals(false)
+      lastDataArrayRef.current = null
     }
-  }, [dataArray, loadTotals, hasLoadedTotals, exportPage, hideTotals])
+  }, [dataArray, exportPage, hideTotals, hasLoadedTotals, loadTotals])
 
-  // Reset hasLoadedTotals when dataArray becomes empty
-  useEffect(() => {
-    if (!dataArray || dataArray.length === 0) {
-      setHasLoadedTotals(false)
-    }
-  }, [dataArray])
-
-  // Memoize table props - only if tables are not hidden
+  // Memoize table props - stable reference
   const tableProps = useMemo(() => {
     if (hideTables) return null
     if (!exportPage || !dataArray || dataArray.length === 0) return null

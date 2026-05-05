@@ -1,12 +1,12 @@
 import './servicos.scss'
-import { useContext, useEffect, useState } from 'react' 
+import { useContext, useEffect, useState, useRef } from 'react' 
 import Joyride from 'react-joyride'
 import Select from 'react-select'
 import { AuthContext } from '../../contexts/auth'
 import { useLocation } from 'react-router-dom'
 import MyCalendar from '../../components/Componente_Calendario'
 import { toast } from 'react-toastify'
-import NewDisplayData from '../../components/Component_NewDisplayData'  // Changed from DisplayData to NewDisplayData
+import NewDisplayData from '../../components/Component_NewDisplayData'
 import { FiHelpCircle } from 'react-icons/fi'
 import api from '../../services/api'
 
@@ -18,6 +18,10 @@ const Servicos = () => {
   const [listaBandeiras, setListaBandeiras] = useState([])
   const [listaAdministradoras, setListaAdministradoras] = useState([])
 
+  // Add ref to prevent infinite loop
+  const isProcessingRef = useRef(false)
+  const lastProcessedArrayRef = useRef(null)
+
   const resetValues = () => {
     setServicesPageArray([])
     setServicesPageAdminArray([])
@@ -27,6 +31,8 @@ const Servicos = () => {
     setBandeira(null)
     localStorage.removeItem('selectedAdmServices')
     localStorage.removeItem('selectedBanServices')
+    // Reset refs
+    lastProcessedArrayRef.current = null
   }
 
   useEffect(() => {
@@ -70,14 +76,35 @@ const Servicos = () => {
     loadAdmins, loadBanners
   } = useContext(AuthContext)
 
-  // Update totals when servicesPageArray changes using new function
+  // FIXED: Update totals when servicesPageArray changes - prevent infinite loop
   useEffect(() => {
-    if (servicesPageArray.length > 0) {
+    // Skip if already processing
+    if (isProcessingRef.current) return
+    
+    // Skip if no data
+    if (servicesPageArray.length === 0) return
+    
+    // Check if this exact array was already processed
+    const currentSignature = JSON.stringify(servicesPageArray)
+    if (currentSignature === lastProcessedArrayRef.current) return
+    
+    isProcessingRef.current = true
+    
+    try {
       const groupedData = newGroupByAdminServices(servicesPageArray)
-      setServicesPageAdminArray(groupedData)
+      // Only update if different from current
+      if (JSON.stringify(groupedData) !== JSON.stringify(servicesPageAdminArray)) {
+        setServicesPageAdminArray(groupedData)
+      }
       newLoadTotalServices(servicesPageArray)
+      lastProcessedArrayRef.current = currentSignature
+    } finally {
+      // Reset after a short delay
+      setTimeout(() => {
+        isProcessingRef.current = false
+      }, 100)
     }
-  }, [servicesPageArray, newGroupByAdminServices, newLoadTotalServices])
+  }, [servicesPageArray, newGroupByAdminServices, newLoadTotalServices, servicesPageAdminArray])
 
   // Helper function to format date to YYYY-MM-DD with error handling
   const formatDateToYYYYMMDD = (date) => {
@@ -174,7 +201,6 @@ const Servicos = () => {
       }
     } catch (error) {
       console.error('Error in getRequestObject:', error)
-      // Return default values if something goes wrong
       return {
         dataInicial: '',
         dataFinal: '',
@@ -197,7 +223,6 @@ const Servicos = () => {
     try {
       const requestObject = getRequestObject(format)
       
-      // Validate dates before sending
       if (!requestObject.dataInicial || !requestObject.dataFinal) {
         toast.warning('Please select valid dates before downloading')
         return
@@ -297,6 +322,8 @@ const Servicos = () => {
       
       const servicesData = await newLoadServices(formattedStartDate, formattedEndDate)
       
+      // Reset the processed flag when new data loads
+      lastProcessedArrayRef.current = null
       setServicesPageArray(servicesData || [])
       
       return servicesData
@@ -311,10 +338,9 @@ const Servicos = () => {
     if (servicesPageArray && servicesPageArray.length > 0) {
       exportServices(servicesPageArray)
     }
-  }, [servicesPageArray, localStorage.getItem('currentPath')])
+  }, [servicesPageArray])
 
   const handleDateRangeChange = (dateRange) => {
-    // Validate dateRange before setting
     if (dateRange && Array.isArray(dateRange) && dateRange.length === 2) {
       setServicesDateRange(dateRange)
     } else {
@@ -391,7 +417,7 @@ const Servicos = () => {
 
   const calculateServicesTotal = (servicesArray) => {
     if (!servicesArray || servicesArray.length === 0) return { total: 0 }
-    const total = servicesArray.reduce((sum, service) => sum + Math.abs(service.valor || 0), 0)
+    const total = servicesArray.reduce((sum, service) => sum + Math.abs(service.valor || service.VALORLIQUIDO || 0), 0)
     return { total: total }
   }
 
@@ -449,7 +475,6 @@ const Servicos = () => {
                 />
               ) : (
                 <>
-                  {/* Filters Section - exactly like Vendas and Creditos */}
                   <div data-tour="select-container-calendario" className='select-container-calendario'>
                     <div className='select-wrapper'>
                       <h5>Adquirente</h5>
