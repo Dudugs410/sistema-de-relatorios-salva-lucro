@@ -131,6 +131,10 @@
 
 }
 
+.icon-global{
+    color: var(--primary-color);
+}
+
 .subtitle{
     color: var(--subtitle-color)
 }
@@ -174,6 +178,10 @@
     border: solid 1px !important;
     border-radius: 25px !important;
     cursor: pointer !important;
+}
+
+.money{
+    color: var(--secondary-color-light) !important;
 }
 
 ///select

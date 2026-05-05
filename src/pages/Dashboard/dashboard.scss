@@ -46,6 +46,22 @@
       .card-icon {
         font-size: 32px;
         margin-bottom: 10px;
+        
+        // ADD THIS - Icon styles
+        .icon-global {
+          transition: all 0.3s ease;
+          color: var(--font-color);
+        }
+      }
+      
+      // ADD THIS - Active state for icon
+      &.active .card-icon .icon-global {
+        color: var(--secondary-color) !important;
+      }
+      
+      // ADD THIS - Hover state for icon
+      &:hover .card-icon .icon-global {
+        color: var(--secondary-color);
       }
 
       .card-title {
@@ -92,10 +108,15 @@
         display: flex;
         align-items: center;
         gap: 10px;
-        color: var(--primary-color);
+        color: var(--font-color);
 
         .section-icon {
           font-size: 28px;
+          
+          // ADD THIS - Section icon style
+          .icon-global {
+            color: var(--secondary-color);
+          }
         }
       }
 
@@ -157,7 +178,7 @@
         padding: 20px;
         border-radius: 8px;
         background: var(--background-color);
-        border: 2px solid var(--secondary-color); // Changed to secondary color
+        border: 2px solid var(--secondary-color);
         text-align: center;
         transition: all 0.3s ease;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -222,7 +243,7 @@
         border-radius: 8px;
         transition: all 0.3s ease;
         background-color: var(--background-color);
-        border: 2px solid var(--secondary-color); // Changed to secondary color
+        border: 2px solid var(--secondary-color);
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 
         &:hover {
@@ -340,6 +361,19 @@
   }
 }
 
+// ADD THIS - Global icon styles for theme switching
+.icon-global {
+  transition: all 0.3s ease;
+}
+
+[data-theme="light"] .icon-global {
+  color: var(--primary-color);
+}
+
+[data-theme="dark"] .icon-global {
+  color: #e0e0e0;
+}
+
 // Animation for progress bar
 @keyframes shimmer {
   0% {
@@ -381,7 +415,7 @@
 
     .summary-card {
       background: var(--background-color);
-      border-color: var(--secondary-color); // Keep secondary color in dark mode
+      border-color: var(--secondary-color);
       
       &:hover {
         border-color: var(--secondary-color);
@@ -399,7 +433,7 @@
 
     .metric-card {
       background: var(--background-color);
-      border-color: var(--secondary-color); // Keep secondary color in dark mode
+      border-color: var(--secondary-color);
       
       &:hover {
         border-color: var(--secondary-color);
