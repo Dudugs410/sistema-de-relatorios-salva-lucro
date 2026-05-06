@@ -44,32 +44,38 @@ const tableConfig = {
       { key: 'adquirente', label: 'Adquirente', path: 'ADMINISTRADORA' }
     ],
     mobileCards: [
-      { key: 'ADMINISTRADORA', label: 'Adquirente' },
-      { key: 'BANDEIRA', label: 'Bandeira', badge: true },
-      { key: 'CNPJ', label: 'CNPJ' },
-      { key: 'VALORBRUTO', label: 'Valor Bruto', format: 'currency', className: 'green-global' },
-      { key: 'VALORLIQUIDO', label: 'Valor Líquido', format: 'currency', className: 'green-global' },
-      { key: 'CARTAO', label: 'Cartão'},
-      { key: 'TAXA', label: 'Taxa', format: 'percent', className: 'red-global' },
-      { key: 'DATAVENDA', label: 'Data Venda', format: 'date' },
-      { key: 'PARCELA', label: 'Parcela' },
-      { key: 'NSU', label: 'NSU' },
-      { key: 'STATUS', label: 'Status' }
+      { key: 'adquirente', label: 'Adquirente', path: 'ADMINISTRADORA' },
+      { key: 'bandeira', label: 'Bandeira', path: 'BANDEIRA', badge: true },
+      { key: 'cnpj', label: 'CNPJ', path: 'CNPJ' },
+      { key: 'valorBruto', label: 'Valor Bruto', path: 'VALORBRUTO', format: 'currency', className: 'green-global' },
+      { key: 'valorLiquido', label: 'Valor Líquido', path: 'VALORLIQUIDO', format: 'currency', className: 'green-global' },
+      { key: 'cartao', label: 'Cartão', path: 'CARTAO'},
+      { key: 'taxa', label: 'Taxa', path: 'TAXA', format: 'percent', className: 'red-global' },
+      { key: 'dataVenda', label: 'Data Venda', path: 'DATAVENDA', format: 'date' },
+      { key: 'parcela', label: 'Parcelas', path: 'PARCELA' },
+      { key: 'nsu', label: 'NSU', path: 'NSU' },
+      { key: 'status', label: 'Status', path: 'STATUS' }
     ]
   },
   servicos: {
     title: 'Serviços',
     filters: [
-      { key: 'adquirente', label: 'Adquirente', path: 'nome_adquirente' },
-      { key: 'servico', label: 'Serviço', path: 'descricao' }
+      { key: 'adquirente', label: 'Adquirente', path: 'ADMINISTRADORA' },
+      { key: 'tipoAjuste', label: 'Tipo de Ajuste', path: 'TIPOAJUSTE' }
     ],
     mobileCards: [
-      { key: 'nome_adquirente', label: 'Adquirente' },
-      { key: 'descricao', label: 'Serviço', badge: true },
-      { key: 'cnpj', label: 'CNPJ' },
-      { key: 'data', label: 'Data', format: 'date' },
-      { key: 'valor', label: 'Valor', format: 'currency', className: 'red-global' },
-      { key: 'razao_social', label: 'Razão Social' }
+      { key: 'adquirente', label: 'Adquirente', path: 'ADMINISTRADORA' },
+      { key: 'tipoAjuste', label: 'Tipo', path: 'TIPOAJUSTE', badge: true },
+      { key: 'cnpj', label: 'CNPJ', path: 'CNPJ' },
+      { key: 'razaoSocial', label: 'Razão Social', path: 'RAZAOSOCIAL' },
+      { key: 'valorBruto', label: 'Valor Bruto', path: 'VALORBRUTO', format: 'currency', className: 'red-global' },
+      { key: 'valorLiquido', label: 'Valor Líquido', path: 'VALORLIQUIDO', format: 'currency', className: 'red-global' },
+      { key: 'descricao', label: 'Descrição', path: 'DESCRICAOAJUSTE' },
+      { key: 'dataVenda', label: 'Data Venda', path: 'DATAVENDA', format: 'date' },
+      { key: 'dataCredito', label: 'Data Crédito', path: 'DATACREDITO', format: 'date' },
+      { key: 'nsu', label: 'NSU', path: 'NSU' },
+      { key: 'status', label: 'Status', path: 'STATUS' },
+      { key: 'codigoAjuste', label: 'Código', path: 'CODIGOAJUSTE' }
     ]
   }
 }
@@ -78,7 +84,6 @@ const tableConfig = {
 const findFilterObject = (value, filterKey, dataArray, tableType) => {
   if (!value || !dataArray || dataArray.length === 0) return null
   
-  // Create a map to store unique objects by their code
   const uniqueMap = new Map()
   
   dataArray.forEach(item => {
@@ -126,19 +131,18 @@ const findFilterObject = (value, filterKey, dataArray, tableType) => {
         }
       }
     } else if (tableType === 'servicos') {
-      if (filterKey === 'servico') {
-        displayName = item.descricao
-        // Generate a hash code for the service description if no code exists
-        code = item.codigoServico || Math.abs(displayName.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0))
+      if (filterKey === 'tipoAjuste') {
+        displayName = item.TIPOAJUSTE
+        code = item.CODIGOAJUSTE || Math.abs(displayName?.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) || 0)
         if (displayName === value && !uniqueMap.has(code)) {
           uniqueMap.set(code, {
-            codigoServico: code,
-            descricaoServico: displayName
+            codigoAjuste: code,
+            descricaoAjuste: displayName
           })
         }
       } else if (filterKey === 'adquirente') {
-        displayName = item.nome_adquirente
-        code = item.codigoAdquirente
+        displayName = item.ADMINISTRADORA
+        code = item.CODIGOADMINISTRADORA
         if (displayName === value && code && !uniqueMap.has(code)) {
           uniqueMap.set(code, {
             codigoAdquirente: code,
@@ -151,7 +155,6 @@ const findFilterObject = (value, filterKey, dataArray, tableType) => {
   
   const result = uniqueMap.size > 0 ? Array.from(uniqueMap.values())[0] : null
   
-  // Debug logging
   if (result) {
     console.log(`Found ${filterKey} object for "${value}":`, result)
   } else {
@@ -208,7 +211,6 @@ const NewTabelaGenerica = forwardRef(({
     dateConvert
   } = useContext(AuthContext)
 
-  // Memoize dataArray to prevent unnecessary re-renders
   const dataArray = useMemo(() => array || [], [array])
 
   const [dataExibicao, setDataExibicao] = useState([])
@@ -236,24 +238,12 @@ const NewTabelaGenerica = forwardRef(({
     onTotalUpdateRef.current = onTotalUpdate
   }, [onTotalUpdate])
 
-useEffect(() => {
-  if (onTotalUpdateRef.current && dataExibicao && dataExibicao.length > 0) {
-    // Only call if data actually changed
-    const dataSignature = JSON.stringify(dataExibicao)
-    if (dataSignature !== lastNotifiedDataRef.current) {
-      lastNotifiedDataRef.current = dataSignature
-      onTotalUpdateRef.current(dataExibicao)
-    }
-  }
-}, [dataExibicao])
-
   const config = useMemo(() => tableConfig[tableType] || {}, [tableType])
 
   useImperativeHandle(ref, () => ({
     getFilteredData: () => dataExibicao
   }), [dataExibicao])
 
-  // Get localStorage keys based on table type
   const getStorageKeys = useCallback(() => {
     switch(tableType) {
       case 'vendas':
@@ -267,7 +257,6 @@ useEffect(() => {
     }
   }, [tableType])
 
-  // Get the appropriate filter key names based on table type
   const getFilterKeys = useCallback(() => {
     switch(tableType) {
       case 'vendas':
@@ -275,7 +264,7 @@ useEffect(() => {
       case 'creditos':
         return { first: 'bandeira', second: 'adquirente' }
       case 'servicos':
-        return { first: 'servico', second: 'adquirente' }
+        return { first: 'tipoAjuste', second: 'adquirente' }
       default:
         return { first: 'bandeira', second: 'adquirente' }
     }
@@ -314,14 +303,13 @@ useEffect(() => {
     
     const initialFilters = {}
     
-    // Load first filter (bandeira for vendas/creditos, servico for servicos)
     if (savedFirstFilter && savedFirstFilter !== 'null' && savedFirstFilter !== 'undefined') {
       try {
         const parsedFilter = JSON.parse(savedFirstFilter)
         let filterValue = null
         
         if (tableType === 'servicos') {
-          filterValue = parsedFilter.descricaoServico
+          filterValue = parsedFilter.descricaoAjuste
         } else {
           filterValue = parsedFilter.descricaoBandeira
         }
@@ -335,7 +323,6 @@ useEffect(() => {
       }
     }
     
-    // Load second filter (adquirente)
     if (savedSecondFilter && savedSecondFilter !== 'null' && savedSecondFilter !== 'undefined') {
       try {
         const parsedFilter = JSON.parse(savedSecondFilter)
@@ -376,7 +363,7 @@ useEffect(() => {
     }
   }, [selectedFilters, dataArray, tableType, getStorageKeys, getFilterKeys])
 
-  // Update localStorage when second filter (adquirente) changes
+  // Update localStorage when second filter changes
   useEffect(() => {
     const storageKeys = getStorageKeys()
     const filterKeys = getFilterKeys()
@@ -433,12 +420,12 @@ useEffect(() => {
         return {
           adquirente: {
             label: 'Adquirente',
-            accessor: (item) => item.nome_adquirente || '',
-            dependentKey: 'servico'
+            accessor: (item) => item.ADMINISTRADORA || '',
+            dependentKey: 'tipoAjuste'
           },
-          servico: {
-            label: 'Serviço',
-            accessor: (item) => item.descricao || '',
+          tipoAjuste: {
+            label: 'Tipo de Ajuste',
+            accessor: (item) => item.TIPOAJUSTE || '',
             dependentKey: 'adquirente'
           }
         }
@@ -479,9 +466,8 @@ useEffect(() => {
     setAllFilterOptions(allOptions)
   }, [dataArray, showFilters, getFilterConfig])
 
-  // FIX: Main filtering logic - prevent infinite loop
+  // Main filtering logic
   useEffect(() => {
-    // Skip if already updating
     if (isUpdatingRef.current) return
     
     if (dataArray.length === 0) {
@@ -508,7 +494,6 @@ useEffect(() => {
       })
     }
     
-    // FIX: Use string comparison to check if data actually changed
     const filteredDataSignature = JSON.stringify(filteredData)
     
     if (filteredDataSignature !== lastFilteredDataRef.current) {
@@ -517,12 +502,10 @@ useEffect(() => {
       setDataExibicao(filteredData)
       setCurrentPage(1)
       
-      // FIX: Only call onTotalUpdate if data length changed and data is processed
       if (onTotalUpdateRef.current && isDataProcessed && filteredData.length !== dataExibicao.length) {
         onTotalUpdateRef.current(filteredData)
       }
       
-      // Reset updating flag after a delay
       setTimeout(() => {
         isUpdatingRef.current = false
       }, 100)
@@ -532,6 +515,17 @@ useEffect(() => {
       setIsDataProcessed(true)
     }
   }, [dataArray, selectedFilters, getFilterConfig, dataExibicao.length, isDataProcessed])
+
+  // Update parent component when dataExibicao changes
+  useEffect(() => {
+    if (onTotalUpdateRef.current && dataExibicao && dataExibicao.length > 0) {
+      const dataSignature = JSON.stringify(dataExibicao)
+      if (dataSignature !== lastNotifiedDataRef.current) {
+        lastNotifiedDataRef.current = dataSignature
+        onTotalUpdateRef.current(dataExibicao)
+      }
+    }
+  }, [dataExibicao])
 
   const toggleRow = useCallback(async (row) => {
     const rowId = row.id || row.document || row.contractNumber || Math.random()
@@ -825,7 +819,8 @@ useEffect(() => {
             </table>
           )}
 
-          {isMobileView && config.mobileCards && (
+          {/* Mobile Cards - Fixed for services */}
+          {isMobileView && config.mobileCards && config.mobileCards.length > 0 ? (
             <div className="mobile-cards">
               {currentItems.map((item, index) => (
                 <div key={index} className="sale-card">
@@ -845,10 +840,10 @@ useEffect(() => {
                       
                       return field.badge ? (
                         <ConditionalMarquee key={field.key} className="badge">
-                          {formattedValue}
+                          {formattedValue || field.label}
                         </ConditionalMarquee>
                       ) : (
-                        <strong key={field.key}>{formattedValue}</strong>
+                        <strong key={field.key}>{formattedValue || 'N/A'}</strong>
                       )
                     })}
                   </div>
@@ -872,15 +867,51 @@ useEffect(() => {
                             <div key={field.key} className="card-col">
                               <small>{field.label}</small>
                               {field.className ? (
-                                <span className={field.className}>{formattedValue}</span>
+                                <span className={field.className}>{formattedValue || 'N/A'}</span>
                               ) : (
-                                <span>{formattedValue}</span>
+                                <span>{formattedValue || 'N/A'}</span>
                               )}
                             </div>
                           )
                         })}
                       </div>
                     ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : isMobileView && (
+            // Fallback mobile view when no mobileCards config exists
+            <div className="mobile-cards-fallback">
+              {currentItems.map((item, index) => (
+                <div key={index} className="sale-card-fallback">
+                  <div className="card-header-fallback">
+                    <strong>{item.ADMINISTRADORA || item.nome_adquirente || 'Unknown'}</strong>
+                    {item.TIPOAJUSTE && <span className="badge-fallback">{item.TIPOAJUSTE}</span>}
+                  </div>
+                  <div className="card-body-fallback">
+                    <div className="card-row-fallback">
+                      <span className="label">Valor:</span>
+                      <span className={`value ${(item.VALORLIQUIDO || 0) < 0 ? 'red-global' : 'green-global'}`}>
+                        {formatValue(Math.abs(item.VALORLIQUIDO || item.VALORBRUTO || 0), 'currency')}
+                      </span>
+                    </div>
+                    <div className="card-row-fallback">
+                      <span className="label">Data:</span>
+                      <span className="value">{formatValue(item.DATAVENDA || item.data, 'date')}</span>
+                    </div>
+                    {item.DESCRICAOAJUSTE && (
+                      <div className="card-row-fallback">
+                        <span className="label">Descrição:</span>
+                        <span className="value description">{item.DESCRICAOAJUSTE}</span>
+                      </div>
+                    )}
+                    {item.CNPJ && (
+                      <div className="card-row-fallback">
+                        <span className="label">CNPJ:</span>
+                        <span className="value">{item.CNPJ}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

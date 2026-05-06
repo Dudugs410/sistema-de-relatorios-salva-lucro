@@ -387,7 +387,7 @@ const CreditosDataBanco = () => {
             </div>
 
             {/* Export Buttons Section - exactly like GerarRelatorio */}
-            <div data-tour="exportacao-section" className='container' style={{ marginTop: '20px' }}>
+            <div data-tour="exportacao-section" className='container'>
               <div className='export-column'>
                 <button 
                   className="btn btn-exportar btn-exportar-excel" 
