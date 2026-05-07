@@ -51,7 +51,7 @@
 .navlink-child {
     padding-left: 2rem !important;
     cursor: pointer;
-    color: var(--background-color);
+    color: white !important;
 
     &.active-child {
         background-color: var(--secondary-color);
