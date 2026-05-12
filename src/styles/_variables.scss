@@ -1,3 +1,5 @@
+// _variables.scss
+
 :root {
   // Default font and base variables
   --secondary-color-light: #99cc33;
@@ -8,6 +10,7 @@
   --default-font-app: var(--default-font);
 }
 
+// Default context (SL)
 [data-context="SL"] {
   --primary-color: rgb(10, 61, 112);        
   --secondary-color: #99cc33;
@@ -46,4 +49,198 @@
   --calendar-neighbor-bg: black;
   --sidebar-font-color: #d3d3d3;
   --subtitle-color: darkgray;
+}
+
+// Placeholder for SIFRA context - YOU DEFINE THESE COLORS
+[data-context="SIFRA"] {
+  --primary-color: rgb(255, 100, 0); // Example - change as needed
+  --secondary-color: #ffcc00;
+  --background-color: #fff8f0;
+  --font-color: #663300;
+  --header-text-color: white;
+  --modalidades-border: rgb(255, 100, 0);
+  --table-background: white;
+  --table-row-hover-color: #ffcc00;
+  --table-row-hover-bg: rgb(255, 100, 0);
+  --header-bg: rgba(255,100,0,0.945);
+  --calendar-cell-color: rgb(255, 100, 0);
+  --calendar-now-color: #ffcc00;
+  --calendar-neighbor-color: #999999;
+  --calendar-btn-navigation-color: #ff6600;
+  --calendar-neighbor-bg: rgb(200, 200, 200);
+  --sidebar-font-color: white;
+  --subtitle-color: rgb(255, 100, 0);
+}
+
+[data-context="SIFRA"][data-theme="dark"] {
+  --primary-color: rgb(40, 20, 0);
+  --secondary-color: #cc9900;
+  --background-color: rgb(30, 20, 10);
+  --font-color: #ffcc99;
+  --header-text-color: #ffcc99;
+  --modalidades-border: #996600;
+  --table-background: rgb(40, 20, 0);
+  --table-row-hover-color: #664400;
+  --table-row-hover-bg: #996600;
+  --header-bg: rgba(30,20,10,0.945);
+  --calendar-cell-color: #996600;
+  --calendar-now-color: #ffcc00;
+  --calendar-neighbor-color: #666666;
+  --calendar-btn-navigation-color: #ff9900;
+  --calendar-neighbor-bg: rgb(20, 10, 5);
+  --sidebar-font-color: #ffcc99;
+  --subtitle-color: #cc9900;
+}
+
+// Placeholder for MG context - YOU DEFINE THESE COLORS
+[data-context="MG"] {
+  --primary-color: rgb(0, 100, 150);
+  --secondary-color: #00aaff;
+  --background-color: #f0f8ff;
+  --font-color: #003366;
+  --header-text-color: white;
+  --modalidades-border: rgb(0, 100, 150);
+  --table-background: white;
+  --table-row-hover-color: #00aaff;
+  --table-row-hover-bg: rgb(0, 100, 150);
+  --header-bg: rgba(0,100,150,0.945);
+  --calendar-cell-color: rgb(0, 100, 150);
+  --calendar-now-color: #00aaff;
+  --calendar-neighbor-color: #888888;
+  --calendar-btn-navigation-color: #0088cc;
+  --calendar-neighbor-bg: rgb(200, 220, 240);
+  --sidebar-font-color: white;
+  --subtitle-color: rgb(0, 100, 150);
+}
+
+[data-context="MG"][data-theme="dark"] {
+  --primary-color: rgb(0, 40, 60);
+  --secondary-color: #0088bb;
+  --background-color: rgb(10, 30, 40);
+  --font-color: #aaddff;
+  --header-text-color: #aaddff;
+  --modalidades-border: #006699;
+  --table-background: rgb(0, 40, 60);
+  --table-row-hover-color: #004466;
+  --table-row-hover-bg: #006699;
+  --header-bg: rgba(10,30,40,0.945);
+  --calendar-cell-color: #006699;
+  --calendar-now-color: #00aaff;
+  --calendar-neighbor-color: #555555;
+  --calendar-btn-navigation-color: #0099dd;
+  --calendar-neighbor-bg: rgb(5, 20, 30);
+  --sidebar-font-color: #aaddff;
+  --subtitle-color: #0088bb;
+}
+
+[data-context="superjur"] {
+  // Core brand colors
+  --primary-color: #99cc33;        // Lime green - main brand color
+  --secondary-color: #ffcc00;      // Yellow - accent color
+  
+  // Background and text colors that complement the brand
+  --background-color: #f8f9fa;     // Light gray/white - clean background
+  --font-color: #2d3748;           // Dark slate - good contrast and readability
+  
+  // Header colors
+  --header-text-color: #ffffff;     // White text on colored backgrounds
+  --header-bg: rgba(153, 204, 51, 0.95);  // Semi-transparent primary color
+  
+  // Border colors
+  --modalidades-border: #99cc33;    // Primary color for borders
+  
+  // Table styles
+  --table-background: #ffffff;       // White tables
+  --table-row-hover-color: #2d3748;  // Dark text on hover
+  --table-row-hover-bg: #fff3cd;     // Light yellow background on hover
+  
+  // Calendar styles
+  --calendar-cell-color: #4a5568;    // Dark gray for calendar text
+  --calendar-now-color: #99cc33;     // Primary color for "today"
+  --calendar-neighbor-color: #a0aec0; // Light gray for other months
+  --calendar-btn-navigation-color: #99cc33; // Primary color for buttons
+  --calendar-neighbor-bg: #edf2f7;   // Light gray-bg for other months
+  
+  // Sidebar
+  --sidebar-font-color: #ffffff;     // White text on sidebar
+  
+  // Subtitle
+  --subtitle-color: #4a5568;         // Dark gray for subtitles
+}
+
+// Dark theme for Superjur
+[data-context="superjur"][data-theme="dark"] {
+  // Core brand colors - adjusted for dark background
+  --primary-color: #a8e62e;         // Slightly brighter lime green for dark mode
+  --secondary-color: #ffdd33;       // Brighter yellow for dark mode
+  
+  // Background and text colors for dark mode
+  --background-color: #1a202c;       // Dark slate background
+  --font-color: #e2e8f0;            // Light gray for good readability
+  
+  // Header colors - dark mode
+  --header-text-color: #ffffff;      // White text on header
+  --header-bg: rgba(26, 32, 44, 0.95); // Dark background with transparency
+  
+  // Border colors
+  --modalidades-border: #a8e62e;     // Brighter green for borders in dark mode
+  
+  // Table styles - dark mode
+  --table-background: #2d3748;       // Dark gray tables
+  --table-row-hover-color: #ffffff;  // White text on hover
+  --table-row-hover-bg: #a8e62e;     // Primary color on hover (green)
+  
+  // Calendar styles - dark mode
+  --calendar-cell-color: #cbd5e0;    // Light gray for calendar text
+  --calendar-now-color: #a8e62e;     // Primary color for "today"
+  --calendar-neighbor-color: #718096; // Muted gray for other months
+  --calendar-btn-navigation-color: #ffdd33; // Yellow for buttons in dark mode
+  --calendar-neighbor-bg: #2d3748;   // Dark gray for other months background
+  
+  // Sidebar - dark mode
+  --sidebar-font-color: #e2e8f0;     // Light gray text on sidebar
+  
+  // Subtitle - dark mode
+  --subtitle-color: #cbd5e0;         // Light gray for subtitles
+}
+
+// Placeholder for SPECIAL context - YOU DEFINE THESE
+[data-context="SPECIAL"] {
+  --primary-color: rgb(150, 0, 100);
+  --secondary-color: #ff66cc;
+  --background-color: #fff0f5;
+  --font-color: #660033;
+  --header-text-color: white;
+  --modalidades-border: rgb(150, 0, 100);
+  --table-background: white;
+  --table-row-hover-color: #ff66cc;
+  --table-row-hover-bg: rgb(150, 0, 100);
+  --header-bg: rgba(150,0,100,0.945);
+  --calendar-cell-color: rgb(150, 0, 100);
+  --calendar-now-color: #ff66cc;
+  --calendar-neighbor-color: #999999;
+  --calendar-btn-navigation-color: #cc0099;
+  --calendar-neighbor-bg: rgb(220, 200, 210);
+  --sidebar-font-color: white;
+  --subtitle-color: rgb(150, 0, 100);
+}
+
+[data-context="SPECIAL"][data-theme="dark"] {
+  --primary-color: rgb(50, 0, 35);
+  --secondary-color: #cc3399;
+  --background-color: rgb(30, 10, 25);
+  --font-color: #ffccdd;
+  --header-text-color: #ffccdd;
+  --modalidades-border: #990066;
+  --table-background: rgb(50, 0, 35);
+  --table-row-hover-color: #330022;
+  --table-row-hover-bg: #990066;
+  --header-bg: rgba(30,10,25,0.945);
+  --calendar-cell-color: #990066;
+  --calendar-now-color: #ff66cc;
+  --calendar-neighbor-color: #666666;
+  --calendar-btn-navigation-color: #dd00aa;
+  --calendar-neighbor-bg: rgb(20, 5, 15);
+  --sidebar-font-color: #ffccdd;
+  --subtitle-color: #cc3399;
 }

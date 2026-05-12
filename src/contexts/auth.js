@@ -14,6 +14,12 @@ import jwtDecode from 'jwt-decode'
 import defaultImg from '../assets/LOGO AZUL.png'
 import { imageToBase64 } from '../components/utils/base64'
 
+//imagens de Logo
+import salvalucro from '../assets/LogoTopo.png'
+import sifra from '../assets/logoSifra.png'
+import MG from '../assets/logoMG.png'
+import superjur from '../assets/logoSuperjur.png'
+
 import _ from 'lodash'
 
 export const AuthContext = createContext({})
@@ -43,7 +49,7 @@ function AuthProvider({ children }){
 	const [fetchingData, setFetchingData] = useState(false)
 
 	const [displayGroup, setDisplayGroup] = useState('')
-    const [displayClient, setDisplayClient] = useState('')
+  const [displayClient, setDisplayClient] = useState('')
 
 	
 	const [canceledSales, setCanceledSales] = useState(false)
@@ -53,6 +59,9 @@ function AuthProvider({ children }){
   const [chartSales, setChartSales] = useState()
   const [chartCredits, setChartCredits] = useState()
   const [chartServices, setChartServices] = useState()
+
+  const [currentLogo, setCurrentLogo] = useState(null)
+  const [currentContext, setCurrentContext] = useState('SL')
 
 	//////////////////////////////////////////////////////////////////
 
@@ -80,7 +89,7 @@ function AuthProvider({ children }){
 	},[cancelOngoingRequests])
 
 	// Função que loga o usuário e gerencia quaisquer dados relevantes à isso
-  const loginApp = async (login, password) => {
+const loginApp = async (login, password) => {
   resetAppValues()
   try {
     const response = await api.post('token', { client_id: login, client_secret: md5(password) })
@@ -94,7 +103,6 @@ function AuthProvider({ children }){
 
     if (loggedSuccessfully) {
         localStorage.setItem('currentPath', '/dashboard')
-        //localStorage.setItem('md5Pass', md5(password))
         setClientUserId(userId)
         let user
       try {
@@ -105,6 +113,41 @@ function AuthProvider({ children }){
         console.log(error)
       }
       console.log(user)
+
+      let context = 'superjur' // Default: context = 'salvalucro'
+      let logo = salvalucro // Default: logo = salvalucro
+      
+      if (context === 'SIFRA') {
+        context = 'SIFRA'
+        logo = sifra
+      } else if (context === 'MG') {
+        context = 'MG'
+        logo = MG
+      } else if (context === 'superjur') {
+        context = 'superjur'
+        logo = superjur
+      } else if (context === 'SPECIAL'){
+        context = 'SPECIAL'
+        logo = null
+      } else {
+        context = 'SL'
+        logo = salvalucro
+      }
+
+      setCurrentContext(context)
+      if (logo) {
+        setCurrentLogo(logo)
+      } else {
+        // Set default logo
+        setCurrentLogo(salvalucro) // Import this at top
+      }
+      
+      // Apply context to HTML element for CSS variables
+      document.documentElement.setAttribute('data-context', context)
+      
+      // Apply theme if needed
+      const theme = user.TEMA ? 'dark' : 'light'
+      document.documentElement.setAttribute('data-theme', theme)
 
       //checa se o usuário não tem tema e imagem definidos,
       //seta os que não tem com as definições padrão e
@@ -243,10 +286,11 @@ function AuthProvider({ children }){
 	localStorage.setItem('groupCode', gru[0].CODIGOGRUPO)
 	localStorage.setItem('cnpj', 'todos')
   setIsSignedIn(true)
-}  } catch (error) {
+  }} catch (error) {
       console.error('Login error:', error)
       alert(error.message)
-  }}
+  }
+}
 
   const getLocalJoyRide = () => {
     return JSON.parse(localStorage.getItem('joyride'))
@@ -3381,6 +3425,7 @@ const exportCredits = (data) => {
 		//Usuário //
 		loadUser, updateUser,
 		userImg, setUserImg,
+    currentLogo, currentContext,
 
 		// Dashboard //
 		

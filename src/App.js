@@ -3,19 +3,23 @@ import 'react-icons'
 import AuthProvider from './contexts/auth'
 import { BrowserRouter } from 'react-router-dom'
 import RoutesApp from './routes'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { ToastContainer } from 'react-toastify'
+import Cookies from 'js-cookie'
 
 import './index.scss'
 import PluggyProvider from './contexts/pluggyContext'
 import { initializeContext } from './util/contextInitializer';
+import useSessionTimeout from './hooks/useSessionTimeout/useSessionTimeout'
 
 initializeContext()
 
-function App() {
-
+// Component that uses the hook
+function AppContent() {
+  useSessionTimeout(30) // 30 minutes timeout
+  
   return (
-    <BrowserRouter basename='/salvalucro3'>
+    <>
       <AuthProvider>
         <PluggyProvider>
           <RoutesApp/>
@@ -32,6 +36,28 @@ function App() {
         draggable
         pauseOnHover
       />
+    </>
+  )
+}
+
+function App() {
+  // Tab close / page hide handler
+  useEffect(() => {
+    const handlePageHide = () => {
+      const sensitiveData = ['token', 'refreshToken', 'user']
+      sensitiveData.forEach(key => sessionStorage.removeItem(key))
+    }
+    
+    window.addEventListener('pagehide', handlePageHide)
+    
+    return () => {
+      window.removeEventListener('pagehide', handlePageHide)
+    }
+  }, [])
+
+  return (
+    <BrowserRouter basename='/salvalucro3'>
+      <AppContent />
     </BrowserRouter>
   )
 }
