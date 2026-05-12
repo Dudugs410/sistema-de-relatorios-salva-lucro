@@ -1,9 +1,7 @@
+// SidebarMenu component
 import React, { useContext, useState, useEffect } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './Sidebar.scss'
-import salvaLucroLogoBranco from '../../assets/LogoTopo.png'
-import sifra from '../../assets/logoSifra.png'
-import MG from '../../assets/logoMG.png'
 import { FiPercent, FiMoon, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText, FiClipboard, FiDownload, FiCalendar, FiPaperclip, FiSettings, FiTruck, FiShoppingBag, FiTable, FiLink, FiDatabase } from "react-icons/fi"
 import { LiaFileInvoiceDollarSolid } from "react-icons/lia";
 import { Collapse, Nav, Navbar, NavItem, NavLink, Button } from 'reactstrap'
@@ -16,18 +14,9 @@ const Sidebar = () => {
     const [activeParent, setActiveParent] = useState(null)
     const [lastClicked, setLastClicked] = useState(null)
     const [sidebarVisible, setSidebarVisible] = useState(false)
-    const [contextImg, setContextImg] = useState()
-
-    useEffect(() => {
-        let context = localStorage.getItem('selectedContext')
-        if (context === 'sifra') {
-            setContextImg(sifra)
-        } else if (context === 'MG') {
-            setContextImg(MG)
-        } else {
-            setContextImg(salvaLucroLogoBranco)
-        }
-    }, [])
+    
+    // Get logo and context from AuthContext
+    const { currentLogo, currentContext } = useContext(AuthContext)
 
     const navigate = useNavigate()
 
@@ -104,7 +93,13 @@ const Sidebar = () => {
             </Button>
             <div className={`d-flex flex-column bg-sidebar sidebar ${sidebarVisible ? 'visible' : ''}`}>
                 <div className='navbar-title'>
-                    <img className='img-header' src={contextImg} alt='logo salva lucro' onClick={handleLogo} />
+                    {/* Use logo from authContext - removed the old logic */}
+                    <img 
+                        className='img-header' 
+                        src={currentLogo} 
+                        alt='logo' 
+                        onClick={handleLogo} 
+                    />
                 </div>
                 <Navbar color="light" light expand="md">
                     <Nav navbar className="flex-column w-100">
