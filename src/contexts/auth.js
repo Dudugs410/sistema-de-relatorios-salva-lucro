@@ -114,7 +114,7 @@ const loginApp = async (login, password) => {
       }
       console.log(user)
 
-      let context = 'superjur' // Default: context = 'salvalucro'
+      let context = 'salvalucro' // Default: context = 'salvalucro'
       let logo = salvalucro // Default: logo = salvalucro
       
       if (context === 'SIFRA') {
@@ -130,7 +130,7 @@ const loginApp = async (login, password) => {
         context = 'SPECIAL'
         logo = null
       } else {
-        context = 'SL'
+        context = 'salvalucro'
         logo = salvalucro
       }
 
