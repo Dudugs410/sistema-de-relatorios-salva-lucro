@@ -19,6 +19,7 @@ import salvalucro from '../assets/LogoTopo.png'
 import sifra from '../assets/logoSifra.png'
 import MG from '../assets/logoMG.png'
 import superjur from '../assets/logoSuperjur.png'
+import carddigital from '../assets/logoCardDigital.png'
 
 import _ from 'lodash'
 
@@ -60,8 +61,42 @@ function AuthProvider({ children }){
   const [chartCredits, setChartCredits] = useState()
   const [chartServices, setChartServices] = useState()
 
-  const [currentLogo, setCurrentLogo] = useState(null)
-  const [currentContext, setCurrentContext] = useState('SL')
+  const [currentLogo, setCurrentLogo] = useState(salvalucro)
+  const [currentContext, setCurrentContext] = useState('salvalucro')
+
+  ///
+
+useEffect(() => {
+  // On page refresh, get the saved context from localStorage
+  const savedContext = localStorage.getItem('appContext')
+  
+  if (savedContext && savedContext !== currentContext) {
+    // Apply the saved context to HTML
+    document.documentElement.setAttribute('data-context', savedContext)
+    setCurrentContext(savedContext)
+    
+    // Set the correct logo based on saved context
+    if (savedContext === 'SIFRA') {
+      setCurrentLogo(sifra)
+    } else if (savedContext === 'MG') {
+      setCurrentLogo(MG)
+    } else if (savedContext === 'superjur') {
+      setCurrentLogo(superjur)
+    } else if (savedContext === 'carddigital') {
+      setCurrentLogo(carddigital)
+    } else {
+      setCurrentLogo(salvalucro)
+    }
+  }
+}, []) // Empty array means this runs once when app loads
+
+// Add this SECOND useEffect - to save context whenever it changes
+useEffect(() => {
+  // Save current context to localStorage whenever it changes
+  if (currentContext) {
+    localStorage.setItem('appContext', currentContext)
+  }
+}, [currentContext])
 
 	//////////////////////////////////////////////////////////////////
 
@@ -114,8 +149,8 @@ const loginApp = async (login, password) => {
       }
       console.log(user)
 
-      let context = 'salvalucro' // Default: context = 'salvalucro'
-      let logo = salvalucro // Default: logo = salvalucro
+      let context = '' // Default: context = 'salvalucro'
+      let logo = null // Default: logo = salvalucro
       
       if (context === 'SIFRA') {
         context = 'SIFRA'
@@ -126,15 +161,15 @@ const loginApp = async (login, password) => {
       } else if (context === 'superjur') {
         context = 'superjur'
         logo = superjur
-      } else if (context === 'SPECIAL'){
-        context = 'SPECIAL'
-        logo = null
+      } else if (context === 'carddigital'){
+        context = 'carddigital'
+        logo = carddigital
       } else {
         context = 'salvalucro'
         logo = salvalucro
       }
-
-      setCurrentContext(context)
+      
+        setCurrentContext(context)
       if (logo) {
         setCurrentLogo(logo)
       } else {
@@ -1418,6 +1453,10 @@ const newLoadTotalServices = (servicesArray) => {
   }
   
   return result
+}
+
+const loadResumo = () => {
+
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

@@ -5,6 +5,27 @@ import App from './App'
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals'
 
+// Initialize theme from localStorage before React renders
+const initializeTheme = () => {
+  try {
+    const savedContext = localStorage.getItem('appContext');
+    const savedTheme = localStorage.getItem('appTheme');
+    
+    if (savedContext) {
+      document.documentElement.setAttribute('data-context', savedContext);
+      console.log('Index: Applied context', savedContext);
+    }
+    if (savedTheme) {
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      console.log('Index: Applied theme', savedTheme);
+    }
+  } catch(e) {
+    console.log('Theme initialization error:', e);
+  }
+};
+
+initializeTheme();
+
 const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
   //<React.StrictMode>
