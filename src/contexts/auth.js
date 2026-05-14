@@ -76,9 +76,9 @@ useEffect(() => {
     setCurrentContext(savedContext)
     
     // Set the correct logo based on saved context
-    if (savedContext === 'SIFRA') {
+    if (savedContext === 'sifra') {
       setCurrentLogo(sifra)
-    } else if (savedContext === 'MG') {
+    } else if (savedContext === 'mg') {
       setCurrentLogo(MG)
     } else if (savedContext === 'superjur') {
       setCurrentLogo(superjur)
