@@ -147,9 +147,9 @@ const loginApp = async (login, password) => {
       } catch (error) {
         console.log(error)
       }
-      console.log(user)
+      console.log('user: ', user)
 
-      let context = '' // Default: context = 'salvalucro'
+      let context = user.GRUPO.IDENTIDADEVISUAL // Default: context = 'salvalucro'
       let logo = null // Default: logo = salvalucro
       
       if (context === 'SIFRA') {
