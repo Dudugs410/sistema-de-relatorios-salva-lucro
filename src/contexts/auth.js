@@ -124,208 +124,216 @@ useEffect(() => {
 	},[cancelOngoingRequests])
 
 	// Função que loga o usuário e gerencia quaisquer dados relevantes à isso
-const loginApp = async (login, password) => {
-  resetAppValues()
-  try {
-    const response = await api.post('token', { client_id: login, client_secret: md5(password) })
-    const responseData = response.data
-    localStorage.setItem('token', responseData.acess_token)
-    localStorage.setItem('refreshToken', responseData.refresh_token)
-    const userId = jwtDecode(responseData.acess_token).id
-    localStorage.setItem('userID', userId)
-    Cookies.set('userID', userId)
-    const loggedSuccessfully = JSON.parse(responseData.sucess)
+  const loginApp = async (login, password) => {
+    resetAppValues()
+    try {
+      const response = await api.post('token', { client_id: login, client_secret: md5(password) })
+      const responseData = response.data
+      localStorage.setItem('token', responseData.acess_token)
+      localStorage.setItem('refreshToken', responseData.refresh_token)
+      const userId = jwtDecode(responseData.acess_token).id
+      localStorage.setItem('userID', userId)
+      Cookies.set('userID', userId)
+      const loggedSuccessfully = JSON.parse(responseData.sucess)
 
-    if (loggedSuccessfully) {
-        localStorage.setItem('currentPath', '/dashboard')
-        setClientUserId(userId)
-        let user
-      try {
-        user = await loadUser(userId)
-        localStorage.setItem('user', JSON.stringify(user))
-        localStorage.setItem('isChecked', user.TEMA)
-      } catch (error) {
-        console.log(error)
-      }
-      console.log('user: ', user)
+      if (loggedSuccessfully) {
+          localStorage.setItem('currentPath', '/dashboard')
+          setClientUserId(userId)
+          let user
+        try {
+          user = await loadUser(userId)
+          localStorage.setItem('user', JSON.stringify(user))
+          localStorage.setItem('isChecked', user.TEMA)
+        } catch (error) {
+          console.log(error)
+        }
+        console.log('user: ', user)
 
       let context = user.GRUPO.IDENTIDADEVISUAL // Default: context = 'salvalucro'
       let logo = null // Default: logo = salvalucro
-      
-      if (context === 'SIFRA') {
-        context = 'SIFRA'
-        logo = sifra
-      } else if (context === 'MG') {
-        context = 'MG'
-        logo = MG
-      } else if (context === 'superjur') {
-        context = 'superjur'
-        logo = superjur
-      } else if (context === 'carddigital'){
-        context = 'carddigital'
-        logo = carddigital
-      } else {
-        context = 'salvalucro'
-        logo = salvalucro
-      }
-      
-        setCurrentContext(context)
-      if (logo) {
-        setCurrentLogo(logo)
-      } else {
-        // Set default logo
-        setCurrentLogo(salvalucro) // Import this at top
-      }
-      
-      // Apply context to HTML element for CSS variables
-      document.documentElement.setAttribute('data-context', context)
-      
-      // Apply theme if needed
-      const theme = user.TEMA ? 'dark' : 'light'
-      document.documentElement.setAttribute('data-theme', theme)
 
-      //checa se o usuário não tem tema e imagem definidos,
-      //seta os que não tem com as definições padrão e
-      //atualiza o usuário no banco
-      const handleUpdateUser = async () => {
-        try{
-          if(!user.TEMA){
-            user.TEMA = false
+      console.log('identidade visual: ', context)
+
+      switch (context) {
+        case 'sifra':
+          context = 'sifra'
+          logo = sifra
+          break
+        case 'mg':
+          context = 'mg'
+          logo = MG
+          break
+        case 'superjur':
+          context = 'superjur'
+          logo = superjur
+          break
+        case 'carddigital':
+          context = 'carddigital'
+          logo = carddigital
+          break
+        default:
+          context = 'salvalucro'
+          logo = salvalucro
+          break
+      }
+
+          setCurrentContext(context)
+        if (logo) {
+          setCurrentLogo(logo)
+        } else {
+          // Set default logo
+          setCurrentLogo(salvalucro) // Import this at top
+        }
+        
+        // Apply context to HTML element for CSS variables
+        document.documentElement.setAttribute('data-context', context)
+        
+        // Apply theme if needed
+        const theme = user.TEMA ? 'dark' : 'light'
+        document.documentElement.setAttribute('data-theme', theme)
+
+        //checa se o usuário não tem tema e imagem definidos,
+        //seta os que não tem com as definições padrão e
+        //atualiza o usuário no banco
+        const handleUpdateUser = async () => {
+          try{
+            if(!user.TEMA){
+              user.TEMA = false
+            }
+            if(!user.IMAGEMBASE64){
+              console.log('user.IMAGEMBASE64')
+              const base64String = await imageToBase64(defaultImg)
+              user.IMAGEMBASE64 = base64String
+              setUserImg(base64String)
+            }
+            updateUser(user)
+            localStorage.setItem('user', JSON.stringify(user))
+          } catch (error){
+            console.log(error)
           }
-          if(!user.IMAGEMBASE64){
-            console.log('user.IMAGEMBASE64')
-            const base64String = await imageToBase64(defaultImg)
-            user.IMAGEMBASE64 = base64String
-            setUserImg(base64String)
-          }
-          updateUser(user)
-          localStorage.setItem('user', JSON.stringify(user))
-        } catch (error){
-          console.log(error)
-        }
-      }
-
-      if((!user.TEMA) || (!user.IMAGEMBASE64)){
-        await handleUpdateUser()
-      }
-
-      const userData = { NOME: user.NOME, EMAIL: user.EMAIL }
-      localStorage.setItem('GRUCODIGO', user.GRUCODIGO)
-      localStorage.setItem('isSignedIn', true)
-      localStorage.setItem('userData', JSON.stringify(userData))
-
-    try {
-      const clientUserId = userId
-
-      const loginLog = async () => {
-        function getBrazilianISOTime() {
-          const now = new Date()
-          
-          const dateTimeParts = new Intl.DateTimeFormat('en-US', {
-            timeZone: 'America/Sao_Paulo',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            fractionalSecondDigits: 3,
-            hour12: false,
-          }).formatToParts(now)
-          
-          const { year, month, day, hour, minute, second, fractionalSecond } = 
-            dateTimeParts.reduce((acc, part) => {
-            acc[part.type] = part.value
-            return acc
-            }, {})
-          return `${year}-${month}-${day}T${hour}:${minute}:${second}.${fractionalSecond}`;
         }
 
-        const currentDateTime = getBrazilianISOTime()
-
-          let body = {
-            USUCODIGO: userId,
-            USULOGIN: login.toUpperCase(),
-            ACESSOPERMITIDO: 'S',
-            APLICACAO: 'ReactApp',
-            DATAHORA: currentDateTime,
-          }
-
-          api.post('/LogAcesso', body)
-          console.log('login registrado')
-        }
-      const getLoginLog = async () => {
-        let params = {
-          codigo: userId
+        if((!user.TEMA) || (!user.IMAGEMBASE64)){
+          await handleUpdateUser()
         }
 
-        let config = {
-          params: params
-        }
-
-        let res = await api.get('/LogAcesso', config)
-        console.log(res)
-        return res
-      }
+        const userData = { NOME: user.NOME, EMAIL: user.EMAIL }
+        localStorage.setItem('GRUCODIGO', user.GRUCODIGO)
+        localStorage.setItem('isSignedIn', true)
+        localStorage.setItem('userData', JSON.stringify(userData))
 
       try {
-        await loginLog()
-      } catch (error) {
-        console.log(error)
-      }
-	
-    //pluggy
-    const response = await fetch('https://api.pluggy.ai/auth', {
-      method: 'POST',
-      headers: {
-      'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-      clientId: "7cee8f27-cbfa-4a19-b14d-306f9656787a",
-      clientSecret: "01e4edaf-639a-40ae-945a-4a04ab652bad",
-      itemOptions: {
-        clientUserId: clientUserId
-      }
-      })
-    })
+        const clientUserId = userId
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+        const loginLog = async () => {
+          function getBrazilianISOTime() {
+            const now = new Date()
+            
+            const dateTimeParts = new Intl.DateTimeFormat('en-US', {
+              timeZone: 'America/Sao_Paulo',
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit',
+              second: '2-digit',
+              fractionalSecondDigits: 3,
+              hour12: false,
+            }).formatToParts(now)
+            
+            const { year, month, day, hour, minute, second, fractionalSecond } = 
+              dateTimeParts.reduce((acc, part) => {
+              acc[part.type] = part.value
+              return acc
+              }, {})
+            return `${year}-${month}-${day}T${hour}:${minute}:${second}.${fractionalSecond}`;
+          }
+
+          const currentDateTime = getBrazilianISOTime()
+
+            let body = {
+              USUCODIGO: userId,
+              USULOGIN: login.toUpperCase(),
+              ACESSOPERMITIDO: 'S',
+              APLICACAO: 'ReactApp',
+              DATAHORA: currentDateTime,
+            }
+
+            api.post('/LogAcesso', body)
+            console.log('login registrado')
+          }
+        const getLoginLog = async () => {
+          let params = {
+            codigo: userId
+          }
+
+          let config = {
+            params: params
+          }
+
+          let res = await api.get('/LogAcesso', config)
+          console.log(res)
+          return res
+        }
+
+        try {
+          await loginLog()
+        } catch (error) {
+          console.log(error)
+        }
+    
+      //pluggy
+      const response = await fetch('https://api.pluggy.ai/auth', {
+        method: 'POST',
+        headers: {
+        'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+        clientId: "7cee8f27-cbfa-4a19-b14d-306f9656787a",
+        clientSecret: "01e4edaf-639a-40ae-945a-4a04ab652bad",
+        itemOptions: {
+          clientUserId: clientUserId
+        }
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json()
+
+      Cookies.set('pluggy_api_key', data.apiKey, {
+        expires: 1,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict'
+      })
+
+      Cookies.set('pluggy_client_id', clientUserId, {
+        expires: 1,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict'
+      })
+    } catch (error) {
+      console.error('Authentication failed:', error)
+      Cookies.remove('pluggy_api_key')
+      Cookies.remove('pluggy_client_id')
+      throw error
     }
 
-    const data = await response.json()
-
-    Cookies.set('pluggy_api_key', data.apiKey, {
-      expires: 1,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict'
-    })
-
-    Cookies.set('pluggy_client_id', clientUserId, {
-      expires: 1,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict'
-    })
-  } catch (error) {
-    console.error('Authentication failed:', error)
-    Cookies.remove('pluggy_api_key')
-    Cookies.remove('pluggy_client_id')
-    throw error
+    const opt = await loadOptions()
+    localStorage.setItem('options', JSON.stringify(opt))
+    
+    const gru = await loadGroupsList()
+    localStorage.setItem('groupsStorage', JSON.stringify(gru))
+    localStorage.setItem('groupCode', gru[0].CODIGOGRUPO)
+    localStorage.setItem('cnpj', 'todos')
+    setIsSignedIn(true)
+    }} catch (error) {
+        console.error('Login error:', error)
+        alert(error.message)
+    }
   }
-
-	const opt = await loadOptions()
-	localStorage.setItem('options', JSON.stringify(opt))
-	
-	const gru = await loadGroupsList()
-	localStorage.setItem('groupsStorage', JSON.stringify(gru))
-	localStorage.setItem('groupCode', gru[0].CODIGOGRUPO)
-	localStorage.setItem('cnpj', 'todos')
-  setIsSignedIn(true)
-  }} catch (error) {
-      console.error('Login error:', error)
-      alert(error.message)
-  }
-}
 
   const getLocalJoyRide = () => {
     return JSON.parse(localStorage.getItem('joyride'))

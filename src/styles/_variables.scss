@@ -52,160 +52,160 @@
 }
 
 // SIFRA context
-[data-context="SIFRA"] {
-  --primary-color: rgb(255, 100, 0);
-  --secondary-color: #ffcc00;
-  --background-color: #fff8f0;
-  --font-color: #663300;
+[data-context="sifra"] {
+  --primary-color: rgb(10, 61, 112);        
+  --secondary-color: #99cc33;
+  --background-color: #fff;
+  --font-color: #0a3d70;
   --header-text-color: white;
-  --modalidades-border: rgb(255, 100, 0);
+  --modalidades-border: rgb(10, 61, 112);
   --table-background: white;
-  --table-row-hover-color: #ffcc00;
-  --table-row-hover-bg: rgb(255, 100, 0);
-  --header-bg: rgba(255,100,0,0.945);
-  --calendar-cell-color: rgb(255, 100, 0);
-  --calendar-now-color: #ffcc00;
-  --calendar-neighbor-color: #999999;
-  --calendar-btn-navigation-color: #ff6600;
-  --calendar-neighbor-bg: rgb(200, 200, 200);
-  --sidebar-font-color: white;
-  --subtitle-color: rgb(255, 100, 0);
-}
-
-[data-context="SIFRA"][data-theme="dark"] {
-  --primary-color: rgb(40, 20, 0);
-  --secondary-color: #cc9900;
-  --background-color: rgb(30, 20, 10);
-  --font-color: #ffcc99;
-  --header-text-color: #ffcc99;
-  --modalidades-border: #996600;
-  --table-background: rgb(40, 20, 0);
-  --table-row-hover-color: #664400;
-  --table-row-hover-bg: #996600;
-  --header-bg: rgba(30,20,10,0.945);
-  --calendar-cell-color: #996600;
-  --calendar-now-color: #ffcc00;
-  --calendar-neighbor-color: #666666;
-  --calendar-btn-navigation-color: #ff9900;
-  --calendar-neighbor-bg: rgb(20, 10, 5);
-  --sidebar-font-color: #ffcc99;
-  --subtitle-color: #cc9900;
-}
-
-// MG context
-[data-context="MG"] {
-  --primary-color: rgb(0, 100, 150);
-  --secondary-color: #00aaff;
-  --background-color: #f0f8ff;
-  --font-color: #003366;
-  --header-text-color: white;
-  --modalidades-border: rgb(0, 100, 150);
-  --table-background: white;
-  --table-row-hover-color: #00aaff;
-  --table-row-hover-bg: rgb(0, 100, 150);
-  --header-bg: rgba(0,100,150,0.945);
-  --calendar-cell-color: rgb(0, 100, 150);
-  --calendar-now-color: #00aaff;
-  --calendar-neighbor-color: #888888;
-  --calendar-btn-navigation-color: #0088cc;
-  --calendar-neighbor-bg: rgb(200, 220, 240);
-  --sidebar-font-color: white;
-  --subtitle-color: rgb(0, 100, 150);
-}
-
-[data-context="MG"][data-theme="dark"] {
-  --primary-color: rgb(0, 40, 60);
-  --secondary-color: #0088bb;
-  --background-color: rgb(10, 30, 40);
-  --font-color: #aaddff;
-  --header-text-color: #aaddff;
-  --modalidades-border: #006699;
-  --table-background: rgb(0, 40, 60);
-  --table-row-hover-color: #004466;
-  --table-row-hover-bg: #006699;
-  --header-bg: rgba(10,30,40,0.945);
-  --calendar-cell-color: #006699;
-  --calendar-now-color: #00aaff;
-  --calendar-neighbor-color: #555555;
-  --calendar-btn-navigation-color: #0099dd;
-  --calendar-neighbor-bg: rgb(5, 20, 30);
-  --sidebar-font-color: #aaddff;
-  --subtitle-color: #0088bb;
-}
-
-// Superjur context
-[data-context="superjur"] {
-  --primary-color: #5c7a1e;
-  --secondary-color: #ffcc00;
-  --background-color: #f8f9fa;
-  --font-color: #2d3748;
-  --header-text-color: #ffffff;
-  --header-bg: #5c7a1e;
-  --modalidades-border: #5c7a1e;
-  --table-background: #ffffff;
-  --table-row-hover-color: #2d3748;
-  --table-row-hover-bg: #fff3cd;
-  --calendar-cell-color: #4a5568;
-  --calendar-now-color: #5c7a1e;
-  --calendar-neighbor-color: #a0aec0;
-  --calendar-btn-navigation-color: #5c7a1e;
-  --calendar-neighbor-bg: #edf2f7;
-  --sidebar-font-color: #ffffff;
-  --subtitle-color: #4a5568;
-}
-
-[data-context="superjur"][data-theme="dark"] {
-  --primary-color: #5c7a1e;
-  --secondary-color: #ffdd33;
-  --background-color: #1a202c;
-  --font-color: #e2e8f0;
-  --header-text-color: #ffffff;
-  --header-bg: rgba(26, 32, 44, 0.95);
-  --modalidades-border: #5c7a1e;
-  --table-background: #2d3748;
-  --table-row-hover-color: #ffffff;
-  --table-row-hover-bg: #5c7a1e;
-  --calendar-cell-color: #cbd5e0;
-  --calendar-now-color: #5c7a1e;
-  --calendar-neighbor-color: #718096;
-  --calendar-btn-navigation-color: #ffdd33;
-  --calendar-neighbor-bg: #2d3748;
-  --sidebar-font-color: #e2e8f0;
-  --subtitle-color: #cbd5e0;
-}
-
-// Card Digital context
-[data-context="carddigital"] {
-  --primary-color: rgb(48, 92, 214);
-  --secondary-color: #40c46c;
-  --background-color: #ffffff;
-  --font-color: rgb(48, 92, 214);
-  --header-text-color: white;
-  --modalidades-border: rgb(48, 92, 214);
-  --table-background: white;
-  --table-row-hover-color: #40c46c;
-  --table-row-hover-bg: rgb(48, 92, 214);
-  --header-bg: rgba(48, 92, 214, 0.945);
-  --calendar-cell-color: rgb(48, 92, 214);
-  --calendar-now-color: #40c46c;
+  --table-row-hover-color: #99cc33;
+  --table-row-hover-bg: rgb(10, 61, 112);
+  --header-bg: rgba(10,61,112,0.945);
+  --calendar-cell-color: rgb(10, 61, 112);
+  --calendar-now-color: rgb(153, 204, 51);
   --calendar-neighbor-color: #757575;
-  --calendar-btn-navigation-color: rgb(48, 92, 214);
+  --calendar-btn-navigation-color: #0a3d70;
   --calendar-neighbor-bg: rgb(187, 187, 187);
   --sidebar-font-color: white;
-  --subtitle-color: rgb(48, 92, 214);
+  --subtitle-color: rgb(10, 61, 112);
 }
 
-[data-context="carddigital"][data-theme="dark"] {
-  --primary-color: rgb(35, 31, 32);
-  --secondary-color: #40c46c;
-  --background-color: rgb(20, 20, 20);
+[data-context="sifra"][data-theme="dark"] {
+  --primary-color: rgb(20, 20, 20);
+  --secondary-color: darkgray;
+  --background-color: rgb(35, 31, 32);
   --font-color: #d3d3d3;
   --header-text-color: black;
   --modalidades-border: rgb(97, 97, 97);
   --table-background: rgb(20, 20, 20);
   --table-row-hover-color: rgb(55, 51, 52);
   --table-row-hover-bg: rgb(97, 97, 97);
-  --header-bg: rgba(35, 31, 32, 0.945);
+  --header-bg: rgba(35,31,32, 0.945);
+  --calendar-cell-color: rgb(97, 97, 97);
+  --calendar-now-color: white;
+  --calendar-neighbor-color: rgb(51, 51, 51);
+  --calendar-btn-navigation-color: white;
+  --calendar-neighbor-bg: black;
+  --sidebar-font-color: #d3d3d3;
+  --subtitle-color: darkgray;
+}
+
+// MG context
+[data-context="mg"] {
+  --primary-color: rgb(10, 61, 112);        
+  --secondary-color: #99cc33;
+  --background-color: #fff;
+  --font-color: #0a3d70;
+  --header-text-color: white;
+  --modalidades-border: rgb(10, 61, 112);
+  --table-background: white;
+  --table-row-hover-color: #99cc33;
+  --table-row-hover-bg: rgb(10, 61, 112);
+  --header-bg: rgba(10,61,112,0.945);
+  --calendar-cell-color: rgb(10, 61, 112);
+  --calendar-now-color: rgb(153, 204, 51);
+  --calendar-neighbor-color: #757575;
+  --calendar-btn-navigation-color: #0a3d70;
+  --calendar-neighbor-bg: rgb(187, 187, 187);
+  --sidebar-font-color: white;
+  --subtitle-color: rgb(10, 61, 112);
+}
+
+[data-context="mg"][data-theme="dark"] {
+  --primary-color: rgb(20, 20, 20);
+  --secondary-color: darkgray;
+  --background-color: rgb(35, 31, 32);
+  --font-color: #d3d3d3;
+  --header-text-color: black;
+  --modalidades-border: rgb(97, 97, 97);
+  --table-background: rgb(20, 20, 20);
+  --table-row-hover-color: rgb(55, 51, 52);
+  --table-row-hover-bg: rgb(97, 97, 97);
+  --header-bg: rgba(35,31,32, 0.945);
+  --calendar-cell-color: rgb(97, 97, 97);
+  --calendar-now-color: white;
+  --calendar-neighbor-color: rgb(51, 51, 51);
+  --calendar-btn-navigation-color: white;
+  --calendar-neighbor-bg: black;
+  --sidebar-font-color: #d3d3d3;
+  --subtitle-color: darkgray;
+}
+
+// Superjur context
+[data-context="superjur"] {
+  --primary-color: rgb(10, 61, 112);        
+  --secondary-color: #99cc33;
+  --background-color: #fff;
+  --font-color: #0a3d70;
+  --header-text-color: white;
+  --modalidades-border: rgb(10, 61, 112);
+  --table-background: white;
+  --table-row-hover-color: #99cc33;
+  --table-row-hover-bg: rgb(10, 61, 112);
+  --header-bg: rgba(10,61,112,0.945);
+  --calendar-cell-color: rgb(10, 61, 112);
+  --calendar-now-color: rgb(153, 204, 51);
+  --calendar-neighbor-color: #757575;
+  --calendar-btn-navigation-color: #0a3d70;
+  --calendar-neighbor-bg: rgb(187, 187, 187);
+  --sidebar-font-color: white;
+  --subtitle-color: rgb(10, 61, 112);
+}
+
+[data-context="superjur"][data-theme="dark"] {
+  --primary-color: rgb(20, 20, 20);
+  --secondary-color: darkgray;
+  --background-color: rgb(35, 31, 32);
+  --font-color: #d3d3d3;
+  --header-text-color: black;
+  --modalidades-border: rgb(97, 97, 97);
+  --table-background: rgb(20, 20, 20);
+  --table-row-hover-color: rgb(55, 51, 52);
+  --table-row-hover-bg: rgb(97, 97, 97);
+  --header-bg: rgba(35,31,32, 0.945);
+  --calendar-cell-color: rgb(97, 97, 97);
+  --calendar-now-color: white;
+  --calendar-neighbor-color: rgb(51, 51, 51);
+  --calendar-btn-navigation-color: white;
+  --calendar-neighbor-bg: black;
+  --sidebar-font-color: #d3d3d3;
+  --subtitle-color: darkgray;
+}
+
+// Card Digital context
+[data-context="carddigital"] {
+  --primary-color: rgb(10, 61, 112);        
+  --secondary-color: #99cc33;
+  --background-color: #fff;
+  --font-color: #0a3d70;
+  --header-text-color: white;
+  --modalidades-border: rgb(10, 61, 112);
+  --table-background: white;
+  --table-row-hover-color: #99cc33;
+  --table-row-hover-bg: rgb(10, 61, 112);
+  --header-bg: rgba(10,61,112,0.945);
+  --calendar-cell-color: rgb(10, 61, 112);
+  --calendar-now-color: rgb(153, 204, 51);
+  --calendar-neighbor-color: #757575;
+  --calendar-btn-navigation-color: #0a3d70;
+  --calendar-neighbor-bg: rgb(187, 187, 187);
+  --sidebar-font-color: white;
+  --subtitle-color: rgb(10, 61, 112);
+}
+
+[data-context="carddigital"][data-theme="dark"] {
+  --primary-color: rgb(20, 20, 20);
+  --secondary-color: darkgray;
+  --background-color: rgb(35, 31, 32);
+  --font-color: #d3d3d3;
+  --header-text-color: black;
+  --modalidades-border: rgb(97, 97, 97);
+  --table-background: rgb(20, 20, 20);
+  --table-row-hover-color: rgb(55, 51, 52);
+  --table-row-hover-bg: rgb(97, 97, 97);
+  --header-bg: rgba(35,31,32, 0.945);
   --calendar-cell-color: rgb(97, 97, 97);
   --calendar-now-color: white;
   --calendar-neighbor-color: rgb(51, 51, 51);
