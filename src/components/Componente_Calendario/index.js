@@ -22,16 +22,27 @@ const MyCalendar = (props) => {
     const [allowRange, setAllowRange] = useState(true)
     const [showPesquisar, setShowPesquisar] = useState(true)
 
-    // Check if we're on the CreditosDataBanco page
-    const isCreditosDataBanco = location.pathname === '/creditos-data-banco'
+    // Define routes with their specific behaviors
+    const routesWithoutPesquisar = [
+      '/creditos-data-banco',
+      '/previsao-recebimento',
+      '/resumo-mensal'
+    ]
+
+    const routesWithAllowRangeFalse = [
+      '/sysmo',
+      '/metasapiranga',
+      '/meta',
+      '/vendasdelivery'
+    ]
 
     useEffect(()=>{
-      if(location.pathname === ('/sysmo') || location.pathname === '/metasapiranga' || location.pathname === '/meta' || location.pathname === ('/vendasdelivery')){
+      if (routesWithAllowRangeFalse.includes(location.pathname)) {
         setAllowRange(false)
         setShowPesquisar(false)
-      } else if (location.pathname === '/creditos-data-banco') {
+      } else if (routesWithoutPesquisar.includes(location.pathname)) {
         setAllowRange(true)
-        setShowPesquisar(false) // Hide search button for CreditosDataBanco
+        setShowPesquisar(false)
       } else {
         setAllowRange(true)
         setShowPesquisar(true)
@@ -57,9 +68,16 @@ const MyCalendar = (props) => {
       setDateSysmo(date)
     }
 
+    // Define routes that should show the "Exportar relatório" message instead of "Executar busca"
+    const routesWithExportMessage = [
+      '/creditos-data-banco',
+      '/previsao-recebimento',
+      '/resumo-mensal'
+    ]
+
     // Get the text for the info message
     const getInfoText = () => {
-      if (isCreditosDataBanco) {
+      if (routesWithExportMessage.includes(location.pathname)) {
         if (dateRange[0].toLocaleDateString('pt-BR') !== dateRange[1].toLocaleDateString('pt-BR')) {
           return `Exportar relatório do dia <strong>${dateRange[0].toLocaleDateString('pt-BR')}</strong> ao dia <strong>${dateRange[1].toLocaleDateString('pt-BR')}</strong>`
         } else {

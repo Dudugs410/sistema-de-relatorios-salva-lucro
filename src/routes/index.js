@@ -23,6 +23,8 @@ import VendasDelivery from '../pages/VendasDelivery'
 import ConciliacaoBancaria from '../pages/ConciliacaoBancaria'
 import Taxas from '../pages/Taxas'
 import Extrato from "../pages/Extrato"
+import PrevisaoRecebimentos from "../pages/PrevisaoRecebimentos"
+import ResumoMensal from "../pages/ResumoMensal"
 
 function RoutesApp() {
   const location = useLocation()
@@ -56,8 +58,11 @@ function RoutesApp() {
       <Route path='/dashboard' element={<Private><Dashboard /></Private>} />
       <Route path='/vendas' element={<Private><Vendas /></Private>} />
       <Route path='/creditos' element={<Private><Recebiveis /></Private>} />
-      <Route path='/creditos-data-banco' element={<Private><CreditosDataBanco /></Private>} /> {/* Add this route */}
+      <Route path='/creditos-data-banco' element={<Private><CreditosDataBanco /></Private>} />
+      <Route path='/previsao-recebimento' element={<Private><PrevisaoRecebimentos/></Private>}/> {/* Add this route */}
       <Route path='/servicos' element={<Private><Servicos /></Private>} />
+      <Route path='/resumo-mensal' element={<Private><ResumoMensal/></Private>}/>
+
       {/*<Route path='/taxas' element={<Private><Taxas /></Private>} />
       <Route path='/extrato' element={<Private><Extrato /></Private>} />
       <Route path='/cadastrodebancos' element={<Private><CadastroDeBancos /></Private>} />*/}

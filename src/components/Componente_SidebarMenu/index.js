@@ -78,10 +78,18 @@ const Sidebar = () => {
                 icone: icones['FiCreditCard'], 
                 children: [
                     { nome: 'Resumo de Créditos', rota: '/creditos' },
-                    { nome: 'Créditos por Data e Banco', rota: '/creditos-data-banco' }
+                    { nome: 'Créditos por Data e Banco', rota: '/creditos-data-banco' },
+                    { nome: 'Previsão de Recebimentos', rota: '/previsao-recebimento'}
                 ]
             },
-            { nome: 'Serviços', icone: icones['FiTool'], rota: '/servicos' },
+            { 
+                nome: 'Serviços', 
+                icone: icones['FiTool'], 
+                children: [
+                    { nome: 'Ajustes', rota: '/servicos' },
+                    { nome: 'Resumo Mensal', rota: '/resumo-mensal' },
+                ]
+            },
         ]
         setOptionsWithIcons(orderedOptions)
     }, [])
