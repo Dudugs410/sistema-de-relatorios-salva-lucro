@@ -181,7 +181,7 @@
 }
 
 .money{
-    color: var(--secondary-color-light) !important;
+    color: var(--secondary-color) !important;
 }
 
 ///select
@@ -229,7 +229,7 @@
     --bs-table-bg: var(--table-background);
 
     --bs-table-striped-color: var(--font-color);
-    --bs-table-striped-bg: rgba(var(--primary-color), 0.05);
+    --bs-table-striped-bg: rgba(var(--primary-color-rgb), 0.1) !important;
 }
 
 .table-bordered>:not(caption)>* {

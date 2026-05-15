@@ -17,9 +17,9 @@ import { imageToBase64 } from '../components/utils/base64'
 //imagens de Logo
 import salvalucro from '../assets/LogoTopo.png'
 import sifra from '../assets/logoSifra.png'
-import MG from '../assets/logoMG.png'
+import MG from '../assets/logoMG transparente.png'
 import superjur from '../assets/logoSuperjur.png'
-import carddigital from '../assets/logoCardDigital.png'
+import carddigital from '../assets/logoCardDigital outline.png'
 
 import _ from 'lodash'
 
@@ -64,47 +64,36 @@ function AuthProvider({ children }){
   const [currentLogo, setCurrentLogo] = useState(salvalucro)
   const [currentContext, setCurrentContext] = useState('salvalucro')
 
-  ///
-
-useEffect(() => {
-  // On page refresh, get the saved context from localStorage
-  const savedContext = localStorage.getItem('appContext')
-  
-  if (savedContext && savedContext !== currentContext) {
-    // Apply the saved context to HTML
-    document.documentElement.setAttribute('data-context', savedContext)
-    setCurrentContext(savedContext)
+  useEffect(() => {
+    const savedContext = localStorage.getItem('appContext')
     
-    // Set the correct logo based on saved context
-    if (savedContext === 'sifra') {
-      setCurrentLogo(sifra)
-    } else if (savedContext === 'mg') {
-      setCurrentLogo(MG)
-    } else if (savedContext === 'superjur') {
-      setCurrentLogo(superjur)
-    } else if (savedContext === 'carddigital') {
-      setCurrentLogo(carddigital)
-    } else {
-      setCurrentLogo(salvalucro)
+    if (savedContext && savedContext !== currentContext) {
+      document.documentElement.setAttribute('data-context', savedContext)
+      setCurrentContext(savedContext)
+      
+      if (savedContext === 'sifra') {
+        setCurrentLogo(sifra)
+      } else if (savedContext === 'mg') {
+        setCurrentLogo(MG)
+      } else if (savedContext === 'superjur') {
+        setCurrentLogo(superjur)
+      } else if (savedContext === 'carddigital') {
+        setCurrentLogo(carddigital)
+      } else {
+        setCurrentLogo(salvalucro)
+      }
     }
-  }
-}, []) // Empty array means this runs once when app loads
+  }, [])
 
-// Add this SECOND useEffect - to save context whenever it changes
-useEffect(() => {
-  // Save current context to localStorage whenever it changes
-  if (currentContext) {
-    localStorage.setItem('appContext', currentContext)
-  }
-}, [currentContext])
+  useEffect(() => {
+    if (currentContext) {
+      localStorage.setItem('appContext', currentContext)
+    }
+  }, [currentContext])
 
 	//////////////////////////////////////////////////////////////////
 
   const navigate = useNavigate()
-
-	// *** Usuário e Login *** //
-
-	// objeto que guardará dados do usuário, caso seja necessário acessar algo //
 
 	const [groupsList, setGroupsList] = useState([])
 	const [clientsList, setClientsList] = useState([])
@@ -123,7 +112,7 @@ useEffect(() => {
 		}
 	},[cancelOngoingRequests])
 
-	// Função que loga o usuário e gerencia quaisquer dados relevantes à isso
+	// Função que loga o usuário e gerencia quaisquer dados relevantes
   const loginApp = async (login, password) => {
     resetAppValues()
     try {
@@ -149,7 +138,8 @@ useEffect(() => {
         }
         console.log('user: ', user)
 
-      let context = user.GRUPO.IDENTIDADEVISUAL // Default: context = 'salvalucro'
+      let context = 'carddigital'
+      //let context = user.GRUPO.IDENTIDADEVISUAL // Default: context = 'salvalucro'
       let logo = null // Default: logo = salvalucro
 
       console.log('identidade visual: ', context)
@@ -177,18 +167,15 @@ useEffect(() => {
           break
       }
 
-          setCurrentContext(context)
+        setCurrentContext(context)
         if (logo) {
           setCurrentLogo(logo)
         } else {
-          // Set default logo
-          setCurrentLogo(salvalucro) // Import this at top
+          setCurrentLogo(salvalucro)
         }
         
-        // Apply context to HTML element for CSS variables
         document.documentElement.setAttribute('data-context', context)
         
-        // Apply theme if needed
         const theme = user.TEMA ? 'dark' : 'light'
         document.documentElement.setAttribute('data-theme', theme)
 
@@ -363,7 +350,6 @@ useEffect(() => {
   }
 	
   /////desloga usuário
-	// FIXED: Memoized logout function
 	const logout = useCallback(() => {
 		clearCookies()
 		localStorage.clear()

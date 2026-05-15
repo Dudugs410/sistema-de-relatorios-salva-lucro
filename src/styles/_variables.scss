@@ -1,5 +1,3 @@
-// _variables.scss
-
 :root {
   // Default font and base variables
   --secondary-color-light: #99cc33;
@@ -13,6 +11,7 @@
 // Default context (SL)
 [data-context="salvalucro"] {
   --primary-color: rgb(10, 61, 112);        
+  --primary-color-rgb: 10, 61, 112;
   --secondary-color: #99cc33;
   --background-color: #fff;
   --font-color: #0a3d70;
@@ -33,6 +32,7 @@
 
 [data-context="salvalucro"][data-theme="dark"] {
   --primary-color: rgb(20, 20, 20);
+  --primary-color-rgb: 20, 20, 20;
   --secondary-color: darkgray;
   --background-color: rgb(35, 31, 32);
   --font-color: #d3d3d3;
@@ -54,17 +54,18 @@
 // SIFRA context
 [data-context="sifra"] {
   --primary-color: rgb(10, 61, 112);        
-  --secondary-color: #99cc33;
+  --primary-color-rgb: 10, 61, 112;
+  --secondary-color: #e0ca00;
   --background-color: #fff;
   --font-color: #0a3d70;
   --header-text-color: white;
   --modalidades-border: rgb(10, 61, 112);
   --table-background: white;
-  --table-row-hover-color: #99cc33;
+  --table-row-hover-color: #e0ca00;
   --table-row-hover-bg: rgb(10, 61, 112);
   --header-bg: rgba(10,61,112,0.945);
   --calendar-cell-color: rgb(10, 61, 112);
-  --calendar-now-color: rgb(153, 204, 51);
+  --calendar-now-color: #e0ca00;
   --calendar-neighbor-color: #757575;
   --calendar-btn-navigation-color: #0a3d70;
   --calendar-neighbor-bg: rgb(187, 187, 187);
@@ -74,7 +75,8 @@
 
 [data-context="sifra"][data-theme="dark"] {
   --primary-color: rgb(20, 20, 20);
-  --secondary-color: darkgray;
+  --primary-color-rgb: 20, 20, 20;
+  --secondary-color: #a19100;
   --background-color: rgb(35, 31, 32);
   --font-color: #d3d3d3;
   --header-text-color: black;
@@ -94,27 +96,29 @@
 
 // MG context
 [data-context="mg"] {
-  --primary-color: rgb(10, 61, 112);        
+  --primary-color: #6b74b5;        
+  --primary-color-rgb: 107, 116, 181;
   --secondary-color: #99cc33;
   --background-color: #fff;
-  --font-color: #0a3d70;
+  --font-color: #6b74b5;
   --header-text-color: white;
-  --modalidades-border: rgb(10, 61, 112);
+  --modalidades-border: #6b74b5;
   --table-background: white;
   --table-row-hover-color: #99cc33;
-  --table-row-hover-bg: rgb(10, 61, 112);
-  --header-bg: rgba(10,61,112,0.945);
-  --calendar-cell-color: rgb(10, 61, 112);
+  --table-row-hover-bg: #6b74b5;
+  --header-bg: rgba(107, 116, 181,0.945);
+  --calendar-cell-color: #6b74b5;
   --calendar-now-color: rgb(153, 204, 51);
   --calendar-neighbor-color: #757575;
-  --calendar-btn-navigation-color: #0a3d70;
+  --calendar-btn-navigation-color: rgb(107, 116, 181);
   --calendar-neighbor-bg: rgb(187, 187, 187);
   --sidebar-font-color: white;
-  --subtitle-color: rgb(10, 61, 112);
+  --subtitle-color: #6b74b5;
 }
 
 [data-context="mg"][data-theme="dark"] {
   --primary-color: rgb(20, 20, 20);
+  --primary-color-rgb: 20, 20, 20;
   --secondary-color: darkgray;
   --background-color: rgb(35, 31, 32);
   --font-color: #d3d3d3;
@@ -136,6 +140,7 @@
 // Superjur context
 [data-context="superjur"] {
   --primary-color: rgb(10, 61, 112);        
+  --primary-color-rgb: 10, 61, 112;
   --secondary-color: #99cc33;
   --background-color: #fff;
   --font-color: #0a3d70;
@@ -156,6 +161,7 @@
 
 [data-context="superjur"][data-theme="dark"] {
   --primary-color: rgb(20, 20, 20);
+  --primary-color-rgb: 20, 20, 20;
   --secondary-color: darkgray;
   --background-color: rgb(35, 31, 32);
   --font-color: #d3d3d3;
@@ -177,6 +183,7 @@
 // Card Digital context
 [data-context="carddigital"] {
   --primary-color: rgb(10, 61, 112);        
+  --primary-color-rgb: 10, 61, 112;
   --secondary-color: #99cc33;
   --background-color: #fff;
   --font-color: #0a3d70;
@@ -197,6 +204,7 @@
 
 [data-context="carddigital"][data-theme="dark"] {
   --primary-color: rgb(20, 20, 20);
+  --primary-color-rgb: 20, 20, 20;
   --secondary-color: darkgray;
   --background-color: rgb(35, 31, 32);
   --font-color: #d3d3d3;
@@ -218,6 +226,7 @@
 // SPECIAL context
 [data-context="SPECIAL"] {
   --primary-color: rgb(150, 0, 100);
+  --primary-color-rgb: 150, 0, 100;
   --secondary-color: #ff66cc;
   --background-color: #fff0f5;
   --font-color: #660033;
@@ -238,6 +247,7 @@
 
 [data-context="SPECIAL"][data-theme="dark"] {
   --primary-color: rgb(50, 0, 35);
+  --primary-color-rgb: 50, 0, 35;
   --secondary-color: #cc3399;
   --background-color: rgb(30, 10, 25);
   --font-color: #ffccdd;
