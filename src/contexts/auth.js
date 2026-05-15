@@ -18,7 +18,7 @@ import { imageToBase64 } from '../components/utils/base64'
 import salvalucro from '../assets/LogoTopo.png'
 import sifra from '../assets/logoSifra.png'
 import MG from '../assets/logoMG transparente.png'
-import superjur from '../assets/logoSuperjur.png'
+import superjur from '../assets/logoSuperjur outline.png'
 import carddigital from '../assets/logoCardDigital outline.png'
 
 import _ from 'lodash'
@@ -138,7 +138,7 @@ function AuthProvider({ children }){
         }
         console.log('user: ', user)
 
-      let context = 'carddigital'
+      let context = 'superjur'
       //let context = user.GRUPO.IDENTIDADEVISUAL // Default: context = 'salvalucro'
       let logo = null // Default: logo = salvalucro
 

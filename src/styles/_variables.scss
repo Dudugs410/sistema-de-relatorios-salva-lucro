@@ -139,24 +139,24 @@
 
 // Superjur context
 [data-context="superjur"] {
-  --primary-color: rgb(10, 61, 112);        
-  --primary-color-rgb: 10, 61, 112;
-  --secondary-color: #99cc33;
+  --primary-color: rgb(176, 207, 113);        
+  --primary-color-rgb: 176, 207, 113;
+  --secondary-color: #555555;
   --background-color: #fff;
-  --font-color: #0a3d70;
+  --font-color: #b0cf71;
   --header-text-color: white;
-  --modalidades-border: rgb(10, 61, 112);
+  --modalidades-border: #b0cf71;
   --table-background: white;
-  --table-row-hover-color: #99cc33;
-  --table-row-hover-bg: rgb(10, 61, 112);
-  --header-bg: rgba(10,61,112,0.945);
-  --calendar-cell-color: rgb(10, 61, 112);
-  --calendar-now-color: rgb(153, 204, 51);
+  --table-row-hover-color: #555555;
+  --table-row-hover-bg: #b0cf71;
+  --header-bg: rgba(176, 207, 113,0.945);
+  --calendar-cell-color: #b0cf71;
+  --calendar-now-color: #555555;
   --calendar-neighbor-color: #757575;
-  --calendar-btn-navigation-color: #0a3d70;
+  --calendar-btn-navigation-color: #b0cf71;
   --calendar-neighbor-bg: rgb(187, 187, 187);
   --sidebar-font-color: white;
-  --subtitle-color: rgb(10, 61, 112);
+  --subtitle-color: #b0cf71;
 }
 
 [data-context="superjur"][data-theme="dark"] {
