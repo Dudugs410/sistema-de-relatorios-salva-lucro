@@ -138,8 +138,8 @@ function AuthProvider({ children }){
         }
         console.log('user: ', user)
 
-      let context = 'superjur'
-      //let context = user.GRUPO.IDENTIDADEVISUAL // Default: context = 'salvalucro'
+      //let context = 'superjur'
+      let context = user.GRUPO.IDENTIDADEVISUAL // Default: context = 'salvalucro'
       let logo = null // Default: logo = salvalucro
 
       console.log('identidade visual: ', context)
