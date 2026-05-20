@@ -20,6 +20,7 @@ import sifra from '../assets/logoSifra.png'
 import MG from '../assets/logoMG transparente.png'
 import superjur from '../assets/logoSuperjur outline.png'
 import carddigital from '../assets/logoCardDigital outline.png'
+import SPECIAL from '../assets/PLACEHOLDER.png'
 
 import _ from 'lodash'
 
@@ -138,8 +139,8 @@ function AuthProvider({ children }){
         }
         console.log('user: ', user)
 
-      //let context = 'superjur'
-      let context = user.GRUPO.IDENTIDADEVISUAL // Default: context = 'salvalucro'
+      let context = 'sifra'
+      //let context = user.GRUPO.IDENTIDADEVISUAL // Default: context = 'salvalucro'
       let logo = null // Default: logo = salvalucro
 
       console.log('identidade visual: ', context)
@@ -160,6 +161,11 @@ function AuthProvider({ children }){
         case 'carddigital':
           context = 'carddigital'
           logo = carddigital
+          break
+
+        case 'SPECIAL':
+          context = 'SPECIAL'
+          logo = SPECIAL
           break
         default:
           context = 'salvalucro'
