@@ -139,8 +139,8 @@ function AuthProvider({ children }){
         }
         console.log('user: ', user)
 
-      let context = 'sifra'
-      //let context = user.GRUPO.IDENTIDADEVISUAL // Default: context = 'salvalucro'
+      //let context = 'sifra'
+      let context = user.GRUPO.IDENTIDADEVISUAL // Default: context = 'salvalucro'
       let logo = null // Default: logo = salvalucro
 
       console.log('identidade visual: ', context)
@@ -161,6 +161,19 @@ function AuthProvider({ children }){
         case 'carddigital':
           context = 'carddigital'
           logo = carddigital
+          break
+
+        case 'ALT-1':
+          context = 'ALT-1'
+          logo = SPECIAL
+          break
+        case 'ALT-2':
+          context = 'ALT-2'
+          logo = SPECIAL
+          break
+        case 'ALT-3':
+          context = 'ALT-3'
+          logo = SPECIAL
           break
 
         case 'SPECIAL':
