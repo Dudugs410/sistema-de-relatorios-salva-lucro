@@ -139,7 +139,7 @@ function AuthProvider({ children }){
         }
         console.log('user: ', user)
 
-      //let context = 'sifra'
+      //let context = 'carddigital'
       let context = user.GRUPO.IDENTIDADEVISUAL // Default: context = 'salvalucro'
       let logo = null // Default: logo = salvalucro
 
@@ -173,6 +173,34 @@ function AuthProvider({ children }){
           break
         case 'ALT-3':
           context = 'ALT-3'
+          logo = SPECIAL
+          break
+        case 'ALT-4':
+          context = 'ALT-4'
+          logo = SPECIAL
+          break
+        case 'ALT-5':
+          context = 'ALT-5'
+          logo = SPECIAL
+          break
+        case 'ALT-6':
+          context = 'ALT-6'
+          logo = SPECIAL
+          break
+        case 'ALT-7':
+          context = 'ALT-7'
+          logo = SPECIAL
+          break
+        case 'ALT-8':
+          context = 'ALT-8'
+          logo = SPECIAL
+          break
+        case 'ALT-9':
+          context = 'ALT-9'
+          logo = SPECIAL
+          break
+        case 'ALT-10':
+          context = 'ALT-10'
           logo = SPECIAL
           break
 

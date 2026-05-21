@@ -101,13 +101,33 @@ const Sidebar = () => {
             </Button>
             <div className={`d-flex flex-column bg-sidebar sidebar ${sidebarVisible ? 'visible' : ''}`}>
                 <div className='navbar-title'>
-                    {/* Use logo from authContext - removed the old logic */}
+                    {currentContext?.startsWith('ALT-') ? (
+                    <div 
+                        className='img-header logo-mask'
+                        style={{ 
+                        backgroundColor: 'var(--secondary-color)',
+                        maskImage: `url(${currentLogo})`,
+                        WebkitMaskImage: `url(${currentLogo})`,
+                        maskSize: '160px 30px',
+                        WebkitMaskSize: 'contain',
+                        maskRepeat: 'no-repeat',
+                        WebkitMaskRepeat: 'no-repeat',
+                        maskPosition: 'center',
+                        WebkitMaskPosition: 'center',
+                        width: '160px',      // <-- CRITICAL: set explicit width
+                        height: '40px',      // <-- CRITICAL: set explicit height
+                        cursor: 'pointer'
+                        }}
+                        onClick={handleLogo}
+                    />
+                    ) : (
                     <img 
                         className='img-header' 
                         src={currentLogo} 
-                        alt='logo' 
+                        alt='logo'
                         onClick={handleLogo} 
                     />
+                    )}
                 </div>
                 <Navbar color="light" light expand="md">
                     <Nav navbar className="flex-column w-100">
