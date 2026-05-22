@@ -1,4 +1,73 @@
+.user-page {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 30px;
+  max-width: 1400px;
+  margin: 0;
+  padding: 20px 0px 60px 0px;
+  height: calc(100vh - 100px);
+  min-height: 500px;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    height: auto;
+    min-height: auto;
+    gap: 20px;
+    padding: 15px;
+  }
+}
+
+// Menu Section (Left side on desktop, top on mobile)
+.user-menu-section {
+  flex-shrink: 0;
+  width: 320px;
+  height: 100%; // Full height
+  
+  @media (max-width: 768px) {
+    width: 100%;
+    height: auto;
+  }
+}
+
+// Content Section (Right side on desktop, bottom on mobile)
+.user-content-section {
+  flex: 1;
+  min-width: 0; // Prevents overflow
+  height: 100%; // Full height
+  opacity: 0;
+  transform: translateX(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  
+  &.active {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  
+  @media (max-width: 768px) {
+    width: 100%;
+    height: auto;
+    transform: translateY(20px);
+
+    &.active {
+      transform: translateY(0);
+          margin-bottom: 40px;
+    }
+  }
+}
+
+// User Card Styles - Now a flex container that pushes button to bottom
 .user-card {
+  display: flex;
+  gap: 15px;
+  flex-direction: column;
+  border: solid var(--secondary-color) 1px;
+  border-radius: 15px;
+  padding: 25px;
+  background-color: var(--table-background);
+  height: 100%; // Take full height of parent
+  position: relative;
+  
   .image-container {
     position: relative;
     width: 150px;
@@ -6,6 +75,7 @@
     border-radius: 50%;
     cursor: pointer;
     margin: 0 auto;
+    flex-shrink: 0; // Prevent shrinking
     
     &:hover {
       .image {
@@ -52,6 +122,7 @@
     font-size: 14px;
     text-align: center;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    padding: 10px;
   }
   
   .image-placeholder {
@@ -72,31 +143,237 @@
   }
 }
 
-.user-button-container {
+.user-info {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0; // Prevent shrinking
+  
+  b {
+    word-break: break-word;
+    text-align: center;
+  }
+}
+
+.user-button-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 10px;
-  margin-top: 20px;
+  margin-top: auto; // This pushes everything to the bottom
+  flex-shrink: 0;
   
   .user-btn {
-    width: 200px;
+    width: 100%;
+    max-width: 280px;
     padding: 12px;
     font-size: 14px;
-    
-    &:first-child {
-      background-color: var(--secondary-color);
-      
-      &:hover {
-        background-color: var(--secondary-color-light);
-      }
+  }
+}
+
+.user-btn {
+  &.user-btn-sair {
+    background-color: rgba(0, 0, 0, 0);
+    border: solid red 1px;
+    color: red;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: red;
+      color: white;
     }
   }
 }
 
-.user-info{
+.confirmation-buttons {
   display: flex;
-   flex-direction: column;
-  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
+  flex-shrink: 0;
+  
+  .user-btn {
+    margin: 0;
+  }
+}
+
+// Preferences Panel Styles - Full height
+.preferences-panel {
+  background-color: var(--table-background);
+  border: 1px solid var(--modalidades-border);
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  height: 100%; // Full height
+  display: flex;
+  flex-direction: column;
+  
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 25px;
+    border-bottom: 1px solid var(--modalidades-border);
+    background-color: var(--header-bg);
+    flex-shrink: 0;
+    
+    h3 {
+      margin: 0;
+      color: var(--header-text-color);
+      font-size: 1.2rem;
+    }
+    
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 28px;
+      cursor: pointer;
+      color: var(--header-text-color);
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      &:hover {
+        opacity: 0.7;
+      }
+    }
+  }
+  
+  .panel-content {
+    flex: 1; // Takes remaining space
+    overflow-y: auto;
+    padding: 15px;
+    
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: var(--calendar-neighbor-bg);
+      border-radius: 4px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: var(--modalidades-border);
+      border-radius: 4px;
+      
+      &:hover {
+        background: var(--primary-color);
+      }
+    }
+  }
+  
+  .color-scheme-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    margin: 8px 0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background-color: var(--table-background);
+    border: 1px solid transparent;
+    
+    &:hover {
+      background-color: var(--table-row-hover-color);
+      border-color: var(--modalidades-border);
+    }
+    
+    &.selected {
+      border-color: var(--secondary-color);
+      background-color: var(--table-row-hover-color);
+    }
+    
+    .scheme-info {
+      flex: 1;
+      
+      .scheme-name {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 12px;
+        color: var(--font-color);
+        font-size: 0.95rem;
+      }
+      
+      .color-previews {
+        display: flex;
+        gap: 25px;
+        flex-wrap: wrap;
+      }
+      
+      .theme-preview {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        
+        .theme-label {
+          font-size: 0.75rem;
+          color: var(--font-color);
+          opacity: 0.8;
+          min-width: 35px;
+        }
+        
+        .color-chips {
+          display: flex;
+          
+          .color-chip {
+            width: 28px;
+            height: 28px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            
+            &.primary {
+              border-radius: 6px 0 0 6px;
+            }
+            
+            &.secondary {
+              border-radius: 0 6px 6px 0;
+            }
+          }
+        }
+      }
+    }
+    
+    .checkmark {
+      color: var(--secondary-color);
+      font-size: 20px;
+      font-weight: bold;
+      margin-left: 15px;
+      flex-shrink: 0;
+    }
+  }
+  
+  .panel-footer {
+    padding: 20px 25px;
+    border-top: 1px solid var(--modalidades-border);
+    background-color: var(--table-background);
+    flex-shrink: 0;
+    
+    .save-btn {
+      width: 100%;
+      padding: 12px;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: opacity 0.2s;
+      
+      &:hover {
+        opacity: 0.9;
+      }
+      
+      &:active {
+        transform: scale(0.98);
+      }
+    }
+  }
 }
 
 @keyframes fadeIn {
@@ -108,68 +385,151 @@
   }
 }
 
-// Responsive design
+// Responsive Design
 @media (max-width: 768px) {
+  .user-page {
+    flex-direction: column;
+    height: auto;
+    gap: 20px;
+    padding: 15px;
+  }
+  
+  .user-menu-section {
+    width: 100%;
+    height: auto;
+  }
+  
+  .user-content-section {
+    width: 100%;
+    height: auto;
+    transform: translateY(20px);
+    
+    &.active {
+      transform: translateY(0);
+    }
+  }
+  
   .user-card {
-    .image-container {
+    height: auto;
+    padding: 20px;
+    
+    .user-button-container {
+      margin-top: 20px; // Reset margin-top for mobile, still some spacing
+    }
+  }
+  
+  .preferences-panel {
+    height: auto;
+    max-height: 70vh; // Limit height on mobile
+    
+    .panel-header {
+      padding: 15px 20px;
+      
+      h3 {
+        font-size: 1.1rem;
+      }
+    }
+    
+    .panel-content {
+      max-height: none;
+      padding: 10px;
+    }
+    
+    .color-scheme-option {
+      padding: 12px;
+      
+      .scheme-info {
+        .scheme-name {
+          font-size: 0.9rem;
+          margin-bottom: 10px;
+        }
+        
+        .color-previews {
+          gap: 15px;
+        }
+        
+        .theme-preview {
+          .color-chips .color-chip {
+            width: 24px;
+            height: 24px;
+          }
+        }
+      }
+    }
+    
+    .panel-footer {
+      padding: 15px 20px;
+    }
+  }
+}
+
+// Top buttons container (buttons that go right under user info)
+.top-buttons-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  flex-shrink: 0;
+  
+  .user-btn {
+    width: 100%;
+    max-width: 280px;
+    padding: 12px;
+    font-size: 14px;
+  }
+}
+
+// Sair button container (pushes to bottom)
+.sair-button-container {
+  margin-top: auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  
+  .user-btn {
+    width: 100%;
+    max-width: 280px;
+    padding: 12px;
+    font-size: 14px;
+  }
+}
+
+// Small mobile devices
+@media (max-width: 480px) {
+  .user-page {
+    padding: 20px 10px 60px 10px;
+  }
+  
+  .user-card {
+    padding: 20px 10px 60px 10px;
+    
+    .image-container,
+    .image-placeholder {
       width: 120px;
       height: 120px;
     }
     
     .overlay-text {
-      font-size: 12px;
+      font-size: 11px;
     }
   }
   
-  .user-button-container {
-    .user-btn {
-      width: 180px;
-      padding: 10px;
-      font-size: 13px;
+  .user-btn {
+    padding: 10px;
+    font-size: 13px;
+  }
+  
+  .preferences-panel {
+    .color-scheme-option {
+      .scheme-info {
+        .color-previews {
+          flex-direction: column;
+          gap: 8px;
+        }
+      }
     }
   }
 }
-
-.user-content{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.img-container{
-    display: flex;
-    justify-content: center;
-}
-
-.user-card{
-    display: flex;
-    gap: 10px;
-    flex-direction: column;
-    border: solid var(--secondary-color) 1px;
-    border-radius: 15px;
-    padding: 20px;
-}
-
-.user-button-container{
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 3px;
-}
-
-.user-btn{
-    width: 100%;
-    max-width: 300px;
-
-    &.user-btn-sair{
-        background-color: rgba(0, 0, 0, 0.0);
-        border: solid red 1px;
-        color: red;
-
-        &:hover{
-            background-color: red;
-            color: white
-        }
-    }
-}                
