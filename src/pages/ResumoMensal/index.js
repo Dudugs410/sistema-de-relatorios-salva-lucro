@@ -175,7 +175,16 @@ const ResumoMensal = () => {
         }
         
         const dateRangeStr = startDateStr === endDateStr ? startDateStr : `${startDateStr}_a_${endDateStr}`
-        const fileName = `Relatório_Gerencial_${dateRangeStr}.${fileExtension}`
+
+        const requestGroup = JSON.parse(localStorage.getItem('selectedGroupBody'))
+        const requestGroupName = requestGroup?.label || localStorage.getItem('clientName') || ""
+        const cliente = JSON.parse(localStorage.getItem('selectedClientBody'))
+        const isTodos = cliente?.label === 'TODOS'
+        const clientName = cliente?.label || localStorage.getItem('clientName') || ""
+
+        const fileName = isTodos 
+          ? `Relatório_Gerencial_${requestGroupName}_TODAS_FILIAIS_${dateRangeStr}.${fileExtension}`
+          : `Relatório_Gerencial_${requestGroupName}_${clientName}_${dateRangeStr}.${fileExtension}`
         
         a.download = fileName
         document.body.appendChild(a)

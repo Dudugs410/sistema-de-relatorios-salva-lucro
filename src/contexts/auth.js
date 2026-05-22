@@ -139,8 +139,8 @@ function AuthProvider({ children }){
         }
         console.log('user: ', user)
 
-      //let context = 'ALT-10'
-      let context = user.GRUPO.IDENTIDADEVISUAL // Default: context = 'salvalucro'
+      let context = 'ALT-10'
+      //let context = user.GRUPO.IDENTIDADEVISUAL // Default: context = 'salvalucro'
       let logo = null // Default: logo = salvalucro
 
       console.log('identidade visual: ', context)

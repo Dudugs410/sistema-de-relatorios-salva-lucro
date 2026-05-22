@@ -177,8 +177,21 @@ const CreditosDataBanco = () => {
         }
         
         const dateRangeStr = startDateStr === endDateStr ? startDateStr : `${startDateStr}_a_${endDateStr}`
-        const fileName = `Creditos_por_Banco_${dateRangeStr}.${fileExtension}`
-        
+        // Get the request group name and client info
+        const requestGroup = JSON.parse(localStorage.getItem('selectedGroupBody'))
+        const requestGroupName = requestGroup?.label || grupo?.label || localStorage.getItem('clientName') || ""
+        const cliente = JSON.parse(localStorage.getItem('selectedClientBody'))
+        const isTodos = cliente?.label === 'TODOS'
+
+        let fileName
+        if (isTodos) {
+          // Case 1: When client is "TODOS" - show only group name
+          fileName = `Creditos_por_Banco_${requestGroupName}_TODAS_FILIAIS_${dateRangeStr}.${fileExtension}`
+        } else {
+          // Case 2: When client is specified - show group name + client name
+          const clientName = cliente?.label || grupo?.label || localStorage.getItem('clientName') || ""
+          fileName = `Creditos_por_Banco_${requestGroupName}_${clientName}_${dateRangeStr}.${fileExtension}`
+        }
         a.download = fileName
         document.body.appendChild(a)
         a.click()
