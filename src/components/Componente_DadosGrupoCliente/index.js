@@ -108,7 +108,7 @@ const DadosGrupoCliente = () => {
     } else if (selectedClient) {
       localStorage.setItem('cnpj', selectedClient.value)
       localStorage.setItem('clientCode', 'todos')
-      setExportName(selectedGroup ? `${selectedGroup.label} - Todas Filiais` : '')
+      setExportName(selectedGroup ? `${selectedGroup.label}_TODAS_FILIAIS` : '')
     }
     console.log('selectedClient: ', selectedClient)
     console.log('selectedGroup: ', selectedGroup)

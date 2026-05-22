@@ -139,13 +139,20 @@ function AuthProvider({ children }){
         }
         console.log('user: ', user)
 
-      //let context = 'carddigital'
-      let context = user.GRUPO.IDENTIDADEVISUAL // Default: context = 'salvalucro'
+      let context = 'ALT-10'
+      //let context = user.GRUPO.IDENTIDADEVISUAL // Default: context = 'salvalucro'
       let logo = null // Default: logo = salvalucro
 
       console.log('identidade visual: ', context)
 
+      
+
       switch (context) {
+
+        ///////////////////////////////////////
+        // tema e logo por identidade visual 
+        ///////////////////////////////////////
+
         case 'sifra':
           context = 'sifra'
           logo = sifra
@@ -162,6 +169,10 @@ function AuthProvider({ children }){
           context = 'carddigital'
           logo = carddigital
           break
+
+        ///////////////////////////////////////
+        // opções de tema de cores alternativas
+        ///////////////////////////////////////
 
         case 'ALT-1':
           context = 'ALT-1'

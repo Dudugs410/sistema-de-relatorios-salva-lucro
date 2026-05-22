@@ -728,7 +728,17 @@ const NewTabelaGenerica = forwardRef(({
       {showFilters && (
         <>
           <div className='date-container'>
-            <div data-tour="bandeiraadquirente-section" className='container desktop-filters'>
+
+
+            <hr className='hr-global'/>
+            <div className='container-busca'>
+              <span className='span-busca'>
+                {getDateRangeText()}
+              </span>
+            </div>
+          </div>
+          <hr className='hr-global'/>
+                      <div data-tour="bandeiraadquirente-section" className='container desktop-filters'>
               {Object.keys(getFilterConfig()).map(filterKey => (
                 <div key={filterKey} className='export-column'>
                   <div className='filter-card'>
@@ -764,15 +774,7 @@ const NewTabelaGenerica = forwardRef(({
                 </div>
               )}
             </div>
-
             <hr className='hr-global'/>
-            <div className='container-busca'>
-              <span className='span-busca'>
-                {getDateRangeText()}
-              </span>
-            </div>
-          </div>
-          <hr className='hr-global'/>
         </>
       )}
 
