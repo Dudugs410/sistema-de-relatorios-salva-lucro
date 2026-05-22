@@ -139,8 +139,8 @@ function AuthProvider({ children }){
         }
         console.log('user: ', user)
 
-      let context = 'ALT-10'
-      //let context = user.GRUPO.IDENTIDADEVISUAL // Default: context = 'salvalucro'
+      //let context = 'ALT-13'
+      let context = user.GRUPO.IDENTIDADEVISUAL // Default: context = 'salvalucro'
       let logo = null // Default: logo = salvalucro
 
       console.log('identidade visual: ', context)
@@ -212,6 +212,22 @@ function AuthProvider({ children }){
           break
         case 'ALT-10':
           context = 'ALT-10'
+          logo = SPECIAL
+          break
+        case 'ALT-11':
+          context = 'ALT-11'
+          logo = SPECIAL
+          break
+        case 'ALT-12':
+          context = 'ALT-12'
+          logo = SPECIAL
+          break
+        case 'ALT-13':
+          context = 'ALT-13'
+          logo = SPECIAL
+          break
+        case 'ALT-14':
+          context = 'ALT-14'
           logo = SPECIAL
           break
 

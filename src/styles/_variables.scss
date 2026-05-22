@@ -695,3 +695,175 @@
   --sidebar-font-color: #d0d0e0;
   --subtitle-color: #e68296;
 }
+
+// ALT-11 context (Hatsune Miku - Teal and Electric Blue)
+[data-context="ALT-11"] {
+  --primary-color: rgb(30, 120, 130);
+  --primary-color-rgb: 30, 120, 130;
+  --secondary-color: rgb(0, 150, 230);
+  --background-color: #e8f4f8;
+  --font-color: #001a1a;
+  --header-text-color: white;
+  --modalidades-border: rgb(30, 120, 130);
+  --table-background: white;
+  --table-row-hover-color: #b3e4f0;
+  --table-row-hover-bg: rgb(30, 120, 130);
+  --header-bg: rgba(30, 120, 130, 0.945);
+  --calendar-cell-color: rgb(30, 120, 130);
+  --calendar-now-color: #0096e6;
+  --calendar-neighbor-color: #666666;
+  --calendar-btn-navigation-color: #1e7a8a;
+  --calendar-neighbor-bg: rgb(210, 235, 240);
+  --sidebar-font-color: white;
+  --subtitle-color: rgb(30, 120, 130);
+}
+
+[data-context="ALT-11"][data-theme="dark"] {
+  --primary-color: rgb(15, 55, 60);
+  --primary-color-rgb: 15, 55, 60;
+  --secondary-color: #30b8f0;
+  --background-color: rgb(8, 22, 28);
+  --font-color: #d4eef5;
+  --header-text-color: #e0f4ff;
+  --modalidades-border: #30b8f0;
+  --table-background: rgb(15, 55, 60);
+  --table-row-hover-color: rgb(30, 75, 85);
+  --table-row-hover-bg: rgb(50, 90, 110);
+  --header-bg: rgba(15, 55, 60, 0.945);
+  --calendar-cell-color: #30b8f0;
+  --calendar-now-color: #39c5bb;
+  --calendar-neighbor-color: rgb(70, 100, 110);
+  --calendar-btn-navigation-color: #39c5bb;
+  --calendar-neighbor-bg: rgb(3, 12, 16);
+  --sidebar-font-color: #d4eef5;
+  --subtitle-color: #39c5bb;
+}
+
+// ALT-12 context (Kasane Teto - Cherry Red and Silver)
+[data-context="ALT-12"] {
+  --primary-color: rgb(170, 45, 65);
+  --primary-color-rgb: 170, 45, 65;
+  --secondary-color: rgb(160, 170, 180);
+  --background-color: #fef5f6;
+  --font-color: #2a0a15;
+  --header-text-color: white;
+  --modalidades-border: rgb(170, 45, 65);
+  --table-background: white;
+  --table-row-hover-color: #e8e8f0;
+  --table-row-hover-bg: rgb(170, 45, 65);
+  --header-bg: rgba(170, 45, 65, 0.945);
+  --calendar-cell-color: rgb(170, 45, 65);
+  --calendar-now-color: #9aaab8;
+  --calendar-neighbor-color: #777777;
+  --calendar-btn-navigation-color: #a62a4a;
+  --calendar-neighbor-bg: rgb(252, 240, 242);
+  --sidebar-font-color: white;
+  --subtitle-color: rgb(170, 45, 65);
+}
+
+[data-context="ALT-12"][data-theme="dark"] {
+  --primary-color: rgb(55, 25, 35);
+  --primary-color-rgb: 55, 25, 35;
+  --secondary-color: #c8a8b4;
+  --background-color: rgb(28, 18, 22);
+  --font-color: #e8d4da;
+  --header-text-color: #ffe8ee;
+  --modalidades-border: #c8a8b4;
+  --table-background: rgb(55, 25, 35);
+  --table-row-hover-color: rgb(80, 45, 58);
+  --table-row-hover-bg: rgb(100, 75, 85);
+  --header-bg: rgba(55, 25, 35, 0.945);
+  --calendar-cell-color: #c8a8b4;
+  --calendar-now-color: #d44068;
+  --calendar-neighbor-color: rgb(95, 75, 85);
+  --calendar-btn-navigation-color: #d44068;
+  --calendar-neighbor-bg: rgb(18, 10, 14);
+  --sidebar-font-color: #e8d4da;
+  --subtitle-color: #d44068;
+}
+
+// ALT-13 context (Hatsune Miku 2007 Original - YAMAHA Blue-Green)
+[data-context="ALT-13"] {
+  --primary-color: rgb(0, 120, 117);
+  --primary-color-rgb: 0, 120, 117;
+  --secondary-color: rgb(0, 180, 175);
+  --background-color: #eef7f9;
+  --font-color: #002629;
+  --header-text-color: white;
+  --modalidades-border: rgb(0, 120, 117);
+  --table-background: white;
+  --table-row-hover-color: #c0eef0;
+  --table-row-hover-bg: rgb(0, 120, 117);
+  --header-bg: rgba(0, 120, 117, 0.945);
+  --calendar-cell-color: rgb(0, 120, 117);
+  --calendar-now-color: #00b4aa;
+  --calendar-neighbor-color: #666666;
+  --calendar-btn-navigation-color: #008a86;
+  --calendar-neighbor-bg: rgb(225, 240, 242);
+  --sidebar-font-color: white;
+  --subtitle-color: rgb(0, 120, 117);
+}
+
+[data-context="ALT-13"][data-theme="dark"] {
+  --primary-color: rgb(0, 70, 68);
+  --primary-color-rgb: 0, 70, 68;
+  --secondary-color: #30d0cc;
+  --background-color: rgb(10, 30, 32);
+  --font-color: #cceef0;
+  --header-text-color: #e0f8fa;
+  --modalidades-border: #30d0cc;
+  --table-background: rgb(0, 70, 68);
+  --table-row-hover-color: rgb(25, 95, 93);
+  --table-row-hover-bg: rgb(50, 105, 108);
+  --header-bg: rgba(0, 70, 68, 0.945);
+  --calendar-cell-color: #30d0cc;
+  --calendar-now-color: #1abfba;
+  --calendar-neighbor-color: rgb(75, 115, 117);
+  --calendar-btn-navigation-color: #1abfba;
+  --calendar-neighbor-bg: rgb(4, 18, 20);
+  --sidebar-font-color: #cceef0;
+  --subtitle-color: #1abfba;
+}
+
+// ALT-14 context (Megurine Luka - Pink & Pearl)
+[data-context="ALT-14"] {
+  --primary-color: rgb(200, 60, 120);
+  --primary-color-rgb: 200, 60, 120;
+  --secondary-color: rgb(230, 160, 200);
+  --background-color: #fef5fa;
+  --font-color: #3a0a25;
+  --header-text-color: white;
+  --modalidades-border: rgb(200, 60, 120);
+  --table-background: white;
+  --table-row-hover-color: #fce4f0;
+  --table-row-hover-bg: rgb(200, 60, 120);
+  --header-bg: rgba(200, 60, 120, 0.945);
+  --calendar-cell-color: rgb(200, 60, 120);
+  --calendar-now-color: #e6a0c8;
+  --calendar-neighbor-color: #888888;
+  --calendar-btn-navigation-color: #b83a6a;
+  --calendar-neighbor-bg: rgb(252, 240, 245);
+  --sidebar-font-color: white;
+  --subtitle-color: rgb(200, 60, 120);
+}
+
+[data-context="ALT-14"][data-theme="dark"] {
+  --primary-color: rgb(80, 28, 55);
+  --primary-color-rgb: 80, 28, 55;
+  --secondary-color: #e6b0d0;
+  --background-color: rgb(28, 18, 24);
+  --font-color: #f0dce8;
+  --header-text-color: #ffeef6;
+  --modalidades-border: #e6b0d0;
+  --table-background: rgb(80, 28, 55);
+  --table-row-hover-color: rgb(105, 50, 80);
+  --table-row-hover-bg: rgb(110, 85, 95);
+  --header-bg: rgba(80, 28, 55, 0.945);
+  --calendar-cell-color: #e6b0d0;
+  --calendar-now-color: #d46a9e;
+  --calendar-neighbor-color: rgb(100, 70, 85);
+  --calendar-btn-navigation-color: #d46a9e;
+  --calendar-neighbor-bg: rgb(18, 10, 15);
+  --sidebar-font-color: #f0dce8;
+  --subtitle-color: #d46a9e;
+}
