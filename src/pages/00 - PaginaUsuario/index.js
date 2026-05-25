@@ -1,21 +1,46 @@
-import { useContext, useEffect, useState, useRef } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import '../../styles/global.scss'
 import './user.scss'
 import { AuthContext } from '../../contexts/auth'
+import icon1 from '../../assets/user_icons/ICON_LOGO_AZUL.png'
+import icon2 from '../../assets/user_icons/ICON_LOGO_BRANCO.png'
+import icon3 from '../../assets/user_icons/ICON_LOGO_PRETO.png'
+import icon4 from '../../assets/user_icons/ICON_LOGO_ROSA.png'
+import icon5 from '../../assets/user_icons/ICON_LOGO_VERDE.png'
+import icon6 from '../../assets/user_icons/ICON_MG_SOLUCOES.png'
+import icon7 from '../../assets/user_icons/ICON_SIFRA.png'
+import icon8 from '../../assets/user_icons/ICON_SUPERJUR.png'
+import icon9 from '../../assets/user_icons/ICON_CARD_DIGITAL.png'
 
 const Usuario = () => {
   const { userImg, setUserImg, logout, updateUser } = useContext(AuthContext)
   const [imageLoading, setImageLoading] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
-  const [selectedFile, setSelectedFile] = useState(null)
-  const [showConfirmButton, setShowConfirmButton] = useState(false)
   const [previewUrl, setPreviewUrl] = useState('')
   const [activeRightPanel, setActiveRightPanel] = useState(null)
   const [selectedScheme, setSelectedScheme] = useState(localStorage.getItem('colorScheme') || 'SPECIAL')
   const [schemeColors, setSchemeColors] = useState({})
-  const fileInputRef = useRef(null)
   
   const user = JSON.parse(localStorage.getItem('user')) || {}
+  
+  // Check if user is admin (adjust based on your user object structure)
+  const isAdmin = user?.ADMIN === true || user?.role === 'admin' || user?.tipo === 'admin'
+
+  // Available user icons
+  const commonIcons = [
+    { id: 'icon1', name: 'Azul', path: icon1 },
+    { id: 'icon2', name: 'Branco', path: icon2 },
+    { id: 'icon3', name: 'Preto', path: icon3 },
+    { id: 'icon4', name: 'Rosa', path: icon4 },
+    { id: 'icon5', name: 'Verde', path: icon5 },
+  ]
+
+  const adminIcons = [
+    { id: 'icon6', name: 'MG Soluções', path: icon6 },
+    { id: 'icon7', name: 'Sifra', path: icon7 },
+    { id: 'icon8', name: 'SuperJur', path: icon8 },
+    { id: 'icon9', name: 'Card Digital', path: icon9 },
+  ]
 
   // Available color schemes with names in Brazilian Portuguese
   const colorSchemes = [
@@ -38,19 +63,16 @@ const Usuario = () => {
 
   // Function to get colors for a specific scheme and theme
   const getSchemeColors = (schemeId, theme) => {
-    // Create a temporary div with the context and theme
     const tempDiv = document.createElement('div')
     tempDiv.setAttribute('data-context', schemeId)
     tempDiv.setAttribute('data-theme', theme)
     tempDiv.style.display = 'none'
     document.body.appendChild(tempDiv)
     
-    // Get the computed styles
     const computedStyle = getComputedStyle(tempDiv)
     const primaryColor = computedStyle.getPropertyValue('--primary-color').trim()
     const secondaryColor = computedStyle.getPropertyValue('--secondary-color').trim()
     
-    // Remove the temporary div
     document.body.removeChild(tempDiv)
     
     return {
@@ -80,26 +102,14 @@ const Usuario = () => {
     }
   }, [userImg, user])
 
-  // Function to handle file selection
-  const handleFileSelect = (event) => {
-    const file = event.target.files[0]
-    if (file) {
-      if (validateFile(file)) {
-        setSelectedFile(file)
-        const url = URL.createObjectURL(file)
-        setPreviewUrl(url)
-        setShowConfirmButton(true)
-      }
-    }
-  }
-
-  // Function to update image
-  const updateImage = async () => {
-    if (!selectedFile) return
-
+  // Function to handle icon selection
+  const handleIconSelect = async (iconPath) => {
     setImageLoading(true)
     try {
-      const base64String = await convertFileToBase64(selectedFile)
+      // Convert the imported icon to base64
+      const response = await fetch(iconPath)
+      const blob = await response.blob()
+      const base64String = await convertBlobToBase64(blob)
       
       const updatedUser = {
         ...user,
@@ -109,68 +119,28 @@ const Usuario = () => {
       setUserImg(base64String)
       await updateUser(updatedUser)
       
-      if (previewUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(previewUrl)
-      }
-      
       setImageLoading(false)
-      setShowConfirmButton(false)
-      setSelectedFile(null)
-      
-      alert('Foto atualizada com sucesso!')
+      alert('Ícone atualizado com sucesso!')
     } catch (error) {
-      console.error('Error updating image:', error)
+      console.error('Error updating icon:', error)
       setImageLoading(false)
-      alert('Erro ao atualizar a foto. Tente novamente.')
+      alert('Erro ao atualizar o ícone. Tente novamente.')
     }
   }
 
-  // Helper function to convert file to base64
-  const convertFileToBase64 = (file) => {
+  // Helper function to convert blob to base64
+  const convertBlobToBase64 = (blob) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader()
-      reader.readAsDataURL(file)
+      reader.readAsDataURL(blob)
       reader.onload = () => resolve(reader.result)
       reader.onerror = error => reject(error)
     })
   }
 
-  // Function to cancel image change
-  const cancelImageChange = () => {
-    setPreviewUrl(userImg || user?.IMAGEMBASE64 || '')
-    setSelectedFile(null)
-    setShowConfirmButton(false)
-    
-    if (previewUrl.startsWith('blob:')) {
-      URL.revokeObjectURL(previewUrl)
-    }
-    
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ''
-    }
-  }
-
-  // Function to trigger file input click
+  // Function to trigger icon selection panel
   const handleImageClick = () => {
-    fileInputRef.current?.click()
-  }
-
-  // Function to validate file type and size
-  const validateFile = (file) => {
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
-    const maxSize = 5 * 1024 * 1024
-
-    if (!validTypes.includes(file.type)) {
-      alert('Por favor, selecione uma imagem válida (JPEG, PNG, GIF, WebP)')
-      return false
-    }
-
-    if (file.size > maxSize) {
-      alert('A imagem deve ter no máximo 5MB')
-      return false
-    }
-
-    return true
+    setActiveRightPanel('icons')
   }
 
   // Apply color scheme to document
@@ -179,15 +149,6 @@ const Usuario = () => {
     localStorage.setItem('colorScheme', schemeId)
     setSelectedScheme(schemeId)
   }
-
-  // Clean up blob URLs on unmount
-  useEffect(() => {
-    return () => {
-      if (previewUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(previewUrl)
-      }
-    }
-  }, [previewUrl])
 
   return(
     <div className='appPage'>
@@ -224,35 +185,6 @@ const Usuario = () => {
                 )}
               </div>
               
-              {/* Confirmation buttons when image is selected */}
-              {showConfirmButton && (
-                <div className="confirmation-buttons">
-                  <button 
-                    className="btn btn-confirm btn-global user-btn"
-                    onClick={updateImage}
-                    disabled={imageLoading}
-                  >
-                    {imageLoading ? 'Salvando...' : 'Confirmar Foto'}
-                  </button>
-                  <button 
-                    className="btn btn-cancel btn-global user-btn"
-                    onClick={cancelImageChange}
-                    disabled={imageLoading}
-                  >
-                    Cancelar
-                  </button>
-                </div>
-              )}
-              
-              {/* Hidden file input */}
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileSelect}
-                accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
-                style={{ display: 'none' }}
-              />
-              
               <div className='user-info'>
                 <b className='text-global' style={{'margin': '0'}}>{user?.NOME || 'Usuário'}</b>
                 <b className='text-global' style={{'margin': '0'}}>{user?.EMAIL || ''}</b>
@@ -260,7 +192,7 @@ const Usuario = () => {
               
               {/* Top buttons container - these go right under user info */}
               <div className='top-buttons-container'>
-                <button className='btn btn-global user-btn' onClick={handleImageClick}>Trocar Imagem de Usuário</button>
+                <button className='btn btn-global user-btn' onClick={() => setActiveRightPanel('icons')}>Trocar Ícone</button>
                 <button className='btn btn-global user-btn' onClick={() => setActiveRightPanel('preferences')}>Preferências</button>
               </div>
               
@@ -273,6 +205,62 @@ const Usuario = () => {
 
           {/* Right/Content Section - Dynamic Panel */}
           <div className={`user-content-section ${activeRightPanel ? 'active' : ''}`}>
+            {/* Icons Selection Panel */}
+            {activeRightPanel === 'icons' && (
+              <div className="preferences-panel icons-panel">
+                <div className="panel-header">
+                  <h3>Escolher Ícone de Usuário</h3>
+                  <button className="close-btn" onClick={() => setActiveRightPanel(null)}>×</button>
+                </div>
+                
+                <div className="panel-content icons-content">
+                  {/* Admin Only Icons Section */}
+                  {isAdmin && adminIcons.length > 0 && (
+                    <>
+                      <div className="icons-section">
+                        <h4 className="section-title admin-title">Ícones Exclusivos para Admin</h4>
+                        <div className="icons-grid">
+                          {adminIcons.map((icon) => (
+                            <div
+                              key={icon.id}
+                              className="icon-option"
+                              onClick={() => handleIconSelect(icon.path)}
+                            >
+                              <div className="icon-image-wrapper">
+                                <img src={icon.path} alt={icon.name} className="icon-image" />
+                              </div>
+                              <span className="icon-name">{icon.name}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="section-divider"></div>
+                    </>
+                  )}
+                  
+                  {/* Common Icons Section */}
+                  <div className="icons-section">
+                    <h4 className="section-title">Ícones</h4>
+                    <div className="icons-grid">
+                      {commonIcons.map((icon) => (
+                        <div
+                          key={icon.id}
+                          className="icon-option"
+                          onClick={() => handleIconSelect(icon.path)}
+                        >
+                          <div className="icon-image-wrapper">
+                            <img src={icon.path} alt={icon.name} className="icon-image" />
+                          </div>
+                          <span className="icon-name">{icon.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Preferences Panel */}
             {activeRightPanel === 'preferences' && (
               <div className="preferences-panel">
                 <div className="panel-header">
