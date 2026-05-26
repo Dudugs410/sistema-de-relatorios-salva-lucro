@@ -10,6 +10,13 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- CACHE CONTROL - Force fresh content -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    
+    <!-- Content Security Policy -->
     <meta http-equiv="Content-Security-Policy" content="
       default-src 'self';
       script-src 'self' 'unsafe-inline';
@@ -21,28 +28,109 @@
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- Theme initialization script - runs before React loads to prevent FOUC -->
+    <!-- APP VERSION - Increment this on each deployment -->
+    <script>
+      (function() {
+        const APP_VERSION = '2.0.1'; // CHANGE THIS ON EVERY DEPLOY
+        
+        // Check if we need to force a reload due to version change
+        try {
+          const storedVersion = localStorage.getItem('app_version');
+          
+          if (storedVersion !== APP_VERSION) {
+            localStorage.setItem('app_version', APP_VERSION);
+            // Clear any cached theme customizations if needed
+            // localStorage.removeItem('colorScheme');
+            // Force reload from server, bypassing cache
+            window.location.reload(true);
+            return; // Stop further execution
+          }
+        } catch(e) {
+          console.warn('Version check failed:', e);
+        }
+      })();
+    </script>
+    
+    <!-- CRITICAL: Enhanced Theme initialization script - runs before any CSS loads -->
     <script>
       (function() {
         try {
+          // Helper function to get context from user data
+          function getContextFromUser(userData) {
+            if (!userData) return null;
+            try {
+              const user = typeof userData === 'string' ? JSON.parse(userData) : userData;
+              if (user.GRUCODIGO === 'SIFRA') return 'SIFRA';
+              if (user.GRUCODIGO === 'MG') return 'MG';
+              if (user.GRUCODIGO === 'superjur') return 'superjur';
+              if (user.GRUCODIGO === 'carddigital') return 'carddigital';
+              if (user.CONTEXT) return user.CONTEXT;
+              return null;
+            } catch(e) {
+              return null;
+            }
+          }
+
+          // Get saved data from localStorage
           const savedContext = localStorage.getItem('appContext');
           const savedTheme = localStorage.getItem('appTheme');
+          const userData = localStorage.getItem('user');
+          const token = localStorage.getItem('token');
+          
+          // Determine the correct context
+          let finalContext = 'salvalucro'; // Default
+          
+          // Priority: savedContext > user.GRUCODIGO > default
           if (savedContext) {
-            document.documentElement.setAttribute('data-context', savedContext);
-            console.log('Pre-render: Applied context', savedContext);
-          } else {
-            // Set default context if none saved
-            document.documentElement.setAttribute('data-context', 'salvalucro');
+            finalContext = savedContext;
+          } else if (token && userData) {
+            const contextFromUser = getContextFromUser(userData);
+            if (contextFromUser) finalContext = contextFromUser;
           }
+          
+          // Determine the correct theme
+          let finalTheme = 'light'; // Default
+          
           if (savedTheme) {
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            console.log('Pre-render: Applied theme', savedTheme);
-          } else {
-            // Set default theme if none saved
-            document.documentElement.setAttribute('data-theme', 'light');
+            finalTheme = savedTheme;
+          } else if (token && userData) {
+            try {
+              const user = typeof userData === 'string' ? JSON.parse(userData) : userData;
+              if (user.TEMA === true) finalTheme = 'dark';
+            } catch(e) {}
           }
+          
+          // Apply to HTML element IMMEDIATELY
+          document.documentElement.setAttribute('data-context', finalContext);
+          document.documentElement.setAttribute('data-theme', finalTheme);
+          
+          // Also store in sessionStorage to verify theme was applied
+          sessionStorage.setItem('themeInitialized', 'true');
+          sessionStorage.setItem('themeContext', finalContext);
+          sessionStorage.setItem('themeMode', finalTheme);
+          
+          console.log('✅ Theme pre-loaded:', { context: finalContext, theme: finalTheme });
+          
+          // Add a small style to prevent FOUC
+          const style = document.createElement('style');
+          style.textContent = `
+            /* Hide content briefly until theme is fully applied */
+            html:not([data-context]) #root,
+            html:not([data-theme]) #root {
+              opacity: 0;
+            }
+            html[data-context][data-theme] #root {
+              opacity: 1;
+              transition: opacity 0.15s ease-in;
+            }
+          `;
+          document.head.appendChild(style);
+          
         } catch(e) {
-          console.log('Theme initialization error:', e);
+          console.error('Theme initialization error:', e);
+          // Fallback to defaults
+          document.documentElement.setAttribute('data-context', 'salvalucro');
+          document.documentElement.setAttribute('data-theme', 'light');
         }
       })();
     </script>
@@ -50,7 +138,7 @@
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
 
     <!-- iOS specific -->
-    <meta name="apple-mobile-web-app-title" content="Your App Title">
+    <meta name="apple-mobile-web-app-title" content="SalvaLucro">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 

@@ -40,19 +40,76 @@ const formatCurrency = (value) => {
   })
 }
 
-// Safe date conversion
+// Format date from ISO format (YYYY-MM-DDTHH:MM:SS) to Brazilian format (DD/MM/YYYY)
+const formatDateOnly = (isoDate) => {
+  if (!isoDate) return 'N/A'
+  
+  try {
+    // Handle ISO format: "2026-05-01T00:00:00"
+    if (typeof isoDate === 'string' && isoDate.includes('T')) {
+      const datePart = isoDate.split('T')[0] // Gets "2026-05-01"
+      const [year, month, day] = datePart.split('-')
+      if (year && month && day) {
+        return `${day}/${month}/${year}`
+      }
+    }
+    
+    // Handle if it's already in YYYY-MM-DD format
+    if (typeof isoDate === 'string' && isoDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      const [year, month, day] = isoDate.split('-')
+      return `${day}/${month}/${year}`
+    }
+    
+    // Handle Date object
+    if (isoDate instanceof Date && !isNaN(isoDate.getTime())) {
+      const day = String(isoDate.getDate()).padStart(2, '0')
+      const month = String(isoDate.getMonth() + 1).padStart(2, '0')
+      const year = isoDate.getFullYear()
+      return `${day}/${month}/${year}`
+    }
+    
+    return isoDate || 'N/A'
+  } catch (error) {
+    console.error('Error formatting date:', error)
+    return 'N/A'
+  }
+}
+
+// Format time from ISO format (1900-01-01THH:MM:SS) to just HH:MM:SS
+const formatTimeOnly = (isoDateTime) => {
+  if (!isoDateTime) return 'N/A'
+  
+  try {
+    // Handle ISO format with T separator: "1900-01-01T09:37:03"
+    if (typeof isoDateTime === 'string' && isoDateTime.includes('T')) {
+      const timePart = isoDateTime.split('T')[1] // Gets "09:37:03"
+      // Remove any milliseconds if present
+      return timePart.split('.')[0]
+    }
+    
+    // Handle if it's already just a time string
+    if (typeof isoDateTime === 'string' && isoDateTime.match(/^\d{2}:\d{2}:\d{2}/)) {
+      return isoDateTime.split('.')[0]
+    }
+    
+    // Handle Date object
+    if (isoDateTime instanceof Date && !isNaN(isoDateTime.getTime())) {
+      const hours = String(isoDateTime.getHours()).padStart(2, '0')
+      const minutes = String(isoDateTime.getMinutes()).padStart(2, '0')
+      const seconds = String(isoDateTime.getSeconds()).padStart(2, '0')
+      return `${hours}:${minutes}:${seconds}`
+    }
+    
+    return 'N/A'
+  } catch (error) {
+    console.error('Error formatting time:', error)
+    return 'N/A'
+  }
+}
+
+// Safe date conversion wrapper for backward compatibility
 const formatDate = (date) => {
-  if (!date) return 'N/A'
-  if (typeof date === 'string' && date.includes('/')) {
-    return date
-  }
-  if (date instanceof Date && !isNaN(date.getTime())) {
-    const day = String(date.getDate()).padStart(2, '0')
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const year = date.getFullYear()
-    return `${day}/${month}/${year}`
-  }
-  return date || 'N/A'
+  return formatDateOnly(date)
 }
 
 const NewDisplayData = ({ 
@@ -94,7 +151,7 @@ const NewDisplayData = ({
   const safeDateConvert = useCallback((date) => {
     if (!date) return 'N/A'
     try {
-      return formatDate(date)
+      return formatDateOnly(date)
     } catch (error) {
       console.error('Error converting date:', error)
       return 'N/A'
@@ -107,6 +164,7 @@ const NewDisplayData = ({
       case 'vendas':
         return [
           { key: 'CNPJ', header: 'CNPJ' },
+          { key: 'RAZAOSOCIAL', header: 'Razão Social' },
           { key: 'ADMINISTRADORA', header: 'Adquirente' },
           { key: 'BANDEIRA', header: 'Bandeira' },
           { key: 'PRODUTO', header: 'Produto', render: (item) => (item?.PRODUTO || "").trim() },
@@ -128,29 +186,28 @@ const NewDisplayData = ({
           },
           { 
             key: 'DESCONTO', 
-            header: 'Desconto (%)',
-            render: (item) => <span className='red-global'>{safeToFixed(item?.DESCONTO, 2)}%</span>
+            header: 'Desconto',
+            render: (item) => <span className='red-global'>{formatCurrency(Math.abs(Number(item?.DESCONTO) || 0))}</span>
           },
           { key: 'NSU', header: 'NSU' },
           { key: 'CARTAO', header: 'Cartão'},
           { 
             key: 'DATAVENDA', 
             header: 'Data da Venda',
-            accessor: (item) => safeDateConvert(item?.DATAVENDA)
+            accessor: (item) => formatDateOnly(item?.DATAVENDA)
           },
           { 
             key: 'HORAVENDA', 
             header: 'Hora da Venda',
-            accessor: (item) => item?.HORAVENDA || 'N/A'
+            accessor: (item) => formatTimeOnly(item?.HORAVENDA)
           },
           { 
             key: 'DATACREDITO', 
             header: 'Data do Crédito',
-            accessor: (item) => safeDateConvert(item?.DATACREDITO)
+            accessor: (item) => formatDateOnly(item?.DATACREDITO)
           },
           { key: 'AUTORIZACAO', header: 'Autorização' },
           { key: 'PARCELA', header: 'QTD Parcelas' },
-          { key: 'STATUS', header: 'Status' },
           { key: 'NUMEROPV', header: 'Número PV' },
           { key: 'RO', header: 'RO' }
         ]
@@ -158,6 +215,7 @@ const NewDisplayData = ({
       case 'creditos':
         return [
           { key: 'CNPJ', header: 'CNPJ' },
+          { key: 'RAZAOSOCIAL', header: 'Razão Social' },
           { key: 'ADMINISTRADORA', header: 'Adquirente' },
           { key: 'BANDEIRA', header: 'Bandeira' },
           { key: 'PRODUTO', header: 'Produto', render: (item) => (item?.PRODUTO || "").trim() },
@@ -179,36 +237,29 @@ const NewDisplayData = ({
           },
           { 
             key: 'DESCONTO', 
-            header: 'Desconto (%)',
-            render: (item) => <span className='red-global'>{safeToFixed(item?.DESCONTO, 2)}%</span>
+            header: 'Desconto',
+            render: (item) => <span className='red-global'>{formatCurrency(Math.abs(Number(item?.DESCONTO) || 0))}</span>
           },
           { key: 'CARTAO', header: 'Cartão'},
           { key: 'NSU', header: 'NSU' },
           { 
             key: 'DATAVENDA', 
             header: 'Data da Venda',
-            accessor: (item) => safeDateConvert(item?.DATAVENDA)
-          },
-          { 
-            key: 'HORAVENDA', 
-            header: 'Hora da Venda',
-            accessor: (item) => item?.HORAVENDA || 'N/A'
+            accessor: (item) => formatDateOnly(item?.DATAVENDA)
           },
           { 
             key: 'DATACREDITO', 
             header: 'Data do Crédito',
-            accessor: (item) => safeDateConvert(item?.DATACREDITO)
+            accessor: (item) => formatDateOnly(item?.DATACREDITO)
           },
           { key: 'AUTORIZACAO', header: 'Autorização' },
           { key: 'PARCELA', header: 'Parcela' },
           { key: 'TOTALPARCELA', header: 'QTD Parcelas' },
-          { key: 'STATUS', header: 'Status' },
           { key: 'NUMEROPV', header: 'Número PV' },
           { key: 'RO', header: 'RO' },
           { key: 'BANCO', header: 'Banco' },
           { key: 'AGENCIA', header: 'Agência' },
-          { key: 'CONTA', header: 'Conta' },
-          { key: 'RAZAOSOCIAL', header: 'Razão Social' }
+          { key: 'CONTA', header: 'Conta' }
         ]
       
       case 'servicos':
@@ -216,50 +267,19 @@ const NewDisplayData = ({
         return [
           { key: 'CNPJ', header: 'CNPJ' },
           { key: 'RAZAOSOCIAL', header: 'Razão Social' },
-          { key: 'NUMEROPV', header: 'Número PV' },
+          { 
+            key: 'VALOR', 
+            header: 'Valor',
+            render: (item) => {
+              // Use VALORLIQUIDO if available, fallback to VALORBRUTO
+              const valor = item?.VALORLIQUIDO !== undefined && item?.VALORLIQUIDO !== null 
+                ? item.VALORLIQUIDO 
+                : item?.VALORBRUTO
+              return <span className={Number(valor) >= 0 ? 'green-global' : 'red-global'}>{formatCurrency(valor)}</span>
+            }
+          },
           { key: 'ADMINISTRADORA', header: 'Adquirente' },
-          { key: 'TIPOAJUSTE', header: 'Tipo de Ajuste' },
-          { key: 'DESCRICAOAJUSTE', header: 'Descrição' },
-          { key: 'CODIGOAJUSTE', header: 'Código Ajuste' },
-          { 
-            key: 'VALORBRUTO', 
-            header: 'Valor Bruto',
-            render: (item) => <span className={Number(item?.VALORBRUTO) >= 0 ? 'green-global' : 'red-global'}>{formatCurrency(item?.VALORBRUTO)}</span>
-          },
-          { 
-            key: 'VALORLIQUIDO', 
-            header: 'Valor Líquido',
-            render: (item) => <span className={Number(item?.VALORLIQUIDO) >= 0 ? 'green-global' : 'red-global'}>{formatCurrency(item?.VALORLIQUIDO)}</span>
-          },
-          { key: 'NSU', header: 'NSU' },
-          { 
-            key: 'DATAVENDA', 
-            header: 'Data da Venda',
-            accessor: (item) => safeDateConvert(item?.DATAVENDA)
-          },
-          { 
-            key: 'DATACREDITO', 
-            header: 'Data do Crédito',
-            accessor: (item) => safeDateConvert(item?.DATACREDITO)
-          },
-          { 
-            key: 'DATAPAGAMENTO', 
-            header: 'Data Pagamento',
-            accessor: (item) => safeDateConvert(item?.DATAPAGAMENTO)
-          },
-          { key: 'AUTORIZACAO', header: 'Autorização' },
-          { key: 'STATUS', header: 'Status' },
-          { key: 'RO', header: 'RO' },
-          { key: 'NUMEROTERMINAL', header: 'Terminal' },
-          { key: 'TID', header: 'TID' },
-          { key: 'TRANSACAO', header: 'Transação' },
-          { key: 'BANDEIRA', header: 'Bandeira' },
-          { key: 'CARTAO', header: 'Cartão' },
-          { key: 'PRODUTO', header: 'Produto' },
-          { key: 'MODALIDADE', header: 'Modalidade' },
-          { key: 'PARCELA', header: 'Parcela' },
-          { key: 'TAXA', header: 'Taxa', render: (item) => item?.TAXA ? `${safeToFixed(item.TAXA, 2)}%` : 'N/A' },
-          { key: 'DESCONTO', header: 'Desconto', render: (item) => item?.DESCONTO ? `${safeToFixed(item.DESCONTO, 2)}%` : 'N/A' }
+          { key: 'DESCRICAOAJUSTE', header: 'Descrição' }
         ]
       
       default:
@@ -477,12 +497,7 @@ const NewDisplayData = ({
           adquirente: {
             label: 'Adquirente',
             accessor: (item) => item?.ADMINISTRADORA || '',
-            dependentKey: 'tipoAjuste'
-          },
-          tipoAjuste: {
-            label: 'Tipo de Ajuste',
-            accessor: (item) => item?.TIPOAJUSTE || '',
-            dependentKey: 'adquirente'
+            dependentKey: 'descricao'
           },
           descricao: {
             label: 'Descrição',
