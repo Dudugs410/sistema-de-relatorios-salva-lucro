@@ -12,13 +12,12 @@ import icon7 from '../../assets/user_icons/ICON_SIFRA.png'
 import icon8 from '../../assets/user_icons/ICON_SUPERJUR.png'
 import icon9 from '../../assets/user_icons/ICON_CARD_DIGITAL.png'
 
-// Admin exclusive icons (you'll need to add these)
+// Admin icons
 import adminIcon1 from '../../assets/user_icons/ADMIN_ICON_1.png'
 import adminIcon2 from '../../assets/user_icons/ADMIN_ICON_2.png'
 import adminIcon3 from '../../assets/user_icons/ADMIN_ICON_3.png'
 
-// FEATURE FLAG - Set to false to disable icon and theme customization
-const ENABLE_CUSTOMIZATION = false // Change to true to enable customization
+const ENABLE_CUSTOMIZATION = false
 
 const Usuario = () => {
   const { userImg, setUserImg, logout, updateUser } = useContext(AuthContext)
