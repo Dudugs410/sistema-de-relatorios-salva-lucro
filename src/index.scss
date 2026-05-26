@@ -1,5 +1,19 @@
 @import './styles/variables';
 
+/* Prevent FOUC - hide content until theme is ready */
+html:not([data-context]) #root,
+html:not([data-theme]) #root {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* Fade in content smoothly once theme is applied */
+html[data-context][data-theme] #root {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.2s ease-in;
+}
+
 * {
   font-family: var(--default-font-app);
   box-sizing: border-box;
@@ -13,8 +27,14 @@ html, body, .app, #root, .appPage, .app-page {
   overflow-x: hidden;
   overflow-y: overlay;
   display: contents;
-  transition: all .4s;
+  transition: background-color 0.2s ease, color 0.2s ease;
   background-color: var(--background-color);
+}
+
+/* Apply theme colors to body */
+body {
+  background-color: var(--background-color);
+  color: var(--font-color);
 }
 
 h5 {
@@ -27,16 +47,27 @@ h6 {
   --bs-heading-color: var(--subtitle-color);
 }
 
+/* Headers with theme colors */
+h1, h2, h3, h4 {
+  color: var(--primary-color);
+}
+
 .appPage, .app-page {
   min-height: 100vh;
-  font-family: sans-serif;
+  font-family: var(--default-font-app);
   background-color: var(--background-color);
+  color: var(--font-color);
 }
 
 a {
-  color: black;
+  color: var(--primary-color);
   text-decoration: none;
   cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--secondary-color);
 }
 
 li, ul {
@@ -45,6 +76,22 @@ li, ul {
 
 td, th {
   padding: 0;
+}
+
+/* Table theming */
+table {
+  background-color: var(--table-background);
+  color: var(--font-color);
+}
+
+th {
+  background-color: var(--primary-color);
+  color: var(--header-text-color);
+}
+
+tr:hover {
+  background-color: var(--table-row-hover-bg);
+  color: var(--table-row-hover-color);
 }
 
 .text-shadow {
@@ -56,17 +103,24 @@ td, th {
   filter: drop-shadow(5px 5px 10px #000);
 }
 
+/* Scrollbar theming based on theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
 ::-webkit-scrollbar-track {
-  background-color: red;
+  background-color: var(--bg-secondary, #f1f1f1);
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #888;
+  background-color: var(--primary-color, #888);
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: #555;
+  background-color: var(--secondary-color, #555);
 }
 
 table {
@@ -79,6 +133,67 @@ body, .app, #root, .appPage, .app-page {
   flex-direction: column;
   align-items: stretch;
   overflow-y: overlay;
+}
+
+/* Button theming */
+button {
+  background-color: var(--primary-color);
+  color: var(--text-on-primary);
+  border: none;
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  background-color: var(--secondary-color);
+  color: var(--text-on-secondary);
+}
+
+/* Card theming */
+.card, .panel {
+  background-color: var(--bg-primary);
+  border-color: var(--border-light);
+  color: var(--text-primary);
+}
+
+/* Modal theming */
+.modal-content {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.modal-header {
+  background-color: var(--bg-secondary);
+  border-bottom-color: var(--border-light);
+}
+
+.modal-footer {
+  background-color: var(--bg-secondary);
+  border-top-color: var(--border-light);
+}
+
+/* Form theming */
+input, select, textarea {
+  background-color: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--input-text);
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--input-focus-border);
+  outline: none;
+}
+
+/* Navbar theming */
+.navbar {
+  background-color: var(--bg-header);
+}
+
+.nav-link {
+  color: var(--header-text-color);
+}
+
+.nav-link:hover {
+  color: var(--secondary-color);
 }
 
 @media (max-width: 412px) {
@@ -105,4 +220,18 @@ body, .app, #root, .appPage, .app-page {
   }
 }
 
+/* Loading state while theme is initializing */
+.theme-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  background-color: var(--background-color);
+  color: var(--font-color);
+}
 
+.theme-loading::after {
+  content: "Carregando...";
+  font-size: 1.2rem;
+}

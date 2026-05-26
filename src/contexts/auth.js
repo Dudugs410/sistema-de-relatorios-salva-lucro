@@ -253,6 +253,9 @@ function AuthProvider({ children }){
         const theme = user.TEMA ? 'dark' : 'light'
         document.documentElement.setAttribute('data-theme', theme)
 
+        localStorage.setItem('appTheme', theme) // Save theme preference
+        localStorage.setItem('appContext', context) // Save context preference
+
         //checa se o usuário não tem tema e imagem definidos,
         //seta os que não tem com as definições padrão e
         //atualiza o usuário no banco

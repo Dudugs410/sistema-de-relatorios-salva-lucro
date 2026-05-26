@@ -11,6 +11,7 @@ import './index.scss'
 import PluggyProvider from './contexts/pluggyContext'
 import { initializeContext } from './util/contextInitializer';
 import useSessionTimeout from './hooks/useSessionTimeout/useSessionTimeout'
+import ThemeSync from './components/ThemeSync' // Import your existing ThemeSync
 
 initializeContext()
 
@@ -22,7 +23,9 @@ function AppContent() {
     <>
       <AuthProvider>
         <PluggyProvider>
-          <RoutesApp/>
+          <ThemeSync> {/* Wrap RoutesApp with ThemeSync */}
+            <RoutesApp/>
+          </ThemeSync>
         </PluggyProvider>
       </AuthProvider>
       <ToastContainer
