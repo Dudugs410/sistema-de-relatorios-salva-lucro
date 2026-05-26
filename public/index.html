@@ -10,6 +10,13 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- CACHE CONTROL - Force fresh content -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    
+    <!-- Content Security Policy -->
     <meta http-equiv="Content-Security-Policy" content="
       default-src 'self';
       script-src 'self' 'unsafe-inline';
@@ -20,6 +27,29 @@
     
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- APP VERSION - Increment this on each deployment -->
+    <script>
+      (function() {
+        const APP_VERSION = '2.0.1'; // CHANGE THIS ON EVERY DEPLOY
+        
+        // Check if we need to force a reload due to version change
+        try {
+          const storedVersion = localStorage.getItem('app_version');
+          
+          if (storedVersion !== APP_VERSION) {
+            localStorage.setItem('app_version', APP_VERSION);
+            // Clear any cached theme customizations if needed
+            // localStorage.removeItem('colorScheme');
+            // Force reload from server, bypassing cache
+            window.location.reload(true);
+            return; // Stop further execution
+          }
+        } catch(e) {
+          console.warn('Version check failed:', e);
+        }
+      })();
+    </script>
     
     <!-- CRITICAL: Enhanced Theme initialization script - runs before any CSS loads -->
     <script>

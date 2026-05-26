@@ -146,14 +146,14 @@ const Usuario = () => {
     setSchemeColors(colors)
   }, [])
 
-  // Set initial preview from global context or localStorage
+  // ✅ FIXED: Set preview from context only, ignore localStorage Base64
   useEffect(() => {
     if (userImg) {
       setPreviewUrl(userImg)
-    } else if (user?.IMAGEMBASE64) {
-      setPreviewUrl(user.IMAGEMBASE64)
+    } else {
+      setPreviewUrl(getDefaultIcon())
     }
-  }, [userImg, user])
+  }, [userImg]) // Only depend on userImg, not 'user'
 
   // Function to handle icon selection
   const handleIconSelect = async (iconPath) => {

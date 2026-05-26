@@ -113,39 +113,40 @@ function AuthProvider({ children }){
 		}
 	},[cancelOngoingRequests])
 
-	// Função que loga o usuário e gerencia quaisquer dados relevantes
-  const loginApp = async (login, password) => {
-    resetAppValues()
-    try {
-      const response = await api.post('token', { client_id: login, client_secret: md5(password) })
-      const responseData = response.data
-      localStorage.setItem('token', responseData.acess_token)
-      localStorage.setItem('refreshToken', responseData.refresh_token)
-      const userId = jwtDecode(responseData.acess_token).id
-      localStorage.setItem('userID', userId)
-      Cookies.set('userID', userId)
-      const loggedSuccessfully = JSON.parse(responseData.sucess)
+// Função que loga o usuário e gerencia quaisquer dados relevantes
+const loginApp = async (login, password) => {
+  resetAppValues()
+  try {
+    const response = await api.post('token', { client_id: login, client_secret: md5(password) })
+    const responseData = response.data
+    localStorage.setItem('token', responseData.acess_token)
+    localStorage.setItem('refreshToken', responseData.refresh_token)
+    const userId = jwtDecode(responseData.acess_token).id
+    localStorage.setItem('userID', userId)
+    Cookies.set('userID', userId)
+    const loggedSuccessfully = JSON.parse(responseData.sucess)
 
-      if (loggedSuccessfully) {
-          localStorage.setItem('currentPath', '/dashboard')
-          setClientUserId(userId)
-          let user
-        try {
-          user = await loadUser(userId)
-          localStorage.setItem('user', JSON.stringify(user))
-          localStorage.setItem('isChecked', user.TEMA)
-        } catch (error) {
-          console.log(error)
-        }
-        console.log('user: ', user)
+    if (loggedSuccessfully) {
+      localStorage.setItem('currentPath', '/dashboard')
+      setClientUserId(userId)
+      let user
+      try {
+        user = await loadUser(userId)
+        localStorage.setItem('user', JSON.stringify(user))
+        localStorage.setItem('isChecked', user.TEMA)
+      } catch (error) {
+        console.log(error)
+      }
+      console.log('user: ', user)
+
+      // Set default image for ALL users (no more Base64 conversion!)
+      setUserImg(defaultImg)
 
       //let context = 'ALT-13'
       let context = user.GRUPO.IDENTIDADEVISUAL // Default: context = 'salvalucro'
       let logo = null // Default: logo = salvalucro
 
       console.log('identidade visual: ', context)
-
-      
 
       switch (context) {
 
@@ -241,50 +242,42 @@ function AuthProvider({ children }){
           break
       }
 
-        setCurrentContext(context)
-        if (logo) {
-          setCurrentLogo(logo)
-        } else {
-          setCurrentLogo(salvalucro)
-        }
-        
-        document.documentElement.setAttribute('data-context', context)
-        
-        const theme = user.TEMA ? 'dark' : 'light'
-        document.documentElement.setAttribute('data-theme', theme)
+      setCurrentContext(context)
+      if (logo) {
+        setCurrentLogo(logo)
+      } else {
+        setCurrentLogo(salvalucro)
+      }
+      
+      document.documentElement.setAttribute('data-context', context)
+      
+      const theme = user.TEMA ? 'dark' : 'light'
+      document.documentElement.setAttribute('data-theme', theme)
 
-        localStorage.setItem('appTheme', theme) // Save theme preference
-        localStorage.setItem('appContext', context) // Save context preference
+      localStorage.setItem('appTheme', theme) // Save theme preference
+      localStorage.setItem('appContext', context) // Save context preference
 
-        //checa se o usuário não tem tema e imagem definidos,
-        //seta os que não tem com as definições padrão e
-        //atualiza o usuário no banco
-        const handleUpdateUser = async () => {
-          try{
-            if(!user.TEMA){
-              user.TEMA = false
-            }
-            if(!user.IMAGEMBASE64){
-              console.log('user.IMAGEMBASE64')
-              const base64String = await imageToBase64(defaultImg)
-              user.IMAGEMBASE64 = base64String
-              setUserImg(base64String)
-            }
+      // Only update theme if needed, no more image handling
+      const handleUpdateUser = async () => {
+        try{
+          if(!user.TEMA){
+            user.TEMA = false
             updateUser(user)
             localStorage.setItem('user', JSON.stringify(user))
-          } catch (error){
-            console.log(error)
           }
+        } catch (error){
+          console.log(error)
         }
+      }
 
-        if((!user.TEMA) || (!user.IMAGEMBASE64)){
-          await handleUpdateUser()
-        }
+      if(!user.TEMA){
+        await handleUpdateUser()
+      }
 
-        const userData = { NOME: user.NOME, EMAIL: user.EMAIL }
-        localStorage.setItem('GRUCODIGO', user.GRUCODIGO)
-        localStorage.setItem('isSignedIn', true)
-        localStorage.setItem('userData', JSON.stringify(userData))
+      const userData = { NOME: user.NOME, EMAIL: user.EMAIL }
+      localStorage.setItem('GRUCODIGO', user.GRUCODIGO)
+      localStorage.setItem('isSignedIn', true)
+      localStorage.setItem('userData', JSON.stringify(userData))
 
       try {
         const clientUserId = userId
@@ -315,17 +308,18 @@ function AuthProvider({ children }){
 
           const currentDateTime = getBrazilianISOTime()
 
-            let body = {
-              USUCODIGO: userId,
-              USULOGIN: login.toUpperCase(),
-              ACESSOPERMITIDO: 'S',
-              APLICACAO: 'ReactApp',
-              DATAHORA: currentDateTime,
-            }
-
-            api.post('/LogAcesso', body)
-            console.log('login registrado')
+          let body = {
+            USUCODIGO: userId,
+            USULOGIN: login.toUpperCase(),
+            ACESSOPERMITIDO: 'S',
+            APLICACAO: 'ReactApp',
+            DATAHORA: currentDateTime,
           }
+
+          api.post('/LogAcesso', body)
+          console.log('login registrado')
+        }
+        
         const getLoginLog = async () => {
           let params = {
             codigo: userId
@@ -346,58 +340,59 @@ function AuthProvider({ children }){
           console.log(error)
         }
     
-      //pluggy
-      const response = await fetch('https://api.pluggy.ai/auth', {
-        method: 'POST',
-        headers: {
-        'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-        clientId: "7cee8f27-cbfa-4a19-b14d-306f9656787a",
-        clientSecret: "01e4edaf-639a-40ae-945a-4a04ab652bad",
-        itemOptions: {
-          clientUserId: clientUserId
-        }
+        //pluggy
+        const response = await fetch('https://api.pluggy.ai/auth', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            clientId: "7cee8f27-cbfa-4a19-b14d-306f9656787a",
+            clientSecret: "01e4edaf-639a-40ae-945a-4a04ab652bad",
+            itemOptions: {
+              clientUserId: clientUserId
+            }
+          })
         })
-      })
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json()
+
+        Cookies.set('pluggy_api_key', data.apiKey, {
+          expires: 1,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'strict'
+        })
+
+        Cookies.set('pluggy_client_id', clientUserId, {
+          expires: 1,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'strict'
+        })
+      } catch (error) {
+        console.error('Authentication failed:', error)
+        Cookies.remove('pluggy_api_key')
+        Cookies.remove('pluggy_client_id')
+        throw error
       }
 
-      const data = await response.json()
-
-      Cookies.set('pluggy_api_key', data.apiKey, {
-        expires: 1,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict'
-      })
-
-      Cookies.set('pluggy_client_id', clientUserId, {
-        expires: 1,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict'
-      })
-    } catch (error) {
-      console.error('Authentication failed:', error)
-      Cookies.remove('pluggy_api_key')
-      Cookies.remove('pluggy_client_id')
-      throw error
+      const opt = await loadOptions()
+      localStorage.setItem('options', JSON.stringify(opt))
+      
+      const gru = await loadGroupsList()
+      localStorage.setItem('groupsStorage', JSON.stringify(gru))
+      localStorage.setItem('groupCode', gru[0].CODIGOGRUPO)
+      localStorage.setItem('cnpj', 'todos')
+      setIsSignedIn(true)
     }
-
-    const opt = await loadOptions()
-    localStorage.setItem('options', JSON.stringify(opt))
-    
-    const gru = await loadGroupsList()
-    localStorage.setItem('groupsStorage', JSON.stringify(gru))
-    localStorage.setItem('groupCode', gru[0].CODIGOGRUPO)
-    localStorage.setItem('cnpj', 'todos')
-    setIsSignedIn(true)
-    }} catch (error) {
-        console.error('Login error:', error)
-        alert(error.message)
-    }
+  } catch (error) {
+    console.error('Login error:', error)
+    alert(error.message)
   }
+}
 
   const getLocalJoyRide = () => {
     return JSON.parse(localStorage.getItem('joyride'))
@@ -3024,6 +3019,7 @@ const [taxesPageArray, setTaxesPageArray] = useState([])
 	////////////////////////////////////////////////////////////////////////////////////////
 
 	const resetAppValues = () => {
+    setUserImg(defaultImg)
 		setIsLoadedDashboard(false)
 		setIsLoadedSalesDashboard(false)
 		setIsLoadedCreditsDashboard(false)
