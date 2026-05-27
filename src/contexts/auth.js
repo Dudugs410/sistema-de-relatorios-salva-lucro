@@ -32,6 +32,9 @@ function AuthProvider({ children }){
 
 	const [clientUserId, setClientUserId] = useState()
   const [userImg, setUserImg] = useState('')
+  
+  // Theme state
+  const [theme, setTheme] = useState(false) // false = light, true = dark
 
 	////////////////////////////////////////////////////////////////
 
@@ -64,6 +67,50 @@ function AuthProvider({ children }){
 
   const [currentLogo, setCurrentLogo] = useState(salvalucro)
   const [currentContext, setCurrentContext] = useState('salvalucro')
+
+  // Theme toggle function
+  const toggleTheme = useCallback(async () => {
+    const newTheme = !theme
+    setTheme(newTheme)
+    
+    // Update localStorage
+    const userData = JSON.parse(localStorage.getItem('user'))
+    if (userData) {
+      userData.TEMA = newTheme
+      localStorage.setItem('user', JSON.stringify(userData))
+      
+      // Update database
+      try {
+        await updateUser(userData)
+        console.log('Theme updated in database to:', newTheme ? 'dark' : 'light')
+      } catch (error) {
+        console.error('Failed to save theme preference to database:', error)
+      }
+    }
+    
+    // Apply theme to document
+    document.documentElement.setAttribute('data-theme', newTheme ? 'dark' : 'light')
+    localStorage.setItem('appTheme', newTheme ? 'dark' : 'light')
+  }, [theme])
+
+  // Load theme from user data when user changes
+  useEffect(() => {
+    const loadThemeFromUser = () => {
+      const userData = JSON.parse(localStorage.getItem('user'))
+      if (userData && userData.TEMA !== undefined && userData.TEMA !== null) {
+        const themeValue = userData.TEMA === true || userData.TEMA === 'true'
+        setTheme(themeValue)
+        document.documentElement.setAttribute('data-theme', themeValue ? 'dark' : 'light')
+        console.log('Theme loaded from database:', themeValue ? 'dark' : 'light')
+      } else {
+        // Default to light if no preference
+        setTheme(false)
+        document.documentElement.setAttribute('data-theme', 'light')
+      }
+    }
+    
+    loadThemeFromUser()
+  }, [clientUserId]) // Reload when user changes
 
   useEffect(() => {
     const savedContext = localStorage.getItem('appContext')
@@ -251,18 +298,19 @@ const loginApp = async (login, password) => {
       
       document.documentElement.setAttribute('data-context', context)
       
-      const theme = user.TEMA ? 'dark' : 'light'
-      document.documentElement.setAttribute('data-theme', theme)
-
-      localStorage.setItem('appTheme', theme) // Save theme preference
-      localStorage.setItem('appContext', context) // Save context preference
+      // FIXED: Set theme from user data
+      const themeValue = user.TEMA === true || user.TEMA === 'true'
+      setTheme(themeValue)
+      document.documentElement.setAttribute('data-theme', themeValue ? 'dark' : 'light')
+      localStorage.setItem('appTheme', themeValue ? 'dark' : 'light')
+      localStorage.setItem('appContext', context)
 
       // Only update theme if needed, no more image handling
       const handleUpdateUser = async () => {
         try{
-          if(!user.TEMA){
+          if(user.TEMA === undefined || user.TEMA === null){
             user.TEMA = false
-            updateUser(user)
+            await updateUser(user)
             localStorage.setItem('user', JSON.stringify(user))
           }
         } catch (error){
@@ -270,7 +318,7 @@ const loginApp = async (login, password) => {
         }
       }
 
-      if(!user.TEMA){
+      if(user.TEMA === undefined || user.TEMA === null){
         await handleUpdateUser()
       }
 
@@ -431,6 +479,9 @@ const loginApp = async (login, password) => {
     localStorage.removeItem('selectedContext')
     sessionStorage.removeItem('currentPath')
 		localStorage.setItem('isSignedIn', false)
+    // Reset theme to light on logout
+    setTheme(false)
+    document.documentElement.setAttribute('data-theme', 'light')
 		navigate('/')
 	}, [navigate])
 
@@ -452,6 +503,13 @@ const loginApp = async (login, password) => {
 
         const responseData = await response.json()
         console.log('response: ', responseData)
+        
+        // Update localStorage with the response
+        if (responseData && responseData.CODIGO) {
+          localStorage.setItem('user', JSON.stringify(responseData))
+        }
+        
+        return responseData
     } catch (error) {
       console.error('Erro ao atualizar usuário:', error)
       toast.dismiss()
@@ -3018,7 +3076,7 @@ const [taxesPageArray, setTaxesPageArray] = useState([])
 
 	////////////////////////////////////////////////////////////////////////////////////////
 
-	const resetAppValues = () => {
+	const resetAppValues = useCallback(() => {
     setUserImg(defaultImg)
 		setIsLoadedDashboard(false)
 		setIsLoadedSalesDashboard(false)
@@ -3045,7 +3103,7 @@ const [taxesPageArray, setTaxesPageArray] = useState([])
 		setServicesPageArray([])
 		setServicesPageAdminArray([])
 		setServicesDateRange([new Date(), new Date()])
-		setServicesTotal({ total: 0 }) // FIXED: Now an object instead of number
+		setServicesTotal({ total: 0 })
 		setSalesDashboard({
 			sales: [],
 			totalLast4: 0,
@@ -3086,7 +3144,9 @@ const [taxesPageArray, setTaxesPageArray] = useState([])
 		setCanceledCredits(false)
 		setCanceledServices(false)
 		setIsSignedIn(false)
-	}
+		
+		// Don't reset theme here as it will be reloaded from user data
+	}, [])
 
 
 
@@ -3532,6 +3592,7 @@ const exportCredits = (data) => {
 		loadUser, updateUser,
 		userImg, setUserImg,
     currentLogo, currentContext,
+    theme, toggleTheme,  // ADDED THEME AND TOGGLE THEME
 
 		// Dashboard //
 		
@@ -3631,7 +3692,7 @@ const exportCredits = (data) => {
 		creditsPageArray, creditsPageAdminArray, creditsTotal, creditsDateRange,
 		servicesPageArray, servicesPageAdminArray, servicesDateRange, servicesTotal,
 		taxesPageArray,
-		logout, updateUser // Add the memoized functions
+		logout, updateUser, theme, toggleTheme // ADDED theme and toggleTheme to dependencies
 	])
 
 	return(
