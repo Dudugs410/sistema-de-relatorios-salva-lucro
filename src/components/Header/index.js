@@ -5,6 +5,7 @@ import React, { useContext, useEffect, useState, useCallback, useRef } from "rea
 import './header.scss'
 import '../../index.scss'
 import Relogio from "../Componente_Relogio"
+import defaultImg from '../../assets/LOGO AZUL.png' // Import the default image
 
 const useTheme = (updateUser) => {
     const [isChecked, setIsChecked] = useState(() => {
@@ -173,11 +174,10 @@ const Header = () => {
         navigate('/dashboard')
     }, [navigate])
 
+    // ✅ FIXED: No fallback to localStorage Base64
     const getImageSource = useCallback(() => {
-        if (userImg) return userImg;
-        
-        const localUser = JSON.parse(localStorage.getItem('user'));
-        return localUser?.IMAGEMBASE64 || '';
+        // Always use userImg from context, or fallback to default image
+        return userImg || defaultImg
     }, [userImg])
 
     const handleUserProfileClick = () => {
@@ -228,7 +228,8 @@ const Header = () => {
                                 src={getImageSource()}
                                 alt="User profile"
                                 onError={(e) => {
-                                    e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNEOEQ4RDgiLz4KPHBhdGggZD0iTTIwIDIyQzIyLjIwOTEgMjIgMjQgMjAuMjA5MSAyNCAxOEMyNCAxNS43OTA5IDIyLjIwOTEgMTQgMjAgMTRDMTcuNzkwOSAxNCAxNiAxNS43OTA5IDE2IDE4QzE2IDIwLjIwOTEgMTcuNzkwOSAyMiAyMCAyMloiIGZpbGw9IiM5OTk5OTkiLz4KPHBhdGggZD0iTTIwIDguNUMxOC44OTU0IDguNSAxOC4wMzU3IDkuMzU5NzQgMTguMDM1NyAxMC40NjQzQzE4LjAzNTcgMTEuNTY4OSAxOC44OTU0IDEyLjQyODYgMjAgMTIuNDI4NkMyMS4xMDQ2IDEyLjQyODYgMjEuOTY0MyAxMS41Njg5IDIxLjk2NDMgMTAuNDY0M0MyMS45NjQzIDkuMzU5NzQgMjEuMTA0NiA4LjUgMjAgOC41WiIgZmlsbD0iIzk5OTk5OSIvPgo8L3N2Zz4K';
+                                    // If image fails to load, use default
+                                    e.target.src = defaultImg
                                 }}
                             />
                             <FiChevronDown className={`dropdown-chevron ${showUserDropdown ? 'rotated' : ''}`} />

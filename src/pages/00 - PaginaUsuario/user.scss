@@ -3,11 +3,11 @@
   flex-direction: row;
   align-items: stretch;
   gap: 30px;
-  //max-width: 1400px;
   margin: 0;
   padding: 20px 0px 60px 0px;
-  height: calc(100vh - 100px);
-  min-height: 500px;
+  height: 100%;
+  //height: calc(100vh - 100px);
+  //min-height: 500px;
   
   @media (max-width: 768px) {
     flex-direction: column;
