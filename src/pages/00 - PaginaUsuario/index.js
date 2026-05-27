@@ -17,7 +17,7 @@ import adminIcon1 from '../../assets/user_icons/ADMIN_ICON_1.png'
 import adminIcon2 from '../../assets/user_icons/ADMIN_ICON_2.png'
 import adminIcon3 from '../../assets/user_icons/ADMIN_ICON_3.png'
 
-const ENABLE_CUSTOMIZATION = false
+const ENABLE_CUSTOMIZATION = false // Keep this false for now
 
 const Usuario = () => {
   const { userImg, setUserImg, logout, updateUser } = useContext(AuthContext)
@@ -146,16 +146,14 @@ const Usuario = () => {
     setSchemeColors(colors)
   }, [])
 
-  // ✅ FIXED: Set preview from context only, ignore localStorage Base64
+  // ✅ FIXED: Force preview to ALWAYS use the blue logo (icon1)
+  // This completely ignores userImg and any Base64 from localStorage
   useEffect(() => {
-    if (userImg) {
-      setPreviewUrl(userImg)
-    } else {
-      setPreviewUrl(getDefaultIcon())
-    }
-  }, [userImg]) // Only depend on userImg, not 'user'
+    // Always use icon1 (LOGO AZUL) regardless of anything else
+    setPreviewUrl(icon1)
+  }, []) // Empty dependency array - runs once on mount
 
-  // Function to handle icon selection
+  // Function to handle icon selection (preserved for future use)
   const handleIconSelect = async (iconPath) => {
     if (!ENABLE_CUSTOMIZATION) return // Disabled
     
@@ -182,7 +180,7 @@ const Usuario = () => {
     }
   }
 
-  // Helper function to convert blob to base64
+  // Helper function to convert blob to base64 (preserved for future use)
   const convertBlobToBase64 = (blob) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader()
@@ -192,7 +190,7 @@ const Usuario = () => {
     })
   }
 
-  // Function to trigger icon selection panel
+  // Function to trigger icon selection panel (preserved for future use)
   const handleImageClick = () => {
     if (!ENABLE_CUSTOMIZATION) return // Disabled - no action when clicked
     setActiveRightPanel('icons')
@@ -238,7 +236,7 @@ const Usuario = () => {
                       alt="Perfil do usuário"
                       onError={(e) => {
                         console.error('Failed to load image')
-                        e.target.src = getDefaultIcon()
+                        e.target.src = icon1 // Force fallback to blue logo
                       }}
                     />
                     {isHovered && ENABLE_CUSTOMIZATION && (
