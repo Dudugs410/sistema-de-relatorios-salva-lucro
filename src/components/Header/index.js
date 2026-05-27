@@ -5,66 +5,10 @@ import React, { useContext, useEffect, useState, useCallback, useRef } from "rea
 import './header.scss'
 import '../../index.scss'
 import Relogio from "../Componente_Relogio"
-import defaultImg from '../../assets/LOGO AZUL.png' // Import the default image
-
-const useTheme = (updateUser) => {
-    const [isChecked, setIsChecked] = useState(() => {
-        const userData = JSON.parse(localStorage.getItem('user'));
-        console.log('=== THEME INIT DEBUG ===');
-        console.log('User data:', userData);
-        console.log('User TEMA:', userData?.TEMA);
-        console.log('User TEMA type:', typeof userData?.TEMA);
-        
-        if (userData && userData.TEMA !== undefined && userData.TEMA !== null) {
-            const temaBoolean = userData.TEMA === 'true' || userData.TEMA === true;
-            console.log('Using user TEMA preference:', userData.TEMA, '→', temaBoolean);
-            return temaBoolean;
-        }
-        
-        console.log('No TEMA preference found, defaulting to false (light theme)');
-        return false;
-    });
-
-    const toggleTheme = useCallback(() => {
-        const updatedChecked = !isChecked;
-        console.log('Toggling theme from', isChecked, 'to', updatedChecked);
-        setIsChecked(updatedChecked);
-      
-        const userData = JSON.parse(localStorage.getItem('user'));
-        if (userData) {
-            userData.TEMA = updatedChecked;
-            localStorage.setItem('user', JSON.stringify(userData));
-            
-            if (updateUser) {
-                console.log('Updating database TEMA to:', updatedChecked);
-                updateUser(userData);
-            }
-        }
-
-        document.documentElement.setAttribute('data-theme', updatedChecked ? 'dark' : 'light');
-        console.log('Set data-theme to:', updatedChecked ? 'dark' : 'light');
-        
-        return updatedChecked;
-    }, [isChecked, updateUser]);
-
-    useEffect(() => {
-        console.log('=== APPLYING THEME ===');
-        console.log('isChecked:', isChecked);
-        console.log('Setting data-theme to:', isChecked ? 'dark' : 'light');
-        document.documentElement.setAttribute('data-theme', isChecked ? 'dark' : 'light');
-    }, [isChecked]);
-
-    return {
-        isChecked,
-        toggleTheme,
-        setIsChecked
-    };
-};
+import defaultImg from '../../assets/LOGO AZUL.png'
 
 const Header = () => {
-    const { logout, isCheckedCalendar, setIsCheckedCalendar, userImg, updateUser } = useContext(AuthContext)
-    
-    const { isChecked, toggleTheme } = useTheme(updateUser);
+    const { logout, isCheckedCalendar, setIsCheckedCalendar, userImg, theme, toggleTheme } = useContext(AuthContext)
 
     const [showRelatoriosDropdown, setShowRelatoriosDropdown] = useState(false)
     const [showExportacoesDropdown, setShowExportacoesDropdown] = useState(false)
@@ -174,9 +118,8 @@ const Header = () => {
         navigate('/dashboard')
     }, [navigate])
 
-    // ✅ FIXED: No fallback to localStorage Base64
+    // Fixed: No fallback to localStorage Base64
     const getImageSource = useCallback(() => {
-        // Always use userImg from context, or fallback to default image
         return userImg || defaultImg
     }, [userImg])
 
@@ -206,7 +149,7 @@ const Header = () => {
                                 <input 
                                     type="checkbox" 
                                     id="toggleButton" 
-                                    checked={isChecked} 
+                                    checked={theme} 
                                     onChange={handleCheckboxChange}
                                 />
                                 <span className="slider">
@@ -228,7 +171,6 @@ const Header = () => {
                                 src={getImageSource()}
                                 alt="User profile"
                                 onError={(e) => {
-                                    // If image fails to load, use default
                                     e.target.src = defaultImg
                                 }}
                             />

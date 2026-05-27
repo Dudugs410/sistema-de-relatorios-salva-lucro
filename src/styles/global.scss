@@ -1,6 +1,18 @@
 
 @import './variables';
 
+html {
+  transition: background-color 0.2s ease, color 0.2s ease;
+  
+  * {
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+}
+
+html.preload-transitions * {
+  transition: none !important;
+}
+
 .app-page-global{
     display: contents;
     flex-direction: column;
