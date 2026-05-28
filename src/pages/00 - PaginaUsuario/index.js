@@ -17,16 +17,20 @@ import adminIcon1 from '../../assets/user_icons/ADMIN_ICON_1.png'
 import adminIcon2 from '../../assets/user_icons/ADMIN_ICON_2.png'
 import adminIcon3 from '../../assets/user_icons/ADMIN_ICON_3.png'
 
-const ENABLE_CUSTOMIZATION = false // Keep this false for now
+const ENABLE_CUSTOMIZATION = true
 
 const Usuario = () => {
   const { userImg, setUserImg, logout, updateUser } = useContext(AuthContext)
   const [imageLoading, setImageLoading] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
-  const [previewUrl, setPreviewUrl] = useState('')
+  const [previewUrl, setPreviewUrl] = useState(icon1) // Always start with LOGO AZUL
   const [activeRightPanel, setActiveRightPanel] = useState(null)
-  const [selectedScheme, setSelectedScheme] = useState(localStorage.getItem('colorScheme') || 'SPECIAL')
+  const [selectedScheme, setSelectedScheme] = useState(() => {
+    // Load from localStorage but don't apply to document (preview only)
+    return localStorage.getItem('colorScheme') || 'SPECIAL'
+  })
   const [schemeColors, setSchemeColors] = useState({})
+  const [selectedIcon, setSelectedIcon] = useState(null) // Track selected icon (not applied yet)
   
   const user = JSON.parse(localStorage.getItem('user')) || {}
   
@@ -39,15 +43,15 @@ const Usuario = () => {
     
     switch (identidadeVisual) {
       case 'sifra':
-        return icon7 // ICON_SIFRA
+        return icon7
       case 'mg':
-        return icon6 // ICON_MG_SOLUCOES
+        return icon6
       case 'superjur':
-        return icon8 // ICON_SUPERJUR
+        return icon8
       case 'carddigital':
-        return icon9 // ICON_CARD_DIGITAL
+        return icon9
       default:
-        return icon1 // ICON_LOGO_AZUL
+        return icon1
     }
   }
 
@@ -96,7 +100,7 @@ const Usuario = () => {
 
   // Available color schemes with names in Brazilian Portuguese
   const colorSchemes = [
-    getDefaultColorScheme(), // Default option first
+    getDefaultColorScheme(),
     { id: 'SPECIAL', name: 'Especial (Rosa/Roxo)' },
     { id: 'ALT-1', name: 'Verde Água & Coral' },
     { id: 'ALT-2', name: 'Azul Marinho & Dourado' },
@@ -108,10 +112,10 @@ const Usuario = () => {
     { id: 'ALT-8', name: 'Verde Oliva & Terracota' },
     { id: 'ALT-9', name: 'Índigo & Limão' },
     { id: 'ALT-10', name: 'Cinza Carvão & Rosa' },
-    { id: 'ALT-11', name: 'Hatsune Miku (Azul Turquesa)' },
-    { id: 'ALT-12', name: 'Kasane Teto (Vermelho Cereja)' },
-    { id: 'ALT-13', name: 'Miku 2007 Original' },
-    { id: 'ALT-14', name: 'Megurine Luka (Rosa)' }
+    { id: 'ALT-11', name: 'Azul Turquesa' },
+    { id: 'ALT-12', name: 'Vermelho Cereja' },
+    { id: 'ALT-13', name: '2007 Original' },
+    { id: 'ALT-14', name: 'Rosa' }
   ]
 
   // Function to get colors for a specific scheme and theme
@@ -146,70 +150,79 @@ const Usuario = () => {
     setSchemeColors(colors)
   }, [])
 
-  // ✅ FIXED: Force preview to ALWAYS use the blue logo (icon1)
-  // This completely ignores userImg and any Base64 from localStorage
+  // On component mount, set the actual theme from database (if any)
   useEffect(() => {
-    // Always use icon1 (LOGO AZUL) regardless of anything else
+    const savedScheme = localStorage.getItem('colorScheme')
+    const defaultScheme = getDefaultColorScheme().id
+    const schemeToApply = savedScheme || defaultScheme
+    
+    // Apply the stored/database theme to the document
+    document.documentElement.setAttribute('data-context', schemeToApply)
+    setSelectedScheme(schemeToApply)
+  }, [])
+
+  // Load current user icon - ALWAYS use LOGO AZUL (icon1) on refresh
+  useEffect(() => {
+    // FOR NOW: Always use LOGO AZUL as the displayed image
     setPreviewUrl(icon1)
-  }, []) // Empty dependency array - runs once on mount
+  }, []) // Empty dependency array ensures this only runs once on mount
 
-  // Function to handle icon selection (preserved for future use)
-  const handleIconSelect = async (iconPath) => {
-    if (!ENABLE_CUSTOMIZATION) return // Disabled
-    
-    setImageLoading(true)
-    try {
-      const response = await fetch(iconPath)
-      const blob = await response.blob()
-      const base64String = await convertBlobToBase64(blob)
-      
-      const updatedUser = {
-        ...user,
-        IMAGEMBASE64: base64String
-      }
-      
-      setUserImg(base64String)
-      await updateUser(updatedUser)
-      
-      setImageLoading(false)
-      alert('Ícone atualizado com sucesso!')
-    } catch (error) {
-      console.error('Error updating icon:', error)
-      setImageLoading(false)
-      alert('Erro ao atualizar o ícone. Tente novamente.')
+  // Function to handle icon selection (just selects, doesn't preview)
+  const handleIconSelect = (icon) => {
+    if (!ENABLE_CUSTOMIZATION) return
+    setSelectedIcon(icon)
+  }
+
+  // Function to apply the selected icon (changes the displayed image)
+  const handleApplyIcon = () => {
+    if (!ENABLE_CUSTOMIZATION || !selectedIcon) {
+      alert('Por favor, selecione um ícone primeiro.')
+      return
     }
-  }
-
-  // Helper function to convert blob to base64 (preserved for future use)
-  const convertBlobToBase64 = (blob) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.readAsDataURL(blob)
-      reader.onload = () => resolve(reader.result)
-      reader.onerror = error => reject(error)
-    })
-  }
-
-  // Function to trigger icon selection panel (preserved for future use)
-  const handleImageClick = () => {
-    if (!ENABLE_CUSTOMIZATION) return // Disabled - no action when clicked
-    setActiveRightPanel('icons')
-  }
-
-  // Apply color scheme to document
-  const applyColorScheme = (schemeId) => {
-    if (!ENABLE_CUSTOMIZATION) return // Disabled
     
+    // Update the displayed image
+    setPreviewUrl(selectedIcon.path)
+    alert(`Ícone "${selectedIcon.name}" aplicado! (Apenas visualização - não salvo no banco)`)
+    // Keep panel open
+  }
+
+  // Function to trigger icon selection panel
+  const handleImageClick = () => {
+    if (!ENABLE_CUSTOMIZATION) return
+    setActiveRightPanel('icons')
+    setSelectedIcon(null) // Reset selection when opening panel
+  }
+
+  // Apply color scheme preview (does NOT save to localStorage)
+  const previewColorScheme = (schemeId) => {
+    if (!ENABLE_CUSTOMIZATION) return
+    
+    // Just preview the colors, don't save to localStorage
     document.documentElement.setAttribute('data-context', schemeId)
-    localStorage.setItem('colorScheme', schemeId)
     setSelectedScheme(schemeId)
   }
 
-  // Get the current saved scheme or default
+  // Save color scheme - PREVIEW ONLY, no database save
+  const handleApplyColorScheme = () => {
+    if (!ENABLE_CUSTOMIZATION) return
+    
+    // Don't save to localStorage, just show message
+    // The preview is already applied from previewColorScheme
+    alert(`Esquema de cores "${colorSchemes.find(s => s.id === selectedScheme)?.name}" aplicado! (Apenas visualização - não salvo no banco)`)
+    // Panel stays open
+  }
+
+  // Get the current saved scheme from database (or default)
   const getCurrentSchemeId = () => {
+    // Return the database value or default
     const savedScheme = localStorage.getItem('colorScheme')
     const defaultScheme = getDefaultColorScheme().id
     return savedScheme || defaultScheme
+  }
+
+  // Check if an icon is selected
+  const isIconSelected = (icon) => {
+    return selectedIcon && selectedIcon.id === icon.id
   }
 
   return(
@@ -236,7 +249,7 @@ const Usuario = () => {
                       alt="Perfil do usuário"
                       onError={(e) => {
                         console.error('Failed to load image')
-                        e.target.src = icon1 // Force fallback to blue logo
+                        e.target.src = icon1
                       }}
                     />
                     {isHovered && ENABLE_CUSTOMIZATION && (
@@ -286,16 +299,16 @@ const Usuario = () => {
                       <div className="icons-grid">
                         <div
                           key={defaultIdentityIcon.id}
-                          className="icon-option"
-                          onClick={() => handleIconSelect(defaultIdentityIcon.path)}
+                          className={`icon-option ${isIconSelected(defaultIdentityIcon) ? 'selected' : ''}`}
+                          onClick={() => handleIconSelect(defaultIdentityIcon)}
                         >
                           <div className="icon-image-wrapper">
                             <img src={defaultIdentityIcon.path} alt={defaultIdentityIcon.name} className="icon-image" />
                           </div>
                           <span className="icon-name">{defaultIdentityIcon.name}</span>
-                          <span className="icon-description">
-                            ({defaultIdentityIcon.description})
-                          </span>
+                          {isIconSelected(defaultIdentityIcon) && (
+                            <div className="selection-checkmark">✓</div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -311,13 +324,16 @@ const Usuario = () => {
                             {adminExclusiveIcons.map((icon) => (
                               <div
                                 key={icon.id}
-                                className="icon-option"
-                                onClick={() => handleIconSelect(icon.path)}
+                                className={`icon-option ${isIconSelected(icon) ? 'selected' : ''}`}
+                                onClick={() => handleIconSelect(icon)}
                               >
                                 <div className="icon-image-wrapper">
                                   <img src={icon.path} alt={icon.name} className="icon-image" />
                                 </div>
                                 <span className="icon-name">{icon.name}</span>
+                                {isIconSelected(icon) && (
+                                  <div className="selection-checkmark">✓</div>
+                                )}
                               </div>
                             ))}
                           </div>
@@ -333,17 +349,31 @@ const Usuario = () => {
                         {colorIcons.map((icon) => (
                           <div
                             key={icon.id}
-                            className="icon-option"
-                            onClick={() => handleIconSelect(icon.path)}
+                            className={`icon-option ${isIconSelected(icon) ? 'selected' : ''}`}
+                            onClick={() => handleIconSelect(icon)}
                           >
                             <div className="icon-image-wrapper">
                               <img src={icon.path} alt={icon.name} className="icon-image" />
                             </div>
                             <span className="icon-name">{icon.name}</span>
+                            {isIconSelected(icon) && (
+                              <div className="selection-checkmark">✓</div>
+                            )}
                           </div>
                         ))}
                       </div>
                     </div>
+                  </div>
+                  
+                  <div className="panel-footer">
+                    <button 
+                      className="btn btn-global save-btn"
+                      onClick={handleApplyIcon}
+                      disabled={!selectedIcon}
+                      style={{ opacity: !selectedIcon ? 0.5 : 1, cursor: !selectedIcon ? 'not-allowed' : 'pointer' }}
+                    >
+                      Aplicar Visualização
+                    </button>
                   </div>
                 </div>
               )}
@@ -366,12 +396,12 @@ const Usuario = () => {
                         <div 
                           key={scheme.id}
                           className={`color-scheme-option ${isSelected ? 'selected' : ''}`}
-                          onClick={() => setSelectedScheme(scheme.id)}
+                          onClick={() => previewColorScheme(scheme.id)}
                         >
                           <div className="scheme-info">
                             <span className="scheme-name">
                               {scheme.name}
-                              {isCurrentScheme && <span className="current-badge"> (Atual)</span>}
+                              {isCurrentScheme && <span className="current-badge"> (Banco de Dados)</span>}
                             </span>
                             <div className="color-previews">
                               {/* Light Theme Preview */}
@@ -415,12 +445,9 @@ const Usuario = () => {
                   <div className="panel-footer">
                     <button 
                       className="btn btn-global save-btn"
-                      onClick={() => {
-                        applyColorScheme(selectedScheme)
-                        setActiveRightPanel(null)
-                      }}
+                      onClick={handleApplyColorScheme}
                     >
-                      Salvar Seleção
+                      Aplicar Visualização
                     </button>
                   </div>
                 </div>
