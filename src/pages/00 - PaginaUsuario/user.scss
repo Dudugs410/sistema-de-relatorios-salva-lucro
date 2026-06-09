@@ -208,7 +208,7 @@
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  
+  margin-bottom: 40px !important;
   .panel-header {
     display: flex;
     justify-content: space-between;
@@ -553,6 +553,7 @@
       h3 {
         font-size: 1.1rem;
       }
+      
     }
     
     .panel-content {
@@ -811,5 +812,62 @@
     height: 1px;
     background: var(--modalidades-border);
     margin: 20px 0;
+  }
+}
+
+// Unsaved changes banner
+.unsaved-banner {
+  background-color: #ff9800;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 500;
+  animation: pulse 1.5s infinite;
+}
+
+// Save button with changes
+.save-btn {
+  transition: all 0.2s ease;
+  
+  &.has-changes {
+    background-color: #ff9800 !important;
+    animation: pulse 1.5s infinite;
+    
+    &:hover {
+      background-color: #f57c00 !important;
+      transform: scale(1.02);
+    }
+  }
+}
+
+// Pending badge for items
+.pending-badge {
+  font-size: 0.6rem;
+  color: #ff9800;
+  background: rgba(255, 152, 0, 0.1);
+  padding: 2px 6px;
+  border-radius: 10px;
+  margin-left: 8px;
+}
+
+// Pending card styling
+.color-scheme-card.pending,
+.icon-card.pending {
+  border-color: #ff9800;
+  box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.3);
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
   }
 }
