@@ -2,7 +2,7 @@
 /* eslint-disable default-case */
 import { React, createContext, useState, useEffect, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-
+import { useUserPreferences } from '../hooks/useUserPreferences/useUserPreferences'
 import Cookies from 'js-cookie'
 import api, { cancelOngoingRequests } from '../services/api'
 
@@ -24,6 +24,37 @@ import SPECIAL from '../assets/PLACEHOLDER.png'
 
 import _ from 'lodash'
 
+import icon1 from '../assets/user_icons/ICON_LOGO_AZUL.png'
+import icon2 from '../assets/user_icons/ICON_LOGO_BRANCO.png'
+import icon3 from '../assets/user_icons/ICON_LOGO_PRETO.png'
+import icon4 from '../assets/user_icons/ICON_LOGO_ROSA.png'
+import icon5 from '../assets/user_icons/ICON_LOGO_VERDE.png'
+import icon6 from '../assets/user_icons/ICON_MG_SOLUCOES.png'
+import icon7 from '../assets/user_icons/ICON_SIFRA.png'
+import icon8 from '../assets/user_icons/ICON_SUPERJUR.png'
+import icon9 from '../assets/user_icons/ICON_CARD_DIGITAL.png'
+import adminIcon1 from '../assets/user_icons/ADMIN_ICON_1.png'
+import adminIcon2 from '../assets/user_icons/ADMIN_ICON_2.png'
+import adminIcon3 from '../assets/user_icons/ADMIN_ICON_3.png'
+
+const getIconPathByCode = (code) => {
+  const icons = {
+    1: icon1,
+    2: icon2,
+    3: icon3,
+    4: icon4,
+    5: icon5,
+    6: icon6,
+    7: icon7,
+    8: icon8,
+    9: icon9,
+    10: adminIcon1,
+    11: adminIcon2,
+    12: adminIcon3,
+  }
+  return icons[code] || icon1
+}
+
 export const AuthContext = createContext({})
 
 function AuthProvider({ children }){
@@ -35,6 +66,13 @@ function AuthProvider({ children }){
   
   // Theme state
   const [theme, setTheme] = useState(false) // false = light, true = dark
+
+  ////////////////////////////////////////////////////////////////
+
+  const {
+    loadUserPrefs,
+    saveUserPrefs,
+  } = useUserPreferences()
 
 	////////////////////////////////////////////////////////////////
 
@@ -68,29 +106,74 @@ function AuthProvider({ children }){
   const [currentLogo, setCurrentLogo] = useState(salvalucro)
   const [currentContext, setCurrentContext] = useState('salvalucro')
 
+
+
   // Theme toggle function
+  // In auth.js - Update the toggleTheme function
   const toggleTheme = useCallback(async () => {
     const newTheme = !theme
     setTheme(newTheme)
     
-    // Update localStorage
-    const userData = JSON.parse(localStorage.getItem('user'))
-    if (userData) {
-      userData.TEMA = newTheme
-      localStorage.setItem('user', JSON.stringify(userData))
-      
-      // Update database
-      try {
-        await updateUser(userData)
-        console.log('Theme updated in database to:', newTheme ? 'dark' : 'light')
-      } catch (error) {
-        console.error('Failed to save theme preference to database:', error)
-      }
-    }
-    
-    // Apply theme to document
+    // Apply theme to document immediately
     document.documentElement.setAttribute('data-theme', newTheme ? 'dark' : 'light')
     localStorage.setItem('appTheme', newTheme ? 'dark' : 'light')
+    
+    // Get current user and preferences
+    const userId = localStorage.getItem('userID')
+    const token = localStorage.getItem('token')
+    
+    if (userId && token) {
+      try {
+        // Get current preferences
+        let existingPrefs = null
+        try {
+          const prefsResponse = await api.get('PreferenciasUsuario', {
+            params: { codigo: userId }
+          })
+          existingPrefs = prefsResponse.data
+        } catch (e) {
+          console.log('No existing preferences found')
+        }
+        
+        const getCurrentDate = () => new Date().toISOString().split('T')[0]
+        const now = getCurrentDate()
+        
+        // Get current icon and color scheme from existing preferences or defaults
+        const currentIconCode = existingPrefs?.ICONE || 1
+        const currentColorScheme = existingPrefs?.ESQUEMACORES || 'salvalucro'
+        
+        const payload = {
+          USUCODIGO: parseInt(userId),
+          TEMA: newTheme,
+          ICONE: currentIconCode,
+          ESQUEMACORES: currentColorScheme,
+          USUARIOMODIFICACAO: parseInt(userId),
+          DATAMODIFICACAO: now,
+          USUARIOINSERCAO: parseInt(userId),
+          DATAINSERCAO: now,
+          ATIVO: true
+        }
+        
+        if (existingPrefs?.CODIGO) {
+          payload.CODIGO = existingPrefs.CODIGO
+          await api.put('PreferenciasUsuario', payload)
+          console.log('Theme updated with PUT to:', newTheme ? 'dark' : 'light')
+        } else {
+          await api.post('PreferenciasUsuario', payload)
+          console.log('Theme created with POST to:', newTheme ? 'dark' : 'light')
+        }
+        
+        // Also update user object for backward compatibility
+        const userData = JSON.parse(localStorage.getItem('user'))
+        if (userData) {
+          userData.TEMA = newTheme
+          localStorage.setItem('user', JSON.stringify(userData))
+        }
+        
+      } catch (error) {
+        console.error('Failed to save theme to database:', error)
+      }
+    }
   }, [theme])
 
   // Load theme from user data when user changes
@@ -160,7 +243,14 @@ function AuthProvider({ children }){
 		}
 	},[cancelOngoingRequests])
 
-// Função que loga o usuário e gerencia quaisquer dados relevantes
+  const getLocalJoyRide = () => {
+    return JSON.parse(localStorage.getItem('joyride'))
+  }
+
+  const setLocalJoyride = (item) => {
+    localStorage.setItem(JSON.stringify(item), 'joyride')
+  }
+
 const loginApp = async (login, password) => {
   resetAppValues()
   try {
@@ -186,21 +276,108 @@ const loginApp = async (login, password) => {
       }
       console.log('user: ', user)
 
-      // Set default image for ALL users (no more Base64 conversion!)
-      setUserImg(defaultImg)
+      // LOAD OR CREATE USER PREFERENCES FROM API
+      let userPreferences = null
+      try {
+        const prefsResponse = await api.get('PreferenciasUsuario', {
+          params: { codigo: userId }
+        })
+        userPreferences = prefsResponse.data
+        console.log('📡 Loaded user preferences from API:', userPreferences)
+        
+        // If no preferences exist, create default ones
+        if (!userPreferences || userPreferences === null) {
+          console.log('📝 No preferences found, creating defaults for user...')
+          
+          const getCurrentDate = () => new Date().toISOString().split('T')[0]
+          const now = getCurrentDate()
+          
+          // Determine default icon and color scheme based on identity visual
+          let defaultIconCode = 1
+          let defaultColorScheme = user?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro'
+          
+          switch (user?.GRUPO?.IDENTIDADEVISUAL) {
+            case 'sifra':
+              defaultIconCode = 7
+              defaultColorScheme = 'sifra'
+              break
+            case 'mg':
+              defaultIconCode = 6
+              defaultColorScheme = 'mg'
+              break
+            case 'superjur':
+              defaultIconCode = 8
+              defaultColorScheme = 'superjur'
+              break
+            case 'carddigital':
+              defaultIconCode = 9
+              defaultColorScheme = 'carddigital'
+              break
+            default:
+              defaultIconCode = 1
+              defaultColorScheme = 'salvalucro'
+              break
+          }
+          
+          const defaultPayload = {
+            USUCODIGO: parseInt(userId),
+            TEMA: false,
+            ICONE: defaultIconCode,
+            ESQUEMACORES: defaultColorScheme,
+            USUARIOMODIFICACAO: parseInt(userId),
+            DATAMODIFICACAO: now,
+            USUARIOINSERCAO: parseInt(userId),
+            DATAINSERCAO: now,
+            ATIVO: true
+          }
+          
+          const createResponse = await api.post('PreferenciasUsuario', defaultPayload)
+          userPreferences = createResponse.data
+          console.log('✅ Default preferences created:', userPreferences)
+        }
+      } catch (error) {
+        console.error('Error loading/creating preferences:', error)
+        // If error, create default preferences object
+        let defaultIconCode = 1
+        let defaultColorScheme = user?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro'
+        
+        switch (user?.GRUPO?.IDENTIDADEVISUAL) {
+          case 'sifra':
+            defaultIconCode = 7
+            defaultColorScheme = 'sifra'
+            break
+          case 'mg':
+            defaultIconCode = 6
+            defaultColorScheme = 'mg'
+            break
+          case 'superjur':
+            defaultIconCode = 8
+            defaultColorScheme = 'superjur'
+            break
+          case 'carddigital':
+            defaultIconCode = 9
+            defaultColorScheme = 'carddigital'
+            break
+          default:
+            defaultIconCode = 1
+            defaultColorScheme = 'salvalucro'
+            break
+        }
+        
+        userPreferences = {
+          TEMA: false,
+          ICONE: defaultIconCode,
+          ESQUEMACORES: defaultColorScheme
+        }
+      }
 
-      //let context = 'ALT-13'
-      let context = user.GRUPO.IDENTIDADEVISUAL // Default: context = 'salvalucro'
-      let logo = null // Default: logo = salvalucro
+      // Determine context (color scheme) - priority: saved preferences > identity visual
+      let context = userPreferences?.ESQUEMACORES || user?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro'
+      let logo = null
 
-      console.log('identidade visual: ', context)
+      console.log('Final context (color scheme): ', context)
 
       switch (context) {
-
-        ///////////////////////////////////////
-        // tema e logo por identidade visual 
-        ///////////////////////////////////////
-
         case 'sifra':
           context = 'sifra'
           logo = sifra
@@ -217,11 +394,6 @@ const loginApp = async (login, password) => {
           context = 'carddigital'
           logo = carddigital
           break
-
-        ///////////////////////////////////////
-        // opções de tema de cores alternativas
-        ///////////////////////////////////////
-
         case 'ALT-1':
           context = 'ALT-1'
           logo = SPECIAL
@@ -278,7 +450,6 @@ const loginApp = async (login, password) => {
           context = 'ALT-14'
           logo = SPECIAL
           break
-
         case 'SPECIAL':
           context = 'SPECIAL'
           logo = SPECIAL
@@ -298,14 +469,30 @@ const loginApp = async (login, password) => {
       
       document.documentElement.setAttribute('data-context', context)
       
-      // FIXED: Set theme from user data
-      const themeValue = user.TEMA === true || user.TEMA === 'true'
+      // Determine theme - priority: saved preferences > user data
+      let themeValue
+      if (userPreferences?.TEMA !== undefined && userPreferences?.TEMA !== null) {
+        themeValue = userPreferences.TEMA === true || userPreferences.TEMA === 'true'
+        console.log('Using saved theme preference:', themeValue ? 'dark' : 'light')
+      } else {
+        themeValue = user.TEMA === true || user.TEMA === 'true'
+        console.log('Using user theme from database:', themeValue ? 'dark' : 'light')
+      }
+      
       setTheme(themeValue)
       document.documentElement.setAttribute('data-theme', themeValue ? 'dark' : 'light')
       localStorage.setItem('appTheme', themeValue ? 'dark' : 'light')
       localStorage.setItem('appContext', context)
 
-      // Only update theme if needed, no more image handling
+      // APPLY SAVED ICON TO HEADER - This is the critical fix
+      if (userPreferences?.ICONE) {
+        localStorage.setItem('userIconCode', userPreferences.ICONE)
+        const iconPath = getIconPathByCode(userPreferences.ICONE)
+        setUserImg(iconPath)
+        console.log('🖼️ Applied saved icon to header:', userPreferences.ICONE, iconPath)
+      }
+
+      // Only update theme if needed
       const handleUpdateUser = async () => {
         try{
           if(user.TEMA === undefined || user.TEMA === null){
@@ -442,33 +629,24 @@ const loginApp = async (login, password) => {
   }
 }
 
-  const getLocalJoyRide = () => {
-    return JSON.parse(localStorage.getItem('joyride'))
+const loadUser = async (userId) => {
+  console.log('userID: ', userId)
+  let params = { codigo: userId }
+  let config = { params: params }
+  
+  // Load user data only (preferences are loaded separately)
+  let userData = null
+  try {
+    const response = await api.get('usuario', config)
+    userData = response.data
+  } catch (error) {
+    console.error('Error loading user:', error)
+    throw error
   }
 
-  const setLocalJoyride = (item) => {
-    localStorage.setItem(JSON.stringify(item), 'joyride')
-  }
+  return userData
+}
 
-  const loadUser = async (userId) => {
-    console.log('userID: ', userId)
-    let params = {
-      codigo: userId
-    }
-
-    let config = {
-      params: params
-    }
-
-    try {
-      const response = await api.get('usuario', config)
-      return response.data
-    } catch (error) {
-      console.log(error)
-    }
-
-  }
-	
   /////desloga usuário
 	const logout = useCallback(() => {
 		clearCookies()
@@ -3077,7 +3255,6 @@ const [taxesPageArray, setTaxesPageArray] = useState([])
 	////////////////////////////////////////////////////////////////////////////////////////
 
 	const resetAppValues = useCallback(() => {
-    setUserImg(defaultImg)
 		setIsLoadedDashboard(false)
 		setIsLoadedSalesDashboard(false)
 		setIsLoadedCreditsDashboard(false)
@@ -3587,7 +3764,6 @@ const exportCredits = (data) => {
 		logout,
 		accessToken, setAccessToken,
 		refreshSession,
-
 		//Usuário //
 		loadUser, updateUser,
 		userImg, setUserImg,
@@ -3687,7 +3863,7 @@ const exportCredits = (data) => {
 		displayGroup, displayClient, canceledSales, canceledCredits, canceledServices, groupsList, clientsList,
 		btnDisabledSales, btnDisabledCredits, btnDisabledServices, btnDisabledSysmo, isLoadingTaxes, isLoadingBanks,
 		isLoadedDashboard, isLoadedSalesDashboard, isLoadedCreditsDashboard, isLoadedServicesDashboard, canceled,
-		salesDashboard, creditsDashboard, servicesDashboard, chartSales, chartCredits, chartServices,
+    salesDashboard, creditsDashboard, servicesDashboard, chartSales, chartCredits, chartServices,
 		salesPageArray, salesPageAdminArray, salesTotal, salesDateRange,
 		creditsPageArray, creditsPageAdminArray, creditsTotal, creditsDateRange,
 		servicesPageArray, servicesPageAdminArray, servicesDateRange, servicesTotal,

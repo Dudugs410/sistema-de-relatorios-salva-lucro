@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "homepage": "https://app.salvalucro.com.br/salvalucro3",
-  "proxy": "http://localhost:3000",
+  "proxy": "https://app.salvalucro.com.br",
   "dependencies": {
     "@auth0/auth0-react": "^2.2.4",
     "@iconscout/react-unicons": "^2.0.2",

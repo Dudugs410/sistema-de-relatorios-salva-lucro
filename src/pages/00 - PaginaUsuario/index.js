@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from 'react'
 import '../../styles/global.scss'
 import './user.scss'
 import { AuthContext } from '../../contexts/auth'
+import { useUserPreferences } from '../../hooks/useUserPreferences/useUserPreferences'
 import icon1 from '../../assets/user_icons/ICON_LOGO_AZUL.png'
 import icon2 from '../../assets/user_icons/ICON_LOGO_BRANCO.png'
 import icon3 from '../../assets/user_icons/ICON_LOGO_PRETO.png'
@@ -16,28 +17,49 @@ import icon9 from '../../assets/user_icons/ICON_CARD_DIGITAL.png'
 import adminIcon1 from '../../assets/user_icons/ADMIN_ICON_1.png'
 import adminIcon2 from '../../assets/user_icons/ADMIN_ICON_2.png'
 import adminIcon3 from '../../assets/user_icons/ADMIN_ICON_3.png'
+import jwtDecode from 'jwt-decode'
 
 const ENABLE_CUSTOMIZATION = true
 
 const Usuario = () => {
-  const { userImg, setUserImg, logout, updateUser } = useContext(AuthContext)
+  const { userImg, setUserImg, loadUser, logout, updateUser, theme } = useContext(AuthContext)
+  const { loadUserPrefs, saveUserPrefs } = useUserPreferences()
+  
   const [imageLoading, setImageLoading] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
-  const [previewUrl, setPreviewUrl] = useState(icon1) // Always start with LOGO AZUL
   const [activeRightPanel, setActiveRightPanel] = useState(null)
-  const [selectedScheme, setSelectedScheme] = useState(() => {
-    // Load from localStorage but don't apply to document (preview only)
-    return localStorage.getItem('colorScheme') || 'SPECIAL'
-  })
+  const [selectedScheme, setSelectedScheme] = useState('salvalucro')
   const [schemeColors, setSchemeColors] = useState({})
-  const [selectedIcon, setSelectedIcon] = useState(null) // Track selected icon (not applied yet)
+  const [selectedIcon, setSelectedIcon] = useState(null)
+  const [saving, setSaving] = useState(false)
+  const [currentSavedIconCode, setCurrentSavedIconCode] = useState(null)
+  
+  // Unsaved changes tracking
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  const [originalScheme, setOriginalScheme] = useState('salvalucro')
+  const [originalIconCode, setOriginalIconCode] = useState(null)
   
   const user = JSON.parse(localStorage.getItem('user')) || {}
-  
-  // Check if user is admin
+
+  // Load saved preferences from API on component mount
+  useEffect(() => {
+    const loadCurrentPreferences = async () => {
+      const prefs = await loadUserPrefs()
+      if (prefs?.ESQUEMACORES) {
+        setSelectedScheme(prefs.ESQUEMACORES)
+        setOriginalScheme(prefs.ESQUEMACORES)
+        document.documentElement.setAttribute('data-context', prefs.ESQUEMACORES)
+      }
+      if (prefs?.ICONE) {
+        setOriginalIconCode(prefs.ICONE)
+        setCurrentSavedIconCode(prefs.ICONE)
+      }
+    }
+    loadCurrentPreferences()
+  }, [])
+
   const isAdmin = user?.ADMIN === true || user?.role === 'admin' || user?.tipo === 'admin' || user?.GRUPO?.NOME === 'ADMINISTRADORES'
 
-  // Function to get default icon based on user's IDENTIDADEVISUAL
   const getDefaultIcon = () => {
     const identidadeVisual = user?.GRUPO?.IDENTIDADEVISUAL || ''
     
@@ -59,26 +81,30 @@ const Usuario = () => {
   const defaultIdentityIcon = { 
     id: 'default', 
     name: 'Padrão', 
-    path: getDefaultIcon(), 
+    path: getDefaultIcon(),
+    code: 0,
     isDefault: true,
     description: `Baseado na identidade visual: ${user?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro'}`
   }
 
-  // Color icons (available to all users)
+  // Color icons with explicit codes
   const colorIcons = [
-    { id: 'icon1', name: 'Azul', path: icon1 },
-    { id: 'icon2', name: 'Branco', path: icon2 },
-    { id: 'icon3', name: 'Preto', path: icon3 },
-    { id: 'icon4', name: 'Rosa', path: icon4 },
-    { id: 'icon5', name: 'Verde', path: icon5 },
+    { id: 'icon1', name: 'Azul', path: icon1, code: 1 },
+    { id: 'icon2', name: 'Branco', path: icon2, code: 2 },
+    { id: 'icon3', name: 'Preto', path: icon3, code: 3 },
+    { id: 'icon4', name: 'Rosa', path: icon4, code: 4 },
+    { id: 'icon5', name: 'Verde', path: icon5, code: 5 },
   ]
 
-  // Admin exclusive icons (only visible to admin users)
+  // Admin exclusive icons with explicit codes
   const adminExclusiveIcons = [
-    { id: 'admin1', name: 'Admin Especial 1', path: adminIcon1 },
-    { id: 'admin2', name: 'Admin Especial 2', path: adminIcon2 },
-    { id: 'admin3', name: 'Admin Especial 3', path: adminIcon3 },
+    { id: 'admin1', name: 'Admin Especial 1', path: adminIcon1, code: 10 },
+    { id: 'admin2', name: 'Admin Especial 2', path: adminIcon2, code: 11 },
+    { id: 'admin3', name: 'Admin Especial 3', path: adminIcon3, code: 12 },
   ]
+
+  // All icons combined
+  const allIcons = [...colorIcons, ...adminExclusiveIcons, defaultIdentityIcon]
 
   // Function to get the default color scheme based on user's IDENTIDADEVISUAL
   const getDefaultColorScheme = () => {
@@ -96,6 +122,12 @@ const Usuario = () => {
       default:
         return { id: 'salvalucro', name: 'Salva Lucro (Padrão)' }
     }
+  }
+
+  // Get current saved scheme ID
+  const getCurrentSchemeId = async () => {
+    const prefs = await loadUserPrefs()
+    return prefs?.ESQUEMACORES || getDefaultColorScheme().id
   }
 
   // Available color schemes with names in Brazilian Portuguese
@@ -150,79 +182,188 @@ const Usuario = () => {
     setSchemeColors(colors)
   }, [])
 
-  // On component mount, set the actual theme from database (if any)
-  useEffect(() => {
-    const savedScheme = localStorage.getItem('colorScheme')
-    const defaultScheme = getDefaultColorScheme().id
-    const schemeToApply = savedScheme || defaultScheme
-    
-    // Apply the stored/database theme to the document
-    document.documentElement.setAttribute('data-context', schemeToApply)
-    setSelectedScheme(schemeToApply)
-  }, [])
-
-  // Load current user icon - ALWAYS use LOGO AZUL (icon1) on refresh
-  useEffect(() => {
-    // FOR NOW: Always use LOGO AZUL as the displayed image
-    setPreviewUrl(icon1)
-  }, []) // Empty dependency array ensures this only runs once on mount
-
-  // Function to handle icon selection (just selects, doesn't preview)
+  // Function to handle icon selection with unsaved changes tracking
   const handleIconSelect = (icon) => {
     if (!ENABLE_CUSTOMIZATION) return
     setSelectedIcon(icon)
+    // Preview the selected icon temporarily
+    setUserImg(icon.path)
+    // Mark that there are unsaved changes
+    if (originalIconCode !== icon.code) {
+      setHasUnsavedChanges(true)
+    }
   }
 
-  // Function to apply the selected icon (changes the displayed image)
-  const handleApplyIcon = () => {
+  // Apply icon and save to database
+  const handleApplyIcon = async () => {
     if (!ENABLE_CUSTOMIZATION || !selectedIcon) {
       alert('Por favor, selecione um ícone primeiro.')
       return
     }
     
-    // Update the displayed image
-    setPreviewUrl(selectedIcon.path)
-    alert(`Ícone "${selectedIcon.name}" aplicado! (Apenas visualização - não salvo no banco)`)
-    // Keep panel open
+    setSaving(true)
+    
+    const token = localStorage.getItem('token')
+    const user = await loadUser(jwtDecode(token).id)
+    const getCurrentDate = () => new Date().toISOString().split('T')[0]
+    const date = getCurrentDate()
+    
+    // Get current preferences to preserve other values
+    const currentPrefs = await loadUserPrefs()
+    
+    const body = {
+      "USUCODIGO": user.CODIGO,
+      "TEMA": currentPrefs?.TEMA || false,
+      "ICONE": selectedIcon.code,
+      "ESQUEMACORES": currentPrefs?.ESQUEMACORES || 'salvalucro',
+      "USUARIOMODIFICACAO": user.CODIGO,
+      "DATAMODIFICACAO": date,
+      "USUARIOINSERCAO": user.CODIGO,
+      "DATAINSERCAO": date,
+      "ATIVO": true,
+    }
+    
+    // Add CODIGO if it exists (for PUT)
+    if (currentPrefs?.CODIGO) {
+      body.CODIGO = currentPrefs.CODIGO
+    }
+    
+    console.log('Saving icon with body:', body)
+    
+    const success = await saveUserPrefs(body)
+    
+    if (success) {
+      setUserImg(selectedIcon.path)
+      setCurrentSavedIconCode(selectedIcon.code)
+      setOriginalIconCode(selectedIcon.code)
+      setHasUnsavedChanges(false)
+      alert(`Ícone "${selectedIcon.name}" salvo com sucesso!`)
+      setActiveRightPanel(null)
+      setSelectedIcon(null)
+    } else {
+      alert('Erro ao salvar o ícone. Tente novamente.')
+    }
+    setSaving(false)
   }
 
   // Function to trigger icon selection panel
   const handleImageClick = () => {
     if (!ENABLE_CUSTOMIZATION) return
     setActiveRightPanel('icons')
-    setSelectedIcon(null) // Reset selection when opening panel
+    setSelectedIcon(null)
+    setHasUnsavedChanges(false)
   }
 
-  // Apply color scheme preview (does NOT save to localStorage)
+  // Apply color scheme and save to database
+  const handleApplyColorScheme = async () => {
+    if (!ENABLE_CUSTOMIZATION) return
+    
+    setSaving(true)
+    
+    const token = localStorage.getItem('token')
+    const user = await loadUser(jwtDecode(token).id)
+    const getCurrentDate = () => new Date().toISOString().split('T')[0]
+    const date = getCurrentDate()
+    
+    // Get current preferences to preserve icon
+    const currentPrefs = await loadUserPrefs()
+    
+    const body = {
+      "USUCODIGO": user.CODIGO,
+      "TEMA": currentPrefs?.TEMA || false,
+      "ICONE": currentPrefs?.ICONE || 1,
+      "ESQUEMACORES": selectedScheme,
+      "USUARIOMODIFICACAO": user.CODIGO,
+      "DATAMODIFICACAO": date,
+      "USUARIOINSERCAO": user.CODIGO,
+      "DATAINSERCAO": date,
+      "ATIVO": true,
+    }
+    
+    // Add CODIGO if it exists (for PUT)
+    if (currentPrefs?.CODIGO) {
+      body.CODIGO = currentPrefs.CODIGO
+    }
+    
+    console.log('Saving color scheme with body:', body)
+    
+    const success = await saveUserPrefs(body)
+    
+    if (success) {
+      document.documentElement.setAttribute('data-context', selectedScheme)
+      setOriginalScheme(selectedScheme)
+      setHasUnsavedChanges(false)
+      alert(`Esquema de cores "${colorSchemes.find(s => s.id === selectedScheme)?.name}" salvo com sucesso!`)
+      setActiveRightPanel(null)
+    } else {
+      alert('Erro ao salvar o esquema de cores. Tente novamente.')
+    }
+    setSaving(false)
+  }
+
+  // Preview color scheme with unsaved changes tracking
   const previewColorScheme = (schemeId) => {
     if (!ENABLE_CUSTOMIZATION) return
-    
-    // Just preview the colors, don't save to localStorage
     document.documentElement.setAttribute('data-context', schemeId)
     setSelectedScheme(schemeId)
-  }
-
-  // Save color scheme - PREVIEW ONLY, no database save
-  const handleApplyColorScheme = () => {
-    if (!ENABLE_CUSTOMIZATION) return
-    
-    // Don't save to localStorage, just show message
-    // The preview is already applied from previewColorScheme
-    alert(`Esquema de cores "${colorSchemes.find(s => s.id === selectedScheme)?.name}" aplicado! (Apenas visualização - não salvo no banco)`)
-    // Panel stays open
-  }
-
-  // Get the current saved scheme from database (or default)
-  const getCurrentSchemeId = () => {
-    // Return the database value or default
-    const savedScheme = localStorage.getItem('colorScheme')
-    const defaultScheme = getDefaultColorScheme().id
-    return savedScheme || defaultScheme
+    // Mark that there are unsaved changes
+    if (originalScheme !== schemeId) {
+      setHasUnsavedChanges(true)
+    }
   }
 
   // Check if an icon is selected
   const isIconSelected = (icon) => {
     return selectedIcon && selectedIcon.id === icon.id
+  }
+
+  // Check if an icon is currently saved
+  const isCurrentIcon = (icon) => {
+    return currentSavedIconCode === icon.code
+  }
+
+  // Check if color scheme has pending changes
+  const isSchemePending = (schemeId) => {
+    return hasUnsavedChanges && selectedScheme === schemeId && originalScheme !== schemeId
+  }
+
+  // Check if icon has pending changes
+  const isIconPending = (icon) => {
+    return hasUnsavedChanges && isIconSelected(icon) && originalIconCode !== icon.code
+  }
+
+  // Close panel with unsaved changes warning
+  const handleClosePanel = async () => {
+    if (hasUnsavedChanges) {
+      const confirmClose = window.confirm('Você tem alterações não salvas. Deseja sair sem salvar?')
+      if (!confirmClose) {
+        return
+      }
+    }
+    
+    setActiveRightPanel(null)
+    if (hasUnsavedChanges) {
+      // Revert to saved values
+      setSelectedScheme(originalScheme)
+      document.documentElement.setAttribute('data-context', originalScheme)
+      
+      if (selectedIcon) {
+        const prefs = await loadUserPrefs()
+        const savedIcon = allIcons.find(icon => icon.code === prefs?.ICONE)
+        if (savedIcon) {
+          setUserImg(savedIcon.path)
+        }
+        setSelectedIcon(null)
+      }
+      setHasUnsavedChanges(false)
+    } else if (selectedIcon) {
+      const prefs = await loadUserPrefs()
+      const savedIcon = allIcons.find(icon => icon.code === prefs?.ICONE)
+      if (savedIcon) {
+        setUserImg(savedIcon.path)
+      }
+      setSelectedIcon(null)
+    }
   }
 
   return(
@@ -245,11 +386,11 @@ const Usuario = () => {
                   <>
                     <img 
                       className={`image ${isHovered && ENABLE_CUSTOMIZATION ? 'image-hover' : ''}`} 
-                      src={previewUrl} 
+                      src={userImg || getDefaultIcon()} 
                       alt="Perfil do usuário"
                       onError={(e) => {
                         console.error('Failed to load image')
-                        e.target.src = icon1
+                        e.target.src = getDefaultIcon()
                       }}
                     />
                     {isHovered && ENABLE_CUSTOMIZATION && (
@@ -266,11 +407,11 @@ const Usuario = () => {
                 <b className='text-global' style={{'margin': '0'}}>{user?.EMAIL || ''}</b>
               </div>
               
-              {/* Top buttons container - only show if customization is enabled */}
+              {/* Top buttons container */}
               {ENABLE_CUSTOMIZATION && (
                 <div className='top-buttons-container'>
                   <button className='btn btn-global user-btn' onClick={() => setActiveRightPanel('icons')}>Trocar Ícone</button>
-                  <button className='btn btn-global user-btn' onClick={() => setActiveRightPanel('preferences')}>Preferências</button>
+                  <button className='btn btn-global user-btn' onClick={() => setActiveRightPanel('preferences')}>Preferências de Cores</button>
                 </div>
               )}
               
@@ -281,7 +422,7 @@ const Usuario = () => {
             </div>
           </div>
 
-          {/* Right/Content Section - Dynamic Panel - Only render if customization is enabled */}
+          {/* Right/Content Section */}
           {ENABLE_CUSTOMIZATION && (
             <div className={`user-content-section ${activeRightPanel ? 'active' : ''}`}>
               {/* Icons Selection Panel */}
@@ -289,33 +430,18 @@ const Usuario = () => {
                 <div className="preferences-panel icons-panel">
                   <div className="panel-header">
                     <h3>Escolher Ícone de Usuário</h3>
-                    <button className="close-btn" onClick={() => setActiveRightPanel(null)}>×</button>
+                    <button className="close-btn" onClick={handleClosePanel}>×</button>
                   </div>
                   
-                  <div className="panel-content icons-content">
-                    {/* Default Icon Section - Based on user's identity visual */}
-                    <div className="icons-section">
-                      <h4 className="section-title">Ícone Padrão da Empresa</h4>
-                      <div className="icons-grid">
-                        <div
-                          key={defaultIdentityIcon.id}
-                          className={`icon-option ${isIconSelected(defaultIdentityIcon) ? 'selected' : ''}`}
-                          onClick={() => handleIconSelect(defaultIdentityIcon)}
-                        >
-                          <div className="icon-image-wrapper">
-                            <img src={defaultIdentityIcon.path} alt={defaultIdentityIcon.name} className="icon-image" />
-                          </div>
-                          <span className="icon-name">{defaultIdentityIcon.name}</span>
-                          {isIconSelected(defaultIdentityIcon) && (
-                            <div className="selection-checkmark">✓</div>
-                          )}
-                        </div>
+                  <div className="panel-content">
+                    {/* Unsaved changes banner */}
+                    {hasUnsavedChanges && (
+                      <div className="unsaved-banner">
+                        <span>⚠️ Você tem alterações não salvas</span>
                       </div>
-                    </div>
+                    )}
                     
-                    <div className="section-divider"></div>
-                    
-                    {/* Admin Exclusive Icons Section - Only visible to admin users */}
+                    {/* Admin Exclusive Icons Section */}
                     {isAdmin && adminExclusiveIcons.length > 0 && (
                       <>
                         <div className="icons-section">
@@ -324,16 +450,16 @@ const Usuario = () => {
                             {adminExclusiveIcons.map((icon) => (
                               <div
                                 key={icon.id}
-                                className={`icon-option ${isIconSelected(icon) ? 'selected' : ''}`}
+                                className={`icon-card ${isIconSelected(icon) ? 'selected' : ''} ${isCurrentIcon(icon) ? 'current' : ''} ${isIconPending(icon) ? 'pending' : ''}`}
                                 onClick={() => handleIconSelect(icon)}
                               >
                                 <div className="icon-image-wrapper">
                                   <img src={icon.path} alt={icon.name} className="icon-image" />
                                 </div>
                                 <span className="icon-name">{icon.name}</span>
-                                {isIconSelected(icon) && (
-                                  <div className="selection-checkmark">✓</div>
-                                )}
+                                {isCurrentIcon(icon) && !selectedIcon && <span className="current-badge">Atual</span>}
+                                {isIconSelected(icon) && <span className="temp-badge">Selecionado</span>}
+                                {isIconPending(icon) && <span className="pending-badge">Pendente</span>}
                               </div>
                             ))}
                           </div>
@@ -342,37 +468,57 @@ const Usuario = () => {
                       </>
                     )}
                     
-                    {/* Color Icons Section - Available to all users */}
+                    {/* Color Icons Section */}
                     <div className="icons-section">
                       <h4 className="section-title">Ícones de Cores</h4>
                       <div className="icons-grid">
                         {colorIcons.map((icon) => (
                           <div
                             key={icon.id}
-                            className={`icon-option ${isIconSelected(icon) ? 'selected' : ''}`}
+                            className={`icon-card ${isIconSelected(icon) ? 'selected' : ''} ${isCurrentIcon(icon) ? 'current' : ''} ${isIconPending(icon) ? 'pending' : ''}`}
                             onClick={() => handleIconSelect(icon)}
                           >
                             <div className="icon-image-wrapper">
                               <img src={icon.path} alt={icon.name} className="icon-image" />
                             </div>
                             <span className="icon-name">{icon.name}</span>
-                            {isIconSelected(icon) && (
-                              <div className="selection-checkmark">✓</div>
-                            )}
+                            {isCurrentIcon(icon) && !selectedIcon && <span className="current-badge">Atual</span>}
+                            {isIconSelected(icon) && <span className="temp-badge">Selecionado</span>}
+                            {isIconPending(icon) && <span className="pending-badge">Pendente</span>}
                           </div>
                         ))}
+                      </div>
+                    </div>
+
+                    {/* Default Icon Section */}
+                    <div className="icons-section">
+                      <h4 className="section-title">Ícone Padrão da Empresa</h4>
+                      <div className="icons-grid">
+                        <div
+                          key={defaultIdentityIcon.id}
+                          className={`icon-card ${isIconSelected(defaultIdentityIcon) ? 'selected' : ''} ${isCurrentIcon(defaultIdentityIcon) ? 'current' : ''} ${isIconPending(defaultIdentityIcon) ? 'pending' : ''}`}
+                          onClick={() => handleIconSelect(defaultIdentityIcon)}
+                        >
+                          <div className="icon-image-wrapper">
+                            <img src={defaultIdentityIcon.path} alt={defaultIdentityIcon.name} className="icon-image" />
+                          </div>
+                          <span className="icon-name">{defaultIdentityIcon.name}</span>
+                          <span className="icon-description">{defaultIdentityIcon.description}</span>
+                          {isCurrentIcon(defaultIdentityIcon) && !selectedIcon && <span className="current-badge">Atual</span>}
+                          {isIconSelected(defaultIdentityIcon) && <span className="temp-badge">Selecionado</span>}
+                          {isIconPending(defaultIdentityIcon) && <span className="pending-badge">Pendente</span>}
+                        </div>
                       </div>
                     </div>
                   </div>
                   
                   <div className="panel-footer">
                     <button 
-                      className="btn btn-global save-btn"
+                      className={`btn btn-global save-btn ${hasUnsavedChanges ? 'has-changes' : ''}`}
                       onClick={handleApplyIcon}
-                      disabled={!selectedIcon}
-                      style={{ opacity: !selectedIcon ? 0.5 : 1, cursor: !selectedIcon ? 'not-allowed' : 'pointer' }}
+                      disabled={!selectedIcon || saving}
                     >
-                      Aplicar Visualização
+                      {saving ? 'Salvando...' : hasUnsavedChanges ? '💾 Salvar Alterações' : 'Salvar Ícone'}
                     </button>
                   </div>
                 </div>
@@ -383,28 +529,34 @@ const Usuario = () => {
                 <div className="preferences-panel">
                   <div className="panel-header">
                     <h3>Esquemas de Cores</h3>
-                    <button className="close-btn" onClick={() => setActiveRightPanel(null)}>×</button>
+                    <button className="close-btn" onClick={handleClosePanel}>×</button>
                   </div>
                   
                   <div className="panel-content">
-                    {colorSchemes.map((scheme) => {
-                      const colors = schemeColors[scheme.id]
-                      const isCurrentScheme = scheme.id === getCurrentSchemeId()
-                      const isSelected = selectedScheme === scheme.id
-                      
-                      return (
-                        <div 
-                          key={scheme.id}
-                          className={`color-scheme-option ${isSelected ? 'selected' : ''}`}
-                          onClick={() => previewColorScheme(scheme.id)}
-                        >
-                          <div className="scheme-info">
-                            <span className="scheme-name">
-                              {scheme.name}
-                              {isCurrentScheme && <span className="current-badge"> (Banco de Dados)</span>}
-                            </span>
+                    {/* Unsaved changes banner */}
+                    {hasUnsavedChanges && (
+                      <div className="unsaved-banner">
+                        <span>⚠️ Você tem alterações não salvas</span>
+                      </div>
+                    )}
+                    
+                    <div className="color-schemes-grid">
+                      {colorSchemes.map((scheme) => {
+                        const colors = schemeColors[scheme.id]
+                        const isSelected = selectedScheme === scheme.id
+                        const isPending = isSchemePending(scheme.id)
+                        
+                        return (
+                          <div 
+                            key={scheme.id}
+                            className={`color-scheme-card ${isSelected ? 'selected' : ''} ${isPending ? 'pending' : ''}`}
+                            onClick={() => previewColorScheme(scheme.id)}
+                          >
+                            <div className="scheme-header">
+                              <span className="scheme-name">{scheme.name}</span>
+                              {isPending && <span className="pending-badge">⚠️ Pendente</span>}
+                            </div>
                             <div className="color-previews">
-                              {/* Light Theme Preview */}
                               <div className="theme-preview">
                                 <span className="theme-label">Claro</span>
                                 <div className="color-chips">
@@ -418,7 +570,6 @@ const Usuario = () => {
                                   />
                                 </div>
                               </div>
-                              {/* Dark Theme Preview */}
                               <div className="theme-preview">
                                 <span className="theme-label">Escuro</span>
                                 <div className="color-chips">
@@ -433,21 +584,22 @@ const Usuario = () => {
                                 </div>
                               </div>
                             </div>
+                            {isSelected && (
+                              <div className="checkmark">✓</div>
+                            )}
                           </div>
-                          {isSelected && (
-                            <div className="checkmark">✓</div>
-                          )}
-                        </div>
-                      )
-                    })}
+                        )
+                      })}
+                    </div>
                   </div>
                   
                   <div className="panel-footer">
                     <button 
-                      className="btn btn-global save-btn"
+                      className={`btn btn-global save-btn ${hasUnsavedChanges ? 'has-changes' : ''}`}
                       onClick={handleApplyColorScheme}
+                      disabled={saving}
                     >
-                      Aplicar Visualização
+                      {saving ? 'Salvando...' : hasUnsavedChanges ? '💾 Salvar Alterações' : 'Salvar Esquema de Cores'}
                     </button>
                   </div>
                 </div>
