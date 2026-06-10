@@ -4,13 +4,11 @@ import { useState } from "react"
 const TabelaIdentity = ({ data, clickRow }) => {
   const [expandedRow, setExpandedRow] = useState(null)
 
-  // Function to check if a value is an ISO date string
   const isISODate = (value) => {
     if (typeof value !== 'string') return false
     return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/.test(value)
   }
 
-  // Function to format ISO date to Brazilian format
   const formatToBrazilianDateTime = (isoString) => {
     try {
       const date = new Date(isoString)
@@ -29,7 +27,6 @@ const TabelaIdentity = ({ data, clickRow }) => {
     }
   }
 
-  // Function to format date only (without time)
   const formatDate = (isoString) => {
     try {
       const date = new Date(isoString)
@@ -45,7 +42,6 @@ const TabelaIdentity = ({ data, clickRow }) => {
     }
   }
 
-  // Define the headers and their corresponding data properties
   const headers = [
     { key: 'fullName', label: 'Nome' },
     { key: 'birthDate', label: 'Data de Nascimento', isDate: true },
@@ -57,7 +53,6 @@ const TabelaIdentity = ({ data, clickRow }) => {
     { key: 'updatedAt', label: 'Atualizado Em', isDate: true },
   ]
 
-  // Convert data to array if it's a single object
   const dataArray = data ? (Array.isArray(data) ? data : [data]) : []
 
   const toggleRow = (row) => {
@@ -71,7 +66,6 @@ const TabelaIdentity = ({ data, clickRow }) => {
     }
   }
 
-  // Mobile Card View Component
   const MobileCardView = () => {
     return (
       <div className="mobile-card-view">

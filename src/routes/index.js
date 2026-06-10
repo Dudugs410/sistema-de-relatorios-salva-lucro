@@ -8,6 +8,7 @@ import Usuario from "../pages/00 - PaginaUsuario"
 import Dashboard from '../pages/Dashboard'
 import Vendas from '../pages/Vendas'
 import Recebiveis from '../pages/Creditos'
+import CreditosDataBanco from '../pages/CreditosDataBanco' // Add this import
 import Servicos from '../pages/Servicos'
 import CadastroDeBancos from '../pages/CadastroDeBancos'
 import Financeiro from '../pages/Financeiro'
@@ -22,29 +23,31 @@ import VendasDelivery from '../pages/VendasDelivery'
 import ConciliacaoBancaria from '../pages/ConciliacaoBancaria'
 import Taxas from '../pages/Taxas'
 import Extrato from "../pages/Extrato"
+import PrevisaoRecebimentos from "../pages/PrevisaoRecebimentos"
+import ResumoMensal from "../pages/ResumoMensal"
 
 function RoutesApp() {
   const location = useLocation()
   const navigate = useNavigate()
 
   useEffect(() => {
-    if(location.pathname !== '/'){
-      localStorage.setItem('currentPath', location.pathname)
-    } else {
-      if(localStorage.getItem('isSignedIn') && localStorage.getItem('isSignedIn') === true){
-        localStorage.setItem('currentPath', '/dashboard')
-      }
-    }
-
-    if(localStorage.getItem('currentPath') === '/null') {
-      localStorage.setItem('currentPath', '/dashboard')
+    if (location.pathname !== '/') {
+      sessionStorage.setItem('currentPath', location.pathname)
     }
   }, [location.pathname])
 
   useEffect(() => {
-    const savedPath = localStorage.getItem('currentPath')
-    if (savedPath && savedPath !== location.pathname) {
-      navigate(savedPath)
+    const isSignedIn = localStorage.getItem('isSignedIn') === 'true'
+    const savedPath = sessionStorage.getItem('currentPath')
+    
+    if (!isSignedIn) {
+      navigate('/')
+    } else {
+      if (savedPath && savedPath !== '/' && savedPath !== location.pathname) {
+        navigate(savedPath)
+      } else if (!savedPath || savedPath === '/') {
+        navigate('/dashboard')
+      }
     }
   }, [])
 
@@ -55,27 +58,28 @@ function RoutesApp() {
       <Route path='/dashboard' element={<Private><Dashboard /></Private>} />
       <Route path='/vendas' element={<Private><Vendas /></Private>} />
       <Route path='/creditos' element={<Private><Recebiveis /></Private>} />
+      <Route path='/creditos-data-banco' element={<Private><CreditosDataBanco /></Private>} />
+      <Route path='/previsao-recebimento' element={<Private><PrevisaoRecebimentos/></Private>}/> {/* Add this route */}
       <Route path='/servicos' element={<Private><Servicos /></Private>} />
-      <Route path='/taxas' element={<Private><Taxas /></Private>} />
+      <Route path='/resumo-mensal' element={<Private><ResumoMensal/></Private>}/>
+
+      {/*<Route path='/taxas' element={<Private><Taxas /></Private>} />
       <Route path='/extrato' element={<Private><Extrato /></Private>} />
+      <Route path='/cadastrodebancos' element={<Private><CadastroDeBancos /></Private>} />*/}
+      
+      {/* Commented routes for future use */}
+      {/* <Route path='/financeiro' element={<Private><Financeiro /></Private>} />
+      <Route path='/gerenciais' element={<Private><Gerenciais /></Private>} />
+      <Route path='/outrosrelatorios' element={<Private><OutrosRelatorios /></Private>} />
+      <Route path='/sysmo' element={<Private><ExportacaoSysmo /></Private>} />
+      <Route path='/meta' element={<Private><ExportacaoMeta /></Private>} />
+      <Route path='/metasapiranga' element={<Private><ExportacaoMetaSapiranga /></Private>} />
+      <Route path='/administracao' element={<Private><Administracao /></Private>} />
+      <Route path='/suporte' element={<Private><Suporte /></Private>} />
+      <Route path='/vendasdelivery' element={<Private><VendasDelivery /></Private>} />
+      <Route path='/conciliacao' element={<Private><ConciliacaoBancaria /></Private>} /> */}
     </Routes>
   )
 }
 
 export default RoutesApp
-
-/*
-<Route path='/cadastrodebancos' element={<Private><CadastroDeBancos /></Private>} />
-
-<Route path='/usuario' element={<Private><Usuario /></Private>} />
-<Route path='/financeiro' element={<Private><Financeiro /></Private>} />
-<Route path='/gerenciais' element={<Private><Gerenciais /></Private>} />
-<Route path='/outrosrelatorios' element={<Private><OutrosRelatorios /></Private>} />
-<Route path='/sysmo' element={<Private><ExportacaoSysmo /></Private>} />
-<Route path='/meta' element={<Private><ExportacaoMeta /></Private>} />
-<Route path='/metasapiranga' element={<Private><ExportacaoMetaSapiranga /></Private>} />
-<Route path='/administracao' element={<Private><Administracao /></Private>} />
-<Route path='/suporte' element={<Private><Suporte /></Private>} />
-<Route path='/vendasdelivery' element={<Private><VendasDelivery /></Private>} />
-<Route path='/conciliacao' element={<Private><ConciliacaoBancaria /></Private>} /> 
-*/

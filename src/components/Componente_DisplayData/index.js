@@ -32,50 +32,53 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutori
     switch(tableType) {
       case 'vendas':
         return [
-          { key: 'cnpj', header: 'CNPJ' },
-          { key: 'adquirente.nomeAdquirente', header: 'Adquirente' },
-          { key: 'bandeira.descricaoBandeira', header: 'Bandeira' },
-          { key: 'produto.descricaoProduto', header: 'Produto' },
-          { key: 'modalidade.descricaoModalidade', header: 'Subproduto' },
+          { key: 'CNPJ', header: 'CNPJ' },
+          { key: 'ADMINISTRADORA', header: 'Adquirente' },
+          { key: 'BANDEIRA', header: 'Bandeira' },
+          { key: 'PRODUTO', header: 'Produto' },
+          { key: 'MODALIDADE', header: 'Subproduto' },
           { 
-            key: 'valorBruto', 
+            key: 'VALORBRUTO', 
             header: 'Valor Bruto',
-            render: (item) => <span className='green-global'>{Number(item.valorBruto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span>
+            render: (item) => <span className='green-global'>{Number(item.VALORBRUTO).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span>
           },
           { 
-            key: 'valorLiquido', 
+            key: 'VALORLIQUIDO', 
             header: 'Valor Líquido',
-            render: (item) => <span className='green-global'>{Number(item.valorLiquido).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span>
+            render: (item) => <span className='green-global'>{Number(item.VALORLIQUIDO).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span>
           },
           { 
-            key: 'taxa', 
+            key: 'TAXA', 
             header: 'Taxa',
-            render: (item) => <span className='red-global'>{Number(item.taxa).toFixed(2)}%</span>
+            render: (item) => <span className='red-global'>{Number(item.TAXA).toFixed(2)}%</span>
           },
           { 
-            key: 'valorDesconto', 
-            header: 'Valor Desconto',
-            render: (item) => <span className='red-global'>{Number(item.valorDesconto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span>
+            key: 'DESCONTO', 
+            header: 'Desconto (%)',
+            render: (item) => <span className='red-global'>{Number(item.DESCONTO).toFixed(2)}%</span>
           },
-          { key: 'nsu', header: 'NSU' },
+          { key: 'NSU', header: 'NSU' },
+          { key: 'CARTAO', header: 'Cartão'},
           { 
-            key: 'dataVenda', 
+            key: 'DATAVENDA', 
             header: 'Data da Venda',
-            accessor: (item) => dateConvert(item.dataVenda)
+            accessor: (item) => dateConvert(item.DATAVENDA)
           },
           { 
-            key: 'horaVenda', 
+            key: 'HORAVENDA', 
             header: 'Hora da Venda',
-            accessor: (item) => item.horaVenda?.replaceAll('-', ':')
+            accessor: (item) => item.HORAVENDA || 'N/A'
           },
           { 
-            key: 'dataCredito', 
+            key: 'DATACREDITO', 
             header: 'Data do Crédito',
-            accessor: (item) => dateConvert(item.dataCredito)
+            accessor: (item) => dateConvert(item.DATACREDITO)
           },
-          { key: 'codigoAutorizacao', header: 'Autorização' },
-          { key: 'quantidadeParcelas', header: 'QTD Parcelas' },
-          { key: 'tid', header: 'TID' }
+          { key: 'AUTORIZACAO', header: 'Autorização' },
+          { key: 'PARCELA', header: 'QTD Parcelas' },
+          { key: 'STATUS', header: 'Status' },
+          { key: 'NUMEROPV', header: 'Número PV' },
+          { key: 'RO', header: 'RO' }
         ]
       
       case 'creditos':
@@ -122,7 +125,6 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutori
           { key: 'banco', header: 'Banco' },
           { key: 'agencia', header: 'Agência' },
           { key: 'conta', header: 'Conta' },
-          { key: 'tid', header: 'TID' }
         ]
       
       case 'servicos':
@@ -193,15 +195,18 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutori
     return exportData
   }, [currentPath, exportSales, exportCredits, exportServices, dataArray])
 
-  const getTotalUpdateFunction = useCallback(() => {
-    switch(currentPath) {
-      case '/vendas': return setSalesTotal
-      case '/creditos': return setCreditsTotal
-      default: return null
+const getTotalUpdateFunction = useCallback(() => {
+  switch(currentPath) {
+    case '/vendas': return setSalesTotal
+    case '/creditos': return setCreditsTotal
+    case '/servicos': return (total) => {
+      console.log('Services total:', total)
+      return null
     }
-  }, [currentPath, setSalesTotal, setCreditsTotal])
+    default: return null
+  }
+}, [currentPath, setSalesTotal, setCreditsTotal])
 
-  // FIXED: Enhanced loadTotals to handle filtered data without infinite loops
   const loadTotals = useCallback((array, tableType) => {
     if(array && array.length > 0){
       let temp = []
@@ -213,16 +218,16 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutori
       array.forEach((venda)=>{
         if(temp.length === 0){
           let newObj = {
-            adminName: tableType === 'servicos' ? venda.nome_adquirente : venda.adquirente.nomeAdquirente,
-            total: tableType === 'vendas' ? venda.valorBruto : venda.valorLiquido,
+            adminName: tableType === 'servicos' ? venda.nome_adquirente : venda.ADMINISTRADORA,
+            total: tableType === 'servicos' ? Math.abs(venda.valor) : venda.VALORBRUTO,
             id: 0,
             sales: []
           }
           temp.push(newObj)
         }else{
           let newObj = {
-            adminName: tableType === 'servicos' ? venda.nome_adquirente : venda.adquirente.nomeAdquirente,
-            total: tableType === 'vendas' ? venda.valorBruto : venda.valorLiquido,
+            adminName: tableType === 'servicos' ? venda.nome_adquirente : venda.ADMINISTRADORA,
+            total: tableType === 'servicos' ? Math.abs(venda.valor) : venda.VALORBRUTO,
             id: 0,
             sales: []
           }
@@ -240,20 +245,27 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutori
         }
 
         if (tableType !== 'servicos') {
-          switch(venda.produto.descricaoProduto){
+          const produto = (venda.PRODUTO || "").trim()
+          switch(produto){
             case 'Crédito':
-              totalCreditoTemp += tableType === 'vendas' ? venda.valorBruto : venda.valorLiquido
+              totalCreditoTemp += venda.VALORBRUTO
               break
             case 'Débito':
-              totalDebitoTemp += tableType === 'vendas' ? venda.valorBruto : venda.valorLiquido
+              totalDebitoTemp += venda.VALORBRUTO
               break
             case 'Voucher':
-              totalVoucherTemp += tableType === 'vendas' ? venda.valorBruto : venda.valorLiquido
+              totalVoucherTemp += venda.VALORBRUTO
+              break
+            default:
+              // If produto contains Voucher, add to voucher
+              if (produto.includes('Voucher')) {
+                totalVoucherTemp += venda.VALORBRUTO
+              }
               break
           }
         }
         
-        totalTemp += tableType === 'vendas' ? venda.valorBruto : venda.valorLiquido
+        totalTemp += venda.VALORBRUTO
       })
 
       let totalResult = tableType === 'servicos' 
@@ -262,7 +274,6 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutori
       
       const updateFunction = getTotalUpdateFunction()
       if (updateFunction) {
-        // FIXED: Use setTimeout to break potential synchronous update chain
         setTimeout(() => {
           updateFunction(totalResult)
         }, 0)
@@ -270,12 +281,9 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutori
     }
   }, [getTotalUpdateFunction])
 
-  // FIXED: Enhanced onTotalUpdate to also update filtered data state without infinite loops
   const handleTotalUpdate = useCallback((data) => {
     if (exportPage) {
-      // Update the filtered data state
       setCurrentFilteredData(data)
-      // Load totals with the filtered data
       loadTotals(data, exportPage)
     }
   }, [exportPage, loadTotals])
@@ -286,6 +294,18 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutori
     
     switch(exportPage) {
       case 'vendas':
+        return {
+          adquirente: {
+            label: 'Adquirente',
+            accessor: (item) => item.ADMINISTRADORA || '',
+            dependentKey: 'bandeira'
+          },
+          bandeira: {
+            label: 'Bandeira', 
+            accessor: (item) => item.BANDEIRA || '',
+            dependentKey: 'adquirente'
+          }
+        }
       case 'creditos':
         return {
           adquirente: {
@@ -365,9 +385,23 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutori
     }
   }, [exportPage, dataArray, getTableColumns, getDateRange, getExportFunction, handleTotalUpdate, getFilterConfig])
 
+  // Determine button text based on page type
+  const getButtonText = () => {
+    switch(currentPath) {
+      case '/vendas':
+        return 'Nova Consulta de Vendas'
+      case '/creditos':
+        return 'Nova Consulta de Créditos'
+      case '/servicos':
+        return 'Nova Consulta de Serviços'
+      default:
+        return 'Nova Pesquisa'
+    }
+  }
+
   return (
     <>
-      {totals && <TotalModalidadesComp totals={totals} />}
+      {totals && <TotalModalidadesComp totals={totals} type={exportPage} />}
       {currentPath === '/servicos' && <hr className='hr-global' />}
       
       {/* Pass the export function and filtered data to GerarRelatorio */}
@@ -387,18 +421,14 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutori
         )}
         <hr className='hr-global' />
       </div>
-      <div className='search-bar'>
-        <form className='date-container-vendas'>
-          <div className='submit-container select-align voltar-align'>
-            <button 
-              data-tour="botaovoltar-section" 
-              className='btn btn-secondary btn-global btn-pesquisar' 
-              onClick={onGoBack}
-            >
-              Voltar
-            </button>
-          </div>
-        </form>
+      <div data-tour="botaovoltar-section" className='floating-button-container'>
+        <button 
+          className='btn-floating-new-search' 
+          onClick={onGoBack}
+        >
+          <span className='floating-button-icon'>🔍</span>
+          <span className='floating-button-text'>{getButtonText()}</span>
+        </button>
       </div>
     </>
   )

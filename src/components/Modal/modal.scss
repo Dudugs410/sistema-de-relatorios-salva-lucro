@@ -1,4 +1,4 @@
-// modal.scss - Updated styles
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -8,10 +8,10 @@
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
-  align-items: flex-start; // Changed from center to flex-start
+  align-items: flex-start;
   z-index: 1000;
   padding: 20px;
-  overflow-y: auto; // Allow scrolling for the overlay if needed
+  overflow-y: auto;
 }
 
 .modal-window-content {
@@ -20,8 +20,8 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   width: 95%;
   max-width: 1200px;
-  max-height: calc(100vh - 100px); // Account for header and padding
-  margin-top: 80px; // Push below the header
+  max-height: calc(100vh - 100px);
+  margin-top: 80px;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -31,7 +31,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  overflow: hidden; // Contain the content
+  overflow: hidden;
 }
 
 .modal-btn-container {
@@ -54,12 +54,11 @@
   padding: 0;
 }
 
-// Content area that will scroll if needed
 .modal-content-body {
   flex: 1;
   overflow-y: auto;
   padding: 0 20px 20px 20px;
-  max-height: calc(100vh - 180px); // Account for header, button container, and padding
+  max-height: calc(100vh - 180px);
 }
 
 .modal-background {
@@ -71,7 +70,6 @@
   z-index: -1;
 }
 
-// Responsive adjustments
 @media (max-width: 768px) {
   .modal-overlay {
     padding: 10px;

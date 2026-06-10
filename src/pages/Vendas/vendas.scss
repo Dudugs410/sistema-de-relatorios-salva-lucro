@@ -16,6 +16,11 @@
     transition: all .4s;
 }
 
+.select-container-calendario{
+    display: flex;
+    justify-content: space-evenly;
+}
+
 .content{
     height: 100%;
     width: 100%;
@@ -250,5 +255,73 @@ transition: background-color 0.3s, border-color 0.3s;
         display: flex;
         justify-content: center;
         transition: all .4s;
+    }
+}
+
+// Add these styles to your existing SCSS file
+
+.select-container-calendario {
+    display: flex;
+    justify-content: space-evenly;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.select-wrapper {
+    flex: 1;
+    min-width: 0; // Allows flex item to shrink below content size
+    max-width: 300px;
+}
+
+.select-wrapper h5 {
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: var(--font-color);
+}
+
+.fixed-width-select {
+    width: 100%;
+}
+
+// Override react-select default behavior
+.fixed-width-select .react-select__control {
+    min-width: 250px;
+    width: 100%;
+    cursor: pointer;
+}
+
+.fixed-width-select .react-select__value-container {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fixed-width-select .react-select__single-value {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: calc(100% - 20px);
+}
+
+.fixed-width-select .react-select__menu {
+    min-width: 250px;
+    width: 100%;
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+    .select-container-calendario {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+    
+    .select-wrapper {
+        max-width: 100%;
+        width: 100%;
+    }
+    
+    .fixed-width-select .react-select__control {
+        min-width: 100%;
     }
 }

@@ -7,16 +7,13 @@ const Modal = ({ onClose, children }) => {
   useEffect(() => {
     localStorage.setItem('showModalDash', false)
     
-    // Prevent body scroll when modal is open
     document.body.style.overflow = 'hidden'
     
     return () => {
-      // Restore body scroll when modal closes
       document.body.style.overflow = 'unset'
     }
   }, [onClose])
 
-  // Handle escape key to close modal
   useEffect(() => {
     const handleEscape = (e) => {
       if (e.keyCode === 27) {

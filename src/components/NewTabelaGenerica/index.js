@@ -12,6 +12,7 @@ import {
   FiChevronDown, 
   FiChevronUp 
 } from 'react-icons/fi'
+import Marquee from "react-fast-marquee";
 
 import './NewTabelaGenerica.scss'
 
@@ -19,57 +20,171 @@ const tableConfig = {
   vendas: {
     title: 'Vendas',
     filters: [
-      { key: 'bandeira', label: 'Bandeira', path: 'bandeira.descricaoBandeira' },
-      { key: 'adquirente', label: 'Adquirente', path: 'adquirente.nomeAdquirente' }
+      { key: 'bandeira', label: 'Bandeira', path: 'BANDEIRA' },
+      { key: 'adquirente', label: 'Adquirente', path: 'ADMINISTRADORA' }
     ],
     mobileCards: [
-      { key: 'adquirente', label: 'Adquirente', path: 'adquirente.nomeAdquirente' },
-      { key: 'bandeira', label: 'Bandeira', path: 'bandeira.descricaoBandeira', badge: true },
-      { key: 'cnpj', label: 'CNPJ' },
-      { key: 'valorBruto', label: 'Valor Bruto', format: 'currency', className: 'green-global' },
-      { key: 'valorLiquido', label: 'Valor Líquido', format: 'currency', className: 'green-global' },
-      { key: 'taxa', label: 'Taxa', format: 'percent', className: 'red-global' },
-      { key: 'dataVenda', label: 'Data Venda', format: 'date' },
-      { key: 'quantidadeParcelas', label: 'Parcelas' },
-      { key: 'nsu', label: 'NSU' },
-      { key: 'tid', label: 'TID' }
+      { key: 'adquirente', label: 'Adquirente', path: 'ADMINISTRADORA' },
+      { key: 'bandeira', label: 'Bandeira', path: 'BANDEIRA', badge: true },
+      { key: 'cnpj', label: 'CNPJ', path: 'CNPJ' },
+      { key: 'valorBruto', label: 'Valor Bruto', path: 'VALORBRUTO', format: 'currency', className: 'green-global' },
+      { key: 'valorLiquido', label: 'Valor Líquido', path: 'VALORLIQUIDO', format: 'currency', className: 'green-global' },
+      { key: 'cartao', label: 'Cartão', path: 'CARTAO'},
+      { key: 'taxa', label: 'Taxa', path: 'TAXA', format: 'percent', className: 'red-global' },
+      { key: 'dataVenda', label: 'Data Venda', path: 'DATAVENDA', format: 'date' },
+      { key: 'parcela', label: 'Parcelas', path: 'PARCELA' },
+      { key: 'nsu', label: 'NSU', path: 'NSU' },
+      { key: 'status', label: 'Status', path: 'STATUS' }
     ]
   },
   creditos: {
     title: 'Créditos',
     filters: [
-      { key: 'bandeira', label: 'Bandeira', path: 'bandeira.descricaoBandeira' },
-      { key: 'adquirente', label: 'Adquirente', path: 'adquirente.nomeAdquirente' }
+      { key: 'bandeira', label: 'Bandeira', path: 'BANDEIRA' },
+      { key: 'adquirente', label: 'Adquirente', path: 'ADMINISTRADORA' }
     ],
     mobileCards: [
-      { key: 'adquirente', label: 'Adquirente', path: 'adquirente.nomeAdquirente' },
-      { key: 'bandeira', label: 'Bandeira', path: 'bandeira.descricaoBandeira', badge: true },
-      { key: 'cnpj', label: 'CNPJ' },
-      { key: 'valorBruto', label: 'Valor Bruto', format: 'currency', className: 'green-global' },
-      { key: 'valorLiquido', label: 'Valor Líquido', format: 'currency', className: 'green-global' },
-      { key: 'taxa', label: 'Taxa', format: 'percent', className: 'red-global' },
-      { key: 'dataVenda', label: 'Data Venda', format: 'date' },
-      { key: 'quantidadeParcelas', label: 'Parcelas' },
-      { key: 'nsu', label: 'NSU' },
-      { key: 'tid', label: 'TID' }
+      { key: 'adquirente', label: 'Adquirente', path: 'ADMINISTRADORA' },
+      { key: 'bandeira', label: 'Bandeira', path: 'BANDEIRA', badge: true },
+      { key: 'cnpj', label: 'CNPJ', path: 'CNPJ' },
+      { key: 'valorBruto', label: 'Valor Bruto', path: 'VALORBRUTO', format: 'currency', className: 'green-global' },
+      { key: 'valorLiquido', label: 'Valor Líquido', path: 'VALORLIQUIDO', format: 'currency', className: 'green-global' },
+      { key: 'cartao', label: 'Cartão', path: 'CARTAO'},
+      { key: 'taxa', label: 'Taxa', path: 'TAXA', format: 'percent', className: 'red-global' },
+      { key: 'dataVenda', label: 'Data Venda', path: 'DATAVENDA', format: 'date' },
+      { key: 'parcela', label: 'Parcelas', path: 'PARCELA' },
+      { key: 'nsu', label: 'NSU', path: 'NSU' },
+      { key: 'status', label: 'Status', path: 'STATUS' }
     ]
   },
   servicos: {
     title: 'Serviços',
     filters: [
-      { key: 'servico', label: 'Serviço', path: 'descricao' },
-      { key: 'adquirente', label: 'Adquirente', path: 'nome_adquirente' }
+      { key: 'adquirente', label: 'Adquirente', path: 'ADMINISTRADORA' },
+      { key: 'tipoAjuste', label: 'Tipo de Ajuste', path: 'TIPOAJUSTE' }
     ],
     mobileCards: [
-      { key: 'nome_adquirente', label: 'Adquirente' },
-      { key: 'descricao', label: 'Serviço', badge: true },
-      { key: 'cnpj', label: 'CNPJ' },
-      { key: 'data', label: 'Data', format: 'date' },
-      { key: 'valor', label: 'Valor', format: 'currency', className: 'red-global' },
-      { key: 'razao_social', label: 'Razão Social' }
+      { key: 'adquirente', label: 'Adquirente', path: 'ADMINISTRADORA' },
+      { key: 'tipoAjuste', label: 'Tipo', path: 'TIPOAJUSTE', badge: true },
+      { key: 'cnpj', label: 'CNPJ', path: 'CNPJ' },
+      { key: 'razaoSocial', label: 'Razão Social', path: 'RAZAOSOCIAL' },
+      { key: 'valorBruto', label: 'Valor Bruto', path: 'VALORBRUTO', format: 'currency', className: 'red-global' },
+      { key: 'valorLiquido', label: 'Valor Líquido', path: 'VALORLIQUIDO', format: 'currency', className: 'red-global' },
+      { key: 'descricao', label: 'Descrição', path: 'DESCRICAOAJUSTE' },
+      { key: 'dataVenda', label: 'Data Venda', path: 'DATAVENDA', format: 'date' },
+      { key: 'dataCredito', label: 'Data Crédito', path: 'DATACREDITO', format: 'date' },
+      { key: 'nsu', label: 'NSU', path: 'NSU' },
+      { key: 'status', label: 'Status', path: 'STATUS' },
+      { key: 'codigoAjuste', label: 'Código', path: 'CODIGOAJUSTE' }
     ]
   }
 }
+
+// Helper function to find the full bandeira/adquirente/servico object from the data array
+const findFilterObject = (value, filterKey, dataArray, tableType) => {
+  if (!value || !dataArray || dataArray.length === 0) return null
+  
+  const uniqueMap = new Map()
+  
+  dataArray.forEach(item => {
+    let displayName = null
+    let code = null
+    
+    if (tableType === 'vendas') {
+      if (filterKey === 'bandeira') {
+        displayName = item.BANDEIRA
+        code = item.CODIGOBANDEIRA
+        if (displayName === value && code && !uniqueMap.has(code)) {
+          uniqueMap.set(code, {
+            codigoBandeira: code,
+            descricaoBandeira: displayName
+          })
+        }
+      } else if (filterKey === 'adquirente') {
+        displayName = item.ADMINISTRADORA
+        code = item.CODIGOADMINISTRADORA
+        if (displayName === value && code && !uniqueMap.has(code)) {
+          uniqueMap.set(code, {
+            codigoAdquirente: code,
+            nomeAdquirente: displayName
+          })
+        }
+      }
+    } else if (tableType === 'creditos') {
+      if (filterKey === 'bandeira') {
+        displayName = item.BANDEIRA
+        code = item.CODIGOBANDEIRA
+        if (displayName === value && code && !uniqueMap.has(code)) {
+          uniqueMap.set(code, {
+            codigoBandeira: code,
+            descricaoBandeira: displayName
+          })
+        }
+      } else if (filterKey === 'adquirente') {
+        displayName = item.ADMINISTRADORA
+        code = item.CODIGOADMINISTRADORA
+        if (displayName === value && code && !uniqueMap.has(code)) {
+          uniqueMap.set(code, {
+            codigoAdquirente: code,
+            nomeAdquirente: displayName
+          })
+        }
+      }
+    } else if (tableType === 'servicos') {
+      if (filterKey === 'tipoAjuste') {
+        displayName = item.TIPOAJUSTE
+        code = item.CODIGOAJUSTE || Math.abs(displayName?.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) || 0)
+        if (displayName === value && !uniqueMap.has(code)) {
+          uniqueMap.set(code, {
+            codigoAjuste: code,
+            descricaoAjuste: displayName
+          })
+        }
+      } else if (filterKey === 'adquirente') {
+        displayName = item.ADMINISTRADORA
+        code = item.CODIGOADMINISTRADORA
+        if (displayName === value && code && !uniqueMap.has(code)) {
+          uniqueMap.set(code, {
+            codigoAdquirente: code,
+            nomeAdquirente: displayName
+          })
+        }
+      }
+    }
+  })
+  
+  const result = uniqueMap.size > 0 ? Array.from(uniqueMap.values())[0] : null
+  
+  if (result) {
+    console.log(`Found ${filterKey} object for "${value}":`, result)
+  } else {
+    console.log(`No ${filterKey} object found for "${value}"`)
+  }
+  
+  return result
+}
+
+const ConditionalMarquee = ({ children, speed = 50, gradient = false, className = "" }) => {
+  const text = typeof children === 'string' ? children : '';
+  
+  if (text.length > 10) {
+    return (
+      <div className="marquee-container">
+        <Marquee speed={speed} gradient={gradient} className={className} delay={1}>
+          {children}
+        </Marquee>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="marquee-container static-text">
+      <span className={className}>
+        {children}
+      </span>
+    </div>
+  );
+};
 
 const NewTabelaGenerica = forwardRef(({ 
   array, 
@@ -96,7 +211,6 @@ const NewTabelaGenerica = forwardRef(({
     dateConvert
   } = useContext(AuthContext)
 
-  // Use useMemo for derived data to prevent unnecessary re-renders
   const dataArray = useMemo(() => array || [], [array])
 
   const [dataExibicao, setDataExibicao] = useState([])
@@ -113,18 +227,49 @@ const NewTabelaGenerica = forwardRef(({
   const [error, setError] = useState(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage] = useState(15)
+  const [isDataProcessed, setIsDataProcessed] = useState(false)
 
-  // Add a ref to track last filtered data
   const lastFilteredDataRef = useRef(null)
+  const isUpdatingRef = useRef(false)
+  const onTotalUpdateRef = useRef(onTotalUpdate)
+  const lastNotifiedDataRef = useRef(null)
+
+  useEffect(() => {
+    onTotalUpdateRef.current = onTotalUpdate
+  }, [onTotalUpdate])
 
   const config = useMemo(() => tableConfig[tableType] || {}, [tableType])
 
-  // FIXED: Expose filtered data via ref
   useImperativeHandle(ref, () => ({
     getFilteredData: () => dataExibicao
   }), [dataExibicao])
 
-  // Check for mobile view - fixed with proper cleanup
+  const getStorageKeys = useCallback(() => {
+    switch(tableType) {
+      case 'vendas':
+        return { filter1: 'selectedBan', filter2: 'selectedAdm' }
+      case 'creditos':
+        return { filter1: 'selectedBanCredits', filter2: 'selectedAdmCredits' }
+      case 'servicos':
+        return { filter1: 'selectedBanServices', filter2: 'selectedAdmServices' }
+      default:
+        return { filter1: 'selectedBan', filter2: 'selectedAdm' }
+    }
+  }, [tableType])
+
+  const getFilterKeys = useCallback(() => {
+    switch(tableType) {
+      case 'vendas':
+        return { first: 'bandeira', second: 'adquirente' }
+      case 'creditos':
+        return { first: 'bandeira', second: 'adquirente' }
+      case 'servicos':
+        return { first: 'tipoAjuste', second: 'adquirente' }
+      default:
+        return { first: 'bandeira', second: 'adquirente' }
+    }
+  }, [tableType])
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobileView(window.innerWidth < 768)
@@ -136,12 +281,10 @@ const NewTabelaGenerica = forwardRef(({
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
-  // Reset page when array changes
   useEffect(() => {
     setCurrentPage(1)
   }, [array])
 
-  // Initialize expanded rows if expandAll is true
   useEffect(() => {
     if (expandAll && dataArray && dataArray.length > 0) {
       const allRowIds = dataArray.map((item, index) => 
@@ -151,22 +294,125 @@ const NewTabelaGenerica = forwardRef(({
     }
   }, [dataArray, expandAll])
 
-  // Stable filter configuration
+  // Load saved filters from localStorage on component mount
+  useEffect(() => {
+    const storageKeys = getStorageKeys()
+    const filterKeys = getFilterKeys()
+    const savedFirstFilter = localStorage.getItem(storageKeys.filter1)
+    const savedSecondFilter = localStorage.getItem(storageKeys.filter2)
+    
+    const initialFilters = {}
+    
+    if (savedFirstFilter && savedFirstFilter !== 'null' && savedFirstFilter !== 'undefined') {
+      try {
+        const parsedFilter = JSON.parse(savedFirstFilter)
+        let filterValue = null
+        
+        if (tableType === 'servicos') {
+          filterValue = parsedFilter.descricaoAjuste
+        } else {
+          filterValue = parsedFilter.descricaoBandeira
+        }
+        
+        if (filterValue) {
+          initialFilters[filterKeys.first] = filterValue
+          console.log(`Loaded saved ${storageKeys.filter1} filter:`, filterValue)
+        }
+      } catch (e) {
+        console.error('Error parsing saved filter:', e)
+      }
+    }
+    
+    if (savedSecondFilter && savedSecondFilter !== 'null' && savedSecondFilter !== 'undefined') {
+      try {
+        const parsedFilter = JSON.parse(savedSecondFilter)
+        if (parsedFilter && parsedFilter.nomeAdquirente) {
+          initialFilters[filterKeys.second] = parsedFilter.nomeAdquirente
+          console.log(`Loaded saved ${storageKeys.filter2} filter:`, parsedFilter.nomeAdquirente)
+        }
+      } catch (e) {
+        console.error('Error parsing saved filter:', e)
+      }
+    }
+    
+    if (Object.keys(initialFilters).length > 0) {
+      setSelectedFilters(prev => ({ ...prev, ...initialFilters }))
+    }
+  }, [getStorageKeys, getFilterKeys, tableType])
+
+  // Update localStorage when first filter changes
+  useEffect(() => {
+    const storageKeys = getStorageKeys()
+    const filterKeys = getFilterKeys()
+    const filterValue = selectedFilters[filterKeys.first]
+    
+    console.log(`${filterKeys.first} filter changed to:`, filterValue)
+    
+    if (filterValue && dataArray && dataArray.length > 0) {
+      const filterObject = findFilterObject(filterValue, filterKeys.first, dataArray, tableType)
+      if (filterObject) {
+        localStorage.setItem(storageKeys.filter1, JSON.stringify(filterObject))
+        console.log(`✅ Updated ${storageKeys.filter1} in localStorage:`, filterObject)
+      } else {
+        console.log(`❌ No ${filterKeys.first} object found for:`, filterValue)
+        localStorage.removeItem(storageKeys.filter1)
+      }
+    } else if (!filterValue) {
+      console.log(`Clearing ${storageKeys.filter1} from localStorage`)
+      localStorage.removeItem(storageKeys.filter1)
+    }
+  }, [selectedFilters, dataArray, tableType, getStorageKeys, getFilterKeys])
+
+  // Update localStorage when second filter changes
+  useEffect(() => {
+    const storageKeys = getStorageKeys()
+    const filterKeys = getFilterKeys()
+    const filterValue = selectedFilters[filterKeys.second]
+    
+    console.log(`${filterKeys.second} filter changed to:`, filterValue)
+    
+    if (filterValue && dataArray && dataArray.length > 0) {
+      const filterObject = findFilterObject(filterValue, filterKeys.second, dataArray, tableType)
+      if (filterObject) {
+        localStorage.setItem(storageKeys.filter2, JSON.stringify(filterObject))
+        console.log(`✅ Updated ${storageKeys.filter2} in localStorage:`, filterObject)
+      } else {
+        console.log(`❌ No ${filterKeys.second} object found for:`, filterValue)
+        localStorage.removeItem(storageKeys.filter2)
+      }
+    } else if (!filterValue) {
+      console.log(`Clearing ${storageKeys.filter2} from localStorage`)
+      localStorage.removeItem(storageKeys.filter2)
+    }
+  }, [selectedFilters, dataArray, tableType, getStorageKeys, getFilterKeys])
+
   const getFilterConfig = useCallback(() => {
     if (customFilterConfig) return customFilterConfig
     
     switch(tableType) {
       case 'vendas':
-      case 'creditos':
         return {
           adquirente: {
             label: 'Adquirente',
-            accessor: (item) => item.adquirente?.nomeAdquirente || '',
+            accessor: (item) => item.ADMINISTRADORA || '',
             dependentKey: 'bandeira'
           },
           bandeira: {
             label: 'Bandeira', 
-            accessor: (item) => item.bandeira?.descricaoBandeira || '',
+            accessor: (item) => item.BANDEIRA || '',
+            dependentKey: 'adquirente'
+          }
+        }
+      case 'creditos':
+        return {
+          adquirente: {
+            label: 'Adquirente',
+            accessor: (item) => item.ADMINISTRADORA || '',
+            dependentKey: 'bandeira'
+          },
+          bandeira: {
+            label: 'Bandeira', 
+            accessor: (item) => item.BANDEIRA || '',
             dependentKey: 'adquirente'
           }
         }
@@ -174,12 +420,12 @@ const NewTabelaGenerica = forwardRef(({
         return {
           adquirente: {
             label: 'Adquirente',
-            accessor: (item) => item.nome_adquirente || '',
-            dependentKey: 'servico'
+            accessor: (item) => item.ADMINISTRADORA || '',
+            dependentKey: 'tipoAjuste'
           },
-          servico: {
-            label: 'Serviço',
-            accessor: (item) => item.descricao || '',
+          tipoAjuste: {
+            label: 'Tipo de Ajuste',
+            accessor: (item) => item.TIPOAJUSTE || '',
             dependentKey: 'adquirente'
           }
         }
@@ -188,23 +434,21 @@ const NewTabelaGenerica = forwardRef(({
     }
   }, [tableType, customFilterConfig])
 
-  // Use either provided columns or generated columns
   const tableColumns = useMemo(() => columns || [], [columns])
 
-  // Check if table should be expandable
   const isExpandable = expandable || config.expandable
 
-  // FIXED: Simplified filter options calculation - no infinite loops
+  // Initialize filter options
   useEffect(() => {
     if (!showFilters || dataArray.length === 0) {
-      setDataExibicao(dataArray)
-      setAllFilterOptions({})
+      if (Object.keys(allFilterOptions).length > 0) {
+        setAllFilterOptions({})
+      }
       return
     }
 
     const filterConfig = getFilterConfig()
     
-    // Calculate all possible values
     const allOptions = {}
     Object.keys(filterConfig).forEach(filterKey => {
       const uniqueValues = new Set()
@@ -220,13 +464,18 @@ const NewTabelaGenerica = forwardRef(({
     })
 
     setAllFilterOptions(allOptions)
-  }, [dataArray, tableType, showFilters, getFilterConfig])
+  }, [dataArray, showFilters, getFilterConfig])
 
-  // FIXED: Separate effect for filtering data with duplicate prevention
+  // Main filtering logic
   useEffect(() => {
+    if (isUpdatingRef.current) return
+    
     if (dataArray.length === 0) {
-      setDataExibicao([])
-      lastFilteredDataRef.current = null
+      if (dataExibicao.length !== 0) {
+        setDataExibicao([])
+        lastFilteredDataRef.current = null
+        setIsDataProcessed(false)
+      }
       return
     }
 
@@ -245,22 +494,39 @@ const NewTabelaGenerica = forwardRef(({
       })
     }
     
-    // FIXED: Only update if data actually changed
     const filteredDataSignature = JSON.stringify(filteredData)
+    
     if (filteredDataSignature !== lastFilteredDataRef.current) {
+      isUpdatingRef.current = true
       lastFilteredDataRef.current = filteredDataSignature
       setDataExibicao(filteredData)
-      setCurrentPage(1) // Reset to first page when filters change
+      setCurrentPage(1)
       
-      // Call onTotalUpdate only when data actually changes
-      if (onTotalUpdate && filteredData.length !== dataExibicao.length) {
-        console.log('Calling onTotalUpdate with filtered data:', filteredData.length)
-        onTotalUpdate(filteredData)
+      if (onTotalUpdateRef.current && isDataProcessed && filteredData.length !== dataExibicao.length) {
+        onTotalUpdateRef.current(filteredData)
+      }
+      
+      setTimeout(() => {
+        isUpdatingRef.current = false
+      }, 100)
+    }
+    
+    if (!isDataProcessed && dataArray.length > 0) {
+      setIsDataProcessed(true)
+    }
+  }, [dataArray, selectedFilters, getFilterConfig, dataExibicao.length, isDataProcessed])
+
+  // Update parent component when dataExibicao changes
+  useEffect(() => {
+    if (onTotalUpdateRef.current && dataExibicao && dataExibicao.length > 0) {
+      const dataSignature = JSON.stringify(dataExibicao)
+      if (dataSignature !== lastNotifiedDataRef.current) {
+        lastNotifiedDataRef.current = dataSignature
+        onTotalUpdateRef.current(dataExibicao)
       }
     }
-  }, [dataArray, selectedFilters, getFilterConfig, onTotalUpdate, dataExibicao.length])
+  }, [dataExibicao])
 
-  // Enhanced expandable rows functions
   const toggleRow = useCallback(async (row) => {
     const rowId = row.id || row.document || row.contractNumber || Math.random()
     
@@ -290,7 +556,6 @@ const NewTabelaGenerica = forwardRef(({
     return expandAll ? expandedRows.has(rowId) : expandedRow === rowId
   }, [expandAll, expandedRows, expandedRow])
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       setLoadingData({})
@@ -299,7 +564,6 @@ const NewTabelaGenerica = forwardRef(({
     }
   }, [])
 
-  // Pagination functions
   const goToPrevPage = useCallback(() => {
     setCurrentPage(prev => Math.max(prev - 1, 1))
   }, [])
@@ -315,7 +579,6 @@ const NewTabelaGenerica = forwardRef(({
   const indexOfFirstItem = indexOfLastItem - itemsPerPage
   const currentItems = dataExibicao.slice(indexOfFirstItem, indexOfLastItem)
 
-  // Get date range text as React elements
   const getDateRangeText = useCallback(() => {
     if (!dateRange || dateRange.length < 2) return ''
     
@@ -352,20 +615,22 @@ const NewTabelaGenerica = forwardRef(({
     }
   }, [dateRange, tableType])
 
-  // FIXED: Simple filter change handler - no complex dependencies
   const handleFilterChange = useCallback((filterKey, value) => {
+    console.log(`Changing filter ${filterKey} to:`, value)
     setSelectedFilters(prev => ({
       ...prev,
       [filterKey]: value || ''
     }))
   }, [])
 
-  // Clear all filters
   const clearFilters = useCallback(() => {
+    console.log('Clearing all filters')
+    const storageKeys = getStorageKeys()
     setSelectedFilters({})
-  }, [])
+    localStorage.removeItem(storageKeys.filter1)
+    localStorage.removeItem(storageKeys.filter2)
+  }, [getStorageKeys])
 
-  // FIXED: Get available options for dropdown based on current selections
   const getAvailableOptions = useCallback((filterKey) => {
     if (!enableDependentFilters) {
       return allFilterOptions[filterKey] || []
@@ -375,12 +640,10 @@ const NewTabelaGenerica = forwardRef(({
     const dependentKey = filterConfig[filterKey]?.dependentKey
     const currentDependentValue = selectedFilters[dependentKey]
 
-    // If dependent filter is not selected or is "Todas", show all options
     if (!currentDependentValue) {
       return allFilterOptions[filterKey] || []
     }
 
-    // Calculate available options based on the dependent filter
     const availableValues = new Set()
     const filteredData = dataArray.filter(item => {
       return filterConfig[dependentKey].accessor(item) === currentDependentValue
@@ -396,16 +659,14 @@ const NewTabelaGenerica = forwardRef(({
     return [...availableValues].sort((a, b) => a.localeCompare(b))
   }, [enableDependentFilters, allFilterOptions, getFilterConfig, selectedFilters, dataArray])
 
-  // Helper function to get nested object values
   const getNestedValue = useCallback((obj, path) => {
     return path.split('.').reduce((acc, part) => acc && acc[part], obj)
   }, [])
 
-  // Helper function to format values
-  const formatValue = useCallback((value, format) => {
+  const formatValue = useCallback((value, formatType) => {
     if (value === null || value === undefined || value === '') return ''
     
-    switch (format) {
+    switch (formatType) {
       case 'currency':
         return Number(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
       case 'percent':
@@ -419,11 +680,10 @@ const NewTabelaGenerica = forwardRef(({
     }
   }, [dateConvert])
 
-  // Helper function to chunk array for mobile cards
-  const chunkArray = useCallback((array, size) => {
+  const chunkArray = useCallback((arrayToChunk, size) => {
     const chunks = []
-    for (let i = 0; i < array.length; i += size) {
-      chunks.push(array.slice(i, i + size))
+    for (let i = 0; i < arrayToChunk.length; i += size) {
+      chunks.push(arrayToChunk.slice(i, i + size))
     }
     return chunks
   }, [])
@@ -431,7 +691,7 @@ const NewTabelaGenerica = forwardRef(({
   if (tableType === 'admin') {
     return (
       <div data-tour="totaladq-section" className="tabela-generica-container">
-        {dataExibicao && (
+        {dataExibicao && dataExibicao.length > 0 && (
           <div className='content tabela-adm-content'>
             <div className='table-responsive-md'>
               <table className='table table-striped table-hover det-table-global elemento-table'>
@@ -468,8 +728,17 @@ const NewTabelaGenerica = forwardRef(({
       {showFilters && (
         <>
           <div className='date-container'>
-            {/* Desktop Filters */}
-            <div data-tour="bandeiraadquirente-section" className='container desktop-filters'>
+
+
+            <hr className='hr-global'/>
+            <div className='container-busca'>
+              <span className='span-busca'>
+                {getDateRangeText()}
+              </span>
+            </div>
+          </div>
+          <hr className='hr-global'/>
+                      <div data-tour="bandeiraadquirente-section" className='container desktop-filters'>
               {Object.keys(getFilterConfig()).map(filterKey => (
                 <div key={filterKey} className='export-column'>
                   <div className='filter-card'>
@@ -490,7 +759,6 @@ const NewTabelaGenerica = forwardRef(({
                 </div>
               ))}
               
-              {/* Clear filters button */}
               {Object.keys(selectedFilters).some(key => selectedFilters[key]) && (
                 <div className="export-column">
                   <div className='filter-card'>
@@ -506,80 +774,7 @@ const NewTabelaGenerica = forwardRef(({
                 </div>
               )}
             </div>
-
-            {/* Mobile Filter Toggle */}
-            {enableResponsive && isMobileView && config.filters && config.filters.length > 0 && (
-              <div className="mobile-filter-toggle">
-                <button 
-                  className="mobile-filter-btn"
-                  onClick={() => setShowMobileFilters(!showMobileFilters)}
-                >
-                  <FiFilter /> 
-                  <span>Filtros</span>
-                  {Object.keys(selectedFilters).some(key => selectedFilters[key]) && (
-                    <span className="filter-counter">
-                      {Object.values(selectedFilters).filter(Boolean).length}
-                    </span>
-                  )}
-                </button>
-                {Object.keys(selectedFilters).some(key => selectedFilters[key]) && (
-                  <button 
-                    className="clear-filters-mobile"
-                    onClick={clearFilters}
-                  >
-                    Limpar
-                  </button>
-                )}
-              </div>
-            )}
-
-            {/* Mobile Filters */}
-            {enableResponsive && isMobileView && showMobileFilters && config.filters && (
-              <div className="mobile-filters-panel">
-                <div className="mobile-filters-header">
-                  <h4>Filtros</h4>
-                  <button 
-                    className="close-filters-btn"
-                    onClick={() => setShowMobileFilters(false)}
-                  >
-                  </button>
-                </div>
-                {config.filters.map(filter => (
-                  <div key={filter.key} className="mobile-filter-group">
-                    <label className="mobile-filter-label">{filter.label}</label>
-                    <div className="mobile-select-container">
-                      <select 
-                        value={selectedFilters[filter.key] || ''}
-                        onChange={(e) => handleFilterChange(filter.key, e.target.value)}
-                        className="mobile-select"
-                      >
-                        <option value="">Todos</option>
-                        {getAvailableOptions(filter.key)?.map((value, index) => (
-                          <option key={index} value={value}>{value}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                ))}
-                <div className="mobile-filters-footer">
-                  <button 
-                    className="apply-filters-btn"
-                    onClick={() => setShowMobileFilters(false)}
-                  >
-                    Aplicar Filtros
-                  </button>
-                </div>
-              </div>
-            )}
-
             <hr className='hr-global'/>
-            <div className='container-busca'>
-              <span className='span-busca'>
-                {getDateRangeText()}
-              </span>
-            </div>
-          </div>
-          <hr className='hr-global'/>
         </>
       )}
 
@@ -591,13 +786,14 @@ const NewTabelaGenerica = forwardRef(({
             className="btn-close" 
             onClick={() => setError(null)}
             aria-label="Close"
-          ></button>
+          >
+            ×
+          </button>
         </div>
       )}
 
       <div data-tour="tabelavendas-section" className='dropShadow vendas-view'>
         <div className='table-wrapper'>
-          {/* Desktop view */}
           {!isMobileView && (
             <table className='table table-striped table-hover det-table-global desktop-table'>
               <thead>
@@ -625,20 +821,31 @@ const NewTabelaGenerica = forwardRef(({
             </table>
           )}
 
-          {/* Mobile view with cards */}
-          {isMobileView && config.mobileCards && (
+          {/* Mobile Cards - Fixed for services */}
+          {isMobileView && config.mobileCards && config.mobileCards.length > 0 ? (
             <div className="mobile-cards">
               {currentItems.map((item, index) => (
                 <div key={index} className="sale-card">
                   <div className="card-header">
                     {config.mobileCards.slice(0, 2).map((field, idx) => {
-                      const value = field.path ? getNestedValue(item, field.path) : item[field.key]
+                      let value
+                      if (field.path) {
+                        if (field.path.includes('.')) {
+                          value = getNestedValue(item, field.path)
+                        } else {
+                          value = item[field.path]
+                        }
+                      } else {
+                        value = item[field.key]
+                      }
                       const formattedValue = formatValue(value, field.format)
                       
                       return field.badge ? (
-                        <span key={field.key} className="badge">{formattedValue}</span>
+                        <ConditionalMarquee key={field.key} className="badge">
+                          {formattedValue || field.label}
+                        </ConditionalMarquee>
                       ) : (
-                        <strong key={field.key}>{formattedValue}</strong>
+                        <strong key={field.key}>{formattedValue || 'N/A'}</strong>
                       )
                     })}
                   </div>
@@ -646,16 +853,25 @@ const NewTabelaGenerica = forwardRef(({
                     {chunkArray(config.mobileCards.slice(2), 2).map((row, rowIndex) => (
                       <div key={rowIndex} className="card-row">
                         {row.map(field => {
-                          const value = field.path ? getNestedValue(item, field.path) : item[field.key]
+                          let value
+                          if (field.path) {
+                            if (field.path.includes('.')) {
+                              value = getNestedValue(item, field.path)
+                            } else {
+                              value = item[field.path]
+                            }
+                          } else {
+                            value = item[field.key]
+                          }
                           const formattedValue = formatValue(value, field.format)
                           
                           return (
                             <div key={field.key} className="card-col">
                               <small>{field.label}</small>
                               {field.className ? (
-                                <span className={field.className}>{formattedValue}</span>
+                                <span className={field.className}>{formattedValue || 'N/A'}</span>
                               ) : (
-                                <span>{formattedValue}</span>
+                                <span>{formattedValue || 'N/A'}</span>
                               )}
                             </div>
                           )
@@ -666,9 +882,44 @@ const NewTabelaGenerica = forwardRef(({
                 </div>
               ))}
             </div>
+          ) : isMobileView && (
+            // Fallback mobile view when no mobileCards config exists
+            <div className="mobile-cards-fallback">
+              {currentItems.map((item, index) => (
+                <div key={index} className="sale-card-fallback">
+                  <div className="card-header-fallback">
+                    <strong>{item.ADMINISTRADORA || item.nome_adquirente || 'Unknown'}</strong>
+                    {item.TIPOAJUSTE && <span className="badge-fallback">{item.TIPOAJUSTE}</span>}
+                  </div>
+                  <div className="card-body-fallback">
+                    <div className="card-row-fallback">
+                      <span className="label">Valor:</span>
+                      <span className={`value ${(item.VALORLIQUIDO || 0) < 0 ? 'red-global' : 'green-global'}`}>
+                        {formatValue(Math.abs(item.VALORLIQUIDO || item.VALORBRUTO || 0), 'currency')}
+                      </span>
+                    </div>
+                    <div className="card-row-fallback">
+                      <span className="label">Data:</span>
+                      <span className="value">{formatValue(item.DATAVENDA || item.data, 'date')}</span>
+                    </div>
+                    {item.DESCRICAOAJUSTE && (
+                      <div className="card-row-fallback">
+                        <span className="label">Descrição:</span>
+                        <span className="value description">{item.DESCRICAOAJUSTE}</span>
+                      </div>
+                    )}
+                    {item.CNPJ && (
+                      <div className="card-row-fallback">
+                        <span className="label">CNPJ:</span>
+                        <span className="value">{item.CNPJ}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
 
-          {/* Mobile view fallback to table if no mobile cards config */}
           {isMobileView && !config.mobileCards && (
             <table className='table table-striped table-hover det-table-global desktop-table'>
               <thead>
@@ -741,5 +992,7 @@ const NewTabelaGenerica = forwardRef(({
     </>
   )
 })
+
+NewTabelaGenerica.displayName = 'NewTabelaGenerica'
 
 export default NewTabelaGenerica

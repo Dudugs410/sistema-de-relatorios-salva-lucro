@@ -1,41 +1,46 @@
+// SidebarMenu component
 import React, { useContext, useState, useEffect } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './Sidebar.scss'
-import salvaLucroLogoBranco from '../../assets/LogoTopo.png'
-import sifra from '../../assets/logoSifra.png'
-import MG from '../../assets/logoMG.png'
-import { FiPercent, FiMoon, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText, FiClipboard, FiDownload, FiCalendar, FiPaperclip, FiSettings, FiTruck, FiShoppingBag, FiTable, FiLink } from "react-icons/fi"
+import { FiPercent, FiMoon, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText, FiClipboard, FiDownload, FiCalendar, FiPaperclip, FiSettings, FiTruck, FiShoppingBag, FiTable, FiLink, FiDatabase } from "react-icons/fi"
 import { LiaFileInvoiceDollarSolid } from "react-icons/lia";
 import { Collapse, Nav, Navbar, NavItem, NavLink, Button } from 'reactstrap'
 import { AuthContext } from '../../contexts/auth'
 import { FiMenu } from 'react-icons/fi'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 const Sidebar = () => {
     const [optionsWithIcons, setOptionsWithIcons] = useState([])
     const [activeParent, setActiveParent] = useState(null)
     const [lastClicked, setLastClicked] = useState(null)
     const [sidebarVisible, setSidebarVisible] = useState(false)
-
-    const [contextImg, setContextImg] = useState()
-
-    useEffect(()=>{
-        let context = localStorage.getItem('selectedContext')
-        if(context === 'sifra'){
-            setContextImg(sifra)
-        } else if (context === 'MG'){
-            setContextImg(MG)
-        } else {
-            setContextImg(salvaLucroLogoBranco)
-        }
-    },[])
+    
+    // Get logo and context from AuthContext
+    const { currentLogo, currentContext } = useContext(AuthContext)
 
     const navigate = useNavigate()
+    const location = useLocation()
+
+    // Helper function to check if we're on the Usuario page
+    const isOnUsuarioPage = () => {
+        return location.pathname === '/usuario'
+    }
+
+    // Safe navigation function that dispatches events for the Usuario page
+    const safeNavigate = (path) => {
+        if (isOnUsuarioPage()) {
+            // Dispatch a custom event that the Usuario page can listen to
+            const event = new CustomEvent('sidebar-navigate', { detail: { path } })
+            window.dispatchEvent(event)
+        } else {
+            // Navigate normally if not on Usuario page
+            navigate(path)
+        }
+    }
 
     const toggleDropdown = (parent) => {
         if (activeParent === parent) {
             setActiveParent(null)
-            
         } else {
             setActiveParent(parent)
             setLastClicked(parent)
@@ -45,19 +50,19 @@ const Sidebar = () => {
     const handleChildClick = (child, navigationLink, parent) => {
         setLastClicked(child)
         setActiveParent(parent)
-        navigate(navigationLink)
+        safeNavigate(navigationLink)
         setSidebarVisible(false)
     }
 
     const handleParentClickWithoutChildren = (parent, navigationLink) => {
         setActiveParent(parent)
         setLastClicked(parent)
-        navigate(navigationLink)
+        safeNavigate(navigationLink)
         setSidebarVisible(false)
     }
 
     const handleLogo = () => {
-        navigate('/dashboard')
+        safeNavigate('/dashboard')
     }
 
     const toggleSidebar = () => {
@@ -79,38 +84,33 @@ const Sidebar = () => {
             'FiShoppingBag': FiShoppingBag,
             'FiTable': FiTable,
             'FiPercent': FiPercent,
+            'FiDatabase': FiDatabase,
             'LiaFileInvoiceDollarSolid': LiaFileInvoiceDollarSolid,
         }
 
         const orderedOptions = [
             { nome: 'Início', icone: icones['FiHome'], rota: '/dashboard' },
             { nome: 'Vendas', icone: icones['FiDollarSign'], rota: '/vendas' },
-            { nome: 'Créditos', icone: icones['FiCreditCard'], rota: '/creditos' },
-            { nome: 'Serviços', icone: icones['FiTool'], rota: '/servicos' },
-            { nome: 'Taxas', icone: icones['FiPercent'], rota: '/taxas' },
-            { nome: 'Extrato Bancário', icone: icones['LiaFileInvoiceDollarSolid'], rota: '/extrato'},
+            { 
+                nome: 'Créditos', 
+                icone: icones['FiCreditCard'], 
+                children: [
+                    { nome: 'Resumo de Créditos', rota: '/creditos' },
+                    { nome: 'Créditos por Data e Banco', rota: '/creditos-data-banco' },
+                    { nome: 'Previsão de Recebimentos', rota: '/previsao-recebimento'}
+                ]
+            },
+            { 
+                nome: 'Serviços', 
+                icone: icones['FiTool'], 
+                children: [
+                    { nome: 'Ajustes', rota: '/servicos' },
+                    { nome: 'Resumo Mensal', rota: '/resumo-mensal' },
+                ]
+            },
         ]
         setOptionsWithIcons(orderedOptions)
     }, [])
-
-    {/*
-        { nome: 'Cadastro de Bancos', icone: icones['FiFileText'], rota: '/cadastrodebancos' },
-
-        { nome: 'Relatórios', icone: icones['FiFileText'], children: [
-        { nome: 'Financeiro', rota: '/financeiro' },
-        { nome: 'Gerenciais', rota: '/gerenciais' },
-        { nome: 'Outros', rota: '/outrosrelatorios'},
-        ]},
-        { nome: 'Exportações', icone: icones['FiDownload'], children: [
-            { nome: 'Sysmo', rota: '/sysmo' },
-            { nome: 'Meta', rota: '/meta' },
-            { nome: 'Meta Sapiranga', rota: '/metasapiranga' },
-        ]},
-        { nome: 'Administração', icone: icones['FiPaperClip'], rota: '/administracao'},
-        { nome: 'Suporte', icone: icones['FiSettings'], rota: '/suporte'},
-        { nome: 'Delivery', icone: icones['FiTruck'], rota: '/vendasdelivery'},
-        { nome: 'Conciliacao', icone: icones['FiShoppingBag'], rota: '/conciliacao'},    
-    */}
 
     return (
         <>
@@ -119,7 +119,33 @@ const Sidebar = () => {
             </Button>
             <div className={`d-flex flex-column bg-sidebar sidebar ${sidebarVisible ? 'visible' : ''}`}>
                 <div className='navbar-title'>
-                    <img className='img-header' src={contextImg} alt='logo salva lucro' onClick={handleLogo} />
+                    {currentContext?.startsWith('ALT-') ? (
+                    <div 
+                        className='img-header logo-mask'
+                        style={{ 
+                        backgroundColor: 'var(--secondary-color)',
+                        maskImage: `url(${currentLogo})`,
+                        WebkitMaskImage: `url(${currentLogo})`,
+                        maskSize: '160px 30px',
+                        WebkitMaskSize: 'contain',
+                        maskRepeat: 'no-repeat',
+                        WebkitMaskRepeat: 'no-repeat',
+                        maskPosition: 'center',
+                        WebkitMaskPosition: 'center',
+                        width: '160px',
+                        height: '40px',
+                        cursor: 'pointer'
+                        }}
+                        onClick={handleLogo}
+                    />
+                    ) : (
+                    <img 
+                        className='img-header' 
+                        src={currentLogo} 
+                        alt='logo'
+                        onClick={handleLogo} 
+                    />
+                    )}
                 </div>
                 <Navbar color="light" light expand="md">
                     <Nav navbar className="flex-column w-100">
@@ -154,34 +180,7 @@ const Sidebar = () => {
                 </Navbar>
             </div>
         </>
-    );
+    )
 }
 
-export default Sidebar;
-
-/*
-    { nome: 'Bancos', icone: icones['FiLink'], rota: '/cadastrodebancos' },
-    { nome: 'Taxas', icone: icones['FiTable'], rota: '/taxas' },
-    { 
-        nome: 'Relatórios', 
-        icone: icones['FiFileText'], 
-        children: [
-            { nome: 'Financeiro', rota: '/financeiro' },
-            { nome: 'Gerenciais', rota: '/gerenciais' },
-            { nome: 'Outros', rota: '/outrosrelatorios' },
-        ] 
-    },
-    { 
-        nome: 'Exportações', 
-        icone: icones['FiDownload'], 
-        children: [
-            { nome: 'Sysmo', rota: '/sysmo' },
-            { nome: 'Meta', rota: '/meta' },
-            { nome: 'Meta Sapiranga', rota: '/metasapiranga' },
-        ] 
-    },
-    { nome: 'Administração', icone: icones['FiPaperClip'], rota: '/administracao' },
-    { nome: 'Suporte', icone: icones['FiSettings'], rota: '/suporte' },
-    { nome: 'Delivery', icone: icones['FiTruck'], rota: '/vendasdelivery' },
-    { nome: 'Conciliação', icone: icones['FiShoppingBag'], rota: '/conciliacao' },
-*/
+export default Sidebar

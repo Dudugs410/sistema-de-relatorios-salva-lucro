@@ -492,7 +492,6 @@ const TabelaVendasCreditos = ({array, tipo, isDashboard}) =>{
 								<th className='det-th-global'scope="col">Data do Crédito</th>
 								<th className='det-th-global'scope="col">Autorização</th>
 								<th className='det-th-global'scope="col">QTD Parcelas</th>
-								<th className='det-th-global'scope="col">TID</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -514,7 +513,6 @@ const TabelaVendasCreditos = ({array, tipo, isDashboard}) =>{
 										<td className='det-td-vendas-global'data-label="Data do Crédito">{dateConvert(venda.dataCredito)}</td>
 										<td className='det-td-vendas-global'data-label="Autorização">{venda.codigoAutorizacao}</td>
 										<td className='det-td-vendas-global'data-label="QTD Parcelas">{venda.quantidadeParcelas}</td>
-										<td className='det-td-vendas-global'data-label="TID">{venda.tid}</td>
 									</tr>
 								)
 							})}
@@ -542,7 +540,6 @@ const TabelaVendasCreditos = ({array, tipo, isDashboard}) =>{
 								<th className='det-th-global'scope="col">Banco</th>
 								<th className='det-th-global'scope="col">Agência</th>
 								<th className='det-th-global'scope="col">Conta</th>
-								<th className='det-th-global'scope="col">TID</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -567,7 +564,6 @@ const TabelaVendasCreditos = ({array, tipo, isDashboard}) =>{
 										<td className='det-td-vendas-global'data-label="Banco">{venda.banco}</td>
 										<td className='det-td-vendas-global'data-label="Agência">{venda.agencia}</td>
 										<td className='det-td-vendas-global'data-label="Conta">{venda.conta}</td>
-										<td className='det-td-vendas-global'data-label="TID">{venda.tid}</td>
 									</tr>
 								)
 							})}

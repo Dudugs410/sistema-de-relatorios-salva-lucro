@@ -10,44 +10,142 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- CACHE CONTROL - Force fresh content -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    
+    <!-- Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self';
+      script-src 'self' 'unsafe-inline';
+      style-src 'self' 'unsafe-inline';
+      img-src 'self' data: https:;
+      connect-src 'self' https://app.salvalucro.com.br https://api.pluggy.ai;
+    ">
+    
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
+    
+    <!-- APP VERSION - Increment this on each deployment -->
+    <script>
+      (function() {
+        const APP_VERSION = '2.0.4'; // CHANGE THIS ON EVERY DEPLOY
+        
+        // Check if we need to force a reload due to version change
+        try {
+          const storedVersion = localStorage.getItem('app_version');
+          
+          if (storedVersion !== APP_VERSION) {
+            localStorage.setItem('app_version', APP_VERSION);
+            // Clear any cached theme customizations if needed
+            // localStorage.removeItem('colorScheme');
+            // Force reload from server, bypassing cache
+            window.location.reload(true);
+            return; // Stop further execution
+          }
+        } catch(e) {
+          console.warn('Version check failed:', e);
+        }
+      })();
+    </script>
+    
+    <!-- CRITICAL: Enhanced Theme initialization script - runs before any CSS loads -->
+    <script>
+      (function() {
+        try {
+          // Helper function to get context from user data
+          function getContextFromUser(userData) {
+            if (!userData) return null;
+            try {
+              const user = typeof userData === 'string' ? JSON.parse(userData) : userData;
+              if (user.GRUCODIGO === 'SIFRA') return 'SIFRA';
+              if (user.GRUCODIGO === 'MG') return 'MG';
+              if (user.GRUCODIGO === 'superjur') return 'superjur';
+              if (user.GRUCODIGO === 'carddigital') return 'carddigital';
+              if (user.CONTEXT) return user.CONTEXT;
+              return null;
+            } catch(e) {
+              return null;
+            }
+          }
 
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
+          // Get saved data from localStorage
+          const savedContext = localStorage.getItem('appContext');
+          const savedTheme = localStorage.getItem('appTheme');
+          const userData = localStorage.getItem('user');
+          const token = localStorage.getItem('token');
+          
+          // Determine the correct context
+          let finalContext = 'salvalucro'; // Default
+          
+          // Priority: savedContext > user.GRUCODIGO > default
+          if (savedContext) {
+            finalContext = savedContext;
+          } else if (token && userData) {
+            const contextFromUser = getContextFromUser(userData);
+            if (contextFromUser) finalContext = contextFromUser;
+          }
+          
+          // Determine the correct theme
+          let finalTheme = 'light'; // Default
+          
+          if (savedTheme) {
+            finalTheme = savedTheme;
+          } else if (token && userData) {
+            try {
+              const user = typeof userData === 'string' ? JSON.parse(userData) : userData;
+              if (user.TEMA === true) finalTheme = 'dark';
+            } catch(e) {}
+          }
+          
+          // Apply to HTML element IMMEDIATELY
+          document.documentElement.setAttribute('data-context', finalContext);
+          document.documentElement.setAttribute('data-theme', finalTheme);
+          
+          // Also store in sessionStorage to verify theme was applied
+          sessionStorage.setItem('themeInitialized', 'true');
+          sessionStorage.setItem('themeContext', finalContext);
+          sessionStorage.setItem('themeMode', finalTheme);
+          
+          console.log('✅ Theme pre-loaded:', { context: finalContext, theme: finalTheme });
+          
+          // Add a small style to prevent FOUC
+          const style = document.createElement('style');
+          style.textContent = `
+            /* Hide content briefly until theme is fully applied */
+            html:not([data-context]) #root,
+            html:not([data-theme]) #root {
+              opacity: 0;
+            }
+            html[data-context][data-theme] #root {
+              opacity: 1;
+              transition: opacity 0.15s ease-in;
+            }
+          `;
+          document.head.appendChild(style);
+          
+        } catch(e) {
+          console.error('Theme initialization error:', e);
+          // Fallback to defaults
+          document.documentElement.setAttribute('data-context', 'salvalucro');
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
+    
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
 
     <!-- iOS specific -->
-    <meta name="apple-mobile-web-app-title" content="Your App Title">
+    <meta name="apple-mobile-web-app-title" content="SalvaLucro">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
 
     <title>SALVALUCRO | Financeiro</title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
-
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
   </body>
 </html>
-<!-- -->
