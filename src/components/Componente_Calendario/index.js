@@ -7,7 +7,12 @@ import './Calendar.scss'
 import '../../styles/global.scss'
 import { useLocation } from "react-router-dom"
 
-const MyCalendar = ({ onLoadData, getCalendarDate, btnDisabled }) => {
+const MyCalendar = (props) => {
+
+  const onLoadData = props.onLoadData
+  const getCalendarDate = props.getCalendarDate
+  const btnDisabled = props.btnDisabled
+
     const { isCheckedCalendar } = useContext(AuthContext)
 
     const location = useLocation()
@@ -87,6 +92,8 @@ const MyCalendar = ({ onLoadData, getCalendarDate, btnDisabled }) => {
           { isCheckedCalendar ? <>
           <hr className='hr-global'/>
           <Calendar
+            locale="pt-BR"
+            calendarType="gregory"
             style={{ color:'white' }}
             onChange={ handleDateChange }
             selectRange={allowRange}
@@ -108,7 +115,7 @@ const MyCalendar = ({ onLoadData, getCalendarDate, btnDisabled }) => {
             </span>
           </div>
           <hr className='hr-global'/>
-          { showPesquisar === true ? <button className='btn btn-primary btn-global btn-pesquisar' onClick={ onLoadData } disabled={btnDisabled}>Pesquisar</button> : <></> }
+          { showPesquisar === true ? <button data-tour="pesquisar-section" className='btn btn-primary btn-global btn-pesquisar' onClick={ onLoadData } disabled={btnDisabled}>Pesquisar</button> : <></> }
           { showPesquisar === true ? <hr className='hr-global'/> : <></> }
         </div>
       )
@@ -120,6 +127,8 @@ const MyCalendar = ({ onLoadData, getCalendarDate, btnDisabled }) => {
           { isCheckedCalendar ? <>
           <hr className='hr-global'/>
           <Calendar
+            locale="pt-BR"
+            calendarType="gregory"
             style={{ color:'white' }}
             onChange={ handleDateChangeSysmo }
             value={ dateSysmo }

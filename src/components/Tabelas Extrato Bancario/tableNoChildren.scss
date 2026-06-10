@@ -1,0 +1,7 @@
+.table-no-children{
+    --bs-table-hover-color: inherit !important;
+    --bs-table-hover-bg: inherit !important;
+    :hover{
+        cursor: inherit !important;
+    }
+}

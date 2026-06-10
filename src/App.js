@@ -7,26 +7,31 @@ import React from 'react'
 import { ToastContainer } from 'react-toastify'
 
 import './index.scss'
+import PluggyProvider from './contexts/pluggyContext'
+import { initializeContext } from './util/contextInitializer';
 
+initializeContext()
 
 function App() {
 
   return (
     <BrowserRouter basename='/salvalucro3'>
       <AuthProvider>
-            <RoutesApp/>
+        <PluggyProvider>
+          <RoutesApp/>
+        </PluggyProvider>
       </AuthProvider>
       <ToastContainer
-                position="bottom-right" // Set position to bottom right
-                autoClose={5000} // Adjust as per your requirements
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-            />
+        position="bottom-right" // Set position to bottom right
+        autoClose={5000} // Adjust as per your requirements
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </BrowserRouter>
   )
 }

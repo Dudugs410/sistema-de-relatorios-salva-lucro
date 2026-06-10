@@ -9,10 +9,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.5); /* optional: for a semi-transparent background */
-    z-index: 1000; /* make sure this is higher than other elements */
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
     border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Soft shadow effect */
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     border: solid var(--secondary-color) 1px;
 
 }
@@ -21,7 +21,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100px; /* Adjust height as needed */
+    height: 100px;
   }
   
   .lazy-loading-animation-modal {
@@ -29,7 +29,7 @@
     align-items: center;
     padding: 20px;
     border-radius: 10px;
-    height: 100px; /* Adjust height as needed */
+    height: 100px;
     
   }
   
@@ -40,8 +40,8 @@
     height: 40px;
     animation: spin 1s linear infinite;
     margin-right: 20px;
-    transition: all 0.3s ease-in-out; /* Smooth transition */
-    border-top: 4px solid var(--secondary-color); /* Blue color for spinner */
+    transition: all 0.3s ease-in-out;
+    border-top: 4px solid var(--secondary-color);
   }
 
 
@@ -59,7 +59,7 @@
   .lazy-loading-text-modal {
     font-size: 18px;
     color: #555;
-    transition: all 0.3s ease-in-out; /* Smooth transition */
+    transition: all 0.3s ease-in-out;
   }
   
   .lazy-loading-container-modal:hover .lazy-loading-spinner {

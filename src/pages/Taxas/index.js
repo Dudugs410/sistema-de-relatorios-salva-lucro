@@ -1,7 +1,6 @@
 import { useEffect, useContext, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { AuthContext } from '../../contexts/auth'
-import Cookies from 'js-cookie'
 import '../../styles/global.scss'
 import './taxas.scss'
 import Select from 'react-select'
@@ -11,6 +10,7 @@ import { FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward } from 'react-
 import ConfirmDelete from '../../components/Componente_ConfirmDelete'
 import LazyLoader from '../../components/Componente_LazyLoader/index.js'
 import Overlay from '../../components/Component_Overlay/index.js'
+import TabelaCompTaxas from './TabelaCompTaxas.js'
 
 const Taxas = () => {
     const location = useLocation()
@@ -24,6 +24,8 @@ const Taxas = () => {
         deleteTax,
         changedOption,
         isLoadingTaxes,
+        taxesPageArray,
+        setTaxesTableData,
     } = useContext(AuthContext)
 
     const [bannersList, setBannersList] = useState([])
@@ -41,6 +43,17 @@ const Taxas = () => {
 
     const [clientCode, setClientCode] = useState(localStorage.getItem('clientCode'))
     const [taxesList, setTaxesList] = useState([])
+
+    const taxasComp = [
+ 
+    ]
+
+    useEffect(() => {
+        if (taxasComp && taxasComp.length > 0) {
+            const allTaxas = taxasComp.flatMap(item => item.taxas || []);
+            setTaxesTableData(allTaxas);
+        }
+    }, [])
 
     useEffect(() => {
         localStorage.setItem('currentPath', location.pathname)
@@ -70,6 +83,12 @@ const Taxas = () => {
         }
         inicialize()
     }, [])
+
+    useEffect(()=>{
+    if(taxesPageArray.length > 0){
+        exportTaxes(taxesPageArray)
+    }
+    },[taxesPageArray, localStorage.getItem('currentPath')])
 
     useEffect(() => {
         if (bannersList) {
@@ -179,19 +198,11 @@ const Taxas = () => {
             }
         )
     }
-
-    const handleCancel = () => {
-        resetValues()
-        setIsModalEditOpen(false)
-    }
-
-        //adicionando páginas à tabela:
-
         const [currentPage, setCurrentPage] = useState(1)
-        const [itemsPerPage] = useState(15) // Number of items per page
+        const [itemsPerPage] = useState(15)
     
         useEffect(() => {
-            setCurrentPage(1) // Reset page to 1 when data changes
+            setCurrentPage(1)
         }, [taxesList])
     
         // Change page functions
@@ -279,42 +290,44 @@ const Taxas = () => {
                         style={{ marginBottom: '10px' }}
                     />
                 </div>
-                <div className='table-wrapper table-wrapper-taxes'>
-                    <table className="table table-striped table-hover table-bordered table-bancos det-table-global">
-                        <thead>
-                            <tr className='det-tr-top-global'>
-                                <th className='det-th-global sticky-col start-col' scope="col" style={{ width: '2%', textAlign: 'center' }}>
-                                    <button className="btn btn-primary btn-global" style={{ width: '100%' }} onClick={() => { setIsModalOpen(true) }}>
-                                        <FiPlus size={25} className="icon" />
-                                    </button>
-                                </th>
-                                <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Bandeira</th>
-                                <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Adquirente</th>
-                                <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Modalidade</th>
-                                <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Tipo Taxa</th>
-                                <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>% Taxa</th>
-                                <th className='det-th-global sticky-col end-col' scope="col" style={{ width: '2%', textAlign: 'center' }}></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {currentItems.length > 0 &&
-                                currentItems.map((object, index) => (
-                                    <tr key={index} className="det-tr-global tr-taxas">
-                                        <th className='sticky-col start-col' scope="row" style={{ textAlign: 'center' }} onClick={() => { handleEdit(object) }}>
-                                            <FiEdit className="icon" />
-                                        </th>
-                                        <td className="det-td-vendas-global" data-label="BADDESCRICAO">{object.BADDESCRICAO}</td>
-                                        <td className="det-td-vendas-global" data-label="nomeAdquirente">{object.ADQUIRENTE.nomeAdquirente}</td>
-                                        <td className="det-td-vendas-global" data-label="MODDESCRICAO">{object.MODDESCRICAO}</td>
-                                        <td className="det-td-vendas-global" data-label="TIPOTAXA">{object.TIPOTAXA}</td>
-                                        <td className="det-td-vendas-global" data-label="TAXAPERCENTUAL">{object.TAXAPERCENTUAL} %</td>
-                                        <th className='sticky-col end-col' scope="row" style={{ textAlign: 'center' }} onClick={() => handleDelete(object)}>
-                                            <FiTrash className="icon" />
-                                        </th>
-                                    </tr>
-                                ))}
-                        </tbody>
-                    </table>
+                <div className='dropShadow vendas-view'>
+                    <div className='table-wrapper table-wrapper-taxes'>
+                        <table className="table table-striped table-hover table-bordered table-bancos det-table-global">
+                            <thead>
+                                <tr className='det-tr-top-global'>
+                                    <th className='det-th-global sticky-col start-col' scope="col" style={{ width: '2%', textAlign: 'center' }}>
+                                        <button data-tour="cadastrar-taxa-section" className="btn btn-primary btn-global" style={{ width: '100%' }} onClick={() => { setIsModalOpen(true) }}>
+                                            <FiPlus size={25} className="icon" />
+                                        </button>
+                                    </th>
+                                    <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Bandeira</th>
+                                    <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Adquirente</th>
+                                    <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Modalidade</th>
+                                    <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>Tipo Taxa</th>
+                                    <th className='det-th-global' scope="col" style={{ textAlign: 'center', minWidth: '150px' }}>% Taxa</th>
+                                    <th className='det-th-global sticky-col end-col' scope="col" style={{ width: '2%', textAlign: 'center' }}></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {currentItems.length > 0 &&
+                                    currentItems.map((object, index) => (
+                                        <tr key={index} className="det-tr-global tr-taxas">
+                                            <th data-tour="editar-taxa-section" className='sticky-col start-col' scope="row" style={{ textAlign: 'center' }} onClick={() => { handleEdit(object) }}>
+                                                <FiEdit style={{ color: "green" }}className="icon" />
+                                            </th>
+                                            <td className="det-td-vendas-global" data-label="BADDESCRICAO">{object.BADDESCRICAO}</td>
+                                            <td className="det-td-vendas-global" data-label="nomeAdquirente">{object.ADQUIRENTE.nomeAdquirente}</td>
+                                            <td className="det-td-vendas-global" data-label="MODDESCRICAO">{object.MODDESCRICAO}</td>
+                                            <td className="det-td-vendas-global" data-label="TIPOTAXA">{object.TIPOTAXA}</td>
+                                            <td className="det-td-vendas-global" data-label="TAXAPERCENTUAL">{object.TAXAPERCENTUAL} %</td>
+                                            <th data-tour="deletar-taxa-section" className='sticky-col end-col' scope="row" style={{ textAlign: 'center' }} onClick={() => handleDelete(object)}>
+                                                <FiTrash style={{ color: "red" }} className="icon" />
+                                            </th>
+                                        </tr>
+                                    ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <hr className='hr-global'/>
                 { filteredItems.length > itemsPerPage && (
@@ -421,7 +434,6 @@ const Taxas = () => {
                     <div className='header-container-taxa'>
                         <div className='title-container-global title-container-banco title-container-contato' style={{ marginTop: '5%' }}>
                             <h3 className='title-global' style={{ margin: '0', height: 'auto' }}>Cadastrar Taxa</h3>
-                            <button className='btn btn-danger close-modal-banco close-modal-contato' onClick={closeModal}><FiX size={13} /></button>
                         </div>
                     </div>
                     <hr className='hr-global'/>
@@ -507,9 +519,12 @@ const Taxas = () => {
                             maxLength={5} // Maximum length including the decimal point
                         />
                     </div>
+                    <hr className='hr-global'/>
                     <div className='group-element-taxas'>
-                        <hr className='hr-global'/>
-                        <button className='btn-global btn-taxas' disabled={isLoadingTaxes}>Cadastrar Taxa</button>
+                        <div className='btn-container-modal-taxas'>
+                            <button className='btn-global btn-taxas' disabled={isLoadingTaxes}>Cadastrar Taxa</button>
+                            <button className='btn btn-danger' onClick={closeModal} style={{height: '35.19px', borderRadius: '10px'}}>Voltar</button>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -574,7 +589,6 @@ const Taxas = () => {
                     <div className='header-container-taxa'>
                         <div className='title-container-global title-container-banco title-container-contato' style={{ marginTop: '5%' }}>
                             <h3 className='title-global' style={{ margin: '0', height: 'auto' }}>Cadastrar Taxa</h3>
-                            <button className='btn btn-danger close-modal-banco close-modal-contato' onClick={closeModal}><FiX size={13} /></button>
                         </div>
                     </div>
                     <hr className='hr-global'/>
@@ -650,9 +664,12 @@ const Taxas = () => {
                             />
                         </div>
                     </div>
+                    <hr className='hr-global'/>
                     <div className='group-element-taxas'>
-                        <hr className='hr-global'/>
-                        <button className='btn-global btn-taxas' disabled={isLoadingTaxes}>Atualizar Taxa</button>
+                        <div className='btn-container-modal-taxas'>
+                            <button className='btn-global btn-taxas' disabled={isLoadingTaxes}>Atualizar Taxa</button>
+                            <button className='btn btn-danger' onClick={closeModal} style={{height: '35.19px', borderRadius: '10px'}}>Voltar</button>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -680,24 +697,33 @@ const Taxas = () => {
                             <>  
                                 <span className='subtitle'>Sem Taxas Cadastradas</span>
                                 <br/> 
-                                <button className='btn btn-primary btn-global' onClick={()=>{setIsModalOpen(true)}}><FiPlus className='icon' />Adicionar</button>
+                                <button data-tour="cadastrar-taxa-section" className='btn btn-primary btn-global' onClick={()=>{setIsModalOpen(true)}}><FiPlus className='icon' />Adicionar</button>
                             </>
                             }
                             {
                                 (clientCode === ('todos' || undefined) && (isLoadingTaxes === false)) ?
-                                    <span className='subtitle'>Selecione um cliente para exibir suas taxas cadastradas</span>
+                                    <span className='subtitle' style={{textAlign: 'center'}}>Clique no botão 'Trocar' na parte superior da página para selecionar um cliente e exibir ou cadastrar suas taxas</span>
                                     : 
                                     <></>
                             }
                         </div>
                     </div>
-                    {
-                        isLoadingTaxes ? 
-                            <LazyLoader /> 
-                            : ( taxesList && taxesList.length > 0 ?  
-                                <TaxesTable />
-                            : <></> )
-                    }
+                        {
+                            isLoadingTaxes ? (
+                                <LazyLoader />
+                            ) : taxesList && taxesList.length > 0 ? (
+                                <>
+                                    <TaxesTable />
+                                    {taxasComp && taxasComp.length > 0 ? (
+                                        <TabelaCompTaxas array={taxasComp} />
+                                    ) : (
+                                        <div style={{width: '100%'}}>
+                                            <div className='subtitle-global text-global'>Sem dados de comparativo de taxas a serem exibidos ( <b style={{'color': 'orange'}}>Funcionalidade em Desenvolvimento</b> )</div>
+                                        </div>
+                                    )}
+                                </>
+                            ) : null
+                        }
                     <div className='modal-container' style={{ display: (isModalOpen || isModalEditOpen) ? 'block' : 'none' }}>
                         <ModalNewTax />
                         <ModalEditTax />

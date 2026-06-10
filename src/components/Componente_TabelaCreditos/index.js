@@ -8,7 +8,7 @@ import { FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward } from 'react-
 
 const TabelaCreditos = ({array}) =>{
 
-	const { dateConvert, creditsDateRange, setCreditsTotal } = useContext(AuthContext)
+	const { dateConvert, creditsDateRange, setCreditsTotal, exportCredits } = useContext(AuthContext)
 
 	const [vendasArray, setVendasArray] = useState([])
 	const [vendasTeste, setVendasTeste] = useState([])
@@ -288,10 +288,16 @@ const TabelaCreditos = ({array}) =>{
 
 	},[adqSelecionada])
 
+	useEffect(()=>{
+		if(vendasExibicao.length > 0){
+			exportCredits(vendasExibicao)
+		}
+	},[vendasExibicao])
+
 	return(
 		<>
 			<div className='date-container'>
-				<div className='container'>
+				<div className='container' data-tour="bandeiraadquirente-section">
 					<div className='export-column'>
 						<div className='select-card select-align select-align-filtro'>
 							<span className='span-str'>Adquirente</span>
@@ -326,7 +332,7 @@ const TabelaCreditos = ({array}) =>{
 				</div>
 			</div>
 			<hr className='hr-global'/>
-			<div className='dropShadow vendas-view'>
+			<div data-tour="tabelavendas-section" className='dropShadow vendas-view'>
 				<div className='table-wrapper'>
 					<table className='table table-striped table-hover det-table-global'>
 						<thead>
@@ -360,7 +366,7 @@ const TabelaCreditos = ({array}) =>{
 										<td className='det-td-vendas-global'data-label="Adquirente">{venda.adquirente.nomeAdquirente}</td>
 										<td className='det-td-vendas-global'data-label="Bandeira">{venda.bandeira.descricaoBandeira}</td>
 										<td className='det-td-vendas-global'data-label="Produto">{venda.produto.descricaoProduto}</td>
-										<td className='det-td-vendas-global'data-label="Subproduto">{venda.modalidade.descricaoModalidade}</td>
+										<td className='det-td-vendas-global'data-label="Subproduto">{venda.modalidade?.descricaoModalidade || ''}</td>
 										<td className='det-td-vendas-global'data-label="Data do Crédito">{dateConvert(venda.dataCredito)}</td>
 										<td className='det-td-vendas-global'data-label="Data da Venda">{dateConvert(venda.dataVenda)}</td>
 										<td className='det-td-vendas-global'data-label="Valor Bruto"><span className='green-global'>{Number(venda.valorBruto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>

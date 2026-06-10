@@ -1,12 +1,13 @@
-import { useEffect, useContext } from 'react'
+import { useEffect, useContext, useState } from 'react'
 import './vendas.scss'
+import Joyride from 'react-joyride'
 import { AuthContext } from '../../contexts/auth'
 import { useLocation } from 'react-router-dom'
 import '../../index.scss'
 import MyCalendar from '../../components/Componente_Calendario'
 import DisplayData from '../../components/Componente_DisplayData'
 import { toast } from 'react-toastify'
-import { FiCalendar } from 'react-icons/fi'
+import { FiCalendar, FiHelpCircle } from 'react-icons/fi'
 
 const Vendas = () =>{
   const location = useLocation()
@@ -24,24 +25,8 @@ const Vendas = () =>{
     groupByAdmin,
     exportSales, 
     isCheckedCalendar, setIsCheckedCalendar,
+    
   } = useContext(AuthContext)
-
-  useEffect(()=>{
-    if (localStorage.getItem('localUsers') !== null) {
-        let localUsersTemp = JSON.parse(localStorage.getItem('localUsers'))
-        localUsersTemp.map(user => {
-            if (user.id === localStorage.getItem('userID')) {
-                user.calendar = isCheckedCalendar
-            }
-        })
-        localStorage.setItem('localUsers', JSON.stringify(localUsersTemp))
-    } else {
-        let localUsersTemp = []
-        let userTemp = { id: localStorage.getItem('userID'), calendar: isCheckedCalendar }
-        localUsersTemp.push(userTemp)
-        localStorage.setItem('localUsers', JSON.stringify(localUsersTemp))
-    }
-},[isCheckedCalendar])
 
   useEffect(()=>{
     if(salesPageArray && salesPageArray.length > 0){
@@ -109,22 +94,99 @@ const Vendas = () =>{
   const CustomCheckbox = ({ isChecked, handleCheckboxChange }) => {
     return (
         <label className="checkbox-label">
-        <input
-            type="checkbox"
-            checked={isChecked}
-            onChange={handleCheckboxChange}
-            className='checkbox-input'
-        />
-        <span className='checkbox-custom'></span> {/* aparencia da checkbox-custom */}
-        <span className='checkbox-icon'>
-            <FiCalendar className={`calendar-icon ${isCheckedCalendar ? 'isCheckedCalendar' : ''}`} size={20} />
-        </span>
+          <input
+              type="checkbox"
+              checked={isChecked}
+              onChange={handleCheckboxChange}
+              className='checkbox-input'
+          />
+          <span className='checkbox-custom'></span>
+          <span className='checkbox-icon'>
+              <FiCalendar className={`calendar-icon ${isCheckedCalendar ? 'isCheckedCalendar' : ''}`} size={20} />
+          </span>
         </label>
     )
 }
 
 const handleCheckboxChangeCalendar = () => {
-  setIsCheckedCalendar(!isCheckedCalendar) // Toggle the state
+  setIsCheckedCalendar(!isCheckedCalendar)
+  }
+
+  const [runTutorial, setRunTutorial] = useState(false)
+  const [steps, setSteps] = useState([
+    {
+      target: '[data-tour="calendario-section"]',
+      content: 'Clique em duas vezes em uma data para selecioná-la, ou uma vez em uma data inicial e uma vez em uma data final para selecionar o período começando e terminando nas datas selecionadas.',
+      disableBeacon: true,
+      placement: 'center',
+    },
+    {
+      target: '[data-tour="pesquisar-section"]',
+      content: 'Tendo a data selecionada, clique em "Pesquisar" para realizar a consulta das vendas da data ou período selecionado.',
+      placement: 'center',
+    },
+  ])
+
+    useEffect(()=>{
+      if(salesPageArray.length > 0){
+        let stepsTemp = [
+            {
+              target: '[data-tour="modalidade-section"]',
+              content: 'Valores totais das vendas exibidas, por modalidade.',
+              disableBeacon: true,
+              placement: 'bottom',
+            },
+            {
+              target: '[data-tour="exportacao-section"]',
+              content: 'Exporta as vendas sendo exibidas para os formatos Excel ou PDF.',
+              placement: 'bottom',
+            },
+            {
+              target: '[data-tour="bandeiraadquirente-section"]',
+              content: 'Filtra as vendas de acordo com a combinação de bandeira/adquirente selecionada.',
+              placement: 'bottom',
+            },
+            {
+              target: '[data-tour="tabelavendas-section"]',
+              content: 'Vendas do período selecionado. Podem ser filtradas por bandeira/adquirente.',
+              placement: 'bottom',
+            },
+            {
+              target: '[data-tour="totaladq-section"]',
+              content: 'Valores totais das vendas sendo exibidas, separadas por adquirente.',
+              placement: 'bottom',
+            },
+            {
+              target: '[data-tour="botaovoltar-section"]',
+              content: 'Retorna ao calendário, possibilitando realizar uma nova consulta.',
+              placement: 'bottom',
+            },
+        ]
+        setSteps(stepsTemp)
+      } else {
+        setSteps([
+          {
+            target: '[data-tour="calendario-section"]',
+            content: 'Clique em duas vezes em uma data para selecioná-la, ou uma vez em uma data inicial e uma vez em uma data final para selecionar o período começando e terminando nas datas selecionadas.',
+            disableBeacon: true,
+            placement: 'center',
+          },
+          {
+            target: '[data-tour="pesquisar-section"]',
+            content: 'Tendo a data selecionada, clique em "Pesquisar" para realizar a consulta das vendas da data ou período selecionado.',
+            placement: 'center',
+          },
+        ])
+      }
+    },[salesPageArray])
+
+  const handleTutorialEnd = () => {
+    setRunTutorial(false)
+    if (salesPageArray.length > 0){
+
+    } else{
+    
+    }
   }
 
   return(
@@ -134,8 +196,38 @@ const handleCheckboxChangeCalendar = () => {
           <div className='vendas-title-container'>
             <h1 className='vendas-title'>Calendário de Vendas</h1>
           </div>
-          {/*<CustomCheckbox isChecked={isCheckedCalendar} handleCheckboxChange={handleCheckboxChangeCalendar}/>*/}
-          <div className='component-container-vendas'>
+          <div data-tour="calendario-section" className='component-container-vendas'>
+              { runTutorial &&
+                <Joyride
+                  steps={steps}
+                  run={runTutorial}
+                  continuous={true}
+                  scrollToFirstStep={false}
+                  showProgress={true}
+                  showSkipButton={true}
+                  scrollOffset={80}
+                  styles={{
+                    options: {
+                      primaryColor: '#99cc33',
+                      textColor: '#0a3d70',
+                      zIndex: 10000,
+                    },
+                  }}
+                  callback={(data) => {
+                    if (data.status === 'finished' || data.status === 'skipped') {
+                      handleTutorialEnd()
+                    }
+                  }}
+                  locale={{
+                    back: 'Voltar',
+                    close: 'Fechar',
+                    last: 'Finalizar',
+                    next: 'Próximo',
+                    skip: 'Pular',
+                    nextLabelWithProgress: 'Próximo ({step} de {steps})',
+                  }}
+                />	
+              }
             {salesPageArray !== null ? (
               salesPageArray.length > 0 ? (
                   <DisplayData
@@ -143,6 +235,8 @@ const handleCheckboxChangeCalendar = () => {
                     adminDataArray={salesPageAdminArray}
                     totals={salesTotal}
                     onGoBack={resetValues}
+                    setRunTutorial={setRunTutorial}
+                    location={location}
                   />
                 ) : (
                   <MyCalendar
@@ -152,6 +246,24 @@ const handleCheckboxChangeCalendar = () => {
                   />
                 )
               ) : null }
+              <button 
+                className='btn btn-success-dados btn-tutorial px-2 py-1'
+                    onClick={() => setRunTutorial(true)}
+                    style={{
+                    position: 'relative',
+                    bottom: '0px',
+                    right: '-10px',
+                    zIndex: 10,
+                    padding: '10px 15px',
+                    background: 'none',
+                    color: '#99cc33',
+                    border: 'none',
+                    borderRadius: '5px',
+                    cursor: 'pointer'
+                    }}
+                >
+                <FiHelpCircle />
+            </button>
           </div>
         </div>
       </div>

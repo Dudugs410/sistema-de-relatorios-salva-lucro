@@ -10,6 +10,8 @@ const TabelaVendas = ({array}) =>{
 
 	const { isDarkTheme, dateConvert, 
 			salesDateRange, setSalesTotal,
+			setSalesTableData, salesTableData,
+			exportSales,
 		 } = useContext(AuthContext)
 
 	const [vendasArray, setVendasArray] = useState([])
@@ -290,10 +292,16 @@ const TabelaVendas = ({array}) =>{
 		}
 	},[adqSelecionada])
 
+	useEffect(()=>{
+		if(vendasExibicao.length > 0){
+			exportSales(vendasExibicao)
+		}
+	},[vendasExibicao])
+
 	return(
 		<>
 			<div className='date-container'>
-					<div className='container'>
+					<div data-tour="bandeiraadquirente-section" className='container'>
 						<div className='export-column'>
 							<div className='select-card select-align select-align-filtro'>
 								<span className='span-str'>Adquirente</span>
@@ -328,7 +336,7 @@ const TabelaVendas = ({array}) =>{
 				</div>
 			</div>
 			<hr className='hr-global'/>
-			<div className='dropShadow vendas-view'>
+			<div data-tour="tabelavendas-section" className='dropShadow vendas-view'>
 				<div className='table-wrapper'>
 					<table className='table table-striped table-hover det-table-global'>
 						<thead>
@@ -359,7 +367,7 @@ const TabelaVendas = ({array}) =>{
 										<td className='det-td-vendas-global'data-label="Adquirente">{venda.adquirente.nomeAdquirente}</td>
 										<td className='det-td-vendas-global'data-label="Bandeira">{venda.bandeira.descricaoBandeira}</td>
 										<td className='det-td-vendas-global'data-label="Produto">{venda.produto.descricaoProduto}</td>
-										<td className='det-td-vendas-global'data-label="Subproduto">{venda.modalidade.descricaoModalidade}</td>
+										<td className='det-td-vendas-global'data-label="Subproduto">{venda.modalidade?.descricaoModalidade || ''}</td>
 										<td className='det-td-vendas-global'data-label="Valor Bruto"><span className='green-global'>{Number(venda.valorBruto).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
 										<td className='det-td-vendas-global'data-label="Valor Líquido"><span className='green-global'>{Number(venda.valorLiquido).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</span></td>
 										<td className='det-td-vendas-global'data-label="Taxa"><span className='red-global'>{Number(venda.taxa).toFixed(2)}%</span></td>

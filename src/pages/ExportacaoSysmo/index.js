@@ -55,7 +55,7 @@ const ExportacaoSysmo = () =>{
     useEffect(() => {
         if(bannersList && bannersList.length > 0){
             const bannersListOptions = bannersList.map(banner => ({ value: banner.codigoBandeira, label: banner.descricaoBandeira }))
-            bannersListOptions.unshift({label: "TODOS", value: 0}) // Add the new option as the first object
+            bannersListOptions.unshift({label: "TODOS", value: 0})
             setBanOptions(bannersListOptions)
         }
     }, [bannersList])
@@ -64,7 +64,7 @@ const ExportacaoSysmo = () =>{
     useEffect(() => {
         if (adminsList && adminsList.length > 0) {
             const adminsListOptions = adminsList.map(admin => ({ value: admin.codigoAdquirente, label: admin.nomeAdquirente }))
-            adminsListOptions.unshift({label: "TODOS", value: 0}) // Add the new option as the first object
+            adminsListOptions.unshift({label: "TODOS", value: 0})
             setAdmOptions(adminsListOptions)
         }
     }, [adminsList])
@@ -90,12 +90,6 @@ const ExportacaoSysmo = () =>{
     }
 
     useEffect(()=>{
-        /*if(type === 'Vendas'){
-            setType('Venda')
-        } else if(type === 'Creditos'){
-            setType('Credito')
-        }*/
-
         setObj({
             TIPO: type,
             Bandeira: selectedBan.value,

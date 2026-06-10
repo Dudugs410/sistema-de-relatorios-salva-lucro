@@ -14,6 +14,7 @@ import BanksTable from './BanksTable'
 import ModalNewBank from './ModalNewBank'
 import ModalEditBank from './ModalEditBank'
 import ModalLoading from './ModalLoading'
+import TransferList from '../../components/TransferList/transferList.js'
 
 const CadastroDeBancos = () => {
     const location = useLocation()
@@ -135,7 +136,7 @@ const CadastroDeBancos = () => {
 
     // Update cliAdqOptions when cliAdqList changes
     useEffect(() => {
-        if (cliAdqList.length > 0) {
+        if (cliAdqList && (cliAdqList.length > 0)) {
             const cliAdqListOptions = cliAdqList.map(sub => ({ value: sub.codigoClienteAdquirente, label: sub.codigoEstabelecimento }))
             setCliAdqOptions(cliAdqListOptions)
         } else {
@@ -144,7 +145,7 @@ const CadastroDeBancos = () => {
     }, [cliAdqList])
 
     useEffect(() => {
-        if (subproductList.length > 0) {
+        if (subproductList && (subproductList.length > 0)) {
             const subproductListOptions = subproductList.map(sub => ({ value: sub.codigoSubProduto, label: sub.Modalidade.descricaoModalidade }))
             setSubproductOptions(subproductListOptions)
         } else {
@@ -370,21 +371,24 @@ const CadastroDeBancos = () => {
                                     : 
                                     <></>
                             }
-                        </div> 
+                        </div>
                     </div>
                     {
                         isLoadingBanks ? 
                             <LazyLoader /> 
                             : ( banksList && banksList.length > 0 ?  
-                                <BanksTable 
-                                    banksList={banksList} 
-                                    adminsList={adminsList} 
-                                    bannersList={bannersList} 
-                                    productList={productList} 
-                                    onAdd={handleAdd} 
-                                    onEdit={handleEdit} 
-                                    onDelete={handleDelete} 
-                                />
+                                <>
+                                    <BanksTable 
+                                        banksList={banksList} 
+                                        adminsList={adminsList} 
+                                        bannersList={bannersList} 
+                                        productList={productList} 
+                                        onAdd={handleAdd} 
+                                        onEdit={handleEdit} 
+                                        onDelete={handleDelete} 
+                                    />
+                                    <TransferList/>
+                                </>
                             : <></> )
                         }
                     <div className='modal-container' style={{ display: (isModalOpen || isModalEditOpen) ? 'block' : 'none' }}>

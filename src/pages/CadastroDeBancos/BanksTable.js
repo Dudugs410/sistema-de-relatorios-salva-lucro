@@ -2,13 +2,11 @@ import React, { useState, useEffect } from 'react'
 import { FiEdit, FiTrash, FiPlus, FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward } from 'react-icons/fi'
 
 const BanksTable = ({banksList, adminsList, bannersList, productList, onAdd, onEdit, onDelete}) => {
-    
-    //adicionando páginas à tabela:
 
     const [filter, setFilter] = useState('')
     const [filteredItems, setFilteredItems] = useState([])
     const [currentPage, setCurrentPage] = useState(1)
-    const [itemsPerPage] = useState(15) // Number of items per page
+    const [itemsPerPage] = useState(15)
 
     const getAdminName = (adqCodigo, adminsList) => {
         const admin = adminsList.find(admin => admin.codigoAdquirente === adqCodigo)
@@ -26,32 +24,31 @@ const BanksTable = ({banksList, adminsList, bannersList, productList, onAdd, onE
     }
 
     useEffect(() => {
-        setFilteredItems(banksList) // Initialize with all items
+        setFilteredItems(banksList)
     }, [banksList])
 
     useEffect(() => {
-        setCurrentPage(1) // Reset page to 1 when filter changes
+        setCurrentPage(1)
         filterItems()
     }, [filter])
 
     // Change page functions
     const goToPrevPage = () => {
-        setCurrentPage((prevPage) => Math.max(prevPage - 1, 1)) // Decrease page by 1, minimum page is 1
+        setCurrentPage((prevPage) => Math.max(prevPage - 1, 1))
     }
 
     const goToNextPage = () => {
-        setCurrentPage((prevPage) => Math.min(prevPage + 1, Math.ceil(banksList.length / itemsPerPage))) // Increase page by 1, maximum page is calculated based on array length
+        setCurrentPage((prevPage) => Math.min(prevPage + 1, Math.ceil(banksList.length / itemsPerPage)))
     }
 
     const goToFirstPage = () => {
-        setCurrentPage(1) // Go to the first page
+        setCurrentPage(1)
     }
 
     const goToLastPage = () => {
-        setCurrentPage(Math.ceil(filteredItems.length / itemsPerPage)) // Go to the last page
+        setCurrentPage(Math.ceil(filteredItems.length / itemsPerPage))
     }
 
-    // Calculate indexes for pagination
     const indexOfLastItem = currentPage * itemsPerPage
     const indexOfFirstItem = indexOfLastItem - itemsPerPage
     const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem)
@@ -143,16 +140,16 @@ const BanksTable = ({banksList, adminsList, bannersList, productList, onAdd, onE
                     <button
                         className='btn btn-primary btn-global btn-skip'
                         onClick={goToFirstPage}
-                        disabled={currentPage === 1} // Disable if already on the first page
+                        disabled={currentPage === 1}
                     >
                         <FiSkipBack />
                     </button>
                     <button
                         className='btn btn-primary btn-global btn-navigate'
                         onClick={goToPrevPage}
-                        disabled={currentPage === 1} // Disable if it's the first page
+                        disabled={currentPage === 1}
                     >
-                        <FiChevronLeft/> {/* Left arrow */}
+                        <FiChevronLeft/>
                     </button>
                     <div className='pagina-atual'>
                         <span className='texto-paginacao'>Página </span>
@@ -161,14 +158,14 @@ const BanksTable = ({banksList, adminsList, bannersList, productList, onAdd, onE
                     <button
                         className='btn btn-primary btn-global btn-navigate'
                         onClick={goToNextPage}
-                        disabled={currentPage === Math.ceil(banksList.length / itemsPerPage)} // Disable if it's the last page
+                        disabled={currentPage === Math.ceil(banksList.length / itemsPerPage)}
                     >
-                        <FiChevronRight/> {/* Right arrow */}
+                        <FiChevronRight/>
                     </button>
                     <button
                         className='btn btn-primary btn-global btn-skip'
                         onClick={goToLastPage}
-                        disabled={currentPage === Math.ceil(banksList.length / itemsPerPage)} // Disable if already on the last page
+                        disabled={currentPage === Math.ceil(banksList.length / itemsPerPage)}
                     >
                         <FiSkipForward />
                     </button>

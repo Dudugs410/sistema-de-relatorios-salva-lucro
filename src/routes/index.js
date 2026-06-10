@@ -4,6 +4,7 @@ import { Route, Routes, useLocation, useNavigate } from "react-router-dom"
 import Private from "./Private"
 
 import Login from '../pages/Login'
+import Usuario from "../pages/00 - PaginaUsuario"
 import Dashboard from '../pages/Dashboard'
 import Vendas from '../pages/Vendas'
 import Recebiveis from '../pages/Creditos'
@@ -20,12 +21,12 @@ import OutrosRelatorios from '../pages/OutrosRelatorios'
 import VendasDelivery from '../pages/VendasDelivery'
 import ConciliacaoBancaria from '../pages/ConciliacaoBancaria'
 import Taxas from '../pages/Taxas'
+import Extrato from "../pages/Extrato"
 
 function RoutesApp() {
   const location = useLocation()
   const navigate = useNavigate()
 
-  // Save the current path in localStorage
   useEffect(() => {
     if(location.pathname !== '/'){
       localStorage.setItem('currentPath', location.pathname)
@@ -40,7 +41,6 @@ function RoutesApp() {
     }
   }, [location.pathname])
 
-  // Check and redirect to the saved path on load
   useEffect(() => {
     const savedPath = localStorage.getItem('currentPath')
     if (savedPath && savedPath !== location.pathname) {
@@ -51,10 +51,13 @@ function RoutesApp() {
   return (
     <Routes>
       <Route path='/' element={<Login />} />
+      <Route path='/usuario' element={<Private><Usuario /></Private>} />
       <Route path='/dashboard' element={<Private><Dashboard /></Private>} />
       <Route path='/vendas' element={<Private><Vendas /></Private>} />
       <Route path='/creditos' element={<Private><Recebiveis /></Private>} />
       <Route path='/servicos' element={<Private><Servicos /></Private>} />
+      <Route path='/taxas' element={<Private><Taxas /></Private>} />
+      <Route path='/extrato' element={<Private><Extrato /></Private>} />
     </Routes>
   )
 }
@@ -63,7 +66,8 @@ export default RoutesApp
 
 /*
 <Route path='/cadastrodebancos' element={<Private><CadastroDeBancos /></Private>} />
-<Route path='/Taxas' element={<Private><Taxas /></Private>} />
+
+<Route path='/usuario' element={<Private><Usuario /></Private>} />
 <Route path='/financeiro' element={<Private><Financeiro /></Private>} />
 <Route path='/gerenciais' element={<Private><Gerenciais /></Private>} />
 <Route path='/outrosrelatorios' element={<Private><OutrosRelatorios /></Private>} />

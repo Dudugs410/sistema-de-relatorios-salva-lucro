@@ -6,7 +6,7 @@ import { AuthContext } from '../../contexts/auth'
 import { FiChevronLeft, FiChevronRight, FiSkipBack, FiSkipForward } from 'react-icons/fi'
 
 const TabelaServicos = ({ array }) => {  
-	const { dateConvert,  servicesDateRange } = useContext(AuthContext)
+	const { dateConvert,  servicesDateRange, exportServices } = useContext(AuthContext)
 
 	const [vendasArray, setVendasArray] = useState([])
 	const [vendasTeste, setVendasTeste] = useState([])
@@ -208,33 +208,39 @@ const TabelaServicos = ({ array }) => {
 
 	},[adqSelecionada])
 
+	useEffect(()=>{
+		if(vendasExibicao.length > 0){
+			exportServices(vendasExibicao)
+		}
+	},[vendasExibicao])
+
 	return(
 		<>
 		<div className='date-container'>
-		<div className='container'>
-						<div className='export-column'>
-							<div className='select-card select-align select-align-filtro'>
-								<span className='span-str'>Adquirente</span>
-								<select className='select-filtro' id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}}>
-									<option value=''>Todas</option>
-									{adquirentesExistentes.map((ADQ)=>(
-										<option className='select-filtro' key={ADQ} value={ADQ}>{ADQ}</option>
-									))}
-								</select>
-							</div>
-						</div>
-						<div className='export-column'>
-							<div className='select-card select-align select-align-filtro'>
-								<span className='span-str'>Bandeira</span>
-								<select className='select-filtro' id='bandeira' value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}}>
-									<option value='' defaultValue={'Todas'}>Todas</option>
-									{bandeirasExistentes.map((BAN)=>(
-										<option key={BAN} value={BAN}>{BAN}</option>
-									))}
-								</select>
-							</div>
-						</div>
+			<div className='container' data-tour="bandeiraadquirente-section">
+				<div className='export-column'>
+					<div className='select-card select-align select-align-filtro'>
+						<span className='span-str'>Adquirente</span>
+						<select className='select-filtro' id='adquirente' value={adqSelecionada} onChange={(e) => {setAdqSelecionada(e.target.value)}}>
+							<option value=''>Todas</option>
+							{adquirentesExistentes.map((ADQ)=>(
+								<option className='select-filtro' key={ADQ} value={ADQ}>{ADQ}</option>
+							))}
+						</select>
 					</div>
+				</div>
+				<div className='export-column'>
+					<div className='select-card select-align select-align-filtro'>
+						<span className='span-str'>Bandeira</span>
+						<select className='select-filtro' id='bandeira' value={banSelecionada} onChange={(e) => {setBanSelecionada(e.target.value)}}>
+							<option value='' defaultValue={'Todas'}>Todas</option>
+							{bandeirasExistentes.map((BAN)=>(
+								<option key={BAN} value={BAN}>{BAN}</option>
+							))}
+						</select>
+					</div>
+				</div>
+			</div>
 			<hr className='hr-global'/>
 			<div className='container-busca'>
 				<span className='span-busca'>
@@ -246,7 +252,7 @@ const TabelaServicos = ({ array }) => {
 			</div>
 		</div>
 		<hr className='hr-global'/>
-		<div className='dropShadow vendas-view'>
+		<div data-tour="tabelavendas-section" className='dropShadow vendas-view'>
 			<div className='table-wrapper'
 			>
 				<table className='table table-striped table-hover det-table-global'>

@@ -1,0 +1,25 @@
+.resizable-container {
+  width: 100%;
+}
+
+.react-resizable {
+  max-width: 100%;
+}
+
+.react-resizable-handle {
+  bottom: 100%;
+  right: 100%;
+}
+
+.lagRadar {
+  position: fixed;
+  bottom: 0.5rem;
+  right: 0.5rem;
+}
+
+.responsive {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}/*# sourceMappingURL=resizable.css.map */

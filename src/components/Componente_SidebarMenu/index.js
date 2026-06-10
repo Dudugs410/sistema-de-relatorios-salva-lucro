@@ -1,58 +1,68 @@
-import React, { useContext, useState, useEffect } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './Sidebar.scss';
-import salvaLucroLogoBranco from '../../assets/LogoTopo.png';
-import { FiMoon, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText, FiClipboard, FiDownload, FiCalendar, FiPaperclip, FiSettings, FiTruck, FiShoppingBag, FiTable, FiLink } from "react-icons/fi"
-import { Collapse, Nav, Navbar, NavItem, NavLink, Button } from 'reactstrap';
-import { AuthContext } from '../../contexts/auth';
-import { FiMenu } from 'react-icons/fi'; // Import the menu icon
-import { useNavigate } from 'react-router-dom';
+import React, { useContext, useState, useEffect } from 'react'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import './Sidebar.scss'
+import salvaLucroLogoBranco from '../../assets/LogoTopo.png'
+import sifra from '../../assets/logoSifra.png'
+import MG from '../../assets/logoMG.png'
+import { FiPercent, FiMoon, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText, FiClipboard, FiDownload, FiCalendar, FiPaperclip, FiSettings, FiTruck, FiShoppingBag, FiTable, FiLink } from "react-icons/fi"
+import { LiaFileInvoiceDollarSolid } from "react-icons/lia";
+import { Collapse, Nav, Navbar, NavItem, NavLink, Button } from 'reactstrap'
+import { AuthContext } from '../../contexts/auth'
+import { FiMenu } from 'react-icons/fi'
+import { useNavigate } from 'react-router-dom'
 
 const Sidebar = () => {
-    const { logout } = useContext(AuthContext);
-    const [isOpen, setIsOpen] = useState(false);
-    const [activeChild, setActiveChild] = useState(null);
-    const [optionsWithIcons, setOptionsWithIcons] = useState([]);
-    const [activeParent, setActiveParent] = useState(null);
-    const [lastClicked, setLastClicked] = useState(null); // Track the last clicked option
-    const [sidebarVisible, setSidebarVisible] = useState(false);
+    const [optionsWithIcons, setOptionsWithIcons] = useState([])
+    const [activeParent, setActiveParent] = useState(null)
+    const [lastClicked, setLastClicked] = useState(null)
+    const [sidebarVisible, setSidebarVisible] = useState(false)
 
-    const navigate = useNavigate();
+    const [contextImg, setContextImg] = useState()
+
+    useEffect(()=>{
+        let context = localStorage.getItem('selectedContext')
+        if(context === 'sifra'){
+            setContextImg(sifra)
+        } else if (context === 'MG'){
+            setContextImg(MG)
+        } else {
+            setContextImg(salvaLucroLogoBranco)
+        }
+    },[])
+
+    const navigate = useNavigate()
 
     const toggleDropdown = (parent) => {
         if (activeParent === parent) {
-            setActiveParent(null); // Close the dropdown if it's already open
-            setActiveChild(null); // Reset any active child when closing the parent
+            setActiveParent(null)
+            
         } else {
-            setActiveParent(parent);
-            setActiveChild(null); // Reset any active child when a new parent is selected
-            setLastClicked(parent); // Track this parent as the last clicked
+            setActiveParent(parent)
+            setLastClicked(parent)
         }
     }
 
     const handleChildClick = (child, navigationLink, parent) => {
-        setActiveChild(child);
-        setLastClicked(child); // Track this child as the last clicked
-        setActiveParent(parent); // Keep the parent active
-        navigate(navigationLink);
-        setSidebarVisible(false); // Optionally close the sidebar after navigation
-    };
+        setLastClicked(child)
+        setActiveParent(parent)
+        navigate(navigationLink)
+        setSidebarVisible(false)
+    }
 
     const handleParentClickWithoutChildren = (parent, navigationLink) => {
-        setActiveParent(parent); // Mark this parent as active
-        setActiveChild(null); // Reset the active child
-        setLastClicked(parent); // Track this parent as the last clicked
-        navigate(navigationLink);
-        setSidebarVisible(false); // Optionally close the sidebar after navigation
-    };
+        setActiveParent(parent)
+        setLastClicked(parent)
+        navigate(navigationLink)
+        setSidebarVisible(false)
+    }
 
     const handleLogo = () => {
-        navigate('/dashboard');
-    };
+        navigate('/dashboard')
+    }
 
     const toggleSidebar = () => {
-        setSidebarVisible(!sidebarVisible); // Toggle sidebar visibility
-    };
+        setSidebarVisible(!sidebarVisible)
+    }
 
     useEffect(() => {
         const icones = {
@@ -68,17 +78,39 @@ const Sidebar = () => {
             'FiTruck': FiTruck,
             'FiShoppingBag': FiShoppingBag,
             'FiTable': FiTable,
-        };
+            'FiPercent': FiPercent,
+            'LiaFileInvoiceDollarSolid': LiaFileInvoiceDollarSolid,
+        }
 
         const orderedOptions = [
             { nome: 'Início', icone: icones['FiHome'], rota: '/dashboard' },
             { nome: 'Vendas', icone: icones['FiDollarSign'], rota: '/vendas' },
             { nome: 'Créditos', icone: icones['FiCreditCard'], rota: '/creditos' },
             { nome: 'Serviços', icone: icones['FiTool'], rota: '/servicos' },
-        ];
+            { nome: 'Taxas', icone: icones['FiPercent'], rota: '/taxas' },
+            { nome: 'Extrato Bancário', icone: icones['LiaFileInvoiceDollarSolid'], rota: '/extrato'},
+        ]
+        setOptionsWithIcons(orderedOptions)
+    }, [])
 
-        setOptionsWithIcons(orderedOptions);
-    }, []);
+    {/*
+        { nome: 'Cadastro de Bancos', icone: icones['FiFileText'], rota: '/cadastrodebancos' },
+
+        { nome: 'Relatórios', icone: icones['FiFileText'], children: [
+        { nome: 'Financeiro', rota: '/financeiro' },
+        { nome: 'Gerenciais', rota: '/gerenciais' },
+        { nome: 'Outros', rota: '/outrosrelatorios'},
+        ]},
+        { nome: 'Exportações', icone: icones['FiDownload'], children: [
+            { nome: 'Sysmo', rota: '/sysmo' },
+            { nome: 'Meta', rota: '/meta' },
+            { nome: 'Meta Sapiranga', rota: '/metasapiranga' },
+        ]},
+        { nome: 'Administração', icone: icones['FiPaperClip'], rota: '/administracao'},
+        { nome: 'Suporte', icone: icones['FiSettings'], rota: '/suporte'},
+        { nome: 'Delivery', icone: icones['FiTruck'], rota: '/vendasdelivery'},
+        { nome: 'Conciliacao', icone: icones['FiShoppingBag'], rota: '/conciliacao'},    
+    */}
 
     return (
         <>
@@ -87,7 +119,7 @@ const Sidebar = () => {
             </Button>
             <div className={`d-flex flex-column bg-sidebar sidebar ${sidebarVisible ? 'visible' : ''}`}>
                 <div className='navbar-title'>
-                    <img className='img-header' src={salvaLucroLogoBranco} alt='logo salva lucro' onClick={handleLogo} />
+                    <img className='img-header' src={contextImg} alt='logo salva lucro' onClick={handleLogo} />
                 </div>
                 <Navbar color="light" light expand="md">
                     <Nav navbar className="flex-column w-100">

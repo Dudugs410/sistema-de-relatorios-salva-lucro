@@ -60,4 +60,12 @@ img.img-header:hover{
     overflow-y: auto; /* Allow vertical scroll */
     width: 100%; /* Ensure full width is used */
   }
+
+  .header-container-fixed{
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
   

@@ -7,9 +7,9 @@ function TabelaHorizontal({header, valor}){
 
 	return(
 		<div className="horizontal-table">
-			<div className='table-row'>
-				<div className='header'>{header}:</div>
-				<div className='value'>{Number(valor).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</div>
+			<div className='table-row table-row-horizontal'>
+				<div className='header header-horizontal'>{header}:</div>
+				<div className='value value-horizontal'>{Number(valor).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</div>
 			</div>
 		</div>
 	)

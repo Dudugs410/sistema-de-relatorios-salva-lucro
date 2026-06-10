@@ -1,0 +1,407 @@
+.subtable {
+    --bs-table-hover-bg: rgba(0, 0, 0, 0.1) !important;
+    
+    &:hover  {
+        color: var(--secondary-color-light) !important;
+    }
+}
+
+.mb-1{
+    color: var(--font-color) !important;
+    
+    &:hover {
+        color: var(--font-color) !important;
+    }
+}
+
+.text-muted{
+    color: rgb(143, 143, 143) !important;
+}
+
+// Custom tabs container
+.custom-tabs-container {
+  border-bottom: 2px solid #e9ecef;
+  margin-bottom: 1rem;
+  padding: 0 1rem;
+
+  .custom-tab-item {
+    margin-bottom: -2px;
+
+    .custom-tab-button {
+      border: none;
+      background: transparent;
+      padding: 0.75rem 1.5rem;
+      color: #6c757d;
+      font-weight: 500;
+      border-radius: 0;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      margin: 0;
+      outline: none;
+      font-family: inherit;
+      font-size: inherit;
+      text-decoration: none;
+      display: block;
+      text-align: center;
+
+      &:hover:not(.custom-tab-active) {
+        color: #495057;
+        background-color: #f8f9fa;
+        border-color: transparent;
+      }
+
+      &.custom-tab-active {
+        color: var(--secondary-color);
+        background-color: var(--background-color);
+        border: solid var(--primary-color) 1px;
+        border-radius: 8px 8px 0 0;
+
+        &::after {
+          background-color: var(--background-color);
+        }
+      }
+
+      &:focus {
+        outline: none;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+      }
+
+      &:disabled {
+        color: #6c757d;
+        pointer-events: none;
+        opacity: 0.6;
+      }
+    }
+  }
+}
+
+// Animation for tab indicator
+.custom-tab-button {
+  &::after {
+    transition: all 0.3s ease;
+    transform: scaleX(0);
+    transform-origin: center;
+  }
+
+  &.custom-tab-active::after {
+    transform: scaleX(1);
+  }
+}
+
+.subtable-bg{
+  background-color: var(--background-color) !important;
+  width: 100%;
+}
+
+// Mobile Styles
+@media (max-width: 1350px) {
+  .desktop-only {
+    display: none !important;
+  }
+  
+  .mobile-only {
+    display: block;
+  }
+  
+  .detail-label{
+    color: var(--font-color) !important;
+  }
+
+  .detail-value{
+    color: rgb(109, 109, 109) !important;
+  }
+
+  .mobile-alert {
+    margin: 1rem;
+    border-radius: 8px;
+  }
+
+  .mobile-card-view {
+    padding: 0;
+    
+    .mobile-card {
+      background: var(--background-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border: 1px solid var(--secondary-color);
+      transition: all 0.3s ease;
+      overflow: hidden;
+      cursor: pointer;
+      
+      &.mobile-card-expanded {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      }
+      
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+        pointer-events: none;
+        background-color: var(--primary-color);
+
+        .card-title {
+          flex: 1;
+          
+          h4 {
+            margin: 0 0 0.25rem 0;
+            font-size: 1.1rem;
+            color: white !important;
+            font-weight: 600;
+          }
+          
+          .card-subtitle {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #6c757d;
+          }
+        }
+        
+        .expand-button {
+          background: none;
+          border: none;
+          font-size: 1.3rem;
+          cursor: pointer;
+          padding: 0.5rem;
+          color: var(--primary-color);
+          border-radius: 6px;
+          transition: background-color 0.2s ease;
+          flex-shrink: 0;
+          margin-left: 0.5rem;
+          pointer-events: auto;
+          
+          &:active {
+            background-color: var(--background-color);
+          }
+        }
+      }
+      
+      .card-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        pointer-events: none;
+        
+        .card-field {
+          display: flex;
+          flex-direction: column;
+          
+          .label {
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-bottom: 0.25rem;
+          }
+          
+          .value {
+            font-size: 0.95rem;
+            color: var(--font-color);
+            word-break: break-word;
+            font-weight: 500;
+          }
+        }
+      }
+      
+      .card-expanded {
+        margin-top: 1.5rem;
+        border-top: 1px solid #e9ecef;
+        padding-top: 1.5rem;
+        animation: slideDown 0.3s ease;
+        pointer-events: auto;
+        cursor: default;
+        
+        .mobile-tabs-container {
+          .mobile-tabs {
+            display: flex;
+            background: var(--background-color);
+            border: solid #e9ecef 1px;
+            border-radius: 8px;
+            padding: 0.25rem;
+            margin-bottom: 1rem;
+            
+            .mobile-tab {
+              flex: 1;
+              padding: 0.75rem 1rem;
+              border: none;
+              background: transparent;
+              border-radius: 6px;
+              cursor: pointer;
+              color: var(--font-color);
+              font-weight: 500;
+              transition: all 0.2s ease;
+              font-size: 0.9rem;
+              
+              &:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+              }
+              
+              &.mobile-tab-active {
+                background: var(--background-color);
+                color: var(--secondary-color-light);
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                font-weight: 600;
+              }
+            }
+          }
+          
+          .mobile-tab-content {
+            .mobile-loading {
+              text-align: center;
+              padding: 2rem;
+              color: #6c757d;
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  // Mobile table improvements
+  .mobile-padding {
+    padding: 1rem !important;
+  }
+  
+  .mobile-header {
+    font-size: 1.1rem !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  .mobile-subheader {
+    font-size: 1rem !important;
+  }
+  
+  .mobile-row {
+    margin: 0 !important;
+    
+    .mobile-col {
+      width: 100% !important;
+      margin-bottom: 1rem;
+      padding: 0.5rem !important;
+    }
+  }
+  
+  .mobile-table {
+    min-width: 600px;
+    font-size: 0.875rem;
+    
+    th, td {
+      padding: 0.75rem 0.5rem;
+      white-space: nowrap;
+    }
+  }
+  
+  // Hide desktop tabs on mobile
+  .custom-tabs-container {
+    display: none;
+  }
+}
+
+// Desktop Styles
+@media (min-width: 1351px) {
+  .mobile-only {
+    display: none !important;
+  }
+  
+  .desktop-only {
+    display: block;
+  }
+  
+  // Ensure table is scrollable on smaller desktop screens
+  .vendas-view {
+    overflow-x: auto;
+    
+    .det-table-global {
+      min-width: 1000px;
+    }
+  }
+}
+
+// Animation for expanding content
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Ensure proper transitions
+.det-tr-global,
+.mobile-card,
+.custom-tab-button,
+.mobile-tab {
+  transition: all 0.2s ease;
+}
+
+// Touch feedback
+.touch-feedback {
+  &:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+    transition: transform 2s all;
+  }
+}
+
+// Improve accessibility
+button:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+// Loading states
+.spinner-border {
+  border-width: 2px;
+}
+
+// Ensure text contrast
+.value, .label, .mobile-header, .mobile-subheader {
+  color: var(--font-color);
+}
+
+// Responsive typography
+@media (max-width: 1350px) {
+  .mobile-card {
+    padding: 1rem;
+    
+    .card-content {
+      grid-template-columns: 1fr !important;
+      gap: 0.75rem;
+    }
+    
+    .card-field {
+      .value {
+        font-size: 0.9rem;
+      }
+    }
+  }
+  
+  .mobile-tabs {
+    .mobile-tab {
+      padding: 0.5rem 0.75rem !important;
+      font-size: 0.85rem !important;
+    }
+  }
+}
+
+// Hover effects for desktop
+@media (hover: hover) {
+  .mobile-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    //transform: translateY(-2px);
+  }
+  
+  .custom-tab-button:hover:not(.custom-tab-active) {
+    background-color: #f8f9fa;
+  }
+  
+  .mobile-tab:hover:not(.mobile-tab-active) {
+    background-color: var(--background-color);
+  }
+}

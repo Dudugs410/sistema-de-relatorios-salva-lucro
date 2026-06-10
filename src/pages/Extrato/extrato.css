@@ -1,0 +1,49 @@
+.pluggy-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  margin: 5px;
+}
+
+.pluggy-icon {
+  height: 25px;
+  width: 170px;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-extrato-background {
+  background-color: rgba(0, 0, 0, 0.3);
+  border: solid red 1px;
+  z-index: 10 !important;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.modal-extrato-container {
+  border: solid rgb(0, 255, 0) 1px;
+  border-radius: 15px;
+  background-color: whitesmoke;
+  width: 70%;
+  height: 50%;
+  justify-content: center;
+  align-items: center;
+}
+
+.tabela-extrato-container {
+  overflow-x: auto;
+}
+
+.btn-refresh-extrato {
+  width: auto !important;
+  padding: 10px !important;
+}/*# sourceMappingURL=extrato.css.map */
