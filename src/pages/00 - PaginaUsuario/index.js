@@ -3,6 +3,7 @@ import '../../styles/global.scss'
 import './user.scss'
 import { AuthContext } from '../../contexts/auth'
 import { useUserPreferences } from '../../hooks/useUserPreferences/useUserPreferences'
+import { useNavigate, useLocation } from 'react-router-dom'
 import icon1 from '../../assets/user_icons/ICON_LOGO_AZUL.png'
 import icon2 from '../../assets/user_icons/ICON_LOGO_BRANCO.png'
 import icon3 from '../../assets/user_icons/ICON_LOGO_PRETO.png'
@@ -24,6 +25,8 @@ const ENABLE_CUSTOMIZATION = true
 const Usuario = () => {
   const { userImg, setUserImg, loadUser, logout, updateUser, theme } = useContext(AuthContext)
   const { loadUserPrefs, saveUserPrefs } = useUserPreferences()
+  const navigate = useNavigate()
+  const location = useLocation()
   
   const [imageLoading, setImageLoading] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
@@ -39,24 +42,45 @@ const Usuario = () => {
   const [originalScheme, setOriginalScheme] = useState('salvalucro')
   const [originalIconCode, setOriginalIconCode] = useState(null)
   
+  // Modal state
+  const [showNavigationModal, setShowNavigationModal] = useState(false)
+  const [pendingAction, setPendingAction] = useState(null) // 'navigate', 'panel', 'logout'
+  const [pendingDestination, setPendingDestination] = useState(null)
+  
   const user = JSON.parse(localStorage.getItem('user')) || {}
 
-  // Load saved preferences from API on component mount
+  // Handle browser refresh/close warning
   useEffect(() => {
-    const loadCurrentPreferences = async () => {
-      const prefs = await loadUserPrefs()
-      if (prefs?.ESQUEMACORES) {
-        setSelectedScheme(prefs.ESQUEMACORES)
-        setOriginalScheme(prefs.ESQUEMACORES)
-        document.documentElement.setAttribute('data-context', prefs.ESQUEMACORES)
-      }
-      if (prefs?.ICONE) {
-        setOriginalIconCode(prefs.ICONE)
-        setCurrentSavedIconCode(prefs.ICONE)
+    const handleBeforeUnload = (e) => {
+      if (hasUnsavedChanges) {
+        e.preventDefault()
+        e.returnValue = 'Você tem alterações não salvas. Tem certeza que deseja sair?'
+        return e.returnValue
       }
     }
-    loadCurrentPreferences()
-  }, [])
+    
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [hasUnsavedChanges])
+
+  // Listen for sidebar navigation events
+  useEffect(() => {
+    const handleSidebarNavigation = (event) => {
+      const { path } = event.detail || {}
+      if (path && path !== location.pathname) {
+        if (hasUnsavedChanges) {
+          setPendingAction('navigate')
+          setPendingDestination(path)
+          setShowNavigationModal(true)
+        } else {
+          navigate(path)
+        }
+      }
+    }
+    
+    window.addEventListener('sidebar-navigate', handleSidebarNavigation)
+    return () => window.removeEventListener('sidebar-navigate', handleSidebarNavigation)
+  }, [hasUnsavedChanges, location.pathname, navigate])
 
   const isAdmin = user?.ADMIN === true || user?.role === 'admin' || user?.tipo === 'admin' || user?.GRUPO?.NOME === 'ADMINISTRADORES'
 
@@ -124,12 +148,6 @@ const Usuario = () => {
     }
   }
 
-  // Get current saved scheme ID
-  const getCurrentSchemeId = async () => {
-    const prefs = await loadUserPrefs()
-    return prefs?.ESQUEMACORES || getDefaultColorScheme().id
-  }
-
   // Available color schemes with names in Brazilian Portuguese
   const colorSchemes = [
     getDefaultColorScheme(),
@@ -182,19 +200,151 @@ const Usuario = () => {
     setSchemeColors(colors)
   }, [])
 
-  // Function to handle icon selection with unsaved changes tracking
+  // Load saved preferences from API on component mount
+  useEffect(() => {
+    const loadCurrentPreferences = async () => {
+      const prefs = await loadUserPrefs()
+      if (prefs?.ESQUEMACORES) {
+        setSelectedScheme(prefs.ESQUEMACORES)
+        setOriginalScheme(prefs.ESQUEMACORES)
+        document.documentElement.setAttribute('data-context', prefs.ESQUEMACORES)
+      }
+      if (prefs?.ICONE) {
+        setOriginalIconCode(prefs.ICONE)
+        setCurrentSavedIconCode(prefs.ICONE)
+      }
+    }
+    loadCurrentPreferences()
+  }, [])
+
+  // Save current changes
+  const saveCurrentChanges = async () => {
+    setSaving(true)
+    
+    try {
+      // Save icon if selected and changed
+      if (selectedIcon && originalIconCode !== selectedIcon.code) {
+        const token = localStorage.getItem('token')
+        const user = await loadUser(jwtDecode(token).id)
+        const getCurrentDate = () => new Date().toISOString().split('T')[0]
+        const date = getCurrentDate()
+        const currentPrefs = await loadUserPrefs()
+        
+        const body = {
+          "USUCODIGO": user.CODIGO,
+          "TEMA": currentPrefs?.TEMA || false,
+          "ICONE": selectedIcon.code,
+          "ESQUEMACORES": currentPrefs?.ESQUEMACORES || 'salvalucro',
+          "USUARIOMODIFICACAO": user.CODIGO,
+          "DATAMODIFICACAO": date,
+          "USUARIOINSERCAO": user.CODIGO,
+          "DATAINSERCAO": date,
+          "ATIVO": true,
+        }
+        
+        if (currentPrefs?.CODIGO) {
+          body.CODIGO = currentPrefs.CODIGO
+        }
+        
+        await saveUserPrefs(body)
+        setUserImg(selectedIcon.path)
+        setOriginalIconCode(selectedIcon.code)
+        setCurrentSavedIconCode(selectedIcon.code)
+      }
+      
+      // Save color scheme if changed
+      if (originalScheme !== selectedScheme) {
+        const token = localStorage.getItem('token')
+        const user = await loadUser(jwtDecode(token).id)
+        const getCurrentDate = () => new Date().toISOString().split('T')[0]
+        const date = getCurrentDate()
+        const currentPrefs = await loadUserPrefs()
+        
+        const body = {
+          "USUCODIGO": user.CODIGO,
+          "TEMA": currentPrefs?.TEMA || false,
+          "ICONE": currentPrefs?.ICONE || 1,
+          "ESQUEMACORES": selectedScheme,
+          "USUARIOMODIFICACAO": user.CODIGO,
+          "DATAMODIFICACAO": date,
+          "USUARIOINSERCAO": user.CODIGO,
+          "DATAINSERCAO": date,
+          "ATIVO": true,
+        }
+        
+        if (currentPrefs?.CODIGO) {
+          body.CODIGO = currentPrefs.CODIGO
+        }
+        
+        await saveUserPrefs(body)
+        document.documentElement.setAttribute('data-context', selectedScheme)
+        setOriginalScheme(selectedScheme)
+      }
+      
+      setHasUnsavedChanges(false)
+      setSelectedIcon(null)
+      return true
+    } catch (error) {
+      console.error('Error saving changes:', error)
+      return false
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  // Handle navigation/save/discard
+  const handleNavigationConfirm = async (shouldSave) => {
+    setShowNavigationModal(false)
+    
+    if (shouldSave) {
+      const saved = await saveCurrentChanges()
+      if (saved) {
+        if (pendingAction === 'navigate' && pendingDestination) {
+          navigate(pendingDestination)
+        } else if (pendingAction === 'panel') {
+          setActiveRightPanel(pendingDestination)
+        } else if (pendingAction === 'logout') {
+          logout()
+        }
+      }
+    } else {
+      // Discard changes
+      setHasUnsavedChanges(false)
+      setSelectedIcon(null)
+      setSelectedScheme(originalScheme)
+      document.documentElement.setAttribute('data-context', originalScheme)
+      
+      // Revert icon
+      const prefs = await loadUserPrefs()
+      const savedIcon = allIcons.find(icon => icon.code === prefs?.ICONE)
+      if (savedIcon) {
+        setUserImg(savedIcon.path)
+      }
+      
+      if (pendingAction === 'navigate' && pendingDestination) {
+        navigate(pendingDestination)
+      } else if (pendingAction === 'panel') {
+        setActiveRightPanel(pendingDestination)
+      } else if (pendingAction === 'logout') {
+        logout()
+      }
+    }
+    
+    setPendingAction(null)
+    setPendingDestination(null)
+  }
+
+  // Function to handle icon selection
   const handleIconSelect = (icon) => {
     if (!ENABLE_CUSTOMIZATION) return
     setSelectedIcon(icon)
-    // Preview the selected icon temporarily
     setUserImg(icon.path)
-    // Mark that there are unsaved changes
     if (originalIconCode !== icon.code) {
       setHasUnsavedChanges(true)
     }
   }
 
-  // Apply icon and save to database
+  // Apply icon and save
   const handleApplyIcon = async () => {
     if (!ENABLE_CUSTOMIZATION || !selectedIcon) {
       alert('Por favor, selecione um ícone primeiro.')
@@ -207,8 +357,6 @@ const Usuario = () => {
     const user = await loadUser(jwtDecode(token).id)
     const getCurrentDate = () => new Date().toISOString().split('T')[0]
     const date = getCurrentDate()
-    
-    // Get current preferences to preserve other values
     const currentPrefs = await loadUserPrefs()
     
     const body = {
@@ -223,12 +371,9 @@ const Usuario = () => {
       "ATIVO": true,
     }
     
-    // Add CODIGO if it exists (for PUT)
     if (currentPrefs?.CODIGO) {
       body.CODIGO = currentPrefs.CODIGO
     }
-    
-    console.log('Saving icon with body:', body)
     
     const success = await saveUserPrefs(body)
     
@@ -254,7 +399,7 @@ const Usuario = () => {
     setHasUnsavedChanges(false)
   }
 
-  // Apply color scheme and save to database
+  // Apply color scheme and save
   const handleApplyColorScheme = async () => {
     if (!ENABLE_CUSTOMIZATION) return
     
@@ -264,8 +409,6 @@ const Usuario = () => {
     const user = await loadUser(jwtDecode(token).id)
     const getCurrentDate = () => new Date().toISOString().split('T')[0]
     const date = getCurrentDate()
-    
-    // Get current preferences to preserve icon
     const currentPrefs = await loadUserPrefs()
     
     const body = {
@@ -280,12 +423,9 @@ const Usuario = () => {
       "ATIVO": true,
     }
     
-    // Add CODIGO if it exists (for PUT)
     if (currentPrefs?.CODIGO) {
       body.CODIGO = currentPrefs.CODIGO
     }
-    
-    console.log('Saving color scheme with body:', body)
     
     const success = await saveUserPrefs(body)
     
@@ -301,14 +441,36 @@ const Usuario = () => {
     setSaving(false)
   }
 
-  // Preview color scheme with unsaved changes tracking
+  // Preview color scheme
   const previewColorScheme = (schemeId) => {
     if (!ENABLE_CUSTOMIZATION) return
     document.documentElement.setAttribute('data-context', schemeId)
     setSelectedScheme(schemeId)
-    // Mark that there are unsaved changes
     if (originalScheme !== schemeId) {
       setHasUnsavedChanges(true)
+    }
+  }
+
+  // Handle panel change
+  const handlePanelChange = (panelName) => {
+    if (hasUnsavedChanges && activeRightPanel !== panelName) {
+      setPendingAction('panel')
+      setPendingDestination(panelName)
+      setShowNavigationModal(true)
+    } else {
+      setActiveRightPanel(panelName)
+      setSelectedIcon(null)
+      setHasUnsavedChanges(false)
+    }
+  }
+
+  // Handle logout
+  const handleLogout = () => {
+    if (hasUnsavedChanges) {
+      setPendingAction('logout')
+      setShowNavigationModal(true)
+    } else {
+      logout()
     }
   }
 
@@ -332,42 +494,68 @@ const Usuario = () => {
     return hasUnsavedChanges && isIconSelected(icon) && originalIconCode !== icon.code
   }
 
-  // Close panel with unsaved changes warning
-  const handleClosePanel = async () => {
+  // Close panel
+  const handleClosePanel = () => {
     if (hasUnsavedChanges) {
       const confirmClose = window.confirm('Você tem alterações não salvas. Deseja sair sem salvar?')
-      if (!confirmClose) {
-        return
-      }
+      if (!confirmClose) return
     }
     
     setActiveRightPanel(null)
     if (hasUnsavedChanges) {
-      // Revert to saved values
       setSelectedScheme(originalScheme)
       document.documentElement.setAttribute('data-context', originalScheme)
-      
-      if (selectedIcon) {
-        const prefs = await loadUserPrefs()
-        const savedIcon = allIcons.find(icon => icon.code === prefs?.ICONE)
-        if (savedIcon) {
-          setUserImg(savedIcon.path)
-        }
-        setSelectedIcon(null)
-      }
       setHasUnsavedChanges(false)
+      setSelectedIcon(null)
     } else if (selectedIcon) {
-      const prefs = await loadUserPrefs()
-      const savedIcon = allIcons.find(icon => icon.code === prefs?.ICONE)
-      if (savedIcon) {
-        setUserImg(savedIcon.path)
-      }
       setSelectedIcon(null)
     }
   }
 
+// Navigation Modal Component
+// Navigation Modal Component
+const NavigationModal = () => {
+  if (!showNavigationModal) return null
+  
+  return (
+      <div className="prefs-modal-overlay">
+        <div className="prefs-modal-container">
+          <div className="prefs-modal-header">
+            <h3>Alterações não salvas</h3>
+          </div>
+          <div className="prefs-modal-body">
+            <p>Você tem alterações não salvas nas suas preferências.</p>
+            <p>Deseja salvar antes de sair?</p>
+          </div>
+          <div className="prefs-modal-footer">
+            <button 
+              className="prefs-modal-btn prefs-modal-btn-discard"
+              onClick={() => handleNavigationConfirm(false)}
+            >
+              Descartar
+            </button>
+            <button 
+              className="prefs-modal-btn prefs-modal-btn-cancel"
+              onClick={() => setShowNavigationModal(false)}
+            >
+              Cancelar
+            </button>
+            <button 
+              className="prefs-modal-btn prefs-modal-btn-save"
+              onClick={() => handleNavigationConfirm(true)}
+              disabled={saving}
+            >
+              {saving ? 'Salvando...' : 'Salvar'}
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return(
     <div className='appPage'>
+      <NavigationModal />
       <div className='page-background-global'>
         <div className='page-content-global user-page'>
           {/* Left/Menu Section */}
@@ -410,14 +598,14 @@ const Usuario = () => {
               {/* Top buttons container */}
               {ENABLE_CUSTOMIZATION && (
                 <div className='top-buttons-container'>
-                  <button className='btn btn-global user-btn' onClick={() => setActiveRightPanel('icons')}>Trocar Ícone</button>
-                  <button className='btn btn-global user-btn' onClick={() => setActiveRightPanel('preferences')}>Preferências de Cores</button>
+                  <button className='btn btn-global user-btn' onClick={() => handlePanelChange('icons')}>Trocar Ícone</button>
+                  <button className='btn btn-global user-btn' onClick={() => handlePanelChange('preferences')}>Preferências de Cores</button>
                 </div>
               )}
               
               {/* Sair button container */}
               <div className='sair-button-container'>
-                <button className='btn btn-danger btn-global user-btn user-btn-sair' onClick={() => { logout() }}>Sair</button>
+                <button className='btn btn-danger btn-global user-btn user-btn-sair' onClick={handleLogout}>Sair</button>
               </div>              
             </div>
           </div>

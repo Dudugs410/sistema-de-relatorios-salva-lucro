@@ -7,7 +7,7 @@ import { LiaFileInvoiceDollarSolid } from "react-icons/lia";
 import { Collapse, Nav, Navbar, NavItem, NavLink, Button } from 'reactstrap'
 import { AuthContext } from '../../contexts/auth'
 import { FiMenu } from 'react-icons/fi'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 const Sidebar = () => {
     const [optionsWithIcons, setOptionsWithIcons] = useState([])
@@ -19,6 +19,24 @@ const Sidebar = () => {
     const { currentLogo, currentContext } = useContext(AuthContext)
 
     const navigate = useNavigate()
+    const location = useLocation()
+
+    // Helper function to check if we're on the Usuario page
+    const isOnUsuarioPage = () => {
+        return location.pathname === '/usuario'
+    }
+
+    // Safe navigation function that dispatches events for the Usuario page
+    const safeNavigate = (path) => {
+        if (isOnUsuarioPage()) {
+            // Dispatch a custom event that the Usuario page can listen to
+            const event = new CustomEvent('sidebar-navigate', { detail: { path } })
+            window.dispatchEvent(event)
+        } else {
+            // Navigate normally if not on Usuario page
+            navigate(path)
+        }
+    }
 
     const toggleDropdown = (parent) => {
         if (activeParent === parent) {
@@ -32,19 +50,19 @@ const Sidebar = () => {
     const handleChildClick = (child, navigationLink, parent) => {
         setLastClicked(child)
         setActiveParent(parent)
-        navigate(navigationLink)
+        safeNavigate(navigationLink)
         setSidebarVisible(false)
     }
 
     const handleParentClickWithoutChildren = (parent, navigationLink) => {
         setActiveParent(parent)
         setLastClicked(parent)
-        navigate(navigationLink)
+        safeNavigate(navigationLink)
         setSidebarVisible(false)
     }
 
     const handleLogo = () => {
-        navigate('/dashboard')
+        safeNavigate('/dashboard')
     }
 
     const toggleSidebar = () => {
@@ -114,8 +132,8 @@ const Sidebar = () => {
                         WebkitMaskRepeat: 'no-repeat',
                         maskPosition: 'center',
                         WebkitMaskPosition: 'center',
-                        width: '160px',      // <-- CRITICAL: set explicit width
-                        height: '40px',      // <-- CRITICAL: set explicit height
+                        width: '160px',
+                        height: '40px',
                         cursor: 'pointer'
                         }}
                         onClick={handleLogo}
