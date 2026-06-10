@@ -301,7 +301,18 @@ const TabelaVendas = ({array}) =>{
 	return(
 		<>
 			<div className='date-container'>
-					<div data-tour="bandeiraadquirente-section" className='container'>
+				<hr className='hr-global'/>
+				<div className='container-busca'>
+						<span className='span-busca'>
+							{salesDateRange[0].toLocaleDateString('pt-BR') !== salesDateRange[1].toLocaleDateString('pt-BR') ?
+								<span dangerouslySetInnerHTML={{__html: `Exibindo Vendas do dia <strong>${salesDateRange[0].toLocaleDateString('pt-BR')}</strong> ao dia <strong>${salesDateRange[1].toLocaleDateString('pt-BR')}</strong>`}} /> : 
+								<span dangerouslySetInnerHTML={{__html: `Exibindo Vendas do dia <strong>${salesDateRange[0].toLocaleDateString('pt-BR')}</strong>`}} />
+							}
+						</span>
+				</div>
+			</div>
+			<hr className='hr-global'/>
+								<div data-tour="bandeiraadquirente-section" className='container'>
 						<div className='export-column'>
 							<div className='select-card select-align select-align-filtro'>
 								<span className='span-str'>Adquirente</span>
@@ -325,17 +336,6 @@ const TabelaVendas = ({array}) =>{
 							</div>
 						</div>
 					</div>
-				<hr className='hr-global'/>
-				<div className='container-busca'>
-						<span className='span-busca'>
-							{salesDateRange[0].toLocaleDateString('pt-BR') !== salesDateRange[1].toLocaleDateString('pt-BR') ?
-								<span dangerouslySetInnerHTML={{__html: `Exibindo Vendas do dia <strong>${salesDateRange[0].toLocaleDateString('pt-BR')}</strong> ao dia <strong>${salesDateRange[1].toLocaleDateString('pt-BR')}</strong>`}} /> : 
-								<span dangerouslySetInnerHTML={{__html: `Exibindo Vendas do dia <strong>${salesDateRange[0].toLocaleDateString('pt-BR')}</strong>`}} />
-							}
-						</span>
-				</div>
-			</div>
-			<hr className='hr-global'/>
 			<div data-tour="tabelavendas-section" className='dropShadow vendas-view'>
 				<div className='table-wrapper'>
 					<table className='table table-striped table-hover det-table-global'>
@@ -356,7 +356,6 @@ const TabelaVendas = ({array}) =>{
 								<th className='det-th-global'scope="col">Data do Crédito</th>
 								<th className='det-th-global'scope="col">Autorização</th>
 								<th className='det-th-global'scope="col">QTD Parcelas</th>
-								<th className='det-th-global'scope="col">TID</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -378,7 +377,6 @@ const TabelaVendas = ({array}) =>{
 										<td className='det-td-vendas-global'data-label="Data do Crédito">{dateConvert(venda.dataCredito)}</td>
 										<td className='det-td-vendas-global'data-label="Autorização">{venda.codigoAutorizacao}</td>
 										<td className='det-td-vendas-global'data-label="QTD Parcelas">{venda.quantidadeParcelas}</td>
-										<td className='det-td-vendas-global'data-label="TID">{venda.tid}</td>
 									</tr>
 								)
 							})}

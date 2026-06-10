@@ -142,6 +142,11 @@ const SeletorCliente = ({ onClose }) => {
     }
   }
 
+  useEffect(()=>{
+    localStorage.setItem('selectedGroupBody', JSON.stringify(selectedGroup))
+    localStorage.setItem('selectedClientBody', JSON.stringify(selectedClient))
+  },[])
+
   useEffect(() => {
     if (selectorGroupList && selectorGroupList.length > 0) {
       const sortedOptions = selectorGroupList
@@ -183,7 +188,7 @@ const SeletorCliente = ({ onClose }) => {
     if (selectedGroup) {
       const options = getClientOptions(selectedGroup)
       setClientOptions(options)
-
+      localStorage.setItem('selectedGroupBody', JSON.stringify(selectedGroup))
       if (!localStorage.getItem('selectedClient')) {
         setSelectedClient({
           ...options[0],
@@ -212,6 +217,7 @@ const SeletorCliente = ({ onClose }) => {
     setSalesPageArray([])
     setCreditsPageArray([])
     setServicesPageArray([])
+    localStorage.setItem('selectedClientBody', JSON.stringify(selectedClient))
     if (selectedClient && selectedClient.label !== 'TODOS') {
       localStorage.setItem('cnpj', selectedClient.value)
       localStorage.setItem('clientCode', selectedClient.cod)
@@ -219,7 +225,7 @@ const SeletorCliente = ({ onClose }) => {
     } else if (selectedClient) {
       localStorage.setItem('cnpj', selectedClient.value)
       localStorage.setItem('clientCode', 'todos')
-      setExportName(selectedGroup ? `${selectedGroup.label} - Todas Filiais` : '')
+      setExportName(selectedGroup ? `${selectedGroup.label}_TODAS_FILIAIS` : '')
     }
   }, [selectedClient, selectedGroup])
 

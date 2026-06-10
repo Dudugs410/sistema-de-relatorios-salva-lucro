@@ -12,13 +12,17 @@ import PieChart from '../../components/GraficoDashboard';
 import { useLocation } from 'react-router-dom';
 import '../../index.scss';
 import LazyLoader from '../../components/Componente_LazyLoader/index.js';
-import { FiHelpCircle } from 'react-icons/fi';
+import { FiHelpCircle, FiSun, FiMoon } from 'react-icons/fi';
 import ModalAlerta from './ModalAlerta/index.js';
+
+import { LuCircleDollarSign } from "react-icons/lu";
+import { FaRegCreditCard } from "react-icons/fa6";
+import { LiaToolsSolid } from "react-icons/lia";
 
 const Dashboard = () => {
   const location = useLocation();
-  // Joyride state
   const [runTutorial, setRunTutorial] = useState(false);
+  const [activeDataType, setActiveDataType] = useState('vendas');
 
   const alerta = false;
   const [modalOpen, setModalOpen] = useState(alerta);
@@ -57,6 +61,12 @@ const Dashboard = () => {
     setCanceledSales, setCanceledCredits, setCanceledServices,
   } = useContext(AuthContext);
 
+  // Helper function to format currency with secondary color class
+  const formatCurrency = (value) => {
+    if (value === undefined || value === null) return 'R$ 0,00';
+    return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  };
+
   useEffect(() => {
     setCanceled(false);
   }, []);
@@ -70,8 +80,6 @@ const Dashboard = () => {
   const handleTutorialEnd = () => {
     setRunTutorial(false);
   };
-
-  const chartDataExists = (array) => array && array.length > 0;
 
   const reloadSales = () => {
     setIsLoadedSalesDashboard(false);
@@ -108,87 +116,264 @@ const Dashboard = () => {
     }
   }, [canceled]);
 
-  const DisplaySales = () => {
-    return (
-      <div className='graph-data'>
-          <>
-            <PieChart 
-              data01={salesDashboard.chart} 
-              arrayAdm={salesDashboard.sales} 
-              totalAdmin={salesDashboard.totalAdmin}
-              tipo='0' 
-              dados='vendas'
-            />
-            <div className='dash-table-container'>
-              <TabelaHorizontal 
-                header='Total Últimos 4 dias' 
-                valor={salesDashboard.totalLast4} 
-                isCurrency={true}
-              />
-              <TabelaHorizontal 
-                header='Total do Mês' 
-                valor={salesDashboard.totalMonth} 
-                isCurrency={true}
-              /> 
-            </div>
-          </>
-      </div>
-    );
-  };
-
-  const DisplayCredits = () => {
-    return (
-      <div className='graph-data'>
-        <>
-          <PieChart 
-            data01={creditsDashboard.chart} 
-            arrayAdm={creditsDashboard.credits} 
-            totalAdmin={creditsDashboard.totalAdmin}
-            tipo='1' 
-            dados='creditos'
-          />
-          <div className='dash-table-container'>
-            <TabelaHorizontal 
-              header='Previsão de Hoje' 
-              valor={creditsDashboard.totalCreditsToday} 
-              isCurrency={true}
-            />
-            <TabelaHorizontal 
-              header='Previsão Próx 5 Dias' 
-              valor={creditsDashboard.totalCreditsNext5} 
-              isCurrency={true}
-            />
-          </div> 
-        </>
-      </div>
-    )
+  const formatDateRange = () => {
+    const currentDate = new Date()
+    const finalDate = new Date(currentDate)
+    finalDate.setDate(currentDate.getDate() - 2)
+    const initialDate = new Date(finalDate)
+    initialDate.setDate(finalDate.getDate() - 3)
+    
+    const formatToBrazilian = (date) => {
+      const day = String(date.getDate()).padStart(2, '0')
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const year = date.getFullYear()
+      return `${day}/${month}/${year}`
+    }
+    
+    const initialDay = formatToBrazilian(initialDate)
+    const finalDay = formatToBrazilian(finalDate)
+    
+    if (initialDate.getMonth() === finalDate.getMonth() && 
+        initialDate.getFullYear() === finalDate.getFullYear()) {
+      const initialDayOnly = String(initialDate.getDate()).padStart(2, '0')
+      return `${initialDayOnly} a ${finalDay}`
+    }
+    
+    return `${initialDay} a ${finalDay}`
   }
 
-  const DisplayServices = () => {
+  const getCurrentDashboardData = () => {
+    switch(activeDataType) {
+      case 'vendas':
+        return {
+          dashboard: salesDashboard,
+          isLoaded: isLoadedSalesDashboard,
+          title: 'Vendas',
+          icon: LuCircleDollarSign,
+          color: 'var(--secondary-color)',
+          tipo: '0',
+          dados: 'vendas'
+        }
+      case 'creditos':
+        return {
+          dashboard: creditsDashboard,
+          isLoaded: isLoadedCreditsDashboard,
+          title: 'Créditos',
+          icon: FaRegCreditCard,
+          color: 'var(--secondary-color)',
+          tipo: '1',
+          dados: 'creditos'
+        }
+      case 'servicos':
+        return {
+          dashboard: servicesDashboard,
+          isLoaded: isLoadedServicesDashboard,
+          title: 'Serviços',
+          icon: LiaToolsSolid,
+          color: 'var(--secondary-color)',
+          tipo: '2',
+          dados: 'servicos'
+        }
+      default:
+        return null
+    }
+  }
+
+  const currentData = getCurrentDashboardData()
+
+  const getTotalValue = () => {
+    if (!currentData?.dashboard?.chart?.data) return 0
+    return currentData.dashboard.chart.data.reduce((sum, val) => sum + val, 0)
+  }
+
+  const getSummaryData = () => {
+    if (!currentData?.dashboard?.chart) return []
+    const { labels, data } = currentData.dashboard.chart
+    const total = getTotalValue()
+    return labels?.map((label, index) => ({
+      label,
+      value: data[index],
+      percentage: total > 0 ? ((data[index] / total) * 100).toFixed(1) : 0
+    })) || []
+  }
+
+  const renderModernView = () => {
+    if (!currentData) return null
+
+    const { dashboard, isLoaded, title, icon: IconComponent, color, tipo, dados } = currentData
+    const totalValue = getTotalValue()
+    const summaryData = getSummaryData()
+
+    if (!isLoaded) {
+      return (
+        <div className='chart-main-section'>
+          <LazyLoader />
+        </div>
+      )
+    }
+
     return (
-      <div className='graph-data'>
-        <>
-          <PieChart 
-            data01={servicesDashboard.chart} 
-            arrayAdm={servicesDashboard.services} 
-            totalAdmin={servicesDashboard.totalAdmin}
-            tipo='2' 
-            dados='servicos'
-          />
-          <div className='dash-table-container'>
-            <TabelaHorizontal 
-              header='Total de Hoje' 
-              valor={servicesDashboard.totalServicesToday} 
-              isCurrency={true}
-            />
-            <TabelaHorizontal 
-              header='Total do Mês' 
-              valor={servicesDashboard.totalServicesMonth} 
-              isCurrency={true}
-            /> 
+      <>
+        {/* Chart Type Selector Cards */}
+        <div className="chart-type-selector">
+          <div 
+            className={`selector-card ${activeDataType === 'vendas' ? 'active' : ''}`}
+            onClick={() => setActiveDataType('vendas')}
+          >
+            <div className="card-icon">
+              <LuCircleDollarSign className={`icon-global ${activeDataType === 'vendas' ? 'active-icon' : ''}`} />
+            </div>
+            <div className="card-title">Vendas</div>
+            <div className="card-value currency-value money">
+              {formatCurrency(salesDashboard?.totalMonth) || 'R$ 0,00'}
+            </div>
           </div>
-        </>
-      </div>
+          
+          <div 
+            className={`selector-card ${activeDataType === 'creditos' ? 'active' : ''}`}
+            onClick={() => setActiveDataType('creditos')}
+          >
+            <div className="card-icon">
+              <FaRegCreditCard className={`icon-global ${activeDataType === 'creditos' ? 'active-icon' : ''}`} />
+            </div>
+            <div className="card-title">Créditos</div>
+            <div className="card-value currency-value money">
+              {formatCurrency(creditsDashboard?.totalCreditsToday) || 'R$ 0,00'}
+            </div>
+          </div>
+          
+          <div 
+            className={`selector-card ${activeDataType === 'servicos' ? 'active' : ''}`}
+            onClick={() => setActiveDataType('servicos')}
+          >
+            <div className="card-icon">
+              <LiaToolsSolid className={`icon-global ${activeDataType === 'servicos' ? 'active-icon' : ''}`} />
+            </div>
+            <div className="card-title">Serviços</div>
+            <div className="card-value currency-value money">
+              {formatCurrency(servicesDashboard?.totalServicesToday) || 'R$ 0,00'}
+            </div>
+          </div>
+        </div>
+
+        {/* Main Chart Section */}
+        <div className="chart-main-section">
+          <div className="chart-header">
+            <h2>
+              <span className="section-icon">
+                <IconComponent className="icon-global" />
+              </span>
+              {title} por {dados === 'servicos' ? 'Tipo' : 'Adquirente'}
+            </h2>
+            <div className="total-info">
+              <span className="total-label">Total Geral:</span>
+              <span className="total-value currency-value money">
+                {formatCurrency(totalValue)}
+              </span>
+            </div>
+          </div>
+          
+          <div className="chart-wrapper-enhanced">
+            <PieChart 
+              data01={dashboard.chart} 
+              arrayAdm={tipo === '0' ? dashboard.sales : tipo === '1' ? dashboard.credits : dashboard.services} 
+              totalAdmin={dashboard.totalAdmin}
+              tipo={tipo} 
+              dados={dados}
+            />
+          </div>
+        </div>
+
+        {/* Métricas Adicionais */}
+        <div className="additional-metrics">
+          <div className='subtitle-container-global'>
+            <h3 className='subtitle'>Métricas Adicionais</h3>
+          </div>
+          <hr className='hr-global'/>
+          <div className="metrics-grid">
+            {tipo === '0' && (
+              <>
+                <div className="metric-card">
+                  <div className="metric-label">Total últimos 4 dias</div>
+                  <div className="metric-value currency-value money">
+                    {formatCurrency(dashboard.totalLast4)}
+                  </div>
+                  <div className="metric-period">{formatDateRange()}</div>
+                </div>
+                <div className="metric-card">
+                  <div className="metric-label">Total do Mês</div>
+                  <div className="metric-value currency-value money">
+                    {formatCurrency(dashboard.totalMonth)}
+                  </div>
+                </div>
+              </>
+            )}
+            {tipo === '1' && (
+              <>
+                <div className="metric-card">
+                  <div className="metric-label">Previsão de Hoje</div>
+                  <div className="metric-value currency-value">
+                    {formatCurrency(dashboard.totalCreditsToday)}
+                  </div>
+                </div>
+                <div className="metric-card">
+                  <div className="metric-label">Previsão Próx 5 Dias</div>
+                  <div className="metric-value currency-value">
+                    {formatCurrency(dashboard.totalCreditsNext5)}
+                  </div>
+                </div>
+              </>
+            )}
+            {tipo === '2' && (
+              <>
+                <div className="metric-card">
+                  <div className="metric-label">Total de Hoje</div>
+                  <div className="metric-value currency-value">
+                    {formatCurrency(dashboard.totalServicesToday)}
+                  </div>
+                </div>
+                <div className="metric-card">
+                  <div className="metric-label">Total do Mês</div>
+                  <div className="metric-value currency-value">
+                    {formatCurrency(dashboard.totalServicesMonth)}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Summary Section */}
+        <div className="summary-section">
+          <div className='subtitle-container-global'>
+            <h3 className='subtitle'>Resumo por {dados === 'servicos' ? 'Tipo de Serviço' : 'Adquirente'}</h3>
+          </div>
+          <hr className='hr-global'/>
+          <div className="summary-cards">
+            {summaryData.map((item, index) => (
+              <div key={item.label} className="summary-card">
+                <div className="summary-card-header">
+                  <span className="summary-label">{item.label}</span>
+                  <span className="summary-percentage">{item.percentage}%</span>
+                </div>
+                <div className="summary-value currency-value money">
+                  {formatCurrency(item.value)}
+                </div>
+                <div className="progress-bar">
+                  <div 
+                    className="progress-fill" 
+                    style={{ 
+                      width: `${item.percentage}%`,
+                      backgroundColor: 'var(--primary-color)'
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <hr className='hr-global'/>
+      </>
     )
   }
 
@@ -232,34 +417,12 @@ const Dashboard = () => {
       
       <div className='appPage'>
         <div className='content-area dash'>
-          <div className='data-group-area' data-tour="sales-section">
-            <h1 className='title-chart'>Vendas:</h1>
-            {isLoadedSalesDashboard === false ? (
-              <LazyLoader /> 
-            ) : (
-              <DisplaySales />
-            )}
+          <div className="modern-dashboard-view">
+            {renderModernView()}
           </div>
-          
-          <div className='data-group-area' data-tour="credits-section">
-            <h1 className='title-chart'>Créditos:</h1>			
-            {isLoadedCreditsDashboard === false ? (
-              <LazyLoader /> 
-            ) : (
-              <DisplayCredits />
-            )}
-          </div>
-          
-          <div className='data-group-area' data-tour="services-section">
-            <h1 className='title-chart'>Serviços:</h1>
-            {isLoadedServicesDashboard === false ? (
-              <LazyLoader />
-            ) : (
-              <DisplayServices />
-            )}
-          </div>
-        </div>		
+        </div>
       </div>    
+      
       <button 
         className='btn btn-success-dados btn-tutorial px-2 py-1'
         onClick={() => setRunTutorial(true)}

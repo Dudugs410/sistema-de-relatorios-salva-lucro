@@ -22,9 +22,26 @@ const MyCalendar = (props) => {
     const [allowRange, setAllowRange] = useState(true)
     const [showPesquisar, setShowPesquisar] = useState(true)
 
+    // Define routes with their specific behaviors
+    const routesWithoutPesquisar = [
+      '/creditos-data-banco',
+      '/previsao-recebimento',
+      '/resumo-mensal'
+    ]
+
+    const routesWithAllowRangeFalse = [
+      '/sysmo',
+      '/metasapiranga',
+      '/meta',
+      '/vendasdelivery'
+    ]
+
     useEffect(()=>{
-      if(location.pathname === ('/sysmo') || location.pathname === '/metasapiranga' || location.pathname === '/meta' || location.pathname === ('/vendasdelivery')){
+      if (routesWithAllowRangeFalse.includes(location.pathname)) {
         setAllowRange(false)
+        setShowPesquisar(false)
+      } else if (routesWithoutPesquisar.includes(location.pathname)) {
+        setAllowRange(true)
         setShowPesquisar(false)
       } else {
         setAllowRange(true)
@@ -33,7 +50,14 @@ const MyCalendar = (props) => {
     },[location])
 
     useEffect(()=>{
+      localStorage.setItem('dataInicial', dateRange[0])
+      localStorage.setItem('dataFinal', dateRange[1])
+    },[])
+
+    useEffect(()=>{
       getCalendarDate(dateRange)
+      localStorage.setItem('dataInicial', dateRange[0])
+      localStorage.setItem('dataFinal', dateRange[1])
     },[dateRange])
 
     const handleDateChange = (date) =>{
@@ -42,6 +66,30 @@ const MyCalendar = (props) => {
 
     const handleDateChangeSysmo = (date) =>{
       setDateSysmo(date)
+    }
+
+    // Define routes that should show the "Exportar relatório" message instead of "Executar busca"
+    const routesWithExportMessage = [
+      '/creditos-data-banco',
+      '/previsao-recebimento',
+      '/resumo-mensal'
+    ]
+
+    // Get the text for the info message
+    const getInfoText = () => {
+      if (routesWithExportMessage.includes(location.pathname)) {
+        if (dateRange[0].toLocaleDateString('pt-BR') !== dateRange[1].toLocaleDateString('pt-BR')) {
+          return `Exportar relatório do dia <strong>${dateRange[0].toLocaleDateString('pt-BR')}</strong> ao dia <strong>${dateRange[1].toLocaleDateString('pt-BR')}</strong>`
+        } else {
+          return `Exportar relatório do dia <strong>${dateRange[0].toLocaleDateString('pt-BR')}</strong>`
+        }
+      } else {
+        if (dateRange[0].toLocaleDateString('pt-BR') !== dateRange[1].toLocaleDateString('pt-BR')) {
+          return `Executar busca do dia <strong>${dateRange[0].toLocaleDateString('pt-BR')}</strong> ao dia <strong>${dateRange[1].toLocaleDateString('pt-BR')}</strong>`
+        } else {
+          return `Executar busca do dia <strong>${dateRange[0].toLocaleDateString('pt-BR')}</strong>`
+        }
+      }
     }
 
     //date-range-picker
@@ -108,10 +156,7 @@ const MyCalendar = (props) => {
           <hr className='hr-global'/>
           <div className='container-busca'>
             <span className='span-busca'>
-              {dateRange[0].toLocaleDateString('pt-BR') !== dateRange[1].toLocaleDateString('pt-BR') ? 
-                <span dangerouslySetInnerHTML={{__html: `Executar busca do dia <strong>${dateRange[0].toLocaleDateString('pt-BR')}</strong> ao dia <strong>${dateRange[1].toLocaleDateString('pt-BR')}</strong>`}} /> : 
-                <span dangerouslySetInnerHTML={{__html: `Executar busca do dia <strong>${dateRange[0].toLocaleDateString('pt-BR')}</strong>`}} />
-              }
+              <span dangerouslySetInnerHTML={{__html: getInfoText()}} />
             </span>
           </div>
           <hr className='hr-global'/>

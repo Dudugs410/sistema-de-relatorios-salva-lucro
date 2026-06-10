@@ -355,7 +355,6 @@ const TabelaCreditos = ({array}) =>{
 								<th className='det-th-global'scope="col">Banco</th>
 								<th className='det-th-global'scope="col">Agência</th>
 								<th className='det-th-global'scope="col">Conta</th>
-								<th className='det-th-global'scope="col">TID</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -380,7 +379,6 @@ const TabelaCreditos = ({array}) =>{
 										<td className='det-td-vendas-global'data-label="Banco">{venda.banco}</td>
 										<td className='det-td-vendas-global'data-label="Agência">{venda.agencia}</td>
 										<td className='det-td-vendas-global'data-label="Conta">{venda.conta}</td>
-										<td className='det-td-vendas-global'data-label="TID">{venda.tid}</td>
 									</tr>
 								)
 							})}

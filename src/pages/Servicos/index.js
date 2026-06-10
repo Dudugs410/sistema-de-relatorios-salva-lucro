@@ -1,42 +1,290 @@
 import './servicos.scss'
-import { useContext, useEffect, useState } from 'react' 
+import { useContext, useEffect, useState, useRef } from 'react' 
 import Joyride from 'react-joyride'
+import Select from 'react-select'
 import { AuthContext } from '../../contexts/auth'
 import { useLocation } from 'react-router-dom'
 import MyCalendar from '../../components/Componente_Calendario'
 import { toast } from 'react-toastify'
-import DisplayData from '../../components/Componente_DisplayData'
+import NewDisplayData from '../../components/Component_NewDisplayData'
 import { FiHelpCircle } from 'react-icons/fi'
+import api from '../../services/api'
 
-
-const Servicos = () =>{
+const Servicos = () => {
   const location = useLocation()
+  const [downloading, setDownloading] = useState(false)
+  const [bandeira, setBandeira] = useState(null)
+  const [administradora, setAdministradora] = useState(null)
+  const [listaBandeiras, setListaBandeiras] = useState([])
+  const [listaAdministradoras, setListaAdministradoras] = useState([])
 
-  useEffect(() => {
-      localStorage.setItem('currentPath', location.pathname)
-  }, [location])
-
-	const {
-	  servicesPageArray, setServicesPageArray,
-	  servicesPageAdminArray, setServicesPageAdminArray,
-	  servicesDateRange, setServicesDateRange,
-	  loadServices, servicesTableData,
-    btnDisabledServices, setBtnDisabledServices,
-    groupServicesByAdmin,
-    exportServices, 
-	} = useContext(AuthContext)
-
-  useEffect(()=>{
-    if(servicesPageArray.length>0){
-      setServicesPageAdminArray(groupServicesByAdmin(servicesPageArray))
-    }
-  },[servicesPageArray])
+  // Add ref to prevent infinite loop
+  const isProcessingRef = useRef(false)
+  const lastProcessedArrayRef = useRef(null)
 
   const resetValues = () => {
     setServicesPageArray([])
     setServicesPageAdminArray([])
     setBtnDisabledServices(false)
     servicesTableData.length = 0
+    setAdministradora(null)
+    setBandeira(null)
+    localStorage.removeItem('selectedAdmServices')
+    localStorage.removeItem('selectedBanServices')
+    // Reset refs
+    lastProcessedArrayRef.current = null
+  }
+
+  useEffect(() => {
+    const inicializar = async () => {
+      setListaBandeiras(await loadBanners())
+      setListaAdministradoras(await loadAdmins())
+    }
+    inicializar()
+  }, [])
+
+  useEffect(() => {
+    resetValues()
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem('currentPath', location.pathname)
+  }, [location])
+
+  const handleAdmin = (option) => {
+    setAdministradora(option?.codigoAdquirente || null)
+    localStorage.setItem('selectedAdmServices', JSON.stringify(option))
+  }
+
+  const handleBan = (option) => {
+    setBandeira(option?.codigoBandeira || null)
+    localStorage.setItem('selectedBanServices', JSON.stringify(option))
+  }
+
+  // Use the new functions from AuthContext
+  const {
+    servicesPageArray, setServicesPageArray,
+    servicesPageAdminArray, setServicesPageAdminArray,
+    servicesDateRange, setServicesDateRange,
+    servicesTableData,
+    btnDisabledServices, setBtnDisabledServices,
+    exportServices,
+    newLoadServices,
+    newGroupByAdminServices,
+    newLoadTotalServices,
+    servicesTotal, setServicesTotal,
+    loadAdmins, loadBanners
+  } = useContext(AuthContext)
+
+  // FIXED: Update totals when servicesPageArray changes - prevent infinite loop
+  useEffect(() => {
+    // Skip if already processing
+    if (isProcessingRef.current) return
+    
+    // Skip if no data
+    if (servicesPageArray.length === 0) return
+    
+    // Check if this exact array was already processed
+    const currentSignature = JSON.stringify(servicesPageArray)
+    if (currentSignature === lastProcessedArrayRef.current) return
+    
+    isProcessingRef.current = true
+    
+    try {
+      const groupedData = newGroupByAdminServices(servicesPageArray)
+      // Only update if different from current
+      if (JSON.stringify(groupedData) !== JSON.stringify(servicesPageAdminArray)) {
+        setServicesPageAdminArray(groupedData)
+      }
+      newLoadTotalServices(servicesPageArray)
+      lastProcessedArrayRef.current = currentSignature
+    } finally {
+      // Reset after a short delay
+      setTimeout(() => {
+        isProcessingRef.current = false
+      }, 100)
+    }
+  }, [servicesPageArray, newGroupByAdminServices, newLoadTotalServices, servicesPageAdminArray])
+
+  // Helper function to format date to YYYY-MM-DD with error handling
+  const formatDateToYYYYMMDD = (date) => {
+    // Early return for null, undefined, or empty values
+    if (!date) return ''
+    
+    // If it's already in YYYY-MM-DD format
+    if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return date
+    }
+    
+    // If it's a Date object
+    if (date instanceof Date && !isNaN(date.getTime())) {
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      return `${year}-${month}-${day}`
+    }
+    
+    // If it's a string with DD/MM/YYYY format
+    if (typeof date === 'string' && date.includes('/')) {
+      try {
+        const [day, month, year] = date.split('/')
+        if (day && month && year) {
+          return `${year}-${month}-${day}`
+        }
+      } catch (e) {
+        console.error('Error parsing date string:', e)
+        return ''
+      }
+    }
+    
+    // Try to create a Date object from the value
+    try {
+      const dateObj = new Date(date)
+      if (!isNaN(dateObj.getTime())) {
+        const year = dateObj.getFullYear()
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0')
+        const day = String(dateObj.getDate()).padStart(2, '0')
+        return `${year}-${month}-${day}`
+      }
+    } catch (e) {
+      console.error('Error creating date object:', e)
+    }
+    
+    return ''
+  }
+
+  // Get the request object for API downloads with safe handling
+  const getRequestObject = (format) => {
+    try {
+      const cliente = JSON.parse(localStorage.getItem('selectedClientBody') || '{}')
+      const grupo = JSON.parse(localStorage.getItem('selectedGroupBody') || '{}')
+      const dataInicial = localStorage.getItem('dataInicial')
+      const dataFinal = localStorage.getItem('dataFinal')
+      
+      const bandeiraObj = JSON.parse(localStorage.getItem('selectedBanServices') || '{}')
+      const adquirenteObj = JSON.parse(localStorage.getItem('selectedAdmServices') || '{}')
+      
+      let clientesString = ""
+      
+      if (cliente && cliente.label === 'TODOS') {
+        const clientCodes = grupo?.clients?.map(client => client.CODIGOCLIENTE) || []
+        clientesString = clientCodes.join(', ')
+      } else if (cliente && cliente.cod) {
+        clientesString = String(cliente.cod)
+      } else if (cliente && cliente.value) {
+        clientesString = String(cliente.value)
+      } else {
+        const apiCNPJ = localStorage.getItem('cnpj')
+        const apiGroupCode = localStorage.getItem('groupCode')
+        clientesString = apiCNPJ === 'todos' ? String(apiGroupCode) : String(apiCNPJ)
+      }
+
+      const nomeGrupo = grupo?.label || localStorage.getItem('clientName') || ""
+      const ban = bandeiraObj?.codigoBandeira || ''
+      const adq = adquirenteObj?.codigoAdquirente || ''
+
+      // Safe date formatting with fallback
+      const formattedStartDate = formatDateToYYYYMMDD(dataInicial)
+      const formattedEndDate = formatDateToYYYYMMDD(dataFinal)
+
+      return {
+        dataInicial: formattedStartDate,
+        dataFinal: formattedEndDate,
+        clientes: clientesString,
+        nomeGrupo: nomeGrupo,
+        bandeira: ban,
+        adquirente: adq,
+        produto: '',
+        modalidade: '',
+        arquivo: format,
+        modelo: 'AJUSTE'
+      }
+    } catch (error) {
+      console.error('Error in getRequestObject:', error)
+      return {
+        dataInicial: '',
+        dataFinal: '',
+        clientes: '',
+        nomeGrupo: '',
+        bandeira: '',
+        adquirente: '',
+        produto: '',
+        modalidade: '',
+        arquivo: format,
+        modelo: 'AJUSTE'
+      }
+    }
+  }
+
+  // Generic download function using the API
+  const downloadReport = async (format) => {
+    setDownloading(true)
+    
+    try {
+      const requestObject = getRequestObject(format)
+      
+      if (!requestObject.dataInicial || !requestObject.dataFinal) {
+        toast.warning('Please select valid dates before downloading')
+        return
+      }
+      
+      const response = await api.post('relatorios/detalhado', requestObject)
+      
+      if (response.data.success === true && response.data.formato === format) {
+        const binaryData = atob(response.data.base64)
+        const arrayBuffer = new ArrayBuffer(binaryData.length)
+        const uint8Array = new Uint8Array(arrayBuffer)
+        for (let i = 0; i < binaryData.length; i++) {
+          uint8Array[i] = binaryData.charCodeAt(i)
+        }
+        
+        const mimeType = format === 'PDF' 
+          ? 'application/pdf' 
+          : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        const fileExtension = format === 'PDF' ? 'pdf' : 'xlsx'
+        const blob = new Blob([arrayBuffer], { type: mimeType })
+        const url = URL.createObjectURL(blob)
+        
+        const a = document.createElement('a')
+        a.href = url
+        
+        const startDate = formatDateToYYYYMMDD(servicesDateRange?.[0])
+        const endDate = formatDateToYYYYMMDD(servicesDateRange?.[1])
+        const dateRangeStr = startDate === endDate ? startDate : `${startDate}_a_${endDate}`
+        const fileName = `Relatorio_Servicos_${dateRangeStr}.${fileExtension}`
+        
+        a.download = fileName
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
+        
+        toast.success(`${format} report downloaded successfully!`)
+      } else {
+        toast.error(response.data.mensagem || `Failed to generate ${format} report`)
+      }
+    } catch (err) {
+      console.error('Download error:', err)
+      toast.error(err.response?.data?.mensagem || err.message || `An error occurred while generating the ${format} report`)
+    } finally {
+      setDownloading(false)
+    }
+  }
+
+  const handleExcelDownload = async () => {
+    if (!servicesPageArray || servicesPageArray.length === 0) {
+      toast.warning('No data available to export. Please load data first.')
+      return
+    }
+    await downloadReport('XLSX')
+  }
+
+  const handlePDFDownload = async () => {
+    if (!servicesPageArray || servicesPageArray.length === 0) {
+      toast.warning('No data available to export. Please load data first.')
+      return
+    }
+    await downloadReport('PDF')
   }
 
   async function handleLoadData(e) {
@@ -50,203 +298,300 @@ const Servicos = () =>{
       setBtnDisabledServices(false)
     } catch (error) {
       console.error('Error handling busca:', error)
+      toast.error('Erro ao carregar dados')
       setBtnDisabledServices(false)
     }
   }
   
   async function loadData() {
     try {
-      setServicesPageArray(await loadServices(servicesDateRange[0].toLocaleDateString('pt-BR'), servicesDateRange[1].toLocaleDateString('pt-BR')))
+      const startDate = servicesDateRange?.[0]
+      const endDate = servicesDateRange?.[1]
+      
+      if (!startDate || !endDate) {
+        toast.warning('Por favor, selecione um período de datas')
+        throw new Error('Date range not selected')
+      }
+      
+      const formattedStartDate = startDate instanceof Date 
+        ? startDate.toLocaleDateString('pt-BR')
+        : startDate
+      const formattedEndDate = endDate instanceof Date 
+        ? endDate.toLocaleDateString('pt-BR')
+        : endDate
+      
+      const servicesData = await newLoadServices(formattedStartDate, formattedEndDate)
+      
+      // Reset the processed flag when new data loads
+      lastProcessedArrayRef.current = null
+      setServicesPageArray(servicesData || [])
+      
+      return servicesData
     } catch (error) {
-      console.error('Error fetching sales data:', error)
       toast.dismiss()
-      toast.error(error)
+      toast.error(error.response?.data?.mensagem || error.message || 'Erro ao carregar serviços')
       throw error
     }
   }
 
-  useEffect(()=>{
-    if(servicesPageArray.length > 0){
+  useEffect(() => {
+    if (servicesPageArray && servicesPageArray.length > 0) {
       exportServices(servicesPageArray)
     }
-  },[servicesPageArray, localStorage.getItem('currentPath')])
+  }, [servicesPageArray])
 
   const handleDateRangeChange = (dateRange) => {
-    setServicesDateRange(dateRange)
-  }
-
-    const [runTutorial, setRunTutorial] = useState(false)
-    const [steps, setSteps] = useState([
-      {
-        target: '[data-tour="calendario-section"]',
-        content: 'Clique em duas vezes em uma data para selecioná-la, ou uma vez em uma data inicial e uma vez em uma data final para selecionar o período começando e terminando nas datas selecionadas.',
-        disableBeacon: true,
-        placement: 'bottom'
-      },
-      {
-        target: '[data-tour="pesquisar-section"]',
-        content: 'Tendo a data selecionada, clique em "Pesquisar" para realizar a consulta das vendas da data ou período selecionado.',
-        placement: 'bottom'
-      },
-    ])
-
-    useEffect(()=>{
-      if(servicesPageArray.length > 0){
-          let stepsTemp = [
-            {
-              target: '[data-tour="exportacao-section"]',
-              content: 'Exporta as informações de serviços/ajustes sendo exibidas, para os formatos Excel ou PDF.',
-              disableBeacon: true,
-              placement: 'bottom'
-            },
-            {
-              target: '[data-tour="bandeiraadquirente-section"]',
-              content: 'Filtra os ajustes/serviços de acordo com a combinação de adquirente/tipo de serviço selecionada.',
-              placement: 'bottom'
-            },
-            {
-              target: '[data-tour="tabelavendas-section"]',
-              content: 'Serviços/Ajustes do período selecionado. Podem ser filtrados por adquirente/tipo de serviço.',
-              placement: 'bottom'
-            },
-            {
-              target: '[data-tour="totaladq-section"]',
-              content: 'Valores totais dos serviços/ajustes sendo exibidas, separados por adquirente.',
-              placement: 'bottom'
-            },
-            {
-              target: '[data-tour="botaovoltar-section"]',
-              content: 'Retorna ao calendário, possibilitando realizar uma nova consulta.',
-              placement: 'bottom'
-            },
-        ]
-        setSteps(stepsTemp)
-      } else {
-        setSteps([
-          {
-            target: '[data-tour="calendario-section"]',
-            content: 'Clique em duas vezes em uma data para selecioná-la, ou uma vez em uma data inicial e uma vez em uma data final para selecionar o período começando e terminando nas datas selecionadas.',
-            disableBeacon: true,
-            placement: 'bottom'
-          },
-          {
-            target: '[data-tour="pesquisar-section"]',
-            content: 'Tendo a data selecionada, clique em "Pesquisar" para realizar a consulta das vendas da data ou período selecionado.',
-            placement: 'bottom'
-          },
-        ])
-      }
-    },[servicesPageArray])
-/*  
-    useEffect(() => {
-      localStorage.setItem('currentPath', location.pathname)
-      
-      try {
-        
-        const tutorialCompleted = userTemp.joyrideComplete.servicosCalendar
-        
-        if (!tutorialCompleted) {
-          const timer = setTimeout(() => {
-            setRunTutorial(true)
-          }, 1000)
-          return () => clearTimeout(timer)
-        }
-      } catch (error) {
-        console.error('Error while processing user data:', error)
-      }
-    }, [location])
-  */
-  const handleTutorialEnd = () => {
-    setRunTutorial(false)
-    if (servicesPageArray.length > 0){
-
-    } else{
-
+    if (dateRange && Array.isArray(dateRange) && dateRange.length === 2) {
+      setServicesDateRange(dateRange)
+    } else {
+      console.warn('Invalid date range received:', dateRange)
     }
   }
 
-	return(
-		<div className='appPage'>
-		  <div className='page-vendas-background'>
-			<div className='page-content-vendas'>
-			  <div className='vendas-title-container'>
-				<h1 className='vendas-title'>Serviços</h1>
-			  </div>
-			  <div className='component-container-vendas' data-tour="calendario-section">
-          { runTutorial &&
-            <Joyride
-              steps={steps}
-              run={runTutorial}
-              continuous={true}
-              scrollToFirstStep={false}
-              showProgress={true}
-              showSkipButton={true}
-              scrollOffset={80}
-              styles={{
-                options: {
-                  primaryColor: '#99cc33',
-                  textColor: '#0a3d70',
-                  zIndex: 10000,
-                }
-              }}
-              callback={(data) => {
-                if (data.status === 'finished' || data.status === 'skipped') {
-                  handleTutorialEnd()
-                }
-              }}
-              locale={{
-                back: 'Voltar',
-                close: 'Fechar',
-                last: 'Finalizar',
-                next: 'Próximo',
-                skip: 'Pular',
-                nextLabelWithProgress: 'Próximo ({step} de {steps})',
-              }}
-            />	
-          }
-          { servicesPageArray !== null ?
-            (servicesPageArray.length > 0 ? (
-              <DisplayData 
-                dataArray={servicesPageArray} 
-                adminDataArray={servicesPageAdminArray} 
-                totals={null} 
-                onGoBack={resetValues}
-                setRunTutorial={setRunTutorial}
-                location={location}
+  const getSelectedAdminOption = () => {
+    if (!administradora || listaAdministradoras.length === 0) return null
+    return listaAdministradoras.find(option => option.codigoAdquirente === administradora)
+  }
+
+  const getSelectedBanOption = () => {
+    if (!bandeira || listaBandeiras.length === 0) return null
+    return listaBandeiras.find(option => option.codigoBandeira === bandeira)
+  }
+
+  const [runTutorial, setRunTutorial] = useState(false)
+  const [steps, setSteps] = useState([
+    {
+      target: '[data-tour="select-container-calendario"]',
+      content: 'Selecione os filtros desejados para o relatório.',
+      disableBeacon: true,
+      placement: 'bottom'
+    },
+    {
+      target: '[data-tour="calendario-section"]',
+      content: 'Clique em duas vezes em uma data para selecioná-la, ou uma vez em uma data inicial e uma vez em uma data final para selecionar o período.',
+      placement: 'bottom'
+    },
+    {
+      target: '[data-tour="pesquisar-section"]',
+      content: 'Tendo a data selecionada, clique em "Pesquisar" para realizar a consulta dos serviços.',
+      placement: 'bottom'
+    },
+  ])
+
+  useEffect(() => {
+    if (servicesPageArray && servicesPageArray.length > 0) {
+      let stepsTemp = [
+        {
+          target: '[data-tour="exportacao-section"]',
+          content: 'Exporta as informações de serviços/ajustes sendo exibidas, para os formatos Excel ou PDF.',
+          placement: 'bottom'
+        },
+        {
+          target: '[data-tour="bandeiraadquirente-section"]',
+          content: 'Filtra os ajustes/serviços de acordo com a combinação de adquirente/tipo de serviço selecionada.',
+          placement: 'bottom'
+        },
+        {
+          target: '[data-tour="tabelavendas-section"]',
+          content: 'Serviços/Ajustes do período selecionado. Podem ser filtrados por adquirente/tipo de serviço.',
+          placement: 'bottom'
+        },
+        {
+          target: '[data-tour="totaladq-section"]',
+          content: 'Valores totais dos serviços/ajustes sendo exibidas, separados por adquirente.',
+          placement: 'bottom'
+        },
+        {
+          target: '[data-tour="botaovoltar-section"]',
+          content: 'Retorna ao calendário, possibilitando realizar uma nova consulta.',
+          placement: 'bottom'
+        },
+      ]
+      setSteps(stepsTemp)
+    }
+  }, [servicesPageArray])
+
+  const handleTutorialEnd = () => {
+    setRunTutorial(false)
+  }
+
+  const calculateServicesTotal = (servicesArray) => {
+    if (!servicesArray || servicesArray.length === 0) return { total: 0 }
+    const total = servicesArray.reduce((sum, service) => sum + Math.abs(service.valor || service.VALORLIQUIDO || 0), 0)
+    return { total: total }
+  }
+
+  return (
+    <div className='appPage'>
+      <div className='page-vendas-background'>
+        <div className='page-content-vendas'>
+          <div className='vendas-title-container'>
+            <h1 className='vendas-title'>Serviços</h1>
+          </div>
+          <hr className='hr-global' />
+          
+          <div className='component-container-vendas' data-tour="calendario-section">
+            {runTutorial &&
+              <Joyride
+                steps={steps}
+                run={runTutorial}
+                continuous={true}
+                scrollToFirstStep={false}
+                showProgress={true}
+                showSkipButton={true}
+                scrollOffset={80}
+                styles={{
+                  options: {
+                    primaryColor: '#99cc33',
+                    textColor: '#0a3d70',
+                    zIndex: 10000,
+                  }
+                }}
+                callback={(data) => {
+                  if (data.status === 'finished' || data.status === 'skipped') {
+                    handleTutorialEnd()
+                  }
+                }}
+                locale={{
+                  back: 'Voltar',
+                  close: 'Fechar',
+                  last: 'Finalizar',
+                  next: 'Próximo',
+                  skip: 'Pular',
+                  nextLabelWithProgress: 'Próximo ({step} de {steps})',
+                }}
               />
+            }
+            
+            {servicesPageArray !== null ?
+              servicesPageArray.length > 0 ? (
+                <NewDisplayData 
+                  dataArray={servicesPageArray} 
+                  adminDataArray={servicesPageAdminArray} 
+                  totals={calculateServicesTotal(servicesPageArray)} 
+                  onGoBack={resetValues}
+                  setRunTutorial={setRunTutorial}
+                  location={location}
+                />
               ) : (
-              <MyCalendar 
-                onLoadData={handleLoadData} 
-                getCalendarDate={handleDateRangeChange} 
-                btnDisabled={btnDisabledServices}
-              />
+                <>
+                  <div data-tour="select-container-calendario" className='select-container-calendario'>
+                    <div className='select-wrapper'>
+                      <h5>Adquirente</h5>
+                      <Select
+                        className='seletor-adq-select fixed-width-select'
+                        id='adquirente'
+                        options={listaAdministradoras}
+                        getOptionLabel={(option) => option.nomeAdquirente}
+                        getOptionValue={(option) => option.codigoAdquirente}
+                        onChange={(option) => handleAdmin(option)}
+                        value={getSelectedAdminOption()}
+                        menuPortalTarget={document.body}
+                        menuPosition="fixed"
+                        placeholder="Selecione uma adquirente..."
+                        isClearable={true}
+                        styles={{
+                          control: (base) => ({
+                            ...base,
+                            minWidth: 250,
+                            width: '100%',
+                          }),
+                          menu: (base) => ({
+                            ...base,
+                            minWidth: 250,
+                            width: '100%',
+                          }),
+                          valueContainer: (base) => ({
+                            ...base,
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }),
+                          singleValue: (base) => ({
+                            ...base,
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            maxWidth: '90%',
+                          }),
+                        }}
+                      />
+                    </div>
+                    <div className='select-wrapper'>
+                      <h5>Bandeira</h5>
+                      <Select
+                        className='seletor-adq-select fixed-width-select'
+                        id='bandeira'
+                        options={listaBandeiras}
+                        getOptionLabel={(option) => option.descricaoBandeira}
+                        getOptionValue={(option) => option.codigoBandeira}
+                        onChange={(option) => handleBan(option)}
+                        value={getSelectedBanOption()}
+                        menuPortalTarget={document.body}
+                        menuPosition="fixed"
+                        placeholder="Selecione uma bandeira..."
+                        isClearable={true}
+                        styles={{
+                          control: (base) => ({
+                            ...base,
+                            minWidth: 250,
+                            width: '100%',
+                          }),
+                          menu: (base) => ({
+                            ...base,
+                            minWidth: 250,
+                            width: '100%',
+                          }),
+                          valueContainer: (base) => ({
+                            ...base,
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }),
+                          singleValue: (base) => ({
+                            ...base,
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            maxWidth: '90%',
+                          }),
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  <MyCalendar 
+                    onLoadData={handleLoadData} 
+                    getCalendarDate={handleDateRangeChange} 
+                    btnDisabled={btnDisabledServices}
+                  />
+                </>
               )
-            )
-          : null }
-              <button 
-                className='btn btn-success-dados btn-tutorial px-2 py-1'
-                    onClick={() => setRunTutorial(true)}
-                    style={{
-                    position: 'relative',
-                    bottom: '0px',
-                    right: '-10px',
-                    zIndex: 10,
-                    padding: '10px 15px',
-                    background: 'none',
-                    color: '#99cc33',
-                    border: 'none',
-                    borderRadius: '5px',
-                    cursor: 'pointer'
-                    }}
-                >
-                <FiHelpCircle />
+            : null}
+            
+            <button 
+              className='btn btn-success-dados btn-tutorial px-2 py-1'
+              onClick={() => setRunTutorial(true)}
+              style={{
+                position: 'relative',
+                bottom: '0px',
+                right: '-10px',
+                zIndex: 10,
+                padding: '10px 15px',
+                background: 'none',
+                color: '#99cc33',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer'
+              }}
+            >
+              <FiHelpCircle />
             </button>
-			    </div>
-			  </div>
-		  </div>
-		</div>
-	)
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export default Servicos
-

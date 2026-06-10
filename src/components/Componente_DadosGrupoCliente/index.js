@@ -34,6 +34,9 @@ const DadosGrupoCliente = () => {
     if(selectedGroup && selectedClient){
       setDisplayGroup(selectedGroup.label)
       setDisplayClient(selectedClient.label)
+
+      localStorage.setItem('selectedGroupBody', JSON.stringify(selectedGroup))
+      localStorage.setItem('selectedClientBody', JSON.stringify(selectedClient))
     }
   },[selectedGroup, selectedClient])
 
@@ -105,8 +108,10 @@ const DadosGrupoCliente = () => {
     } else if (selectedClient) {
       localStorage.setItem('cnpj', selectedClient.value)
       localStorage.setItem('clientCode', 'todos')
-      setExportName(selectedGroup ? `${selectedGroup.label} - Todas Filiais` : '')
+      setExportName(selectedGroup ? `${selectedGroup.label}_TODAS_FILIAIS` : '')
     }
+    console.log('selectedClient: ', selectedClient)
+    console.log('selectedGroup: ', selectedGroup)
   }, [selectedClient, selectedGroup])
 
   const getClientOptions = (group) => {

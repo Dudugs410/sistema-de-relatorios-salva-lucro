@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { AuthContext } from "../../contexts/auth"
-import salvaLucroLogo from '../../assets/logoSalvaLucro.png'
+import salvaLucroLogo from '../../assets/LogoTopo.png'
 import sifraLogo from '../../assets/logoSifra.png'
 import mgLogo from '../../assets/logoMG.png'
 import './login.css'
@@ -85,8 +85,8 @@ const Login = () => {
                 <form type='submit' className='form-login' onSubmit={handleLogin}>
                  <img className='img-login' src={currentLogo} alt='logo' />
                     <div className='input-container-login'>
-                        <input id='login' className='input-login' type='text' placeholder='usuário' value={login} onChange={(e) => setLogin(e.target.value)}/>
-                        <input id='senha' className='input-login' type='password' placeholder='senha' value={password} onChange={(e) => setPassword(e.target.value)}/>
+                        <input id='login' className='input-login' type='text' placeholder='usuário' value={login} autoComplete="username" onChange={(e) => setLogin(e.target.value)}/>
+                        <input id='senha' className='input-login' type='password' placeholder='senha' value={password} autoComplete="current-password" onChange={(e) => setPassword(e.target.value)}/>
                         <hr className='hr-global' />
                         { !loading ? <button type='submit' className='btn btn-primary'>Login</button> : <button type='submit' className='btn btn-primary' disabled>Login</button>}
                     </div>

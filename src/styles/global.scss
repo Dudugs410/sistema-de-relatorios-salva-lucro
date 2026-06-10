@@ -1,6 +1,18 @@
 
 @import './variables';
 
+html {
+  transition: background-color 0.2s ease, color 0.2s ease;
+  
+  * {
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+}
+
+html.preload-transitions * {
+  transition: none !important;
+}
+
 .app-page-global{
     display: contents;
     flex-direction: column;
@@ -43,6 +55,18 @@
     padding: 10px;
     color: var(--font-color);
     background-color: var(--secondary-color);
+}
+
+.subtitle-container-global{
+    display: flex;
+    color: var(--font-color);
+    background-color: var(--secondary-color);
+    padding: 10px;
+    border-radius: 20px;
+    height: 2em;
+    align-items: center;
+    flex-direction: row;
+
 }
 
 .title-global{
@@ -119,6 +143,10 @@
 
 }
 
+.icon-global{
+    color: var(--primary-color);
+}
+
 .subtitle{
     color: var(--subtitle-color)
 }
@@ -162,6 +190,10 @@
     border: solid 1px !important;
     border-radius: 25px !important;
     cursor: pointer !important;
+}
+
+.money{
+    color: var(--secondary-color) !important;
 }
 
 ///select
@@ -209,7 +241,7 @@
     --bs-table-bg: var(--table-background);
 
     --bs-table-striped-color: var(--font-color);
-    --bs-table-striped-bg: rgba(var(--primary-color), 0.05);
+    --bs-table-striped-bg: rgba(var(--primary-color-rgb), 0.1) !important;
 }
 
 .table-bordered>:not(caption)>* {

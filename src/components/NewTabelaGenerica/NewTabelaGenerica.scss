@@ -8,7 +8,7 @@
   --card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.15);
   --text-muted: #6c757d;
   --text-primary: var(--font-color);
-  --success-color: #28a745;
+  --success-color: var(--secondary-color);//#28a745;
   --danger-color: #dc3545;
   --warning-color: #ffc107;
   --info-color: #17a2b8;
@@ -749,7 +749,6 @@
   }
 
   .desktop-filters {
-    flex-direction: column;
     gap: 1rem;
     
     .export-column {
