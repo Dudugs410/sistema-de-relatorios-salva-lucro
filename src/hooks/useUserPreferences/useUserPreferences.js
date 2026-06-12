@@ -1,5 +1,6 @@
 import { useCallback } from 'react'
 import api from '../../services/api'
+import { getIconPathByCode, DEFAULT_ICON_CODE } from '../../util/iconRegistry'
 
 export const useUserPreferences = () => {
   // GET user preferences from API - ALWAYS FRESH
@@ -43,7 +44,7 @@ export const useUserPreferences = () => {
     const now = getCurrentDate()
     
     // Get user data to determine default icon based on identity visual
-    let defaultIconCode = 1 // Default blue icon
+    let defaultIconCode = DEFAULT_ICON_CODE // Default blue icon
     let defaultColorScheme = 'salvalucro'
     
     try {
@@ -73,7 +74,7 @@ export const useUserPreferences = () => {
           defaultColorScheme = 'carddigital'
           break
         default:
-          defaultIconCode = 1
+          defaultIconCode = DEFAULT_ICON_CODE
           defaultColorScheme = 'salvalucro'
           break
       }

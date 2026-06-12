@@ -14,40 +14,9 @@ import ThemeSync from './components/ThemeSync'
 import { AuthContext } from './contexts/auth'
 import { useUserPreferences } from './hooks/useUserPreferences/useUserPreferences'
 
-// Import icons for mapping
-import icon1 from './assets/user_icons/ICON_LOGO_AZUL.png'
-import icon2 from './assets/user_icons/ICON_LOGO_BRANCO.png'
-import icon3 from './assets/user_icons/ICON_LOGO_PRETO.png'
-import icon4 from './assets/user_icons/ICON_LOGO_ROSA.png'
-import icon5 from './assets/user_icons/ICON_LOGO_VERDE.png'
-import icon6 from './assets/user_icons/ICON_MG_SOLUCOES.png'
-import icon7 from './assets/user_icons/ICON_SIFRA.png'
-import icon8 from './assets/user_icons/ICON_SUPERJUR.png'
-import icon9 from './assets/user_icons/ICON_CARD_DIGITAL.png'
-import adminIcon1 from './assets/user_icons/ADMIN_ICON_1.png'
-import adminIcon2 from './assets/user_icons/ADMIN_ICON_2.png'
-import adminIcon3 from './assets/user_icons/ADMIN_ICON_3.png'
+import { getIconPathByCode } from './util/iconRegistry'
 
 initializeContext()
-
-// Icon mapping function
-const getIconPathByCode = (code) => {
-  const icons = {
-    1: icon1,
-    2: icon2,
-    3: icon3,
-    4: icon4,
-    5: icon5,
-    6: icon6,
-    7: icon7,
-    8: icon8,
-    9: icon9,
-    10: adminIcon1,
-    11: adminIcon2,
-    12: adminIcon3,
-  }
-  return icons[code] || icon1
-}
 
 // Component that loads user preferences on app start
 function PreferenceLoader({ children }) {
