@@ -31,19 +31,15 @@
     <!-- APP VERSION - Increment this on each deployment -->
     <script>
       (function() {
-        const APP_VERSION = '2.0.4'; // CHANGE THIS ON EVERY DEPLOY
+        const APP_VERSION = '2.0.4';
         
-        // Check if we need to force a reload due to version change
         try {
           const storedVersion = localStorage.getItem('app_version');
           
           if (storedVersion !== APP_VERSION) {
             localStorage.setItem('app_version', APP_VERSION);
-            // Clear any cached theme customizations if needed
-            // localStorage.removeItem('colorScheme');
-            // Force reload from server, bypassing cache
             window.location.reload(true);
-            return; // Stop further execution
+            return;
           }
         } catch(e) {
           console.warn('Version check failed:', e);
@@ -71,16 +67,13 @@
             }
           }
 
-          // Get saved data from localStorage
           const savedContext = localStorage.getItem('appContext');
           const savedTheme = localStorage.getItem('appTheme');
           const userData = localStorage.getItem('user');
           const token = localStorage.getItem('token');
           
-          // Determine the correct context
-          let finalContext = 'salvalucro'; // Default
+          let finalContext = 'salvalucro';
           
-          // Priority: savedContext > user.GRUCODIGO > default
           if (savedContext) {
             finalContext = savedContext;
           } else if (token && userData) {
@@ -88,8 +81,7 @@
             if (contextFromUser) finalContext = contextFromUser;
           }
           
-          // Determine the correct theme
-          let finalTheme = 'light'; // Default
+          let finalTheme = 'light';
           
           if (savedTheme) {
             finalTheme = savedTheme;
@@ -100,18 +92,15 @@
             } catch(e) {}
           }
           
-          // Apply to HTML element IMMEDIATELY
           document.documentElement.setAttribute('data-context', finalContext);
           document.documentElement.setAttribute('data-theme', finalTheme);
           
-          // Also store in sessionStorage to verify theme was applied
           sessionStorage.setItem('themeInitialized', 'true');
           sessionStorage.setItem('themeContext', finalContext);
           sessionStorage.setItem('themeMode', finalTheme);
           
           console.log('✅ Theme pre-loaded:', { context: finalContext, theme: finalTheme });
           
-          // Add a small style to prevent FOUC
           const style = document.createElement('style');
           style.textContent = `
             /* Hide content briefly until theme is fully applied */
@@ -128,7 +117,6 @@
           
         } catch(e) {
           console.error('Theme initialization error:', e);
-          // Fallback to defaults
           document.documentElement.setAttribute('data-context', 'salvalucro');
           document.documentElement.setAttribute('data-theme', 'light');
         }

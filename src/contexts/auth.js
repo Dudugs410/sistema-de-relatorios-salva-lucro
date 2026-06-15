@@ -24,36 +24,7 @@ import SPECIAL from '../assets/PLACEHOLDER.png'
 
 import _ from 'lodash'
 
-import icon1 from '../assets/user_icons/ICON_LOGO_AZUL.png'
-import icon2 from '../assets/user_icons/ICON_LOGO_BRANCO.png'
-import icon3 from '../assets/user_icons/ICON_LOGO_PRETO.png'
-import icon4 from '../assets/user_icons/ICON_LOGO_ROSA.png'
-import icon5 from '../assets/user_icons/ICON_LOGO_VERDE.png'
-import icon6 from '../assets/user_icons/ICON_MG_SOLUCOES.png'
-import icon7 from '../assets/user_icons/ICON_SIFRA.png'
-import icon8 from '../assets/user_icons/ICON_SUPERJUR.png'
-import icon9 from '../assets/user_icons/ICON_CARD_DIGITAL.png'
-import adminIcon1 from '../assets/user_icons/ADMIN_ICON_1.png'
-import adminIcon2 from '../assets/user_icons/ADMIN_ICON_2.png'
-import adminIcon3 from '../assets/user_icons/ADMIN_ICON_3.png'
-
-const getIconPathByCode = (code) => {
-  const icons = {
-    1: icon1,
-    2: icon2,
-    3: icon3,
-    4: icon4,
-    5: icon5,
-    6: icon6,
-    7: icon7,
-    8: icon8,
-    9: icon9,
-    10: adminIcon1,
-    11: adminIcon2,
-    12: adminIcon3,
-  }
-  return icons[code] || icon1
-}
+import { getIconPathByCode, DEFAULT_ICON_PATH, ICON_MAP } from '../util/iconRegistry'
 
 export const AuthContext = createContext({})
 
@@ -488,8 +459,10 @@ const loginApp = async (login, password) => {
       if (userPreferences?.ICONE) {
         localStorage.setItem('userIconCode', userPreferences.ICONE)
         const iconPath = getIconPathByCode(userPreferences.ICONE)
-        setUserImg(iconPath)
-        console.log('🖼️ Applied saved icon to header:', userPreferences.ICONE, iconPath)
+        if (iconPath) {
+          setUserImg(iconPath)
+          console.log('🖼️ Applied saved icon to header:', userPreferences.ICONE)
+        }
       }
 
       // Only update theme if needed
@@ -509,6 +482,7 @@ const loginApp = async (login, password) => {
         await handleUpdateUser()
       }
 
+      // This part works - DO NOT CHANGE
       const userData = { NOME: user.NOME, EMAIL: user.EMAIL }
       localStorage.setItem('GRUCODIGO', user.GRUCODIGO)
       localStorage.setItem('isSignedIn', true)
@@ -642,6 +616,25 @@ const loadUser = async (userId) => {
   } catch (error) {
     console.error('Error loading user:', error)
     throw error
+  }
+
+  // Load preferences and apply icon
+  try {
+    const prefsResponse = await api.get('PreferenciasUsuario', {
+      params: { codigo: userId }
+    })
+    const preferences = prefsResponse.data
+    
+    if (preferences && preferences.ICONE) {
+      const iconPath = getIconPathByCode(preferences.ICONE)
+      if (iconPath) {
+        setUserImg(iconPath)
+        localStorage.setItem('userIconCode', preferences.ICONE)
+        console.log('🖼️ Loaded user icon:', preferences.ICONE)
+      }
+    }
+  } catch (error) {
+    console.log('No preferences found or error loading icon:', error)
   }
 
   return userData
