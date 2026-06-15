@@ -122,7 +122,32 @@ export const getUserDefaultIcon = (identidadeVisual) => {
 export const DEFAULT_ICON_CODE = 1
 export const DEFAULT_ICON_PATH = ICON_MAP[DEFAULT_ICON_CODE]
 
-export const getIconPathByCode = (code) => ICON_MAP[code] || DEFAULT_ICON_PATH
+export const getIconPathByCode = (code) => {
+  // Handle invalid inputs
+  if (!code || typeof code !== 'number') {
+    console.warn(`Invalid icon code: ${code}, using default`)
+    return ICON_MAP[1]
+  }
+  
+  const icon = ICON_MAP[code]
+  if (!icon) {
+    console.warn(`Icon code ${code} not found, using default`)
+    return ICON_MAP[1]
+  }
+  return icon
+}
+
+// Get default icon safely - ALWAYS returns a valid path
+export const getSafeDefaultIcon = (userData = null) => {
+  try {
+    const identidadeVisual = userData?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro'
+    const defaultIcon = VISUAL_IDENTITY_ICONS[identidadeVisual] || VISUAL_IDENTITY_ICONS['salvalucro']
+    return defaultIcon.path
+  } catch (error) {
+    console.error('Error getting safe default icon:', error)
+    return ICON_MAP[1] // Ultimate fallback to blue icon
+  }
+}
 
 // Export individual icons for components that need direct access (backward compatibility)
 export {

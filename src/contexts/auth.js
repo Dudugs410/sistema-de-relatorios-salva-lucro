@@ -459,8 +459,10 @@ const loginApp = async (login, password) => {
       if (userPreferences?.ICONE) {
         localStorage.setItem('userIconCode', userPreferences.ICONE)
         const iconPath = getIconPathByCode(userPreferences.ICONE)
-        setUserImg(iconPath)
-        console.log('🖼️ Applied saved icon to header:', userPreferences.ICONE, iconPath)
+        if (iconPath) {
+          setUserImg(iconPath)
+          console.log('🖼️ Applied saved icon to header:', userPreferences.ICONE)
+        }
       }
 
       // Only update theme if needed
@@ -480,6 +482,7 @@ const loginApp = async (login, password) => {
         await handleUpdateUser()
       }
 
+      // This part works - DO NOT CHANGE
       const userData = { NOME: user.NOME, EMAIL: user.EMAIL }
       localStorage.setItem('GRUCODIGO', user.GRUCODIGO)
       localStorage.setItem('isSignedIn', true)
@@ -613,6 +616,25 @@ const loadUser = async (userId) => {
   } catch (error) {
     console.error('Error loading user:', error)
     throw error
+  }
+
+  // Load preferences and apply icon
+  try {
+    const prefsResponse = await api.get('PreferenciasUsuario', {
+      params: { codigo: userId }
+    })
+    const preferences = prefsResponse.data
+    
+    if (preferences && preferences.ICONE) {
+      const iconPath = getIconPathByCode(preferences.ICONE)
+      if (iconPath) {
+        setUserImg(iconPath)
+        localStorage.setItem('userIconCode', preferences.ICONE)
+        console.log('🖼️ Loaded user icon:', preferences.ICONE)
+      }
+    }
+  } catch (error) {
+    console.log('No preferences found or error loading icon:', error)
   }
 
   return userData

@@ -18,6 +18,12 @@ const Header = () => {
     const currentUser = JSON.parse(localStorage.getItem('currentUser'))
     const userData = JSON.parse(localStorage.getItem('userData'))
     
+    // Debug: Log userData when component mounts or updates
+    useEffect(() => {
+        console.log('🔍 Header - userData from localStorage:', userData)
+        console.log('🔍 Header - userImg from context:', userImg)
+    }, [userData, userImg])
+    
     const handleCheckboxChangeCalendar = useCallback(() => {
         setIsCheckedCalendar(!isCheckedCalendar)
     }, [isCheckedCalendar, setIsCheckedCalendar])
@@ -171,6 +177,7 @@ const Header = () => {
                                 src={getImageSource()}
                                 alt="User profile"
                                 onError={(e) => {
+                                    console.log('Image failed to load, using default')
                                     e.target.src = defaultImg
                                 }}
                             />
