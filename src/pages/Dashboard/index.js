@@ -35,19 +35,24 @@ const Dashboard = () => {
       placement: 'bottom'
     },
     {
-      target: '[data-tour="sales-section"]',
-      content: 'Esta seção mostra seus dados de vendas, incluindo totais mensais e desempenho dos últimos 4 dias.',
+      target: '[data-tour="selector-cards"]',
+      content: 'Selecione entre Vendas, Créditos ou Serviços para visualizar métricas específicas. Cada card mostra o valor total do período atual.',
       placement: 'bottom'
     },
     {
-      target: '[data-tour="credits-section"]',
-      content: 'Aqui você pode ver informações de crédito, incluindo previsão para hoje e para os próximos 5 dias.',
+      target: '[data-tour="main-chart"]',
+      content: 'Este gráfico de pizza mostra a distribuição dos valores por adquirente ou tipo de serviço. Passe o mouse sobre as fatias para ver detalhes.',
       placement: 'bottom'
     },
     {
-      target: '[data-tour="services-section"]',
-      content: 'Esta seção exibe dados de serviços com o total de hoje e o resumo mensal.',
-      placement: 'bottom'
+      target: '[data-tour="metrics-grid"]',
+      content: 'Métricas adicionais específicas para o tipo de dado selecionado. Os valores são atualizados automaticamente.',
+      placement: 'top'
+    },
+    {
+      target: '[data-tour="summary-section"]',
+      content: 'Resumo detalhado com distribuição percentual de cada adquirente ou tipo de serviço, incluindo barras de progresso para fácil visualização.',
+      placement: 'top'
     },
   ]);
 
@@ -206,7 +211,7 @@ const Dashboard = () => {
 
     if (!isLoaded) {
       return (
-        <div className='chart-main-section'>
+        <div className='chart-main-section' data-tour="main-chart">
           <LazyLoader />
         </div>
       )
@@ -215,7 +220,7 @@ const Dashboard = () => {
     return (
       <>
         {/* Chart Type Selector Cards */}
-        <div className="chart-type-selector">
+        <div className="chart-type-selector" data-tour="selector-cards">
           <div 
             className={`selector-card ${activeDataType === 'vendas' ? 'active' : ''}`}
             onClick={() => setActiveDataType('vendas')}
@@ -257,7 +262,7 @@ const Dashboard = () => {
         </div>
 
         {/* Main Chart Section */}
-        <div className="chart-main-section">
+        <div className="chart-main-section" data-tour="main-chart">
           <div className="chart-header">
             <h2>
               <span className="section-icon">
@@ -285,7 +290,7 @@ const Dashboard = () => {
         </div>
 
         {/* Métricas Adicionais */}
-        <div className="additional-metrics">
+        <div className="additional-metrics" data-tour="metrics-grid">
           <div className='subtitle-container-global'>
             <h3 className='subtitle'>Métricas Adicionais</h3>
           </div>
@@ -344,7 +349,7 @@ const Dashboard = () => {
         </div>
 
         {/* Summary Section */}
-        <div className="summary-section">
+        <div className="summary-section" data-tour="summary-section">
           <div className='subtitle-container-global'>
             <h3 className='subtitle'>Resumo por {dados === 'servicos' ? 'Tipo de Serviço' : 'Adquirente'}</h3>
           </div>
@@ -388,10 +393,11 @@ const Dashboard = () => {
           steps={steps}
           run={runTutorial}
           continuous={true}
-          scrollToFirstStep={false}
+          scrollToFirstStep={true}
           showProgress={true}
           showSkipButton={true}
           scrollOffset={80}
+          disableOverlayClose={true}
           styles={{
             options: {
               primaryColor: '#99cc33',
@@ -445,4 +451,4 @@ const Dashboard = () => {
   )
 }
 
-export default Dashboard;
+export default Dashboard

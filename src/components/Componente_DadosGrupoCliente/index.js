@@ -136,7 +136,7 @@ const DadosGrupoCliente = () => {
   } 
 
   return (
-    <div className="display-seletor">
+    <div className="display-seletor" data-tour="trocar-section-wrapper">
       {/* Remove the Modal wrapper and render SeletorCliente directly */}
       {modalOpen && <SeletorCliente onClose={() => { setModalOpen(false) }} />}
       
