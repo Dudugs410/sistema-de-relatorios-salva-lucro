@@ -9,6 +9,30 @@ import { FiMenu } from 'react-icons/fi'
 import { useNavigate, useLocation } from 'react-router-dom'
 import api from '../../services/api';
 
+// Icon mapping object - maps icon names from API to React Icon components
+const iconComponentMap = {
+    'FiHome': FiHome,
+    'FiDollarSign': FiDollarSign,
+    'FiCreditCard': FiCreditCard,
+    'FiCalendar': FiCalendar,
+    'FiTool': FiTool,
+    'FiTable': FiTable,
+    'FiFileText': FiFileText,
+    'FiPercent': FiPercent,
+    'FiMoon': FiMoon,
+    'FiSun': FiSun,
+    'FiRefreshCcw': FiRefreshCcw,
+    'FiClipboard': FiClipboard,
+    'FiDownload': FiDownload,
+    'FiPaperclip': FiPaperclip,
+    'FiSettings': FiSettings,
+    'FiTruck': FiTruck,
+    'FiShoppingBag': FiShoppingBag,
+    'FiLink': FiLink,
+    'FiDatabase': FiDatabase,
+    'LiaFileInvoiceDollarSolid': LiaFileInvoiceDollarSolid,
+};
+
 const Sidebar = () => {
     const [optionsWithIcons, setOptionsWithIcons] = useState([])
     const [activeParent, setActiveParent] = useState(null)
@@ -25,8 +49,43 @@ const Sidebar = () => {
         console.log('Sidebar component mounted')
     }, [])
 
-    const getIconForMenu = (menuName) => {
-        const iconMap = {
+    // Function to get icon component from API icon name
+    const getIconFromApi = (iconName) => {
+        // If iconName is empty, null, or undefined, return null
+        if (!iconName || iconName.trim() === '') {
+            console.log('Icon name is empty, returning null');
+            return null;
+        }
+        
+        console.log('Looking for icon:', iconName);
+        console.log('Available icons in map:', Object.keys(iconComponentMap));
+        
+        // Try to match the icon name from API to our component map
+        let icon = iconComponentMap[iconName];
+        
+        if (!icon) {
+            // Try with Fi prefix
+            icon = iconComponentMap[`Fi${iconName}`];
+        }
+        
+        if (!icon) {
+            // Try with Lia prefix
+            icon = iconComponentMap[`Lia${iconName}`];
+        }
+        
+        if (!icon) {
+            // Try with first letter capitalized
+            const capitalized = iconName.charAt(0).toUpperCase() + iconName.slice(1);
+            icon = iconComponentMap[capitalized];
+        }
+        
+        console.log('Icon found:', icon ? 'Yes' : 'No');
+        return icon || null;
+    }
+
+    // Fallback icon mapping for when API doesn't provide icons
+    const getFallbackIconForMenu = (menuName) => {
+        const fallbackIconMap = {
             'Dashboard': FiHome,
             'Vendas': FiDollarSign,
             'Créditos': FiCreditCard,
@@ -39,7 +98,7 @@ const Sidebar = () => {
             'Serviços': FiTool,
         }
         
-        return iconMap[menuName] || FiLink
+        return fallbackIconMap[menuName] || FiLink
     }
 
     const isOnUsuarioPage = () => {
@@ -100,23 +159,50 @@ const Sidebar = () => {
                 
                 const childrenCount = validChildren.length
                 
+                // Try to get icon from API first
+                let parentIcon = null;
+                if (parent.icone) {
+                    parentIcon = getIconFromApi(parent.icone);
+                }
+                // If no API icon, use fallback
+                if (!parentIcon) {
+                    parentIcon = getFallbackIconForMenu(parent.nome);
+                }
+                
+                console.log(`Parent "${parent.nome}" icon:`, parentIcon ? 'Found' : 'Not found');
+                
                 if (childrenCount === 0) {
                     return null
                 } else if (childrenCount === 1) {
                     const child = validChildren[0]
                     return {
                         nome: parent.nome,
-                        icone: getIconForMenu(parent.nome),
-                        rota: child.rota
+                        icone: parentIcon, // Use API icon or fallback
+                        rota: child.rota,
+                        id: parent.id
                     }
                 } else {
+                    // For children, also try to get icons from API
+                    const childrenWithIcons = validChildren.map(child => {
+                        let childIcon = null;
+                        if (child.icone) {
+                            childIcon = getIconFromApi(child.icone);
+                        }
+                        // If no API icon for child, we could use fallback or leave null
+                        // For now, we'll leave it null (will render nothing)
+                        return {
+                            nome: child.nome,
+                            rota: child.rota,
+                            icone: childIcon, // Will be null if no icon provided
+                            id: child.id
+                        };
+                    });
+                    
                     return {
                         nome: parent.nome,
-                        icone: getIconForMenu(parent.nome),
-                        children: validChildren.map(child => ({
-                            nome: child.nome,
-                            rota: child.rota
-                        }))
+                        icone: parentIcon, // Use API icon or fallback
+                        children: childrenWithIcons,
+                        id: parent.id
                     }
                 }
             })
@@ -133,7 +219,7 @@ const Sidebar = () => {
             .then(data => {
                 console.log('TEST: Direct fetch successful!', data)
                 const transformed = transformMenuData(data)
-                console.log('TEST: Transformed data:', transformed)
+                console.log('TEST: Transformed data:', JSON.stringify(transformed, null, 2))
                 setOptionsWithIcons(transformed)
                 setLoading(false)
             })
@@ -220,6 +306,20 @@ const Sidebar = () => {
             }
         }, 3000)
     }, [])
+
+    // Helper function to render icon or null
+    const renderIcon = (iconComponent, menuName) => {
+        if (!iconComponent) {
+            console.log(`No icon component for ${menuName}`);
+            return null;
+        }
+        console.log(`Rendering icon for ${menuName}`);
+        // Create the icon element
+        return React.createElement(iconComponent, { 
+            size: 18,
+            style: { marginRight: '5px' }
+        });
+    };
 
     if (loading) {
         return (
@@ -316,7 +416,8 @@ const Sidebar = () => {
                                             option.children ? toggleDropdown(option.nome) : handleParentClickWithoutChildren(option.nome, option.rota)
                                         }}
                                     >
-                                        &nbsp;<option.icone /><b>&nbsp;{option.nome}</b>
+                                        {renderIcon(option.icone, option.nome)}
+                                        <b>&nbsp;{option.nome}</b>
                                     </NavLink>
                                     {option.children && option.children.length > 0 && (
                                         <Collapse isOpen={activeParent === option.nome}>
@@ -330,6 +431,7 @@ const Sidebar = () => {
                                                                 handleChildClick(child.nome, child.rota, option.nome)
                                                             }}
                                                         >
+                                                            {renderIcon(child.icone, child.nome)}
                                                             {child.nome}
                                                         </NavLink>
                                                     </NavItem>
