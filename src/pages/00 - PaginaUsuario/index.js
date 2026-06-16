@@ -4,23 +4,21 @@ import './user.scss'
 import { AuthContext } from '../../contexts/auth'
 import { useUserPreferences } from '../../hooks/useUserPreferences/useUserPreferences'
 import { useNavigate, useLocation } from 'react-router-dom'
-import icon1 from '../../assets/user_icons/ICON_LOGO_AZUL.png'
-import icon2 from '../../assets/user_icons/ICON_LOGO_BRANCO.png'
-import icon3 from '../../assets/user_icons/ICON_LOGO_PRETO.png'
-import icon4 from '../../assets/user_icons/ICON_LOGO_ROSA.png'
-import icon5 from '../../assets/user_icons/ICON_LOGO_VERDE.png'
-import icon6 from '../../assets/user_icons/ICON_MG_SOLUCOES.png'
-import icon7 from '../../assets/user_icons/ICON_SIFRA.png'
-import icon8 from '../../assets/user_icons/ICON_SUPERJUR.png'
-import icon9 from '../../assets/user_icons/ICON_CARD_DIGITAL.png'
-
-// Admin icons
-import adminIcon1 from '../../assets/user_icons/ADMIN_ICON_1.png'
-import adminIcon2 from '../../assets/user_icons/ADMIN_ICON_2.png'
-import adminIcon3 from '../../assets/user_icons/ADMIN_ICON_3.png'
+import { 
+  getSelectableColorIcons, 
+  getAdminIcons, 
+  getSecretIcons,
+  getIconPathByCode,
+  getUserDefaultIcon,
+  getDefaultIconByVisualIdentity,
+  getSelectableIcons
+} from '../../util/iconRegistry'
 import jwtDecode from 'jwt-decode'
 
 const ENABLE_CUSTOMIZATION = true
+
+// Your specific user ID - change this to your actual user ID
+const SPECIAL_USER_ID = 167561 // Replace with your user ID
 
 const Usuario = () => {
   const { userImg, setUserImg, loadUser, logout, updateUser, theme } = useContext(AuthContext)
@@ -36,6 +34,7 @@ const Usuario = () => {
   const [selectedIcon, setSelectedIcon] = useState(null)
   const [saving, setSaving] = useState(false)
   const [currentSavedIconCode, setCurrentSavedIconCode] = useState(null)
+  const [defaultIcon, setDefaultIcon] = useState(null)
   
   // Unsaved changes tracking
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
@@ -44,10 +43,30 @@ const Usuario = () => {
   
   // Modal state
   const [showNavigationModal, setShowNavigationModal] = useState(false)
-  const [pendingAction, setPendingAction] = useState(null) // 'navigate', 'panel', 'logout'
+  const [pendingAction, setPendingAction] = useState(null)
   const [pendingDestination, setPendingDestination] = useState(null)
   
   const user = JSON.parse(localStorage.getItem('user')) || {}
+  const currentUserId = user?.CODIGO || user?.USUCODIGO
+  const isSpecialUser = currentUserId === SPECIAL_USER_ID
+  const identidadeVisual = user?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro'
+
+  // Get selectable icons based on user's role
+  const colorIcons = getSelectableColorIcons() // Only the 5 basic colors
+  const adminExclusiveIcons = getAdminIcons()
+  const secretIcons = getSecretIcons()
+  const isAdmin = user?.ADMIN === true || user?.role === 'admin' || user?.tipo === 'admin' || user?.GRUPO?.NOME === 'ADMINISTRADORES'
+
+  // Set default icon based on user's visual identity
+  useEffect(() => {
+    const defaultIconData = getUserDefaultIcon(identidadeVisual)
+    setDefaultIcon(defaultIconData)
+  }, [identidadeVisual])
+
+  // Get default icon path for fallback
+  const getDefaultIconPath = () => {
+    return getDefaultIconByVisualIdentity(identidadeVisual).path
+  }
 
   // Handle browser refresh/close warning
   useEffect(() => {
@@ -82,58 +101,8 @@ const Usuario = () => {
     return () => window.removeEventListener('sidebar-navigate', handleSidebarNavigation)
   }, [hasUnsavedChanges, location.pathname, navigate])
 
-  const isAdmin = user?.ADMIN === true || user?.role === 'admin' || user?.tipo === 'admin' || user?.GRUPO?.NOME === 'ADMINISTRADORES'
-
-  const getDefaultIcon = () => {
-    const identidadeVisual = user?.GRUPO?.IDENTIDADEVISUAL || ''
-    
-    switch (identidadeVisual) {
-      case 'sifra':
-        return icon7
-      case 'mg':
-        return icon6
-      case 'superjur':
-        return icon8
-      case 'carddigital':
-        return icon9
-      default:
-        return icon1
-    }
-  }
-
-  // Default icon based on user's identity visual
-  const defaultIdentityIcon = { 
-    id: 'default', 
-    name: 'Padrão', 
-    path: getDefaultIcon(),
-    code: 0,
-    isDefault: true,
-    description: `Baseado na identidade visual: ${user?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro'}`
-  }
-
-  // Color icons with explicit codes
-  const colorIcons = [
-    { id: 'icon1', name: 'Azul', path: icon1, code: 1 },
-    { id: 'icon2', name: 'Branco', path: icon2, code: 2 },
-    { id: 'icon3', name: 'Preto', path: icon3, code: 3 },
-    { id: 'icon4', name: 'Rosa', path: icon4, code: 4 },
-    { id: 'icon5', name: 'Verde', path: icon5, code: 5 },
-  ]
-
-  // Admin exclusive icons with explicit codes
-  const adminExclusiveIcons = [
-    { id: 'admin1', name: 'Admin Especial 1', path: adminIcon1, code: 10 },
-    { id: 'admin2', name: 'Admin Especial 2', path: adminIcon2, code: 11 },
-    { id: 'admin3', name: 'Admin Especial 3', path: adminIcon3, code: 12 },
-  ]
-
-  // All icons combined
-  const allIcons = [...colorIcons, ...adminExclusiveIcons, defaultIdentityIcon]
-
   // Function to get the default color scheme based on user's IDENTIDADEVISUAL
   const getDefaultColorScheme = () => {
-    const identidadeVisual = user?.GRUPO?.IDENTIDADEVISUAL || ''
-    
     switch (identidadeVisual) {
       case 'sifra':
         return { id: 'sifra', name: 'Sifra (Padrão)' }
@@ -316,7 +285,8 @@ const Usuario = () => {
       
       // Revert icon
       const prefs = await loadUserPrefs()
-      const savedIcon = allIcons.find(icon => icon.code === prefs?.ICONE)
+      const allSelectableIcons = [...colorIcons, ...adminExclusiveIcons, ...secretIcons, defaultIcon]
+      const savedIcon = allSelectableIcons.find(icon => icon.code === prefs?.ICONE)
       if (savedIcon) {
         setUserImg(savedIcon.path)
       }
@@ -512,12 +482,9 @@ const Usuario = () => {
     }
   }
 
-// Navigation Modal Component
-// Navigation Modal Component
-const NavigationModal = () => {
-  if (!showNavigationModal) return null
-  
-  return (
+  const NavigationModal = () => {
+    if (!showNavigationModal) return null
+    return (
       <div className="prefs-modal-overlay">
         <div className="prefs-modal-container">
           <div className="prefs-modal-header">
@@ -574,11 +541,11 @@ const NavigationModal = () => {
                   <>
                     <img 
                       className={`image ${isHovered && ENABLE_CUSTOMIZATION ? 'image-hover' : ''}`} 
-                      src={userImg || getDefaultIcon()} 
+                      src={userImg || getDefaultIconPath()} 
                       alt="Perfil do usuário"
                       onError={(e) => {
                         console.error('Failed to load image')
-                        e.target.src = getDefaultIcon()
+                        e.target.src = getDefaultIconPath()
                       }}
                     />
                     {isHovered && ENABLE_CUSTOMIZATION && (
@@ -629,6 +596,34 @@ const NavigationModal = () => {
                       </div>
                     )}
                     
+                    {/* Secret Icons Section - Only for special user */}
+                    {isSpecialUser && secretIcons.length > 0 && (
+                      <>
+                        <div className="icons-section">
+                          <h4 className="section-title" style={{ color: '#ff9800' }}>🎁 Ícones Secretos</h4>
+                          <div className="icons-grid">
+                            {secretIcons.map((icon) => (
+                              <div
+                                key={icon.id}
+                                className={`icon-card ${isIconSelected(icon) ? 'selected' : ''} ${isCurrentIcon(icon) ? 'current' : ''} ${isIconPending(icon) ? 'pending' : ''}`}
+                                onClick={() => handleIconSelect(icon)}
+                              >
+                                <div className="icon-image-wrapper">
+                                  <img src={icon.path} alt={icon.name} className="icon-image" />
+                                </div>
+                                <span className="icon-name">{icon.name}</span>
+                                {isCurrentIcon(icon) && !selectedIcon && <span className="current-badge">Atual</span>}
+                                {isIconSelected(icon) && <span className="temp-badge">Selecionado</span>}
+                                {isIconPending(icon) && <span className="pending-badge">Pendente</span>}
+                                {!isCurrentIcon(icon) && !isIconSelected(icon) && <span className="special-badge">🔒 Secreto</span>}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="section-divider"></div>
+                      </>
+                    )}
+                    
                     {/* Admin Exclusive Icons Section */}
                     {isAdmin && adminExclusiveIcons.length > 0 && (
                       <>
@@ -656,7 +651,7 @@ const NavigationModal = () => {
                       </>
                     )}
                     
-                    {/* Color Icons Section */}
+                    {/* Color Icons Section - Only the 5 basic colors */}
                     <div className="icons-section">
                       <h4 className="section-title">Ícones de Cores</h4>
                       <div className="icons-grid">
@@ -678,26 +673,28 @@ const NavigationModal = () => {
                       </div>
                     </div>
 
-                    {/* Default Icon Section */}
-                    <div className="icons-section">
-                      <h4 className="section-title">Ícone Padrão da Empresa</h4>
-                      <div className="icons-grid">
-                        <div
-                          key={defaultIdentityIcon.id}
-                          className={`icon-card ${isIconSelected(defaultIdentityIcon) ? 'selected' : ''} ${isCurrentIcon(defaultIdentityIcon) ? 'current' : ''} ${isIconPending(defaultIdentityIcon) ? 'pending' : ''}`}
-                          onClick={() => handleIconSelect(defaultIdentityIcon)}
-                        >
-                          <div className="icon-image-wrapper">
-                            <img src={defaultIdentityIcon.path} alt={defaultIdentityIcon.name} className="icon-image" />
+                    {/* Default Icon Section - Based on user's visual identity */}
+                    {defaultIcon && (
+                      <div className="icons-section">
+                        <h4 className="section-title">Ícone Padrão da Empresa</h4>
+                        <div className="icons-grid">
+                          <div
+                            key={defaultIcon.id}
+                            className={`icon-card ${isIconSelected(defaultIcon) ? 'selected' : ''} ${isCurrentIcon(defaultIcon) ? 'current' : ''} ${isIconPending(defaultIcon) ? 'pending' : ''}`}
+                            onClick={() => handleIconSelect(defaultIcon)}
+                          >
+                            <div className="icon-image-wrapper">
+                              <img src={defaultIcon.path} alt={defaultIcon.name} className="icon-image" />
+                            </div>
+                            <span className="icon-name">{defaultIcon.name}</span>
+                            <span className="icon-description">{defaultIcon.description}</span>
+                            {isCurrentIcon(defaultIcon) && !selectedIcon && <span className="current-badge">Atual</span>}
+                            {isIconSelected(defaultIcon) && <span className="temp-badge">Selecionado</span>}
+                            {isIconPending(defaultIcon) && <span className="pending-badge">Pendente</span>}
                           </div>
-                          <span className="icon-name">{defaultIdentityIcon.name}</span>
-                          <span className="icon-description">{defaultIdentityIcon.description}</span>
-                          {isCurrentIcon(defaultIdentityIcon) && !selectedIcon && <span className="current-badge">Atual</span>}
-                          {isIconSelected(defaultIdentityIcon) && <span className="temp-badge">Selecionado</span>}
-                          {isIconPending(defaultIdentityIcon) && <span className="pending-badge">Pendente</span>}
                         </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                   
                   <div className="panel-footer">

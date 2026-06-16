@@ -1,13 +1,15 @@
 import { useCallback } from 'react'
 import api from '../../services/api'
+import { getIconPathByCode, DEFAULT_ICON_CODE, VISUAL_IDENTITY_ICONS } from '../../util/iconRegistry'
 
 export const useUserPreferences = () => {
-  // GET user preferences from API - ALWAYS FRESH
+  // GET user preferences from API
   const loadUserPrefs = useCallback(async () => {
     const userId = localStorage.getItem('userID')
+    const token = localStorage.getItem('token')
     
-    if (!userId) {
-      console.log('No user ID found')
+    if (!userId || !token) {
+      console.log('No user logged in, skipping preference load')
       return null
     }
 
@@ -18,43 +20,55 @@ export const useUserPreferences = () => {
       
       console.log('📡 Loaded user preferences from API:', response.data)
       
-      // If no preferences exist (null response), create default preferences
+      // Validate response data
       if (!response.data || response.data === null) {
-        console.log('📝 No preferences found, creating default preferences...')
-        const defaultPrefs = await createDefaultPreferences(userId)
-        return defaultPrefs
+        console.log('📝 No preferences found for this user')
+        return null
+      }
+      
+      // Ensure the response has the expected structure
+      if (typeof response.data !== 'object') {
+        console.log('⚠️ Invalid preferences format, returning null')
+        return null
       }
       
       return response.data
     } catch (error) {
       if (error.response?.status === 404) {
-        console.log('📝 No preferences found (404), creating default preferences...')
-        const defaultPrefs = await createDefaultPreferences(userId)
-        return defaultPrefs
+        console.log('📝 No preferences found (404) for this user')
+        return null
       }
       console.error('Error loading user preferences:', error)
       return null
     }
   }, [])
 
-  // Create default preferences for a user
-  const createDefaultPreferences = useCallback(async (userId) => {
+  // Create default preferences for a user with safe fallbacks
+  const createDefaultPreferences = useCallback(async (userId, userData = null) => {
     const getCurrentDate = () => new Date().toISOString().split('T')[0]
     const now = getCurrentDate()
     
-    // Get user data to determine default icon based on identity visual
-    let defaultIconCode = 1 // Default blue icon
+    // SAFE: Get user data with fallbacks
+    let identidadeVisual = 'salvalucro' // Default fallback
+    let defaultIconCode = DEFAULT_ICON_CODE
     let defaultColorScheme = 'salvalucro'
     
     try {
-      const userResponse = await api.get('usuario', {
-        params: { codigo: userId }
-      })
+      // Use provided userData or fetch it
+      let userInfo = userData
+      if (!userInfo) {
+        const userResponse = await api.get('usuario', {
+          params: { codigo: userId }
+        })
+        userInfo = userResponse.data
+      }
       
-      const userData = userResponse.data
-      const identidadeVisual = userData?.GRUPO?.IDENTIDADEVISUAL || ''
+      // SAFE: Navigate through nested objects with optional chaining
+      identidadeVisual = userInfo?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro'
       
-      // Set default icon based on identity visual
+      console.log(`📝 Creating default preferences for user ${userId} with visual identity: ${identidadeVisual}`)
+      
+      // Set default icon based on identity visual (with fallback)
       switch (identidadeVisual) {
         case 'sifra':
           defaultIconCode = 7
@@ -73,12 +87,13 @@ export const useUserPreferences = () => {
           defaultColorScheme = 'carddigital'
           break
         default:
-          defaultIconCode = 1
+          defaultIconCode = DEFAULT_ICON_CODE
           defaultColorScheme = 'salvalucro'
           break
       }
     } catch (error) {
       console.error('Error getting user data for default preferences:', error)
+      // Keep fallback values
     }
     
     const payload = {
@@ -103,7 +118,24 @@ export const useUserPreferences = () => {
     }
   }, [])
 
-  // SAVE user preferences to API (POST - will auto-convert to PUT if exists)
+  // Get or create preferences
+  const getOrCreatePreferences = useCallback(async (userId, userData = null) => {
+    try {
+      let prefs = await loadUserPrefs()
+      
+      if (!prefs) {
+        console.log('📝 Creating default preferences for user...')
+        prefs = await createDefaultPreferences(userId, userData)
+      }
+      
+      return prefs
+    } catch (error) {
+      console.error('Error in getOrCreatePreferences:', error)
+      return null
+    }
+  }, [loadUserPrefs, createDefaultPreferences])
+
+  // SAVE user preferences to API
   const saveUserPrefs = useCallback(async (body) => {
     try { 
       const response = await api.post('PreferenciasUsuario', body)
@@ -118,5 +150,7 @@ export const useUserPreferences = () => {
   return {
     loadUserPrefs,
     saveUserPrefs,
+    getOrCreatePreferences,
+    createDefaultPreferences,
   }
 }

@@ -14,59 +14,32 @@ import ThemeSync from './components/ThemeSync'
 import { AuthContext } from './contexts/auth'
 import { useUserPreferences } from './hooks/useUserPreferences/useUserPreferences'
 
-// Import icons for mapping
-import icon1 from './assets/user_icons/ICON_LOGO_AZUL.png'
-import icon2 from './assets/user_icons/ICON_LOGO_BRANCO.png'
-import icon3 from './assets/user_icons/ICON_LOGO_PRETO.png'
-import icon4 from './assets/user_icons/ICON_LOGO_ROSA.png'
-import icon5 from './assets/user_icons/ICON_LOGO_VERDE.png'
-import icon6 from './assets/user_icons/ICON_MG_SOLUCOES.png'
-import icon7 from './assets/user_icons/ICON_SIFRA.png'
-import icon8 from './assets/user_icons/ICON_SUPERJUR.png'
-import icon9 from './assets/user_icons/ICON_CARD_DIGITAL.png'
-import adminIcon1 from './assets/user_icons/ADMIN_ICON_1.png'
-import adminIcon2 from './assets/user_icons/ADMIN_ICON_2.png'
-import adminIcon3 from './assets/user_icons/ADMIN_ICON_3.png'
+import { getIconPathByCode, getDefaultIconByVisualIdentity } from './util/iconRegistry'
 
 initializeContext()
-
-// Icon mapping function
-const getIconPathByCode = (code) => {
-  const icons = {
-    1: icon1,
-    2: icon2,
-    3: icon3,
-    4: icon4,
-    5: icon5,
-    6: icon6,
-    7: icon7,
-    8: icon8,
-    9: icon9,
-    10: adminIcon1,
-    11: adminIcon2,
-    12: adminIcon3,
-  }
-  return icons[code] || icon1
-}
 
 // Component that loads user preferences on app start
 function PreferenceLoader({ children }) {
   const { loadUserPrefs } = useUserPreferences()
-  const { setUserImg } = useContext(AuthContext) || {}
+  const { setUserImg, isSignedIn, setIsSignedIn } = useContext(AuthContext) || {}
   const [preferencesLoaded, setPreferencesLoaded] = useState(false)
 
   useEffect(() => {
     const loadPreferencesFromAPI = async () => {
       const token = localStorage.getItem('token')
       const userId = localStorage.getItem('userID')
+      const storedIsSignedIn = localStorage.getItem('isSignedIn') === 'true'
       
-      if (token && userId) {
-        console.log('🔄 Loading user preferences from API on app initialization...')
+      // Check if user is actually logged in
+      const isLoggedIn = token && userId && (isSignedIn === true || storedIsSignedIn === true)
+      
+      if (isLoggedIn) {
+        console.log('🔄 User is logged in, loading preferences on refresh...')
         
         const prefs = await loadUserPrefs()
         
-        if (prefs) {
-          console.log('✅ Preferences loaded from API:', prefs)
+        if (prefs && setUserImg) {
+          console.log('✅ Preferences loaded on refresh:', prefs)
           
           // Apply color scheme to document
           if (prefs.ESQUEMACORES) {
@@ -82,21 +55,29 @@ function PreferenceLoader({ children }) {
           // Apply icon to header
           if (prefs.ICONE && setUserImg) {
             const iconPath = getIconPathByCode(prefs.ICONE)
+            console.log('🖼️ Setting userImg from refresh to code:', prefs.ICONE)
             setUserImg(iconPath)
             localStorage.setItem('userIconCode', prefs.ICONE)
-            console.log('🖼️ Applied icon from PreferenceLoader:', prefs.ICONE, iconPath)
           }
-        } else {
-          console.log('📝 No preferences found, using defaults')
-          // Set default icon
-          setUserImg(icon1)
+        } else if (setUserImg) {
+          // No preferences found, set default icon based on user's visual identity
+          console.log('📝 No preferences found on refresh, setting default icon')
+          const userData = JSON.parse(localStorage.getItem('user'))
+          const identidadeVisual = userData?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro'
+          const defaultIcon = getDefaultIconByVisualIdentity(identidadeVisual)
+          setUserImg(defaultIcon.path)
         }
+      } else {
+        console.log('🔒 No user logged in, skipping preference loading')
+        // Set default theme for login page
+        document.documentElement.setAttribute('data-context', 'salvalucro')
+        document.documentElement.setAttribute('data-theme', 'light')
       }
       setPreferencesLoaded(true)
     }
     
     loadPreferencesFromAPI()
-  }, [loadUserPrefs, setUserImg])
+  }, []) // Run ONCE on mount, not on isSignedIn changes
 
   if (!preferencesLoaded) {
     return null
@@ -111,28 +92,27 @@ function PageVisibilityHandler({ children }) {
   const { setUserImg } = useContext(AuthContext) || {}
 
   useEffect(() => {
-    const handleVisibilityChange = () => {
+    const handleVisibilityChange = async () => {
       if (!document.hidden) {
         console.log('📱 Page became visible, checking for preference updates...')
         const token = localStorage.getItem('token')
         const userId = localStorage.getItem('userID')
         
         if (token && userId) {
-          loadUserPrefs().then(prefs => {
-            if (prefs) {
-              if (prefs.ESQUEMACORES) {
-                document.documentElement.setAttribute('data-context', prefs.ESQUEMACORES)
-              }
-              if (prefs.TEMA !== undefined) {
-                const themeValue = prefs.TEMA === true || prefs.TEMA === 'true'
-                document.documentElement.setAttribute('data-theme', themeValue ? 'dark' : 'light')
-              }
-              if (prefs.ICONE && setUserImg) {
-                const iconPath = getIconPathByCode(prefs.ICONE)
-                setUserImg(iconPath)
-              }
+          const prefs = await loadUserPrefs()
+          if (prefs) {
+            if (prefs.ESQUEMACORES) {
+              document.documentElement.setAttribute('data-context', prefs.ESQUEMACORES)
             }
-          })
+            if (prefs.TEMA !== undefined) {
+              const themeValue = prefs.TEMA === true || prefs.TEMA === 'true'
+              document.documentElement.setAttribute('data-theme', themeValue ? 'dark' : 'light')
+            }
+            if (prefs.ICONE && setUserImg) {
+              const iconPath = getIconPathByCode(prefs.ICONE)
+              setUserImg(iconPath)
+            }
+          }
         }
       }
     }
