@@ -283,67 +283,75 @@ const Vendas = () =>{
       target: '[data-tour="calendario-section"]',
       content: 'Clique em duas vezes em uma data para selecioná-la, ou uma vez em uma data inicial e uma vez em uma data final para selecionar o período começando e terminando nas datas selecionadas.',
       disableBeacon: true,
-      placement: 'center',
+      placement: 'bottom',
     },
     {
       target: '[data-tour="pesquisar-section"]',
       content: 'Tendo a data selecionada, clique em "Pesquisar" para realizar a consulta das vendas da data ou período selecionado.',
-      placement: 'center',
+      placement: 'bottom',
     },
   ])
 
   useEffect(() => {
     if (salesPageArray && salesPageArray.length > 0) {
-      let stepsTemp = [
-        {
+      const isAjustes = location.pathname === '/servicos';
+      
+      let newSteps = [];
+      
+      // Only show modalidade for vendas and creditos, not for ajustes
+      if (!isAjustes) {
+        newSteps.push({
           target: '[data-tour="modalidade-section"]',
           content: 'Valores totais das vendas exibidas, por modalidade.',
           disableBeacon: true,
           placement: 'bottom',
-        },
-        {
-          target: '[data-tour="exportacao-section"]',
-          content: 'Exporta as vendas sendo exibidas para os formatos Excel ou PDF.',
-          placement: 'bottom',
-        },
-        {
-          target: '[data-tour="bandeiraadquirente-section"]',
-          content: 'Filtra as vendas de acordo com a combinação de bandeira/adquirente selecionada.',
-          placement: 'bottom',
-        },
-        {
-          target: '[data-tour="tabelavendas-section"]',
-          content: 'Vendas do período selecionado. Podem ser filtradas por bandeira/adquirente.',
-          placement: 'bottom',
-        },
-        {
+        });
+      }
+      
+      newSteps.push({
+        target: '[data-tour="exportacao-section"]',
+        content: 'Exporta as vendas sendo exibidas para os formatos Excel ou PDF.',
+        placement: 'bottom',
+      });
+      
+      newSteps.push({
+        target: '[data-tour="tabelavendas-section"]',
+        content: 'Vendas do período selecionado. Podem ser filtradas por bandeira/adquirente.',
+        placement: 'bottom',
+      });
+      
+      // Only show totaladq for vendas and creditos, not for ajustes
+      if (!isAjustes) {
+        newSteps.push({
           target: '[data-tour="totaladq-section"]',
           content: 'Valores totais das vendas sendo exibidas, separadas por adquirente.',
           placement: 'bottom',
-        },
-        {
-          target: '[data-tour="botaovoltar-section"]',
-          content: 'Retorna ao calendário, possibilitando realizar uma nova consulta.',
-          placement: 'bottom',
-        },
-      ]
-      setSteps(stepsTemp)
+        });
+      }
+      
+      newSteps.push({
+        target: '[data-tour="botaovoltar-section"]',
+        content: 'Retorna ao calendário, possibilitando realizar uma nova consulta.',
+        placement: 'bottom',
+      });
+      
+      setSteps(newSteps);
     } else {
       setSteps([
         {
           target: '[data-tour="calendario-section"]',
           content: 'Clique em duas vezes em uma data para selecioná-la, ou uma vez em uma data inicial e uma vez em uma data final para selecionar o período começando e terminando nas datas selecionadas.',
           disableBeacon: true,
-          placement: 'center',
+          placement: 'bottom',
         },
         {
           target: '[data-tour="pesquisar-section"]',
           content: 'Tendo a data selecionada, clique em "Pesquisar" para realizar a consulta das vendas da data ou período selecionado.',
-          placement: 'center',
+          placement: 'bottom',
         },
-      ])
+      ]);
     }
-  }, [salesPageArray])
+  }, [salesPageArray, location.pathname]);
 
   const handleTutorialEnd = () => {
     setRunTutorial(false)
@@ -367,38 +375,42 @@ const Vendas = () =>{
             <h1 className='vendas-title'>Calendário de Vendas</h1>
           </div>
           <hr className='hr-global'/>
-          <div data-tour="calendario-section" className='component-container-vendas'>
-            { runTutorial &&
-              <Joyride
-                steps={steps}
-                run={runTutorial}
-                continuous={true}
-                scrollToFirstStep={false}
-                showProgress={true}
-                showSkipButton={true}
-                scrollOffset={80}
-                styles={{
-                  options: {
-                    primaryColor: '#99cc33',
-                    textColor: '#0a3d70',
-                    zIndex: 10000,
-                  },
-                }}
-                callback={(data) => {
-                  if (data.status === 'finished' || data.status === 'skipped') {
-                    handleTutorialEnd()
-                  }
-                }}
-                locale={{
-                  back: 'Voltar',
-                  close: 'Fechar',
-                  last: 'Finalizar',
-                  next: 'Próximo',
-                  skip: 'Pular',
-                  nextLabelWithProgress: 'Próximo ({step} de {steps})',
-                }}
-              />	
-            }
+          
+          {/* Joyride rendered outside the condition */}
+          {runTutorial && (
+            <Joyride
+              steps={steps}
+              run={runTutorial}
+              continuous={true}
+              scrollToFirstStep={true}
+              showProgress={true}
+              showSkipButton={true}
+              scrollOffset={80}
+              disableOverlayClose={true}
+              styles={{
+                options: {
+                  primaryColor: '#99cc33',
+                  textColor: '#0a3d70',
+                  zIndex: 10000,
+                },
+              }}
+              callback={(data) => {
+                if (data.status === 'finished' || data.status === 'skipped') {
+                  handleTutorialEnd()
+                }
+              }}
+              locale={{
+                back: 'Voltar',
+                close: 'Fechar',
+                last: 'Finalizar',
+                next: 'Próximo',
+                skip: 'Pular',
+                nextLabelWithProgress: 'Próximo ({step} de {steps})',
+              }}
+            />	
+          )}
+          
+          <div className='component-container-vendas'>
             {salesPageArray !== null ? (
               salesPageArray.length > 0 ? (
                 <NewDisplayData
@@ -411,7 +423,7 @@ const Vendas = () =>{
                 />
               ) : (
                 <>
-                  <div className='select-container-calendario'>
+                  <div className='select-container-calendario' data-tour="bandeiraadquirente-section">
                     <div className='select-wrapper'>
                       <h5>Adquirente</h5>
                       <Select 
@@ -495,11 +507,13 @@ const Vendas = () =>{
                       />
                     </div>
                   </div>
-                  <MyCalendar
-                    onLoadData={handleLoadData}
-                    getCalendarDate={handleDateRangeChange}
-                    btnDisabled={btnDisabledSales}
-                  />
+                  <div data-tour="calendario-section">
+                    <MyCalendar
+                      onLoadData={handleLoadData}
+                      getCalendarDate={handleDateRangeChange}
+                      btnDisabled={btnDisabledSales}
+                    />
+                  </div>
                 </>
               )
             ) : null }

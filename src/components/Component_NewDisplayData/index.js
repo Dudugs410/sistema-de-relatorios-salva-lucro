@@ -1,4 +1,4 @@
-// NewDisplayData.jsx - Complete fixed version with infinite loop prevention
+// NewDisplayData.jsx - Complete fixed version with proper data-tour attributes
 import { useContext, useEffect, useState, useCallback, useMemo, useRef } from 'react'
 import NewTabelaGenerica from '../../components/NewTabelaGenerica'
 import TabelaGenericaAdm from '../../components/Componente_TabelaAdm'
@@ -590,39 +590,48 @@ const NewDisplayData = ({
 
   return (
     <>
-      {!hideTotals && totals && (
-        <TotalModalidadesComp 
-          totals={{
-            debit: totals?.debit ?? 0,
-            credit: totals?.credit ?? 0,
-            voucher: totals?.voucher ?? 0,
-            total: totals?.total ?? totals?.totalLiquido ?? 0
-          }} 
-          type={exportPage} 
-        />
+      {!hideTotals && totals && (exportPage === 'vendas' || exportPage === 'creditos') && (
+        <div data-tour="modalidade-section">
+          <TotalModalidadesComp 
+            totals={{
+              debit: totals?.debit ?? 0,
+              credit: totals?.credit ?? 0,
+              voucher: totals?.voucher ?? 0,
+              total: totals?.total ?? totals?.totalLiquido ?? 0
+            }} 
+            type={exportPage} 
+          />
+        </div>
       )}
       
-      <GerarRelatorio 
-        className='export' 
-        onExport={getExportFunction()}
-        filteredData={currentFilteredData}
-      />
+      <div data-tour="exportacao-section">
+        <GerarRelatorio 
+          className='export' 
+          onExport={getExportFunction()}
+          filteredData={currentFilteredData}
+        />
+      </div>
       
       {!hideTables && (
         <div className='component-container-vendas'>
-          {tableProps && (
-            <NewTabelaGenerica {...tableProps} />
-          )}
+          <div data-tour="tabelavendas-section">
+            {tableProps && (
+              <NewTabelaGenerica {...tableProps} />
+            )}
+          </div>
           <hr className='hr-global' />
-          {adminDataArray && adminDataArray.length > 0 && (
-            <TabelaGenericaAdm Array={adminDataArray} />
+          {adminDataArray && adminDataArray.length > 0 && (exportPage === 'vendas' || exportPage === 'creditos') && (
+            <div data-tour="totaladq-section">
+              <TabelaGenericaAdm Array={adminDataArray} />
+            </div>
           )}
           <hr className='hr-global' />
         </div>
       )}
       
-      <div data-tour="botaovoltar-section" className='floating-button-container'>
+      <div className='floating-button-container'>
         <button 
+          data-tour="botaovoltar-section"
           className='btn-floating-new-search' 
           onClick={onGoBack}
         >
