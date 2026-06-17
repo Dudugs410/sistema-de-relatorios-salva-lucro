@@ -52,7 +52,7 @@ const Dashboard = () => {
     {
       target: '[data-tour="summary-section"]',
       content: 'Resumo detalhado com distribuição percentual de cada adquirente ou tipo de serviço, incluindo barras de progresso para fácil visualização.',
-      placement: 'top'
+      placement: 'bottom'
     },
   ]);
 
