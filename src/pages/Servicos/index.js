@@ -18,7 +18,6 @@ const Servicos = () => {
   const [listaBandeiras, setListaBandeiras] = useState([])
   const [listaAdministradoras, setListaAdministradoras] = useState([])
 
-  // Add ref to prevent infinite loop
   const isProcessingRef = useRef(false)
   const lastProcessedArrayRef = useRef(null)
 
@@ -31,7 +30,6 @@ const Servicos = () => {
     setBandeira(null)
     localStorage.removeItem('selectedAdmServices')
     localStorage.removeItem('selectedBanServices')
-    // Reset refs
     lastProcessedArrayRef.current = null
   }
 
@@ -61,7 +59,6 @@ const Servicos = () => {
     localStorage.setItem('selectedBanServices', JSON.stringify(option))
   }
 
-  // Use the new functions from AuthContext
   const {
     servicesPageArray, setServicesPageArray,
     servicesPageAdminArray, setServicesPageAdminArray,
@@ -76,15 +73,10 @@ const Servicos = () => {
     loadAdmins, loadBanners
   } = useContext(AuthContext)
 
-  // FIXED: Update totals when servicesPageArray changes - prevent infinite loop
   useEffect(() => {
-    // Skip if already processing
     if (isProcessingRef.current) return
-    
-    // Skip if no data
     if (servicesPageArray.length === 0) return
     
-    // Check if this exact array was already processed
     const currentSignature = JSON.stringify(servicesPageArray)
     if (currentSignature === lastProcessedArrayRef.current) return
     
@@ -92,39 +84,29 @@ const Servicos = () => {
     
     try {
       const groupedData = newGroupByAdminServices(servicesPageArray)
-      // Only update if different from current
       if (JSON.stringify(groupedData) !== JSON.stringify(servicesPageAdminArray)) {
         setServicesPageAdminArray(groupedData)
       }
       newLoadTotalServices(servicesPageArray)
       lastProcessedArrayRef.current = currentSignature
     } finally {
-      // Reset after a short delay
       setTimeout(() => {
         isProcessingRef.current = false
       }, 100)
     }
   }, [servicesPageArray, newGroupByAdminServices, newLoadTotalServices, servicesPageAdminArray])
 
-  // Helper function to format date to YYYY-MM-DD with error handling
   const formatDateToYYYYMMDD = (date) => {
-    // Early return for null, undefined, or empty values
     if (!date) return ''
-    
-    // If it's already in YYYY-MM-DD format
     if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
       return date
     }
-    
-    // If it's a Date object
     if (date instanceof Date && !isNaN(date.getTime())) {
       const year = date.getFullYear()
       const month = String(date.getMonth() + 1).padStart(2, '0')
       const day = String(date.getDate()).padStart(2, '0')
       return `${year}-${month}-${day}`
     }
-    
-    // If it's a string with DD/MM/YYYY format
     if (typeof date === 'string' && date.includes('/')) {
       try {
         const [day, month, year] = date.split('/')
@@ -136,8 +118,6 @@ const Servicos = () => {
         return ''
       }
     }
-    
-    // Try to create a Date object from the value
     try {
       const dateObj = new Date(date)
       if (!isNaN(dateObj.getTime())) {
@@ -149,11 +129,9 @@ const Servicos = () => {
     } catch (e) {
       console.error('Error creating date object:', e)
     }
-    
     return ''
   }
 
-  // Get the request object for API downloads with safe handling
   const getRequestObject = (format) => {
     try {
       const cliente = JSON.parse(localStorage.getItem('selectedClientBody') || '{}')
@@ -183,7 +161,6 @@ const Servicos = () => {
       const ban = bandeiraObj?.codigoBandeira || ''
       const adq = adquirenteObj?.codigoAdquirente || ''
 
-      // Safe date formatting with fallback
       const formattedStartDate = formatDateToYYYYMMDD(dataInicial)
       const formattedEndDate = formatDateToYYYYMMDD(dataFinal)
 
@@ -216,7 +193,6 @@ const Servicos = () => {
     }
   }
 
-  // Generic download function using the API
   const downloadReport = async (format) => {
     setDownloading(true)
     
@@ -322,7 +298,6 @@ const Servicos = () => {
       
       const servicesData = await newLoadServices(formattedStartDate, formattedEndDate)
       
-      // Reset the processed flag when new data loads
       lastProcessedArrayRef.current = null
       setServicesPageArray(servicesData || [])
       
@@ -359,6 +334,8 @@ const Servicos = () => {
   }
 
   const [runTutorial, setRunTutorial] = useState(false)
+  
+  // Steps - same structure as Vendas and Creditos
   const [steps, setSteps] = useState([
     {
       target: '[data-tour="select-container-calendario"]',
@@ -368,7 +345,7 @@ const Servicos = () => {
     },
     {
       target: '[data-tour="calendario-section"]',
-      content: 'Clique em duas vezes em uma data para selecioná-la, ou uma vez em uma data inicial e uma vez em uma data final para selecionar o período.',
+      content: 'Clique duas vezes em uma data para selecioná-la, ou uma vez em uma data inicial e uma vez em uma data final para selecionar o período.',
       placement: 'bottom'
     },
     {
@@ -378,17 +355,14 @@ const Servicos = () => {
     },
   ])
 
+  // When data loads, update steps - JUST LIKE VENDAS
   useEffect(() => {
     if (servicesPageArray && servicesPageArray.length > 0) {
-      let stepsTemp = [
+      // Simple steps - only what exists in the DOM
+      const newSteps = [
         {
           target: '[data-tour="exportacao-section"]',
           content: 'Exporta as informações de serviços/ajustes sendo exibidas, para os formatos Excel ou PDF.',
-          placement: 'bottom'
-        },
-        {
-          target: '[data-tour="bandeiraadquirente-section"]',
-          content: 'Filtra os ajustes/serviços de acordo com a combinação de adquirente/tipo de serviço selecionada.',
           placement: 'bottom'
         },
         {
@@ -397,18 +371,14 @@ const Servicos = () => {
           placement: 'bottom'
         },
         {
-          target: '[data-tour="totaladq-section"]',
-          content: 'Valores totais dos serviços/ajustes sendo exibidas, separados por adquirente.',
-          placement: 'bottom'
-        },
-        {
           target: '[data-tour="botaovoltar-section"]',
           content: 'Retorna ao calendário, possibilitando realizar uma nova consulta.',
           placement: 'bottom'
         },
       ]
-      setSteps(stepsTemp)
+      setSteps(newSteps)
     }
+    // If no data, keep the calendar steps (already set in useState)
   }, [servicesPageArray])
 
   const handleTutorialEnd = () => {
@@ -431,7 +401,7 @@ const Servicos = () => {
           <hr className='hr-global' />
           
           <div className='component-container-vendas' data-tour="calendario-section">
-            {runTutorial &&
+            {runTutorial && (
               <Joyride
                 steps={steps}
                 run={runTutorial}
@@ -461,7 +431,7 @@ const Servicos = () => {
                   nextLabelWithProgress: 'Próximo ({step} de {steps})',
                 }}
               />
-            }
+            )}
             
             {servicesPageArray !== null ?
               servicesPageArray.length > 0 ? (

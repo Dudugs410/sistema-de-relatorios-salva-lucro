@@ -281,7 +281,7 @@ const Vendas = () =>{
   const [steps, setSteps] = useState([
     {
       target: '[data-tour="calendario-section"]',
-      content: 'Clique em duas vezes em uma data para selecioná-la, ou uma vez em uma data inicial e uma vez em uma data final para selecionar o período começando e terminando nas datas selecionadas.',
+      content: 'Clique duas vezes em uma data para selecioná-la, ou uma vez em uma data inicial e uma vez em uma data final para selecionar o período começando e terminando nas datas selecionadas.',
       disableBeacon: true,
       placement: 'bottom',
     },
@@ -340,7 +340,7 @@ const Vendas = () =>{
       setSteps([
         {
           target: '[data-tour="calendario-section"]',
-          content: 'Clique em duas vezes em uma data para selecioná-la, ou uma vez em uma data inicial e uma vez em uma data final para selecionar o período começando e terminando nas datas selecionadas.',
+          content: 'Clique duas vezes em uma data para selecioná-la, ou uma vez em uma data inicial e uma vez em uma data final para selecionar o período começando e terminando nas datas selecionadas.',
           disableBeacon: true,
           placement: 'bottom',
         },
