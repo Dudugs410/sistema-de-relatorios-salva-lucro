@@ -34,6 +34,8 @@ const Creditos = () => {
     localStorage.removeItem('selectedBanCredits')
     // Reset ref
     initialLoadDoneRef.current = false
+    // Reset tutorial state
+    setRunTutorial(false)
   }, [])
 
   useEffect(() => {
@@ -229,7 +231,7 @@ const Creditos = () => {
 
   // Joyride state
   const [runTutorial, setRunTutorial] = useState(false)
-  const [steps, setSteps] = useState([
+  const [tutorialSteps, setTutorialSteps] = useState([
     {
       target: '[data-tour="calendario-section"]',
       content: 'Clique duas vezes em uma data para selecioná-la, ou uma vez em uma data inicial e uma vez em uma data final para selecionar o período começando e terminando nas datas selecionadas.',
@@ -258,11 +260,6 @@ const Creditos = () => {
           placement: 'bottom'
         },
         {
-          target: '[data-tour="bandeiraadquirente-section"]',
-          content: 'Filtra os créditos de acordo com a combinação de bandeira/adquirente selecionada.',
-          placement: 'bottom'
-        },
-        {
           target: '[data-tour="tabelavendas-section"]',
           content: 'Créditos do período selecionado. Podem ser filtrados por bandeira/adquirente.',
           placement: 'bottom'
@@ -278,9 +275,9 @@ const Creditos = () => {
           placement: 'bottom'
         },
       ]
-      setSteps(stepsTemp)
+      setTutorialSteps(stepsTemp)
     } else {
-      setSteps([
+      setTutorialSteps([
         {
           target: '[data-tour="calendario-section"]',
           content: 'Clique duas vezes em uma data para selecioná-la, ou uma vez em uma data inicial e uma vez em uma data final para selecionar o período começando e terminando nas datas selecionadas.',
@@ -309,37 +306,6 @@ const Creditos = () => {
           </div>
           <hr className='hr-global' />
           <div className='component-container-vendas' data-tour="calendario-section">
-            {runTutorial &&
-              <Joyride
-                steps={steps}
-                run={runTutorial}
-                continuous={true}
-                scrollToFirstStep={false}
-                showProgress={true}
-                showSkipButton={true}
-                scrollOffset={80}
-                styles={{
-                  options: {
-                    primaryColor: '#99cc33',
-                    textColor: '#0a3d70',
-                    zIndex: 10000,
-                  }
-                }}
-                callback={(data) => {
-                  if (data.status === 'finished' || data.status === 'skipped') {
-                    handleTutorialEnd()
-                  }
-                }}
-                locale={{
-                  back: 'Voltar',
-                  close: 'Fechar',
-                  last: 'Finalizar',
-                  next: 'Próximo',
-                  skip: 'Pular',
-                  nextLabelWithProgress: 'Próximo ({step} de {steps})',
-                }}
-              />
-            }
             {creditsPageArray !== null ?
               (creditsPageArray.length > 0 ? (
                 <NewDisplayData
@@ -349,9 +315,44 @@ const Creditos = () => {
                   onGoBack={resetValues}
                   setRunTutorial={setRunTutorial}
                   location={location}
+                  runTutorial={runTutorial}
+                  tutorialSteps={tutorialSteps}
                 />
               ) : (
                 <>
+                  {/* Joyride for calendar view */}
+                  {runTutorial && (
+                    <Joyride
+                      steps={tutorialSteps}
+                      run={runTutorial}
+                      continuous={true}
+                      scrollToFirstStep={false}
+                      showProgress={true}
+                      showSkipButton={true}
+                      scrollOffset={80}
+                      styles={{
+                        options: {
+                          primaryColor: '#99cc33',
+                          textColor: '#0a3d70',
+                          zIndex: 10000,
+                        }
+                      }}
+                      callback={(data) => {
+                        if (data.status === 'finished' || data.status === 'skipped') {
+                          handleTutorialEnd()
+                        }
+                      }}
+                      locale={{
+                        back: 'Voltar',
+                        close: 'Fechar',
+                        last: 'Finalizar',
+                        next: 'Próximo',
+                        skip: 'Pular',
+                        nextLabelWithProgress: 'Próximo ({step} de {steps})',
+                      }}
+                    />
+                  )}
+                  
                   <div className='select-container-calendario'>
                     <div className='select-wrapper'>
                       <h5>Adquirente</h5>
