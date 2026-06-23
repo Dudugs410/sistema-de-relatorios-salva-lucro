@@ -134,7 +134,13 @@ const Usuario = () => {
     { id: 'ALT-11', name: 'Azul Turquesa' },
     { id: 'ALT-12', name: 'Vermelho Cereja' },
     { id: 'ALT-13', name: '2007 Original' },
-    { id: 'ALT-14', name: 'Rosa' }
+    { id: 'ALT-14', name: 'Rosa' },
+    // Colorblind-friendly options
+    { id: 'CB-PROTANOPIA', name: '♿ Protanopia (Vermelho-Deficiente)' },
+    { id: 'CB-DEUTERANOPIA', name: '♿ Deuteranopia (Verde-Deficiente)' },
+    { id: 'CB-TRITANOPIA', name: '♿ Tritanopia (Azul-Deficiente)' },
+    { id: 'CB-MONOCHROMACY', name: '♿ Monocromático (Preto & Branco)' },
+    { id: 'CB-HIGH-CONTRAST', name: '♿ Alto Contraste' }
   ]
 
   // Function to get colors for a specific scheme and theme
@@ -580,6 +586,13 @@ const Usuario = () => {
           {/* Right/Content Section */}
           {ENABLE_CUSTOMIZATION && (
             <div className={`user-content-section ${activeRightPanel ? 'active' : ''}`}>
+              {/* Empty State - shown when no panel is active */}
+              {!activeRightPanel && (
+                <div className="empty-state">
+                  <div className="empty-icon">✨</div>
+                </div>
+              )}
+              
               {/* Icons Selection Panel */}
               {activeRightPanel === 'icons' && (
                 <div className="preferences-panel icons-panel">
@@ -596,11 +609,11 @@ const Usuario = () => {
                       </div>
                     )}
                     
-                    {/* Secret Icons Section - Only for special user */}
+                    {/* Exclusive Icons Section - Only for specific users */}
                     {isSpecialUser && secretIcons.length > 0 && (
                       <>
                         <div className="icons-section">
-                          <h4 className="section-title" style={{ color: '#ff9800' }}>🎁 Ícones Secretos</h4>
+                          <h4 className="section-title" style={{ color: '#ff9800' }}>⭐ Ícones Exclusivos</h4>
                           <div className="icons-grid">
                             {secretIcons.map((icon) => (
                               <div
@@ -615,7 +628,7 @@ const Usuario = () => {
                                 {isCurrentIcon(icon) && !selectedIcon && <span className="current-badge">Atual</span>}
                                 {isIconSelected(icon) && <span className="temp-badge">Selecionado</span>}
                                 {isIconPending(icon) && <span className="pending-badge">Pendente</span>}
-                                {!isCurrentIcon(icon) && !isIconSelected(icon) && <span className="special-badge">🔒 Secreto</span>}
+                                {!isCurrentIcon(icon) && !isIconSelected(icon) && <span className="exclusive-badge">⭐ Exclusivo</span>}
                               </div>
                             ))}
                           </div>
@@ -687,7 +700,7 @@ const Usuario = () => {
                               <img src={defaultIcon.path} alt={defaultIcon.name} className="icon-image" />
                             </div>
                             <span className="icon-name">{defaultIcon.name}</span>
-                            <span className="icon-description">{defaultIcon.description}</span>
+                            {/*<span className="icon-description">{defaultIcon.description}</span>*/}
                             {isCurrentIcon(defaultIcon) && !selectedIcon && <span className="current-badge">Atual</span>}
                             {isIconSelected(defaultIcon) && <span className="temp-badge">Selecionado</span>}
                             {isIconPending(defaultIcon) && <span className="pending-badge">Pendente</span>}
@@ -730,15 +743,20 @@ const Usuario = () => {
                         const colors = schemeColors[scheme.id]
                         const isSelected = selectedScheme === scheme.id
                         const isPending = isSchemePending(scheme.id)
+                        const isColorblind = scheme.id.startsWith('CB-')
                         
                         return (
                           <div 
                             key={scheme.id}
                             className={`color-scheme-card ${isSelected ? 'selected' : ''} ${isPending ? 'pending' : ''}`}
                             onClick={() => previewColorScheme(scheme.id)}
+                            data-colorblind={isColorblind ? "true" : "false"}
                           >
                             <div className="scheme-header">
-                              <span className="scheme-name">{scheme.name}</span>
+                              <span className="scheme-name">
+                                {scheme.name}
+                                {isColorblind && <span className="accessibility-badge">♿ Acessível</span>}
+                              </span>
                               {isPending && <span className="pending-badge">⚠️ Pendente</span>}
                             </div>
                             <div className="color-previews">

@@ -1,9 +1,10 @@
-// NewDisplayData.jsx - Complete fixed version with proper data-tour attributes
+// NewDisplayData.jsx - Complete fixed version with centralized Joyride
 import { useContext, useEffect, useState, useCallback, useMemo, useRef } from 'react'
 import NewTabelaGenerica from '../../components/NewTabelaGenerica'
 import TabelaGenericaAdm from '../../components/Componente_TabelaAdm'
 import TotalModalidadesComp from '../../components/Componente_TotalModalidades'
 import GerarRelatorio from "../../components/Componente_GerarRelatorio"
+import Joyride from 'react-joyride'
 import '../../index.scss'
 import './displayData.scss'
 import { AuthContext } from '../../contexts/auth'
@@ -117,10 +118,12 @@ const NewDisplayData = ({
   adminDataArray, 
   totals, 
   onGoBack, 
-  setRunTutorial, 
+  setRunTutorial,
   location,
   hideTables = false,
-  hideTotals = false
+  hideTotals = false,
+  runTutorial = false,
+  tutorialSteps = []
 }) => {
   const { 
     clientUserId, 
@@ -588,8 +591,49 @@ const NewDisplayData = ({
     }
   }
 
+  // Handle tutorial end
+  const handleTutorialEnd = () => {
+    if (setRunTutorial) {
+      setRunTutorial(false)
+    }
+  }
+
   return (
     <>
+      {/* Centralized Joyride - only render if there are steps */}
+      {runTutorial && tutorialSteps && tutorialSteps.length > 0 && (
+        <Joyride
+          steps={tutorialSteps}
+          run={runTutorial}
+          continuous={true}
+          scrollToFirstStep={true}
+          showProgress={true}
+          showSkipButton={true}
+          scrollOffset={80}
+          disableOverlayClose={true}
+          styles={{
+            options: {
+              primaryColor: '#99cc33',
+              textColor: '#0a3d70',
+              zIndex: 10000,
+            },
+          }}
+          callback={(data) => {
+            if (data.status === 'finished' || data.status === 'skipped') {
+              handleTutorialEnd()
+            }
+          }}
+          locale={{
+            back: 'Voltar',
+            close: 'Fechar',
+            last: 'Finalizar',
+            next: 'Próximo',
+            skip: 'Pular',
+            nextLabelWithProgress: 'Próximo ({step} de {steps})',
+          }}
+        />
+      )}
+
       {!hideTotals && totals && (exportPage === 'vendas' || exportPage === 'creditos') && (
         <div data-tour="modalidade-section">
           <TotalModalidadesComp 

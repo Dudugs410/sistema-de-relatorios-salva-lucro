@@ -1,13 +1,11 @@
 import './servicos.scss'
 import { useContext, useEffect, useState, useRef } from 'react' 
-import Joyride from 'react-joyride'
 import Select from 'react-select'
 import { AuthContext } from '../../contexts/auth'
 import { useLocation } from 'react-router-dom'
 import MyCalendar from '../../components/Componente_Calendario'
 import { toast } from 'react-toastify'
 import NewDisplayData from '../../components/Component_NewDisplayData'
-import { FiHelpCircle } from 'react-icons/fi'
 import api from '../../services/api'
 
 const Servicos = () => {
@@ -333,58 +331,6 @@ const Servicos = () => {
     return listaBandeiras.find(option => option.codigoBandeira === bandeira)
   }
 
-  const [runTutorial, setRunTutorial] = useState(false)
-  
-  // Steps - same structure as Vendas and Creditos
-  const [steps, setSteps] = useState([
-    {
-      target: '[data-tour="select-container-calendario"]',
-      content: 'Selecione os filtros desejados para o relatório.',
-      disableBeacon: true,
-      placement: 'bottom'
-    },
-    {
-      target: '[data-tour="calendario-section"]',
-      content: 'Clique duas vezes em uma data para selecioná-la, ou uma vez em uma data inicial e uma vez em uma data final para selecionar o período.',
-      placement: 'bottom'
-    },
-    {
-      target: '[data-tour="pesquisar-section"]',
-      content: 'Tendo a data selecionada, clique em "Pesquisar" para realizar a consulta dos serviços.',
-      placement: 'bottom'
-    },
-  ])
-
-  // When data loads, update steps - JUST LIKE VENDAS
-  useEffect(() => {
-    if (servicesPageArray && servicesPageArray.length > 0) {
-      // Simple steps - only what exists in the DOM
-      const newSteps = [
-        {
-          target: '[data-tour="exportacao-section"]',
-          content: 'Exporta as informações de serviços/ajustes sendo exibidas, para os formatos Excel ou PDF.',
-          placement: 'bottom'
-        },
-        {
-          target: '[data-tour="tabelavendas-section"]',
-          content: 'Serviços/Ajustes do período selecionado. Podem ser filtrados por adquirente/tipo de serviço.',
-          placement: 'bottom'
-        },
-        {
-          target: '[data-tour="botaovoltar-section"]',
-          content: 'Retorna ao calendário, possibilitando realizar uma nova consulta.',
-          placement: 'bottom'
-        },
-      ]
-      setSteps(newSteps)
-    }
-    // If no data, keep the calendar steps (already set in useState)
-  }, [servicesPageArray])
-
-  const handleTutorialEnd = () => {
-    setRunTutorial(false)
-  }
-
   const calculateServicesTotal = (servicesArray) => {
     if (!servicesArray || servicesArray.length === 0) return { total: 0 }
     const total = servicesArray.reduce((sum, service) => sum + Math.abs(service.valor || service.VALORLIQUIDO || 0), 0)
@@ -400,39 +346,7 @@ const Servicos = () => {
           </div>
           <hr className='hr-global' />
           
-          <div className='component-container-vendas' data-tour="calendario-section">
-            {runTutorial && (
-              <Joyride
-                steps={steps}
-                run={runTutorial}
-                continuous={true}
-                scrollToFirstStep={false}
-                showProgress={true}
-                showSkipButton={true}
-                scrollOffset={80}
-                styles={{
-                  options: {
-                    primaryColor: '#99cc33',
-                    textColor: '#0a3d70',
-                    zIndex: 10000,
-                  }
-                }}
-                callback={(data) => {
-                  if (data.status === 'finished' || data.status === 'skipped') {
-                    handleTutorialEnd()
-                  }
-                }}
-                locale={{
-                  back: 'Voltar',
-                  close: 'Fechar',
-                  last: 'Finalizar',
-                  next: 'Próximo',
-                  skip: 'Pular',
-                  nextLabelWithProgress: 'Próximo ({step} de {steps})',
-                }}
-              />
-            )}
-            
+          <div className='component-container-vendas'>
             {servicesPageArray !== null ?
               servicesPageArray.length > 0 ? (
                 <NewDisplayData 
@@ -440,8 +354,8 @@ const Servicos = () => {
                   adminDataArray={servicesPageAdminArray} 
                   totals={calculateServicesTotal(servicesPageArray)} 
                   onGoBack={resetValues}
-                  setRunTutorial={setRunTutorial}
                   location={location}
+                  hideTotals={true}
                 />
               ) : (
                 <>
@@ -538,25 +452,6 @@ const Servicos = () => {
                 </>
               )
             : null}
-            
-            <button 
-              className='btn btn-success-dados btn-tutorial px-2 py-1'
-              onClick={() => setRunTutorial(true)}
-              style={{
-                position: 'relative',
-                bottom: '0px',
-                right: '-10px',
-                zIndex: 10,
-                padding: '10px 15px',
-                background: 'none',
-                color: '#99cc33',
-                border: 'none',
-                borderRadius: '5px',
-                cursor: 'pointer'
-              }}
-            >
-              <FiHelpCircle />
-            </button>
           </div>
         </div>
       </div>

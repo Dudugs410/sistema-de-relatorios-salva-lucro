@@ -16,6 +16,7 @@
     flex-direction: column;
     padding: 20px 20px 60px 20px;
     gap: 20px;
+    align-items: stretch;
   }
   
   @media (max-width: 768px) {
@@ -24,13 +25,12 @@
   }
 }
 
-// Menu Section - Left side sticky card
+// Menu Section - Left side card
 .user-menu-section {
   flex-shrink: 0;
   width: 320px;
-  position: sticky;
-  top: 20px;
   align-self: flex-start;
+  display: flex;
   
   @media (min-width: 1400px) {
     width: 350px;
@@ -38,14 +38,17 @@
   
   @media (max-width: 992px) {
     width: 100%;
-    position: static;
+    align-self: auto;
+    display: block;
   }
 }
 
-// Content Section - Grid layout on larger displays
+// Content Section
 .user-content-section {
   flex: 1;
   min-width: 0;
+  transition: all 0.3s ease;
+  align-self: flex-start;
   
   &.active {
     .preferences-panel {
@@ -53,8 +56,157 @@
     }
   }
   
+  // Empty state - shown when no panel is active
+  &:not(.active) {
+    background: var(--table-background);
+    border: solid var(--secondary-color) 1px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    max-height: calc(100vh - 120px);
+    min-height: 400px;
+    
+    // Subtle gradient background
+    &::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(
+        circle at 70% 50%,
+        rgba(var(--secondary-color-rgb, 0.05)) 0%,
+        transparent 70%
+      );
+      pointer-events: none;
+    }
+    
+    .empty-state {
+      text-align: center;
+      position: relative;
+      z-index: 1;
+      
+      .empty-icon {
+        font-size: 4rem;
+        opacity: 0.15;
+        animation: float 4s ease-in-out infinite;
+        display: block;
+        user-select: none;
+        filter: drop-shadow(0 0 20px rgba(var(--secondary-color-rgb, 0.1)));
+      }
+    }
+  }
+  
+  // When panel is active, match height with left panel
+  &.active {
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 120px);
+    
+    .preferences-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      border: solid var(--secondary-color) 1px;
+      border-radius: 20px;
+      background: var(--table-background);
+      overflow: hidden;
+      box-shadow: none;
+      margin-bottom: 0 !important;
+      max-height: 100%;
+      
+      .panel-header {
+        flex-shrink: 0;
+      }
+      
+      .panel-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        
+        &::-webkit-scrollbar {
+          width: 8px;
+        }
+        
+        &::-webkit-scrollbar-track {
+          background: var(--calendar-neighbor-bg);
+          border-radius: 4px;
+        }
+        
+        &::-webkit-scrollbar-thumb {
+          background: var(--modalidades-border);
+          border-radius: 4px;
+          
+          &:hover {
+            background: var(--primary-color);
+          }
+        }
+      }
+      
+      .panel-footer {
+        border-top: 1px solid var(--modalidades-border);
+        padding: 20px 25px;
+        background-color: var(--table-background);
+        flex-shrink: 0;
+        
+        .save-btn {
+          width: 100%;
+          padding: 12px;
+          background-color: var(--secondary-color);
+          color: white;
+          border: none;
+          border-radius: 10px;
+          cursor: pointer;
+          font-size: 1rem;
+          transition: all 0.2s;
+          
+          &:hover:not(:disabled) {
+            opacity: 0.9;
+            transform: translateY(-1px);
+          }
+          
+          &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+          }
+        }
+      }
+    }
+  }
+  
   @media (max-width: 992px) {
     width: 100%;
+    align-self: auto;
+    
+    &:not(.active) {
+      max-height: none;
+      min-height: 150px;
+      height: auto;
+      padding: 20px;
+      
+      .empty-state {
+        .empty-icon {
+          font-size: 3rem;
+        }
+      }
+    }
+    
+    &.active {
+      max-height: none;
+      
+      .preferences-panel {
+        height: auto;
+        max-height: 600px;
+        
+        .panel-content {
+          max-height: 400px;
+        }
+      }
+    }
   }
 }
 
@@ -68,9 +220,28 @@
   padding: 30px 25px;
   background-color: var(--table-background);
   transition: all 0.3s ease;
+  width: 100%;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
   
   @media (max-width: 992px) {
     padding: 25px 20px;
+    max-height: none;
+    height: auto;
+  }
+  
+  // Custom scrollbar for the card
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: var(--secondary-color);
+    border-radius: 4px;
   }
   
   .image-container {
@@ -201,14 +372,18 @@
   }
 }
 
-// Preferences Panel - Card Grid Layout on larger displays
+// Preferences Panel
 .preferences-panel {
   background-color: var(--table-background);
-  border: 1px solid var(--modalidades-border);
+  border: solid var(--secondary-color) 1px;
   border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
   margin-bottom: 40px !important;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  
   .panel-header {
     display: flex;
     justify-content: space-between;
@@ -216,6 +391,7 @@
     padding: 20px 25px;
     border-bottom: 1px solid var(--modalidades-border);
     background-color: var(--header-bg);
+    flex-shrink: 0;
     
     h3 {
       margin: 0;
@@ -243,7 +419,7 @@
   
   .panel-content {
     padding: 20px;
-    max-height: calc(100vh - 200px);
+    flex: 1;
     overflow-y: auto;
     
     &::-webkit-scrollbar {
@@ -265,26 +441,51 @@
     }
   }
   
-  // GRID LAYOUT for color schemes on larger displays
+  .panel-footer {
+    padding: 20px 25px;
+    border-top: 1px solid var(--modalidades-border);
+    background-color: var(--table-background);
+    flex-shrink: 0;
+    
+    .save-btn {
+      width: 100%;
+      padding: 12px;
+      background-color: var(--secondary-color);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.2s;
+      
+      &:hover:not(:disabled) {
+        opacity: 0.9;
+        transform: translateY(-1px);
+      }
+      
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+  }
+  
+  // GRID LAYOUT for color schemes - Responsive columns
   .color-schemes-grid {
     display: grid;
     grid-template-columns: 1fr;
     gap: 12px;
+    max-width: 100%;
+    overflow: hidden;
     
-    @media (min-width: 992px) and (max-width: 1199px) {
+    // Only use 2 columns when there's enough space (at least 1200px)
+    @media (min-width: 1200px) {
       grid-template-columns: repeat(2, 1fr);
     }
     
-    @media (min-width: 1200px) and (max-width: 1499px) {
-      grid-template-columns: repeat(2, 1fr);
-    }
-    
-    @media (min-width: 1500px) and (max-width: 1799px) {
+    // 3 columns on very large screens (at least 1600px)
+    @media (min-width: 1600px) {
       grid-template-columns: repeat(3, 1fr);
-    }
-    
-    @media (min-width: 1800px) {
-      grid-template-columns: repeat(4, 1fr);
     }
   }
   
@@ -295,6 +496,8 @@
     padding: 16px;
     cursor: pointer;
     transition: all 0.2s ease;
+    min-width: 0;
+    word-break: break-word;
     
     &:hover {
       transform: translateY(-4px);
@@ -308,24 +511,47 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
     
+    // Colorblind options styling
+    &[data-colorblind="true"] {
+      border-color: #4CAF50;
+      
+      &:hover {
+        border-color: #45a049;
+        box-shadow: 0 8px 20px rgba(76, 175, 80, 0.2);
+      }
+      
+      &.selected {
+        border-color: #4CAF50;
+        background-color: rgba(76, 175, 80, 0.05);
+        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+      }
+    }
+    
     .scheme-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 12px;
+      gap: 8px;
       
       .scheme-name {
         font-weight: 600;
         font-size: 0.9rem;
         color: var(--font-color);
-      }
-      
-      .current-badge {
-        font-size: 0.65rem;
-        color: #4caf50;
-        background: rgba(76, 175, 80, 0.1);
-        padding: 2px 8px;
-        border-radius: 12px;
+        flex: 1;
+        min-width: 0;
+        
+        .accessibility-badge {
+          display: inline-block;
+          font-size: 0.6rem;
+          background: #4CAF50;
+          color: white;
+          padding: 2px 8px;
+          border-radius: 12px;
+          margin-left: 6px;
+          font-weight: 500;
+          white-space: nowrap;
+        }
       }
     }
     
@@ -336,6 +562,7 @@
       
       .theme-preview {
         flex: 1;
+        min-width: 0;
         
         .theme-label {
           font-size: 0.7rem;
@@ -352,6 +579,7 @@
             width: 40px;
             height: 40px;
             border: 1px solid rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
             
             &.primary {
               border-radius: 8px 0 0 8px;
@@ -373,29 +601,24 @@
     }
   }
   
-  // Icons Grid - Card layout
+  // Icons Grid - Responsive
   .icons-grid {
     display: grid;
     gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    max-width: 100%;
+    overflow: hidden;
     
-    @media (min-width: 992px) and (max-width: 1199px) {
-      grid-template-columns: repeat(3, 1fr);
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     }
     
-    @media (min-width: 1200px) and (max-width: 1499px) {
-      grid-template-columns: repeat(4, 1fr);
+    @media (min-width: 992px) {
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     }
     
-    @media (min-width: 1500px) and (max-width: 1799px) {
-      grid-template-columns: repeat(5, 1fr);
-    }
-    
-    @media (min-width: 1800px) {
-      grid-template-columns: repeat(6, 1fr);
-    }
-    
-    @media (max-width: 991px) {
-      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    @media (min-width: 1200px) {
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     }
   }
   
@@ -407,6 +630,7 @@
     cursor: pointer;
     transition: all 0.2s ease;
     text-align: center;
+    min-width: 0;
     
     &:hover {
       transform: translateY(-4px);
@@ -442,6 +666,15 @@
       color: var(--font-color);
       display: block;
       margin-bottom: 4px;
+      word-break: break-word;
+    }
+    
+    .icon-description {
+      font-size: 0.65rem;
+      color: var(--secondary-color);
+      display: block;
+      margin-top: 4px;
+      word-break: break-word;
     }
     
     .current-badge, .temp-badge {
@@ -458,340 +691,9 @@
       color: var(--secondary-color);
     }
   }
-  
-  .panel-footer {
-    padding: 20px 25px;
-    border-top: 1px solid var(--modalidades-border);
-    background-color: var(--table-background);
-    
-    .save-btn {
-      width: 100%;
-      padding: 12px;
-      background-color: var(--secondary-color);
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: all 0.2s;
-      
-      &:hover:not(:disabled) {
-        opacity: 0.9;
-        transform: translateY(-1px);
-      }
-      
-      &:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-      }
-    }
-  }
 }
 
 // Icons Panel Section Title
-.icons-section {
-  margin-bottom: 24px;
-  
-  .section-title {
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 16px;
-    color: var(--font-color);
-    padding-bottom: 8px;
-    border-bottom: 2px solid var(--secondary-color);
-    
-    &.admin-title {
-      color: var(--secondary-color);
-    }
-  }
-  
-  .section-divider {
-    height: 1px;
-    background: var(--modalidades-border);
-    margin: 20px 0;
-  }
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-// Responsive adjustments
-@media (max-width: 992px) {
-  .preferences-panel {
-    .color-schemes-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-}
-
-@media (max-width: 768px) {
-  .user-page {
-    padding: 15px;
-  }
-  
-  .preferences-panel {
-    .panel-header {
-      padding: 15px 20px;
-      
-      h3 {
-        font-size: 1.1rem;
-      }
-      
-    }
-    
-    .panel-content {
-      padding: 15px;
-    }
-    
-    .color-scheme-card {
-      padding: 12px;
-    }
-    
-    .icon-card {
-      padding: 12px 8px;
-      
-      .icon-image-wrapper {
-        width: 50px;
-        height: 50px;
-        
-        .icon-image {
-          width: 40px;
-          height: 40px;
-        }
-      }
-    }
-  }
-}
-// Add these styles to your user.scss file
-
-// Grid layout for color schemes
-.color-schemes-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-  
-  @media (min-width: 992px) and (max-width: 1199px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  @media (min-width: 1200px) and (max-width: 1499px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  @media (min-width: 1500px) and (max-width: 1799px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  
-  @media (min-width: 1800px) {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-.color-scheme-card {
-  background-color: var(--table-background);
-  border: 1px solid var(--modalidades-border);
-  border-radius: 16px;
-  padding: 16px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    border-color: var(--secondary-color);
-  }
-  
-  &.selected {
-    border-color: var(--secondary-color);
-    background-color: var(--table-row-hover-color);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-  
-  .scheme-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-    
-    .scheme-name {
-      font-weight: 600;
-      font-size: 0.9rem;
-      color: var(--font-color);
-    }
-    
-    .current-badge {
-      font-size: 0.65rem;
-      color: #4caf50;
-      background: rgba(76, 175, 80, 0.1);
-      padding: 2px 8px;
-      border-radius: 12px;
-    }
-  }
-  
-  .color-previews {
-    display: flex;
-    gap: 16px;
-    margin-bottom: 12px;
-    
-    .theme-preview {
-      flex: 1;
-      
-      .theme-label {
-        font-size: 0.7rem;
-        color: var(--font-color);
-        opacity: 0.7;
-        margin-bottom: 6px;
-        display: block;
-      }
-      
-      .color-chips {
-        display: flex;
-        
-        .color-chip {
-          width: 40px;
-          height: 40px;
-          border: 1px solid rgba(0, 0, 0, 0.1);
-          
-          &.primary {
-            border-radius: 8px 0 0 8px;
-          }
-          
-          &.secondary {
-            border-radius: 0 8px 8px 0;
-          }
-        }
-      }
-    }
-  }
-  
-  .checkmark {
-    text-align: right;
-    color: var(--secondary-color);
-    font-size: 18px;
-    font-weight: bold;
-  }
-}
-
-// Icons Grid
-.icons-grid {
-  display: grid;
-  gap: 16px;
-  
-  @media (min-width: 992px) and (max-width: 1199px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  
-  @media (min-width: 1200px) and (max-width: 1499px) {
-    grid-template-columns: repeat(4, 1fr);
-  }
-  
-  @media (min-width: 1500px) and (max-width: 1799px) {
-    grid-template-columns: repeat(5, 1fr);
-  }
-  
-  @media (min-width: 1800px) {
-    grid-template-columns: repeat(6, 1fr);
-  }
-  
-  @media (max-width: 991px) {
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  }
-}
-
-.icon-card {
-  background-color: var(--table-background);
-  border: 1px solid var(--modalidades-border);
-  border-radius: 16px;
-  padding: 16px 12px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: center;
-  
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    border-color: var(--secondary-color);
-  }
-  
-  &.selected {
-    border-color: var(--secondary-color);
-    background-color: var(--table-row-hover-color);
-  }
-  
-  &.current {
-    border-color: #4caf50;
-  }
-  
-  .icon-image-wrapper {
-    background-color: #a0a0a0;
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    margin: 0 auto 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    
-    .icon-image {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-  }
-  
-  .icon-name {
-    font-size: 0.75rem;
-    color: var(--font-color);
-    display: block;
-    margin-bottom: 4px;
-  }
-  
-  .icon-description {
-    font-size: 0.65rem;
-    color: var(--secondary-color);
-    display: block;
-    margin-top: 4px;
-    word-break: break-word;
-  }
-  
-  .current-badge, .temp-badge {
-    font-size: 0.6rem;
-    display: inline-block;
-    margin-top: 4px;
-    padding: 2px 6px;
-    border-radius: 10px;
-  }
-  
-  .current-badge {
-    color: #4caf50;
-    background: rgba(76, 175, 80, 0.1);
-  }
-  
-  .temp-badge {
-    color: var(--secondary-color);
-    background: rgba(var(--secondary-color-rgb), 0.1);
-  }
-}
-
-// Icons Section
 .icons-section {
   margin-bottom: 24px;
   
@@ -860,6 +762,81 @@
   box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.3);
 }
 
+// Exclusive badge
+.exclusive-badge {
+  font-size: 0.6rem;
+  color: #ff9800;
+  background: rgba(255, 152, 0, 0.15);
+  padding: 2px 6px;
+  border-radius: 10px;
+  margin-top: 4px;
+  display: inline-block;
+}
+
+// Special badge (kept for backward compatibility)
+.special-badge {
+  font-size: 0.6rem;
+  color: #ff9800;
+  background: rgba(255, 152, 0, 0.15);
+  padding: 2px 6px;
+  border-radius: 10px;
+  margin-top: 4px;
+  display: inline-block;
+}
+
+.applied-badge {
+  font-size: 0.6rem;
+  color: #4caf50;
+  background: rgba(76, 175, 80, 0.15);
+  padding: 2px 6px;
+  border-radius: 10px;
+  margin-top: 4px;
+  display: inline-block;
+}
+
+.icon-card.applied {
+  opacity: 0.7;
+  cursor: default !important;
+  
+  &:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
+
+// Keyframes
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(5deg);
+  }
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+}
+
 @keyframes pulse {
   0% {
     opacity: 1;
@@ -872,7 +849,27 @@
   }
 }
 
-// User Preferences Modal Styles - Unique prefix to avoid conflicts
+@keyframes prefsModalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes prefsModalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// User Preferences Modal Styles
 .prefs-modal-overlay {
   position: fixed !important;
   top: 0 !important;
@@ -988,52 +985,57 @@
   }
 }
 
-@keyframes prefsModalFadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes prefsModalSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+// Responsive adjustments
+@media (max-width: 1199px) {
+  .preferences-panel {
+    .color-schemes-grid {
+      grid-template-columns: 1fr !important;
+    }
   }
 }
 
-.special-badge {
-  font-size: 0.6rem;
-  color: #ff9800;
-  background: rgba(255, 152, 0, 0.15);
-  padding: 2px 6px;
-  border-radius: 10px;
-  margin-top: 4px;
-  display: inline-block;
+@media (max-width: 992px) {
+  .preferences-panel {
+    .icons-grid {
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important;
+    }
+  }
 }
 
-.applied-badge {
-  font-size: 0.6rem;
-  color: #4caf50;
-  background: rgba(76, 175, 80, 0.15);
-  padding: 2px 6px;
-  border-radius: 10px;
-  margin-top: 4px;
-  display: inline-block;
-}
-
-.icon-card.applied {
-  opacity: 0.7;
-  cursor: default !important;
+@media (max-width: 768px) {
+  .user-page {
+    padding: 15px;
+  }
   
-  &:hover {
-    transform: none !important;
-    box-shadow: none !important;
+  .preferences-panel {
+    .panel-header {
+      padding: 15px 20px;
+      
+      h3 {
+        font-size: 1.1rem;
+      }
+    }
+    
+    .panel-content {
+      padding: 15px;
+    }
+    
+    .color-scheme-card {
+      padding: 12px;
+    }
+    
+    .icon-card {
+      padding: 12px 8px;
+      
+      .icon-image-wrapper {
+        width: 50px;
+        height: 50px;
+        
+        .icon-image {
+          width: 40px;
+          height: 40px;
+        }
+      }
+    }
   }
 }
