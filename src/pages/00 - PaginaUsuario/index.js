@@ -117,7 +117,74 @@ const Usuario = () => {
     }
   }
 
-  // Available color schemes with names in Brazilian Portuguese
+  // Function to get colors for a specific scheme and theme - IMPROVED
+  const getSchemeColors = (schemeId, theme) => {
+    // Create a temporary element to read computed styles
+    const tempDiv = document.createElement('div')
+    tempDiv.setAttribute('data-context', schemeId)
+    tempDiv.setAttribute('data-theme', theme)
+    tempDiv.style.display = 'none'
+    tempDiv.style.position = 'absolute'
+    tempDiv.style.pointerEvents = 'none'
+    document.body.appendChild(tempDiv)
+    
+    // Force a reflow to ensure styles are applied
+    tempDiv.offsetHeight
+    
+    const computedStyle = getComputedStyle(tempDiv)
+    let primaryColor = computedStyle.getPropertyValue('--primary-color').trim()
+    let secondaryColor = computedStyle.getPropertyValue('--secondary-color').trim()
+    
+    // Remove the temporary element
+    document.body.removeChild(tempDiv)
+    
+    // If colors couldn't be read, use fallback values
+    if (!primaryColor || primaryColor === '' || primaryColor === 'undefined') {
+      // Fallback colors for all themes
+      const fallbackColors = {
+        'salvalucro': { light: { primary: '#0a3d70', secondary: '#99cc33' }, dark: { primary: '#141414', secondary: '#99cc33' } },
+        'sifra': { light: { primary: '#0a3d70', secondary: '#e0ca00' }, dark: { primary: '#141414', secondary: '#a19100' } },
+        'mg': { light: { primary: '#6b74b5', secondary: '#99cc33' }, dark: { primary: '#141414', secondary: '#6b74b5' } },
+        'superjur': { light: { primary: '#839b54', secondary: '#555555' }, dark: { primary: '#141414', secondary: '#839b54' } },
+        'carddigital': { light: { primary: '#17669b', secondary: '#4cc593' }, dark: { primary: '#141414', secondary: '#17669b' } },
+        'SPECIAL': { light: { primary: '#960064', secondary: '#ff66cc' }, dark: { primary: '#141414', secondary: '#ff66cc' } },
+        'ALT-1': { light: { primary: '#006464', secondary: '#ff7f50' }, dark: { primary: '#121919', secondary: '#ff7f50' } },
+        'ALT-2': { light: { primary: '#193778', secondary: '#ffd700' }, dark: { primary: '#0a1228', secondary: '#ffd700' } },
+        'ALT-3': { light: { primary: '#285a32', secondary: '#ffc89a' }, dark: { primary: '#121e14', secondary: '#ffc89a' } },
+        'ALT-4': { light: { primary: '#37465f', secondary: '#ffbe46' }, dark: { primary: '#191e28', secondary: '#ffbe46' } },
+        'ALT-5': { light: { primary: '#6e2d5a', secondary: '#5ac8a0' }, dark: { primary: '#23121e', secondary: '#5ac8a0' } },
+        'ALT-6': { light: { primary: '#5a3278', secondary: '#ffc850' }, dark: { primary: '#191223', secondary: '#ffc850' } },
+        'ALT-7': { light: { primary: '#146478', secondary: '#ff826e' }, dark: { primary: '#0c232a', secondary: '#ff826e' } },
+        'ALT-8': { light: { primary: '#46552d', secondary: '#d26e4b' }, dark: { primary: '#192012', secondary: '#d26e4b' } },
+        'ALT-9': { light: { primary: '#373782', secondary: '#b4e650' }, dark: { primary: '#121228', secondary: '#b4e650' } },
+        'ALT-10': { light: { primary: '#3c414b', secondary: '#e68296' }, dark: { primary: '#14161c', secondary: '#e68296' } },
+        'ALT-11': { light: { primary: '#1e7882', secondary: '#0096e6' }, dark: { primary: '#0f373c', secondary: '#30b8f0' } },
+        'ALT-12': { light: { primary: '#aa2d41', secondary: '#9aaab8' }, dark: { primary: '#371923', secondary: '#c8a8b4' } },
+        'ALT-13': { light: { primary: '#007875', secondary: '#00b4aa' }, dark: { primary: '#004644', secondary: '#30d0cc' } },
+        'ALT-14': { light: { primary: '#c83c78', secondary: '#e6a0c8' }, dark: { primary: '#501c37', secondary: '#e6b0d0' } },
+        'CB-PROTANOPIA': { light: { primary: '#0055A4', secondary: '#FFB347' }, dark: { primary: '#4D94FF', secondary: '#FFC44D' } },
+        'CB-DEUTERANOPIA': { light: { primary: '#0066CC', secondary: '#FF6B35' }, dark: { primary: '#4D9FFF', secondary: '#FF8A5C' } },
+        'CB-TRITANOPIA': { light: { primary: '#D45500', secondary: '#009E6B' }, dark: { primary: '#FF7733', secondary: '#33C99A' } },
+        'CB-MONOCHROMACY': { light: { primary: '#555555', secondary: '#222222' }, dark: { primary: '#999999', secondary: '#CCCCCC' } },
+        'CB-HIGH-CONTRAST': { light: { primary: '#0000FF', secondary: '#FFD700' }, dark: { primary: '#4D4DFF', secondary: '#FFD700' } }
+      }
+      
+      if (fallbackColors[schemeId] && fallbackColors[schemeId][theme]) {
+        primaryColor = fallbackColors[schemeId][theme].primary
+        secondaryColor = fallbackColors[schemeId][theme].secondary
+      } else {
+        primaryColor = '#cccccc'
+        secondaryColor = '#cccccc'
+      }
+    }
+    
+    return {
+      primary: primaryColor,
+      secondary: secondaryColor
+    }
+  }
+
+  // Available color schemes with names
   const colorSchemes = [
     getDefaultColorScheme(),
     { id: 'SPECIAL', name: 'Especial (Rosa/Roxo)' },
@@ -142,26 +209,6 @@ const Usuario = () => {
     { id: 'CB-MONOCHROMACY', name: '♿ Monocromático (Preto & Branco)' },
     { id: 'CB-HIGH-CONTRAST', name: '♿ Alto Contraste' }
   ]
-
-  // Function to get colors for a specific scheme and theme
-  const getSchemeColors = (schemeId, theme) => {
-    const tempDiv = document.createElement('div')
-    tempDiv.setAttribute('data-context', schemeId)
-    tempDiv.setAttribute('data-theme', theme)
-    tempDiv.style.display = 'none'
-    document.body.appendChild(tempDiv)
-    
-    const computedStyle = getComputedStyle(tempDiv)
-    const primaryColor = computedStyle.getPropertyValue('--primary-color').trim()
-    const secondaryColor = computedStyle.getPropertyValue('--secondary-color').trim()
-    
-    document.body.removeChild(tempDiv)
-    
-    return {
-      primary: primaryColor || '#cccccc',
-      secondary: secondaryColor || '#cccccc'
-    }
-  }
 
   // Load all scheme colors on component mount
   useEffect(() => {
@@ -700,7 +747,7 @@ const Usuario = () => {
                               <img src={defaultIcon.path} alt={defaultIcon.name} className="icon-image" />
                             </div>
                             <span className="icon-name">{defaultIcon.name}</span>
-                            {/*<span className="icon-description">{defaultIcon.description}</span>*/}
+                            <span className="icon-description">{defaultIcon.description}</span>
                             {isCurrentIcon(defaultIcon) && !selectedIcon && <span className="current-badge">Atual</span>}
                             {isIconSelected(defaultIcon) && <span className="temp-badge">Selecionado</span>}
                             {isIconPending(defaultIcon) && <span className="pending-badge">Pendente</span>}
