@@ -526,8 +526,8 @@
     word-break: break-word;
     
     &:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      //transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.60);
       border-color: var(--secondary-color);
     }
     
@@ -659,8 +659,8 @@
     min-width: 0;
     
     &:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      //transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.60);
       border-color: var(--secondary-color);
     }
     
