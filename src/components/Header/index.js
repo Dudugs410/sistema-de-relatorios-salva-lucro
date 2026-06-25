@@ -146,63 +146,65 @@ const Header = () => {
     }
 
     return (  
-        <div className="header-container">
-            <div className='header-bg-image'>
-                <div className="header-info-wrapper header-bg">
-                    <div className='navbar-customer-wrapper me-2 text-truncate'>
-                        <div className="toggle-container me-1">
-                            <label className="switch">
-                                <input 
-                                    type="checkbox" 
-                                    id="toggleButton" 
-                                    checked={theme} 
-                                    onChange={handleCheckboxChange}
-                                />
-                                <span className="slider">
-                                    <FiMoon/>
-                                    <FiSun/>
-                                </span>
-                            </label>
-                        </div>
-                        <div className='user-data'>
-                            <div>{userData?.NOME || 'Usuário'}</div>
-                            <div>{userData?.EMAIL || ''}</div>
-                            <Relogio/>
-                        </div>
-                    </div>
-                    <div className='btn-container' ref={userDropdownRef} onClick={handleUserProfileClick}>
-                        <div className="user-profile-wrapper">
-                            <img 
-                                className='image'
-                                src={getImageSource()}
-                                alt="User profile"
-                                onError={(e) => {
-                                    console.log('Image failed to load, using default')
-                                    e.target.src = defaultImg
-                                }}
-                            />
-                            <FiChevronDown className={`dropdown-chevron ${showUserDropdown ? 'rotated' : ''}`} />
-                        </div>
-                        
-                        {showUserDropdown && (
-                            <div className="user-dropdown-menu">
-                                <button 
-                                    className="dropdown-item"
-                                    onClick={handleNavigateToUserPage}
-                                >
-                                    <FiUser className="dropdown-icon" />
-                                    <span>Meu Perfil</span>
-                                </button>
-                                <div className="dropdown-divider"></div>
-                                <button 
-                                    className="dropdown-item logout-item"
-                                    onClick={handleLogout}
-                                >
-                                    <FiLogOut className="dropdown-icon" />
-                                    <span>Sair</span>
-                                </button>
+        <div className="header-wrapper">
+            <div className="header-container">
+                <div className='header-bg-image'>
+                    <div className="header-info-wrapper header-bg">
+                        <div className='navbar-customer-wrapper me-2 text-truncate'>
+                            <div className="toggle-container me-1">
+                                <label className="switch">
+                                    <input 
+                                        type="checkbox" 
+                                        id="toggleButton" 
+                                        checked={theme} 
+                                        onChange={handleCheckboxChange}
+                                    />
+                                    <span className="slider">
+                                        <FiMoon/>
+                                        <FiSun/>
+                                    </span>
+                                </label>
                             </div>
-                        )}
+                            <div className='user-data'>
+                                <div>{userData?.NOME || 'Usuário'}</div>
+                                <div>{userData?.EMAIL || ''}</div>
+                                <Relogio/>
+                            </div>
+                        </div>
+                        <div className='btn-container' ref={userDropdownRef} onClick={handleUserProfileClick}>
+                            <div className="user-profile-wrapper">
+                                <img 
+                                    className='image'
+                                    src={getImageSource()}
+                                    alt="User profile"
+                                    onError={(e) => {
+                                        console.log('Image failed to load, using default')
+                                        e.target.src = defaultImg
+                                    }}
+                                />
+                                <FiChevronDown className={`dropdown-chevron ${showUserDropdown ? 'rotated' : ''}`} />
+                            </div>
+                            
+                            {showUserDropdown && (
+                                <div className="user-dropdown-menu">
+                                    <button 
+                                        className="dropdown-item"
+                                        onClick={handleNavigateToUserPage}
+                                    >
+                                        <FiUser className="dropdown-icon" />
+                                        <span>Meu Perfil</span>
+                                    </button>
+                                    <div className="dropdown-divider"></div>
+                                    <button 
+                                        className="dropdown-item logout-item"
+                                        onClick={handleLogout}
+                                    >
+                                        <FiLogOut className="dropdown-icon" />
+                                        <span>Sair</span>
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
