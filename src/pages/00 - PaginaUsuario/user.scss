@@ -357,6 +357,27 @@
   }
 }
 
+// ============================================
+// FIX: Maintain outline/border on menu buttons hover
+// ============================================
+
+// Fix for top buttons (Trocar Ícone, Preferências de Cores)
+.top-buttons-container .user-btn.btn-global {
+  //border: 1px solid var(--secondary-color) !important;
+  background-color: var(--secondary-color) !important;
+  color: var(--primary-color) !important;
+  transition: all 0.2s ease !important;
+  
+  &:hover {
+    color: var(--secondary-color) !important;
+    border-color: var(--secondary-color) !important;
+    background-color: rgba(var(--secondary-color-rgb, 0.1)) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(var(--secondary-color-rgb, 0.2));
+  }
+}
+
+// Sair button - keep red styling
 .user-btn {
   &.user-btn-sair {
     background-color: rgba(0, 0, 0, 0);
@@ -368,9 +389,14 @@
       background-color: red;
       color: white;
       transform: translateY(-2px);
+      border-color: red;
     }
   }
 }
+
+// ============================================
+// END OF FIX
+// ============================================
 
 // Preferences Panel
 .preferences-panel {
@@ -395,7 +421,7 @@
     
     h3 {
       margin: 0;
-      color: var(--header-text-color);
+      color: var(--secondary-color);
       font-size: 1.2rem;
     }
     

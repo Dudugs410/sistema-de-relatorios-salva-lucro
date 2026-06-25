@@ -747,7 +747,7 @@ const Usuario = () => {
                               <img src={defaultIcon.path} alt={defaultIcon.name} className="icon-image" />
                             </div>
                             <span className="icon-name">{defaultIcon.name}</span>
-                            <span className="icon-description">{defaultIcon.description}</span>
+                            {/*<span className="icon-description">{defaultIcon.description}</span>*/}
                             {isCurrentIcon(defaultIcon) && !selectedIcon && <span className="current-badge">Atual</span>}
                             {isIconSelected(defaultIcon) && <span className="temp-badge">Selecionado</span>}
                             {isIconPending(defaultIcon) && <span className="pending-badge">Pendente</span>}
