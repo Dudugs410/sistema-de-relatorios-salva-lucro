@@ -64,7 +64,44 @@ const Dashboard = () => {
     changedOption, canceled, fetchingData, setFetchingData, setCanceled,
     canceledSales, canceledCredits, canceledServices,
     setCanceledSales, setCanceledCredits, setCanceledServices,
+    // Add these from context
+    userPreferences,
+    loadUserPreferences,
+    currentContext,
+    currentTheme
   } = useContext(AuthContext);
+
+  // ===== FIX: Load user preferences from API on mount =====
+  useEffect(() => {
+    const loadPrefs = async () => {
+      try {
+        const userId = localStorage.getItem('userID');
+        if (userId) {
+          // This should load preferences from API and apply them
+          await loadUserPreferences(userId);
+        }
+      } catch (error) {
+        console.error('Error loading preferences in dashboard:', error);
+      }
+    };
+    
+    loadPrefs();
+  }, []); // Run once on mount
+
+  // ===== Apply preferences when they change =====
+  useEffect(() => {
+    if (currentContext) {
+      document.documentElement.setAttribute('data-context', currentContext);
+      console.log('🎨 Dashboard applied context from API:', currentContext);
+    }
+    
+    if (currentTheme !== undefined && currentTheme !== null) {
+      const themeValue = currentTheme ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', themeValue);
+      console.log('🎨 Dashboard applied theme from API:', themeValue);
+    }
+  }, [currentContext, currentTheme]);
+  // ===== END FIX =====
 
   // Helper function to format currency with secondary color class
   const formatCurrency = (value) => {

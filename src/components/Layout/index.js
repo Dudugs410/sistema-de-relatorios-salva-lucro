@@ -21,9 +21,8 @@ function Layout({ children }) {
             <DadosGrupoCliente/>
           {children}
         </div>
-        <Footer/>
+        {/*<Footer/>*/}
       </div>
-
     </div>
   )
 }
