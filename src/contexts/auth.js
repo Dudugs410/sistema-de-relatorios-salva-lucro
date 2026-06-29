@@ -222,6 +222,62 @@ function AuthProvider({ children }){
     localStorage.setItem(JSON.stringify(item), 'joyride')
   }
 
+const [currentTheme, setCurrentTheme] = useState(false);
+const [userPreferences, setUserPreferences] = useState(null);
+
+// Function to load user preferences from API
+const loadUserPreferences = useCallback(async (userId) => {
+  if (!userId) {
+    console.warn('No userId provided to loadUserPreferences');
+    return null;
+  }
+
+  try {
+    console.log('🔄 Loading user preferences from API for user:', userId);
+    
+    const response = await api.get('PreferenciasUsuario', {
+      params: { codigo: userId }
+    });
+    
+    const preferences = response.data;
+    console.log('📡 User preferences loaded from API:', preferences);
+    
+    if (preferences) {
+      // Update state
+      setUserPreferences(preferences);
+      
+      // Apply context
+      const context = preferences.ESQUEMACORES || 'salvalucro';
+      setCurrentContext(context);
+      document.documentElement.setAttribute('data-context', context);
+      console.log('🎨 Applied context from API:', context);
+      
+      // Apply theme
+      const themeValue = preferences.TEMA === true || preferences.TEMA === 'true';
+      setCurrentTheme(themeValue);
+      document.documentElement.setAttribute('data-theme', themeValue ? 'dark' : 'light');
+      console.log('🎨 Applied theme from API:', themeValue ? 'dark' : 'light');
+      
+      // Apply icon if needed
+      if (preferences.ICONE) {
+        const iconPath = getIconPathByCode(preferences.ICONE);
+        if (iconPath) {
+          setUserImg(iconPath);
+          console.log('🖼️ Applied icon from API:', preferences.ICONE);
+        }
+      }
+      
+      return preferences;
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('❌ Error loading user preferences from API:', error);
+    return null;
+  }
+}, []);
+
+
 const loginApp = async (login, password) => {
   resetAppValues()
   try {
@@ -247,8 +303,9 @@ const loginApp = async (login, password) => {
       }
       console.log('user: ', user)
 
-      // LOAD OR CREATE USER PREFERENCES FROM API
+      // ===== LOAD PREFERENCES FROM API =====
       let userPreferences = null
+      
       try {
         const prefsResponse = await api.get('PreferenciasUsuario', {
           params: { codigo: userId }
@@ -308,7 +365,7 @@ const loginApp = async (login, password) => {
         }
       } catch (error) {
         console.error('Error loading/creating preferences:', error)
-        // If error, create default preferences object
+        // Create fallback preferences
         let defaultIconCode = 1
         let defaultColorScheme = user?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro'
         
@@ -342,11 +399,11 @@ const loginApp = async (login, password) => {
         }
       }
 
-      // Determine context (color scheme) - priority: saved preferences > identity visual
+      // ===== DETERMINE CONTEXT (COLOR SCHEME) =====
       let context = userPreferences?.ESQUEMACORES || user?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro'
       let logo = null
 
-      console.log('Final context (color scheme): ', context)
+      console.log('🎨 Setting context from preferences:', context)
 
       switch (context) {
         case 'sifra':
@@ -431,31 +488,35 @@ const loginApp = async (login, password) => {
           break
       }
 
-      setCurrentContext(context)
-      if (logo) {
-        setCurrentLogo(logo)
-      } else {
-        setCurrentLogo(salvalucro)
-      }
-      
-      document.documentElement.setAttribute('data-context', context)
-      
-      // Determine theme - priority: saved preferences > user data
+      // ===== DETERMINE THEME =====
       let themeValue
       if (userPreferences?.TEMA !== undefined && userPreferences?.TEMA !== null) {
         themeValue = userPreferences.TEMA === true || userPreferences.TEMA === 'true'
         console.log('Using saved theme preference:', themeValue ? 'dark' : 'light')
       } else {
         themeValue = user.TEMA === true || user.TEMA === 'true'
-        console.log('Using user theme from database:', themeValue ? 'dark' : 'light')
+        console.log('No preferences found, using user theme:', themeValue ? 'dark' : 'light')
       }
+
+      // ===== APPLY EVERYTHING TO DOM AND STORAGE =====
+      // Set context
+      setCurrentContext(context)
+      document.documentElement.setAttribute('data-context', context)
+      localStorage.setItem('appContext', context)
       
+      // Set theme
       setTheme(themeValue)
       document.documentElement.setAttribute('data-theme', themeValue ? 'dark' : 'light')
       localStorage.setItem('appTheme', themeValue ? 'dark' : 'light')
-      localStorage.setItem('appContext', context)
+      
+      // Set logo
+      if (logo) {
+        setCurrentLogo(logo)
+      } else {
+        setCurrentLogo(salvalucro)
+      }
 
-      // APPLY SAVED ICON TO HEADER - This is the critical fix
+      // Apply icon
       if (userPreferences?.ICONE) {
         localStorage.setItem('userIconCode', userPreferences.ICONE)
         const iconPath = getIconPathByCode(userPreferences.ICONE)
@@ -465,7 +526,13 @@ const loginApp = async (login, password) => {
         }
       }
 
-      // Only update theme if needed
+      console.log('✅ Preferences applied successfully:', {
+        context: context,
+        theme: themeValue ? 'dark' : 'light',
+        icon: userPreferences?.ICONE
+      })
+
+      // ===== UPDATE USER IF NEEDED =====
       const handleUpdateUser = async () => {
         try{
           if(user.TEMA === undefined || user.TEMA === null){
@@ -482,12 +549,13 @@ const loginApp = async (login, password) => {
         await handleUpdateUser()
       }
 
-      // This part works - DO NOT CHANGE
+      // ===== SAVE USER DATA =====
       const userData = { NOME: user.NOME, EMAIL: user.EMAIL }
       localStorage.setItem('GRUCODIGO', user.GRUCODIGO)
       localStorage.setItem('isSignedIn', true)
       localStorage.setItem('userData', JSON.stringify(userData))
 
+      // ===== LOGIN LOG =====
       try {
         const clientUserId = userId
 
@@ -549,7 +617,7 @@ const loginApp = async (login, password) => {
           console.log(error)
         }
     
-        //pluggy
+        // ===== PLUGGY AUTH =====
         const response = await fetch('https://api.pluggy.ai/auth', {
           method: 'POST',
           headers: {
@@ -588,6 +656,7 @@ const loginApp = async (login, password) => {
         throw error
       }
 
+      // ===== LOAD OPTIONS AND GROUPS =====
       const opt = await loadOptions()
       localStorage.setItem('options', JSON.stringify(opt))
       
@@ -595,6 +664,9 @@ const loginApp = async (login, password) => {
       localStorage.setItem('groupsStorage', JSON.stringify(gru))
       localStorage.setItem('groupCode', gru[0].CODIGOGRUPO)
       localStorage.setItem('cnpj', 'todos')
+      
+      // ===== SET SIGNED IN STATE LAST =====
+      // This triggers navigation to dashboard after all preferences are applied
       setIsSignedIn(true)
     }
   } catch (error) {
@@ -3762,6 +3834,10 @@ const exportCredits = (data) => {
 		userImg, setUserImg,
     currentLogo, currentContext,
     theme, toggleTheme,  // ADDED THEME AND TOGGLE THEME
+    userPreferences,
+    currentTheme,
+    loadUserPreferences,
+
 
 		// Dashboard //
 		
