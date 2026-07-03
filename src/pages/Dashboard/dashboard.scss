@@ -245,7 +245,7 @@
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 
         &:hover {
-          transform: translateY(-3px);
+          //transform: translateY(-3px);
           box-shadow: 0 6px 16px rgba(153, 204, 51, 0.2);
           background: linear-gradient(135deg, var(--background-color) 0%, rgba(153, 204, 51, 0.05) 100%);
         }

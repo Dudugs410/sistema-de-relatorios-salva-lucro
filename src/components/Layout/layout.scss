@@ -89,3 +89,30 @@ img.img-header:hover{
     top: 0;
     z-index: 10;
   }
+
+// ===== RESPONSIVE STYLES =====
+// Ensure the sidebar background works the same on all screen sizes
+
+@media screen and (max-width: 768px) {
+  .sidebar-content {
+    // Ensure the pseudo-element still works on mobile
+    &::before {
+      background-image: url("../../assets/financ.jpg");
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-blend-mode: multiply;
+      background-color: var(--primary-color);
+      filter: brightness(0.7);
+    }
+  }
+  
+  .navbar-title > img {
+    width: 120px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .navbar-title > img {
+    width: 100px;
+  }
+}
