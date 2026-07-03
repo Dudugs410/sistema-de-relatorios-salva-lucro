@@ -22,8 +22,15 @@
     padding: 8px;
 }
 
-.navbar-title>img{
+.navbar-title > img {
     width: 160px;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+    
+    &:hover {
+      opacity: 1;
+      cursor: pointer !important;
+    }
 }
 
 img.img-header:hover{
@@ -32,11 +39,31 @@ img.img-header:hover{
   
   .sidebar-content {
     flex-shrink: 0;
-    background-image: url("../../assets/financ.jpg");
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-blend-mode: multiply;
-    background-color: var(--header-bg);
+    position: relative;
+    overflow: hidden;
+    
+    // Pseudo-element for the background image with darkening
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url("../../assets/financ.jpg");
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-blend-mode: multiply;
+      background-color: var(--primary-color);
+      filter: brightness(0.7);
+      z-index: 0;
+    }
+    
+    // Ensure all children appear above the background
+    > * {
+      position: relative;
+      z-index: 1;
+    }
   }
   
   .column-container {
@@ -62,4 +89,3 @@ img.img-header:hover{
     top: 0;
     z-index: 10;
   }
-  
