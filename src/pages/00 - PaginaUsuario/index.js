@@ -49,6 +49,7 @@ const Usuario = () => {
   const user = JSON.parse(localStorage.getItem('user')) || {}
   const currentUserId = user?.CODIGO || user?.USUCODIGO
   const isSpecialUser = currentUserId === SPECIAL_USER_ID
+  // This should come from the user's group, not from preferences
   const identidadeVisual = user?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro'
 
   // Get selectable icons based on user's role
@@ -57,10 +58,11 @@ const Usuario = () => {
   const secretIcons = getSecretIcons()
   const isAdmin = user?.ADMIN === true || user?.role === 'admin' || user?.tipo === 'admin' || user?.GRUPO?.NOME === 'ADMINISTRADORES'
 
-  // Set default icon based on user's visual identity
+  // Set default icon based on user's visual identity (from GRUPO)
   useEffect(() => {
     const defaultIconData = getUserDefaultIcon(identidadeVisual)
     setDefaultIcon(defaultIconData)
+    console.log('📌 Default icon set from IDENTIDADEVISUAL:', identidadeVisual, defaultIconData)
   }, [identidadeVisual])
 
   // Get default icon path for fallback
@@ -772,7 +774,6 @@ const Usuario = () => {
                               <img src={defaultIcon.path} alt={defaultIcon.name} className="icon-image" />
                             </div>
                             <span className="icon-name">{defaultIcon.name}</span>
-                            {/*<span className="icon-description">{defaultIcon.description}</span>*/}
                             {isCurrentIcon(defaultIcon) && !selectedIcon && <span className="current-badge">Atual</span>}
                             {isIconSelected(defaultIcon) && <span className="temp-badge">Selecionado</span>}
                             {isIconPending(defaultIcon) && <span className="pending-badge">Pendente</span>}
