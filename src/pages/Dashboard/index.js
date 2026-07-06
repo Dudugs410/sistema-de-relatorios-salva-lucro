@@ -280,7 +280,7 @@ const Dashboard = () => {
             </div>
             <div className="card-title">Créditos</div>
             <div className="card-value currency-value money">
-              {formatCurrency(creditsDashboard?.totalCreditsToday) || 'R$ 0,00'}
+              {formatCurrency(creditsDashboard?.totalCreditsNext5) || 'R$ 0,00'}
             </div>
           </div>
           
