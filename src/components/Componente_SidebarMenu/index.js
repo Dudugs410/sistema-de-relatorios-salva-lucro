@@ -359,9 +359,6 @@ const Sidebar = () => {
                     </div>
                     <div className="loading-placeholder text-center p-4">
                         Carregando menu...
-                        <button onClick={testDirectFetch} style={{marginLeft: '10px'}}>
-                            Test Fetch
-                        </button>
                     </div>
                 </div>
             </>

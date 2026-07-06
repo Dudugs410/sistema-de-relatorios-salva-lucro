@@ -293,7 +293,7 @@ const Dashboard = () => {
             </div>
             <div className="card-title">Serviços</div>
             <div className="card-value currency-value money">
-              {formatCurrency(servicesDashboard?.totalServicesToday) || 'R$ 0,00'}
+              {formatCurrency(servicesDashboard?.totalServicesMonth) || 'R$ 0,00'}
             </div>
           </div>
         </div>
