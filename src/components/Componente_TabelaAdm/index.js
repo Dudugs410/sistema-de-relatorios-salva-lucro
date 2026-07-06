@@ -61,7 +61,7 @@ export default function TabelaGenericaAdm({ Array: dataArray, textColor }) {
                 const finalColorClass = textColor || 'green-global'
                 
                 return (
-                  <tr key={elemento?.id || index}>
+                  <tr key={elemento?.id || index} className='det-tr-global'>
                     <td className='det-td-global det-vendas-global' data-label="Adquirente">
                       {adminName}
                     </td>

@@ -1,5 +1,18 @@
 @import '../../styles/styles.scss';
 
+:root {
+  --table-header-bg: #f8f9fa;
+  --table-header-color: #212529;
+  --table-border: transparent;
+  --table-hover: rgba(0, 123, 255, 0.08);
+  --table-hover-color: #212529;
+  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --text-muted: #6c757d;
+  --success-color: var(--secondary-color);
+  --danger-color: #dc3545;
+}
+
 .vendas-container{
     height: 100%;
     background-color: white;
@@ -76,7 +89,7 @@
 .thead-admin{
     color: white;
     text-align: center;
-    border-bottom: solid white 1px;
+    border-bottom: none;
     width: 100%;
     border-radius: 20px;
     padding: 10px;
@@ -94,16 +107,16 @@
     align-items: center;
 }
 
-.det-tr-top{
+.det-tr-top-global {
     position: sticky;
     top: 0;
-    color: white;
+    background: var(--primary-color) !important;
+    color: white !important;
     text-align: center;
-    border-bottom: solid white 1px;
+    border-bottom: none;
     width: 100%;
     border-radius: 20px;
     padding: 10px;
-    background-color: var(--primary-color);
 }
 
 .det-td--top{
@@ -145,19 +158,136 @@
 }
 
 .span-table-servicos-green{
-    color: rgb(0, 204, 0);
+    color: var(--success-color);
     font-weight: bold;
 }
 
-// Mobile responsive styles
+.green-global {
+    color: var(--success-color) !important;
+    font-weight: 600;
+}
+
+.red-global {
+    color: var(--danger-color) !important;
+    font-weight: 600;
+}
+
+// Table styles matching NewTabelaGenerica - NO BORDERS
+.table-responsive-md {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 0.5rem;
+    background: var(--background-color);
+}
+
+.det-table-global {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--background-color);
+    margin-bottom: 0;
+    border: none !important;
+    
+    .det-tr-top-global {
+        background: var(--primary-color) !important;
+        border: none !important;
+        
+        .det-td-global {
+            padding: 1rem 0.75rem;
+            font-weight: 600;
+            color: white !important;
+            border: none !important;
+            white-space: nowrap;
+            
+            &:first-child {
+                border-top-left-radius: 0.5rem;
+            }
+            
+            &:last-child {
+                border-top-right-radius: 0.5rem;
+            }
+        }
+    }
+    
+    .det-tr-global {
+        transition: all 0.2s ease;
+        border: none !important;
+        background: var(--background-color);
+        
+        &:hover {
+            background-color: var(--table-hover, rgba(0, 123, 255, 0.08)) !important;
+            
+            .det-td-global {
+                color: var(--secondary-color) !important;
+            }
+        }
+        
+        &:nth-child(even) {
+            background-color: var(--table-stripe-color, rgba(0, 0, 0, 0.02));
+        }
+        
+        .det-td-global {
+            padding: 0.875rem 0.75rem;
+            color: var(--font-color) !important;
+            vertical-align: middle;
+            background: transparent !important;
+            border: none !important;
+            
+            &:first-child {
+                border-left: none !important;
+            }
+            
+            &:last-child {
+                border-right: none !important;
+            }
+        }
+    }
+}
+
+// Striped rows - theme aware
+[data-theme="light"] {
+    .det-tr-global:nth-child(even) {
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+    
+    .det-tr-global:hover {
+        background-color: rgba(0, 123, 255, 0.08) !important;
+    }
+}
+
+[data-theme="dark"] {
+    .det-tr-global:nth-child(even) {
+        background-color: rgba(255, 255, 255, 0.03);
+    }
+    
+    .det-tr-global:hover {
+        background-color: rgba(153, 204, 51, 0.08) !important;
+    }
+}
+
 .tabela-generica-container {
     width: 100%;
     overflow-x: auto;
 }
 
-.table-responsive-md {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+// Scrollbar styling matching NewTabelaGenerica
+.table-responsive-md::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-responsive-md::-webkit-scrollbar-track {
+    background: var(--table-header-bg, #f8f9fa);
+    border-radius: 4px;
+}
+
+.table-responsive-md::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 4px;
+    
+    &:hover {
+        background: var(--primary-color);
+        filter: brightness(0.9);
+    }
 }
 
 @media screen and (max-width: 869px){
@@ -198,9 +328,9 @@
         white-space: nowrap;
     }
 
-    .thead-global th {
-        font-size: 0.8rem;
+    .det-tr-top-global .det-td-global {
         padding: 0.5rem 0.25rem;
+        font-size: 0.8rem;
     }
 }
 
@@ -213,7 +343,7 @@
         padding: 0.375rem 0.125rem;
     }
 
-    .thead-global th {
+    .det-tr-top-global .det-td-global {
         font-size: 0.75rem;
         padding: 0.375rem 0.125rem;
     }
