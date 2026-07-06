@@ -282,6 +282,12 @@ const Vendas = () =>{
   const [runTutorial, setRunTutorial] = useState(false)
   const [tutorialSteps, setTutorialSteps] = useState([
     {
+      target: '[data-tour="bandeiraadquirente-section"]',
+      content: 'Selecione os filtros desejados para o relatório.',
+      disableBeacon: true,
+      placement: 'bottom',
+    },
+    {
       target: '[data-tour="calendario-section"]',
       content: 'Clique duas vezes em uma data para selecioná-la, ou uma vez em uma data inicial e uma vez em uma data final para selecionar o período começando e terminando nas datas selecionadas.',
       disableBeacon: true,
@@ -340,6 +346,12 @@ const Vendas = () =>{
       setTutorialSteps(newSteps);
     } else {
       setTutorialSteps([
+        {
+          target: '[data-tour="bandeiraadquirente-section"]',
+          content: 'Selecione os filtros desejados para o relatório.',
+          disableBeacon: true,
+          placement: 'bottom',
+        },
         {
           target: '[data-tour="calendario-section"]',
           content: 'Clique duas vezes em uma data para selecioná-la, ou uma vez em uma data inicial e uma vez em uma data final para selecionar o período começando e terminando nas datas selecionadas.',

@@ -233,6 +233,12 @@ const Creditos = () => {
   const [runTutorial, setRunTutorial] = useState(false)
   const [tutorialSteps, setTutorialSteps] = useState([
     {
+      target: '[data-tour="select-container-calendario"]',
+      content: 'Selecione os filtros desejados para o relatório.',
+      disableBeacon: true,
+      placement: 'bottom'
+    },
+    {
       target: '[data-tour="calendario-section"]',
       content: 'Clique duas vezes em uma data para selecioná-la, ou uma vez em uma data inicial e uma vez em uma data final para selecionar o período começando e terminando nas datas selecionadas.',
       disableBeacon: true,
@@ -278,6 +284,12 @@ const Creditos = () => {
       setTutorialSteps(stepsTemp)
     } else {
       setTutorialSteps([
+        {
+          target: '[data-tour="select-container-calendario"]',
+          content: 'Selecione os filtros desejados para o relatório.',
+          disableBeacon: true,
+          placement: 'bottom'
+        },
         {
           target: '[data-tour="calendario-section"]',
           content: 'Clique duas vezes em uma data para selecioná-la, ou uma vez em uma data inicial e uma vez em uma data final para selecionar o período começando e terminando nas datas selecionadas.',
@@ -353,7 +365,7 @@ const Creditos = () => {
                     />
                   )}
                   
-                  <div className='select-container-calendario'>
+                  <div className='select-container-calendario' data-tour="select-container-calendario">
                     <div className='select-wrapper'>
                       <h5>Adquirente</h5>
                       <Select
@@ -447,7 +459,12 @@ const Creditos = () => {
             ) : null}
             <button
               className='btn btn-success-dados btn-tutorial px-2 py-1'
-              onClick={() => setRunTutorial(true)}
+              onClick={() => {
+                setRunTutorial(false);
+                setTimeout(() => {
+                  setRunTutorial(true);
+                }, 50);
+              }}
               style={{
                 position: 'relative',
                 bottom: '0px',
