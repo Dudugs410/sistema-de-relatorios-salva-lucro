@@ -269,6 +269,7 @@ const Dashboard = () => {
             <div className="card-value currency-value money">
               {formatCurrency(salesDashboard?.totalMonth) || 'R$ 0,00'}
             </div>
+            <div className="card-subtitle">Total de vendas do mês</div>
           </div>
           
           <div 
@@ -282,6 +283,7 @@ const Dashboard = () => {
             <div className="card-value currency-value money">
               {formatCurrency(creditsDashboard?.totalCreditsNext5) || 'R$ 0,00'}
             </div>
+            <div className="card-subtitle">Previsão de créditos para os próximos 5 dias</div>
           </div>
           
           <div 
@@ -295,6 +297,7 @@ const Dashboard = () => {
             <div className="card-value currency-value money">
               {formatCurrency(servicesDashboard?.totalServicesMonth) || 'R$ 0,00'}
             </div>
+            <div className="card-subtitle">Total de serviços do mês</div>
           </div>
         </div>
 
