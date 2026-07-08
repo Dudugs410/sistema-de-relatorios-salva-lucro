@@ -53,11 +53,14 @@
 }
 
 .select-card-seletor-display{
+    display: flex;
     width: 100%;
-    white-space: nowrap
+    white-space: nowrap;
+    justify-content: flex-end;
 }
 
 .select-card-seletor-btn-container{
+    width: 100%;
     display: inline-flex;
     gap: 5px;
     justify-content: flex-end;
