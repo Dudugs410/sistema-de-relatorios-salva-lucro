@@ -23,11 +23,12 @@
     padding: 1.5em 1em;
     align-items: center;
     justify-content: space-between;
-    flex-wrap: wrap;
 }
 
 .grupo-cli-content{
-
+    display: flex;
+    width: 100%;
+    justify-content: center;
 }
 
 .gru-cli-inner-container{
@@ -52,14 +53,14 @@
 }
 
 .select-card-seletor-display{
-    //max-width: 250px;
+    width: 100%;
     white-space: nowrap
 }
 
 .select-card-seletor-btn-container{
-    display: inline-flex
-;
+    display: inline-flex;
     gap: 5px;
+    justify-content: flex-end;
 }
 
 .btn-success-dados{
@@ -75,8 +76,16 @@
 }
 
 @media only screen and (max-width: 630px){
+    .grupo-cli-content{
+        width: 100%
+    }
+
+    .select-card-seletor-btn-container{
+        width: 100% !important;
+    }
+
     .grupo-cli-container{
-        width: 80%;
+        width: 100%;
         display: flex;
         flex-direction: column;
         padding: 1.5em 1em;

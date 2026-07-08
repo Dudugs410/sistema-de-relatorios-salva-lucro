@@ -35,14 +35,14 @@
       }
 
       &:hover {
-        transform: translateY(-5px);
+        //transform: translateY(-5px);
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
         border-color: var(--secondary-color) !important;
       }
 
       &.active {
         border-color: var(--secondary-color) !important;
-        transform: translateY(-5px);
+        //transform: translateY(-5px);
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         background: linear-gradient(135deg, var(--background-color) 0%, rgba(153, 204, 51, 0.05) 100%);
 
