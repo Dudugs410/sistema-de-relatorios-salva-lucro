@@ -162,7 +162,7 @@ const DadosGrupoCliente = () => {
                 <button 
                   type='button' 
                   data-tour="trocar-section" 
-                  className='btn btn-success-dados px-2 py-1' 
+                  className='btn-global' 
                   onClick={() => { setModalOpen(true) }} 
                   disabled={fetchingData}
                 >

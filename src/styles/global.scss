@@ -1,4 +1,3 @@
-
 @import './variables';
 
 html {
@@ -153,6 +152,194 @@ html.preload-transitions * {
 
 ///Botões
 
+// ===== STANDARDIZED BUTTON CLASS =====
+// Use this class for all buttons throughout the app
+.btn-standard {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 2.5em;
+    padding: 0 20px;
+    border-radius: 10px;
+    font-weight: 500;
+    font-size: 14px;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid var(--secondary-color);
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+    white-space: nowrap;
+    user-select: none;
+    min-width: 100px;
+    
+    // Hover state
+    &:hover:not(:disabled) {
+        background-color: var(--primary-color);
+        color: var(--secondary-color);
+        //transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(var(--primary-color-rgb, 10, 61, 112), 0.3);
+    }
+    
+    // Active/Click state
+    &:active:not(:disabled) {
+        transform: translateY(0);
+        box-shadow: 0 2px 6px rgba(var(--primary-color-rgb, 10, 61, 112), 0.2);
+    }
+    
+    // Disabled state
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+    
+    // Focus state for accessibility
+    &:focus-visible {
+        outline: 3px solid var(--secondary-color);
+        outline-offset: 2px;
+    }
+    
+    // Variants
+    &.btn-primary {
+        background-color: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+        
+        &:hover:not(:disabled) {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            border-color: var(--secondary-color);
+        }
+    }
+    
+    &.btn-outline {
+        background-color: transparent;
+        color: var(--secondary-color);
+        border-color: var(--secondary-color);
+        
+        &:hover:not(:disabled) {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+        }
+    }
+    
+    &.btn-danger {
+        background-color: #dc3545;
+        color: white;
+        border-color: #dc3545;
+        
+        &:hover:not(:disabled) {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+    }
+    
+    &.btn-success {
+        background-color: var(--secondary-color);
+        color: var(--primary-color);
+        border-color: var(--secondary-color);
+        
+        &:hover:not(:disabled) {
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+        }
+    }
+    
+    // Size variants
+    &.btn-sm {
+        height: 2em;
+        padding: 0 14px;
+        font-size: 12px;
+        min-width: 70px;
+    }
+    
+    &.btn-lg {
+        height: 3em;
+        padding: 0 28px;
+        font-size: 16px;
+        min-width: 140px;
+    }
+    
+    // Icon-only buttons
+    &.btn-icon {
+        min-width: 2.5em;
+        padding: 0;
+        width: 2.5em;
+        border-radius: 50%;
+    }
+}
+
+// ===== Mobile Responsive Button Sizes =====
+@media screen and (max-width: 768px) {
+    .btn-standard {
+        height: 3em; // Bigger on mobile
+        padding: 0 24px;
+        font-size: 16px;
+        min-width: 120px;
+        border-radius: 12px;
+        
+        // Touch-friendly spacing
+        &:hover:not(:disabled) {
+            transform: translateY(-1px);
+        }
+        
+        // Size variants on mobile
+        &.btn-sm {
+            height: 2.5em;
+            padding: 0 18px;
+            font-size: 14px;
+            min-width: 90px;
+        }
+        
+        &.btn-lg {
+            height: 3.5em;
+            padding: 0 32px;
+            font-size: 18px;
+            min-width: 160px;
+        }
+        
+        &.btn-icon {
+            min-width: 3em;
+            width: 3em;
+            height: 3em;
+        }
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .btn-standard {
+        height: 3.2em; // Even bigger on very small screens
+        padding: 0 20px;
+        font-size: 15px;
+        min-width: 100px;
+        border-radius: 14px;
+        
+        &.btn-sm {
+            height: 2.8em;
+            padding: 0 16px;
+            font-size: 13px;
+            min-width: 80px;
+        }
+        
+        &.btn-lg {
+            height: 3.8em;
+            padding: 0 28px;
+            font-size: 17px;
+            min-width: 140px;
+        }
+        
+        &.btn-icon {
+            min-width: 3.2em;
+            width: 3.2em;
+            height: 3.2em;
+        }
+    }
+}
+
+// ===== LEGACY BUTTON CLASSES (keep for backward compatibility) =====
 .btn-global{
     width: 30%;
     display: flex;
@@ -163,11 +350,67 @@ html.preload-transitions * {
     border-radius: 10px;
     font-weight: 200;
     align-items: center;
-
     border: solid var(--secondary-color) 1px;
     background-color: var(--secondary-color);
-    color:var(--primary-color);
+    color: var(--primary-color);
+    transition: all 0.3s ease;
+    padding: 0 16px;
+    gap: 8px;
+    
+    &:hover:not(:disabled) {
+        background-color: var(--primary-color);
+        color: var(--secondary-color);
+        translate: 0 !important;
+        border-color: solid var(--secondary-color) 1px;
+    }
+    
+    &:active:not(:disabled) {
+        transform: scale(1);
+        transform: translateY(0) !important;
+    }
+    
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+}
 
+// Mobile responsive - full width with better styling
+@media screen and (max-width: 768px) {
+    .btn-global {
+        width: 100% !important;
+        max-width: none !important;
+        height: 3.2em;
+        padding: 0 24px;
+        font-size: 16px;
+        border-radius: 12px;
+        font-weight: 600;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        border-width: 2px;
+        
+        &:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+        
+        &:active:not(:disabled) {
+            transform: scale(0.96);
+        }
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .btn-global {
+        height: 3.5em;
+        font-size: 15px;
+        border-radius: 14px;
+        padding: 0 20px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
+        
+        &:active:not(:disabled) {
+            transform: scale(0.94);
+        }
+    }
 }
 
 .btn-global .btn.disabled, .btn:disabled{
