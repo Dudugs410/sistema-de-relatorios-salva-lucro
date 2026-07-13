@@ -30,7 +30,7 @@
     width: 60px;
     height: 60px;
     border: 5px solid rgba(0, 0, 139, 0.1); /* Light version of primary */
-    border-top: 5px solid var(--primary-color); /* Primary color */
+    border-top: 5px solid var(--secondary-color); /* Primary color */
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
     margin: 0 auto 20px;
@@ -55,7 +55,7 @@
 .loading-dots span {
     width: 12px;
     height: 12px;
-    background: var(--primary-color); /* Primary color */
+    background: var(--secondary-color); /* Primary color */
     border-radius: 50%;
     animation: bounce 1.4s ease-in-out infinite both;
 }

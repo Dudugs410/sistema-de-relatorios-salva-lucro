@@ -1,3 +1,12 @@
+/* ========== ROOT VARIABLES ========== */
+:root {
+    --primary-color: #00008B;
+    --primary-color-rgb: 0, 0, 139;
+    --primary-color-dark: #000066;
+    --secondary-color: #4a4a8a;
+    --overlay-opacity: 0.4;
+}
+
 /* ========== BASE STYLES ========== */
 .teste-bandeiras {
     border: solid red 2px;
@@ -28,7 +37,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 139, 0.4);
+    background-color: rgba(var(--primary-color-rgb), var(--overlay-opacity));
     z-index: 0;
     pointer-events: none;
 }
@@ -154,7 +163,7 @@
     border-color: var(--primary-color);
     background-color: rgba(255, 255, 255, 0.2);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 139, 0.3);
+    box-shadow: 0 6px 20px rgba(var(--primary-color-rgb), 0.3);
 }
 
 .input-login:not(:first-child) {
@@ -196,7 +205,7 @@
     text-transform: uppercase;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0, 0, 139, 0.3);
+    box-shadow: 0 4px 15px rgba(var(--primary-color-rgb), 0.3);
     border-right: solid gray 1px;
     border-left: solid gray 1px;
     border-bottom: solid gray 1px;
@@ -215,7 +224,7 @@
 
 .btn-primary:hover {
     background-color: var(--secondary-color);
-    box-shadow: 0 8px 25px rgba(0, 0, 139, 0.4);
+    box-shadow: 0 8px 25px rgba(var(--primary-color-rgb), 0.4);
 }
 
 .btn-primary:hover::before {
@@ -224,7 +233,7 @@
 
 .btn-primary:active {
     transform: translateY(0px);
-    box-shadow: 0 2px 10px rgba(0, 0, 139, 0.3);
+    box-shadow: 0 2px 10px rgba(var(--primary-color-rgb), 0.3);
 }
 
 .btn-primary:disabled {
