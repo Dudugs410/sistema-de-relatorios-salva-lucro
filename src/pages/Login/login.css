@@ -182,7 +182,7 @@
 
 /* ========== BUTTON ========== */
 .btn-primary {
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-color-dark));
+    background: var(--primary-color);
     color: white;
     border: none;
     padding: 14px;
@@ -197,6 +197,9 @@
     position: relative;
     overflow: hidden;
     box-shadow: 0 4px 15px rgba(0, 0, 139, 0.3);
+    border-right: solid gray 1px;
+    border-left: solid gray 1px;
+    border-bottom: solid gray 1px;
 }
 
 .btn-primary::before {
@@ -211,7 +214,7 @@
 }
 
 .btn-primary:hover {
-    transform: translateY(-3px);
+    background-color: var(--secondary-color);
     box-shadow: 0 8px 25px rgba(0, 0, 139, 0.4);
 }
 
