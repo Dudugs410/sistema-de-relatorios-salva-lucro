@@ -52,11 +52,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 4px 0 0 4px;
     box-shadow: -5px 0 30px rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-left: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: none;
+    border-bottom: none;
 }
 
 /* ========== FORM ========== */
@@ -334,11 +335,12 @@
     .form-wrapper {
         width: 500px;
         max-width: 90%;
-        border-radius: 12px;
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.1);
+        border-top: none;
+        border-bottom: none;
     }
 
     .img-login {
@@ -359,12 +361,13 @@
         max-width: 400px;
         height: auto;
         padding: 20px;
-        border-radius: 12px;
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
         margin: 20px;
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.1);
+        border-top: none;
+        border-bottom: none;
     }
 
     .form-login {
@@ -416,6 +419,8 @@
         width: 98%;
         padding: 15px;
         margin: 10px;
+        border-top: none;
+        border-bottom: none;
     }
 
     .form-login {
