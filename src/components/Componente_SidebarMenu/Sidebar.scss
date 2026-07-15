@@ -8,6 +8,19 @@
   -webkit-mask-position: center;
 }
 
+.tenant-label-sidebar {
+  display: block;
+  font-size: 10px;
+  color: #6c757d;
+  text-align: center;
+  padding: 4px 0;
+  margin-top: -8px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
 .sidebar {
     width: 10%;
     min-width: 200px;

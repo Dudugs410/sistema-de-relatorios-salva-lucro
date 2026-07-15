@@ -1,3 +1,4 @@
+// App.js
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'react-icons'
 import AuthProvider from './contexts/auth'
@@ -15,6 +16,7 @@ import { AuthContext } from './contexts/auth'
 import { useUserPreferences } from './hooks/useUserPreferences/useUserPreferences'
 
 import { getIconPathByCode, getDefaultIconByVisualIdentity } from './util/iconRegistry'
+import { getTenantFromURL } from './util/tenant';
 
 initializeContext()
 
@@ -30,7 +32,6 @@ function PreferenceLoader({ children }) {
       const userId = localStorage.getItem('userID')
       const storedIsSignedIn = localStorage.getItem('isSignedIn') === 'true'
       
-      // Check if user is actually logged in
       const isLoggedIn = token && userId && (isSignedIn === true || storedIsSignedIn === true)
       
       if (isLoggedIn) {
@@ -41,18 +42,15 @@ function PreferenceLoader({ children }) {
         if (prefs && setUserImg) {
           console.log('✅ Preferences loaded on refresh:', prefs)
           
-          // Apply color scheme to document
           if (prefs.ESQUEMACORES) {
             document.documentElement.setAttribute('data-context', prefs.ESQUEMACORES)
           }
           
-          // Apply theme to document
           if (prefs.TEMA !== undefined) {
             const themeValue = prefs.TEMA === true || prefs.TEMA === 'true'
             document.documentElement.setAttribute('data-theme', themeValue ? 'dark' : 'light')
           }
           
-          // Apply icon to header
           if (prefs.ICONE && setUserImg) {
             const iconPath = getIconPathByCode(prefs.ICONE)
             console.log('🖼️ Setting userImg from refresh to code:', prefs.ICONE)
@@ -60,7 +58,6 @@ function PreferenceLoader({ children }) {
             localStorage.setItem('userIconCode', prefs.ICONE)
           }
         } else if (setUserImg) {
-          // No preferences found, set default icon based on user's visual identity
           console.log('📝 No preferences found on refresh, setting default icon')
           const userData = JSON.parse(localStorage.getItem('user'))
           const identidadeVisual = userData?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro'
@@ -69,15 +66,16 @@ function PreferenceLoader({ children }) {
         }
       } else {
         console.log('🔒 No user logged in, skipping preference loading')
-        // Set default theme for login page
-        document.documentElement.setAttribute('data-context', 'salvalucro')
+        // Set default theme for login page based on tenant
+        const tenant = getTenantFromURL();
+        document.documentElement.setAttribute('data-context', tenant.contextKey || 'SL');
         document.documentElement.setAttribute('data-theme', 'light')
       }
       setPreferencesLoaded(true)
     }
     
     loadPreferencesFromAPI()
-  }, []) // Run ONCE on mount, not on isSignedIn changes
+  }, [])
 
   if (!preferencesLoaded) {
     return null
@@ -157,6 +155,19 @@ function AppContent() {
 }
 
 function App() {
+  // Detecta o tenant para definir o basename dinamicamente
+  const [basename, setBasename] = useState('/salvalucro3');
+
+  useEffect(() => {
+    const tenant = getTenantFromURL();
+    // O basename deve ser o caminho do tenant
+    if (tenant) {
+      setBasename(`/${tenant.path}`);
+    }
+    
+    console.log('🏷️ Basename definido:', basename);
+  }, []);
+
   useEffect(() => {
     const handlePageHide = () => {
       const sensitiveData = ['token', 'refreshToken', 'user']
@@ -168,7 +179,7 @@ function App() {
   }, [])
 
   return (
-    <BrowserRouter basename='/salvalucro3'>
+    <BrowserRouter basename={basename}>
       <AppContent />
     </BrowserRouter>
   )

@@ -1,98 +1,134 @@
-import React, { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
-import { AuthContext } from "../../contexts/auth"
-import salvaLucroLogo from '../../assets/LogoTopo.png'
-import sifraLogo from '../../assets/logoSifra.png'
-import mgLogo from '../../assets/logoMG.png'
-import './login.css'
-import { useContext } from "react"
-import LoadingModal from "./LoadingModal"
-import ContextSelector from "../../components/ContextSelector"
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../contexts/auth";
+import { getCurrentTenant, getTenantFromURL, getLogoByContext } from '../../util/tenant';
+import './login.css';
+import { useContext } from "react";
+import LoadingModal from "./LoadingModal";
 
 const Login = () => {
     const {
         loginApp,
         isSignedIn,
         setIsSignedIn,
-    } = useContext(AuthContext)
-    const navigate = useNavigate()
+    } = useContext(AuthContext);
+    const navigate = useNavigate();
 
-    const [login, setLogin] = useState('')
-    const [password, setPassword] = useState('')
-    const [loading, setLoading] = useState(false)
-    const [currentLogo, setCurrentLogo] = useState(salvaLucroLogo)
+    const [login, setLogin] = useState('');
+    const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [currentLogo, setCurrentLogo] = useState(null);
+    const [tenantInfo, setTenantInfo] = useState(null);
 
-    // Function to get logo based on context
-    const getLogoByContext = () => {
-        const context = localStorage.getItem('selectedContext') || 'SL';
-        switch(context) {
-            case 'Sifra':
-                return sifraLogo;
-            case 'MG':
-                return mgLogo;
-            case 'SL':
-                return salvaLucroLogo
-            case '':
-                return salvaLucroLogo
-            default:
-                return salvaLucroLogo;
+    // Função para carregar o tenant e logo
+    const loadTenant = () => {
+        // Tenta pegar o contexto do localStorage (para compatibilidade)
+        const savedContext = localStorage.getItem('selectedContext');
+        let logo;
+        
+        if (savedContext) {
+            // Se tem contexto salvo, usa ele
+            logo = getLogoByContext(savedContext);
+            console.log('🖼️ Logo carregada do contexto salvo:', savedContext);
+        } else {
+            // Senão, detecta da URL
+            const tenant = getTenantFromURL();
+            setTenantInfo(tenant);
+            logo = tenant.logo;
+            // Salva o contexto para consistência
+            localStorage.setItem('selectedContext', tenant.contextKey);
+            console.log('🖼️ Logo carregada da URL:', tenant.contextKey);
         }
-    }
+        
+        setCurrentLogo(logo);
+        
+        // Aplica o contexto no DOM
+        const contextToApply = savedContext || (tenantInfo?.contextKey) || 'SL';
+        document.documentElement.setAttribute('data-context', contextToApply);
+    };
 
     // Listen for context changes
     useEffect(() => {
-        const handleContextChange = () => {
-            setCurrentLogo(getLogoByContext());
+        const handleContextChange = (event) => {
+            console.log('🔄 Contexto alterado, recarregando logo...');
+            loadTenant();
         };
+
+        // Carrega logo inicial
+        loadTenant();
 
         window.addEventListener('contextChange', handleContextChange);
         
-        // Set initial logo
-        setCurrentLogo(getLogoByContext());
-
         return () => {
             window.removeEventListener('contextChange', handleContextChange);
         };
     }, []);
 
-    useEffect(()=>{
-        if(localStorage.getItem('isSignedIn')){
-            setIsSignedIn(JSON.parse(localStorage.getItem('isSignedIn')))
+    useEffect(() => {
+        if (localStorage.getItem('isSignedIn')) {
+            setIsSignedIn(JSON.parse(localStorage.getItem('isSignedIn')));
         }
-    },[])
+    }, []);
 
-    useEffect(()=>{
-        if(isSignedIn === true){
-            const path = localStorage.getItem('currentPath')
-            if(path !== '/'){
-                navigate(`/${path}`)
+    useEffect(() => {
+        if (isSignedIn === true) {
+            const path = localStorage.getItem('currentPath');
+            if (path !== '/') {
+                navigate(`/${path}`);
             }
         }
-    },[isSignedIn])
+    }, [isSignedIn]);
 
-    async function handleLogin(e){
-        e.preventDefault()
-        setLoading(true)
-        await loginApp(login, password)
-        setLoading(false)
+    async function handleLogin(e) {
+        e.preventDefault();
+        setLoading(true);
+        await loginApp(login, password);
+        setLoading(false);
+    }
+
+    // Se logo ainda não carregou, mostra placeholder
+    if (!currentLogo) {
+        return <div>Carregando...</div>;
     }
 
     return(
         <div className='appPage'>
-            {/*<ContextSelector/>*/}
             <div className='body-login'> 
-                {/* Background overlay */}
                 <div className='bg-login'></div>
                 
-                {/* Form wrapper with 10% white background */}
                 <div className='form-wrapper'>
                     <form type='submit' className='form-login' onSubmit={handleLogin}>
-                        {/*<img className='img-login' src={currentLogo} alt='logo' />*/}
+                        <img 
+                            className='img-login' 
+                            src={currentLogo} 
+                            alt='logo' 
+                            onError={(e) => {
+                                console.error('❌ Erro ao carregar logo:', currentLogo);
+                                // Fallback para logo padrão
+                                e.target.src = require('../../assets/LogoTopo.png');
+                            }}
+                        />
                         <div className='input-container-login'>
-                            <input id='login' className='input-login' type='text' placeholder='usuário' value={login} autoComplete="username" onChange={(e) => setLogin(e.target.value)}/>
-                            <input id='senha' className='input-login' type='password' placeholder='senha' value={password} autoComplete="current-password" onChange={(e) => setPassword(e.target.value)}/>
+                            <input 
+                                id='login' 
+                                className='input-login' 
+                                type='text' 
+                                placeholder='usuário' 
+                                value={login} 
+                                autoComplete="username" 
+                                onChange={(e) => setLogin(e.target.value)}
+                            />
+                            <input 
+                                id='senha' 
+                                className='input-login' 
+                                type='password' 
+                                placeholder='senha' 
+                                value={password} 
+                                autoComplete="current-password" 
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
                             <hr className='hr-global' />
-                            { !loading ? 
+                            {!loading ? 
                                 <button type='submit' className='btn btn-primary'>Login</button> : 
                                 <button type='submit' className='btn btn-primary' disabled>Login</button>
                             }
@@ -100,9 +136,9 @@ const Login = () => {
                     </form>
                 </div>
             </div>
-            { loading ? <LoadingModal/> : <></>}
+            {loading && <LoadingModal />}
         </div>
-    )
-}
+    );
+};
 
-export default Login
+export default Login;

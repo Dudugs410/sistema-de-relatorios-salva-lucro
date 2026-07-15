@@ -3,8 +3,9 @@ import Layout from '../components/Layout'
 import { AuthContext } from '../contexts/auth'
 import { useUserActivity } from '../util/userActivity'
 import ModalUserActivity from '../components/ModalUserActivity'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import jwtDecode from 'jwt-decode'
+import { getTenantFromURL } from '../util/tenant'
 
 export default function Private({ children }) {
   const { logout, refreshSession } = useContext(AuthContext)
@@ -12,6 +13,8 @@ export default function Private({ children }) {
   const [isTokenValid, setIsTokenValid] = useState(null)
 
   const navigate = useNavigate()
+  const location = useLocation()
+  const tenant = getTenantFromURL()
 
   const validateToken = (token) => {
     try {
@@ -37,40 +40,78 @@ export default function Private({ children }) {
   useEffect(() => {
     const token = localStorage.getItem('token');
     const isSignedIn = localStorage.getItem('isSignedIn') === 'true';
+    const currentPath = location.pathname;
+    
+    console.log('🔐 Private - Verificando autenticação:', { 
+      isSignedIn, 
+      hasToken: !!token, 
+      currentPath,
+      tenant: tenant?.contextKey 
+    });
     
     if (isSignedIn && (!token || !validateToken(token))) {
-      console.log('Token invalid or expired, logging out');
+      console.log('❌ Token inválido ou expirado, fazendo logout');
       logout();
-      navigate('/');
+      // Redireciona para login mantendo o tenant
+      navigate('/login');
       return;
     }
     
     if (!isSignedIn) {
-      navigate('/');
+      console.log('🔒 Usuário não autenticado, redirecionando para login');
+      // Salva a rota atual para redirecionar após login
+      if (currentPath !== '/login' && currentPath !== '/') {
+        sessionStorage.setItem('currentPath', currentPath);
+      }
+      navigate('/login');
       return;
     }
     
+    // Se chegou aqui, token é válido
     setIsTokenValid(true);
-  }, [logout, navigate])
+    
+    // Se o usuário está logado e está na página de login, redireciona para dashboard
+    if (currentPath === '/login' || currentPath === '/') {
+      console.log('📊 Usuário logado na página de login, redirecionando para dashboard');
+      navigate('/dashboard');
+    }
+    
+  }, [logout, navigate, location.pathname, tenant])
 
   const stayLoggedIn = async () => {
     try {
       await refreshSession();
       setShowModal(false);
     } catch (error) {
+      console.error('Erro ao renovar sessão:', error);
       logout();
+      navigate('/login');
     }
   }
 
   const handleInactivity = () => {
+    console.log('⏰ Inatividade detectada, mostrando modal');
     setShowModal(true)
   }
 
   const handleExpiryWarning = () => {
+    console.log('⚠️ Aviso de expiração da sessão');
     setShowModal(true)
   }
 
-  useUserActivity(stayLoggedIn, handleInactivity, 10 * 60 * 1000, handleExpiryWarning)
+  // Atualiza o timeout baseado no tenant (opcional)
+  const inactivityTimeout = 10 * 60 * 1000; // 10 minutos padrão
+  // Você pode ter timeouts diferentes por tenant se quiser
+  // const inactivityTimeout = tenant?.timeout || 10 * 60 * 1000;
+
+  useUserActivity(stayLoggedIn, handleInactivity, inactivityTimeout, handleExpiryWarning)
+
+  // Função para logout com redirecionamento para tenant
+  const handleLogout = () => {
+    logout();
+    // Navega para o login do tenant atual
+    navigate('/login');
+  }
 
   if (isTokenValid === null) {
     return (
@@ -100,7 +141,7 @@ export default function Private({ children }) {
                   <button className="btn btn-global" onClick={stayLoggedIn}>
                     Sim
                   </button>
-                  <button className="btn btn-global" onClick={logout}>
+                  <button className="btn btn-global" onClick={handleLogout}>
                     Não
                   </button>
                 </div>
