@@ -7,6 +7,7 @@ import { FiFilePlus } from 'react-icons/fi'
 
 import './GerarRelatorio.scss'
 import { AuthContext } from '../../contexts/auth'
+import { toast } from 'react-toastify' // Add this import
 
 export default function GerarRelatorio({ onExport, filteredData }) {
 
@@ -277,14 +278,16 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 				document.body.removeChild(a)
 				URL.revokeObjectURL(url)
 				
-				console.log(`${format} report downloaded successfully`)
+				// Success toast message
+				toast.success(`${format} baixado com sucesso!`)
+				console.log(`${format} relatório baixado com sucesso!`)
 			} else {
 				console.error('API returned unsuccessful response:', response.data)
-				alert(response.data.mensagem || `Failed to generate ${format} report`)
+				toast.error(response.data.mensagem || `Falha ao gerar relatório ${format}`)
 			}
 		} catch (err) {
 			console.error(`Error downloading ${format} report:`, err)
-			alert(err.response?.data?.mensagem || err.message || `An error occurred while generating the ${format} report`)
+			toast.error(err.response?.data?.mensagem || err.message || `Ocorreu um erro ao gerar o relatório ${format}`)
 		} finally {
 			setDownloading(false)
 		}
@@ -293,7 +296,7 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 	// Excel download handler
 	const exportToExcel = async () => {
 		if (!tableData || tableData.length === 0) {
-			alert('Sem dados para a exportação.')
+			toast.warning('Sem dados para exportar.')
 			return
 		}
 		await downloadReport('XLSX')
@@ -302,7 +305,7 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 	// PDF download handler
 	const generatePdf = async () => {
 		if (!tableData || tableData.length === 0) {
-			alert('Sem dados para exportar')
+			toast.warning('Sem dados para exportar.')
 			return
 		}
 		await downloadReport('PDF')

@@ -192,8 +192,8 @@ const ResumoMensal = () => {
         document.body.removeChild(a)
         URL.revokeObjectURL(url)
         
-        toast.success('PDF downloaded successfully!')
-        console.log('PDF downloaded successfully')
+        toast.success('PDF baixado com sucesso!')
+        console.log('PDF baixado com sucesso!')
       } else {
         console.error('API returned unsuccessful response:', response.data)
         toast.error(response.data.mensagem || 'Failed to generate PDF report')
