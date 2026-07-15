@@ -198,8 +198,8 @@ const CreditosDataBanco = () => {
         document.body.removeChild(a)
         URL.revokeObjectURL(url)
         
-        toast.success(`${format} downloaded successfully!`)
-        console.log(`${format} downloaded successfully`)
+        toast.success(`${format} baixado com sucesso!`)
+        console.log(`${format} baixado com sucesso!`)
       } else {
         console.error('API returned unsuccessful response:', response.data)
         toast.error(response.data.mensagem || `Failed to generate ${format} report`)

@@ -233,13 +233,13 @@ const Servicos = () => {
         document.body.removeChild(a)
         URL.revokeObjectURL(url)
         
-        toast.success(`${format} report downloaded successfully!`)
+        toast.success(`Relatório ${format} baixado com sucesso!`)
       } else {
-        toast.error(response.data.mensagem || `Failed to generate ${format} report`)
+        toast.error(response.data.mensagem || `Erro ao gerar relatório ${format}`)
       }
     } catch (err) {
       console.error('Download error:', err)
-      toast.error(err.response?.data?.mensagem || err.message || `An error occurred while generating the ${format} report`)
+      toast.error(err.response?.data?.mensagem || err.message || `Um erro ocorreu ao gerar relatório ${format}`)
     } finally {
       setDownloading(false)
     }
