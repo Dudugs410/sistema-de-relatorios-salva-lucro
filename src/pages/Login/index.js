@@ -87,7 +87,7 @@ const Login = () => {
                 {/* Form wrapper with 10% white background */}
                 <div className='form-wrapper'>
                     <form type='submit' className='form-login' onSubmit={handleLogin}>
-                        <img className='img-login' src={currentLogo} alt='logo' />
+                        {/*<img className='img-login' src={currentLogo} alt='logo' />*/}
                         <div className='input-container-login'>
                             <input id='login' className='input-login' type='text' placeholder='usuário' value={login} autoComplete="username" onChange={(e) => setLogin(e.target.value)}/>
                             <input id='senha' className='input-login' type='password' placeholder='senha' value={password} autoComplete="current-password" onChange={(e) => setPassword(e.target.value)}/>
