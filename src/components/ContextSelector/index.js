@@ -1,14 +1,17 @@
 // components/ContextSelector.js
 import React, { useState, useEffect } from 'react';
+import { getAvailableTenants, getCurrentTenant } from '../util/tenant';
 import './ContextSelector.scss';
 
 const ContextSelector = () => {
   const [selectedContext, setSelectedContext] = useState('SL');
-
-  // Available contexts/companies
-  const contexts = [
-    { id: 'SL', label: 'Salva Lucro' },
-  ];
+  
+  // Get available contexts from tenant config
+  const contexts = getAvailableTenants().map(tenant => ({
+    id: tenant.contextKey,
+    label: tenant.label,
+    path: tenant.path
+  }));
 
   // Function to apply context to DOM
   const applyContext = (contextId) => {
@@ -21,14 +24,25 @@ const ContextSelector = () => {
   // Load saved context from localStorage on component mount
   useEffect(() => {
     const savedContext = localStorage.getItem('selectedContext');
-    if (savedContext) {
+    
+    // Try to get from URL first, then localStorage, then default
+    const currentTenant = getCurrentTenant();
+    
+    if (currentTenant) {
+      setSelectedContext(currentTenant.contextKey);
+      applyContext(currentTenant.contextKey);
+      localStorage.setItem('selectedContext', currentTenant.contextKey);
+    } else if (savedContext) {
       setSelectedContext(savedContext);
       applyContext(savedContext);
     } else {
-      // Set default if none exists
-      setSelectedContext('SL');
-      applyContext('SL');
-      localStorage.setItem('selectedContext', 'SL');
+      // Set default
+      const defaultTenant = getAvailableTenants()[0];
+      if (defaultTenant) {
+        setSelectedContext(defaultTenant.contextKey);
+        applyContext(defaultTenant.contextKey);
+        localStorage.setItem('selectedContext', defaultTenant.contextKey);
+      }
     }
   }, []);
 
@@ -39,8 +53,17 @@ const ContextSelector = () => {
     localStorage.setItem('selectedContext', newContext);
     applyContext(newContext);
     
-    // Optional: Dispatch event for other components to listen to
-    window.dispatchEvent(new Event('contextChange'));
+    // Navigate to the corresponding tenant path
+    const tenant = getAvailableTenants().find(t => t.contextKey === newContext);
+    if (tenant) {
+      // Redirect to the tenant's path
+      window.location.href = `/${tenant.path}`;
+    }
+    
+    // Dispatch event for other components to listen to
+    window.dispatchEvent(new CustomEvent('contextChange', { 
+      detail: { context: newContext }
+    }));
   };
 
   return (

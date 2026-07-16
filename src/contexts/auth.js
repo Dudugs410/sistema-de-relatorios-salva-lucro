@@ -25,6 +25,8 @@ import SPECIAL from '../assets/PLACEHOLDER.png'
 import _ from 'lodash'
 
 import { getIconPathByCode, DEFAULT_ICON_PATH, ICON_MAP } from '../util/iconRegistry'
+// ===== IMPORT DO TENANT =====
+import { getCurrentTenant, getLogoByContext, getTenantFromURL } from '../util/tenant'
 
 export const AuthContext = createContext({})
 
@@ -74,28 +76,81 @@ function AuthProvider({ children }){
   const [chartCredits, setChartCredits] = useState()
   const [chartServices, setChartServices] = useState()
 
-  const [currentLogo, setCurrentLogo] = useState(salvalucro)
-  const [currentContext, setCurrentContext] = useState('salvalucro')
+  // ===== LOGO STATE - Inicializa com base no tenant da URL =====
+  const initialTenant = getTenantFromURL();
+  const [currentLogo, setCurrentLogo] = useState(initialTenant?.logo || salvalucro)
+  const [currentContext, setCurrentContext] = useState(initialTenant?.contextKey || 'SL')
 
+  // ===== FUNÇÃO PARA CARREGAR LOGO DO TENANT =====
+  const loadLogoFromTenant = useCallback(() => {
+    // Primeiro tenta da URL
+    const urlTenant = getTenantFromURL();
+    
+    if (urlTenant && urlTenant.logo) {
+      console.log('🏢 AuthContext - Carregando logo da URL:', urlTenant.nome);
+      setCurrentLogo(urlTenant.logo);
+      setCurrentContext(urlTenant.contextKey);
+      document.documentElement.setAttribute('data-context', urlTenant.contextKey);
+      localStorage.setItem('selectedContext', urlTenant.contextKey);
+      return;
+    }
+    
+    // Fallback: tenta do localStorage
+    const savedContext = localStorage.getItem('selectedContext') || 'SL';
+    const logo = getLogoByContext(savedContext);
+    if (logo) {
+      console.log('🏢 AuthContext - Carregando logo do localStorage:', savedContext);
+      setCurrentLogo(logo);
+      setCurrentContext(savedContext);
+      document.documentElement.setAttribute('data-context', savedContext);
+    } else {
+      // Fallback final
+      console.log('🏢 AuthContext - Usando logo padrão (SalvaLucro)');
+      setCurrentLogo(salvalucro);
+      setCurrentContext('SL');
+      document.documentElement.setAttribute('data-context', 'SL');
+    }
+  }, []);
 
+  // ===== CARREGA TENANT AO INICIAR O APP =====
+  useEffect(() => {
+    loadLogoFromTenant();
+  }, []);
+
+  // ===== ESCUTA MUDANÇAS NA URL (para navegação entre tenants) =====
+  useEffect(() => {
+    const handleUrlChange = () => {
+      const urlTenant = getTenantFromURL();
+      if (urlTenant && urlTenant.logo && urlTenant.contextKey !== currentContext) {
+        console.log('🏢 AuthContext - URL mudou, recarregando logo:', urlTenant.nome);
+        setCurrentLogo(urlTenant.logo);
+        setCurrentContext(urlTenant.contextKey);
+        document.documentElement.setAttribute('data-context', urlTenant.contextKey);
+        localStorage.setItem('selectedContext', urlTenant.contextKey);
+      }
+    };
+
+    // Listen for popstate (back/forward)
+    window.addEventListener('popstate', handleUrlChange);
+    
+    return () => {
+      window.removeEventListener('popstate', handleUrlChange);
+    };
+  }, [currentContext]);
 
   // Theme toggle function
-  // In auth.js - Update the toggleTheme function
   const toggleTheme = useCallback(async () => {
     const newTheme = !theme
     setTheme(newTheme)
     
-    // Apply theme to document immediately
     document.documentElement.setAttribute('data-theme', newTheme ? 'dark' : 'light')
     localStorage.setItem('appTheme', newTheme ? 'dark' : 'light')
     
-    // Get current user and preferences
     const userId = localStorage.getItem('userID')
     const token = localStorage.getItem('token')
     
     if (userId && token) {
       try {
-        // Get current preferences
         let existingPrefs = null
         try {
           const prefsResponse = await api.get('PreferenciasUsuario', {
@@ -109,7 +164,6 @@ function AuthProvider({ children }){
         const getCurrentDate = () => new Date().toISOString().split('T')[0]
         const now = getCurrentDate()
         
-        // Get current icon and color scheme from existing preferences or defaults
         const currentIconCode = existingPrefs?.ICONE || 1
         const currentColorScheme = existingPrefs?.ESQUEMACORES || 'salvalucro'
         
@@ -134,7 +188,6 @@ function AuthProvider({ children }){
           console.log('Theme created with POST to:', newTheme ? 'dark' : 'light')
         }
         
-        // Also update user object for backward compatibility
         const userData = JSON.parse(localStorage.getItem('user'))
         if (userData) {
           userData.TEMA = newTheme
@@ -157,35 +210,16 @@ function AuthProvider({ children }){
         document.documentElement.setAttribute('data-theme', themeValue ? 'dark' : 'light')
         console.log('Theme loaded from database:', themeValue ? 'dark' : 'light')
       } else {
-        // Default to light if no preference
         setTheme(false)
         document.documentElement.setAttribute('data-theme', 'light')
       }
     }
     
     loadThemeFromUser()
-  }, [clientUserId]) // Reload when user changes
+  }, [clientUserId])
 
-  useEffect(() => {
-    const savedContext = localStorage.getItem('appContext')
-    
-    if (savedContext && savedContext !== currentContext) {
-      document.documentElement.setAttribute('data-context', savedContext)
-      setCurrentContext(savedContext)
-      
-      if (savedContext === 'sifra') {
-        setCurrentLogo(sifra)
-      } else if (savedContext === 'mg') {
-        setCurrentLogo(MG)
-      } else if (savedContext === 'superjur') {
-        setCurrentLogo(superjur)
-      } else if (savedContext === 'carddigital') {
-        setCurrentLogo(carddigital)
-      } else {
-        setCurrentLogo(salvalucro)
-      }
-    }
-  }, [])
+  // ===== NÃO SOBRESCREVER O LOGO COM O savedContext =====
+  // Este useEffect foi removido/substituído pela lógica acima
 
   useEffect(() => {
     if (currentContext) {
@@ -243,22 +277,19 @@ const loadUserPreferences = useCallback(async (userId) => {
     console.log('📡 User preferences loaded from API:', preferences);
     
     if (preferences) {
-      // Update state
       setUserPreferences(preferences);
       
-      // Apply context
+      // Apply context from preferences ONLY if user is logged in
       const context = preferences.ESQUEMACORES || 'salvalucro';
       setCurrentContext(context);
       document.documentElement.setAttribute('data-context', context);
       console.log('🎨 Applied context from API:', context);
       
-      // Apply theme
       const themeValue = preferences.TEMA === true || preferences.TEMA === 'true';
       setCurrentTheme(themeValue);
       document.documentElement.setAttribute('data-theme', themeValue ? 'dark' : 'light');
       console.log('🎨 Applied theme from API:', themeValue ? 'dark' : 'light');
       
-      // Apply icon if needed
       if (preferences.ICONE) {
         const iconPath = getIconPathByCode(preferences.ICONE);
         if (iconPath) {
@@ -276,7 +307,6 @@ const loadUserPreferences = useCallback(async (userId) => {
     return null;
   }
 }, []);
-
 
 const loginApp = async (login, password) => {
   resetAppValues()
@@ -313,14 +343,12 @@ const loginApp = async (login, password) => {
         userPreferences = prefsResponse.data
         console.log('📡 Loaded user preferences from API:', userPreferences)
         
-        // If no preferences exist, create default ones
         if (!userPreferences || userPreferences === null) {
           console.log('📝 No preferences found, creating defaults for user...')
           
           const getCurrentDate = () => new Date().toISOString().split('T')[0]
           const now = getCurrentDate()
           
-          // Determine default icon and color scheme based on identity visual
           let defaultIconCode = 1
           let defaultColorScheme = user?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro'
           
@@ -365,7 +393,6 @@ const loginApp = async (login, password) => {
         }
       } catch (error) {
         console.error('Error loading/creating preferences:', error)
-        // Create fallback preferences
         let defaultIconCode = 1
         let defaultColorScheme = user?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro'
         
@@ -399,94 +426,19 @@ const loginApp = async (login, password) => {
         }
       }
 
-      // ===== DETERMINE CONTEXT (COLOR SCHEME) =====
-      let context = userPreferences?.ESQUEMACORES || user?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro'
-      let logo = null
-
-      console.log('🎨 Setting context from preferences:', context)
-
-      switch (context) {
-        case 'sifra':
-          context = 'sifra'
-          logo = sifra
-          break
-        case 'mg':
-          context = 'mg'
-          logo = MG
-          break
-        case 'superjur':
-          context = 'superjur'
-          logo = superjur
-          break
-        case 'carddigital':
-          context = 'carddigital'
-          logo = carddigital
-          break
-        case 'ALT-1':
-          context = 'ALT-1'
-          logo = SPECIAL
-          break
-        case 'ALT-2':
-          context = 'ALT-2'
-          logo = SPECIAL
-          break
-        case 'ALT-3':
-          context = 'ALT-3'
-          logo = SPECIAL
-          break
-        case 'ALT-4':
-          context = 'ALT-4'
-          logo = SPECIAL
-          break
-        case 'ALT-5':
-          context = 'ALT-5'
-          logo = SPECIAL
-          break
-        case 'ALT-6':
-          context = 'ALT-6'
-          logo = SPECIAL
-          break
-        case 'ALT-7':
-          context = 'ALT-7'
-          logo = SPECIAL
-          break
-        case 'ALT-8':
-          context = 'ALT-8'
-          logo = SPECIAL
-          break
-        case 'ALT-9':
-          context = 'ALT-9'
-          logo = SPECIAL
-          break
-        case 'ALT-10':
-          context = 'ALT-10'
-          logo = SPECIAL
-          break
-        case 'ALT-11':
-          context = 'ALT-11'
-          logo = SPECIAL
-          break
-        case 'ALT-12':
-          context = 'ALT-12'
-          logo = SPECIAL
-          break
-        case 'ALT-13':
-          context = 'ALT-13'
-          logo = SPECIAL
-          break
-        case 'ALT-14':
-          context = 'ALT-14'
-          logo = SPECIAL
-          break
-        case 'SPECIAL':
-          context = 'SPECIAL'
-          logo = SPECIAL
-          break
-        default:
-          context = 'salvalucro'
-          logo = salvalucro
-          break
+      // ===== DETERMINE CONTEXT - PRIORITIZE URL TENANT =====
+      // Primeiro tenta da URL
+      const urlTenant = getTenantFromURL();
+      let context = urlTenant?.contextKey || 'SL';
+      let logo = urlTenant?.logo || salvalucro;
+      
+      // Se não tiver tenant na URL, usa o das preferências
+      if (!urlTenant) {
+        context = userPreferences?.ESQUEMACORES || user?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro';
+        logo = getLogoByContext(context) || salvalucro;
       }
+      
+      console.log('🎨 Setting context from URL:', context, 'Logo encontrado:', !!logo);
 
       // ===== DETERMINE THEME =====
       let themeValue
@@ -499,17 +451,16 @@ const loginApp = async (login, password) => {
       }
 
       // ===== APPLY EVERYTHING TO DOM AND STORAGE =====
-      // Set context
       setCurrentContext(context)
       document.documentElement.setAttribute('data-context', context)
       localStorage.setItem('appContext', context)
+      localStorage.setItem('selectedContext', context)
       
-      // Set theme
       setTheme(themeValue)
       document.documentElement.setAttribute('data-theme', themeValue ? 'dark' : 'light')
       localStorage.setItem('appTheme', themeValue ? 'dark' : 'light')
       
-      // Set logo
+      // Set logo from URL tenant (not from preferences)
       if (logo) {
         setCurrentLogo(logo)
       } else {
@@ -529,7 +480,8 @@ const loginApp = async (login, password) => {
       console.log('✅ Preferences applied successfully:', {
         context: context,
         theme: themeValue ? 'dark' : 'light',
-        icon: userPreferences?.ICONE
+        icon: userPreferences?.ICONE,
+        logo: logo ? 'set' : 'default'
       })
 
       // ===== UPDATE USER IF NEEDED =====
@@ -665,8 +617,6 @@ const loginApp = async (login, password) => {
       localStorage.setItem('groupCode', gru[0].CODIGOGRUPO)
       localStorage.setItem('cnpj', 'todos')
       
-      // ===== SET SIGNED IN STATE LAST =====
-      // This triggers navigation to dashboard after all preferences are applied
       setIsSignedIn(true)
     }
   } catch (error) {
@@ -680,7 +630,6 @@ const loadUser = async (userId) => {
   let params = { codigo: userId }
   let config = { params: params }
   
-  // Load user data only (preferences are loaded separately)
   let userData = null
   try {
     const response = await api.get('usuario', config)
@@ -690,7 +639,6 @@ const loadUser = async (userId) => {
     throw error
   }
 
-  // Load preferences and apply icon
   try {
     const prefsResponse = await api.get('PreferenciasUsuario', {
       params: { codigo: userId }
@@ -722,7 +670,6 @@ const loadUser = async (userId) => {
     localStorage.removeItem('selectedContext')
     sessionStorage.removeItem('currentPath')
 		localStorage.setItem('isSignedIn', false)
-    // Reset theme to light on logout
     setTheme(false)
     document.documentElement.setAttribute('data-theme', 'light')
 		navigate('/')
@@ -730,7 +677,6 @@ const loadUser = async (userId) => {
 
   // FIXED: Memoized updateUser function
   const updateUser = useCallback(async (userObj) => {
-    //setIsLoadingUser(true)
     console.log('update user: ', userObj)
     try {
         let body = JSON.stringify(userObj)
@@ -747,7 +693,6 @@ const loadUser = async (userId) => {
         const responseData = await response.json()
         console.log('response: ', responseData)
         
-        // Update localStorage with the response
         if (responseData && responseData.CODIGO) {
           localStorage.setItem('user', JSON.stringify(responseData))
         }
@@ -761,38 +706,35 @@ const loadUser = async (userId) => {
         logout()
         return
       }
-    } finally {
-      //setIsLoadingUser(false)
     }
   }, [logout])
 
 	// funções que retornam arrays com Grupos, Clientes, Bandeiras e Adquirentes, respectivamente //
 
-		const loadGroupsList = async () => {
-			try {
-				const response = await api.get('/grupo')
-				const gru = response.data
-				setGroupsList(gru)
-				setClientsList(gru[0].CLIENTES)
-				//console.log('groupsList: ', gru)
-				return gru
-			} catch (error) {
-				console.error(error)
-				if (error.response.status === 401) {
-					logout()
-				}
-				throw new Error(error.message)
+	const loadGroupsList = async () => {
+		try {
+			const response = await api.get('/grupo')
+			const gru = response.data
+			setGroupsList(gru)
+			setClientsList(gru[0].CLIENTES)
+			return gru
+		} catch (error) {
+			console.error(error)
+			if (error.response.status === 401) {
+				logout()
 			}
+			throw new Error(error.message)
 		}
+	}
 
 	// *** funções API *** //
 
-		//controladores do disabled dos botões nas páginas com calendarios
+	//controladores do disabled dos botões nas páginas com calendarios
 
-		const [btnDisabledSales, setBtnDisabledSales] = useState(false)
-		const [btnDisabledCredits, setBtnDisabledCredits] = useState(false)
-		const [btnDisabledServices, setBtnDisabledServices] = useState(false)
-		const [btnDisabledSysmo, setBtnDisabledSysmo] = useState(false)
+	const [btnDisabledSales, setBtnDisabledSales] = useState(false)
+	const [btnDisabledCredits, setBtnDisabledCredits] = useState(false)
+	const [btnDisabledServices, setBtnDisabledServices] = useState(false)
+	const [btnDisabledSysmo, setBtnDisabledSysmo] = useState(false)
 
 // Relatórios:
 
@@ -3822,25 +3764,22 @@ const exportCredits = (data) => {
 		})
 	}
 
-	// FIXED: Memoized context value to prevent unnecessary re-renders
+	// FIXED: Memoized context value
 	const contextValue = useMemo(() => ({
 		alerta,
 		isSignedIn, setIsSignedIn,
 		logout,
 		accessToken, setAccessToken,
 		refreshSession,
-		//Usuário //
 		loadUser, updateUser,
 		userImg, setUserImg,
     currentLogo, currentContext,
-    theme, toggleTheme,  // ADDED THEME AND TOGGLE THEME
+    theme, toggleTheme,
     userPreferences,
     currentTheme,
     loadUserPreferences,
 
-
 		// Dashboard //
-		
 		loadDashboard, isLoadedDashboard, setIsLoadedDashboard,
 		salesDashboard, isLoadedSalesDashboard, setIsLoadedSalesDashboard,
 		creditsDashboard, isLoadedCreditsDashboard, setIsLoadedCreditsDashboard,
@@ -3850,7 +3789,6 @@ const exportCredits = (data) => {
 		canceledServices, setCanceledServices,
 		
 		// Vendas //
-
 		loadSales, loadTotalSales, newLoadSales, newLoadTotalSales,
 		salesDateRange, setSalesDateRange,
 		salesPageArray, setSalesPageArray,
@@ -3861,7 +3799,6 @@ const exportCredits = (data) => {
 		exportSales, errorSales,
 
 		// Creditos //
-
 		loadCredits, loadTotalCredits, newLoadCredits, newLoadCreditsDataBanco, newGroupByAdminCredits, newLoadTotalCredits,
 		creditsPageArray, setCreditsPageArray,
 		creditsPageAdminArray, setCreditsPageAdminArray,
@@ -3872,7 +3809,6 @@ const exportCredits = (data) => {
 		exportCredits, errorCredits,
 
 		// Serviços //
-
 		loadServices, newLoadServices, newGroupByAdminServices, newLoadTotalServices,
 		servicesPageArray, setServicesPageArray,
 		servicesPageAdminArray, setServicesPageAdminArray,
@@ -3881,52 +3817,40 @@ const exportCredits = (data) => {
 		servicesTableData, setServicesTableData,
 		exportServices, errorServices,
 
-		// Taxas
-
+		// Taxas //
 		loadTaxes, isLoadingTaxes, setIsLoadingTaxes,
 		addTax, editTax, deleteTax,
 		taxesTableData, setTaxesTableData, exportTaxes,
 		taxesPageArray, setTaxesPageArray,
 
-		// Bancos
-
+		// Bancos //
 		loadBanks, isLoadingBanks, setIsLoadingBanks,
 		addBank, editBank, deleteBank,
 		loadCliAdq,
 
-		// Sysmo
-
+		// Sysmo //
 		loadSysmo,
 		btnDisabledSysmo, setBtnDisabledSysmo,
 
-		// outros / compartilhados //
-
+		// Outros //
 		loginApp, 
 		loadBanners, loadAdmins, loadMods, loadProducts, loadSubproducts,
 		groupByAdmin, newGroupByAdmin, groupServicesByAdmin,
 		exportName, setExportName,
 		isCheckedCalendar, setIsCheckedCalendar,
 		converteData, dateConvert, dateConvertSearch, dateConvertYYYYMMDD,
-
 		fetchingData, setFetchingData,
-
 		groupsList, clientsList,
 		loadGroupsList, setGroupsList,
 		displayClient, displayGroup,
 		setDisplayGroup, setDisplayClient,
-
 		changedOption, setChangedOption,
 		canceled, setCanceled,
-
 		resetAppValues,
-
 		clientUserId,
-		
-		// Safe number formatting helpers
 		safeToFixed,
 		safeCurrencyFormat,
 	}), [
-		// List all dependencies that should trigger context updates
 		isSignedIn, accessToken, userImg, salesTableData, creditsTableData, servicesTableData, taxesTableData,
 		exportName, isCheckedCalendar, changedOption, errorSales, errorCredits, errorServices, fetchingData,
 		displayGroup, displayClient, canceledSales, canceledCredits, canceledServices, groupsList, clientsList,
@@ -3937,7 +3861,7 @@ const exportCredits = (data) => {
 		creditsPageArray, creditsPageAdminArray, creditsTotal, creditsDateRange,
 		servicesPageArray, servicesPageAdminArray, servicesDateRange, servicesTotal,
 		taxesPageArray,
-		logout, updateUser, theme, toggleTheme // ADDED theme and toggleTheme to dependencies
+		logout, updateUser, theme, toggleTheme
 	])
 
 	return(

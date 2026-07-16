@@ -118,7 +118,6 @@ const Header = () => {
         navigate('/dashboard')
     }, [navigate])
 
-    // Fixed: No fallback to localStorage Base64
     const getImageSource = useCallback(() => {
         return userImg || defaultImg
     }, [userImg])

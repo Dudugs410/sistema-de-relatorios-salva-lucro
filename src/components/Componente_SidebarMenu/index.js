@@ -45,41 +45,27 @@ const Sidebar = () => {
     const navigate = useNavigate()
     const location = useLocation()
 
-    useEffect(() => {
-        console.log('Sidebar component mounted')
-    }, [])
-
     // Function to get icon component from API icon name
     const getIconFromApi = (iconName) => {
-        // If iconName is empty, null, or undefined, return null
         if (!iconName || iconName.trim() === '') {
-            console.log('Icon name is empty, returning null');
             return null;
         }
         
-        console.log('Looking for icon:', iconName);
-        console.log('Available icons in map:', Object.keys(iconComponentMap));
-        
-        // Try to match the icon name from API to our component map
         let icon = iconComponentMap[iconName];
         
         if (!icon) {
-            // Try with Fi prefix
             icon = iconComponentMap[`Fi${iconName}`];
         }
         
         if (!icon) {
-            // Try with Lia prefix
             icon = iconComponentMap[`Lia${iconName}`];
         }
         
         if (!icon) {
-            // Try with first letter capitalized
             const capitalized = iconName.charAt(0).toUpperCase() + iconName.slice(1);
             icon = iconComponentMap[capitalized];
         }
         
-        console.log('Icon found:', icon ? 'Yes' : 'No');
         return icon || null;
     }
 
@@ -159,17 +145,13 @@ const Sidebar = () => {
                 
                 const childrenCount = validChildren.length
                 
-                // Try to get icon from API first
                 let parentIcon = null;
                 if (parent.icone) {
                     parentIcon = getIconFromApi(parent.icone);
                 }
-                // If no API icon, use fallback
                 if (!parentIcon) {
                     parentIcon = getFallbackIconForMenu(parent.nome);
                 }
-                
-                console.log(`Parent "${parent.nome}" icon:`, parentIcon ? 'Found' : 'Not found');
                 
                 if (childrenCount === 0) {
                     return null
@@ -177,30 +159,27 @@ const Sidebar = () => {
                     const child = validChildren[0]
                     return {
                         nome: parent.nome,
-                        icone: parentIcon, // Use API icon or fallback
+                        icone: parentIcon,
                         rota: child.rota,
                         id: parent.id
                     }
                 } else {
-                    // For children, also try to get icons from API
                     const childrenWithIcons = validChildren.map(child => {
                         let childIcon = null;
                         if (child.icone) {
                             childIcon = getIconFromApi(child.icone);
                         }
-                        // If no API icon for child, we could use fallback or leave null
-                        // For now, we'll leave it null (will render nothing)
                         return {
                             nome: child.nome,
                             rota: child.rota,
-                            icone: childIcon, // Will be null if no icon provided
+                            icone: childIcon,
                             id: child.id
                         };
                     });
                     
                     return {
                         nome: parent.nome,
-                        icone: parentIcon, // Use API icon or fallback
+                        icone: parentIcon,
                         children: childrenWithIcons,
                         id: parent.id
                     }
@@ -210,16 +189,12 @@ const Sidebar = () => {
     }
 
     const testDirectFetch = () => {
-        console.log('TEST: Attempting direct fetch with hardcoded ID')
         const testUserId = localStorage.getItem('userId') || '167561'
-        console.log('TEST: Using user ID:', testUserId)
         
         fetch(`https://app.salvalucro.com.br/api/v1/Menu?codigo=${testUserId}`)
             .then(response => response.json())
             .then(data => {
-                console.log('TEST: Direct fetch successful!', data)
                 const transformed = transformMenuData(data)
-                console.log('TEST: Transformed data:', JSON.stringify(transformed, null, 2))
                 setOptionsWithIcons(transformed)
                 setLoading(false)
             })
@@ -230,64 +205,41 @@ const Sidebar = () => {
     }
 
     const fetchMenus = async () => {
-        console.log('fetchMenus function called')
-        
         try {
             setLoading(true)
             
             let userId = null
             
-            console.log('Checking user context:', user)
-            console.log('localStorage userId:', localStorage.getItem('userId'))
-            console.log('localStorage user:', localStorage.getItem('user'))
-            
             if (user && user.id) {
                 userId = user.id
-                console.log('Found user.id:', userId)
             } else if (localStorage.getItem('userId')) {
                 userId = localStorage.getItem('userId')
-                console.log('Found localStorage userId:', userId)
             } else if (localStorage.getItem('user')) {
                 try {
                     const userObj = JSON.parse(localStorage.getItem('user'))
                     userId = userObj.id || userObj.userId
-                    console.log('Found parsed user object:', userObj, 'userId:', userId)
                 } catch (e) {
                     console.error('Error parsing user from localStorage', e)
                 }
             }
             
             if (!userId) {
-                console.error('No user ID found. Using fallback test ID 167561')
                 userId = '167561'
             }
             
-            console.log('Attempting API call with userId:', userId)
-            console.log('API endpoint:', `/Menu?codigo=${userId}`)
-            
-            // Try using the api service
             const response = await api.get(`/Menu?codigo=${userId}`)
             
-            console.log('API Response received:', response)
-            console.log('Response data:', response.data)
-            
             if (response.data && Array.isArray(response.data)) {
-                console.log('Processing menu data array')
                 const transformedMenus = transformMenuData(response.data)
-                console.log('Transformed menus:', transformedMenus)
                 setOptionsWithIcons(transformedMenus)
             } else if (response.data && response.data.data && Array.isArray(response.data.data)) {
-                console.log('Processing wrapped menu data')
                 const transformedMenus = transformMenuData(response.data.data)
-                console.log('Transformed menus:', transformedMenus)
                 setOptionsWithIcons(transformedMenus)
             } else {
-                console.warn('Unexpected response format:', response)
                 setOptionsWithIcons([])
             }
         } catch (error) {
-            console.error('Error fetching menus with api service:', error)
-            console.log('Falling back to direct fetch...')
+            console.error('Error fetching menus:', error)
             testDirectFetch()
         } finally {
             setLoading(false)
@@ -295,26 +247,13 @@ const Sidebar = () => {
     }
 
     useEffect(() => {
-        console.log('Sidebar useEffect - attempting to fetch menus')
-        
         fetchMenus()
-        
-        setTimeout(() => {
-            if (optionsWithIcons.length === 0 && loading) {
-                console.log('Still loading after 3 seconds, checking api service...')
-                console.log('api service object:', api)
-            }
-        }, 3000)
     }, [])
 
-    // Helper function to render icon or null
     const renderIcon = (iconComponent, menuName) => {
         if (!iconComponent) {
-            console.log(`No icon component for ${menuName}`);
             return null;
         }
-        console.log(`Rendering icon for ${menuName}`);
-        // Create the icon element
         return React.createElement(iconComponent, { 
             size: 18,
             style: { marginRight: '5px' }

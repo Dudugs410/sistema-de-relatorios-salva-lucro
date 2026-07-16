@@ -663,7 +663,6 @@ const NewDisplayData = ({
               <NewTabelaGenerica {...tableProps} />
             )}
           </div>
-          <hr className='hr-global' />
           {adminDataArray && adminDataArray.length > 0 && (exportPage === 'vendas' || exportPage === 'creditos') && (
             <div data-tour="totaladq-section">
               <TabelaGenericaAdm Array={adminDataArray} />
