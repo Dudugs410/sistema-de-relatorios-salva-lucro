@@ -1,49 +1,51 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../../contexts/auth";
-import { getCurrentTenant, getTenantFromURL, getLogoByContext } from '../../util/tenant';
-import './login.css';
-import { useContext } from "react";
-import LoadingModal from "./LoadingModal";
+import React, { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { AuthContext } from "../../contexts/auth"
+import { getCurrentTenant, getLogoByContext } from '../../util/tenant'
+import './login.css'
+import { useContext } from "react"
+import LoadingModal from "./LoadingModal"
 
 const Login = () => {
     const {
         loginApp,
         isSignedIn,
         setIsSignedIn,
-    } = useContext(AuthContext);
-    const navigate = useNavigate();
+    } = useContext(AuthContext)
+    const navigate = useNavigate()
 
-    const [login, setLogin] = useState('');
-    const [password, setPassword] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [currentLogo, setCurrentLogo] = useState(null);
-    const [tenantInfo, setTenantInfo] = useState(null);
+    const [login, setLogin] = useState('')
+    const [password, setPassword] = useState('')
+    const [loading, setLoading] = useState(false)
+    const [currentLogo, setCurrentLogo] = useState(null)
+    const [tenantInfo, setTenantInfo] = useState(null)
 
     // Função para carregar o tenant e logo
     const loadTenant = () => {
         // Tenta pegar o contexto do localStorage (para compatibilidade)
         const savedContext = localStorage.getItem('selectedContext');
         let logo;
+        let tenant;
         
         if (savedContext) {
             // Se tem contexto salvo, usa ele
             logo = getLogoByContext(savedContext);
+            tenant = getCurrentTenant();
             console.log('🖼️ Logo carregada do contexto salvo:', savedContext);
         } else {
             // Senão, detecta da URL
-            const tenant = getTenantFromURL();
-            setTenantInfo(tenant);
+            tenant = getCurrentTenant();
             logo = tenant.logo;
             // Salva o contexto para consistência
             localStorage.setItem('selectedContext', tenant.contextKey);
             console.log('🖼️ Logo carregada da URL:', tenant.contextKey);
         }
         
+        setTenantInfo(tenant);
         setCurrentLogo(logo);
         
         // Aplica o contexto no DOM
-        const contextToApply = savedContext || (tenantInfo?.contextKey) || 'SL';
+        const contextToApply = savedContext || tenant?.contextKey || 'SL';
         document.documentElement.setAttribute('data-context', contextToApply);
     };
 

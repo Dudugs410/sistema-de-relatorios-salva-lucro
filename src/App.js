@@ -66,7 +66,6 @@ function PreferenceLoader({ children }) {
         }
       } else {
         console.log('🔒 No user logged in, skipping preference loading')
-        // Set default theme for login page based on tenant
         const tenant = getTenantFromURL();
         document.documentElement.setAttribute('data-context', tenant.contextKey || 'SL');
         document.documentElement.setAttribute('data-theme', 'light')
@@ -155,17 +154,22 @@ function AppContent() {
 }
 
 function App() {
-  // Detecta o tenant para definir o basename dinamicamente
   const [basename, setBasename] = useState('/salvalucro3');
 
   useEffect(() => {
-    const tenant = getTenantFromURL();
-    // O basename deve ser o caminho do tenant
-    if (tenant) {
-      setBasename(`/${tenant.path}`);
-    }
+    // Get the current path from window.location
+    const path = window.location.pathname;
     
-    console.log('🏷️ Basename definido:', basename);
+    // Extract the first segment (tenant name)
+    const pathSegments = path.split('/').filter(seg => seg.length > 0);
+    const tenantPath = pathSegments[0] || 'salvalucro3';
+    
+    // Set basename to the tenant path
+    setBasename(`/${tenantPath}`);
+    
+    console.log('🏷️ Basename definido:', `/${tenantPath}`);
+    console.log('📍 Path atual:', path);
+    console.log('🔍 Tenant detectado:', tenantPath);
   }, []);
 
   useEffect(() => {

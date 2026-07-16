@@ -17,59 +17,64 @@ export const TENANTS = {
     label: 'Salva Lucro',
     path: 'salvalucro3'
   },
-  'sifra': {
+  'sifra_react': {
     id: 'Sifra',
     nome: 'Sifra',
     logo: sifraLogo,
     contextKey: 'Sifra',
     label: 'Sifra',
-    path: 'sifra'
+    path: 'sifra_react'
   },
-  'mg': {
+  'mg_react': {
     id: 'MG',
     nome: 'MG',
     logo: mgLogo,
     contextKey: 'MG',
     label: 'MG',
-    path: 'mg'
+    path: 'mg_react'
   },
-
-  'carddigital': {
-     id: 'CardDigital',
-     nome: 'Card Digital',
-     logo: cardDigitalLogo,
-     contextKey: 'CardDigital',
-     label: 'Card Digital',
-     path: 'carddigital'
-   },
-   'superjur': {
-     id: 'SuperJur',
-     nome: 'Super Jur',
-     logo: superJurLogo,
-     contextKey: 'SuperJur',
-     label: 'Super Jur',
-     path: 'superjur'
-   }
+  'carddigital_react': {
+    id: 'CardDigital',
+    nome: 'Card Digital',
+    logo: cardDigitalLogo,
+    contextKey: 'CardDigital',
+    label: 'Card Digital',
+    path: 'carddigital_react'
+  },
+  'superjur_react': {
+    id: 'SuperJur',
+    nome: 'Super Jur',
+    logo: superJurLogo,
+    contextKey: 'SuperJur',
+    label: 'Super Jur',
+    path: 'superjur_react'
+  }
 };
 
 // Função para identificar o tenant baseado na URL
 export const getTenantFromURL = () => {
   const path = window.location.pathname;
-  const basename = '/salvalucro3'; // Seu basename atual
   
-  // Remove o basename do path se existir
-  let relativePath = path;
-  if (path.startsWith(basename)) {
-    relativePath = path.substring(basename.length);
+  // Pega o primeiro segmento da URL
+  const pathSegments = path.split('/').filter(seg => seg.length > 0);
+  
+  // Se não houver segmentos, usa o padrão
+  if (pathSegments.length === 0) {
+    return TENANTS['salvalucro3'];
   }
   
-  // Pega o primeiro segmento após o basename
-  const pathSegments = relativePath.split('/').filter(seg => seg.length > 0);
-  const tenantKey = pathSegments[0] || 'salvalucro3';
+  // O primeiro segmento é o tenant
+  const tenantKey = pathSegments[0];
   
   console.log('🔍 Tenant detectado:', tenantKey, 'Path:', path);
   
-  return TENANTS[tenantKey] || TENANTS['salvalucro3'];
+  // Verifica se é um tenant válido
+  if (TENANTS[tenantKey]) {
+    return TENANTS[tenantKey];
+  }
+  
+  // Se não for um tenant válido, usa o padrão
+  return TENANTS['salvalucro3'];
 };
 
 // Função para obter tenant atual (prioriza localStorage para compatibilidade)
