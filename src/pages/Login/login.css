@@ -24,9 +24,9 @@
     background-size: cover;
     background-repeat: no-repeat;
     border-radius: 4px;
-    background-image: url("../../assets/background_images/login-background01.jpg");
-    background-color: rgb(10, 61, 112);
-    background-blend-mode: multiply;
+    background-image: url("../../assets/background_images/background_login_001.jpeg");
+    /*background-color: rgb(10, 61, 112);*/
+    /*background-blend-mode: multiply;*/
     position: relative;
 }
 
@@ -454,5 +454,74 @@
 
     .hr-global {
         margin: 20px 0;
+    }
+}
+
+/* ========== LOGO SIZE VARIANTS ========== */
+/* Default logo size (used for SalvaLucro, Sifra, CardDigital) */
+.img-login {
+    display: flex;
+    justify-content: center;
+    width: auto;
+    height: 60px;
+    margin-bottom: 40px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.2));
+    transition: transform 0.3s ease;
+}
+
+.img-login:hover {
+    transform: scale(1.05);
+}
+
+/* Large logo size (used for MG and SuperJur) */
+.img-login-large {
+    height: 200px !important;
+    width: 200px !important;
+    margin-bottom: 40px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.2));
+    transition: transform 0.3s ease;
+}
+
+.img-login-large:hover {
+    transform: scale(1.05);
+}
+
+/* ========== RESPONSIVE ADJUSTMENTS ========== */
+@media (max-width: 600px) {
+    .img-login {
+        height: 45px;
+        margin-bottom: 25px;
+    }
+    
+    .img-login-large {
+        height: 150px !important;
+        width: 150px !important;
+        margin-bottom: 25px;
+    }
+}
+
+@media (max-width: 400px) {
+    .img-login {
+        height: 35px;
+        margin-bottom: 20px;
+    }
+    
+    .img-login-large {
+        height: 120px !important;
+        width: 120px !important;
+        margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 992px) {
+    .img-login {
+        height: 60px;
+    }
+    
+    .img-login-large {
+        height: 180px !important;
+        width: 180px !important;
     }
 }

@@ -8,6 +8,7 @@ import { AuthContext } from '../../contexts/auth'
 import { FiMenu } from 'react-icons/fi'
 import { useNavigate, useLocation } from 'react-router-dom'
 import api from '../../services/api';
+import { getTenantFromURL } from '../../util/tenant';
 
 // Icon mapping object - maps icon names from API to React Icon components
 const iconComponentMap = {
@@ -39,11 +40,19 @@ const Sidebar = () => {
     const [lastClicked, setLastClicked] = useState(null)
     const [sidebarVisible, setSidebarVisible] = useState(false)
     const [loading, setLoading] = useState(true)
+    const [currentTenant, setCurrentTenant] = useState(null)
     
     const { currentLogo, currentContext, user } = useContext(AuthContext)
 
     const navigate = useNavigate()
     const location = useLocation()
+
+    // Get current tenant on mount
+    useEffect(() => {
+        const tenant = getTenantFromURL();
+        setCurrentTenant(tenant);
+        console.log('🏢 Sidebar - Tenant atual:', tenant?.path);
+    }, []);
 
     // Function to get icon component from API icon name
     const getIconFromApi = (iconName) => {
@@ -260,6 +269,60 @@ const Sidebar = () => {
         });
     };
 
+    // ===== LOGO RENDERING LOGIC =====
+    // Check if we should use the color mask (ONLY for salvalucro3)
+    const shouldUseColorMask = () => {
+        // ONLY apply color mask if tenant is salvalucro3
+        // No exceptions for ALT-* or other tenants
+        return currentTenant?.path === 'salvalucro3';
+    };
+
+    // Render logo based on tenant
+    const renderLogo = () => {
+        const isColorMask = shouldUseColorMask();
+        
+        if (isColorMask) {
+            // For salvalucro3 ONLY, use color mask
+            return (
+                <div 
+                    className='img-header logo-mask'
+                    style={{ 
+                        backgroundColor: 'var(--secondary-color)',
+                        maskImage: `url(${currentLogo})`,
+                        WebkitMaskImage: `url(${currentLogo})`,
+                        maskSize: '160px 30px',
+                        WebkitMaskSize: 'contain',
+                        maskRepeat: 'no-repeat',
+                        WebkitMaskRepeat: 'no-repeat',
+                        maskPosition: 'center',
+                        WebkitMaskPosition: 'center',
+                        width: '160px',
+                        height: '40px',
+                        cursor: 'pointer'
+                    }}
+                    onClick={handleLogo}
+                />
+            );
+        } else {
+            // For ALL other tenants (Sifra, MG, CardDigital, SuperJur, etc.)
+            // Show the logo with original colors
+            return (
+                <img 
+                    className='img-header' 
+                    src={currentLogo} 
+                    alt='logo'
+                    onClick={handleLogo}
+                    style={{
+                        width: '160px',
+                        height: 'auto',
+                        cursor: 'pointer',
+                        objectFit: 'contain'
+                    }}
+                />
+            );
+        }
+    };
+
     if (loading) {
         return (
             <>
@@ -268,33 +331,7 @@ const Sidebar = () => {
                 </Button>
                 <div className={`d-flex flex-column bg-sidebar sidebar ${sidebarVisible ? 'visible' : ''}`}>
                     <div className='navbar-title'>
-                        {currentContext?.startsWith('ALT-') ? (
-                        <div 
-                            className='img-header logo-mask'
-                            style={{ 
-                            backgroundColor: 'var(--secondary-color)',
-                            maskImage: `url(${currentLogo})`,
-                            WebkitMaskImage: `url(${currentLogo})`,
-                            maskSize: '160px 30px',
-                            WebkitMaskSize: 'contain',
-                            maskRepeat: 'no-repeat',
-                            WebkitMaskRepeat: 'no-repeat',
-                            maskPosition: 'center',
-                            WebkitMaskPosition: 'center',
-                            width: '160px',
-                            height: '40px',
-                            cursor: 'pointer'
-                            }}
-                            onClick={handleLogo}
-                        />
-                        ) : (
-                        <img 
-                            className='img-header' 
-                            src={currentLogo} 
-                            alt='logo'
-                            onClick={handleLogo} 
-                        />
-                        )}
+                        {renderLogo()}
                     </div>
                     <div className="loading-placeholder text-center p-4">
                         Carregando menu...
@@ -311,33 +348,7 @@ const Sidebar = () => {
             </Button>
             <div className={`d-flex flex-column bg-sidebar sidebar ${sidebarVisible ? 'visible' : ''}`}>
                 <div className='navbar-title'>
-                    {currentContext?.startsWith('ALT-') ? (
-                    <div 
-                        className='img-header logo-mask'
-                        style={{ 
-                        backgroundColor: 'var(--secondary-color)',
-                        maskImage: `url(${currentLogo})`,
-                        WebkitMaskImage: `url(${currentLogo})`,
-                        maskSize: '160px 30px',
-                        WebkitMaskSize: 'contain',
-                        maskRepeat: 'no-repeat',
-                        WebkitMaskRepeat: 'no-repeat',
-                        maskPosition: 'center',
-                        WebkitMaskPosition: 'center',
-                        width: '160px',
-                        height: '40px',
-                        cursor: 'pointer'
-                        }}
-                        onClick={handleLogo}
-                    />
-                    ) : (
-                    <img 
-                        className='img-header' 
-                        src={currentLogo} 
-                        alt='logo'
-                        onClick={handleLogo} 
-                    />
-                    )}
+                    {renderLogo()}
                 </div>
                 <Navbar color="light" light expand="md">
                     <Nav navbar className="flex-column w-100">

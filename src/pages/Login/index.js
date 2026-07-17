@@ -88,10 +88,24 @@ const Login = () => {
         setLoading(false);
     }
 
+    // Determine the logo class based on tenant
+    const getLogoClass = () => {
+        if (!tenantInfo) return 'img-login';
+        
+        const tenantId = tenantInfo.id;
+        // SuperJur and MG get larger logo
+        if (tenantId === 'SuperJur' || tenantId === 'MG') {
+            return 'img-login img-login-large';
+        }
+        return 'img-login';
+    };
+
     // Se logo ainda não carregou, mostra placeholder
     if (!currentLogo) {
         return <div>Carregando...</div>;
     }
+
+    const logoClass = getLogoClass();
 
     return(
         <div className='appPage'>
@@ -101,7 +115,7 @@ const Login = () => {
                 <div className='form-wrapper'>
                     <form type='submit' className='form-login' onSubmit={handleLogin}>
                         <img 
-                            className='img-login' 
+                            className={logoClass} 
                             src={currentLogo} 
                             alt='logo' 
                             onError={(e) => {
