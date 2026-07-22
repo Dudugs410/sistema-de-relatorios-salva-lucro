@@ -41,6 +41,7 @@ const Sidebar = () => {
     const [sidebarVisible, setSidebarVisible] = useState(false)
     const [loading, setLoading] = useState(true)
     const [currentTenant, setCurrentTenant] = useState(null)
+    const [logoError, setLogoError] = useState(false) // Added for logo fallback
     
     const { currentLogo, currentContext, user } = useContext(AuthContext)
 
@@ -52,6 +53,24 @@ const Sidebar = () => {
         const tenant = getTenantFromURL();
         setCurrentTenant(tenant);
         console.log('🏢 Sidebar - Tenant atual:', tenant?.path);
+        
+        // Ensure default context is set if not already (NEW)
+        const currentContextAttr = document.documentElement.getAttribute('data-context');
+        if (!currentContextAttr) {
+            const defaultContext = 'salvalucro';
+            document.documentElement.setAttribute('data-context', defaultContext);
+            localStorage.setItem('userContext', defaultContext);
+            console.log('🔧 Set default context:', defaultContext);
+        }
+        
+        // Ensure default theme is set (NEW)
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        if (!currentTheme) {
+            const defaultTheme = 'light';
+            document.documentElement.setAttribute('data-theme', defaultTheme);
+            localStorage.setItem('userTheme', defaultTheme);
+            console.log('🔧 Set default theme:', defaultTheme);
+        }
     }, []);
 
     // Function to get icon component from API icon name
@@ -277,8 +296,31 @@ const Sidebar = () => {
         return currentTenant?.path === 'salvalucro3';
     };
 
-    // Render logo based on tenant
+    // Render logo based on tenant (UPDATED with error handling)
     const renderLogo = () => {
+        // If no logo is available or logo failed to load, show text fallback (NEW)
+        if (!currentLogo || logoError) {
+            return (
+                <div 
+                    className='img-header text-logo'
+                    onClick={handleLogo}
+                    style={{
+                        width: '160px',
+                        height: '40px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: 'var(--sidebar-font-color, #ffffff)',
+                        fontWeight: 'bold',
+                        fontSize: '18px'
+                    }}
+                >
+                    {currentContext?.toUpperCase() || 'APP'}
+                </div>
+            );
+        }
+
         const isColorMask = shouldUseColorMask();
         
         if (isColorMask) {
@@ -312,6 +354,7 @@ const Sidebar = () => {
                     src={currentLogo} 
                     alt='logo'
                     onClick={handleLogo}
+                    onError={() => setLogoError(true)} // NEW: handle image load error
                     style={{
                         width: '160px',
                         height: 'auto',
@@ -333,7 +376,7 @@ const Sidebar = () => {
                     <div className='navbar-title'>
                         {renderLogo()}
                     </div>
-                    <div className="loading-placeholder text-center p-4">
+                    <div className="loading-placeholder text-center p-4" style={{ color: 'var(--sidebar-font-color, #ffffff)' }}>
                         Carregando menu...
                     </div>
                 </div>
@@ -390,7 +433,9 @@ const Sidebar = () => {
                             ))
                         ) : (
                             <div className="text-center p-4">
-                                <div className="text-muted">Nenhum menu disponível</div>
+                                <div className="text-muted" style={{ color: 'var(--sidebar-font-color, #ffffff)' }}>
+                                    Nenhum menu disponível
+                                </div>
                                 <button onClick={testDirectFetch} className="btn btn-sm btn-primary mt-2">
                                     Recarregar Menu
                                 </button>
