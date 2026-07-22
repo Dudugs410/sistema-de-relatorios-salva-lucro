@@ -25,6 +25,7 @@ import Taxas from '../pages/Taxas'
 import Extrato from "../pages/Extrato"
 import PrevisaoRecebimentos from "../pages/PrevisaoRecebimentos"
 import ResumoMensal from "../pages/ResumoMensal"
+import OpenFinance from "../pages/OpenFinance"
 
 function RoutesApp() {
   const location = useLocation()
@@ -80,7 +81,8 @@ function RoutesApp() {
       <Route path="/taxas" element={<Private><Taxas /></Private>} />
       <Route path="/extrato" element={<Private><Extrato /></Private>} />
       <Route path="/cadastrodebancos" element={<Private><CadastroDeBancos /></Private>} />
-      
+      <Route path="/openfinance" element={<Private><OpenFinance/></Private>} />
+
       {/* Rotas comentadas para uso futuro */}
       {/*
       <Route path="/financeiro" element={<Private><Financeiro /></Private>} />
