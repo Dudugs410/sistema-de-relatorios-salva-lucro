@@ -57,7 +57,7 @@
     align-items: center;
     width: 100%;
     cursor: pointer;
-    color: var(--sidebar-font-color);
+    color: var(--sidebar-font-color, #ffffff); /* Added fallback */
 
     &.active-parent {
         background-color: var(--secondary-color);
@@ -74,7 +74,7 @@
 .navlink-child {
     padding-left: 2rem !important;
     cursor: pointer;
-    color: white !important;
+    color: var(--sidebar-font-color, #ffffff) !important; /* Added fallback */
 
     &.active-child {
         background-color: var(--secondary-color);
