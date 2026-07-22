@@ -50,7 +50,7 @@ img.img-header:hover{
       left: 0;
       right: 0;
       bottom: 0;
-      background-image: url("../../assets/financ.jpg");
+      background-image: url("../../assets/img-login.jpg");
       background-repeat: no-repeat;
       background-size: cover;
       background-blend-mode: multiply;
@@ -97,7 +97,7 @@ img.img-header:hover{
   .sidebar-content {
     // Ensure the pseudo-element still works on mobile
     &::before {
-      background-image: url("../../assets/financ.jpg");
+      background-image: url("../../assets/img-login.jpg");
       background-repeat: no-repeat;
       background-size: cover;
       background-blend-mode: multiply;
