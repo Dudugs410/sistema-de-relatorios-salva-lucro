@@ -142,7 +142,7 @@ const Header = () => {
         <div className="header-wrapper">
             <div className="header-container">
                 <div className='header-bg-image'>
-                    <div className="header-info-wrapper header-bg">
+                    <div className="header-info-wrapper header-bg-header">
                         <div className='navbar-customer-wrapper me-2 text-truncate'>
                             <div className="toggle-container me-1">
                                 <label className="switch">
