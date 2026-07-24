@@ -11,14 +11,14 @@
 .tenant-label-sidebar {
   display: block;
   font-size: 10px;
-  color: #6c757d;
+  color: rgba(255, 255, 255, 0.6);
   text-align: center;
   padding: 4px 0;
   margin-top: -8px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .sidebar {
@@ -35,7 +35,7 @@
 }
 
 .b-links{
-    color: var(--background-color)
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .navbar, .container-fluid {
@@ -43,12 +43,12 @@
 }
 
 .nav-link {
-    border-bottom: solid #888888 1px;
-    color: var(--table-row-hover-bg);
+    border-bottom: solid rgba(255, 255, 255, 0.05) 1px;
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .nav-link:focus, .nav-link:hover {
-    color: var(--background-color);
+    color: #ffffff;
 }
 
 /* Parent hover and active styles */
@@ -57,7 +57,8 @@
     align-items: center;
     width: 100%;
     cursor: pointer;
-    color: var(--sidebar-font-color, #ffffff); /* Added fallback */
+    color: rgba(255, 255, 255, 0.85);
+    transition: all 0.2s ease;
 
     &.active-parent {
         background-color: var(--secondary-color);
@@ -66,7 +67,7 @@
     
     &:hover {
         background-color: var(--secondary-color);
-        color: var(--font-color);
+        color: white;
     }
 }
 
@@ -74,59 +75,33 @@
 .navlink-child {
     padding-left: 2rem !important;
     cursor: pointer;
-    color: var(--sidebar-font-color, #ffffff) !important; /* Added fallback */
+    color: rgba(255, 255, 255, 0.75) !important;
+    transition: all 0.2s ease;
 
     &.active-child {
         background-color: var(--secondary-color);
-        color: var(--font-color);
+        color: white;
         opacity: 0.8;
     }
 
     &:hover {
         background-color: var(--secondary-color);
+        color: white;
     }
-}
-
-
-.navlink-parent:hover{
-    background-color: var(--secondary-color);
-    color: var(--table-row-hover-bg)
 }
 
 .navbar-expand-md .navbar-nav .nav-link {
     text-align: start;
-    /* padding-right: var(--bs-navbar-nav-link-padding-x); */
-    /* padding-left: var(--bs-navbar-nav-link-padding-x); */
-}
-
-/* Parent hover and active styles */
-.navlink-parent:hover, 
-.navlink-parent.active-parent {
-    background-color: var(--secondary-color);
-    color: white;
-}
-
-/* Child hover and active styles */
-.navlink-child:hover,
-.navlink-child.active-child {
-    background-color: var(--secondary-color);
-    color: var(--sidebar-font-color);
-    opacity: 0.8;
-}
-
-.navlink-child:hover{
-    background-color: var(--secondary-color);
 }
 
 .bg-sidebar{
     height: 100%;
-    border-right: solid var(--secondary-color) 1px;
+    border-right: solid rgba(255, 255, 255, 0.05) 1px;
+    // Remove any background - it's handled by the parent
 }
 
 ul{
     background-color: none;
-    //background-color: var(--primary-color);
-    //background-blend-mode: multiply;
 }
 
 .bg-light{
@@ -136,7 +111,6 @@ ul{
 .navbar-expand-md .navbar-nav .nav-link {
     padding-right: var(--bs-navbar-nav-link-padding-x);
     padding-left: var(--bs-navbar-nav-link-padding-x);
-
 }
 
 .sidebar {
@@ -156,11 +130,10 @@ ul{
         top: 0;
         height: 100%;
         z-index: 1000;
-        background-image: url("../../assets/img-login.jpg");
-        background-repeat: no-repeat;
-        background-size: cover;
-        background-blend-mode: multiply;
-        background-color: var(--header-bg);
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        
         &.visible {
             transform: translateX(0);
         }
@@ -173,16 +146,17 @@ ul{
     top: 10px;
     left: 10px;
     z-index: 1001;
-    background: transparent;
-    border: none;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
     font-size: 24px;
     color: white;
+    padding: 8px 12px;
 
     @media (max-width: 946px) {
         display: block;
-        border: solid var(--secondary-color) 1px;
-        background-color: var(--primary-color);
-
     }
 }
 

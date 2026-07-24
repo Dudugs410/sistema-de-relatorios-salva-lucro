@@ -1,16 +1,40 @@
 @import '../../styles/variables';
 
+// ===== MAIN LAYOUT WITH BACKGROUND IMAGE =====
 .layout {
     height: 100vh;
     display: flex;
     flex-direction: column;
     overflow-x: hidden;
+    
+    background-image: url("../../assets/img-login.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    position: relative;
   }
   
   .layout-content {
     display: flex;
     flex: 1;
     overflow-x: hidden;
+  }
+
+  .layout-main {
+    background-color: var(--background-color)
+    //position: relative;
+    //background-blend-mode: lighten;
+    //z-index: 0;
+    
+    /*&::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-color: var(--background-color);
+      opacity: 0.5;
+      z-index: -1;
+    }*/
   }
 
   .navbar-title{
@@ -37,12 +61,13 @@ img.img-header:hover{
     cursor: pointer !important;
   }
   
+  // ===== SIDEBAR WITH COLOR OVERLAY =====
   .sidebar-content {
     flex-shrink: 0;
     position: relative;
     overflow: hidden;
     
-    // Pseudo-element for the background image with darkening
+    // Use soft light blend mode for brighter result
     &::before {
       content: '';
       position: absolute;
@@ -53,13 +78,19 @@ img.img-header:hover{
       background-image: url("../../assets/img-login.jpg");
       background-repeat: no-repeat;
       background-size: cover;
-      background-blend-mode: multiply;
+      background-position: center;
+      background-blend-mode: soft-light; // Brighter than multiply
       background-color: var(--primary-color);
-      filter: brightness(0.7);
+      opacity: 0.9;
       z-index: 0;
     }
     
-    // Ensure all children appear above the background
+    // Lighter glass-morphism with white tint
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    
     > * {
       position: relative;
       z-index: 1;
@@ -88,26 +119,60 @@ img.img-header:hover{
     position: sticky;
     top: 0;
     z-index: 10;
+    
+    .header-bg-image {
+      position: relative;
+      
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url("../../assets/img-login.jpg");
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+        background-blend-mode: soft-light;
+        background-color: var(--primary-color);
+        opacity: 0.9;
+        z-index: 0;
+      }
+      
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      
+      > * {
+        position: relative;
+        z-index: 1;
+      }
+    }
   }
 
 // ===== RESPONSIVE STYLES =====
-// Ensure the sidebar background works the same on all screen sizes
-
 @media screen and (max-width: 768px) {
+  .navbar-title > img {
+    width: 120px;
+  }
+  
   .sidebar-content {
-    // Ensure the pseudo-element still works on mobile
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    
     &::before {
-      background-image: url("../../assets/img-login.jpg");
-      background-repeat: no-repeat;
-      background-size: cover;
-      background-blend-mode: multiply;
-      background-color: var(--primary-color);
-      filter: brightness(0.7);
+      opacity: 0.95;
     }
   }
   
-  .navbar-title > img {
-    width: 120px;
+  .header-container-fixed {
+    .header-bg-image {
+      &::before {
+        opacity: 0.95;
+      }
+    }
   }
 }
 

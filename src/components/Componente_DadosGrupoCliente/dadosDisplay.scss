@@ -2,12 +2,41 @@
 
 .display-seletor{
     height: auto;
-    /* width: 100%; */
-    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     flex-direction: column;
-    /* justify-content: center; */
     align-items: stretch;
+    position: relative;
+    
+    // EXACT SAME PATTERN AS HEADER AND SIDEBAR
+    // Background with primary color overlay using pseudo-element
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url("../../assets/img-login.jpg");
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
+      background-blend-mode: soft-light;
+      background-color: var(--primary-color);
+      opacity: 0.9;
+      z-index: 0;
+    }
+    
+    // Glass-morphism effect on top of the colored background
+    background: rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    
+    // Ensure all children appear above the background
+    > * {
+      position: relative;
+      z-index: 1;
+    }
 }
 
 .tenant-badge-small {
@@ -22,7 +51,6 @@
 }
 
 .dados-display-container{
-    background-color: var(--primary-color);
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
@@ -53,7 +81,6 @@
 .cli-container-display{
     display: flex;
     width: 100%;
-    /* flex-wrap: wrap; */
     justify-content: center;
     align-items: center;
     flex-direction: row;
@@ -68,6 +95,10 @@
     width: 100%;
     white-space: nowrap;
     justify-content: flex-end;
+    
+    span {
+        color: white;
+    }
 }
 
 .select-card-seletor-btn-container{
@@ -86,7 +117,6 @@
         border: solid var(--secondary-color) 1px;
         color: var(--secondary-color);
     }
-
 }
 
 @media only screen and (max-width: 630px){
