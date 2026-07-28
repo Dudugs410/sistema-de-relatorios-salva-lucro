@@ -310,178 +310,174 @@ const Creditos = () => {
   }
 
   return (
-    <div className='appPage'>
-      <div className='page-vendas-background'>
-        <div className='page-content-vendas'>
-          <div className='vendas-title-container'>
-            <h1 className='vendas-title'>Calendário de Créditos</h1>
-          </div>
-          <hr className='hr-global' />
-          <div className='component-container-vendas' data-tour="calendario-section">
-            {creditsPageArray !== null ?
-              (creditsPageArray.length > 0 ? (
-                <NewDisplayData
-                  dataArray={creditsPageArray}
-                  adminDataArray={creditsPageAdminArray}
-                  totals={creditsTotal}
-                  onGoBack={resetValues}
-                  setRunTutorial={setRunTutorial}
-                  location={location}
-                  runTutorial={runTutorial}
-                  tutorialSteps={tutorialSteps}
+    <div className='page-content-vendas'>
+      <div className='vendas-title-container'>
+        <h1 className='vendas-title'>Calendário de Créditos</h1>
+      </div>
+      <hr className='hr-global' />
+      <div className='component-container-vendas' data-tour="calendario-section">
+        {creditsPageArray !== null ?
+          (creditsPageArray.length > 0 ? (
+            <NewDisplayData
+              dataArray={creditsPageArray}
+              adminDataArray={creditsPageAdminArray}
+              totals={creditsTotal}
+              onGoBack={resetValues}
+              setRunTutorial={setRunTutorial}
+              location={location}
+              runTutorial={runTutorial}
+              tutorialSteps={tutorialSteps}
+            />
+          ) : (
+            <>
+              {/* Joyride for calendar view */}
+              {runTutorial && (
+                <Joyride
+                  steps={tutorialSteps}
+                  run={runTutorial}
+                  continuous={true}
+                  scrollToFirstStep={false}
+                  showProgress={true}
+                  showSkipButton={true}
+                  scrollOffset={80}
+                  styles={{
+                    options: {
+                      primaryColor: '#99cc33',
+                      textColor: '#0a3d70',
+                      zIndex: 10000,
+                    }
+                  }}
+                  callback={(data) => {
+                    if (data.status === 'finished' || data.status === 'skipped') {
+                      handleTutorialEnd()
+                    }
+                  }}
+                  locale={{
+                    back: 'Voltar',
+                    close: 'Fechar',
+                    last: 'Finalizar',
+                    next: 'Próximo',
+                    skip: 'Pular',
+                    nextLabelWithProgress: 'Próximo ({step} de {steps})',
+                  }}
                 />
-              ) : (
-                <>
-                  {/* Joyride for calendar view */}
-                  {runTutorial && (
-                    <Joyride
-                      steps={tutorialSteps}
-                      run={runTutorial}
-                      continuous={true}
-                      scrollToFirstStep={false}
-                      showProgress={true}
-                      showSkipButton={true}
-                      scrollOffset={80}
-                      styles={{
-                        options: {
-                          primaryColor: '#99cc33',
-                          textColor: '#0a3d70',
-                          zIndex: 10000,
-                        }
-                      }}
-                      callback={(data) => {
-                        if (data.status === 'finished' || data.status === 'skipped') {
-                          handleTutorialEnd()
-                        }
-                      }}
-                      locale={{
-                        back: 'Voltar',
-                        close: 'Fechar',
-                        last: 'Finalizar',
-                        next: 'Próximo',
-                        skip: 'Pular',
-                        nextLabelWithProgress: 'Próximo ({step} de {steps})',
-                      }}
-                    />
-                  )}
-                  
-                  <div className='select-container-calendario' data-tour="select-container-calendario">
-                    <div className='select-wrapper'>
-                      <h5>Adquirente</h5>
-                      <Select
-                        className='seletor-adq-select fixed-width-select'
-                        id='adquirente'
-                        options={listaAdministradoras}
-                        getOptionLabel={(option) => option.nomeAdquirente}
-                        getOptionValue={(option) => option.codigoAdquirente}
-                        onChange={(option) => handleAdmin(option)}
-                        value={getSelectedAdminOption()}
-                        menuPortalTarget={document.body}
-                        menuPosition="fixed"
-                        placeholder="Selecione uma adquirente..."
-                        isClearable={true}
-                        styles={{
-                          control: (base) => ({
-                            ...base,
-                            minWidth: 250,
-                            width: '100%',
-                          }),
-                          menu: (base) => ({
-                            ...base,
-                            minWidth: 250,
-                            width: '100%',
-                          }),
-                          valueContainer: (base) => ({
-                            ...base,
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                          }),
-                          singleValue: (base) => ({
-                            ...base,
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            maxWidth: '90%',
-                          }),
-                        }}
-                      />
-                    </div>
-                    <div className='select-wrapper'>
-                      <h5>Bandeira</h5>
-                      <Select
-                        className='seletor-adq-select fixed-width-select'
-                        id='bandeira'
-                        options={listaBandeiras}
-                        getOptionLabel={(option) => option.descricaoBandeira}
-                        getOptionValue={(option) => option.codigoBandeira}
-                        onChange={(option) => handleBan(option)}
-                        value={getSelectedBanOption()}
-                        menuPortalTarget={document.body}
-                        menuPosition="fixed"
-                        placeholder="Selecione uma bandeira..."
-                        isClearable={true}
-                        styles={{
-                          control: (base) => ({
-                            ...base,
-                            minWidth: 250,
-                            width: '100%',
-                          }),
-                          menu: (base) => ({
-                            ...base,
-                            minWidth: 250,
-                            width: '100%',
-                          }),
-                          valueContainer: (base) => ({
-                            ...base,
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                          }),
-                          singleValue: (base) => ({
-                            ...base,
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            maxWidth: '90%',
-                          }),
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <MyCalendar
-                    onLoadData={handleLoadData}
-                    getCalendarDate={handleDateRangeChange}
-                    btnDisabled={btnDisabledCredits}
+              )}
+              
+              <div className='select-container-calendario' data-tour="select-container-calendario">
+                <div className='select-wrapper'>
+                  <h5>Adquirente</h5>
+                  <Select
+                    className='seletor-adq-select fixed-width-select'
+                    id='adquirente'
+                    options={listaAdministradoras}
+                    getOptionLabel={(option) => option.nomeAdquirente}
+                    getOptionValue={(option) => option.codigoAdquirente}
+                    onChange={(option) => handleAdmin(option)}
+                    value={getSelectedAdminOption()}
+                    menuPortalTarget={document.body}
+                    menuPosition="fixed"
+                    placeholder="Selecione uma adquirente..."
+                    isClearable={true}
+                    styles={{
+                      control: (base) => ({
+                        ...base,
+                        minWidth: 250,
+                        width: '100%',
+                      }),
+                      menu: (base) => ({
+                        ...base,
+                        minWidth: 250,
+                        width: '100%',
+                      }),
+                      valueContainer: (base) => ({
+                        ...base,
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }),
+                      singleValue: (base) => ({
+                        ...base,
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        maxWidth: '90%',
+                      }),
+                    }}
                   />
-                </>
-              )
-            ) : null}
-            <button
-              className='btn btn-success-dados btn-tutorial px-2 py-1'
-              onClick={() => {
-                setRunTutorial(false);
-                setTimeout(() => {
-                  setRunTutorial(true);
-                }, 50);
-              }}
-              style={{
-                position: 'relative',
-                bottom: '0px',
-                right: '-10px',
-                zIndex: 10,
-                padding: '10px 15px',
-                background: 'none',
-                color: '#99cc33',
-                border: 'none',
-                borderRadius: '5px',
-                cursor: 'pointer'
-              }}
-            >
-              <FiHelpCircle />
-            </button>
-          </div>
-        </div>
+                </div>
+                <div className='select-wrapper'>
+                  <h5>Bandeira</h5>
+                  <Select
+                    className='seletor-adq-select fixed-width-select'
+                    id='bandeira'
+                    options={listaBandeiras}
+                    getOptionLabel={(option) => option.descricaoBandeira}
+                    getOptionValue={(option) => option.codigoBandeira}
+                    onChange={(option) => handleBan(option)}
+                    value={getSelectedBanOption()}
+                    menuPortalTarget={document.body}
+                    menuPosition="fixed"
+                    placeholder="Selecione uma bandeira..."
+                    isClearable={true}
+                    styles={{
+                      control: (base) => ({
+                        ...base,
+                        minWidth: 250,
+                        width: '100%',
+                      }),
+                      menu: (base) => ({
+                        ...base,
+                        minWidth: 250,
+                        width: '100%',
+                      }),
+                      valueContainer: (base) => ({
+                        ...base,
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }),
+                      singleValue: (base) => ({
+                        ...base,
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        maxWidth: '90%',
+                      }),
+                    }}
+                  />
+                </div>
+              </div>
+              <MyCalendar
+                onLoadData={handleLoadData}
+                getCalendarDate={handleDateRangeChange}
+                btnDisabled={btnDisabledCredits}
+              />
+            </>
+          )
+        ) : null}
+        <button
+          className='btn btn-success-dados btn-tutorial px-2 py-1'
+          onClick={() => {
+            setRunTutorial(false);
+            setTimeout(() => {
+              setRunTutorial(true);
+            }, 50);
+          }}
+          style={{
+            position: 'relative',
+            bottom: '0px',
+            right: '-10px',
+            zIndex: 10,
+            padding: '10px 15px',
+            background: 'none',
+            color: '#99cc33',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer'
+          }}
+        >
+          <FiHelpCircle />
+        </button>
       </div>
     </div>
   )
