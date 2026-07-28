@@ -22,19 +22,10 @@
   }
 
   .layout-main {
-    background-color: var(--background-color)
-    //position: relative;
-    //background-blend-mode: lighten;
-    //z-index: 0;
-    
-    /*&::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background-color: var(--background-color);
-      opacity: 0.5;
-      z-index: -1;
-    }*/
+    display: flex;
+    background-color: var(--background-color);
+    justify-content: center;
+    align-items: stretch;
   }
 
   .navbar-title{
@@ -47,14 +38,14 @@
 }
 
 .navbar-title > img {
-    width: 160px;
+  width: 160px;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+  
+  &:hover {
     opacity: 1;
-    transition: opacity 0.3s ease;
-    
-    &:hover {
-      opacity: 1;
-      cursor: pointer !important;
-    }
+    cursor: pointer !important;
+  }
 }
 
 img.img-header:hover{
@@ -66,6 +57,7 @@ img.img-header:hover{
     flex-shrink: 0;
     position: relative;
     overflow: hidden;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     
     // Use soft light blend mode for brighter result
     &::before {
@@ -79,7 +71,7 @@ img.img-header:hover{
       background-repeat: no-repeat;
       background-size: cover;
       background-position: center;
-      background-blend-mode: soft-light; // Brighter than multiply
+      background-blend-mode: soft-light;
       background-color: var(--primary-color);
       opacity: 0.9;
       z-index: 0;
@@ -94,6 +86,30 @@ img.img-header:hover{
     > * {
       position: relative;
       z-index: 1;
+    }
+
+    // Mobile styles
+    @media (max-width: 946px) {
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100vh;
+      z-index: 1000;
+      transform: translateX(-100%);
+      width: 280px;
+      box-shadow: 2px 0 20px rgba(0, 0, 0, 0.5);
+      padding-top: 70px;
+      
+      &.visible {
+        transform: translateX(0);
+      }
+    }
+
+    // Desktop styles
+    @media (min-width: 947px) {
+      transform: translateX(0) !important;
+      width: 250px;
+      min-height: 100vh;
     }
   }
   
@@ -150,6 +166,68 @@ img.img-header:hover{
       }
     }
   }
+
+// ===== HAMBURGER BUTTON =====
+.hamburger-button {
+    display: none;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 9999;
+    background: rgba(26, 26, 46, 0.95);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    color: white;
+    padding: 10px 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: all 0.2s ease;
+    align-items: center;
+    justify-content: center;
+    
+    &:hover {
+      background: rgba(26, 26, 46, 1);
+      transform: scale(1.05);
+    }
+    
+    &:active {
+      transform: scale(0.95);
+    }
+    
+    /* Show only on mobile */
+    @media (max-width: 946px) {
+      display: flex;
+    }
+}
+
+// ===== SIDEBAR OVERLAY =====
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    animation: fadeIn 0.3s ease;
+    
+    /* Show only on mobile */
+    @media (max-width: 946px) {
+      display: block;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+}
 
 // ===== RESPONSIVE STYLES =====
 @media screen and (max-width: 768px) {

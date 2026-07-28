@@ -654,20 +654,21 @@ const NewDisplayData = ({
           onExport={getExportFunction()}
           filteredData={currentFilteredData}
         />
+        <hr className='hr-global'/>
       </div>
       
       {!hideTables && (
         <div className='component-container-vendas'>
-          <div data-tour="tabelavendas-section">
-            {tableProps && (
-              <NewTabelaGenerica {...tableProps} />
-            )}
-          </div>
           {adminDataArray && adminDataArray.length > 0 && (exportPage === 'vendas' || exportPage === 'creditos') && (
             <div data-tour="totaladq-section">
               <TabelaGenericaAdm Array={adminDataArray} />
             </div>
           )}
+          <div data-tour="tabelavendas-section">
+            {tableProps && (
+              <NewTabelaGenerica {...tableProps} />
+            )}
+          </div>
           <hr className='hr-global' />
         </div>
       )}

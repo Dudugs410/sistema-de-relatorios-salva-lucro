@@ -11,7 +11,9 @@ const OpenFinance = () => {
             <div className='page-background-global'>
                 <div className='page-content-global'>
                     <div className='page-content-bancos'>
-                        
+                        <div className='title-container-global'>
+                            <h1 className='title-global'>Cadastramento de Bancos</h1>
+                        </div>
                     </div>
                 </div>
             </div>

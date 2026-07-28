@@ -97,7 +97,6 @@
 .bg-sidebar{
     height: 100%;
     border-right: solid rgba(255, 255, 255, 0.05) 1px;
-    // Remove any background - it's handled by the parent
 }
 
 ul{
@@ -115,51 +114,5 @@ ul{
 
 .sidebar {
     width: 250px;
-    transition: transform 0.3s ease;
     overflow-y: overlay;
-    
-    &.visible {
-        transform: translateX(0);
-    }
-
-    @media (max-width: 946px) {
-        transform: translateX(-100%);
-        padding-top: 70px;
-        position: fixed;
-        left: 0;
-        top: 0;
-        height: 100%;
-        z-index: 1000;
-        background: rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        
-        &.visible {
-            transform: translateX(0);
-        }
-    }
-}
-
-.sidebar-toggle {
-    display: none;
-    position: fixed;
-    top: 10px;
-    left: 10px;
-    z-index: 1001;
-    background: rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    font-size: 24px;
-    color: white;
-    padding: 8px 12px;
-
-    @media (max-width: 946px) {
-        display: block;
-    }
-}
-
-.sidebar-content>button:hover{
-    background-color: var(--secondary-color);
 }

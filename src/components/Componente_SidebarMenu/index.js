@@ -3,9 +3,8 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import './Sidebar.scss'
 import { FiPercent, FiMoon, FiSun, FiHome, FiDollarSign, FiCreditCard, FiRefreshCcw, FiTool, FiFileText, FiClipboard, FiDownload, FiCalendar, FiPaperclip, FiSettings, FiTruck, FiShoppingBag, FiTable, FiLink, FiDatabase } from "react-icons/fi"
 import { LiaFileInvoiceDollarSolid } from "react-icons/lia";
-import { Collapse, Nav, Navbar, NavItem, NavLink, Button } from 'reactstrap'
+import { Collapse, Nav, Navbar, NavItem, NavLink } from 'reactstrap'
 import { AuthContext } from '../../contexts/auth'
-import { FiMenu } from 'react-icons/fi'
 import { useNavigate, useLocation } from 'react-router-dom'
 import api from '../../services/api';
 import { getTenantFromURL } from '../../util/tenant';
@@ -38,10 +37,9 @@ const Sidebar = () => {
     const [optionsWithIcons, setOptionsWithIcons] = useState([])
     const [activeParent, setActiveParent] = useState(null)
     const [lastClicked, setLastClicked] = useState(null)
-    const [sidebarVisible, setSidebarVisible] = useState(false)
     const [loading, setLoading] = useState(true)
     const [currentTenant, setCurrentTenant] = useState(null)
-    const [logoError, setLogoError] = useState(false) // Added for logo fallback
+    const [logoError, setLogoError] = useState(false)
     
     const { currentLogo, currentContext, user } = useContext(AuthContext)
 
@@ -54,7 +52,6 @@ const Sidebar = () => {
         setCurrentTenant(tenant);
         console.log('🏢 Sidebar - Tenant atual:', tenant?.path);
         
-        // Ensure default context is set if not already (NEW)
         const currentContextAttr = document.documentElement.getAttribute('data-context');
         if (!currentContextAttr) {
             const defaultContext = 'salvalucro';
@@ -63,7 +60,6 @@ const Sidebar = () => {
             console.log('🔧 Set default context:', defaultContext);
         }
         
-        // Ensure default theme is set (NEW)
         const currentTheme = document.documentElement.getAttribute('data-theme');
         if (!currentTheme) {
             const defaultTheme = 'light';
@@ -143,22 +139,16 @@ const Sidebar = () => {
         setLastClicked(child)
         setActiveParent(parent)
         safeNavigate(navigationLink)
-        setSidebarVisible(false)
     }
 
     const handleParentClickWithoutChildren = (parent, navigationLink) => {
         setLastClicked(parent)
         setActiveParent(parent)
         safeNavigate(navigationLink)
-        setSidebarVisible(false)
     }
 
     const handleLogo = () => {
         safeNavigate('/dashboard')
-    }
-
-    const toggleSidebar = () => {
-        setSidebarVisible(!sidebarVisible)
     }
 
     const transformMenuData = (menuData) => {
@@ -289,16 +279,11 @@ const Sidebar = () => {
     };
 
     // ===== LOGO RENDERING LOGIC =====
-    // Check if we should use the color mask (ONLY for salvalucro3)
     const shouldUseColorMask = () => {
-        // ONLY apply color mask if tenant is salvalucro3
-        // No exceptions for ALT-* or other tenants
         return currentTenant?.path === 'salvalucro3';
     };
 
-    // Render logo based on tenant (UPDATED with error handling)
     const renderLogo = () => {
-        // If no logo is available or logo failed to load, show text fallback (NEW)
         if (!currentLogo || logoError) {
             return (
                 <div 
@@ -324,7 +309,6 @@ const Sidebar = () => {
         const isColorMask = shouldUseColorMask();
         
         if (isColorMask) {
-            // For salvalucro3 ONLY, use color mask
             return (
                 <div 
                     className='img-header logo-mask'
@@ -346,15 +330,13 @@ const Sidebar = () => {
                 />
             );
         } else {
-            // For ALL other tenants (Sifra, MG, CardDigital, SuperJur, etc.)
-            // Show the logo with original colors
             return (
                 <img 
                     className='img-header' 
                     src={currentLogo} 
                     alt='logo'
                     onClick={handleLogo}
-                    onError={() => setLogoError(true)} // NEW: handle image load error
+                    onError={() => setLogoError(true)}
                     style={{
                         width: '160px',
                         height: 'auto',
@@ -368,83 +350,73 @@ const Sidebar = () => {
 
     if (loading) {
         return (
-            <>
-                <Button className="sidebar-toggle" onClick={toggleSidebar}>
-                    <FiMenu />
-                </Button>
-                <div className={`d-flex flex-column bg-sidebar sidebar ${sidebarVisible ? 'visible' : ''}`}>
-                    <div className='navbar-title'>
-                        {renderLogo()}
-                    </div>
-                    <div className="loading-placeholder text-center p-4" style={{ color: 'var(--sidebar-font-color, #ffffff)' }}>
-                        Carregando menu...
-                    </div>
+            <div className={`d-flex flex-column bg-sidebar sidebar`}>
+                <div className='navbar-title'>
+                    {renderLogo()}
                 </div>
-            </>
+                <div className="loading-placeholder text-center p-4" style={{ color: 'var(--sidebar-font-color, #ffffff)' }}>
+                    Carregando menu...
+                </div>
+            </div>
         )
     }
 
     return (
-        <>
-            <Button className="sidebar-toggle" onClick={toggleSidebar}>
-                <FiMenu />
-            </Button>
-            <div className={`d-flex flex-column bg-sidebar sidebar ${sidebarVisible ? 'visible' : ''}`}>
-                <div className='navbar-title'>
-                    {renderLogo()}
-                </div>
-                <Navbar color="light" light expand="md">
-                    <Nav navbar className="flex-column w-100">
-                        {optionsWithIcons.length > 0 ? (
-                            optionsWithIcons.map((option, index) => (
-                                <NavItem key={index}>
-                                    <NavLink 
-                                        className={`b-links navlink-parent ${lastClicked === option.nome || activeParent === option.nome ? 'active-parent' : ''}`} 
-                                        href="#" 
-                                        onClick={(e) => {
-                                            e.preventDefault()
-                                            option.children ? toggleDropdown(option.nome) : handleParentClickWithoutChildren(option.nome, option.rota)
-                                        }}
-                                    >
-                                        {renderIcon(option.icone, option.nome)}
-                                        <b>&nbsp;{option.nome}</b>
-                                    </NavLink>
-                                    {option.children && option.children.length > 0 && (
-                                        <Collapse isOpen={activeParent === option.nome}>
-                                            <Nav navbar className="flex-column ml-3">
-                                                {option.children.map((child, childIndex) => (
-                                                    <NavItem key={childIndex}>
-                                                        <NavLink 
-                                                            className={`navlink-child ${lastClicked === child.nome ? 'active-child' : ''}`} 
-                                                            onClick={(e) => {
-                                                                e.preventDefault()
-                                                                handleChildClick(child.nome, child.rota, option.nome)
-                                                            }}
-                                                        >
-                                                            {renderIcon(child.icone, child.nome)}
-                                                            {child.nome}
-                                                        </NavLink>
-                                                    </NavItem>
-                                                ))}
-                                            </Nav>
-                                        </Collapse>
-                                    )}
-                                </NavItem>
-                            ))
-                        ) : (
-                            <div className="text-center p-4">
-                                <div className="text-muted" style={{ color: 'var(--sidebar-font-color, #ffffff)' }}>
-                                    Nenhum menu disponível
-                                </div>
-                                <button onClick={testDirectFetch} className="btn btn-sm btn-primary mt-2">
-                                    Recarregar Menu
-                                </button>
-                            </div>
-                        )}
-                    </Nav>
-                </Navbar>
+        <div className={`d-flex flex-column bg-sidebar sidebar`}>
+            <div className='navbar-title'>
+                {renderLogo()}
             </div>
-        </>
+            <Navbar color="light" light expand="md">
+                <Nav navbar className="flex-column w-100">
+                    {optionsWithIcons.length > 0 ? (
+                        optionsWithIcons.map((option, index) => (
+                            <NavItem key={index}>
+                                <NavLink 
+                                    className={`b-links navlink-parent ${lastClicked === option.nome || activeParent === option.nome ? 'active-parent' : ''}`} 
+                                    href="#" 
+                                    onClick={(e) => {
+                                        e.preventDefault()
+                                        option.children ? toggleDropdown(option.nome) : handleParentClickWithoutChildren(option.nome, option.rota)
+                                    }}
+                                >
+                                    {renderIcon(option.icone, option.nome)}
+                                    <b>&nbsp;{option.nome}</b>
+                                </NavLink>
+                                {option.children && option.children.length > 0 && (
+                                    <Collapse isOpen={activeParent === option.nome}>
+                                        <Nav navbar className="flex-column ml-3">
+                                            {option.children.map((child, childIndex) => (
+                                                <NavItem key={childIndex}>
+                                                    <NavLink 
+                                                        className={`navlink-child ${lastClicked === child.nome ? 'active-child' : ''}`} 
+                                                        onClick={(e) => {
+                                                            e.preventDefault()
+                                                            handleChildClick(child.nome, child.rota, option.nome)
+                                                        }}
+                                                    >
+                                                        {renderIcon(child.icone, child.nome)}
+                                                        {child.nome}
+                                                    </NavLink>
+                                                </NavItem>
+                                            ))}
+                                        </Nav>
+                                    </Collapse>
+                                )}
+                            </NavItem>
+                        ))
+                    ) : (
+                        <div className="text-center p-4">
+                            <div className="text-muted" style={{ color: 'var(--sidebar-font-color, #ffffff)' }}>
+                                Nenhum menu disponível
+                            </div>
+                            <button onClick={testDirectFetch} className="btn btn-sm btn-primary mt-2">
+                                Recarregar Menu
+                            </button>
+                        </div>
+                    )}
+                </Nav>
+            </Navbar>
+        </div>
     )
 }
 

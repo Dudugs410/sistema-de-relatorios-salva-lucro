@@ -338,122 +338,118 @@ const Servicos = () => {
   }
 
   return (
-    <div className='appPage'>
-      <div className='page-vendas-background'>
-        <div className='page-content-vendas'>
-          <div className='vendas-title-container'>
-            <h1 className='vendas-title'>Serviços</h1>
-          </div>
-          <hr className='hr-global' />
-          
-          <div className='component-container-vendas'>
-            {servicesPageArray !== null ?
-              servicesPageArray.length > 0 ? (
-                <NewDisplayData 
-                  dataArray={servicesPageArray} 
-                  adminDataArray={servicesPageAdminArray} 
-                  totals={calculateServicesTotal(servicesPageArray)} 
-                  onGoBack={resetValues}
-                  location={location}
-                  hideTotals={true}
-                />
-              ) : (
-                <>
-                  <div data-tour="select-container-calendario" className='select-container-calendario'>
-                    <div className='select-wrapper'>
-                      <h5>Adquirente</h5>
-                      <Select
-                        className='seletor-adq-select fixed-width-select'
-                        id='adquirente'
-                        options={listaAdministradoras}
-                        getOptionLabel={(option) => option.nomeAdquirente}
-                        getOptionValue={(option) => option.codigoAdquirente}
-                        onChange={(option) => handleAdmin(option)}
-                        value={getSelectedAdminOption()}
-                        menuPortalTarget={document.body}
-                        menuPosition="fixed"
-                        placeholder="Selecione uma adquirente..."
-                        isClearable={true}
-                        styles={{
-                          control: (base) => ({
-                            ...base,
-                            minWidth: 250,
-                            width: '100%',
-                          }),
-                          menu: (base) => ({
-                            ...base,
-                            minWidth: 250,
-                            width: '100%',
-                          }),
-                          valueContainer: (base) => ({
-                            ...base,
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                          }),
-                          singleValue: (base) => ({
-                            ...base,
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            maxWidth: '90%',
-                          }),
-                        }}
-                      />
-                    </div>
-                    <div className='select-wrapper'>
-                      <h5>Bandeira</h5>
-                      <Select
-                        className='seletor-adq-select fixed-width-select'
-                        id='bandeira'
-                        options={listaBandeiras}
-                        getOptionLabel={(option) => option.descricaoBandeira}
-                        getOptionValue={(option) => option.codigoBandeira}
-                        onChange={(option) => handleBan(option)}
-                        value={getSelectedBanOption()}
-                        menuPortalTarget={document.body}
-                        menuPosition="fixed"
-                        placeholder="Selecione uma bandeira..."
-                        isClearable={true}
-                        styles={{
-                          control: (base) => ({
-                            ...base,
-                            minWidth: 250,
-                            width: '100%',
-                          }),
-                          menu: (base) => ({
-                            ...base,
-                            minWidth: 250,
-                            width: '100%',
-                          }),
-                          valueContainer: (base) => ({
-                            ...base,
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                          }),
-                          singleValue: (base) => ({
-                            ...base,
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            maxWidth: '90%',
-                          }),
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  <MyCalendar 
-                    onLoadData={handleLoadData} 
-                    getCalendarDate={handleDateRangeChange} 
-                    btnDisabled={btnDisabledServices}
+    <div className='page-content-vendas'>
+      <div className='vendas-title-container'>
+        <h1 className='vendas-title'>Serviços</h1>
+      </div>
+      <hr className='hr-global' />
+      
+      <div className='component-container-vendas'>
+        {servicesPageArray !== null ?
+          servicesPageArray.length > 0 ? (
+            <NewDisplayData 
+              dataArray={servicesPageArray} 
+              adminDataArray={servicesPageAdminArray} 
+              totals={calculateServicesTotal(servicesPageArray)} 
+              onGoBack={resetValues}
+              location={location}
+              hideTotals={true}
+            />
+          ) : (
+            <>
+              <div data-tour="select-container-calendario" className='select-container-calendario'>
+                <div className='select-wrapper'>
+                  <h5>Adquirente</h5>
+                  <Select
+                    className='seletor-adq-select fixed-width-select'
+                    id='adquirente'
+                    options={listaAdministradoras}
+                    getOptionLabel={(option) => option.nomeAdquirente}
+                    getOptionValue={(option) => option.codigoAdquirente}
+                    onChange={(option) => handleAdmin(option)}
+                    value={getSelectedAdminOption()}
+                    menuPortalTarget={document.body}
+                    menuPosition="fixed"
+                    placeholder="Selecione uma adquirente..."
+                    isClearable={true}
+                    styles={{
+                      control: (base) => ({
+                        ...base,
+                        minWidth: 250,
+                        width: '100%',
+                      }),
+                      menu: (base) => ({
+                        ...base,
+                        minWidth: 250,
+                        width: '100%',
+                      }),
+                      valueContainer: (base) => ({
+                        ...base,
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }),
+                      singleValue: (base) => ({
+                        ...base,
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        maxWidth: '90%',
+                      }),
+                    }}
                   />
-                </>
-              )
-            : null}
-          </div>
-        </div>
+                </div>
+                <div className='select-wrapper'>
+                  <h5>Bandeira</h5>
+                  <Select
+                    className='seletor-adq-select fixed-width-select'
+                    id='bandeira'
+                    options={listaBandeiras}
+                    getOptionLabel={(option) => option.descricaoBandeira}
+                    getOptionValue={(option) => option.codigoBandeira}
+                    onChange={(option) => handleBan(option)}
+                    value={getSelectedBanOption()}
+                    menuPortalTarget={document.body}
+                    menuPosition="fixed"
+                    placeholder="Selecione uma bandeira..."
+                    isClearable={true}
+                    styles={{
+                      control: (base) => ({
+                        ...base,
+                        minWidth: 250,
+                        width: '100%',
+                      }),
+                      menu: (base) => ({
+                        ...base,
+                        minWidth: 250,
+                        width: '100%',
+                      }),
+                      valueContainer: (base) => ({
+                        ...base,
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }),
+                      singleValue: (base) => ({
+                        ...base,
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        maxWidth: '90%',
+                      }),
+                    }}
+                  />
+                </div>
+              </div>
+
+              <MyCalendar 
+                onLoadData={handleLoadData} 
+                getCalendarDate={handleDateRangeChange} 
+                btnDisabled={btnDisabledServices}
+              />
+            </>
+          )
+        : null}
       </div>
     </div>
   )
