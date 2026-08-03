@@ -49,7 +49,6 @@ const Extrato = () => {
     }, [])
 
     useEffect(() => {
-        console.log('responseData: ', responseData)
         if((!responseData || Object.keys(responseData).length === 0)){
             setId(localStorage.getItem('pluggyID'))
         }
@@ -113,7 +112,6 @@ const Extrato = () => {
     }, [accounts])
 
     const handleRowClicked = (row) => {
-        console.log('clicked row: ', row)
         setClickedRow(row)
         setIsClicked(true)
         setItemId(row.itemId)
@@ -124,7 +122,6 @@ const Extrato = () => {
     const fetchClicked = async (row) => {
         Cookies.set('accountID', row.id)
         let billsTemp = fetchBills()
-        console.log('billsTemp: ', billsTemp)
     }
 
     const fetchAccounts = async () => {

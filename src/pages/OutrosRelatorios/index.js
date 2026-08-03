@@ -138,7 +138,6 @@ const OutrosRelatorios = () =>{
 
     const incluir = (e) => {
         e.preventDefault()
-        console.log('botão incluir')
     }
 
     const [opcoesApresentacao, setOpcoesApresentacao] = useState ([

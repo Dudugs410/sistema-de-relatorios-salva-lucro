@@ -3,9 +3,6 @@ import '../../../components/Modal/modal.scss'
 import { FiX } from 'react-icons/fi'
 
 const ModalAlerta = ({ onClose }) => {
-    useEffect(()=>{
-        console.log('modal alerta')
-    },[])
   return (
     <div className="modal-overlay">
       <div className='modal-window-content'>

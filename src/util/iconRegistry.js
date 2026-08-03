@@ -46,15 +46,9 @@ export const getDefaultIconByVisualIdentity = (identidadeVisual) => {
   // Normalize the identity - trim and lowercase
   const normalizedIdentity = (identidadeVisual || 'salvalucro').trim().toLowerCase()
   
-  console.log('🔍 getDefaultIconByVisualIdentity - Looking for:', {
-    original: identidadeVisual,
-    normalized: normalizedIdentity
-  })
-  
   // Direct lookup
   if (VISUAL_IDENTITY_ICONS[normalizedIdentity]) {
     const visualIcon = VISUAL_IDENTITY_ICONS[normalizedIdentity]
-    console.log('✅ Found matching icon:', visualIcon)
     return {
       id: `default_${normalizedIdentity}`,
       name: `Padrão (${visualIcon.name})`,

@@ -61,13 +61,11 @@ const Creditos = () => {
   }, [])
 
   const handleAdmin = (option) => {
-    console.log('executou função', option)
     setAdministradora(option?.codigoAdquirente || null)
     localStorage.setItem('selectedAdmCredits', JSON.stringify(option))
   }
 
   const handleBan = (option) => {
-    console.log('executou função', option)
     setBandeira(option?.codigoBandeira || null)
     localStorage.setItem('selectedBanCredits', JSON.stringify(option))
   }
@@ -141,7 +139,6 @@ const Creditos = () => {
       // Call the new API function
       const creditsData = await newLoadCredits(formattedStartDate, formattedEndDate)
       
-      console.log('Credits data loaded:', creditsData?.length || 0, 'records')
       
       if (creditsData && creditsData.length > 0) {
         // Calculate totals by produto
@@ -172,8 +169,6 @@ const Creditos = () => {
           total: totalGeral
         }
         
-        console.log('Calculated credits totals:', totals)
-        console.log(`Crédito: ${totalCredito}, Débito: ${totalDebito}, Voucher: ${totalVoucher}, Total: ${totalGeral}`)
         
         setCreditsTotal(totals)
         
@@ -206,7 +201,6 @@ const Creditos = () => {
   // Update admin array when creditsPageArray changes - ONLY ONCE
   useEffect(() => {
     if (creditsPageArray && creditsPageArray.length > 0 && !initialLoadDoneRef.current) {
-      console.log('Processing initial credits data in useEffect...')
       const groupedData = newGroupByAdminCredits(creditsPageArray)
       setCreditsPageAdminArray(groupedData)
       initialLoadDoneRef.current = true

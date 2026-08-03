@@ -246,7 +246,6 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 		try {
 			const requestObject = getRequestObject(format)
 			
-			console.log(`Downloading ${format} report with request:`, requestObject)
 			
 			const response = await api.post('relatorios/detalhado', requestObject)
 			
@@ -280,7 +279,6 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 				
 				// Success toast message
 				toast.success(`${format} baixado com sucesso!`)
-				console.log(`${format} relatório baixado com sucesso!`)
 			} else {
 				console.error('API returned unsuccessful response:', response.data)
 				toast.error(response.data.mensagem || `Falha ao gerar relatório ${format}`)

@@ -21,6 +21,7 @@ html.preload-transitions * {
 
 .page-background-global{
     display: flex;
+    width: 100%;
     justify-content: center;
     transition: all 0.4s;
     //background-color: var(--background-color);
@@ -621,6 +622,7 @@ tr{
 
     .page-background-global{
         display: flex;
+        width: 100%;
         justify-content: center;
         transition: all .4s;
         

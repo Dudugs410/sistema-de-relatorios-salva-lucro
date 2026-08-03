@@ -84,6 +84,7 @@
 
 .page-vendas-background {
   display: flex;
+  width: 100%;
   justify-content: center;
   transition: all 0.4s;
   background-color: var(--background-color);

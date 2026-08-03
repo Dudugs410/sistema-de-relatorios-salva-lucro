@@ -32,7 +32,6 @@ export function useUserActivity(onActive, onIdle, idleTimeout = 10 * 60 * 1000, 
     idleCheckTimeout.current = setTimeout(() => {
       const idleTime = Date.now() - lastActivityTimeRef.current;
       if (idleTime >= idleTimeout) {
-        console.log('User has gone idle.');
         onIdle();
       }
     }, idleTimeout);

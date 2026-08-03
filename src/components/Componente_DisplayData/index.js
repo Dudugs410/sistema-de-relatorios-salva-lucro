@@ -172,7 +172,6 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutori
         const currentFilteredData = tabelaGenericaRef.current.getFilteredData()
         const dataToExport = currentFilteredData && currentFilteredData.length > 0 ? currentFilteredData : dataArray
         
-        console.log(`Exporting ${dataToExport.length} records for ${currentPath}`)
         
         switch(currentPath) {
           case '/vendas': 
@@ -200,7 +199,6 @@ const getTotalUpdateFunction = useCallback(() => {
     case '/vendas': return setSalesTotal
     case '/creditos': return setCreditsTotal
     case '/servicos': return (total) => {
-      console.log('Services total:', total)
       return null
     }
     default: return null

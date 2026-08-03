@@ -178,7 +178,7 @@ const Teste = () => {
   };
 
   const Testar = async () => {
-    console.log('executou funcao');
+
     setLoading(true);
     setError(null);
     setFileBase64(null);
@@ -195,10 +195,8 @@ const Teste = () => {
     if (cliente && cliente.label === 'TODOS') {
       const clientCodes = grupo?.clients?.map(client => client.CODIGOCLIENTE) || [];
       clientesString = clientCodes.join(', ');
-      console.log('All client codes (TODOS):', clientesString);
     } else if (cliente && cliente.cod) {
       clientesString = String(cliente.cod);
-      console.log('Single client code:', clientesString);
     } else {
       clientesString = "";
     }
@@ -229,16 +227,13 @@ const Teste = () => {
     
     try {
       const response = await api.post('relatorios/detalhado', object);
-      console.log('response:', response.data);
       
       if (response.data.success === true) {
         if (response.data.formato === 'PDF') {
-          console.log('Setting PDF base64 data...');
           setFileBase64(response.data.base64);
           setFileFormat('PDF');
           setResponseMessage(response.data.mensagem);
         } else if (response.data.formato === 'XLSX') {
-          console.log('Setting Excel base64 data...');
           setFileBase64(response.data.base64);
           setFileFormat('XLSX');
           setResponseMessage(response.data.mensagem);

@@ -8,9 +8,6 @@ import { toast } from 'react-toastify';
 import useBankForm from './useBankForm';
 
 const ModalNewBank = ({ onClose, cliAdqOptions, setIsSelected, cliOptions, admOptions, banOptions, productOptions, subproductOptions, addBank, loadBanks, setBanksList }) => {
-  useEffect(() => {
-    console.log('Render Modal New Bank');
-  }, []);
 
   const {
     selectedCli,
