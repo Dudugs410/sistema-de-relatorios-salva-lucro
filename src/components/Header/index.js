@@ -171,7 +171,6 @@ const Header = () => {
                                     src={getImageSource()}
                                     alt="User profile"
                                     onError={(e) => {
-                                        console.log('Image failed to load, using default')
                                         e.target.src = defaultImg
                                     }}
                                 />

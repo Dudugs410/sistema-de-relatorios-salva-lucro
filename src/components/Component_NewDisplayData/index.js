@@ -323,7 +323,6 @@ const NewDisplayData = ({
           dataToExport = currentFilteredDataFromTable && currentFilteredDataFromTable.length > 0 ? currentFilteredDataFromTable : dataArray
         }
         
-        console.log(`Exporting ${dataToExport?.length || 0} records for ${currentPath}`)
         
         // Use custom export page if provided
         const exportPageType = customExportPage || currentPath
@@ -334,7 +333,6 @@ const NewDisplayData = ({
             break
           case 'openfinance':
             // Handle openfinance export
-            console.log('Exporting openfinance data:', dataToExport)
             // You can implement a specific export function here
             // Or fallback to a generic export
             if (exportSales) {
@@ -481,7 +479,6 @@ const NewDisplayData = ({
         total: totalLiquido
       }
       
-      console.log('Services/Ajustes total:', totalResult)
     }
   }, [getTotalUpdateFunction, customExportPage])
 
@@ -590,7 +587,6 @@ const NewDisplayData = ({
     if (dataArray && dataArray.length > 0 && !hasLoadedTotals && !hideTotals) {
       const dataSignature = JSON.stringify(dataArray)
       if (dataSignature !== lastDataArrayRef.current) {
-        console.log('NewDisplayData received dataArray:', dataArray.length, 'records')
         setCurrentFilteredData(dataArray)
         lastDataArrayRef.current = dataSignature
       }

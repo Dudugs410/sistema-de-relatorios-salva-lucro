@@ -30,7 +30,6 @@ const TabelaVendasDashboard = ({array}) =>{
 
 	useEffect(() => {
 		setCurrentPage(1) // Reset page to 1 when data changes
-		console.log('array: ', array)
 	}, [array])
 
 	// Change page functions

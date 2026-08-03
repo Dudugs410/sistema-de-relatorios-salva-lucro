@@ -35,7 +35,6 @@ function PreferenceLoader({ children }) {
       const isLoggedIn = token && userId && (isSignedIn === true || storedIsSignedIn === true)
       
       if (isLoggedIn) {
-        console.log('🔄 User is logged in, loading preferences on refresh...')
         
         const prefs = await loadUserPrefs()
         
@@ -56,7 +55,6 @@ function PreferenceLoader({ children }) {
             localStorage.setItem('userIconCode', prefs.ICONE)
           }
         } else if (setUserImg) {
-          console.log('📝 No preferences found on refresh, setting default icon')
           const userData = JSON.parse(localStorage.getItem('user'))
           const identidadeVisual = userData?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro'
           const defaultIcon = getDefaultIconByVisualIdentity(identidadeVisual)

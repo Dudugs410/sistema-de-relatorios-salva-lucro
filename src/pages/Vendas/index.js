@@ -60,13 +60,11 @@ const Vendas = () =>{
   },[])
 
   const handleAdmin = (option) => {
-    console.log('executou função', option)
     setAdministradora(option?.codigoAdquirente || null)
     localStorage.setItem('selectedAdm', JSON.stringify(option)) 
   }
 
   const handleBan = (option) => {
-    console.log('executou função', option)
     setBandeira(option?.codigoBandeira || null)
     localStorage.setItem('selectedBan', JSON.stringify(option)) 
   }
@@ -87,7 +85,6 @@ const Vendas = () =>{
   // Memoize the grouped data to prevent recreation on every render
   const memoizedGroupedData = useMemo(() => {
     if (salesPageArray && salesPageArray.length > 0) {
-      console.log('Computing grouped data...')
       return newGroupByAdmin(salesPageArray)
     }
     return []
@@ -96,7 +93,6 @@ const Vendas = () =>{
   // Update admin array only when memoized value changes
   useEffect(() => {
     if (memoizedGroupedData.length > 0 && JSON.stringify(memoizedGroupedData) !== JSON.stringify(salesPageAdminArray)) {
-      console.log('Setting salesPageAdminArray:', memoizedGroupedData.length)
       setSalesPageAdminArray(memoizedGroupedData)
     } else if (memoizedGroupedData.length === 0 && salesPageAdminArray.length > 0) {
       setSalesPageAdminArray([])
@@ -144,7 +140,6 @@ const Vendas = () =>{
         currentTotal.credit !== memoizedTotals.credit ||
         currentTotal.voucher !== memoizedTotals.voucher ||
         currentTotal.total !== memoizedTotals.total) {
-      console.log('Updating sales total:', memoizedTotals)
       setSalesTotal(memoizedTotals)
     }
   }, [memoizedTotals, salesTotal, setSalesTotal])
@@ -202,7 +197,6 @@ const Vendas = () =>{
       const isDataSame = JSON.stringify(currentData) === JSON.stringify(memoizedExportData)
       
       if (!isDataSame) {
-        console.log('Updating salesTableData:', memoizedExportData.length, 'records')
         setSalesTableData(memoizedExportData)
       }
     } else if (memoizedExportData.length === 0 && salesTableData.length > 0) {
@@ -239,14 +233,8 @@ const Vendas = () =>{
       const filters = {
         adquirente: administradora || "",
         bandeira: bandeira || "",
-      }
-      
-      console.log('Calling newLoadSales with:', { startDate, endDate, filters })
-      
-      const data = await newLoadSales(startDate, endDate, filters)
-      
-      console.log('Data returned from newLoadSales:', data?.length, 'records')
-      
+      }  
+      const data = await newLoadSales(startDate, endDate, filters)      
       setSalesPageArray(data)
     } catch (error) {
       console.error('Error fetching sales data:', error)
@@ -382,7 +370,7 @@ const Vendas = () =>{
   }
 
   return(
-    <div className='page-content-global'>
+    <div className='page-content-vendas'>
       <div className='vendas-title-container'>
         <h1 className='vendas-title'>Calendário de Vendas</h1>
       </div>

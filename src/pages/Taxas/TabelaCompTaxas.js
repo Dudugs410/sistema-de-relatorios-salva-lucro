@@ -5,10 +5,6 @@ import { AuthContext } from '../../contexts/auth';
 
 const TabelaCompTaxas = ({ array }) => {
     const dataArray = Array.isArray(array) ? array : [array];
-
-    useEffect(()=>{
-        console.log("TabelaCompTaxas: ", array)
-    },[])
     
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(15);

@@ -62,7 +62,6 @@ const Usuario = () => {
   useEffect(() => {
     const defaultIconData = getUserDefaultIcon(identidadeVisual)
     setDefaultIcon(defaultIconData)
-    console.log('📌 Default icon set from IDENTIDADEVISUAL:', identidadeVisual, defaultIconData)
   }, [identidadeVisual])
 
   // Get default icon path for fallback
@@ -174,7 +173,6 @@ const Usuario = () => {
       document.body.removeChild(tempDiv)
       
       // Debug log to see what's being read
-      console.log(`Reading colors for ${schemeId} (${theme}):`, { primaryColor, secondaryColor })
       
       // If colors were successfully read and are valid, return them
       if (primaryColor && primaryColor !== '' && primaryColor !== 'undefined') {

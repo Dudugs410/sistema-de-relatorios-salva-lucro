@@ -92,10 +92,8 @@ const PrevisaoRecebimentos = () => {
     if (cliente && cliente.label === 'TODOS') {
       const clientCodes = grupo?.clients?.map(client => client.CODIGOCLIENTE) || []
       clientesString = clientCodes.join(', ')
-      console.log('All client codes (TODOS):', clientesString)
     } else if (cliente && cliente.cod) {
       clientesString = String(cliente.cod)
-      console.log('Single client code:', clientesString)
     } else if (cliente && cliente.value) {
       clientesString = String(cliente.value)
     } else {
@@ -140,9 +138,7 @@ const PrevisaoRecebimentos = () => {
     
     try {
       const requestObject = getRequestObject(format)
-      
-      console.log(`Downloading ${format} report for FLUXO with request:`, requestObject)
-      
+          
       const response = await api.post('relatorios/detalhado', requestObject)
       
       if (response.data.success === true && response.data.formato === format) {
@@ -195,7 +191,6 @@ const PrevisaoRecebimentos = () => {
         URL.revokeObjectURL(url)
         
         toast.success(`${format} baixado com sucesso!`)
-        console.log(`${format} baixado com sucesso!`)
       } else {
         console.error('API returned unsuccessful response:', response.data)
         toast.error(response.data.mensagem || `Failed to generate ${format} report`)

@@ -103,7 +103,6 @@ function AuthProvider({ children }){
       document.documentElement.setAttribute('data-context', savedContext);
     } else {
       // Fallback final
-      console.log('🏢 AuthContext - Usando logo padrão (SalvaLucro)');
       setCurrentLogo(salvalucro);
       setCurrentContext('SL');
       document.documentElement.setAttribute('data-context', 'SL');
@@ -120,7 +119,6 @@ function AuthProvider({ children }){
     const handleUrlChange = () => {
       const urlTenant = getTenantFromURL();
       if (urlTenant && urlTenant.logo && urlTenant.contextKey !== currentContext) {
-        console.log('🏢 AuthContext - URL mudou, recarregando logo:', urlTenant.nome);
         setCurrentLogo(urlTenant.logo);
         setCurrentContext(urlTenant.contextKey);
         document.documentElement.setAttribute('data-context', urlTenant.contextKey);
@@ -180,10 +178,8 @@ function AuthProvider({ children }){
         if (existingPrefs?.CODIGO) {
           payload.CODIGO = existingPrefs.CODIGO
           await api.put('PreferenciasUsuario', payload)
-          console.log('Theme updated with PUT to:', newTheme ? 'dark' : 'light')
         } else {
           await api.post('PreferenciasUsuario', payload)
-          console.log('Theme created with POST to:', newTheme ? 'dark' : 'light')
         }
         
         const userData = JSON.parse(localStorage.getItem('user'))
@@ -334,7 +330,6 @@ const loginApp = async (login, password) => {
         userPreferences = prefsResponse.data
         
         if (!userPreferences || userPreferences === null) {
-          console.log('📝 No preferences found, creating defaults for user...')
           
           const getCurrentDate = () => new Date().toISOString().split('T')[0]
           const now = getCurrentDate()
@@ -379,7 +374,6 @@ const loginApp = async (login, password) => {
           
           const createResponse = await api.post('PreferenciasUsuario', defaultPayload)
           userPreferences = createResponse.data
-          console.log('✅ Default preferences created:', userPreferences)
         }
       } catch (error) {
         console.error('Error loading/creating preferences:', error)
@@ -434,7 +428,6 @@ const loginApp = async (login, password) => {
         themeValue = userPreferences.TEMA === true || userPreferences.TEMA === 'true'
       } else {
         themeValue = user.TEMA === true || user.TEMA === 'true'
-        console.log('No preferences found, using user theme:', themeValue ? 'dark' : 'light')
       }
 
       // ===== APPLY EVERYTHING TO DOM AND STORAGE =====
@@ -537,7 +530,6 @@ const loginApp = async (login, password) => {
           }
 
           let res = await api.get('/LogAcesso', config)
-          console.log(res)
           return res
         }
 
@@ -666,7 +658,6 @@ const loadUser = async (userId) => {
         })
 
         const responseData = await response.json()
-        console.log('response: ', responseData)
         
         if (responseData && responseData.CODIGO) {
           localStorage.setItem('user', JSON.stringify(responseData))
@@ -674,7 +665,6 @@ const loadUser = async (userId) => {
         
         return responseData
     } catch (error) {
-      console.error('Erro ao atualizar usuário:', error)
       toast.dismiss()
       toast.error('Erro ao atualizar usuário!')
       if (error.response && error.response.status === 401) {
@@ -729,12 +719,10 @@ const loadUser = async (userId) => {
 */
 
 const loadSales = async (startDate, endDate) => {
-  console.log('carregando vendas: ', startDate, ' até ', endDate)
   try {
     setErrorSales(false)
     const apiCNPJ = localStorage.getItem('cnpj')
     const apiGroupCode = localStorage.getItem('groupCode')
-    console.log('CNPJ: ', apiCNPJ, 'GRUcodigo: ', apiGroupCode)
     if((apiCNPJ === 'todos' || apiCNPJ === 'TODOS') && (apiGroupCode !== 'selecione')){
       let params = {
         datainicial: startDate,
@@ -745,13 +733,10 @@ const loadSales = async (startDate, endDate) => {
         params: params
       }
 
-      console.log('antes da requisição (vendas): ', 'params: ', params, ' config: ', config )
-
       const response = await api.get('vendas', config)
       return response.data.VENDAS
 
     } else {
-      console.log('else')
       let params = {
         datainicial: startDate,
         datafinal: endDate,
@@ -762,28 +747,20 @@ const loadSales = async (startDate, endDate) => {
         params: params
       }
 
-      console.log('antes da requisição (vendas): ', 'params: ', params, ' config: ', config )
       const response = await api.get('vendas', config)
       setBtnDisabledSales(false)
       exportSales(response.data.VENDAS)
-      console.log('response: ', response)
-      console.log('retorna response.data.VENDAS')
       return response.data.VENDAS
     }
   } catch (error) {
-    console.log('erro vendas: ', error)
     setBtnDisabledSales(false)
-    console.log('bomba: ', error)
     if(error.code === 'ERR_CANCELED'){
-      console.log('canceled')
       setErrorSales(false)
     } else if (error.response && error.response.status === 401) {
-      console.log('error response status 401')
       toast.error('Sessão Expirada')
       logout()
       return
     } else {
-      console.log('not canceled')
       toast.error('Erro ao Carregar Vendas ', error.code)
       console.error('Error fetching vendas:', error)
       setErrorSales(true)
@@ -823,7 +800,6 @@ const formatDateToYYYYMMDD = (date) => {
 }
 
 const newLoadSales = async (startDate, endDate, additionalFilters = {}) => {
-  console.log('carregando vendas: ', startDate, ' até ', endDate)
   try {
     setErrorSales(false)
     
@@ -860,9 +836,7 @@ const newLoadSales = async (startDate, endDate, additionalFilters = {}) => {
     
     const formattedStartDate = formatDateToYYYYMMDD(startDate)
     const formattedEndDate = formatDateToYYYYMMDD(endDate)
-    
-    console.log('Formatted dates:', formattedStartDate, formattedEndDate)
-    
+        
     // Get stored data from localStorage
     const cliente = JSON.parse(localStorage.getItem('selectedClientBody'))
     const grupo = JSON.parse(localStorage.getItem('selectedGroupBody'))
@@ -879,10 +853,8 @@ const newLoadSales = async (startDate, endDate, additionalFilters = {}) => {
     if (cliente && cliente.label === 'TODOS') {
       const clientCodes = grupo?.clients?.map(client => client.CODIGOCLIENTE) || [];
       clientesString = clientCodes.join(', ');
-      console.log('All client codes (TODOS):', clientesString);
     } else if (cliente && cliente.cod) {
       clientesString = String(cliente.cod);
-      console.log('Single client code:', clientesString);
     } else if (cliente && cliente.value) {
       clientesString = String(cliente.value);
     } else {
@@ -909,33 +881,22 @@ const newLoadSales = async (startDate, endDate, additionalFilters = {}) => {
       arquivo: "JSON",
       modelo: "VENDA"
     }
-    
-    console.log('Final request object:', requestObject)
-    
+
     const response = await api.post('relatorios/detalhado', requestObject)
-    
-    console.log('Full API Response:', response.data)
-    console.log('Response success type:', typeof response.data.success)
-    console.log('Response success value:', response.data.success)
-    console.log('Response dados length:', response.data.dados?.length)
     
     setBtnDisabledSales(false)
     
     // Fix: Check boolean, not string comparison
     if (response.data.success === true && response.data.dados && response.data.dados.length > 0) {
-      console.log('Vendas data received:', response.data.dados.length, 'records')
-      console.log('First record sample:', response.data.dados[0])
       
       // Store in localStorage for export
       //localStorage.setItem('salesData', JSON.stringify(response.data.dados))
       
       return response.data.dados
     } else if (response.data.success === true && (!response.data.dados || response.data.dados.length === 0)) {
-      console.log('Success true but no data in dados array')
       toast.info(response.data.mensagem || "Nenhum dado encontrado para o período selecionado")
       return []
     } else {
-      console.log('Unsuccessful response:', response.data)
       toast.error(response.data.mensagem || "Erro ao carregar dados")
       return []
     }
@@ -945,10 +906,8 @@ const newLoadSales = async (startDate, endDate, additionalFilters = {}) => {
     setBtnDisabledSales(false)
     
     if(error.code === 'ERR_CANCELED'){
-      console.log('Request canceled')
       setErrorSales(false)
     } else if (error.response && error.response.status === 401) {
-      console.log('Session expired')
       toast.error('Sessão Expirada')
       logout()
       return
@@ -963,9 +922,7 @@ const newLoadSales = async (startDate, endDate, additionalFilters = {}) => {
 
 const newGroupByAdmin = (salesArray) => {
   if (!salesArray || salesArray.length === 0) return []
-  
-  console.log('newGroupByAdmin called with:', salesArray.length, 'records')
-  
+    
   const adminMap = new Map()
   
   salesArray.forEach(sale => {
@@ -990,7 +947,6 @@ const newGroupByAdmin = (salesArray) => {
     })
   })
   
-  console.log('newGroupByAdmin result:', result)
   return result
 }
 
@@ -1003,9 +959,7 @@ const newLoadTotalSales = (salesArray) => {
     }
     return
   }
-  
-  console.log('newLoadTotalSales called with:', salesArray.length, 'records')
-  
+    
   let totalCredito = 0
   let totalDebito = 0
   let totalVoucher = 0
@@ -1032,16 +986,13 @@ const newLoadTotalSales = (salesArray) => {
     voucher: totalVoucher,
     total: totalGeral
   }
-  
-  console.log('newLoadTotalSales result:', result)
-  
+    
   // Only update if values actually changed
   const currentTotal = salesTotal;
   if (currentTotal.debit !== result.debit ||
       currentTotal.credit !== result.credit ||
       currentTotal.voucher !== result.voucher ||
       currentTotal.total !== result.total) {
-    console.log('Updating sales total')
     setSalesTotal(result)
   } else {
     console.log('Sales total unchanged, skipping update')
@@ -1049,7 +1000,6 @@ const newLoadTotalSales = (salesArray) => {
 }
 
 const newLoadCredits = async (startDate, endDate, additionalFilters = {}) => {
-  console.log('carregando créditos/recebimentos: ', startDate, ' até ', endDate)
   try {
     setErrorCredits(false)
     
@@ -1086,9 +1036,7 @@ const newLoadCredits = async (startDate, endDate, additionalFilters = {}) => {
     
     const formattedStartDate = formatDateToYYYYMMDD(startDate)
     const formattedEndDate = formatDateToYYYYMMDD(endDate)
-    
-    console.log('Formatted dates:', formattedStartDate, formattedEndDate)
-    
+        
     // Get stored data from localStorage
     const cliente = JSON.parse(localStorage.getItem('selectedClientBody'))
     const grupo = JSON.parse(localStorage.getItem('selectedGroupBody'))
@@ -1105,10 +1053,8 @@ const newLoadCredits = async (startDate, endDate, additionalFilters = {}) => {
     if (cliente && cliente.label === 'TODOS') {
       const clientCodes = grupo?.clients?.map(client => client.CODIGOCLIENTE) || [];
       clientesString = clientCodes.join(', ');
-      console.log('All client codes (TODOS):', clientesString);
     } else if (cliente && cliente.cod) {
       clientesString = String(cliente.cod);
-      console.log('Single client code:', clientesString);
     } else if (cliente && cliente.value) {
       clientesString = String(cliente.value);
     } else {
@@ -1135,33 +1081,22 @@ const newLoadCredits = async (startDate, endDate, additionalFilters = {}) => {
       arquivo: "JSON", // Always JSON for data loading
       modelo: "RECEBIMENTO" // Changed from "VENDA" to "RECEBIMENTO"
     }
-    
-    console.log('Final request object for credits:', requestObject)
-    
+        
     const response = await api.post('relatorios/detalhado', requestObject)
-    
-    console.log('Full API Response for credits:', response.data)
-    console.log('Response success type:', typeof response.data.success)
-    console.log('Response success value:', response.data.success)
-    console.log('Response dados length:', response.data.dados?.length)
     
     setBtnDisabledCredits(false)
     
     // Fix: Check boolean, not string comparison
     if (response.data.success === true && response.data.dados && response.data.dados.length > 0) {
-      console.log('Credits data received:', response.data.dados.length, 'records')
-      console.log('First record sample:', response.data.dados[0])
       
       // Store in localStorage for export
       //localStorage.setItem('creditsData', JSON.stringify(response.data.dados))
       
       return response.data.dados
     } else if (response.data.success === true && (!response.data.dados || response.data.dados.length === 0)) {
-      console.log('Success true but no data in dados array')
       toast.info(response.data.mensagem || "Nenhum dado encontrado para o período selecionado")
       return []
     } else {
-      console.log('Unsuccessful response:', response.data)
       toast.error(response.data.mensagem || "Erro ao carregar dados de créditos")
       return []
     }
@@ -1171,10 +1106,8 @@ const newLoadCredits = async (startDate, endDate, additionalFilters = {}) => {
     setBtnDisabledCredits(false)
     
     if(error.code === 'ERR_CANCELED'){
-      console.log('Request canceled')
       setErrorCredits(false)
     } else if (error.response && error.response.status === 401) {
-      console.log('Session expired')
       toast.error('Sessão Expirada')
       logout()
       return
@@ -1189,9 +1122,7 @@ const newLoadCredits = async (startDate, endDate, additionalFilters = {}) => {
 
 const newGroupByAdminCredits = (creditsArray) => {
   if (!creditsArray || creditsArray.length === 0) return []
-  
-  console.log('newGroupByAdminCredits called with:', creditsArray.length, 'records')
-  
+    
   const adminMap = new Map()
   
   creditsArray.forEach(credit => {
@@ -1216,13 +1147,11 @@ const newGroupByAdminCredits = (creditsArray) => {
     })
   })
   
-  console.log('newGroupByAdminCredits result:', result)
   return result
 }
 
 const newLoadTotalCredits = (creditsArray) => {
   if (!creditsArray || creditsArray.length === 0) {
-    console.log('newLoadTotalCredits: No data, resetting totals')
     setCreditsTotal({ 
       debit: 0, 
       credit: 0, 
@@ -1231,9 +1160,7 @@ const newLoadTotalCredits = (creditsArray) => {
     })
     return
   }
-  
-  console.log('newLoadTotalCredits called with:', creditsArray.length, 'records')
-  
+    
   let totalCredito = 0
   let totalDebito = 0
   let totalVoucher = 0
@@ -1261,12 +1188,10 @@ const newLoadTotalCredits = (creditsArray) => {
     total: totalGeral
   }
   
-  console.log('newLoadTotalCredits result:', result)
   setCreditsTotal(result)
 }
 
 const newLoadCreditsDataBanco = async (startDate, endDate, additionalFilters = {}) => {
-  console.log('carregando créditos por data e banco: ', startDate, ' até ', endDate)
   try {
     setErrorCredits(false)
     
@@ -1304,7 +1229,6 @@ const newLoadCreditsDataBanco = async (startDate, endDate, additionalFilters = {
     const formattedStartDate = formatDateToYYYYMMDD(startDate)
     const formattedEndDate = formatDateToYYYYMMDD(endDate)
     
-    console.log('Formatted dates for DATA_BANCO:', formattedStartDate, formattedEndDate)
     
     // Get stored data from localStorage
     const cliente = JSON.parse(localStorage.getItem('selectedClientBody'))
@@ -1322,10 +1246,8 @@ const newLoadCreditsDataBanco = async (startDate, endDate, additionalFilters = {
     if (cliente && cliente.label === 'TODOS') {
       const clientCodes = grupo?.clients?.map(client => client.CODIGOCLIENTE) || [];
       clientesString = clientCodes.join(', ');
-      console.log('All client codes (TODOS):', clientesString);
     } else if (cliente && cliente.cod) {
       clientesString = String(cliente.cod);
-      console.log('Single client code:', clientesString);
     } else if (cliente && cliente.value) {
       clientesString = String(cliente.value);
     } else {
@@ -1354,33 +1276,22 @@ const newLoadCreditsDataBanco = async (startDate, endDate, additionalFilters = {
       arquivo: "PDF", // Always JSON for data loading
       modelo: "DATA_BANCO" // Changed from "RECEBIMENTO" to "DATA_BANCO"
     }
-    
-    console.log('Final request object for DATA_BANCO:', requestObject)
-    
+        
     const response = await api.post('relatorios/detalhado', requestObject)
-    
-    console.log('Full API Response for DATA_BANCO:', response.data)
-    console.log('Response success type:', typeof response.data.success)
-    console.log('Response success value:', response.data.success)
-    console.log('Response dados length:', response.data.dados?.length)
     
     setBtnDisabledCredits(false)
     
     // Check if response is successful and has data
     if (response.data.success === true && response.data.dados && response.data.dados.length > 0) {
-      console.log('DATA_BANCO data received:', response.data.dados.length, 'records')
-      console.log('First record sample:', response.data.dados[0])
       
       // Store in localStorage for export
       localStorage.setItem('creditsDataBanco', JSON.stringify(response.data.dados))
       
       return response.data.dados
     } else if (response.data.success === true && (!response.data.dados || response.data.dados.length === 0)) {
-      console.log('Success true but no data in dados array')
       toast.info(response.data.mensagem || "Nenhum dado encontrado para o período selecionado")
       return []
     } else {
-      console.log('Unsuccessful response:', response.data)
       toast.error(response.data.mensagem || "Erro ao carregar dados de créditos por data e banco")
       return []
     }
@@ -1390,10 +1301,8 @@ const newLoadCreditsDataBanco = async (startDate, endDate, additionalFilters = {
     setBtnDisabledCredits(false)
     
     if(error.code === 'ERR_CANCELED'){
-      console.log('Request canceled')
       setErrorCredits(false)
     } else if (error.response && error.response.status === 401) {
-      console.log('Session expired')
       toast.error('Sessão Expirada')
       logout()
       return
@@ -1408,9 +1317,7 @@ const newLoadCreditsDataBanco = async (startDate, endDate, additionalFilters = {
 
 const groupByBank = (creditsArray) => {
   if (!creditsArray || creditsArray.length === 0) return []
-  
-  console.log('groupByBank called with:', creditsArray.length, 'records')
-  
+    
   const bankMap = new Map()
   
   creditsArray.forEach(credit => {
@@ -1436,13 +1343,11 @@ const groupByBank = (creditsArray) => {
     })
   })
   
-  console.log('groupByBank result:', result)
   return result
 }
 
 const newLoadTotalCreditsDataBanco = (creditsArray) => {
   if (!creditsArray || creditsArray.length === 0) {
-    console.log('newLoadTotalCreditsDataBanco: No data, resetting totals')
     setCreditsTotal({ 
       debit: 0, 
       credit: 0, 
@@ -1451,9 +1356,7 @@ const newLoadTotalCreditsDataBanco = (creditsArray) => {
     })
     return
   }
-  
-  console.log('newLoadTotalCreditsDataBanco called with:', creditsArray.length, 'records')
-  
+    
   let totalCredito = 0
   let totalDebito = 0
   let totalVoucher = 0
@@ -1481,12 +1384,10 @@ const newLoadTotalCreditsDataBanco = (creditsArray) => {
     total: totalGeral
   }
   
-  console.log('newLoadTotalCreditsDataBanco result:', result)
   setCreditsTotal(result)
 }
 
 const newLoadServices = async (startDate, endDate, additionalFilters = {}) => {
-  console.log('carregando serviços/ajustes: ', startDate, ' até ', endDate)
   try {
     setErrorServices(false)
     
@@ -1522,9 +1423,7 @@ const newLoadServices = async (startDate, endDate, additionalFilters = {}) => {
     
     const formattedStartDate = formatDateToYYYYMMDD(startDate)
     const formattedEndDate = formatDateToYYYYMMDD(endDate)
-    
-    console.log('Formatted dates for services:', formattedStartDate, formattedEndDate)
-    
+        
     // Get stored data from localStorage
     const cliente = JSON.parse(localStorage.getItem('selectedClientBody'))
     const grupo = JSON.parse(localStorage.getItem('selectedGroupBody'))
@@ -1541,10 +1440,8 @@ const newLoadServices = async (startDate, endDate, additionalFilters = {}) => {
     if (cliente && cliente.label === 'TODOS') {
       const clientCodes = grupo?.clients?.map(client => client.CODIGOCLIENTE) || [];
       clientesString = clientCodes.join(', ');
-      console.log('All client codes (TODOS):', clientesString);
     } else if (cliente && cliente.cod) {
       clientesString = String(cliente.cod);
-      console.log('Single client code:', clientesString);
     } else if (cliente && cliente.value) {
       clientesString = String(cliente.value);
     } else {
@@ -1572,32 +1469,22 @@ const newLoadServices = async (startDate, endDate, additionalFilters = {}) => {
       modelo: "AJUSTES" // Changed from "VENDA"/"RECEBIMENTO" to "AJUSTE"
     }
     
-    console.log('Final request object for services:', requestObject)
     
     const response = await api.post('relatorios/detalhado', requestObject)
-    
-    console.log('Full API Response for services:', response.data)
-    console.log('Response success type:', typeof response.data.success)
-    console.log('Response success value:', response.data.success)
-    console.log('Response dados length:', response.data.dados?.length)
     
     setBtnDisabledServices(false)
     
     // Fix: Check boolean, not string comparison
     if (response.data.success === true && response.data.dados && response.data.dados.length > 0) {
-      console.log('Services data received:', response.data.dados.length, 'records')
-      console.log('First record sample:', response.data.dados[0])
       
       // Store in localStorage for export
       localStorage.setItem('servicesData', JSON.stringify(response.data.dados))
       
       return response.data.dados
     } else if (response.data.success === true && (!response.data.dados || response.data.dados.length === 0)) {
-      console.log('Success true but no data in dados array')
       toast.info(response.data.mensagem || "Nenhum serviço/ajuste encontrado para o período selecionado")
       return []
     } else {
-      console.log('Unsuccessful response:', response.data)
       toast.error(response.data.mensagem || "Erro ao carregar dados de serviços/ajustes")
       return []
     }
@@ -1607,10 +1494,8 @@ const newLoadServices = async (startDate, endDate, additionalFilters = {}) => {
     setBtnDisabledServices(false)
     
     if(error.code === 'ERR_CANCELED'){
-      console.log('Request canceled')
       setErrorServices(false)
     } else if (error.response && error.response.status === 401) {
-      console.log('Session expired')
       toast.error('Sessão Expirada')
       logout()
       return
@@ -1626,9 +1511,7 @@ const newLoadServices = async (startDate, endDate, additionalFilters = {}) => {
 // Create a new group by admin function for services if needed
 const newGroupByAdminServices = (servicesArray) => {
   if (!servicesArray || servicesArray.length === 0) return []
-  
-  console.log('newGroupByAdminServices called with:', servicesArray.length, 'records')
-  
+    
   const adminMap = new Map()
   
   servicesArray.forEach(service => {
@@ -1673,7 +1556,6 @@ const newGroupByAdminServices = (servicesArray) => {
     })
   })
   
-  console.log('newGroupByAdminServices result:', result)
   return result
 }
 
@@ -1681,16 +1563,13 @@ const newGroupByAdminServices = (servicesArray) => {
 const newLoadTotalServices = (servicesArray) => {
   // Safe check for empty or invalid data
   if (!servicesArray || servicesArray.length === 0) {
-    console.log('newLoadTotalServices: No data, resetting totals')
     const currentTotal = servicesTotal;
     if (currentTotal.total !== 0) {
       setServicesTotal({ total: 0 })
     }
     return { total: 0 }
   }
-  
-  console.log('newLoadTotalServices called with:', servicesArray.length, 'records')
-  
+    
   let total = 0
   
   servicesArray.forEach(service => {
@@ -1724,13 +1603,10 @@ const newLoadTotalServices = (servicesArray) => {
   const result = {
     total: total
   }
-  
-  console.log('newLoadTotalServices result:', result)
-  
+    
   // Only update if values actually changed
   const currentTotal = servicesTotal;
   if (currentTotal.total !== result.total) {
-    console.log('Updating services total from', currentTotal.total, 'to', result.total)
     setServicesTotal(result)
   } else {
     console.log('Services total unchanged, skipping update')
@@ -1749,12 +1625,10 @@ const loadResumo = () => {
 
 // retorna array de créditos/recebimentos
 const loadCredits = async (startDate, endDate) => {
-  console.log('carregando créditos/recebimentos: ', startDate, ' até ', endDate)
   try {
     setErrorCredits(false)
     const apiCNPJ = localStorage.getItem('cnpj')
     const apiGroupCode = localStorage.getItem('groupCode')
-    console.log('CNPJ: ', apiCNPJ, 'GRUcodigo: ', apiGroupCode)
     if((apiCNPJ === 'todos' || apiCNPJ === 'TODOS') && (apiGroupCode !== 'selecione')){
       let params = {
         dataInicial: startDate,
@@ -1766,7 +1640,6 @@ const loadCredits = async (startDate, endDate) => {
         params: params
       }
 
-      console.log('antes da requisição (créditos/recebimentos): ', 'params: ', params, ' config: ', config )
       const response = await api.get('recebimentos', config)
       return response.data
 
@@ -1780,23 +1653,19 @@ const loadCredits = async (startDate, endDate) => {
       let config = {
         params: params
       }
-      console.log('antes da requisição (créditos/recebimentos): ', 'params: ', params, ' config: ', config )
       const response = await api.get('recebimentos', config)
       setBtnDisabledCredits(false)
       return response.data
     }
   } catch (error) {
-    console.log('erro creditos/recebimentos: ', error)
     setBtnDisabledCredits(false)
     if(error.code === 'ERR_CANCELED'){
-      console.log('canceled')
       setErrorCredits(false)
     } else if (error.response && error.response.status === 401) {
       toast.error('Sessão Expirada')
       logout()
       return
     } else {
-      console.log('not canceled')
       toast.error('Erro ao Carregar Créditos: ', error.code)
       console.error('Erro ao carregar créditos/recebimentos:', error)
       setErrorCredits(true)
@@ -1840,14 +1709,12 @@ const loadServices = async (startDate, endDate) => {
   } catch (error) {
     setBtnDisabledServices(false)
     if(error.code === 'ERR_CANCELED'){
-      console.log('canceled')
       setErrorServices(false)
     } else if (error.response && error.response.status === 401) {
       toast.error('Sessão Expirada')
       logout()
       return
     } else {
-      console.log('not canceled')
       toast.error('Erro ao Carregar Serviços: ', error.response ? error.response.status : 'Unknown error')
       console.error('Error fetching serviços:', error)
       setErrorServices(true)
@@ -1873,7 +1740,6 @@ const loadTaxes = async () => {
       const response = await api.get('taxas', config)
       return response.data
     } else {
-      console.log('Invalid client code:', apiClientCode)
       return []
     }
   } catch (error) {
@@ -1896,7 +1762,6 @@ const addTax = async (tax) => {
     if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
       let body = tax
       const response = await api.post('taxas', body)
-      console.log('response:', response)
     } else {
       console.log('Invalid client code:', apiClientCode)
     }
@@ -1916,7 +1781,6 @@ const addTax = async (tax) => {
 //Edita Taxa
 const editTax = async (tax) => {
   setIsLoadingTaxes(true)
-  console.log('editTax: ', tax)
   try {
     const apiClientCode = tax.CLICODIGO
     if (apiClientCode !== 'todos' && apiClientCode !== 'TODOS' && apiClientCode !== undefined) {
@@ -1932,7 +1796,6 @@ const editTax = async (tax) => {
       })
 
       const responseData = await response.json()
-      console.log('response: ', responseData)
 
       if (response.ok) {
         toast.dismiss()
@@ -1960,7 +1823,6 @@ const editTax = async (tax) => {
 //Deleta Taxa
 const deleteTax = async (tax) => {
   setIsLoadingTaxes(true)
-  console.log(tax)
   try {
     const apiClientCode = localStorage.getItem('clientCode')
     if(apiClientCode !== 'todos' && apiClientCode !== 'TODOS' && apiClientCode !== undefined) {
@@ -1972,12 +1834,10 @@ const deleteTax = async (tax) => {
         data: body
       })
       .then(response => {
-        console.log('response: ', response)
         toast.dismiss()
         toast.success('Taxa deletada com sucesso!')
       })
       .catch(error => {
-        console.log('error: ', error)
         toast.dismiss()
         toast.error('Erro ao deletar taxa!')
       })
@@ -2016,7 +1876,6 @@ const loadBanks = async () => {
       const response = await api.get('banco', config)
       return response.data
     } else {
-      console.log('Invalid client code:', apiClientCode)
       return []
     }
   } catch (error) {
@@ -2033,7 +1892,6 @@ const loadBanks = async () => {
 
 // adiciona novo banco
 const addBank = async (bank) => {
-  console.log('addBank: ', bank)
   setIsLoadingBanks(true)
   try {
     const apiClientCode = localStorage.getItem('clientCode')
@@ -2064,7 +1922,6 @@ const addBank = async (bank) => {
 
 // edita banco
 const editBank = async (editedBank) => {
-  console.log('editBank:', editedBank)
   setIsLoadingBanks(true)
   try {
       let body = JSON.stringify(editedBank)
@@ -2101,7 +1958,6 @@ const editBank = async (editedBank) => {
 
 // deleta banco
 const deleteBank = async (bankToDelete) => {
-  console.log('deleteBank: ', bankToDelete)
   setIsLoadingBanks(true)
   try {
     let body = bankToDelete
@@ -2112,12 +1968,10 @@ const deleteBank = async (bankToDelete) => {
       data: body
     })
     .then(response => {
-      console.log('response: ', response)
       toast.dismiss()
       toast.success('Banco deletado com sucesso!')
     })
     .catch(error => {
-      console.log('error: ', error)
       toast.dismiss()
       toast.error('Erro ao deletar taxa!')
     })
@@ -2273,7 +2127,6 @@ const refreshSession = async () => {
     console.error('Error refreshing session:', error)
 
     if (error.response && error.response.status === 401) {
-      console.log('Unauthorized: logging out')
       logout()
     }
   }
@@ -3461,8 +3314,6 @@ function timeConvert(time){
 
   const exportSales = (data) => {
     try {
-      console.log('exportSales called with data type:', Array.isArray(data))
-      console.log('Data length:', data?.length)
       
       if (!data || data.length === 0) {
         console.log('No data to export')
@@ -3472,18 +3323,13 @@ function timeConvert(time){
         }
         return
       }
-      
-      console.log('First item in exportSales:', data[0])
-      console.log('First item keys:', Object.keys(data[0]))
-      
+            
       // Check if data is from new API (has uppercase fields like CNPJ, ADMINISTRADORA)
       const isNewApiData = data[0] && data[0].CNPJ !== undefined
       
       let transformedData = []
       
-      if (isNewApiData) {
-        console.log('Detected NEW API data structure in exportSales - transforming...')
-        
+      if (isNewApiData) {        
         // Transform new API data to match expected export structure
         transformedData = data.map((item, index) => {
           // Safely extract values with fallbacks
@@ -3553,10 +3399,8 @@ function timeConvert(time){
           }
         })
         
-        console.log('Transformed NEW data for export:', transformedData.length, 'records')
         
       } else {
-        console.log('Detected OLD API data structure in exportSales - using as is')
         
         // For old API data, ensure it has the required structure
         transformedData = data.map((item, index) => ({
@@ -3575,7 +3419,6 @@ function timeConvert(time){
       const isDataSame = JSON.stringify(currentData) === JSON.stringify(transformedData)
       
       if (!isDataSame) {
-        console.log('Data changed, updating salesTableData')
         setSalesTableData(transformedData)
       } else {
         console.log('Data unchanged, skipping update')
@@ -3596,8 +3439,6 @@ const exportCredits = (data) => {
     return []
   }
 
-  console.log('Exporting credits data:', data.length, 'records')
-  console.log('Sample data structure:', data[0])
 
   // Transform the data for export - using flat structure
   const transformedData = data.map(item => {
@@ -3628,7 +3469,6 @@ const exportCredits = (data) => {
     }
   })
 
-  console.log('Transformed data for export:', transformedData.length, 'records')
   
   // Store in localStorage for the GerarRelatorio component to use
   localStorage.setItem('creditsTableData', JSON.stringify(transformedData))

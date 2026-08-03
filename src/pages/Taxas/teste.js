@@ -100,13 +100,10 @@ const Taxas = () =>{
 
     useEffect(()=>{
         const loadTax = async () => {
-            console.log(taxesList)
             
             if((clientCode === 'todos') || (clientCode === 'TODOS')){
-                console.log('clientCode TODOS: ', clientCode)
                 setTaxesList([])
             } else {
-                console.log('clientCode: ', clientCode)
                 const response = await loadTaxes()
                 setTaxesList(response)
             }
@@ -117,7 +114,6 @@ const Taxas = () =>{
     const [editableTax, setEditableTax] = useState()
 
     const handleEdit = (object) => {
-        console.log('handleEdit object: ', object)
         setEditableTax({
           CODIGO: object.CODIGO,
           BANDEIRA: {label: object.BADDESCRICAO, value: object.BADCODIGO},
@@ -134,7 +130,6 @@ const Taxas = () =>{
     }
 
     const handleDelete = async (object) => {
-      console.log('deletando objeto: ', object)
       const toBeDeleted = { 
         CODIGO: object.CODIGO,
         BADCODIGO: object.BADCODIGO,
@@ -143,7 +138,6 @@ const Taxas = () =>{
         MODCODIGO: object.MODCODIGO,
         TAXAPERCENTUAL: object.TAXAPERCENTUAL 
       }
-      console.log('objeto a ser deletado: ', toBeDeleted)
 
       try {
         toast.dismiss()
@@ -239,7 +233,6 @@ const Taxas = () =>{
         }
         
         const isObjectFullyPopulated = (obj) => {
-            console.log('verificando objeto: ', obj)
             for (const key in obj) {
                 if (obj.hasOwnProperty(key)) {
                     if (obj[key] === undefined || obj[key] === 0 || obj[key] === null || obj[key] === ('selecione' || 'Selecione') || tax === '') {
@@ -395,8 +388,6 @@ const Taxas = () =>{
     }
 
     const ModalEditTax = () => {
-
-        console.log('ModalEditTax obj:', editableTax)
         
         const [banner, setBanner] = useState(editableTax.BANDEIRA)
         const [admin, setAdmin] = useState(editableTax.ADQUIRENTE)
@@ -406,7 +397,6 @@ const Taxas = () =>{
         const [taxCode, setTaxCode] = useState(editableTax.CODIGO)
 
         const isObjectFullyPopulated = (obj) => {
-            console.log('verificando objeto: ', obj)
             for (const key in obj) {
                 if (obj.hasOwnProperty(key)) {
                     if (obj[key] === undefined || obj[key] === 0 || obj[key] === null || obj[key] === ('selecione' || 'Selecione')) {
@@ -429,14 +419,12 @@ const Taxas = () =>{
             };
             if(isObjectFullyPopulated(newTaxObj) === true){
                 try {
-                    console.log('objeto atualizado: ', newTaxObj)
                     toast.dismiss()
                     await toast.promise(editTax(newTaxObj), {
                       pending: 'Carregando...',
                       success: 'Carregado com Sucesso',
                       error: 'Ocorreu um Erro',
                     })
-                    console.log('resetando form...')
                     resetValues()
                   } catch (error) {
                     console.error('Error handling busca:', error)

@@ -155,12 +155,6 @@ const findFilterObject = (value, filterKey, dataArray, tableType) => {
   
   const result = uniqueMap.size > 0 ? Array.from(uniqueMap.values())[0] : null
   
-  if (result) {
-    console.log(`Found ${filterKey} object for "${value}":`, result)
-  } else {
-    console.log(`No ${filterKey} object found for "${value}"`)
-  }
-  
   return result
 }
 
@@ -316,7 +310,6 @@ const NewTabelaGenerica = forwardRef(({
         
         if (filterValue) {
           initialFilters[filterKeys.first] = filterValue
-          console.log(`Loaded saved ${storageKeys.filter1} filter:`, filterValue)
         }
       } catch (e) {
         console.error('Error parsing saved filter:', e)
@@ -328,7 +321,6 @@ const NewTabelaGenerica = forwardRef(({
         const parsedFilter = JSON.parse(savedSecondFilter)
         if (parsedFilter && parsedFilter.nomeAdquirente) {
           initialFilters[filterKeys.second] = parsedFilter.nomeAdquirente
-          console.log(`Loaded saved ${storageKeys.filter2} filter:`, parsedFilter.nomeAdquirente)
         }
       } catch (e) {
         console.error('Error parsing saved filter:', e)
@@ -346,19 +338,15 @@ const NewTabelaGenerica = forwardRef(({
     const filterKeys = getFilterKeys()
     const filterValue = selectedFilters[filterKeys.first]
     
-    console.log(`${filterKeys.first} filter changed to:`, filterValue)
     
     if (filterValue && dataArray && dataArray.length > 0) {
       const filterObject = findFilterObject(filterValue, filterKeys.first, dataArray, tableType)
       if (filterObject) {
         localStorage.setItem(storageKeys.filter1, JSON.stringify(filterObject))
-        console.log(`✅ Updated ${storageKeys.filter1} in localStorage:`, filterObject)
       } else {
-        console.log(`❌ No ${filterKeys.first} object found for:`, filterValue)
         localStorage.removeItem(storageKeys.filter1)
       }
     } else if (!filterValue) {
-      console.log(`Clearing ${storageKeys.filter1} from localStorage`)
       localStorage.removeItem(storageKeys.filter1)
     }
   }, [selectedFilters, dataArray, tableType, getStorageKeys, getFilterKeys])
@@ -368,20 +356,15 @@ const NewTabelaGenerica = forwardRef(({
     const storageKeys = getStorageKeys()
     const filterKeys = getFilterKeys()
     const filterValue = selectedFilters[filterKeys.second]
-    
-    console.log(`${filterKeys.second} filter changed to:`, filterValue)
-    
+      
     if (filterValue && dataArray && dataArray.length > 0) {
       const filterObject = findFilterObject(filterValue, filterKeys.second, dataArray, tableType)
       if (filterObject) {
         localStorage.setItem(storageKeys.filter2, JSON.stringify(filterObject))
-        console.log(`✅ Updated ${storageKeys.filter2} in localStorage:`, filterObject)
       } else {
-        console.log(`❌ No ${filterKeys.second} object found for:`, filterValue)
         localStorage.removeItem(storageKeys.filter2)
       }
     } else if (!filterValue) {
-      console.log(`Clearing ${storageKeys.filter2} from localStorage`)
       localStorage.removeItem(storageKeys.filter2)
     }
   }, [selectedFilters, dataArray, tableType, getStorageKeys, getFilterKeys])
@@ -616,7 +599,6 @@ const NewTabelaGenerica = forwardRef(({
   }, [dateRange, tableType])
 
   const handleFilterChange = useCallback((filterKey, value) => {
-    console.log(`Changing filter ${filterKey} to:`, value)
     setSelectedFilters(prev => ({
       ...prev,
       [filterKey]: value || ''
@@ -624,7 +606,6 @@ const NewTabelaGenerica = forwardRef(({
   }, [])
 
   const clearFilters = useCallback(() => {
-    console.log('Clearing all filters')
     const storageKeys = getStorageKeys()
     setSelectedFilters({})
     localStorage.removeItem(storageKeys.filter1)

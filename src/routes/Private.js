@@ -43,7 +43,6 @@ export default function Private({ children }) {
     const currentPath = location.pathname;
     
     if (isSignedIn && (!token || !validateToken(token))) {
-      console.log('❌ Token inválido ou expirado, fazendo logout');
       logout();
       // Redireciona para login mantendo o tenant
       navigate('/login');
@@ -51,7 +50,6 @@ export default function Private({ children }) {
     }
     
     if (!isSignedIn) {
-      console.log('🔒 Usuário não autenticado, redirecionando para login');
       // Salva a rota atual para redirecionar após login
       if (currentPath !== '/login' && currentPath !== '/') {
         sessionStorage.setItem('currentPath', currentPath);
@@ -65,7 +63,6 @@ export default function Private({ children }) {
     
     // Se o usuário está logado e está na página de login, redireciona para dashboard
     if (currentPath === '/login' || currentPath === '/') {
-      console.log('📊 Usuário logado na página de login, redirecionando para dashboard');
       navigate('/dashboard');
     }
     
@@ -83,12 +80,10 @@ export default function Private({ children }) {
   }
 
   const handleInactivity = () => {
-    console.log('⏰ Inatividade detectada, mostrando modal');
     setShowModal(true)
   }
 
   const handleExpiryWarning = () => {
-    console.log('⚠️ Aviso de expiração da sessão');
     setShowModal(true)
   }
 

@@ -19,20 +19,17 @@ export const useUserPreferences = () => {
       
       // Validate response data
       if (!response.data || response.data === null) {
-        console.log('📝 No preferences found for this user')
         return null
       }
       
       // Ensure the response has the expected structure
       if (typeof response.data !== 'object') {
-        console.log('⚠️ Invalid preferences format, returning null')
         return null
       }
       
       return response.data
     } catch (error) {
       if (error.response?.status === 404) {
-        console.log('📝 No preferences found (404) for this user')
         return null
       }
       console.error('Error loading user preferences:', error)
@@ -63,7 +60,6 @@ export const useUserPreferences = () => {
       // SAFE: Navigate through nested objects with optional chaining
       identidadeVisual = userInfo?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro'
       
-      console.log(`📝 Creating default preferences for user ${userId} with visual identity: ${identidadeVisual}`)
       
       // Set default icon based on identity visual (with fallback)
       switch (identidadeVisual) {
@@ -120,7 +116,6 @@ export const useUserPreferences = () => {
       let prefs = await loadUserPrefs()
       
       if (!prefs) {
-        console.log('📝 Creating default preferences for user...')
         prefs = await createDefaultPreferences(userId, userData)
       }
       
@@ -135,7 +130,6 @@ export const useUserPreferences = () => {
   const saveUserPrefs = useCallback(async (body) => {
     try { 
       const response = await api.post('PreferenciasUsuario', body)
-      console.log('✅ Preferences saved to API:', response.data)
       return true
     } catch (error) {
       console.error('Error saving preferences:', error)

@@ -6,8 +6,6 @@ import { PluggyConnect } from 'react-pluggy-connect'
 const PluggyWidget = ({setId, setResponseData}) => {
 
   const onSuccess = (itemData) => {
-    console.log('Pluggy Widget Item Data: ', itemData)
-    console.log('ID: ', itemData.item.id)
     Cookies.set('itemID', itemData.item.id)
     localStorage.setItem('pluggyResponseData', JSON.stringify(itemData.item))
     let pluggyData = {
@@ -18,14 +16,9 @@ const PluggyWidget = ({setId, setResponseData}) => {
         identity: [],
         bills: [],
     }
-    console.log('pluggy data antes do storage: ', pluggyData)
     localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
     setId(itemData.item.id)
     setResponseData(itemData.item)
-  }
-  
-  const onError = (error) => {
-    console.log('Error:', error)
   }
 
   return (

@@ -4,9 +4,6 @@ import { useEffect } from 'react';
 import '../Tabela/tabelaPluggy.scss';
 
 const TabelaItem = ({ item }) => {
-  useEffect(() => {
-    console.log('TabelaItem item:', item);
-  }, [item]); // Now tracks item changes
 
   // Handle different data formats
   const dataArray = Array.isArray(item) ? item : item?.results ? item.results : [item];

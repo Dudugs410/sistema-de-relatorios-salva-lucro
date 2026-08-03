@@ -50,7 +50,6 @@ const Login = () => {
     // Listen for context changes
     useEffect(() => {
         const handleContextChange = (event) => {
-            console.log('🔄 Contexto alterado, recarregando logo...');
             loadTenant();
         };
 

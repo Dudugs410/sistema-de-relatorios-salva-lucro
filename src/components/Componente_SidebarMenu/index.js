@@ -56,7 +56,6 @@ const Sidebar = () => {
             const defaultContext = 'salvalucro';
             document.documentElement.setAttribute('data-context', defaultContext);
             localStorage.setItem('userContext', defaultContext);
-            console.log('🔧 Set default context:', defaultContext);
         }
         
         const currentTheme = document.documentElement.getAttribute('data-theme');
@@ -64,7 +63,6 @@ const Sidebar = () => {
             const defaultTheme = 'light';
             document.documentElement.setAttribute('data-theme', defaultTheme);
             localStorage.setItem('userTheme', defaultTheme);
-            console.log('🔧 Set default theme:', defaultTheme);
         }
     }, []);
 

@@ -92,10 +92,8 @@ const ResumoMensal = () => {
     if (cliente && cliente.label === 'TODOS') {
       const clientCodes = grupo?.clients?.map(client => client.CODIGOCLIENTE) || []
       clientesString = clientCodes.join(', ')
-      console.log('All client codes (TODOS):', clientesString)
     } else if (cliente && cliente.cod) {
       clientesString = String(cliente.cod)
-      console.log('Single client code:', clientesString)
     } else if (cliente && cliente.value) {
       clientesString = String(cliente.value)
     } else {
@@ -140,9 +138,7 @@ const ResumoMensal = () => {
     
     try {
       const requestObject = getRequestObject('PDF')
-      
-      console.log(`Downloading PDF report for RESUMO with request:`, requestObject)
-      
+            
       const response = await api.post('relatorios/detalhado', requestObject)
       
       if (response.data.success === true && response.data.formato === 'PDF') {
@@ -193,7 +189,6 @@ const ResumoMensal = () => {
         URL.revokeObjectURL(url)
         
         toast.success('PDF baixado com sucesso!')
-        console.log('PDF baixado com sucesso!')
       } else {
         console.error('API returned unsuccessful response:', response.data)
         toast.error(response.data.mensagem || 'Failed to generate PDF report')
