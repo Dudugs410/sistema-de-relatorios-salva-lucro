@@ -9,7 +9,6 @@ export const useUserPreferences = () => {
     const token = localStorage.getItem('token')
     
     if (!userId || !token) {
-      console.log('No user logged in, skipping preference load')
       return null
     }
 
@@ -17,8 +16,6 @@ export const useUserPreferences = () => {
       const response = await api.get('PreferenciasUsuario', {
         params: { codigo: userId }
       })
-      
-      console.log('📡 Loaded user preferences from API:', response.data)
       
       // Validate response data
       if (!response.data || response.data === null) {
@@ -110,7 +107,6 @@ export const useUserPreferences = () => {
     
     try {
       const response = await api.post('PreferenciasUsuario', payload)
-      console.log('✅ Default preferences created for user:', userId, response.data)
       return response.data
     } catch (error) {
       console.error('❌ Error creating default preferences:', error)

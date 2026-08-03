@@ -123,7 +123,10 @@ const NewDisplayData = ({
   hideTables = false,
   hideTotals = false,
   runTutorial = false,
-  tutorialSteps = []
+  tutorialSteps = [],
+  customTableColumns = null,
+  customFilterConfig = null,
+  customExportPage = null
 }) => {
   const { 
     clientUserId, 
@@ -163,6 +166,11 @@ const NewDisplayData = ({
 
   // Memoize this to prevent recreation
   const getTableColumns = useCallback((tableType) => {
+    // If custom columns provided, use them
+    if (customTableColumns) {
+      return customTableColumns
+    }
+
     switch(tableType) {
       case 'vendas':
         return [
@@ -288,7 +296,7 @@ const NewDisplayData = ({
       default:
         return []
     }
-  }, [safeDateConvert])
+  }, [safeDateConvert, customTableColumns])
 
   const getDateRange = useCallback(() => {
     switch(currentPath) {
@@ -317,9 +325,33 @@ const NewDisplayData = ({
         
         console.log(`Exporting ${dataToExport?.length || 0} records for ${currentPath}`)
         
-        switch(currentPath) {
+        // Use custom export page if provided
+        const exportPageType = customExportPage || currentPath
+        
+        switch(exportPageType) {
           case '/vendas': 
             await exportSales(dataToExport)
+            break
+          case 'openfinance':
+            // Handle openfinance export
+            console.log('Exporting openfinance data:', dataToExport)
+            // You can implement a specific export function here
+            // Or fallback to a generic export
+            if (exportSales) {
+              await exportSales(dataToExport)
+            } else {
+              // Create a simple CSV download
+              const csvContent = "data:text/csv;charset=utf-8," 
+                + Object.keys(dataToExport[0] || {}).join(",") + "\n"
+                + dataToExport.map(row => Object.values(row).join(",")).join("\n")
+              const encodedUri = encodeURI(csvContent)
+              const link = document.createElement("a")
+              link.setAttribute("href", encodedUri)
+              link.setAttribute("download", `extrato_bancario_${new Date().toISOString().split('T')[0]}.csv`)
+              document.body.appendChild(link)
+              link.click()
+              document.body.removeChild(link)
+            }
             break
           case '/creditos':
             await exportCredits(dataToExport)
@@ -339,20 +371,31 @@ const NewDisplayData = ({
     }
 
     return exportData
-  }, [currentPath, exportSales, exportCredits, exportServices, dataArray, hideTables])
+  }, [currentPath, exportSales, exportCredits, exportServices, dataArray, hideTables, customExportPage])
 
   const getTotalUpdateFunction = useCallback(() => {
+    // If custom export page, don't update totals through context
+    if (customExportPage) {
+      return null
+    }
+    
     switch(currentPath) {
       case '/vendas': return setSalesTotal
       case '/creditos': return setCreditsTotal
       case '/creditos-data-banco': return setCreditsTotal
       default: return null
     }
-  }, [currentPath, setSalesTotal, setCreditsTotal])
+  }, [currentPath, setSalesTotal, setCreditsTotal, customExportPage])
 
   // Memoize loadTotals to prevent recreation
   const loadTotals = useCallback((array, tableType) => {
     if(!array || array.length === 0) return
+    
+    // For openfinance, use custom totals
+    if (customExportPage === 'openfinance') {
+      // Totals are already calculated in the parent component
+      return
+    }
     
     if (tableType === 'vendas') {
       let totalCreditoTemp = 0
@@ -440,7 +483,7 @@ const NewDisplayData = ({
       
       console.log('Services/Ajustes total:', totalResult)
     }
-  }, [getTotalUpdateFunction])
+  }, [getTotalUpdateFunction, customExportPage])
 
   // FIXED: handleTotalUpdate - NO STATE UPDATES to prevent loop
   const handleTotalUpdate = useCallback((data) => {
@@ -465,6 +508,11 @@ const NewDisplayData = ({
   }, [exportPage, loadTotals])
 
   const getFilterConfig = useCallback(() => {
+    // If custom filter config provided, use it
+    if (customFilterConfig) {
+      return customFilterConfig
+    }
+    
     if (!exportPage) return {}
     
     switch(exportPage) {
@@ -511,10 +559,15 @@ const NewDisplayData = ({
       default:
         return {}
     }
-  }, [exportPage])
+  }, [exportPage, customFilterConfig])
 
-  // Set export page based on path - runs only once
+  // Set export page based on path or custom
   useEffect(() => {
+    if (customExportPage) {
+      setExportPage(customExportPage)
+      return
+    }
+    
     const path = location.pathname
     setCurrentPath(path)
     localStorage.setItem('currentPath', path)
@@ -530,7 +583,7 @@ const NewDisplayData = ({
     } else {
       setExportPage('')
     }
-  }, [location.pathname])
+  }, [location.pathname, customExportPage])
 
   // Handle dataArray changes - only update when actually changed
   useEffect(() => {
@@ -560,11 +613,19 @@ const NewDisplayData = ({
     if (hideTables) return null
     if (!exportPage || !dataArray || dataArray.length === 0) return null
     
+    // Determine table type for columns
+    let tableType = exportPage
+    if (exportPage === 'ajustes') {
+      tableType = 'servicos'
+    } else if (exportPage === 'openfinance') {
+      tableType = 'openfinance'
+    }
+    
     return {
       ref: tabelaGenericaRef,
       array: dataArray,
-      tableType: exportPage === 'ajustes' ? 'servicos' : exportPage,
-      columns: getTableColumns(exportPage === 'ajustes' ? 'servicos' : exportPage),
+      tableType: tableType,
+      columns: getTableColumns(tableType),
       dateRange: getDateRange(),
       onExport: getExportFunction(),
       onTotalUpdate: handleTotalUpdate,
@@ -577,6 +638,10 @@ const NewDisplayData = ({
   }, [exportPage, dataArray, getTableColumns, getDateRange, getExportFunction, handleTotalUpdate, getFilterConfig, hideTables])
 
   const getButtonText = () => {
+    if (customExportPage === 'openfinance') {
+      return 'Nova Consulta de Extrato'
+    }
+    
     switch(currentPath) {
       case '/vendas':
         return 'Nova Consulta de Vendas'
@@ -647,6 +712,43 @@ const NewDisplayData = ({
           />
         </div>
       )}
+
+      {/* Show custom totals for openfinance */}
+      {!hideTotals && totals && customExportPage === 'openfinance' && (
+        <div data-tour="totals-section" className="summary-cards">
+          <div className="summary-card">
+            <span className="summary-label">Total de Transações</span>
+            <span className="summary-value">{totals?.count || 0}</span>
+          </div>
+          <div className="summary-card">
+            <span className="summary-label">Total Receitas</span>
+            <span className="summary-value text-success">
+              {(totals?.income || 0).toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+              })}
+            </span>
+          </div>
+          <div className="summary-card">
+            <span className="summary-label">Total Despesas</span>
+            <span className="summary-value text-danger">
+              {(totals?.expense || 0).toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+              })}
+            </span>
+          </div>
+          <div className="summary-card">
+            <span className="summary-label">Saldo</span>
+            <span className={`summary-value ${(totals?.total || 0) >= 0 ? 'text-success' : 'text-danger'}`}>
+              {(totals?.total || 0).toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+              })}
+            </span>
+          </div>
+        </div>
+      )}
       
       <div data-tour="exportacao-section">
         <GerarRelatorio 
@@ -664,7 +766,7 @@ const NewDisplayData = ({
               <TabelaGenericaAdm Array={adminDataArray} />
             </div>
           )}
-          <div data-tour="tabelavendas-section">
+          <div data-tour={customExportPage === 'openfinance' ? "tabela-section" : "tabelavendas-section"}>
             {tableProps && (
               <NewTabelaGenerica {...tableProps} />
             )}

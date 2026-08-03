@@ -92,13 +92,11 @@ const Dashboard = () => {
   useEffect(() => {
     if (currentContext) {
       document.documentElement.setAttribute('data-context', currentContext);
-      console.log('🎨 Dashboard applied context from API:', currentContext);
     }
     
     if (currentTheme !== undefined && currentTheme !== null) {
       const themeValue = currentTheme ? 'dark' : 'light';
       document.documentElement.setAttribute('data-theme', themeValue);
-      console.log('🎨 Dashboard applied theme from API:', themeValue);
     }
   }, [currentContext, currentTheme]);
   // ===== END FIX =====

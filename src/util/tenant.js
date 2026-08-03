@@ -66,8 +66,6 @@ export const getTenantFromURL = () => {
   // O primeiro segmento é o tenant
   const tenantKey = pathSegments[0];
   
-  console.log('🔍 Tenant detectado:', tenantKey, 'Path:', path);
-  
   // Verifica se é um tenant válido
   if (TENANTS[tenantKey]) {
     return TENANTS[tenantKey];
@@ -82,21 +80,15 @@ export const getCurrentTenant = () => {
   const savedContext = localStorage.getItem('selectedContext');
   const urlTenant = getTenantFromURL();
   
-  console.log('📦 Tenant da URL:', urlTenant);
-  console.log('💾 Contexto salvo:', savedContext);
-  
   // Se tiver um contexto salvo que corresponde a um tenant, usa ele
   if (savedContext) {
     const tenantByContext = Object.values(TENANTS).find(
       t => t.contextKey === savedContext
     );
     if (tenantByContext) {
-      console.log('✅ Usando tenant do localStorage:', tenantByContext);
       return tenantByContext;
     }
   }
-  
-  console.log('✅ Usando tenant da URL:', urlTenant);
   return urlTenant;
 };
 

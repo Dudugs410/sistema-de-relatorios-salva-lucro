@@ -87,7 +87,6 @@ function AuthProvider({ children }){
     const urlTenant = getTenantFromURL();
     
     if (urlTenant && urlTenant.logo) {
-      console.log('🏢 AuthContext - Carregando logo da URL:', urlTenant.nome);
       setCurrentLogo(urlTenant.logo);
       setCurrentContext(urlTenant.contextKey);
       document.documentElement.setAttribute('data-context', urlTenant.contextKey);
@@ -99,7 +98,6 @@ function AuthProvider({ children }){
     const savedContext = localStorage.getItem('selectedContext') || 'SL';
     const logo = getLogoByContext(savedContext);
     if (logo) {
-      console.log('🏢 AuthContext - Carregando logo do localStorage:', savedContext);
       setCurrentLogo(logo);
       setCurrentContext(savedContext);
       document.documentElement.setAttribute('data-context', savedContext);
@@ -208,7 +206,6 @@ function AuthProvider({ children }){
         const themeValue = userData.TEMA === true || userData.TEMA === 'true'
         setTheme(themeValue)
         document.documentElement.setAttribute('data-theme', themeValue ? 'dark' : 'light')
-        console.log('Theme loaded from database:', themeValue ? 'dark' : 'light')
       } else {
         setTheme(false)
         document.documentElement.setAttribute('data-theme', 'light')
@@ -267,14 +264,12 @@ const loadUserPreferences = useCallback(async (userId) => {
   }
 
   try {
-    console.log('🔄 Loading user preferences from API for user:', userId);
     
     const response = await api.get('PreferenciasUsuario', {
       params: { codigo: userId }
     });
     
     const preferences = response.data;
-    console.log('📡 User preferences loaded from API:', preferences);
     
     if (preferences) {
       setUserPreferences(preferences);
@@ -283,18 +278,15 @@ const loadUserPreferences = useCallback(async (userId) => {
       const context = preferences.ESQUEMACORES || 'salvalucro';
       setCurrentContext(context);
       document.documentElement.setAttribute('data-context', context);
-      console.log('🎨 Applied context from API:', context);
       
       const themeValue = preferences.TEMA === true || preferences.TEMA === 'true';
       setCurrentTheme(themeValue);
       document.documentElement.setAttribute('data-theme', themeValue ? 'dark' : 'light');
-      console.log('🎨 Applied theme from API:', themeValue ? 'dark' : 'light');
       
       if (preferences.ICONE) {
         const iconPath = getIconPathByCode(preferences.ICONE);
         if (iconPath) {
           setUserImg(iconPath);
-          console.log('🖼️ Applied icon from API:', preferences.ICONE);
         }
       }
       
@@ -331,7 +323,6 @@ const loginApp = async (login, password) => {
       } catch (error) {
         console.log(error)
       }
-      console.log('user: ', user)
 
       // ===== LOAD PREFERENCES FROM API =====
       let userPreferences = null
@@ -341,7 +332,6 @@ const loginApp = async (login, password) => {
           params: { codigo: userId }
         })
         userPreferences = prefsResponse.data
-        console.log('📡 Loaded user preferences from API:', userPreferences)
         
         if (!userPreferences || userPreferences === null) {
           console.log('📝 No preferences found, creating defaults for user...')
@@ -437,14 +427,11 @@ const loginApp = async (login, password) => {
         context = userPreferences?.ESQUEMACORES || user?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro';
         logo = getLogoByContext(context) || salvalucro;
       }
-      
-      console.log('🎨 Setting context from URL:', context, 'Logo encontrado:', !!logo);
 
       // ===== DETERMINE THEME =====
       let themeValue
       if (userPreferences?.TEMA !== undefined && userPreferences?.TEMA !== null) {
         themeValue = userPreferences.TEMA === true || userPreferences.TEMA === 'true'
-        console.log('Using saved theme preference:', themeValue ? 'dark' : 'light')
       } else {
         themeValue = user.TEMA === true || user.TEMA === 'true'
         console.log('No preferences found, using user theme:', themeValue ? 'dark' : 'light')
@@ -473,16 +460,8 @@ const loginApp = async (login, password) => {
         const iconPath = getIconPathByCode(userPreferences.ICONE)
         if (iconPath) {
           setUserImg(iconPath)
-          console.log('🖼️ Applied saved icon to header:', userPreferences.ICONE)
         }
       }
-
-      console.log('✅ Preferences applied successfully:', {
-        context: context,
-        theme: themeValue ? 'dark' : 'light',
-        icon: userPreferences?.ICONE,
-        logo: logo ? 'set' : 'default'
-      })
 
       // ===== UPDATE USER IF NEEDED =====
       const handleUpdateUser = async () => {
@@ -546,7 +525,6 @@ const loginApp = async (login, password) => {
           }
 
           api.post('/LogAcesso', body)
-          console.log('login registrado')
         }
         
         const getLoginLog = async () => {
@@ -626,7 +604,6 @@ const loginApp = async (login, password) => {
 }
 
 const loadUser = async (userId) => {
-  console.log('userID: ', userId)
   let params = { codigo: userId }
   let config = { params: params }
   
@@ -650,7 +627,6 @@ const loadUser = async (userId) => {
       if (iconPath) {
         setUserImg(iconPath)
         localStorage.setItem('userIconCode', preferences.ICONE)
-        console.log('🖼️ Loaded user icon:', preferences.ICONE)
       }
     }
   } catch (error) {
@@ -677,7 +653,6 @@ const loadUser = async (userId) => {
 
   // FIXED: Memoized updateUser function
   const updateUser = useCallback(async (userObj) => {
-    console.log('update user: ', userObj)
     try {
         let body = JSON.stringify(userObj)
 

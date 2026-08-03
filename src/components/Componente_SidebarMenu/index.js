@@ -50,7 +50,6 @@ const Sidebar = () => {
     useEffect(() => {
         const tenant = getTenantFromURL();
         setCurrentTenant(tenant);
-        console.log('🏢 Sidebar - Tenant atual:', tenant?.path);
         
         const currentContextAttr = document.documentElement.getAttribute('data-context');
         if (!currentContextAttr) {

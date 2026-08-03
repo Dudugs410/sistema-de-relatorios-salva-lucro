@@ -31,14 +31,12 @@ const Login = () => {
             // Se tem contexto salvo, usa ele
             logo = getLogoByContext(savedContext);
             tenant = getCurrentTenant();
-            console.log('🖼️ Logo carregada do contexto salvo:', savedContext);
         } else {
             // Senão, detecta da URL
             tenant = getCurrentTenant();
             logo = tenant.logo;
             // Salva o contexto para consistência
             localStorage.setItem('selectedContext', tenant.contextKey);
-            console.log('🖼️ Logo carregada da URL:', tenant.contextKey);
         }
         
         setTenantInfo(tenant);

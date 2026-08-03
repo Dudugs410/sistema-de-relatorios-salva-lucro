@@ -40,7 +40,6 @@ function PreferenceLoader({ children }) {
         const prefs = await loadUserPrefs()
         
         if (prefs && setUserImg) {
-          console.log('✅ Preferences loaded on refresh:', prefs)
           
           if (prefs.ESQUEMACORES) {
             document.documentElement.setAttribute('data-context', prefs.ESQUEMACORES)
@@ -53,7 +52,6 @@ function PreferenceLoader({ children }) {
           
           if (prefs.ICONE && setUserImg) {
             const iconPath = getIconPathByCode(prefs.ICONE)
-            console.log('🖼️ Setting userImg from refresh to code:', prefs.ICONE)
             setUserImg(iconPath)
             localStorage.setItem('userIconCode', prefs.ICONE)
           }
@@ -65,7 +63,6 @@ function PreferenceLoader({ children }) {
           setUserImg(defaultIcon.path)
         }
       } else {
-        console.log('🔒 No user logged in, skipping preference loading')
         const tenant = getTenantFromURL();
         document.documentElement.setAttribute('data-context', tenant.contextKey || 'SL');
         document.documentElement.setAttribute('data-theme', 'light')
@@ -91,7 +88,6 @@ function PageVisibilityHandler({ children }) {
   useEffect(() => {
     const handleVisibilityChange = async () => {
       if (!document.hidden) {
-        console.log('📱 Page became visible, checking for preference updates...')
         const token = localStorage.getItem('token')
         const userId = localStorage.getItem('userID')
         
@@ -167,9 +163,6 @@ function App() {
     // Set basename to the tenant path
     setBasename(`/${tenantPath}`);
     
-    console.log('🏷️ Basename definido:', `/${tenantPath}`);
-    console.log('📍 Path atual:', path);
-    console.log('🔍 Tenant detectado:', tenantPath);
   }, []);
 
   useEffect(() => {
