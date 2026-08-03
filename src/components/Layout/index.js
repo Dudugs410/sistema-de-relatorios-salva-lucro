@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useContext } from "react"
 import Header from "../Header"
 import Footer from "../Footer"
 import SeletorCliente from "../SeletorCliente"
@@ -9,12 +9,38 @@ import SidebarMenu from '../Componente_SidebarMenu'
 import DadosGrupoCliente from "../Componente_DadosGrupoCliente"
 import { getCurrentTenant } from '../../util/tenant'
 import { FiMenu } from 'react-icons/fi'
+import { AuthContext } from '../../contexts/auth'
 
 function Layout({ children }) {
   const [tenantInfo, setTenantInfo] = useState(null)
   const [sidebarVisible, setSidebarVisible] = useState(false)
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 946)
+  
+  // Get user preferences from context
+  const { 
+    userPreferences,
+    loadUserPreferences,
+    currentContext,
+    currentTheme
+  } = useContext(AuthContext)
 
+  // Load user preferences on mount
+  useEffect(() => {
+    const loadPrefs = async () => {
+      try {
+        const userId = localStorage.getItem('userID')
+        if (userId) {
+          await loadUserPreferences(userId)
+        }
+      } catch (error) {
+        // Silently fail - preferences will use defaults
+      }
+    }
+    
+    loadPrefs()
+  }, [])
+
+  // Apply tenant context
   useEffect(() => {
     const tenant = getCurrentTenant()
     setTenantInfo(tenant)
@@ -22,8 +48,21 @@ function Layout({ children }) {
     if (tenant) {
       document.documentElement.setAttribute('data-context', tenant.contextKey)
     }
-    
   }, [])
+
+  // Apply theme and context preferences when they change
+  useEffect(() => {
+    // Apply context from preferences if available
+    if (currentContext) {
+      document.documentElement.setAttribute('data-context', currentContext)
+    }
+    
+    // Apply theme from preferences
+    if (currentTheme !== undefined && currentTheme !== null) {
+      const themeValue = currentTheme ? 'dark' : 'light'
+      document.documentElement.setAttribute('data-theme', themeValue)
+    }
+  }, [currentContext, currentTheme])
 
   // Handle window resize
   useEffect(() => {
