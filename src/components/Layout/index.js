@@ -23,7 +23,6 @@ function Layout({ children }) {
       document.documentElement.setAttribute('data-context', tenant.contextKey)
     }
     
-    console.log('🏢 Layout - Tenant:', tenant)
   }, [])
 
   // Handle window resize

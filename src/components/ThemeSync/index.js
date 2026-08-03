@@ -14,10 +14,6 @@ const ThemeSync = ({ children }) => {
       
       // If they don't match, force sync
       if (htmlContext !== currentContext) {
-        console.log('Syncing theme - React context mismatch:', {
-          react: currentContext,
-          html: htmlContext
-        });
         document.documentElement.setAttribute('data-context', currentContext);
       }
       

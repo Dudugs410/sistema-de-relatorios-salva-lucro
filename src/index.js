@@ -60,16 +60,10 @@ const initializeTheme = () => {
     // Only update if different to avoid unnecessary DOM changes
     if (currentContext !== finalContext) {
       document.documentElement.setAttribute('data-context', finalContext);
-      console.log('✅ Index: Applied context', finalContext, '(was:', currentContext || 'none', ')');
-    } else {
-      console.log('✅ Index: Context already correct', finalContext);
     }
     
     if (currentTheme !== finalTheme) {
       document.documentElement.setAttribute('data-theme', finalTheme);
-      console.log('✅ Index: Applied theme', finalTheme, '(was:', currentTheme || 'none', ')');
-    } else {
-      console.log('✅ Index: Theme already correct', finalTheme);
     }
     
     // Verify theme was applied successfully
@@ -92,12 +86,6 @@ const initializeTheme = () => {
 
 // Run initialization
 initializeTheme();
-
-// Log the final applied theme for debugging
-console.log('🎨 Final theme state:', {
-  context: document.documentElement.getAttribute('data-context'),
-  theme: document.documentElement.getAttribute('data-theme')
-});
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(

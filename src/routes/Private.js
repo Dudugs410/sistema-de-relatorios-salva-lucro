@@ -42,13 +42,6 @@ export default function Private({ children }) {
     const isSignedIn = localStorage.getItem('isSignedIn') === 'true';
     const currentPath = location.pathname;
     
-    console.log('🔐 Private - Verificando autenticação:', { 
-      isSignedIn, 
-      hasToken: !!token, 
-      currentPath,
-      tenant: tenant?.contextKey 
-    });
-    
     if (isSignedIn && (!token || !validateToken(token))) {
       console.log('❌ Token inválido ou expirado, fazendo logout');
       logout();

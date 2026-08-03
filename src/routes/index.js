@@ -43,8 +43,6 @@ function RoutesApp() {
     const isSignedIn = localStorage.getItem('isSignedIn') === 'true'
     const savedPath = sessionStorage.getItem('currentPath')
     const currentPath = location.pathname
-    
-    console.log('🔐 Verificando autenticação:', { isSignedIn, savedPath, currentPath })
 
     if (!isSignedIn) {
       // Se não está logado, vai para login (relativo ao basename)

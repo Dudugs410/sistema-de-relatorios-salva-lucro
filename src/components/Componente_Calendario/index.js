@@ -1,3 +1,4 @@
+// MyCalendar.jsx
 import React, { useContext, useEffect, useState } from "react"
 import Calendar from "react-calendar"
 import { AuthContext } from "../../contexts/auth"
@@ -12,200 +13,201 @@ const MyCalendar = (props) => {
   const onLoadData = props.onLoadData
   const getCalendarDate = props.getCalendarDate
   const btnDisabled = props.btnDisabled
+  const customButtonText = props.customButtonText || "Pesquisar"
 
-    const { isCheckedCalendar } = useContext(AuthContext)
+  const { isCheckedCalendar } = useContext(AuthContext)
 
-    const location = useLocation()
-    
-    const [dateRange, setDateRange] = useState([new Date(), new Date()]);
-    const [dateSysmo, setDateSysmo] = useState(new Date())
-    const [allowRange, setAllowRange] = useState(true)
-    const [showPesquisar, setShowPesquisar] = useState(true)
+  const location = useLocation()
+  
+  const [dateRange, setDateRange] = useState([new Date(), new Date()]);
+  const [dateSysmo, setDateSysmo] = useState(new Date())
+  const [allowRange, setAllowRange] = useState(true)
+  const [showPesquisar, setShowPesquisar] = useState(true)
 
-    // Define routes with their specific behaviors
-    const routesWithoutPesquisar = [
-      '/creditos-data-banco',
-      '/previsao-recebimento',
-      '/resumo-mensal'
-    ]
+  // Define routes with their specific behaviors
+  const routesWithoutPesquisar = [
+    '/creditos-data-banco',
+    '/previsao-recebimento',
+    '/resumo-mensal'
+  ]
 
-    const routesWithAllowRangeFalse = [
-      '/sysmo',
-      '/metasapiranga',
-      '/meta',
-      '/vendasdelivery'
-    ]
+  const routesWithAllowRangeFalse = [
+    '/sysmo',
+    '/metasapiranga',
+    '/meta',
+    '/vendasdelivery'
+  ]
 
-    useEffect(()=>{
-      if (routesWithAllowRangeFalse.includes(location.pathname)) {
-        setAllowRange(false)
-        setShowPesquisar(false)
-      } else if (routesWithoutPesquisar.includes(location.pathname)) {
-        setAllowRange(true)
-        setShowPesquisar(false)
+  useEffect(()=>{
+    if (routesWithAllowRangeFalse.includes(location.pathname)) {
+      setAllowRange(false)
+      setShowPesquisar(false)
+    } else if (routesWithoutPesquisar.includes(location.pathname)) {
+      setAllowRange(true)
+      setShowPesquisar(false)
+    } else {
+      setAllowRange(true)
+      setShowPesquisar(true)
+    }
+  },[location])
+
+  useEffect(()=>{
+    localStorage.setItem('dataInicial', dateRange[0])
+    localStorage.setItem('dataFinal', dateRange[1])
+  },[])
+
+  useEffect(()=>{
+    getCalendarDate(dateRange)
+    localStorage.setItem('dataInicial', dateRange[0])
+    localStorage.setItem('dataFinal', dateRange[1])
+  },[dateRange])
+
+  const handleDateChange = (date) =>{
+    setDateRange(date)
+  }
+
+  const handleDateChangeSysmo = (date) =>{
+    setDateSysmo(date)
+  }
+
+  // Define routes that should show the "Exportar relatório" message instead of "Executar busca"
+  const routesWithExportMessage = [
+    '/creditos-data-banco',
+    '/previsao-recebimento',
+    '/resumo-mensal'
+  ]
+
+  // Get the text for the info message
+  const getInfoText = () => {
+    if (routesWithExportMessage.includes(location.pathname)) {
+      if (dateRange[0].toLocaleDateString('pt-BR') !== dateRange[1].toLocaleDateString('pt-BR')) {
+        return `Exportar relatório do dia <strong>${dateRange[0].toLocaleDateString('pt-BR')}</strong> ao dia <strong>${dateRange[1].toLocaleDateString('pt-BR')}</strong>`
       } else {
-        setAllowRange(true)
-        setShowPesquisar(true)
+        return `Exportar relatório do dia <strong>${dateRange[0].toLocaleDateString('pt-BR')}</strong>`
       }
-    },[location])
-
-    useEffect(()=>{
-      localStorage.setItem('dataInicial', dateRange[0])
-      localStorage.setItem('dataFinal', dateRange[1])
-    },[])
-
-    useEffect(()=>{
-      getCalendarDate(dateRange)
-      localStorage.setItem('dataInicial', dateRange[0])
-      localStorage.setItem('dataFinal', dateRange[1])
-    },[dateRange])
-
-    const handleDateChange = (date) =>{
-      setDateRange(date)
-    }
-
-    const handleDateChangeSysmo = (date) =>{
-      setDateSysmo(date)
-    }
-
-    // Define routes that should show the "Exportar relatório" message instead of "Executar busca"
-    const routesWithExportMessage = [
-      '/creditos-data-banco',
-      '/previsao-recebimento',
-      '/resumo-mensal'
-    ]
-
-    // Get the text for the info message
-    const getInfoText = () => {
-      if (routesWithExportMessage.includes(location.pathname)) {
-        if (dateRange[0].toLocaleDateString('pt-BR') !== dateRange[1].toLocaleDateString('pt-BR')) {
-          return `Exportar relatório do dia <strong>${dateRange[0].toLocaleDateString('pt-BR')}</strong> ao dia <strong>${dateRange[1].toLocaleDateString('pt-BR')}</strong>`
-        } else {
-          return `Exportar relatório do dia <strong>${dateRange[0].toLocaleDateString('pt-BR')}</strong>`
-        }
+    } else {
+      if (dateRange[0].toLocaleDateString('pt-BR') !== dateRange[1].toLocaleDateString('pt-BR')) {
+        return `Executar busca do dia <strong>${dateRange[0].toLocaleDateString('pt-BR')}</strong> ao dia <strong>${dateRange[1].toLocaleDateString('pt-BR')}</strong>`
       } else {
-        if (dateRange[0].toLocaleDateString('pt-BR') !== dateRange[1].toLocaleDateString('pt-BR')) {
-          return `Executar busca do dia <strong>${dateRange[0].toLocaleDateString('pt-BR')}</strong> ao dia <strong>${dateRange[1].toLocaleDateString('pt-BR')}</strong>`
-        } else {
-          return `Executar busca do dia <strong>${dateRange[0].toLocaleDateString('pt-BR')}</strong>`
-        }
+        return `Executar busca do dia <strong>${dateRange[0].toLocaleDateString('pt-BR')}</strong>`
       }
     }
+  }
 
-    //date-range-picker
-    const MyDatePicker = () => {
-      return (
-        <div className='form-container-picker'>
-          <hr className='hr-global'/>
-          <div className='select-elements-container-picker'>
-            <div className='container-select'>
-              <span className='span-picker'>Data Inicial</span>
-              <DatePicker className='input-picker'
-                selected={dateRange[0]}
-                onChange={(date) => setDateRange([date, dateRange[1]])}
-              />
-            </div>
-            <div className='container-select'>
-              <span className='span-picker'>Data Final</span>
-              <DatePicker className='input-picker'
-                selected={dateRange[1]}
-                onChange={(date) => setDateRange([dateRange[0], date])}
-              />
-            </div>
+  //date-range-picker
+  const MyDatePicker = () => {
+    return (
+      <div className='form-container-picker'>
+        <hr className='hr-global'/>
+        <div className='select-elements-container-picker'>
+          <div className='container-select'>
+            <span className='span-picker'>Data Inicial</span>
+            <DatePicker className='input-picker'
+              selected={dateRange[0]}
+              onChange={(date) => setDateRange([date, dateRange[1]])}
+            />
+          </div>
+          <div className='container-select'>
+            <span className='span-picker'>Data Final</span>
+            <DatePicker className='input-picker'
+              selected={dateRange[1]}
+              onChange={(date) => setDateRange([dateRange[0], date])}
+            />
           </div>
         </div>
-      );
-    };
+      </div>
+    );
+  };
 
-    const MyDatePickerSysmo = () => {
-      return (
-        <div className='form-container-picker'>
-          <hr className='hr-global'/>
-          <div className='select-elements-container-picker'>
-            <div className='container-select'>
-              <span className='span-picker'>Data</span>
-              <DatePicker className='input-picker'
-                selected={dateSysmo}
-                onChange={(date) => setDateSysmo(date)}
-              />
-            </div>
+  const MyDatePickerSysmo = () => {
+    return (
+      <div className='form-container-picker'>
+        <hr className='hr-global'/>
+        <div className='select-elements-container-picker'>
+          <div className='container-select'>
+            <span className='span-picker'>Data</span>
+            <DatePicker className='input-picker'
+              selected={dateSysmo}
+              onChange={(date) => setDateSysmo(date)}
+            />
           </div>
         </div>
-      )
-    }
-
-    const CalendarDefault = () => {
-      return (
-        <div className='component-container'>
-          { isCheckedCalendar ? <>
-          <hr className='hr-global'/>
-          <Calendar
-            locale="pt-BR"
-            calendarType="gregory"
-            style={{ color:'white' }}
-            onChange={ handleDateChange }
-            selectRange={allowRange}
-            value={ dateRange }
-          />
-   
-          </>
-          : 
-          <>
-            <MyDatePicker />
-          </>}
-          <hr className='hr-global'/>
-          <div className='container-busca'>
-            <span className='span-busca'>
-              <span dangerouslySetInnerHTML={{__html: getInfoText()}} />
-            </span>
-          </div>
-          <hr className='hr-global'/>
-          { showPesquisar === true ? <button data-tour="pesquisar-section" className='btn btn-primary btn-global btn-pesquisar' onClick={ onLoadData } disabled={btnDisabled}>Pesquisar</button> : <></> }
-          { showPesquisar === true ? <hr className='hr-global'/> : <></> }
-        </div>
-      )
-    }
-
-    const CalendarSysmo = () => {
-      return (
-        <div className='component-container'>
-          { isCheckedCalendar ? <>
-          <hr className='hr-global'/>
-          <Calendar
-            locale="pt-BR"
-            calendarType="gregory"
-            style={{ color:'white' }}
-            onChange={ handleDateChangeSysmo }
-            value={ dateSysmo }
-          />
-          </>
-          : 
-          <>
-            <MyDatePickerSysmo />
-          </>}
-          <hr className='hr-global'/>
-          <div className='container-busca'>
-            <span className='span-busca'>
-                <span dangerouslySetInnerHTML={{__html: `Executar Exportação do dia <strong>${dateSysmo.toLocaleDateString('pt-BR')}</strong>`}} />
-            </span>
-          </div>
-          <hr className='hr-global'/>
-          <button className='btn btn-primary btn-global btn-pesquisar' onClick={ onLoadData } disabled={btnDisabled}>Pesquisar</button>
-          <hr className='hr-global'/>
-        </div>
-      )
-    }
-
-    return(
-      <>
-        {
-          allowRange === true ?
-            <CalendarDefault/>
-            :
-            <CalendarSysmo/>
-        }
-      </>
+      </div>
     )
   }
 
-  export default MyCalendar
+  const CalendarDefault = () => {
+    return (
+      <div className='component-container'>
+        { isCheckedCalendar ? <>
+        <hr className='hr-global'/>
+        <Calendar
+          locale="pt-BR"
+          calendarType="gregory"
+          style={{ color:'white' }}
+          onChange={ handleDateChange }
+          selectRange={allowRange}
+          value={ dateRange }
+        />
+ 
+        </>
+        : 
+        <>
+          <MyDatePicker />
+        </>}
+        <hr className='hr-global'/>
+        <div className='container-busca'>
+          <span className='span-busca'>
+            <span dangerouslySetInnerHTML={{__html: getInfoText()}} />
+          </span>
+        </div>
+        <hr className='hr-global'/>
+        { showPesquisar === true ? <button data-tour="pesquisar-section" className='btn btn-primary btn-global btn-pesquisar' onClick={ onLoadData } disabled={btnDisabled}>{customButtonText}</button> : <></> }
+        { showPesquisar === true ? <hr className='hr-global'/> : <></> }
+      </div>
+    )
+  }
+
+  const CalendarSysmo = () => {
+    return (
+      <div className='component-container'>
+        { isCheckedCalendar ? <>
+        <hr className='hr-global'/>
+        <Calendar
+          locale="pt-BR"
+          calendarType="gregory"
+          style={{ color:'white' }}
+          onChange={ handleDateChangeSysmo }
+          value={ dateSysmo }
+        />
+        </>
+        : 
+        <>
+          <MyDatePickerSysmo />
+        </>}
+        <hr className='hr-global'/>
+        <div className='container-busca'>
+          <span className='span-busca'>
+              <span dangerouslySetInnerHTML={{__html: `Executar Exportação do dia <strong>${dateSysmo.toLocaleDateString('pt-BR')}</strong>`}} />
+          </span>
+        </div>
+        <hr className='hr-global'/>
+        <button className='btn btn-primary btn-global btn-pesquisar' onClick={ onLoadData } disabled={btnDisabled}>{customButtonText}</button>
+        <hr className='hr-global'/>
+      </div>
+    )
+  }
+
+  return(
+    <>
+      {
+        allowRange === true ?
+          <CalendarDefault/>
+          :
+          <CalendarSysmo/>
+      }
+    </>
+  )
+}
+
+export default MyCalendar

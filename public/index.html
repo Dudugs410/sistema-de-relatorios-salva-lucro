@@ -93,8 +93,6 @@
           sessionStorage.setItem('themeContext', finalContext);
           sessionStorage.setItem('themeMode', finalTheme);
           
-          console.log('✅ Theme pre-loaded:', { context: finalContext, theme: finalTheme });
-          
           const style = document.createElement('style');
           style.textContent = `
             /* Hide content briefly until theme is fully applied */
