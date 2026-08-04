@@ -12,6 +12,20 @@ html.preload-transitions * {
   transition: none !important;
 }
 
+// Hide page until theme is applied
+body:not([data-theme]) {
+  opacity: 0;
+}
+
+// Or use a loading state
+body:not([data-theme]) .app-loading {
+  display: flex;
+}
+
+body[data-theme] .app-loading {
+  display: none;
+}
+
 .app-page-global{
     display: contents;
     flex-direction: column;
