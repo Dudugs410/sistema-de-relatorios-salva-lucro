@@ -15,6 +15,7 @@ function Layout({ children }) {
   const [tenantInfo, setTenantInfo] = useState(null)
   const [sidebarVisible, setSidebarVisible] = useState(false)
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 946)
+  const [isThemeLoaded, setIsThemeLoaded] = useState(false)
   
   // Get user preferences from context
   const { 
@@ -32,8 +33,11 @@ function Layout({ children }) {
         if (userId) {
           await loadUserPreferences(userId)
         }
+        // Mark theme as loaded even if there's no user ID
+        setIsThemeLoaded(true)
       } catch (error) {
         // Silently fail - preferences will use defaults
+        setIsThemeLoaded(true)
       }
     }
     
@@ -55,12 +59,16 @@ function Layout({ children }) {
     // Apply context from preferences if available
     if (currentContext) {
       document.documentElement.setAttribute('data-context', currentContext)
+      // Cache context in localStorage
+      localStorage.setItem('userContext', currentContext)
     }
     
     // Apply theme from preferences
     if (currentTheme !== undefined && currentTheme !== null) {
       const themeValue = currentTheme ? 'dark' : 'light'
       document.documentElement.setAttribute('data-theme', themeValue)
+      // Cache theme in localStorage
+      localStorage.setItem('userTheme', String(currentTheme))
     }
   }, [currentContext, currentTheme])
 
@@ -126,6 +134,24 @@ function Layout({ children }) {
   const closeSidebar = () => {
     setSidebarVisible(false);
   };
+
+  // Show loading while theme is being loaded
+  if (!isThemeLoaded) {
+    return (
+      <div className="layout-loading" style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        backgroundColor: 'var(--bg-color, #ffffff)',
+        flexDirection: 'column',
+        gap: '20px'
+      }}>
+        <div className="spinner"></div>
+        <p>Carregando preferências...</p>
+      </div>
+    )
+  }
 
   if (!tenantInfo) {
     return (

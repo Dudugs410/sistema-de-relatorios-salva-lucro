@@ -25,7 +25,7 @@
     <!-- APP VERSION - Increment this on each deployment -->
     <script>
       (function() {
-        const APP_VERSION = '2.1.4';
+        const APP_VERSION = '2.1.5';
         
         try {
           const storedVersion = localStorage.getItem('app_version');
@@ -37,6 +37,61 @@
           }
         } catch(e) {
           console.warn('Version check failed:', e);
+        }
+      })();
+    </script>
+    
+    <!-- CRITICAL: Cached Theme initialization script - runs before any CSS loads -->
+    <script>
+      (function() {
+        try {
+          // Check for cached theme and context from localStorage
+          const cachedTheme = localStorage.getItem('userTheme');
+          const cachedContext = localStorage.getItem('userContext');
+          
+          // Apply cached theme immediately if available
+          if (cachedTheme !== null) {
+            const themeValue = cachedTheme === 'true' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', themeValue);
+          } else {
+            // Fallback to default light theme
+            document.documentElement.setAttribute('data-theme', 'light');
+          }
+          
+          // Apply cached context if available
+          if (cachedContext) {
+            document.documentElement.setAttribute('data-context', cachedContext);
+          } else {
+            // Fallback to default context
+            document.documentElement.setAttribute('data-context', 'salvalucro');
+          }
+          
+          // Mark that theme has been applied
+          document.documentElement.setAttribute('data-theme-applied', 'true');
+          
+          // Store in sessionStorage for quick access
+          sessionStorage.setItem('themeInitialized', 'true');
+          sessionStorage.setItem('themeMode', cachedTheme === 'true' ? 'dark' : 'light');
+          sessionStorage.setItem('themeContext', cachedContext || 'salvalucro');
+          
+          // Add style to prevent FOUC (Flash of Unstyled Content)
+          const style = document.createElement('style');
+          style.textContent = `
+            /* Prevent flash of unstyled content */
+            html:not([data-theme-applied]) #root {
+              opacity: 0;
+            }
+            html[data-theme-applied] #root {
+              opacity: 1;
+              transition: opacity 0.1s ease-in;
+            }
+          `;
+          document.head.appendChild(style);
+          
+        } catch(e) {
+          // Silently fail - theme will load normally
+          document.documentElement.setAttribute('data-context', 'salvalucro');
+          document.documentElement.setAttribute('data-theme', 'light');
         }
       })();
     </script>
@@ -86,26 +141,19 @@
             } catch(e) {}
           }
           
-          document.documentElement.setAttribute('data-context', finalContext);
-          document.documentElement.setAttribute('data-theme', finalTheme);
+          // Only apply if not already applied by cached script
+          if (!document.documentElement.hasAttribute('data-theme-applied')) {
+            document.documentElement.setAttribute('data-context', finalContext);
+            document.documentElement.setAttribute('data-theme', finalTheme);
+          }
+          
+          // Cache these values for future page loads
+          localStorage.setItem('userContext', finalContext);
+          localStorage.setItem('userTheme', String(finalTheme === 'dark'));
           
           sessionStorage.setItem('themeInitialized', 'true');
           sessionStorage.setItem('themeContext', finalContext);
           sessionStorage.setItem('themeMode', finalTheme);
-          
-          const style = document.createElement('style');
-          style.textContent = `
-            /* Hide content briefly until theme is fully applied */
-            html:not([data-context]) #root,
-            html:not([data-theme]) #root {
-              opacity: 0;
-            }
-            html[data-context][data-theme] #root {
-              opacity: 1;
-              transition: opacity 0.15s ease-in;
-            }
-          `;
-          document.head.appendChild(style);
           
         } catch(e) {
           console.error('Theme initialization error:', e);
