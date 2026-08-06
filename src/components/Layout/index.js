@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useContext } from "react"
+import { useLocation } from "react-router-dom"
 import Header from "../Header"
 import Footer from "../Footer"
 import SeletorCliente from "../SeletorCliente"
@@ -12,6 +13,7 @@ import { FiMenu } from 'react-icons/fi'
 import { AuthContext } from '../../contexts/auth'
 
 function Layout({ children }) {
+  const location = useLocation()
   const [tenantInfo, setTenantInfo] = useState(null)
   const [sidebarVisible, setSidebarVisible] = useState(false)
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 946)
@@ -24,6 +26,22 @@ function Layout({ children }) {
     currentContext,
     currentTheme
   } = useContext(AuthContext)
+
+  // Function to apply theme and context
+  const applyThemeAndContext = (context, theme) => {
+    // Apply context
+    if (context) {
+      document.documentElement.setAttribute('data-context', context)
+      localStorage.setItem('userContext', context)
+    }
+    
+    // Apply theme
+    if (theme !== undefined && theme !== null) {
+      const themeValue = theme ? 'dark' : 'light'
+      document.documentElement.setAttribute('data-theme', themeValue)
+      localStorage.setItem('userTheme', String(theme))
+    }
+  }
 
   // Load user preferences on mount
   useEffect(() => {
@@ -56,21 +74,48 @@ function Layout({ children }) {
 
   // Apply theme and context preferences when they change
   useEffect(() => {
-    // Apply context from preferences if available
-    if (currentContext) {
-      document.documentElement.setAttribute('data-context', currentContext)
-      // Cache context in localStorage
-      localStorage.setItem('userContext', currentContext)
+    applyThemeAndContext(currentContext, currentTheme)
+  }, [currentContext, currentTheme])
+
+  // Re-apply theme on route changes (handles browser back/forward)
+  useEffect(() => {
+    // Get cached values from localStorage
+    const cachedTheme = localStorage.getItem('userTheme')
+    const cachedContext = localStorage.getItem('userContext')
+    
+    // Re-apply if we have cached values
+    if (cachedContext || cachedTheme) {
+      // Only re-apply if currentContext/currentTheme aren't set yet
+      if (!currentContext && !currentTheme) {
+        applyThemeAndContext(
+          cachedContext || 'salvalucro',
+          cachedTheme !== null ? cachedTheme === 'true' : false
+        )
+      }
     }
     
-    // Apply theme from preferences
-    if (currentTheme !== undefined && currentTheme !== null) {
-      const themeValue = currentTheme ? 'dark' : 'light'
-      document.documentElement.setAttribute('data-theme', themeValue)
-      // Cache theme in localStorage
-      localStorage.setItem('userTheme', String(currentTheme))
+    // Also check sessionStorage as backup
+    const sessionTheme = sessionStorage.getItem('themeMode')
+    const sessionContext = sessionStorage.getItem('themeContext')
+    
+    if (sessionTheme || sessionContext) {
+      if (!currentContext && !currentTheme) {
+        applyThemeAndContext(
+          sessionContext || 'salvalucro',
+          sessionTheme === 'dark'
+        )
+      }
     }
-  }, [currentContext, currentTheme])
+    
+    // Force a re-application of the theme from context if available
+    if (currentContext || currentTheme !== undefined) {
+      applyThemeAndContext(currentContext, currentTheme)
+    }
+    
+    // Ensure the theme-applied attribute is present
+    document.documentElement.setAttribute('data-theme-applied', 'true')
+    
+  }, [location.pathname]) // This triggers on every route change
 
   // Handle window resize
   useEffect(() => {
