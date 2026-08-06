@@ -62,6 +62,112 @@ const formatCNPJ = (cnpj) => {
   return cnpj
 }
 
+// Custom Select styles with theme support
+const customSelectStyles = {
+  control: (base, { isFocused }) => ({
+    ...base,
+    minWidth: 300,
+    width: '100%',
+    backgroundColor: 'var(--background-color)',
+    borderColor: isFocused ? 'var(--secondary-color)' : 'var(--bs-border-color)',
+    color: 'var(--font-color)',
+    '&:hover': {
+      borderColor: 'var(--secondary-color)',
+    },
+    boxShadow: isFocused ? '0 0 0 1px var(--secondary-color)' : 'none',
+  }),
+  menu: (base) => ({
+    ...base,
+    backgroundColor: 'var(--background-color)',
+    borderColor: 'var(--bs-border-color)',
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+    zIndex: 9999,
+  }),
+  menuList: (base) => ({
+    ...base,
+    backgroundColor: 'var(--background-color)',
+    padding: '4px 0',
+    '::-webkit-scrollbar': {
+      width: '8px',
+      height: '8px',
+    },
+    '::-webkit-scrollbar-track': {
+      background: 'rgba(255, 255, 255, 0.1)',
+    },
+    '::-webkit-scrollbar-thumb': {
+      background: 'var(--secondary-color)',
+      borderRadius: '4px',
+    },
+    '::-webkit-scrollbar-thumb:hover': {
+      background: 'var(--primary-color)',
+    },
+  }),
+  option: (base, { isFocused, isSelected }) => ({
+    ...base,
+    backgroundColor: isSelected 
+      ? 'var(--secondary-color)' 
+      : isFocused 
+        ? 'rgba(var(--secondary-color-rgb), 0.2)' 
+        : 'transparent',
+    color: isSelected ? 'var(--primary-color)' : 'var(--font-color)',
+    cursor: 'pointer',
+    padding: '8px 12px',
+    '&:active': {
+      backgroundColor: 'var(--secondary-color)',
+      color: 'var(--primary-color)',
+    },
+  }),
+  singleValue: (base) => ({
+    ...base,
+    color: 'var(--font-color)',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    maxWidth: '90%',
+  }),
+  input: (base) => ({
+    ...base,
+    color: 'var(--font-color)',
+  }),
+  placeholder: (base) => ({
+    ...base,
+    color: 'var(--font-color)',
+    opacity: 0.6,
+  }),
+  valueContainer: (base) => ({
+    ...base,
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  }),
+  dropdownIndicator: (base) => ({
+    ...base,
+    color: 'var(--font-color)',
+    '&:hover': {
+      color: 'var(--secondary-color)',
+    },
+  }),
+  clearIndicator: (base) => ({
+    ...base,
+    color: 'var(--font-color)',
+    '&:hover': {
+      color: 'var(--secondary-color)',
+    },
+  }),
+  indicatorSeparator: (base) => ({
+    ...base,
+    backgroundColor: 'var(--bs-border-color)',
+  }),
+  noOptionsMessage: (base) => ({
+    ...base,
+    color: 'var(--font-color)',
+  }),
+  loadingMessage: (base) => ({
+    ...base,
+    color: 'var(--font-color)',
+  }),
+}
+
 const OpenFinance = () => {
   const location = useLocation()
   const { dateConvert } = useContext(AuthContext)
@@ -569,31 +675,28 @@ const OpenFinance = () => {
                   isClearable={true}
                   isLoading={loadingBanks}
                   isDisabled={loadingBanks}
-                  styles={{
-                    control: (base) => ({
-                      ...base,
-                      minWidth: 300,
-                      width: '100%',
-                    }),
-                    menu: (base) => ({
-                      ...base,
-                      minWidth: 300,
-                      width: '100%',
-                    }),
-                    valueContainer: (base) => ({
-                      ...base,
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                    }),
-                    singleValue: (base) => ({
-                      ...base,
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      maxWidth: '90%',
-                    }),
-                  }}
+                  styles={customSelectStyles}
+                  theme={(theme) => ({
+                    ...theme,
+                    colors: {
+                      ...theme.colors,
+                      primary: 'var(--secondary-color)',
+                      primary75: 'var(--secondary-color)',
+                      primary50: 'rgba(var(--secondary-color-rgb), 0.5)',
+                      primary25: 'rgba(var(--secondary-color-rgb), 0.25)',
+                      neutral0: 'var(--background-color)',
+                      neutral5: 'var(--background-color)',
+                      neutral10: 'var(--background-color)',
+                      neutral20: 'var(--bs-border-color)',
+                      neutral30: 'var(--bs-border-color)',
+                      neutral40: 'var(--font-color)',
+                      neutral50: 'var(--font-color)',
+                      neutral60: 'var(--font-color)',
+                      neutral70: 'var(--font-color)',
+                      neutral80: 'var(--font-color)',
+                      neutral90: 'var(--font-color)',
+                    },
+                  })}
                 />
               </div>
             </div>
