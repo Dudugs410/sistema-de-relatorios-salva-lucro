@@ -1,5 +1,7 @@
 @import './variables';
 
+// ===== THEME APPLICATION FIXES =====
+// Prevent FOUC (Flash of Unstyled Content)
 html {
   transition: background-color 0.2s ease, color 0.2s ease;
   
@@ -12,12 +14,22 @@ html.preload-transitions * {
   transition: none !important;
 }
 
-// Hide page until theme is applied
+// Hide content until theme is applied
+html:not([data-theme-applied]) #root {
+  opacity: 0;
+}
+
+html[data-theme-applied] #root {
+  opacity: 1;
+  transition: opacity 0.1s ease-in;
+}
+
+// Fallback: Hide if no theme attribute at all
 body:not([data-theme]) {
   opacity: 0;
 }
 
-// Or use a loading state
+// Loading state styles
 body:not([data-theme]) .app-loading {
   display: flex;
 }
@@ -26,6 +38,68 @@ body[data-theme] .app-loading {
   display: none;
 }
 
+// ===== THEME VARIABLES WITH FALLBACKS =====
+// These ensure the theme works even if variables aren't loaded
+:root {
+  // Default light theme (fallback)
+  --primary-color: #0a3d70;
+  --primary-color-rgb: 10, 61, 112;
+  --secondary-color: #99cc33;
+  --secondary-color-rgb: 153, 204, 51;
+  --background-color: #f5f5f5;
+  --font-color: #333333;
+  --subtitle-color: #0a3d70;
+  --table-background: #ffffff;
+  --table-row-hover-color: #333333;
+  --table-row-hover-bg: rgba(10, 61, 112, 0.05);
+  --bs-border-width: 1px;
+  --bs-border-color: #dee2e6;
+}
+
+// Force theme application for any edge cases
+[data-theme="dark"] {
+  --primary-color: #99cc33;
+  --primary-color-rgb: 153, 204, 51;
+  --secondary-color: #0a3d70;
+  --secondary-color-rgb: 10, 61, 112;
+  --background-color: #1a1a1a;
+  --font-color: #e0e0e0;
+  --subtitle-color: #99cc33;
+  --table-background: #2d2d2d;
+  --table-row-hover-color: #e0e0e0;
+  --table-row-hover-bg: rgba(153, 204, 51, 0.1);
+  --bs-border-color: #404040;
+  
+  // Additional dark theme overrides
+  background-color: var(--background-color);
+  color: var(--font-color);
+}
+
+[data-theme="light"] {
+  --primary-color: #0a3d70;
+  --primary-color-rgb: 10, 61, 112;
+  --secondary-color: #99cc33;
+  --secondary-color-rgb: 153, 204, 51;
+  --background-color: #f5f5f5;
+  --font-color: #333333;
+  --subtitle-color: #0a3d70;
+  --table-background: #ffffff;
+  --table-row-hover-color: #333333;
+  --table-row-hover-bg: rgba(10, 61, 112, 0.05);
+  --bs-border-color: #dee2e6;
+  
+  background-color: var(--background-color);
+  color: var(--font-color);
+}
+
+// Force background and text color on body
+body {
+  background-color: var(--background-color);
+  color: var(--font-color);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+// ===== REST OF YOUR EXISTING STYLES =====
 .app-page-global{
     display: contents;
     flex-direction: column;
