@@ -1,5 +1,4 @@
 import { useEffect, useContext, useState, useRef, useCallback } from 'react'
-import Select from 'react-select'
 import '../Vendas/vendas.scss'
 import Joyride from 'react-joyride'
 import { AuthContext } from '../../contexts/auth'
@@ -26,28 +25,34 @@ const Creditos = () => {
       voucher: 0,
       total: 0
     })
-    // Clear select states
-    setAdministradora(null)
-    setBandeira(null)
-    // Clear localStorage items
-    localStorage.removeItem('selectedAdmCredits')
-    localStorage.removeItem('selectedBanCredits')
     // Reset ref
     initialLoadDoneRef.current = false
     // Reset tutorial state
     setRunTutorial(false)
+    
+    // Clear report-specific storage when resetting
+    localStorage.removeItem('reportBandeira')
+    localStorage.removeItem('reportAdquirente')
   }, [])
+
+  // Clean up report data when component unmounts or route changes
+  useEffect(() => {
+    return () => {
+      localStorage.removeItem('reportBandeira')
+      localStorage.removeItem('reportAdquirente')
+    }
+  }, [])
+
+  // Clear report data when path changes (navigation)
+  useEffect(() => {
+    localStorage.removeItem('reportBandeira')
+    localStorage.removeItem('reportAdquirente')
+    localStorage.setItem('currentPath', location.pathname)
+  }, [location])
 
   useEffect(() => {
     resetValues()
   }, [resetValues])
-
-  useEffect(() => {
-    localStorage.setItem('currentPath', location.pathname)
-  }, [location])
-
-  const [bandeira, setBandeira] = useState(null)
-  const [administradora, setAdministradora] = useState(null)
 
   const [listaBandeiras, setListaBandeiras] = useState([])
   const [listaAdministradoras, setListaAdministradoras] = useState([])
@@ -59,16 +64,6 @@ const Creditos = () => {
     }
     inicializar()
   }, [])
-
-  const handleAdmin = (option) => {
-    setAdministradora(option?.codigoAdquirente || null)
-    localStorage.setItem('selectedAdmCredits', JSON.stringify(option))
-  }
-
-  const handleBan = (option) => {
-    setBandeira(option?.codigoBandeira || null)
-    localStorage.setItem('selectedBanCredits', JSON.stringify(option))
-  }
 
   const {
     creditsPageArray, setCreditsPageArray,
@@ -139,7 +134,6 @@ const Creditos = () => {
       // Call the new API function
       const creditsData = await newLoadCredits(formattedStartDate, formattedEndDate)
       
-      
       if (creditsData && creditsData.length > 0) {
         // Calculate totals by produto
         let totalCredito = 0
@@ -168,7 +162,6 @@ const Creditos = () => {
           voucher: totalVoucher,
           total: totalGeral
         }
-        
         
         setCreditsTotal(totals)
         
@@ -211,23 +204,11 @@ const Creditos = () => {
     setCreditsDateRange(dateRange)
   }
 
-  // Get the selected option object for Adquirente
-  const getSelectedAdminOption = () => {
-    if (!administradora || listaAdministradoras.length === 0) return null
-    return listaAdministradoras.find(option => option.codigoAdquirente === administradora)
-  }
-
-  // Get the selected option object for Bandeira
-  const getSelectedBanOption = () => {
-    if (!bandeira || listaBandeiras.length === 0) return null
-    return listaBandeiras.find(option => option.codigoBandeira === bandeira)
-  }
-
   // Joyride state
   const [runTutorial, setRunTutorial] = useState(false)
   const [tutorialSteps, setTutorialSteps] = useState([
     {
-      target: '[data-tour="select-container-calendario"]',
+      target: '[data-tour="bandeiraadquirente-section"]',
       content: 'Selecione os filtros desejados para o relatório.',
       disableBeacon: true,
       placement: 'bottom'
@@ -279,7 +260,7 @@ const Creditos = () => {
     } else {
       setTutorialSteps([
         {
-          target: '[data-tour="select-container-calendario"]',
+          target: '[data-tour="bandeiraadquirente-section"]',
           content: 'Selecione os filtros desejados para o relatório.',
           disableBeacon: true,
           placement: 'bottom'
@@ -321,6 +302,9 @@ const Creditos = () => {
               location={location}
               runTutorial={runTutorial}
               tutorialSteps={tutorialSteps}
+              listaBandeiras={listaBandeiras}
+              listaAdministradoras={listaAdministradoras}
+              showSelects={false} // Hide selects when data is shown
             />
           ) : (
             <>
@@ -357,90 +341,21 @@ const Creditos = () => {
                 />
               )}
               
-              <div className='select-container-calendario' data-tour="select-container-calendario">
-                <div className='select-wrapper'>
-                  <h5>Adquirente</h5>
-                  <Select
-                    className='seletor-adq-select fixed-width-select'
-                    id='adquirente'
-                    options={listaAdministradoras}
-                    getOptionLabel={(option) => option.nomeAdquirente}
-                    getOptionValue={(option) => option.codigoAdquirente}
-                    onChange={(option) => handleAdmin(option)}
-                    value={getSelectedAdminOption()}
-                    menuPortalTarget={document.body}
-                    menuPosition="fixed"
-                    placeholder="Selecione uma adquirente..."
-                    isClearable={true}
-                    styles={{
-                      control: (base) => ({
-                        ...base,
-                        minWidth: 250,
-                        width: '100%',
-                      }),
-                      menu: (base) => ({
-                        ...base,
-                        minWidth: 250,
-                        width: '100%',
-                      }),
-                      valueContainer: (base) => ({
-                        ...base,
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }),
-                      singleValue: (base) => ({
-                        ...base,
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        maxWidth: '90%',
-                      }),
-                    }}
-                  />
-                </div>
-                <div className='select-wrapper'>
-                  <h5>Bandeira</h5>
-                  <Select
-                    className='seletor-adq-select fixed-width-select'
-                    id='bandeira'
-                    options={listaBandeiras}
-                    getOptionLabel={(option) => option.descricaoBandeira}
-                    getOptionValue={(option) => option.codigoBandeira}
-                    onChange={(option) => handleBan(option)}
-                    value={getSelectedBanOption()}
-                    menuPortalTarget={document.body}
-                    menuPosition="fixed"
-                    placeholder="Selecione uma bandeira..."
-                    isClearable={true}
-                    styles={{
-                      control: (base) => ({
-                        ...base,
-                        minWidth: 250,
-                        width: '100%',
-                      }),
-                      menu: (base) => ({
-                        ...base,
-                        minWidth: 250,
-                        width: '100%',
-                      }),
-                      valueContainer: (base) => ({
-                        ...base,
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }),
-                      singleValue: (base) => ({
-                        ...base,
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        maxWidth: '90%',
-                      }),
-                    }}
-                  />
-                </div>
-              </div>
+              <NewDisplayData
+                dataArray={[]}
+                adminDataArray={[]}
+                totals={null}
+                onGoBack={resetValues}
+                setRunTutorial={setRunTutorial}
+                location={location}
+                runTutorial={runTutorial}
+                tutorialSteps={tutorialSteps}
+                listaBandeiras={listaBandeiras}
+                listaAdministradoras={listaAdministradoras}
+                showSelects={true} // Show selects when no data
+                onSearch={handleLoadData}
+                isSearching={btnDisabledCredits}
+              />
               <MyCalendar
                 onLoadData={handleLoadData}
                 getCalendarDate={handleDateRangeChange}

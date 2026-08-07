@@ -7,7 +7,7 @@ import { FiFilePlus } from 'react-icons/fi'
 
 import './GerarRelatorio.scss'
 import { AuthContext } from '../../contexts/auth'
-import { toast } from 'react-toastify' // Add this import
+import { toast } from 'react-toastify'
 
 export default function GerarRelatorio({ onExport, filteredData }) {
 
@@ -47,38 +47,21 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 		return () => clearInterval(intervalId)
 	}, [currentDateTime])
 
-	// In GerarRelatorio.jsx - Update getModelo function
+	// Get modelo based on current path
 	const getModelo = () => {
-	const currentPath = localStorage.getItem('currentPath')
-	switch (currentPath) {
-		case '/vendas':
-		return 'VENDA'
-		case '/creditos':
-		return 'RECEBIMENTO'
-		case '/creditos-data-banco':  // Add this case
-		return 'DATA_BANCO'
-		case '/servicos':
-		return 'AJUSTES'
-		default:
-		return 'VENDA'
-	}
-	}
-
-	// Update getStorageKeys function to include DATA_BANCO
-	const getStorageKeys = () => {
-	const currentPath = localStorage.getItem('currentPath')
-	switch (currentPath) {
-		case '/vendas':
-		return { ban: 'selectedBan', adm: 'selectedAdm' }
-		case '/creditos':
-		return { ban: 'selectedBanCredits', adm: 'selectedAdmCredits' }
-		case '/creditos-data-banco':  // Add this case
-		return { ban: 'selectedBanCredits', adm: 'selectedAdmCredits' }  // Reuse same keys or create new ones
-		case '/servicos':
-		return { ban: 'selectedBanServices', adm: 'selectedAdmServices' }
-		default:
-		return { ban: 'selectedBan', adm: 'selectedAdm' }
-	}
+		const currentPath = localStorage.getItem('currentPath')
+		switch (currentPath) {
+			case '/vendas':
+				return 'VENDA'
+			case '/creditos':
+				return 'RECEBIMENTO'
+			case '/creditos-data-banco':
+				return 'DATA_BANCO'
+			case '/servicos':
+				return 'AJUSTES'
+			default:
+				return 'VENDA'
+		}
 	}
 
 	useEffect(() => {
@@ -91,6 +74,10 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 				break
 			case '/creditos':
 				setTipoRelatorio('Relatório de Créditos')
+				setTipo('creditos')
+				break
+			case '/creditos-data-banco':
+				setTipoRelatorio('Relatório de Créditos - Data Banco')
 				setTipo('creditos')
 				break
 			case '/servicos':
@@ -141,6 +128,8 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 			dateRange = salesDateRange
 		} else if (currentPath === '/creditos' && creditsDateRange && creditsDateRange.length === 2) {
 			dateRange = creditsDateRange
+		} else if (currentPath === '/creditos-data-banco' && creditsDateRange && creditsDateRange.length === 2) {
+			dateRange = creditsDateRange
 		} else if (currentPath === '/servicos' && servicesDateRange && servicesDateRange.length === 2) {
 			dateRange = servicesDateRange
 		}
@@ -174,10 +163,31 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 		const dataInicial = localStorage.getItem('dataInicial')
 		const dataFinal = localStorage.getItem('dataFinal')
 		
-		// Get dynamic storage keys based on current path
-		const storageKeys = getStorageKeys()
-		const bandeira = JSON.parse(localStorage.getItem(storageKeys.ban)) || ''
-		const adquirente = JSON.parse(localStorage.getItem(storageKeys.adm)) || ''
+		// Get bandeira and adquirente from report-specific localStorage keys
+		let bandeira = ''
+		let adquirente = ''
+		
+		try {
+			const bandeiraData = localStorage.getItem('reportBandeira')
+			if (bandeiraData) {
+				const parsed = JSON.parse(bandeiraData)
+				bandeira = parsed?.codigoBandeira || ''
+			}
+		} catch (e) {
+			console.warn('Error parsing report bandeira data:', e)
+			bandeira = ''
+		}
+		
+		try {
+			const adquirenteData = localStorage.getItem('reportAdquirente')
+			if (adquirenteData) {
+				const parsed = JSON.parse(adquirenteData)
+				adquirente = parsed?.codigoAdquirente || ''
+			}
+		} catch (e) {
+			console.warn('Error parsing report adquirente data:', e)
+			adquirente = ''
+		}
 		
 		// Format date function
 		const formatDateToYYYYMMDD = (date) => {
@@ -222,20 +232,25 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 		}
 
 		const nomeGrupo = grupo?.label || ""
-		let ban = bandeira?.codigoBandeira || ''
-		let adq = adquirente?.codigoAdquirente || ''
+
+		// Log the values for debugging
+		console.log('Report values:', {
+			bandeira,
+			adquirente,
+			currentPath: localStorage.getItem('currentPath')
+		})
 
 		return {
 			dataInicial: formatDateToYYYYMMDD(dataInicial),
 			dataFinal: formatDateToYYYYMMDD(dataFinal),
 			clientes: clientesString,
 			nomeGrupo: nomeGrupo,
-			bandeira: ban,
-			adquirente: adq,
+			bandeira: bandeira || '',
+			adquirente: adquirente || '',
 			produto: '',
 			modalidade: '',
 			arquivo: format, // 'PDF' or 'XLSX'
-			modelo: getModelo() // 'VENDA', 'RECEBIMENTO', or 'AJUSTE'
+			modelo: getModelo() // 'VENDA', 'RECEBIMENTO', 'AJUSTE', or 'DATA_BANCO'
 		}
 	}
 
@@ -246,6 +261,8 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 		try {
 			const requestObject = getRequestObject(format)
 			
+			// Log the full request for debugging
+			console.log('Full request object:', requestObject)
 			
 			const response = await api.post('relatorios/detalhado', requestObject)
 			

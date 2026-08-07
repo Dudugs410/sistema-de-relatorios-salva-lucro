@@ -11,21 +11,19 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="mobile-web-app-capable" content="yes">
     
-    <!-- CACHE CONTROL - Force fresh content -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     
-    <!-- UPDATED CSP - Added CDN to connect-src for source maps -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://*.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://*.jsdelivr.net; img-src 'self' data: https:; connect-src 'self' https://app.salvalucro.com.br https://api.pluggy.ai https://cdn.jsdelivr.net https://*.jsdelivr.net; font-src 'self' data: https://cdn.jsdelivr.net;">
     
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- APP VERSION - Increment this on each deployment -->
+    <!-- APP VERSION - Increment on each deployment -->
     <script>
       (function() {
-        const APP_VERSION = '2.1.5';
+        const APP_VERSION = '2.1.7';
         
         try {
           const storedVersion = localStorage.getItem('app_version');
@@ -41,40 +39,31 @@
       })();
     </script>
     
-    <!-- CRITICAL: Cached Theme initialization script - runs before any CSS loads -->
+    <!-- INITIAL THEME - Prevent flash of unstyled content -->
     <script>
       (function() {
         try {
-          // Check for cached theme and context from localStorage
-          const cachedTheme = localStorage.getItem('userTheme');
-          const cachedContext = localStorage.getItem('userContext');
+          // Get saved theme and context from localStorage
+          const savedTheme = localStorage.getItem('appTheme');
+          const savedContext = localStorage.getItem('appContext') || 'salvalucro';
           
-          // Apply cached theme immediately if available
-          if (cachedTheme !== null) {
-            const themeValue = cachedTheme === 'true' ? 'dark' : 'light';
-            document.documentElement.setAttribute('data-theme', themeValue);
+          // Apply immediately to prevent flash
+          document.documentElement.setAttribute('data-context', savedContext);
+          
+          if (savedTheme) {
+            document.documentElement.setAttribute('data-theme', savedTheme);
           } else {
-            // Fallback to default light theme
             document.documentElement.setAttribute('data-theme', 'light');
           }
           
-          // Apply cached context if available
-          if (cachedContext) {
-            document.documentElement.setAttribute('data-context', cachedContext);
-          } else {
-            // Fallback to default context
-            document.documentElement.setAttribute('data-context', 'salvalucro');
-          }
-          
-          // Mark that theme has been applied
+          // Mark as applied
           document.documentElement.setAttribute('data-theme-applied', 'true');
           
-          // Store in sessionStorage for quick access
-          sessionStorage.setItem('themeInitialized', 'true');
-          sessionStorage.setItem('themeMode', cachedTheme === 'true' ? 'dark' : 'light');
-          sessionStorage.setItem('themeContext', cachedContext || 'salvalucro');
+          // Store in sessionStorage for backup
+          sessionStorage.setItem('themeMode', savedTheme || 'light');
+          sessionStorage.setItem('themeContext', savedContext);
           
-          // Add style to prevent FOUC (Flash of Unstyled Content)
+          // Add style to prevent flash
           const style = document.createElement('style');
           style.textContent = `
             /* Prevent flash of unstyled content */
@@ -85,90 +74,39 @@
               opacity: 1;
               transition: opacity 0.1s ease-in;
             }
+            
+            /* Theme variables - will be overridden by React but provides fallback */
+            :root {
+              --bg-color: #ffffff;
+              --text-color: #333333;
+              --border-color: #e0e0e0;
+              --header-bg: #ffffff;
+              --sidebar-bg: #ffffff;
+            }
+            
+            [data-theme="dark"] {
+              --bg-color: #1a1a1a;
+              --text-color: #ffffff;
+              --border-color: #333333;
+              --header-bg: #1a1a1a;
+              --sidebar-bg: #1a1a1a;
+            }
           `;
           document.head.appendChild(style);
           
         } catch(e) {
-          // Silently fail - theme will load normally
-          document.documentElement.setAttribute('data-context', 'salvalucro');
+          // Fallback on error
           document.documentElement.setAttribute('data-theme', 'light');
-        }
-      })();
-    </script>
-    
-    <!-- CRITICAL: Enhanced Theme initialization script - runs before any CSS loads -->
-    <script>
-      (function() {
-        try {
-          // Helper function to get context from user data
-          function getContextFromUser(userData) {
-            if (!userData) return null;
-            try {
-              const user = typeof userData === 'string' ? JSON.parse(userData) : userData;
-              if (user.GRUCODIGO === 'SIFRA') return 'SIFRA';
-              if (user.GRUCODIGO === 'MG') return 'MG';
-              if (user.GRUCODIGO === 'superjur') return 'superjur';
-              if (user.GRUCODIGO === 'carddigital') return 'carddigital';
-              if (user.CONTEXT) return user.CONTEXT;
-              return null;
-            } catch(e) {
-              return null;
-            }
-          }
-
-          const savedContext = localStorage.getItem('appContext');
-          const savedTheme = localStorage.getItem('appTheme');
-          const userData = localStorage.getItem('user');
-          const token = localStorage.getItem('token');
-          
-          let finalContext = 'salvalucro';
-          
-          if (savedContext) {
-            finalContext = savedContext;
-          } else if (token && userData) {
-            const contextFromUser = getContextFromUser(userData);
-            if (contextFromUser) finalContext = contextFromUser;
-          }
-          
-          let finalTheme = 'light';
-          
-          if (savedTheme) {
-            finalTheme = savedTheme;
-          } else if (token && userData) {
-            try {
-              const user = typeof userData === 'string' ? JSON.parse(userData) : userData;
-              if (user.TEMA === true) finalTheme = 'dark';
-            } catch(e) {}
-          }
-          
-          // Only apply if not already applied by cached script
-          if (!document.documentElement.hasAttribute('data-theme-applied')) {
-            document.documentElement.setAttribute('data-context', finalContext);
-            document.documentElement.setAttribute('data-theme', finalTheme);
-          }
-          
-          // Cache these values for future page loads
-          localStorage.setItem('userContext', finalContext);
-          localStorage.setItem('userTheme', String(finalTheme === 'dark'));
-          
-          sessionStorage.setItem('themeInitialized', 'true');
-          sessionStorage.setItem('themeContext', finalContext);
-          sessionStorage.setItem('themeMode', finalTheme);
-          
-        } catch(e) {
+          document.documentElement.setAttribute('data-context', 'salvalucro');
           console.error('Theme initialization error:', e);
-          document.documentElement.setAttribute('data-context', 'salvalucro');
-          document.documentElement.setAttribute('data-theme', 'light');
         }
       })();
     </script>
     
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-
-    <!-- iOS specific -->
-    <meta name="apple-mobile-web-app-title" content="SalvaLucro">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SalvaLucro" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
     <title>SALVALUCRO | Financeiro</title>
   </head>

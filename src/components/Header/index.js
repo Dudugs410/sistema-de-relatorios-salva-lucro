@@ -8,7 +8,8 @@ import Relogio from "../Componente_Relogio"
 import defaultImg from '../../assets/LOGO AZUL.png'
 
 const Header = () => {
-    const { logout, isCheckedCalendar, setIsCheckedCalendar, userImg, theme, toggleTheme } = useContext(AuthContext)
+    // Get theme and toggle from context
+    const { logout, isCheckedCalendar, setIsCheckedCalendar, userImg, theme, toggleTheme, isThemeLoaded } = useContext(AuthContext)
 
     const [showRelatoriosDropdown, setShowRelatoriosDropdown] = useState(false)
     const [showExportacoesDropdown, setShowExportacoesDropdown] = useState(false)
@@ -22,8 +23,11 @@ const Header = () => {
         setIsCheckedCalendar(!isCheckedCalendar)
     }, [isCheckedCalendar, setIsCheckedCalendar])
 
-    const handleCheckboxChange = useCallback(() => {
-        toggleTheme();
+    // Simplified toggle handler
+    const handleToggleTheme = useCallback(() => {
+        if (toggleTheme) {
+            toggleTheme();
+        }
     }, [toggleTheme])
     
     const [optionsWithIcons, setOptionsWithIcons] = useState([])
@@ -138,6 +142,50 @@ const Header = () => {
         }
     }
 
+    // Show loading state if theme isn't loaded yet
+    if (!isThemeLoaded) {
+        return (
+            <div className="header-wrapper">
+                <div className="header-container">
+                    <div className='header-bg-image'>
+                        <div className="header-info-wrapper header-bg-header">
+                            <div className='navbar-customer-wrapper me-2 text-truncate'>
+                                <div className="toggle-container me-1">
+                                    <label className="switch">
+                                        <input 
+                                            type="checkbox" 
+                                            id="toggleButton" 
+                                            checked={false} 
+                                            onChange={() => {}}
+                                        />
+                                        <span className="slider">
+                                            <FiMoon/>
+                                            <FiSun/>
+                                        </span>
+                                    </label>
+                                </div>
+                                <div className='user-data'>
+                                    <div>Carregando...</div>
+                                    <div></div>
+                                    <Relogio/>
+                                </div>
+                            </div>
+                            <div className='btn-container'>
+                                <div className="user-profile-wrapper">
+                                    <img 
+                                        className='image'
+                                        src={defaultImg}
+                                        alt="User profile"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
     return (  
         <div className="header-wrapper">
             <div className="header-container">
@@ -150,7 +198,7 @@ const Header = () => {
                                         type="checkbox" 
                                         id="toggleButton" 
                                         checked={theme} 
-                                        onChange={handleCheckboxChange}
+                                        onChange={handleToggleTheme}
                                     />
                                     <span className="slider">
                                         <FiMoon/>

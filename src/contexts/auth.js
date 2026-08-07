@@ -30,60 +30,172 @@ import { getCurrentTenant, getLogoByContext, getTenantFromURL } from '../util/te
 
 export const AuthContext = createContext({})
 
-function AuthProvider({ children }){
-	const [isSignedIn, setIsSignedIn] = useState(false)
-	const [accessToken, setAccessToken] = useState(undefined)
-
-	const [clientUserId, setClientUserId] = useState()
+function AuthProvider({ children }) {
+  const [isSignedIn, setIsSignedIn] = useState(false)
+  const [accessToken, setAccessToken] = useState(undefined)
+  const [clientUserId, setClientUserId] = useState()
   const [userImg, setUserImg] = useState('')
   
-  // Theme state
-  const [theme, setTheme] = useState(false) // false = light, true = dark
+  // ===== SINGLE SOURCE OF TRUTH FOR THEME =====
+  const [theme, setTheme] = useState(false)
+  const [isThemeLoaded, setIsThemeLoaded] = useState(false)
+  const [userPreferences, setUserPreferences] = useState(null)
 
-  ////////////////////////////////////////////////////////////////
-
+  // ===== USER PREFERENCES HOOK =====
   const {
     loadUserPrefs,
     saveUserPrefs,
+    getOrCreatePreferences,
+    createDefaultPreferences,
   } = useUserPreferences()
 
-	////////////////////////////////////////////////////////////////
-
-	const [salesTableData, setSalesTableData] = useState([])
-	const [creditsTableData, setCreditsTableData] = useState([])
-	const [servicesTableData, setServicesTableData] = useState([])
-	const [taxesTableData, setTaxesTableData] = useState([])
-
-	const [exportName, setExportName] = useState('')
-	const [isCheckedCalendar, setIsCheckedCalendar] = useState(true)
-	const [changedOption, setChangedOption] = useState(false)
-
-	const [errorSales, setErrorSales] = useState(false)
-	const [errorCredits, setErrorCredits] = useState(false)
-	const [errorServices, setErrorServices] = useState(false)
-
-	const [fetchingData, setFetchingData] = useState(false)
-
-	const [displayGroup, setDisplayGroup] = useState('')
-  const [displayClient, setDisplayClient] = useState('')
-
-	
-	const [canceledSales, setCanceledSales] = useState(false)
-	const [canceledCredits, setCanceledCredits] = useState(false)
-	const [canceledServices, setCanceledServices] = useState(false)
-
-  const [chartSales, setChartSales] = useState()
-  const [chartCredits, setChartCredits] = useState()
-  const [chartServices, setChartServices] = useState()
-
-  // ===== LOGO STATE - Inicializa com base no tenant da URL =====
+  // ===== LOGO STATE =====
   const initialTenant = getTenantFromURL();
   const [currentLogo, setCurrentLogo] = useState(initialTenant?.logo || salvalucro)
   const [currentContext, setCurrentContext] = useState(initialTenant?.contextKey || 'SL')
 
-  // ===== FUNÇÃO PARA CARREGAR LOGO DO TENANT =====
+  // ===== APPLY THEME TO DOM =====
+  const applyTheme = useCallback((themeValue) => {
+    const isDark = themeValue === true || themeValue === 'true'
+    setTheme(isDark)
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light')
+    
+    // Store for initial page load only (to prevent flash)
+    localStorage.setItem('appTheme', isDark ? 'dark' : 'light')
+  }, [])
+
+  // ===== APPLY CONTEXT TO DOM =====
+  const applyContext = useCallback((context) => {
+    const contextKey = context || 'salvalucro'
+    setCurrentContext(contextKey)
+    document.documentElement.setAttribute('data-context', contextKey)
+    localStorage.setItem('appContext', contextKey)
+  }, [])
+
+  // ===== LOAD USER PREFERENCES FROM DATABASE =====
+  const loadUserPreferences = useCallback(async (userId) => {
+    if (!userId) {
+      console.warn('No userId provided to loadUserPreferences')
+      return null
+    }
+
+    try {
+      const preferences = await loadUserPrefs()
+      
+      if (preferences) {
+        setUserPreferences(preferences)
+        
+        // Apply theme from database
+        const themeValue = preferences.TEMA === true || preferences.TEMA === 'true'
+        applyTheme(themeValue)
+        
+        // Apply context from database
+        const context = preferences.ESQUEMACORES || 'salvalucro'
+        applyContext(context)
+        
+        // Apply icon if exists
+        if (preferences.ICONE) {
+          const iconPath = getIconPathByCode(preferences.ICONE)
+          if (iconPath) {
+            setUserImg(iconPath)
+          }
+          localStorage.setItem('userIconCode', preferences.ICONE)
+        }
+        
+        return preferences
+      }
+      
+      // No preferences found - create defaults
+      const newPrefs = await createDefaultPreferences(userId)
+      if (newPrefs) {
+        setUserPreferences(newPrefs)
+        applyTheme(false)
+        applyContext('salvalucro')
+        return newPrefs
+      }
+      
+      return null
+      
+    } catch (error) {
+      console.error('❌ Error loading user preferences from API:', error)
+      return null
+    }
+  }, [loadUserPrefs, createDefaultPreferences, applyTheme, applyContext])
+
+  // ===== TOGGLE THEME =====
+  const toggleTheme = useCallback(async () => {
+    const newTheme = !theme
+    const userId = localStorage.getItem('userID')
+    const token = localStorage.getItem('token')
+    
+    // For non-logged in users, just toggle locally
+    if (!userId || !token) {
+      applyTheme(newTheme)
+      return
+    }
+
+    try {
+      // Get current preferences or create new ones
+      let currentPrefs = userPreferences
+      
+      if (!currentPrefs) {
+        currentPrefs = await loadUserPreferences(userId)
+        if (!currentPrefs) {
+          // If still no preferences, create default
+          currentPrefs = await createDefaultPreferences(userId)
+        }
+      }
+
+      const now = new Date().toISOString().split('T')[0]
+      
+      // Build update payload
+      const payload = {
+        USUCODIGO: parseInt(userId),
+        TEMA: newTheme,
+        ICONE: currentPrefs?.ICONE || 1,
+        ESQUEMACORES: currentPrefs?.ESQUEMACORES || 'salvalucro',
+        USUARIOMODIFICACAO: parseInt(userId),
+        DATAMODIFICACAO: now,
+        USUARIOINSERCAO: parseInt(userId),
+        DATAINSERCAO: currentPrefs?.DATAINSERCAO || now,
+        ATIVO: true
+      }
+
+      if (currentPrefs?.CODIGO) {
+        payload.CODIGO = currentPrefs.CODIGO
+        await api.put('PreferenciasUsuario', payload)
+      } else {
+        await api.post('PreferenciasUsuario', payload)
+      }
+
+      // Update local state
+      applyTheme(newTheme)
+      
+      // Update userPreferences state
+      setUserPreferences(prev => ({
+        ...prev,
+        TEMA: newTheme
+      }))
+
+      // Update user data for components that still use it
+      const userData = JSON.parse(localStorage.getItem('user'))
+      if (userData) {
+        userData.TEMA = newTheme
+        localStorage.setItem('user', JSON.stringify(userData))
+      }
+
+      //toast.success(`Tema alterado para ${newTheme ? 'escuro' : 'claro'}`)
+
+    } catch (error) {
+      console.error('Failed to save theme:', error)
+      toast.error('Erro ao salvar preferência de tema')
+      // Revert on error
+      applyTheme(theme)
+    }
+  }, [theme, userPreferences, loadUserPreferences, createDefaultPreferences, applyTheme])
+
+  // ===== LOAD LOGO FROM TENANT =====
   const loadLogoFromTenant = useCallback(() => {
-    // Primeiro tenta da URL
     const urlTenant = getTenantFromURL();
     
     if (urlTenant && urlTenant.logo) {
@@ -94,7 +206,6 @@ function AuthProvider({ children }){
       return;
     }
     
-    // Fallback: tenta do localStorage
     const savedContext = localStorage.getItem('selectedContext') || 'SL';
     const logo = getLogoByContext(savedContext);
     if (logo) {
@@ -102,19 +213,37 @@ function AuthProvider({ children }){
       setCurrentContext(savedContext);
       document.documentElement.setAttribute('data-context', savedContext);
     } else {
-      // Fallback final
       setCurrentLogo(salvalucro);
       setCurrentContext('SL');
       document.documentElement.setAttribute('data-context', 'SL');
     }
   }, []);
 
-  // ===== CARREGA TENANT AO INICIAR O APP =====
+  // ===== INITIALIZE THEME ON APP START =====
+  useEffect(() => {
+    const initializeTheme = async () => {
+      const userId = localStorage.getItem('userID')
+      const token = localStorage.getItem('token')
+      
+      if (userId && token) {
+        await loadUserPreferences(userId)
+      } else {
+        // Not logged in - use light theme
+        applyTheme(false)
+        applyContext('salvalucro')
+      }
+      setIsThemeLoaded(true)
+    }
+    
+    initializeTheme()
+  }, [loadUserPreferences, applyTheme, applyContext])
+
+  // ===== LOAD TENANT ON INIT =====
   useEffect(() => {
     loadLogoFromTenant();
-  }, []);
+  }, [loadLogoFromTenant]);
 
-  // ===== ESCUTA MUDANÇAS NA URL (para navegação entre tenants) =====
+  // ===== LISTEN FOR URL CHANGES (tenant navigation) =====
   useEffect(() => {
     const handleUrlChange = () => {
       const urlTenant = getTenantFromURL();
@@ -126,121 +255,129 @@ function AuthProvider({ children }){
       }
     };
 
-    // Listen for popstate (back/forward)
     window.addEventListener('popstate', handleUrlChange);
-    
     return () => {
       window.removeEventListener('popstate', handleUrlChange);
     };
   }, [currentContext]);
 
-  // Theme toggle function
-  const toggleTheme = useCallback(async () => {
-    const newTheme = !theme
-    setTheme(newTheme)
-    
-    document.documentElement.setAttribute('data-theme', newTheme ? 'dark' : 'light')
-    localStorage.setItem('appTheme', newTheme ? 'dark' : 'light')
-    
-    const userId = localStorage.getItem('userID')
-    const token = localStorage.getItem('token')
-    
-    if (userId && token) {
-      try {
-        let existingPrefs = null
-        try {
-          const prefsResponse = await api.get('PreferenciasUsuario', {
-            params: { codigo: userId }
-          })
-          existingPrefs = prefsResponse.data
-        } catch (e) {
-          console.log('No existing preferences found')
-        }
-        
-        const getCurrentDate = () => new Date().toISOString().split('T')[0]
-        const now = getCurrentDate()
-        
-        const currentIconCode = existingPrefs?.ICONE || 1
-        const currentColorScheme = existingPrefs?.ESQUEMACORES || 'salvalucro'
-        
-        const payload = {
-          USUCODIGO: parseInt(userId),
-          TEMA: newTheme,
-          ICONE: currentIconCode,
-          ESQUEMACORES: currentColorScheme,
-          USUARIOMODIFICACAO: parseInt(userId),
-          DATAMODIFICACAO: now,
-          USUARIOINSERCAO: parseInt(userId),
-          DATAINSERCAO: now,
-          ATIVO: true
-        }
-        
-        if (existingPrefs?.CODIGO) {
-          payload.CODIGO = existingPrefs.CODIGO
-          await api.put('PreferenciasUsuario', payload)
-        } else {
-          await api.post('PreferenciasUsuario', payload)
-        }
-        
-        const userData = JSON.parse(localStorage.getItem('user'))
-        if (userData) {
-          userData.TEMA = newTheme
-          localStorage.setItem('user', JSON.stringify(userData))
-        }
-        
-      } catch (error) {
-        console.error('Failed to save theme to database:', error)
-      }
-    }
-  }, [theme])
-
-  // Load theme from user data when user changes
-  useEffect(() => {
-    const loadThemeFromUser = () => {
-      const userData = JSON.parse(localStorage.getItem('user'))
-      if (userData && userData.TEMA !== undefined && userData.TEMA !== null) {
-        const themeValue = userData.TEMA === true || userData.TEMA === 'true'
-        setTheme(themeValue)
-        document.documentElement.setAttribute('data-theme', themeValue ? 'dark' : 'light')
-      } else {
-        setTheme(false)
-        document.documentElement.setAttribute('data-theme', 'light')
-      }
-    }
-    
-    loadThemeFromUser()
-  }, [clientUserId])
-
-  // ===== NÃO SOBRESCREVER O LOGO COM O savedContext =====
-  // Este useEffect foi removido/substituído pela lógica acima
-
+  // ===== SAVE CONTEXT TO STORAGE =====
   useEffect(() => {
     if (currentContext) {
       localStorage.setItem('appContext', currentContext)
     }
   }, [currentContext])
 
-	//////////////////////////////////////////////////////////////////
-
+  // ===== NAVIGATE =====
   const navigate = useNavigate()
 
-	const [groupsList, setGroupsList] = useState([])
-	const [clientsList, setClientsList] = useState([])
+  // ===== STATE VARIABLES =====
+  const [salesTableData, setSalesTableData] = useState([])
+  const [creditsTableData, setCreditsTableData] = useState([])
+  const [servicesTableData, setServicesTableData] = useState([])
+  const [taxesTableData, setTaxesTableData] = useState([])
 
-	useEffect(()=>{
-		if(canceled){
-			resetAppValues()
-			setErrorSales(false)
-			setErrorCredits(false)
-			setErrorServices(false)
-			setIsLoadedSalesDashboard(false)
-			setIsLoadedCreditsDashboard(false)
-			setIsLoadedServicesDashboard(false)
-			setIsLoadedDashboard(false)
-			setFetchingData(false)
-		}
-	},[cancelOngoingRequests])
+  const [exportName, setExportName] = useState('')
+  const [isCheckedCalendar, setIsCheckedCalendar] = useState(true)
+  const [changedOption, setChangedOption] = useState(false)
 
+  const [errorSales, setErrorSales] = useState(false)
+  const [errorCredits, setErrorCredits] = useState(false)
+  const [errorServices, setErrorServices] = useState(false)
+
+  const [fetchingData, setFetchingData] = useState(false)
+
+  const [displayGroup, setDisplayGroup] = useState('')
+  const [displayClient, setDisplayClient] = useState('')
+
+  const [canceledSales, setCanceledSales] = useState(false)
+  const [canceledCredits, setCanceledCredits] = useState(false)
+  const [canceledServices, setCanceledServices] = useState(false)
+
+  const [chartSales, setChartSales] = useState()
+  const [chartCredits, setChartCredits] = useState()
+  const [chartServices, setChartServices] = useState()
+
+  const [groupsList, setGroupsList] = useState([])
+  const [clientsList, setClientsList] = useState([])
+
+  const [btnDisabledSales, setBtnDisabledSales] = useState(false)
+  const [btnDisabledCredits, setBtnDisabledCredits] = useState(false)
+  const [btnDisabledServices, setBtnDisabledServices] = useState(false)
+  const [btnDisabledSysmo, setBtnDisabledSysmo] = useState(false)
+
+  const [isLoadingTaxes, setIsLoadingTaxes] = useState(false)
+  const [isLoadingBanks, setIsLoadingBanks] = useState(false)
+
+  // ===== DASHBOARD STATES =====
+  const [isLoadedDashboard, setIsLoadedDashboard] = useState(false)
+  const [isLoadedSalesDashboard, setIsLoadedSalesDashboard] = useState(false)
+  const [isLoadedCreditsDashboard, setIsLoadedCreditsDashboard] = useState(false)
+  const [isLoadedServicesDashboard, setIsLoadedServicesDashboard] = useState(false)
+  const [canceled, setCanceled] = useState(false)
+
+  const [salesDashboard, setSalesDashboard] = useState({
+    sales: [],
+    totalLast4: 0,
+    totalMonth: 0,
+    chart: {
+      data: [],
+      labels: []
+    }
+  })
+
+  const [creditsDashboard, setCreditsDashboard] = useState({
+    credits: [],
+    predictToday: 0,
+    predictNext5: 0,
+    chart: {
+      data: [],
+      labels: []
+    }
+  })
+
+  const [servicesDashboard, setServicesDashboard] = useState({
+    services: [],
+    totalToday: 0,
+    totalMonth: 0,
+    chart: {
+      data: [],
+      labels: []
+    }
+  })
+
+  // ===== SALES PAGE STATES =====
+  const [salesPageArray, setSalesPageArray] = useState([])
+  const [salesPageAdminArray, setSalesPageAdminArray] = useState([])
+  const [salesTotal, setSalesTotal] = useState({
+    debit: 0,
+    credit: 0,
+    voucher: 0,
+    total: 0,
+  })
+  const [salesDateRange, setSalesDateRange] = useState([new Date(), new Date()])
+
+  // ===== CREDITS PAGE STATES =====
+  const [creditsPageArray, setCreditsPageArray] = useState([])
+  const [creditsPageAdminArray, setCreditsPageAdminArray] = useState([])
+  const [creditsTotal, setCreditsTotal] = useState({
+    debit: 0,
+    credit: 0,
+    voucher: 0,
+    total: 0,
+  })
+  const [creditsDateRange, setCreditsDateRange] = useState([new Date(), new Date()])
+
+  // ===== SERVICES PAGE STATES =====
+  const [servicesPageArray, setServicesPageArray] = useState([])
+  const [servicesPageAdminArray, setServicesPageAdminArray] = useState([])
+  const [servicesDateRange, setServicesDateRange] = useState([new Date(), new Date()])
+  const [servicesTotal, setServicesTotal] = useState({ total: 0 })
+
+  // ===== TAXES PAGE STATES =====
+  const [taxesPageArray, setTaxesPageArray] = useState([])
+
+  // ===== GET LOCAL JOYRIDE =====
   const getLocalJoyRide = () => {
     return JSON.parse(localStorage.getItem('joyride'))
   }
@@ -249,421 +386,246 @@ function AuthProvider({ children }){
     localStorage.setItem(JSON.stringify(item), 'joyride')
   }
 
-const [currentTheme, setCurrentTheme] = useState(false);
-const [userPreferences, setUserPreferences] = useState(null);
+  // ===== LOGIN FUNCTION =====
+  const loginApp = async (login, password) => {
+    resetAppValues()
+    try {
+      const response = await api.post('token', { client_id: login, client_secret: md5(password) })
+      const responseData = response.data
+      localStorage.setItem('token', responseData.acess_token)
+      localStorage.setItem('refreshToken', responseData.refresh_token)
+      const userId = jwtDecode(responseData.acess_token).id
+      localStorage.setItem('userID', userId)
+      Cookies.set('userID', userId)
+      const loggedSuccessfully = JSON.parse(responseData.sucess)
 
-// Function to load user preferences from API
-const loadUserPreferences = useCallback(async (userId) => {
-  if (!userId) {
-    console.warn('No userId provided to loadUserPreferences');
-    return null;
-  }
-
-  try {
-    
-    const response = await api.get('PreferenciasUsuario', {
-      params: { codigo: userId }
-    });
-    
-    const preferences = response.data;
-    
-    if (preferences) {
-      setUserPreferences(preferences);
-      
-      // Apply context from preferences ONLY if user is logged in
-      const context = preferences.ESQUEMACORES || 'salvalucro';
-      setCurrentContext(context);
-      document.documentElement.setAttribute('data-context', context);
-      
-      const themeValue = preferences.TEMA === true || preferences.TEMA === 'true';
-      setCurrentTheme(themeValue);
-      document.documentElement.setAttribute('data-theme', themeValue ? 'dark' : 'light');
-      
-      if (preferences.ICONE) {
-        const iconPath = getIconPathByCode(preferences.ICONE);
-        if (iconPath) {
-          setUserImg(iconPath);
-        }
-      }
-      
-      return preferences;
-    }
-    
-    return null;
-  } catch (error) {
-    console.error('❌ Error loading user preferences from API:', error);
-    return null;
-  }
-}, []);
-
-const loginApp = async (login, password) => {
-  resetAppValues()
-  try {
-    const response = await api.post('token', { client_id: login, client_secret: md5(password) })
-    const responseData = response.data
-    localStorage.setItem('token', responseData.acess_token)
-    localStorage.setItem('refreshToken', responseData.refresh_token)
-    const userId = jwtDecode(responseData.acess_token).id
-    localStorage.setItem('userID', userId)
-    Cookies.set('userID', userId)
-    const loggedSuccessfully = JSON.parse(responseData.sucess)
-
-    if (loggedSuccessfully) {
-      localStorage.setItem('currentPath', '/dashboard')
-      setClientUserId(userId)
-      let user
-      try {
-        user = await loadUser(userId)
-        localStorage.setItem('user', JSON.stringify(user))
-        localStorage.setItem('isChecked', user.TEMA)
-      } catch (error) {
-        console.log(error)
-      }
-
-      // ===== LOAD PREFERENCES FROM API =====
-      let userPreferences = null
-      
-      try {
-        const prefsResponse = await api.get('PreferenciasUsuario', {
-          params: { codigo: userId }
-        })
-        userPreferences = prefsResponse.data
-        
-        if (!userPreferences || userPreferences === null) {
-          
-          const getCurrentDate = () => new Date().toISOString().split('T')[0]
-          const now = getCurrentDate()
-          
-          let defaultIconCode = 1
-          let defaultColorScheme = user?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro'
-          
-          switch (user?.GRUPO?.IDENTIDADEVISUAL) {
-            case 'sifra':
-              defaultIconCode = 7
-              defaultColorScheme = 'sifra'
-              break
-            case 'mg':
-              defaultIconCode = 6
-              defaultColorScheme = 'mg'
-              break
-            case 'superjur':
-              defaultIconCode = 8
-              defaultColorScheme = 'superjur'
-              break
-            case 'carddigital':
-              defaultIconCode = 9
-              defaultColorScheme = 'carddigital'
-              break
-            default:
-              defaultIconCode = 1
-              defaultColorScheme = 'salvalucro'
-              break
-          }
-          
-          const defaultPayload = {
-            USUCODIGO: parseInt(userId),
-            TEMA: false,
-            ICONE: defaultIconCode,
-            ESQUEMACORES: defaultColorScheme,
-            USUARIOMODIFICACAO: parseInt(userId),
-            DATAMODIFICACAO: now,
-            USUARIOINSERCAO: parseInt(userId),
-            DATAINSERCAO: now,
-            ATIVO: true
-          }
-          
-          const createResponse = await api.post('PreferenciasUsuario', defaultPayload)
-          userPreferences = createResponse.data
-        }
-      } catch (error) {
-        console.error('Error loading/creating preferences:', error)
-        let defaultIconCode = 1
-        let defaultColorScheme = user?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro'
-        
-        switch (user?.GRUPO?.IDENTIDADEVISUAL) {
-          case 'sifra':
-            defaultIconCode = 7
-            defaultColorScheme = 'sifra'
-            break
-          case 'mg':
-            defaultIconCode = 6
-            defaultColorScheme = 'mg'
-            break
-          case 'superjur':
-            defaultIconCode = 8
-            defaultColorScheme = 'superjur'
-            break
-          case 'carddigital':
-            defaultIconCode = 9
-            defaultColorScheme = 'carddigital'
-            break
-          default:
-            defaultIconCode = 1
-            defaultColorScheme = 'salvalucro'
-            break
-        }
-        
-        userPreferences = {
-          TEMA: false,
-          ICONE: defaultIconCode,
-          ESQUEMACORES: defaultColorScheme
-        }
-      }
-
-      // ===== DETERMINE CONTEXT - PRIORITIZE URL TENANT =====
-      // Primeiro tenta da URL
-      const urlTenant = getTenantFromURL();
-      let context = urlTenant?.contextKey || 'SL';
-      let logo = urlTenant?.logo || salvalucro;
-      
-      // Se não tiver tenant na URL, usa o das preferências
-      if (!urlTenant) {
-        context = userPreferences?.ESQUEMACORES || user?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro';
-        logo = getLogoByContext(context) || salvalucro;
-      }
-
-      // ===== DETERMINE THEME =====
-      let themeValue
-      if (userPreferences?.TEMA !== undefined && userPreferences?.TEMA !== null) {
-        themeValue = userPreferences.TEMA === true || userPreferences.TEMA === 'true'
-      } else {
-        themeValue = user.TEMA === true || user.TEMA === 'true'
-      }
-
-      // ===== APPLY EVERYTHING TO DOM AND STORAGE =====
-      setCurrentContext(context)
-      document.documentElement.setAttribute('data-context', context)
-      localStorage.setItem('appContext', context)
-      localStorage.setItem('selectedContext', context)
-      
-      setTheme(themeValue)
-      document.documentElement.setAttribute('data-theme', themeValue ? 'dark' : 'light')
-      localStorage.setItem('appTheme', themeValue ? 'dark' : 'light')
-      
-      // Set logo from URL tenant (not from preferences)
-      if (logo) {
-        setCurrentLogo(logo)
-      } else {
-        setCurrentLogo(salvalucro)
-      }
-
-      // Apply icon
-      if (userPreferences?.ICONE) {
-        localStorage.setItem('userIconCode', userPreferences.ICONE)
-        const iconPath = getIconPathByCode(userPreferences.ICONE)
-        if (iconPath) {
-          setUserImg(iconPath)
-        }
-      }
-
-      // ===== UPDATE USER IF NEEDED =====
-      const handleUpdateUser = async () => {
-        try{
-          if(user.TEMA === undefined || user.TEMA === null){
-            user.TEMA = false
-            await updateUser(user)
-            localStorage.setItem('user', JSON.stringify(user))
-          }
-        } catch (error){
+      if (loggedSuccessfully) {
+        localStorage.setItem('currentPath', '/dashboard')
+        setClientUserId(userId)
+        let user
+        try {
+          user = await loadUser(userId)
+          localStorage.setItem('user', JSON.stringify(user))
+        } catch (error) {
           console.log(error)
         }
-      }
 
-      if(user.TEMA === undefined || user.TEMA === null){
-        await handleUpdateUser()
-      }
+        // ===== LOAD PREFERENCES FROM API =====
+        await loadUserPreferences(userId)
 
-      // ===== SAVE USER DATA =====
-      const userData = { NOME: user.NOME, EMAIL: user.EMAIL }
-      localStorage.setItem('GRUCODIGO', user.GRUCODIGO)
-      localStorage.setItem('isSignedIn', true)
-      localStorage.setItem('userData', JSON.stringify(userData))
-
-      // ===== LOGIN LOG =====
-      try {
-        const clientUserId = userId
-
-        const loginLog = async () => {
-          function getBrazilianISOTime() {
-            const now = new Date()
-            
-            const dateTimeParts = new Intl.DateTimeFormat('en-US', {
-              timeZone: 'America/Sao_Paulo',
-              year: 'numeric',
-              month: '2-digit',
-              day: '2-digit',
-              hour: '2-digit',
-              minute: '2-digit',
-              second: '2-digit',
-              fractionalSecondDigits: 3,
-              hour12: false,
-            }).formatToParts(now)
-            
-            const { year, month, day, hour, minute, second, fractionalSecond } = 
-              dateTimeParts.reduce((acc, part) => {
-              acc[part.type] = part.value
-              return acc
-              }, {})
-            return `${year}-${month}-${day}T${hour}:${minute}:${second}.${fractionalSecond}`;
-          }
-
-          const currentDateTime = getBrazilianISOTime()
-
-          let body = {
-            USUCODIGO: userId,
-            USULOGIN: login.toUpperCase(),
-            ACESSOPERMITIDO: 'S',
-            APLICACAO: 'ReactApp',
-            DATAHORA: currentDateTime,
-          }
-
-          api.post('/LogAcesso', body)
-        }
+        // ===== DETERMINE CONTEXT - PRIORITIZE URL TENANT =====
+        const urlTenant = getTenantFromURL();
+        let context = urlTenant?.contextKey || 'SL';
+        let logo = urlTenant?.logo || salvalucro;
         
-        const getLoginLog = async () => {
-          let params = {
-            codigo: userId
-          }
-
-          let config = {
-            params: params
-          }
-
-          let res = await api.get('/LogAcesso', config)
-          return res
+        if (!urlTenant) {
+          context = userPreferences?.ESQUEMACORES || user?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro';
+          logo = getLogoByContext(context) || salvalucro;
         }
 
+        // ===== APPLY EVERYTHING TO DOM AND STORAGE =====
+        applyContext(context)
+        localStorage.setItem('selectedContext', context)
+        
+        if (logo) {
+          setCurrentLogo(logo)
+        } else {
+          setCurrentLogo(salvalucro)
+        }
+
+        // ===== UPDATE USER IF NEEDED =====
+        const handleUpdateUser = async () => {
+          try {
+            if (user.TEMA === undefined || user.TEMA === null) {
+              user.TEMA = false
+              await updateUser(user)
+              localStorage.setItem('user', JSON.stringify(user))
+            }
+          } catch (error) {
+            console.log(error)
+          }
+        }
+
+        if (user.TEMA === undefined || user.TEMA === null) {
+          await handleUpdateUser()
+        }
+
+        // ===== SAVE USER DATA =====
+        const userData = { NOME: user.NOME, EMAIL: user.EMAIL }
+        localStorage.setItem('GRUCODIGO', user.GRUCODIGO)
+        localStorage.setItem('isSignedIn', true)
+        localStorage.setItem('userData', JSON.stringify(userData))
+
+        // ===== LOGIN LOG =====
         try {
+          const loginLog = async () => {
+            function getBrazilianISOTime() {
+              const now = new Date()
+              const dateTimeParts = new Intl.DateTimeFormat('en-US', {
+                timeZone: 'America/Sao_Paulo',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                fractionalSecondDigits: 3,
+                hour12: false,
+              }).formatToParts(now)
+              
+              const { year, month, day, hour, minute, second, fractionalSecond } = 
+                dateTimeParts.reduce((acc, part) => {
+                acc[part.type] = part.value
+                return acc
+              }, {})
+              return `${year}-${month}-${day}T${hour}:${minute}:${second}.${fractionalSecond}`;
+            }
+
+            const currentDateTime = getBrazilianISOTime()
+
+            let body = {
+              USUCODIGO: userId,
+              USULOGIN: login.toUpperCase(),
+              ACESSOPERMITIDO: 'S',
+              APLICACAO: 'ReactApp',
+              DATAHORA: currentDateTime,
+            }
+
+            api.post('/LogAcesso', body)
+          }
+          
           await loginLog()
         } catch (error) {
           console.log(error)
         }
-    
-        // ===== PLUGGY AUTH =====
-        const response = await fetch('https://api.pluggy.ai/auth', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            clientId: "7cee8f27-cbfa-4a19-b14d-306f9656787a",
-            clientSecret: "01e4edaf-639a-40ae-945a-4a04ab652bad",
-            itemOptions: {
-              clientUserId: clientUserId
-            }
-          })
-        })
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        // ===== PLUGGY AUTH =====
+        try {
+          const response = await fetch('https://api.pluggy.ai/auth', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              clientId: "7cee8f27-cbfa-4a19-b14d-306f9656787a",
+              clientSecret: "01e4edaf-639a-40ae-945a-4a04ab652bad",
+              itemOptions: {
+                clientUserId: userId
+              }
+            })
+          })
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json()
+
+          Cookies.set('pluggy_api_key', data.apiKey, {
+            expires: 1,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict'
+          })
+
+          Cookies.set('pluggy_client_id', userId, {
+            expires: 1,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict'
+          })
+        } catch (error) {
+          console.error('Pluggy auth failed:', error)
+          Cookies.remove('pluggy_api_key')
+          Cookies.remove('pluggy_client_id')
         }
 
-        const data = await response.json()
-
-        Cookies.set('pluggy_api_key', data.apiKey, {
-          expires: 1,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'strict'
-        })
-
-        Cookies.set('pluggy_client_id', clientUserId, {
-          expires: 1,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'strict'
-        })
-      } catch (error) {
-        console.error('Authentication failed:', error)
-        Cookies.remove('pluggy_api_key')
-        Cookies.remove('pluggy_client_id')
-        throw error
+        // ===== LOAD OPTIONS AND GROUPS =====
+        const opt = await loadOptions()
+        localStorage.setItem('options', JSON.stringify(opt))
+        
+        const gru = await loadGroupsList()
+        localStorage.setItem('groupsStorage', JSON.stringify(gru))
+        localStorage.setItem('groupCode', gru[0].CODIGOGRUPO)
+        localStorage.setItem('cnpj', 'todos')
+        
+        setIsSignedIn(true)
       }
-
-      // ===== LOAD OPTIONS AND GROUPS =====
-      const opt = await loadOptions()
-      localStorage.setItem('options', JSON.stringify(opt))
-      
-      const gru = await loadGroupsList()
-      localStorage.setItem('groupsStorage', JSON.stringify(gru))
-      localStorage.setItem('groupCode', gru[0].CODIGOGRUPO)
-      localStorage.setItem('cnpj', 'todos')
-      
-      setIsSignedIn(true)
+    } catch (error) {
+      console.error('Login error:', error)
+      toast.error(error.message || 'Erro ao fazer login')
     }
-  } catch (error) {
-    console.error('Login error:', error)
-    alert(error.message)
-  }
-}
-
-const loadUser = async (userId) => {
-  let params = { codigo: userId }
-  let config = { params: params }
-  
-  let userData = null
-  try {
-    const response = await api.get('usuario', config)
-    userData = response.data
-  } catch (error) {
-    console.error('Error loading user:', error)
-    throw error
   }
 
-  try {
-    const prefsResponse = await api.get('PreferenciasUsuario', {
-      params: { codigo: userId }
-    })
-    const preferences = prefsResponse.data
+  // ===== LOAD USER =====
+  const loadUser = async (userId) => {
+    let params = { codigo: userId }
+    let config = { params: params }
     
-    if (preferences && preferences.ICONE) {
-      const iconPath = getIconPathByCode(preferences.ICONE)
-      if (iconPath) {
-        setUserImg(iconPath)
-        localStorage.setItem('userIconCode', preferences.ICONE)
-      }
+    let userData = null
+    try {
+      const response = await api.get('usuario', config)
+      userData = response.data
+    } catch (error) {
+      console.error('Error loading user:', error)
+      throw error
     }
-  } catch (error) {
-    console.log('No preferences found or error loading icon:', error)
+
+    try {
+      const prefsResponse = await api.get('PreferenciasUsuario', {
+        params: { codigo: userId }
+      })
+      const preferences = prefsResponse.data
+      
+      if (preferences && preferences.ICONE) {
+        const iconPath = getIconPathByCode(preferences.ICONE)
+        if (iconPath) {
+          setUserImg(iconPath)
+          localStorage.setItem('userIconCode', preferences.ICONE)
+        }
+      }
+    } catch (error) {
+      console.log('No preferences found or error loading icon:', error)
+    }
+
+    return userData
   }
 
-  return userData
-}
-
-  /////desloga usuário
-	const logout = useCallback(() => {
-		clearCookies()
-		localStorage.clear()
-		cancelOngoingRequests()
-		resetAppValues()
+  // ===== LOGOUT =====
+  const logout = useCallback(() => {
+    clearCookies()
+    localStorage.clear()
+    cancelOngoingRequests()
+    resetAppValues()
     localStorage.removeItem('isSignedIn')
     localStorage.removeItem('selectedContext')
     sessionStorage.removeItem('currentPath')
-		localStorage.setItem('isSignedIn', false)
-    setTheme(false)
-    document.documentElement.setAttribute('data-theme', 'light')
-		navigate('/')
-	}, [navigate])
+    localStorage.setItem('isSignedIn', false)
+    applyTheme(false)
+    applyContext('salvalucro')
+    setIsSignedIn(false)
+    navigate('/')
+  }, [navigate, applyTheme, applyContext])
 
-  // FIXED: Memoized updateUser function
+  // ===== UPDATE USER =====
   const updateUser = useCallback(async (userObj) => {
     try {
-        let body = JSON.stringify(userObj)
+      let body = JSON.stringify(userObj)
 
-        const response = await fetch('https://app.salvalucro.com.br/api/v1/usuario', {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          },
-          body: body,
-        })
+      const response = await fetch('https://app.salvalucro.com.br/api/v1/usuario', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: body,
+      })
 
-        const responseData = await response.json()
-        
-        if (responseData && responseData.CODIGO) {
-          localStorage.setItem('user', JSON.stringify(responseData))
-        }
-        
-        return responseData
+      const responseData = await response.json()
+      
+      if (responseData && responseData.CODIGO) {
+        localStorage.setItem('user', JSON.stringify(responseData))
+      }
+      
+      return responseData
     } catch (error) {
       toast.dismiss()
       toast.error('Erro ao atualizar usuário!')
@@ -674,2775 +636,798 @@ const loadUser = async (userId) => {
     }
   }, [logout])
 
-	// funções que retornam arrays com Grupos, Clientes, Bandeiras e Adquirentes, respectivamente //
-
-	const loadGroupsList = async () => {
-		try {
-			const response = await api.get('/grupo')
-			const gru = response.data
-			setGroupsList(gru)
-			setClientsList(gru[0].CLIENTES)
-			return gru
-		} catch (error) {
-			console.error(error)
-			if (error.response.status === 401) {
-				logout()
-			}
-			throw new Error(error.message)
-		}
-	}
-
-	// *** funções API *** //
-
-	//controladores do disabled dos botões nas páginas com calendarios
-
-	const [btnDisabledSales, setBtnDisabledSales] = useState(false)
-	const [btnDisabledCredits, setBtnDisabledCredits] = useState(false)
-	const [btnDisabledServices, setBtnDisabledServices] = useState(false)
-	const [btnDisabledSysmo, setBtnDisabledSysmo] = useState(false)
-
-// Relatórios:
-
-/*
-{
-  "dataInicial": "2026-04-01",
-  "dataFinal":"2026-04-03",
-  "clientes" : "5261",  --Se tiver mais que um : "5261,5262,5263"
-  "nomeGrupo" : "CELIO SUPERMERCADO",
-  "bandeira" : "", --um código apenas Ex. "23" 
-  "adquirente" : "",--um código apenas Ex. "23" 
-  "produto" : "",--um código apenas Ex. "23" 
-  "modalidade" : "",--um código apenas Ex. "23" 
-  "arquivo" : "PDF", Pode ser : PDF/XLSX/JSON 
-  "modelo" : "VENDA_DETALHADO"   Pode ser RECEBIMENTO_DETALHADO OU AJUSTE_DETALHADO
-}
-*/
-
-const loadSales = async (startDate, endDate) => {
-  try {
-    setErrorSales(false)
-    const apiCNPJ = localStorage.getItem('cnpj')
-    const apiGroupCode = localStorage.getItem('groupCode')
-    if((apiCNPJ === 'todos' || apiCNPJ === 'TODOS') && (apiGroupCode !== 'selecione')){
-      let params = {
-        datainicial: startDate,
-        datafinal: endDate,
-        codigoGrupo: apiGroupCode,
-      }
-      let config = {
-        params: params
-      }
-
-      const response = await api.get('vendas', config)
-      return response.data.VENDAS
-
-    } else {
-      let params = {
-        datainicial: startDate,
-        datafinal: endDate,
-        cnpj: apiCNPJ,
-      }
-
-      let config = {
-        params: params
-      }
-
-      const response = await api.get('vendas', config)
-      setBtnDisabledSales(false)
-      exportSales(response.data.VENDAS)
-      return response.data.VENDAS
-    }
-  } catch (error) {
-    setBtnDisabledSales(false)
-    if(error.code === 'ERR_CANCELED'){
-      setErrorSales(false)
-    } else if (error.response && error.response.status === 401) {
-      toast.error('Sessão Expirada')
-      logout()
-      return
-    } else {
-      toast.error('Erro ao Carregar Vendas ', error.code)
-      console.error('Error fetching vendas:', error)
-      setErrorSales(true)
-    }
-    return []
-  }
-}
-
-const formatDateToYYYYMMDD = (date) => {
-  if (!date) return ''
-  
-  if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
-    return date
-  }
-  
-  if (date instanceof Date) {
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const day = String(date.getDate()).padStart(2, '0')
-    return `${year}-${month}-${day}`
-  }
-  
-  if (typeof date === 'string' && date.includes('/')) {
-    const [day, month, year] = date.split('/')
-    return `${year}-${month}-${day}`
-  }
-  
-  const dateObj = new Date(date)
-  if (!isNaN(dateObj.getTime())) {
-    const year = dateObj.getFullYear()
-    const month = String(dateObj.getMonth() + 1).padStart(2, '0')
-    const day = String(dateObj.getDate()).padStart(2, '0')
-    return `${year}-${month}-${day}`
-  }
-  
-  return ''
-}
-
-const newLoadSales = async (startDate, endDate, additionalFilters = {}) => {
-  try {
-    setErrorSales(false)
-    
-    // Format dates to YYYY-MM-DD
-    const formatDateToYYYYMMDD = (date) => {
-      if (!date) return ''
-      
-      if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
-        return date
-      }
-      
-      if (date instanceof Date) {
-        const year = date.getFullYear()
-        const month = String(date.getMonth() + 1).padStart(2, '0')
-        const day = String(date.getDate()).padStart(2, '0')
-        return `${year}-${month}-${day}`
-      }
-      
-      if (typeof date === 'string' && date.includes('/')) {
-        const [day, month, year] = date.split('/')
-        return `${year}-${month}-${day}`
-      }
-      
-      const dateObj = new Date(date)
-      if (!isNaN(dateObj.getTime())) {
-        const year = dateObj.getFullYear()
-        const month = String(dateObj.getMonth() + 1).padStart(2, '0')
-        const day = String(dateObj.getDate()).padStart(2, '0')
-        return `${year}-${month}-${day}`
-      }
-      
-      return ''
-    }
-    
-    const formattedStartDate = formatDateToYYYYMMDD(startDate)
-    const formattedEndDate = formatDateToYYYYMMDD(endDate)
-        
-    // Get stored data from localStorage
-    const cliente = JSON.parse(localStorage.getItem('selectedClientBody'))
-    const grupo = JSON.parse(localStorage.getItem('selectedGroupBody'))
-    const selectedBan = JSON.parse(localStorage.getItem('selectedBan'))
-    const selectedAdm = JSON.parse(localStorage.getItem('selectedAdm'))
-    
-    // Store formatted dates in localStorage
-    localStorage.setItem('dataInicial', formattedStartDate)
-    localStorage.setItem('dataFinal', formattedEndDate)
-    
-    // Determine client codes as a comma-separated string
-    let clientesString = "";
-    
-    if (cliente && cliente.label === 'TODOS') {
-      const clientCodes = grupo?.clients?.map(client => client.CODIGOCLIENTE) || [];
-      clientesString = clientCodes.join(', ');
-    } else if (cliente && cliente.cod) {
-      clientesString = String(cliente.cod);
-    } else if (cliente && cliente.value) {
-      clientesString = String(cliente.value);
-    } else {
-      const apiCNPJ = localStorage.getItem('cnpj')
-      const apiGroupCode = localStorage.getItem('groupCode')
-      clientesString = apiCNPJ === 'todos' ? String(apiGroupCode) : String(apiCNPJ)
-    }
-    
-    // Get filter values
-    const bandeira = selectedBan?.value || additionalFilters.bandeira || "";
-    const adquirente = selectedAdm?.value || additionalFilters.adquirente || "";
-    const nomeGrupo = grupo?.label || localStorage.getItem('clientName') || "";
-    
-    // Build the request object
-    const requestObject = {
-      dataInicial: formattedStartDate,
-      dataFinal: formattedEndDate,
-      clientes: clientesString,
-      nomeGrupo: nomeGrupo,
-      bandeira: bandeira,
-      adquirente: adquirente,
-      produto: additionalFilters.produto || "",
-      modalidade: additionalFilters.modalidade || "",
-      arquivo: "JSON",
-      modelo: "VENDA"
-    }
-
-    const response = await api.post('relatorios/detalhado', requestObject)
-    
-    setBtnDisabledSales(false)
-    
-    // Fix: Check boolean, not string comparison
-    if (response.data.success === true && response.data.dados && response.data.dados.length > 0) {
-      
-      // Store in localStorage for export
-      //localStorage.setItem('salesData', JSON.stringify(response.data.dados))
-      
-      return response.data.dados
-    } else if (response.data.success === true && (!response.data.dados || response.data.dados.length === 0)) {
-      toast.info(response.data.mensagem || "Nenhum dado encontrado para o período selecionado")
-      return []
-    } else {
-      toast.error(response.data.mensagem || "Erro ao carregar dados")
-      return []
-    }
-    
-  } catch (error) {
-    console.error('Error in newLoadSales:', error)
-    setBtnDisabledSales(false)
-    
-    if(error.code === 'ERR_CANCELED'){
-      setErrorSales(false)
-    } else if (error.response && error.response.status === 401) {
-      toast.error('Sessão Expirada')
-      logout()
-      return
-    } else {
-      toast.error('Erro ao Carregar Vendas: ' + (error.response?.data?.mensagem || error.message))
-      console.error('Error fetching vendas:', error)
-      setErrorSales(true)
-    }
-    return []
-  }
-}
-
-const newGroupByAdmin = (salesArray) => {
-  if (!salesArray || salesArray.length === 0) return []
-    
-  const adminMap = new Map()
-  
-  salesArray.forEach(sale => {
-    const adminName = sale.ADMINISTRADORA || 'Unknown'
-    const total = sale.VALORBRUTO || 0
-    
-    if (adminMap.has(adminName)) {
-      adminMap.set(adminName, adminMap.get(adminName) + total)
-    } else {
-      adminMap.set(adminName, total)
-    }
-  })
-  
-  const result = []
-  let id = 0
-  adminMap.forEach((total, adminName) => {
-    result.push({
-      id: id++,
-      adminName: adminName,
-      total: total,
-      sales: []
-    })
-  })
-  
-  return result
-}
-
-const newLoadTotalSales = (salesArray) => {
-  if (!salesArray || salesArray.length === 0) {
-    // Only reset if values are not already zero
-    const currentTotal = salesTotal;
-    if (currentTotal.debit !== 0 || currentTotal.credit !== 0 || currentTotal.voucher !== 0 || currentTotal.total !== 0) {
-      setSalesTotal({ debit: 0, credit: 0, voucher: 0, total: 0 })
-    }
-    return
-  }
-    
-  let totalCredito = 0
-  let totalDebito = 0
-  let totalVoucher = 0
-  let totalGeral = 0
-  
-  salesArray.forEach(sale => {
-    const valor = sale.VALORBRUTO || 0
-    const produto = (sale.PRODUTO || "").trim()
-    
-    totalGeral += valor
-    
-    if (produto === 'Crédito') {
-      totalCredito += valor
-    } else if (produto === 'Débito') {
-      totalDebito += valor
-    } else {
-      totalVoucher += valor
-    }
-  })
-  
-  const result = {
-    debit: totalDebito,
-    credit: totalCredito,
-    voucher: totalVoucher,
-    total: totalGeral
-  }
-    
-  // Only update if values actually changed
-  const currentTotal = salesTotal;
-  if (currentTotal.debit !== result.debit ||
-      currentTotal.credit !== result.credit ||
-      currentTotal.voucher !== result.voucher ||
-      currentTotal.total !== result.total) {
-    setSalesTotal(result)
-  } else {
-    console.log('Sales total unchanged, skipping update')
-  }
-}
-
-const newLoadCredits = async (startDate, endDate, additionalFilters = {}) => {
-  try {
-    setErrorCredits(false)
-    
-    // Format dates to YYYY-MM-DD
-    const formatDateToYYYYMMDD = (date) => {
-      if (!date) return ''
-      
-      if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
-        return date
-      }
-      
-      if (date instanceof Date) {
-        const year = date.getFullYear()
-        const month = String(date.getMonth() + 1).padStart(2, '0')
-        const day = String(date.getDate()).padStart(2, '0')
-        return `${year}-${month}-${day}`
-      }
-      
-      if (typeof date === 'string' && date.includes('/')) {
-        const [day, month, year] = date.split('/')
-        return `${year}-${month}-${day}`
-      }
-      
-      const dateObj = new Date(date)
-      if (!isNaN(dateObj.getTime())) {
-        const year = dateObj.getFullYear()
-        const month = String(dateObj.getMonth() + 1).padStart(2, '0')
-        const day = String(dateObj.getDate()).padStart(2, '0')
-        return `${year}-${month}-${day}`
-      }
-      
-      return ''
-    }
-    
-    const formattedStartDate = formatDateToYYYYMMDD(startDate)
-    const formattedEndDate = formatDateToYYYYMMDD(endDate)
-        
-    // Get stored data from localStorage
-    const cliente = JSON.parse(localStorage.getItem('selectedClientBody'))
-    const grupo = JSON.parse(localStorage.getItem('selectedGroupBody'))
-    const selectedBan = JSON.parse(localStorage.getItem('selectedBanCredits')) // Note: different key for credits
-    const selectedAdm = JSON.parse(localStorage.getItem('selectedAdmCredits')) // Note: different key for credits
-    
-    // Store formatted dates in localStorage
-    localStorage.setItem('dataInicial', formattedStartDate)
-    localStorage.setItem('dataFinal', formattedEndDate)
-    
-    // Determine client codes as a comma-separated string
-    let clientesString = "";
-    
-    if (cliente && cliente.label === 'TODOS') {
-      const clientCodes = grupo?.clients?.map(client => client.CODIGOCLIENTE) || [];
-      clientesString = clientCodes.join(', ');
-    } else if (cliente && cliente.cod) {
-      clientesString = String(cliente.cod);
-    } else if (cliente && cliente.value) {
-      clientesString = String(cliente.value);
-    } else {
-      const apiCNPJ = localStorage.getItem('cnpj')
-      const apiGroupCode = localStorage.getItem('groupCode')
-      clientesString = apiCNPJ === 'todos' ? String(apiGroupCode) : String(apiCNPJ)
-    }
-    
-    // Get filter values from localStorage or additionalFilters
-    const bandeira = selectedBan?.codigoBandeira || additionalFilters.bandeira || "";
-    const adquirente = selectedAdm?.codigoAdquirente || additionalFilters.adquirente || "";
-    const nomeGrupo = grupo?.label || localStorage.getItem('clientName') || "";
-    
-    // Build the request object - NOTE: modelo is "RECEBIMENTO" for credits
-    const requestObject = {
-      dataInicial: formattedStartDate,
-      dataFinal: formattedEndDate,
-      clientes: clientesString,
-      nomeGrupo: nomeGrupo,
-      bandeira: bandeira,
-      adquirente: adquirente,
-      produto: additionalFilters.produto || "",
-      modalidade: additionalFilters.modalidade || "",
-      arquivo: "JSON", // Always JSON for data loading
-      modelo: "RECEBIMENTO" // Changed from "VENDA" to "RECEBIMENTO"
-    }
-        
-    const response = await api.post('relatorios/detalhado', requestObject)
-    
-    setBtnDisabledCredits(false)
-    
-    // Fix: Check boolean, not string comparison
-    if (response.data.success === true && response.data.dados && response.data.dados.length > 0) {
-      
-      // Store in localStorage for export
-      //localStorage.setItem('creditsData', JSON.stringify(response.data.dados))
-      
-      return response.data.dados
-    } else if (response.data.success === true && (!response.data.dados || response.data.dados.length === 0)) {
-      toast.info(response.data.mensagem || "Nenhum dado encontrado para o período selecionado")
-      return []
-    } else {
-      toast.error(response.data.mensagem || "Erro ao carregar dados de créditos")
-      return []
-    }
-    
-  } catch (error) {
-    console.error('Error in newLoadCredits:', error)
-    setBtnDisabledCredits(false)
-    
-    if(error.code === 'ERR_CANCELED'){
-      setErrorCredits(false)
-    } else if (error.response && error.response.status === 401) {
-      toast.error('Sessão Expirada')
-      logout()
-      return
-    } else {
-      toast.error('Erro ao Carregar Créditos: ' + (error.response?.data?.mensagem || error.message))
-      console.error('Error fetching credits:', error)
-      setErrorCredits(true)
-    }
-    return []
-  }
-}
-
-const newGroupByAdminCredits = (creditsArray) => {
-  if (!creditsArray || creditsArray.length === 0) return []
-    
-  const adminMap = new Map()
-  
-  creditsArray.forEach(credit => {
-    const adminName = credit.ADMINISTRADORA || 'Unknown'
-    const total = Number(credit.VALORLIQUIDO) || 0  // Use VALORLIQUIDO instead of VALORBRUTO
-    
-    if (adminMap.has(adminName)) {
-      adminMap.set(adminName, adminMap.get(adminName) + total)
-    } else {
-      adminMap.set(adminName, total)
-    }
-  })
-  
-  const result = []
-  let id = 0
-  adminMap.forEach((total, adminName) => {
-    result.push({
-      id: id++,
-      adminName: adminName,
-      total: total,
-      credits: []
-    })
-  })
-  
-  return result
-}
-
-const newLoadTotalCredits = (creditsArray) => {
-  if (!creditsArray || creditsArray.length === 0) {
-    setCreditsTotal({ 
-      debit: 0, 
-      credit: 0, 
-      voucher: 0, 
-      total: 0 
-    })
-    return
-  }
-    
-  let totalCredito = 0
-  let totalDebito = 0
-  let totalVoucher = 0
-  let totalGeral = 0
-  
-  creditsArray.forEach(credit => {
-    const valor = Number(credit.VALORLIQUIDO) || 0
-    const produto = (credit.PRODUTO || "").trim()
-    
-    totalGeral += valor
-    
-    if (produto === 'Crédito') {
-      totalCredito += valor
-    } else if (produto === 'Débito') {
-      totalDebito += valor
-    } else if (produto === 'Voucher') {
-      totalVoucher += valor
-    }
-  })
-  
-  const result = {
-    debit: totalDebito,
-    credit: totalCredito,
-    voucher: totalVoucher,
-    total: totalGeral
-  }
-  
-  setCreditsTotal(result)
-}
-
-const newLoadCreditsDataBanco = async (startDate, endDate, additionalFilters = {}) => {
-  try {
-    setErrorCredits(false)
-    
-    // Format dates to YYYY-MM-DD
-    const formatDateToYYYYMMDD = (date) => {
-      if (!date) return ''
-      
-      if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
-        return date
-      }
-      
-      if (date instanceof Date) {
-        const year = date.getFullYear()
-        const month = String(date.getMonth() + 1).padStart(2, '0')
-        const day = String(date.getDate()).padStart(2, '0')
-        return `${year}-${month}-${day}`
-      }
-      
-      if (typeof date === 'string' && date.includes('/')) {
-        const [day, month, year] = date.split('/')
-        return `${year}-${month}-${day}`
-      }
-      
-      const dateObj = new Date(date)
-      if (!isNaN(dateObj.getTime())) {
-        const year = dateObj.getFullYear()
-        const month = String(dateObj.getMonth() + 1).padStart(2, '0')
-        const day = String(dateObj.getDate()).padStart(2, '0')
-        return `${year}-${month}-${day}`
-      }
-      
-      return ''
-    }
-    
-    const formattedStartDate = formatDateToYYYYMMDD(startDate)
-    const formattedEndDate = formatDateToYYYYMMDD(endDate)
-    
-    
-    // Get stored data from localStorage
-    const cliente = JSON.parse(localStorage.getItem('selectedClientBody'))
-    const grupo = JSON.parse(localStorage.getItem('selectedGroupBody'))
-    const selectedBan = JSON.parse(localStorage.getItem('selectedBanCredits')) || ''
-    const selectedAdm = JSON.parse(localStorage.getItem('selectedAdmCredits')) || ''
-    
-    // Store formatted dates in localStorage
-    localStorage.setItem('dataInicial', formattedStartDate)
-    localStorage.setItem('dataFinal', formattedEndDate)
-    
-    // Determine client codes as a comma-separated string
-    let clientesString = "";
-    
-    if (cliente && cliente.label === 'TODOS') {
-      const clientCodes = grupo?.clients?.map(client => client.CODIGOCLIENTE) || [];
-      clientesString = clientCodes.join(', ');
-    } else if (cliente && cliente.cod) {
-      clientesString = String(cliente.cod);
-    } else if (cliente && cliente.value) {
-      clientesString = String(cliente.value);
-    } else {
-      const apiCNPJ = localStorage.getItem('cnpj')
-      const apiGroupCode = localStorage.getItem('groupCode')
-      clientesString = apiCNPJ === 'todos' ? String(apiGroupCode) : String(apiCNPJ)
-    }
-    
-    // Get filter values from localStorage or additionalFilters
-    const bandeira = selectedBan?.codigoBandeira || additionalFilters.bandeira || "";
-    const adquirente = selectedAdm?.codigoAdquirente || additionalFilters.adquirente || "";
-    const nomeGrupo = grupo?.label || localStorage.getItem('clientName') || "";
-    const produto = additionalFilters.produto || "";
-    const modalidade = additionalFilters.modalidade || "";
-    
-    // Build the request object - NOTE: modelo is "DATA_BANCO" for credits by bank
-    const requestObject = {
-      dataInicial: formattedStartDate,
-      dataFinal: formattedEndDate,
-      clientes: clientesString,
-      nomeGrupo: nomeGrupo,
-      bandeira: bandeira,
-      adquirente: adquirente,
-      produto: produto,
-      modalidade: modalidade,
-      arquivo: "PDF", // Always JSON for data loading
-      modelo: "DATA_BANCO" // Changed from "RECEBIMENTO" to "DATA_BANCO"
-    }
-        
-    const response = await api.post('relatorios/detalhado', requestObject)
-    
-    setBtnDisabledCredits(false)
-    
-    // Check if response is successful and has data
-    if (response.data.success === true && response.data.dados && response.data.dados.length > 0) {
-      
-      // Store in localStorage for export
-      localStorage.setItem('creditsDataBanco', JSON.stringify(response.data.dados))
-      
-      return response.data.dados
-    } else if (response.data.success === true && (!response.data.dados || response.data.dados.length === 0)) {
-      toast.info(response.data.mensagem || "Nenhum dado encontrado para o período selecionado")
-      return []
-    } else {
-      toast.error(response.data.mensagem || "Erro ao carregar dados de créditos por data e banco")
-      return []
-    }
-    
-  } catch (error) {
-    console.error('Error in newLoadCreditsDataBanco:', error)
-    setBtnDisabledCredits(false)
-    
-    if(error.code === 'ERR_CANCELED'){
-      setErrorCredits(false)
-    } else if (error.response && error.response.status === 401) {
-      toast.error('Sessão Expirada')
-      logout()
-      return
-    } else {
-      toast.error('Erro ao Carregar Créditos por Data e Banco: ' + (error.response?.data?.mensagem || error.message))
-      console.error('Error fetching credits by bank:', error)
-      setErrorCredits(true)
-    }
-    return []
-  }
-}
-
-const groupByBank = (creditsArray) => {
-  if (!creditsArray || creditsArray.length === 0) return []
-    
-  const bankMap = new Map()
-  
-  creditsArray.forEach(credit => {
-    // Use BANCO field from the response
-    const bankName = credit.BANCO || 'Sem Banco'
-    const total = Number(credit.VALORLIQUIDO) || 0
-    
-    if (bankMap.has(bankName)) {
-      bankMap.set(bankName, bankMap.get(bankName) + total)
-    } else {
-      bankMap.set(bankName, total)
-    }
-  })
-  
-  const result = []
-  let id = 0
-  bankMap.forEach((total, bankName) => {
-    result.push({
-      id: id++,
-      adminName: bankName,
-      total: total,
-      credits: []
-    })
-  })
-  
-  return result
-}
-
-const newLoadTotalCreditsDataBanco = (creditsArray) => {
-  if (!creditsArray || creditsArray.length === 0) {
-    setCreditsTotal({ 
-      debit: 0, 
-      credit: 0, 
-      voucher: 0, 
-      total: 0 
-    })
-    return
-  }
-    
-  let totalCredito = 0
-  let totalDebito = 0
-  let totalVoucher = 0
-  let totalGeral = 0
-  
-  creditsArray.forEach(credit => {
-    const valor = Number(credit.VALORLIQUIDO) || 0
-    const produto = (credit.PRODUTO || "").trim()
-    
-    totalGeral += valor
-    
-    if (produto === 'Crédito') {
-      totalCredito += valor
-    } else if (produto === 'Débito') {
-      totalDebito += valor
-    } else if (produto === 'Voucher') {
-      totalVoucher += valor
-    }
-  })
-  
-  const result = {
-    debit: totalDebito,
-    credit: totalCredito,
-    voucher: totalVoucher,
-    total: totalGeral
-  }
-  
-  setCreditsTotal(result)
-}
-
-const newLoadServices = async (startDate, endDate, additionalFilters = {}) => {
-  try {
-    setErrorServices(false)
-    
-    const formatDateToYYYYMMDD = (date) => {
-      if (!date) return ''
-      
-      if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
-        return date
-      }
-      
-      if (date instanceof Date) {
-        const year = date.getFullYear()
-        const month = String(date.getMonth() + 1).padStart(2, '0')
-        const day = String(date.getDate()).padStart(2, '0')
-        return `${year}-${month}-${day}`
-      }
-      
-      if (typeof date === 'string' && date.includes('/')) {
-        const [day, month, year] = date.split('/')
-        return `${year}-${month}-${day}`
-      }
-      
-      const dateObj = new Date(date)
-      if (!isNaN(dateObj.getTime())) {
-        const year = dateObj.getFullYear()
-        const month = String(dateObj.getMonth() + 1).padStart(2, '0')
-        const day = String(dateObj.getDate()).padStart(2, '0')
-        return `${year}-${month}-${day}`
-      }
-      
-      return ''
-    }
-    
-    const formattedStartDate = formatDateToYYYYMMDD(startDate)
-    const formattedEndDate = formatDateToYYYYMMDD(endDate)
-        
-    // Get stored data from localStorage
-    const cliente = JSON.parse(localStorage.getItem('selectedClientBody'))
-    const grupo = JSON.parse(localStorage.getItem('selectedGroupBody'))
-    const selectedBan = JSON.parse(localStorage.getItem('selectedBanServices')) || '' // Optional: create specific key for services filters
-    const selectedAdm = JSON.parse(localStorage.getItem('selectedAdmServices')) || '' // Optional: create specific key for services filters
-    
-    // Store formatted dates in localStorage
-    localStorage.setItem('dataInicial', formattedStartDate)
-    localStorage.setItem('dataFinal', formattedEndDate)
-    
-    // Determine client codes as a comma-separated string
-    let clientesString = "";
-    
-    if (cliente && cliente.label === 'TODOS') {
-      const clientCodes = grupo?.clients?.map(client => client.CODIGOCLIENTE) || [];
-      clientesString = clientCodes.join(', ');
-    } else if (cliente && cliente.cod) {
-      clientesString = String(cliente.cod);
-    } else if (cliente && cliente.value) {
-      clientesString = String(cliente.value);
-    } else {
-      const apiCNPJ = localStorage.getItem('cnpj')
-      const apiGroupCode = localStorage.getItem('groupCode')
-      clientesString = apiCNPJ === 'todos' ? String(apiGroupCode) : String(apiCNPJ)
-    }
-    
-    // Get filter values from localStorage or additionalFilters
-    const bandeira = selectedBan?.codigoBandeira || additionalFilters.bandeira || "";
-    const adquirente = selectedAdm?.codigoAdquirente || additionalFilters.adquirente || "";
-    const nomeGrupo = grupo?.label || localStorage.getItem('clientName') || "";
-    
-    // Build the request object - NOTE: modelo is "AJUSTE" for services
-    const requestObject = {
-      dataInicial: formattedStartDate,
-      dataFinal: formattedEndDate,
-      clientes: clientesString,
-      nomeGrupo: nomeGrupo,
-      bandeira: bandeira,
-      adquirente: adquirente,
-      produto: additionalFilters.produto || "",
-      modalidade: additionalFilters.modalidade || "",
-      arquivo: "JSON", // Always JSON for data loading
-      modelo: "AJUSTES" // Changed from "VENDA"/"RECEBIMENTO" to "AJUSTE"
-    }
-    
-    
-    const response = await api.post('relatorios/detalhado', requestObject)
-    
-    setBtnDisabledServices(false)
-    
-    // Fix: Check boolean, not string comparison
-    if (response.data.success === true && response.data.dados && response.data.dados.length > 0) {
-      
-      // Store in localStorage for export
-      localStorage.setItem('servicesData', JSON.stringify(response.data.dados))
-      
-      return response.data.dados
-    } else if (response.data.success === true && (!response.data.dados || response.data.dados.length === 0)) {
-      toast.info(response.data.mensagem || "Nenhum serviço/ajuste encontrado para o período selecionado")
-      return []
-    } else {
-      toast.error(response.data.mensagem || "Erro ao carregar dados de serviços/ajustes")
-      return []
-    }
-    
-  } catch (error) {
-    console.error('Error in newLoadServices:', error)
-    setBtnDisabledServices(false)
-    
-    if(error.code === 'ERR_CANCELED'){
-      setErrorServices(false)
-    } else if (error.response && error.response.status === 401) {
-      toast.error('Sessão Expirada')
-      logout()
-      return
-    } else {
-      toast.error('Erro ao Carregar Serviços/Ajustes: ' + (error.response?.data?.mensagem || error.message))
-      console.error('Error fetching services:', error)
-      setErrorServices(true)
-    }
-    return []
-  }
-}
-
-// Create a new group by admin function for services if needed
-const newGroupByAdminServices = (servicesArray) => {
-  if (!servicesArray || servicesArray.length === 0) return []
-    
-  const adminMap = new Map()
-  
-  servicesArray.forEach(service => {
-    if (!service) return
-    
-    // Safe extraction of admin name with multiple fallbacks
-    const adminName = service.nome_adquirente || 
-                     service.ADMINISTRADORA || 
-                     service.adquirente || 
-                     'Unknown'
-    
-    // Safe extraction of value with multiple fallbacks
-    let valor = 0
-    if (service.valor !== undefined && service.valor !== null) {
-      valor = Math.abs(Number(service.valor))
-    } else if (service.VALOR !== undefined && service.VALOR !== null) {
-      valor = Math.abs(Number(service.VALOR))
-    } else if (service.valorLiquido !== undefined && service.valorLiquido !== null) {
-      valor = Math.abs(Number(service.valorLiquido))
-    } else if (service.VALORLIQUIDO !== undefined && service.VALORLIQUIDO !== null) {
-      valor = Math.abs(Number(service.VALORLIQUIDO))
-    }
-    
-    // Skip if valor is invalid
-    if (isNaN(valor)) return
-    
-    if (adminMap.has(adminName)) {
-      adminMap.set(adminName, adminMap.get(adminName) + valor)
-    } else {
-      adminMap.set(adminName, valor)
-    }
-  })
-  
-  const result = []
-  let id = 0
-  adminMap.forEach((total, adminName) => {
-    result.push({
-      id: id++,
-      adminName: adminName,
-      total: total,
-      services: []
-    })
-  })
-  
-  return result
-}
-
-// Create a new load total function for services
-const newLoadTotalServices = (servicesArray) => {
-  // Safe check for empty or invalid data
-  if (!servicesArray || servicesArray.length === 0) {
-    const currentTotal = servicesTotal;
-    if (currentTotal.total !== 0) {
-      setServicesTotal({ total: 0 })
-    }
-    return { total: 0 }
-  }
-    
-  let total = 0
-  
-  servicesArray.forEach(service => {
-    // Safe value extraction with multiple fallbacks
-    let valor = 0
-    
-    // Try different possible field names
-    if (service.valor !== undefined && service.valor !== null) {
-      valor = Math.abs(Number(service.valor))
-    } else if (service.VALOR !== undefined && service.VALOR !== null) {
-      valor = Math.abs(Number(service.VALOR))
-    } else if (service.valorLiquido !== undefined && service.valorLiquido !== null) {
-      valor = Math.abs(Number(service.valorLiquido))
-    } else if (service.VALORLIQUIDO !== undefined && service.VALORLIQUIDO !== null) {
-      valor = Math.abs(Number(service.VALORLIQUIDO))
-    }
-    
-    // Ensure it's a valid number
-    if (isNaN(valor)) {
-      valor = 0
-    }
-    
-    total += valor
-  })
-  
-  // Ensure total is a valid number
-  if (isNaN(total)) {
-    total = 0
-  }
-  
-  const result = {
-    total: total
-  }
-    
-  // Only update if values actually changed
-  const currentTotal = servicesTotal;
-  if (currentTotal.total !== result.total) {
-    setServicesTotal(result)
-  } else {
-    console.log('Services total unchanged, skipping update')
-  }
-  
-  return result
-}
-
-const loadResumo = () => {
-
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////
-
-// retorna array de créditos/recebimentos
-const loadCredits = async (startDate, endDate) => {
-  try {
-    setErrorCredits(false)
-    const apiCNPJ = localStorage.getItem('cnpj')
-    const apiGroupCode = localStorage.getItem('groupCode')
-    if((apiCNPJ === 'todos' || apiCNPJ === 'TODOS') && (apiGroupCode !== 'selecione')){
-      let params = {
-        dataInicial: startDate,
-        dataFinal: endDate,
-        codigoGrupo: apiGroupCode
-      }
-
-      let config = {
-        params: params
-      }
-
-      const response = await api.get('recebimentos', config)
-      return response.data
-
-    } else {
-      let params = {
-        cnpj: apiCNPJ,
-        dataInicial: startDate,
-        dataFinal: endDate,
-      }
-
-      let config = {
-        params: params
-      }
-      const response = await api.get('recebimentos', config)
-      setBtnDisabledCredits(false)
-      return response.data
-    }
-  } catch (error) {
-    setBtnDisabledCredits(false)
-    if(error.code === 'ERR_CANCELED'){
-      setErrorCredits(false)
-    } else if (error.response && error.response.status === 401) {
-      toast.error('Sessão Expirada')
-      logout()
-      return
-    } else {
-      toast.error('Erro ao Carregar Créditos: ', error.code)
-      console.error('Erro ao carregar créditos/recebimentos:', error)
-      setErrorCredits(true)
-    }
-    return []
-  }
-}
-
-// retorna array de serviços/ajustes
-const loadServices = async (startDate, endDate) => {
-  try {
-    setErrorServices(false)
-    const apiCNPJ = localStorage.getItem('cnpj')
-    const apiGroupCode = localStorage.getItem('groupCode')
-    if((apiCNPJ === 'todos' || apiCNPJ === 'TODOS') && (apiGroupCode !== 'selecione')){
-      let params = {
-        dataInicial: startDate,
-        dataFinal: endDate,
-        codigoGrupo: apiGroupCode
-      }
-
-      let config = {
-        params: params
-      }
-      const response = await api.get('ajustes', config)
-      return response.data
-    } else {
-      const params = {
-        cnpj: apiCNPJ,
-        dataInicial: startDate,
-        dataFinal: endDate,
-      }
-
-      let config = {
-        params,
-      }
-      const response = await api.get('ajustes', config)
-      setBtnDisabledServices(false)
-      return response.data
-    }
-  } catch (error) {
-    setBtnDisabledServices(false)
-    if(error.code === 'ERR_CANCELED'){
-      setErrorServices(false)
-    } else if (error.response && error.response.status === 401) {
-      toast.error('Sessão Expirada')
-      logout()
-      return
-    } else {
-      toast.error('Erro ao Carregar Serviços: ', error.response ? error.response.status : 'Unknown error')
-      console.error('Error fetching serviços:', error)
-      setErrorServices(true)
-    }
-    return []
-  }
-}
-
-// retorna Objeto de Taxas
-const loadTaxes = async () => {
-  setIsLoadingTaxes(true)
-  try {
-    const apiClientCode = localStorage.getItem('clientCode')
-    if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
-      let params = {
-        codigo: apiClientCode
-      }
-
-      let config = {
-        params: params
-      }
-
-      const response = await api.get('taxas', config)
-      return response.data
-    } else {
-      return []
-    }
-  } catch (error) {
-    console.error('Error fetching taxas:', error)
-    if (error.response && error.response.status === 401) {
-      logout()
-      return
-    }
-    return []
-  } finally {
-    setIsLoadingTaxes(false)
-  }
-}
-
-//Adiciona nova Taxa
-const addTax = async (tax) => {
-  setIsLoadingTaxes(true)
-  try {
-    const apiClientCode = localStorage.getItem('clientCode')
-    if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
-      let body = tax
-      const response = await api.post('taxas', body)
-    } else {
-      console.log('Invalid client code:', apiClientCode)
-    }
-  } catch (error) {
-    toast.alert('Erro ao cadastrar taxa')
-    console.error('Error adding tax:', error)
-    if (error.response && error.response.status === 401) {
-      logout()
-      return
-    }
-  } finally {
-    toast.success('Taxa cadastrada com sucesso')
-    setIsLoadingTaxes(false)
-  }
-}
-
-//Edita Taxa
-const editTax = async (tax) => {
-  setIsLoadingTaxes(true)
-  try {
-    const apiClientCode = tax.CLICODIGO
-    if (apiClientCode !== 'todos' && apiClientCode !== 'TODOS' && apiClientCode !== undefined) {
-      let body = JSON.stringify(tax)
-
-      const response = await fetch('https://app.salvalucro.com.br/api/v1/taxas', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: body,
-      })
-
-      const responseData = await response.json()
-
-      if (response.ok) {
-        toast.dismiss()
-        toast.success('Taxa alterada com sucesso!')
-      } else {
-        toast.dismiss()
-        toast.error('Erro ao alterar taxa!')
-      }
-    } else {
-      return []
-    }
-  } catch (error) {
-    console.error('Error updating tax:', error)
-    toast.dismiss()
-    toast.error('Erro ao alterar taxa!')
-    if (error.response && error.response.status === 401) {
-      logout()
-      return
-    }
-  } finally {
-    setIsLoadingTaxes(false)
-  }
-}
-
-//Deleta Taxa
-const deleteTax = async (tax) => {
-  setIsLoadingTaxes(true)
-  try {
-    const apiClientCode = localStorage.getItem('clientCode')
-    if(apiClientCode !== 'todos' && apiClientCode !== 'TODOS' && apiClientCode !== undefined) {
-      let body = tax
-      api.delete('taxas', {
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        data: body
-      })
-      .then(response => {
-        toast.dismiss()
-        toast.success('Taxa deletada com sucesso!')
-      })
-      .catch(error => {
-        toast.dismiss()
-        toast.error('Erro ao deletar taxa!')
-      })
-    } else {
-      return []
-    }
-    setIsLoadingTaxes(false)
-  } catch (error) {
-    console.error('Error fetching vendas:', error)
-    setIsLoadingTaxes(false)
-    if (error.response && error.response.status === 401) {
-      logout()
-      return
-    }
-    return
-  }
-}
-
-//Bancos
-const [isLoadingBanks, setIsLoadingBanks] = useState(false)
-
-// retorna array de bancos
-const loadBanks = async () => {
-  setIsLoadingBanks(true)
-  try {
-    const apiClientCode = localStorage.getItem('clientCode')
-    if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
-      let params = {
-        codigo: apiClientCode
-      }
-
-      let config = {
-        params: params
-      }
-
-      const response = await api.get('banco', config)
-      return response.data
-    } else {
-      return []
-    }
-  } catch (error) {
-    console.error('Error fetching banco:', error)
-    if (error.response && error.response.status === 401) {
-      logout()
-      return
-    }
-    return []
-  } finally {
-    setIsLoadingBanks(false)
-  }
-}
-
-// adiciona novo banco
-const addBank = async (bank) => {
-  setIsLoadingBanks(true)
-  try {
-    const apiClientCode = localStorage.getItem('clientCode')
-    if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
-      let body = bank
-      const response = await api.post('banco', body)
-      if (response.data.success) {
-        toast.dismiss()
-        toast.success(response.data.mensagem)
-      } else {
-        toast.dismiss()
-        toast.error('Erro ao adicionar Banco!')
-      }
-    } else {
-      console.log('código do cliente inválido:', apiClientCode)
-    }
-
-  } catch (error) {
-    console.error('Erro ao adicionar banco:', error)
-    if (error.response && error.response.status === 401) {
-      logout()
-      return
-    }
-  } finally {
-    setIsLoadingBanks(false)
-  }
-}
-
-// edita banco
-const editBank = async (editedBank) => {
-  setIsLoadingBanks(true)
-  try {
-      let body = JSON.stringify(editedBank)
-      const response = await fetch('https://app.salvalucro.com.br/api/v1/banco', {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
-      body: body,
-      })
-
-      const responseData = await response.json()
-
-      if (response.ok) {
-        toast.dismiss()
-        toast.success('Banco alterado com sucesso!')
-      } else {
-        toast.dismiss()
-        toast.error('Erro ao alterar Banco!')
-      }
-  } catch (error) {
-    console.error('Erro ao Alterar Banco:', error)
-    toast.dismiss()
-    toast.error('Erro ao alterar banco!')
-    if (error.response && error.response.status === 401) {
-      logout()
-      return
-    }
-  } finally {
-    setIsLoadingBanks(false)
-  }   
-}
-
-// deleta banco
-const deleteBank = async (bankToDelete) => {
-  setIsLoadingBanks(true)
-  try {
-    let body = bankToDelete
-    api.delete('banco', {
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      data: body
-    })
-    .then(response => {
-      toast.dismiss()
-      toast.success('Banco deletado com sucesso!')
-    })
-    .catch(error => {
-      toast.dismiss()
-      toast.error('Erro ao deletar taxa!')
-    })
-    setIsLoadingBanks(false)
-  } catch (error) {
-    console.error('Error fetching vendas:', error)
-    setIsLoadingBanks(false)
-    if (error.response && error.response.status === 401) {
-      logout()
-      return
-    }
-    return
-  }
-}
-
-const loadCliAdq = async () => {
-  try {
-    let params = {
-      codigoCliente: localStorage.getItem('clientCode'),
-      codigoAdquirente: localStorage.getItem('admCode')
-    }
-
-    let config = {
-      params: params
-    }
-
-    const response = await api.get('clienteAdquirente', config)
-    return response.data
-  } catch (error) {
-    console.log(error)
-  }
-}
-
-const loadProducts = async () => {
-  try {
-    const response = await api.get('produto')
-    return response.data
-  } catch (error) {
-    console.log(error)
-    if (error.response && error.response.status === 401) {
-      logout()
-      return
-    }
-  }
-}
-
-const loadSubproducts = async () => {
-  try {
-    let params = {
-      codigoAdquirente: localStorage.getItem('admCode')
-    }
-
-    let config = {
-      params: params
-    }
-    const response = await api.get('Subproduto', config)
-    return response.data
-  } catch (error) {
-    console.log(error)
-    if (error.response && error.response.status === 401) {
-      logout()
-      return
-    }
-  }
-}
-
-// retorna array de bandeiras
-const loadBanners = async () => {
-  try {
-    const response = await api.get('bandeira')
-    return response.data
-  } catch (error) {
-    console.log(error)
-  }
-}
-
-// retorna array de administradoras
-const loadAdmins = async () => {
-  try {
-    const response = await api.get('adquirente')
-    //await refreshSession()
-    return response.data
-  } catch (error) {
-    console.log(error)
-    if (error.response && error.response.status === 401) {
-      logout()
-      return
-    }
-  }
-}
-
-// retorna array de modalidades e seus respectivos códigos
-const loadMods = async () => {
-  try {
-    const response = await api.get('Modalidade')
-    return response.data
-  } catch (error) {
-    console.log(error)
-    if (error.response && error.response.status === 401) {
-      logout()
-      return
-    }
-  }
-}
-
-// retorna string do arquivo SYSMO
-const loadSysmo = async (obj) => {
-  setBtnDisabledSysmo(true)
-  try {
-    let params = {
-      tipo: obj.TIPO,
-      bandeira: obj.Bandeira,
-      adquirente: obj.Adquirente,
-      data: obj.Data
-    }
-
-    let config = {
-      params: params
-    }
-
-    const response = await api.get('Sysmo', config)
-    return response.data
-  } catch (error) {
-    setBtnDisabledSysmo(false)
-    console.log(error)
-    if (error.response && error.response.status === 401) {
-      logout()
-      return
-    }
-  }
-} 
-
-// renova o access token/sessão do usuário
-const refreshSession = async () => {
-  if(localStorage.getItem('token')){
-    
-  }
-  try {
-    const refreshToken = localStorage.getItem('refreshToken');
-    
-    if (!refreshToken) {
-      console.log('No refresh token available')
-      return
-    }
-    const response = await api.post('token/refresh/', {
-      refresh_token: refreshToken
-    })
-
-    localStorage.setItem('token', response.data.acess_token)
-    localStorage.setItem('refreshToken', response.data.refresh_token)
-
-  } catch (error) {
-    console.error('Error refreshing session:', error)
-
-    if (error.response && error.response.status === 401) {
-      logout()
-    }
-  }
-}
-
-// >>> Dashboard <<< //
-
-// *** Definição de consts / useStates *** 
-
-// const que controla que define se os dados a serem apresentados na
-// página 'Dashboard' foram carregados ou não. caso seja 'false', será
-// feita a consulta a API, carregando os dados e seu valor será setado 
-// para 'true' ao final, evitando que os dados sejam carregados novamente
-// sem necessidade.
-
-const resetDashboard = () => {
-  setSalesDashboard(null)
-  setCreditsDashboard(null)
-  setServicesDashboard(null)
-
-}
-
-const [isLoadedDashboard, setIsLoadedDashboard] = useState(false) // //
-
-const [isLoadedSalesDashboard, setIsLoadedSalesDashboard] = useState(false)
-const [isLoadedCreditsDashboard, setIsLoadedCreditsDashboard] = useState(false)
-const [isLoadedServicesDashboard, setIsLoadedServicesDashboard] = useState(false)
-
-const [canceled, setCanceled] = useState(false)
-
-// consts que guardarão os objetos referentes à cada grupo de dados no Dashboard
-    const [salesDashboard, setSalesDashboard] = useState({
-      sales: [],     // ->  Array com as vendas do Mês     //
-      totalLast4: 0,   // ->  Total dos últimos 4 dias     //
-      totalMonth: 0,   // ->  Total do mês           //
-      chart: {     // ->  Dados referentes ao gráfico   //
-        data: [],   // ->  Valores (por administradora)   //
-        labels: []   // ->  Nomes (por administradora)     //
-      }
-    })
-
-    const [creditsDashboard, setCreditsDashboard] = useState({
-      credits: [],
-      predictToday: 0,
-      predictNext5: 0,
-      chart: {
-        data: [],
-        labels: []
-      }
-    })
-
-    const [servicesDashboard, setServicesDashboard] = useState({
-      services: [],
-      totalToday: 0,
-      totalMonth: 0,
-      chart: {
-        data: [],
-        labels: []
-      }
-    })
-// funções que gerenciarão o carregamento dos dados referente à cada grupo de dados (vendas, créditos, serviços/ajustes)
-
-// ---------------------------------------------------------------------------- //
-
-// ************** //
-//  >> Vendas <<  //
-// ************** //
-
-// ************** //
-// >> Créditos << //
-// ************** //
-
-// ************** //
-// >> Serviços << //
-// ************** //
-
-
-// ----------------------------------------------------------------------------- //
-/*Mock Dashboard*/
-const mockDashboard = 
-{
-    "vendas": {
-        "valorTotaldias": 0.0,
-        "valorTotalMes": 0.0,
-        "totalAdquirentes": [
-            {
-                "adquirente": "Izi",
-                "valor": 845.01,
-                "percentual": 0.0
-            },
-            {
-                "adquirente": "Maxiscard",
-                "valor": 10661.65,
-                "percentual": 0.02
-            },
-            {
-                "adquirente": "TecBiz",
-                "valor": 1551.0,
-                "percentual": 0.0
-            },
-            {
-                "adquirente": "Triocard",
-                "valor": 19821.42,
-                "percentual": 0.05
-            },
-            {
-                "adquirente": "ViaSoft Pay",
-                "valor": 284.01,
-                "percentual": 0.0
-            },
-            {
-                "adquirente": "Alelo",
-                "valor": 898892.19,
-                "percentual": 2.08
-            },
-            {
-                "adquirente": "Verdecard",
-                "valor": 30262.55,
-                "percentual": 0.07
-            },
-            {
-                "adquirente": "VR",
-                "valor": 326399.44,
-                "percentual": 0.76
-            },
-            {
-                "adquirente": "Cielo",
-                "valor": 28440337.57,
-                "percentual": 65.88
-            },
-            {
-                "adquirente": "Vero",
-                "valor": 7448248.2,
-                "percentual": 17.25
-            },
-            {
-                "adquirente": "O2PlusCard",
-                "valor": 11946.71,
-                "percentual": 0.03
-            },
-            {
-                "adquirente": "Personal Card",
-                "valor": 540.66,
-                "percentual": 0.0
-            },
-            {
-                "adquirente": "Pluxee",
-                "valor": 513954.53,
-                "percentual": 1.19
-            },
-            {
-                "adquirente": "Onecard",
-                "valor": 669275.15,
-                "percentual": 1.55
-            },
-            {
-                "adquirente": "Valecard",
-                "valor": 5375.21,
-                "percentual": 0.01
-            },
-            {
-                "adquirente": "Tricard",
-                "valor": 8728.31,
-                "percentual": 0.02
-            },
-            {
-                "adquirente": "PicPay",
-                "valor": 626.97,
-                "percentual": 0.0
-            },
-            {
-                "adquirente": "Facecard",
-                "valor": 85434.2,
-                "percentual": 0.2
-            },
-            {
-                "adquirente": "Senff",
-                "valor": 4141146.5,
-                "percentual": 9.59
-            },
-            {
-                "adquirente": "Greencard",
-                "valor": 151183.95,
-                "percentual": 0.35
-            },
-            {
-                "adquirente": "Goodcard",
-                "valor": 1824.03,
-                "percentual": 0.0
-            },
-            {
-                "adquirente": "Romcard",
-                "valor": 815.76,
-                "percentual": 0.0
-            },
-            {
-                "adquirente": "Lecard",
-                "valor": 947.03,
-                "percentual": 0.0
-            },
-            {
-                "adquirente": "Flexocard",
-                "valor": 8224.92,
-                "percentual": 0.02
-            },
-            {
-                "adquirente": "Ticket",
-                "valor": 383152.84,
-                "percentual": 0.89
-            },
-            {
-                "adquirente": "Cooper Card",
-                "valor": 2114.66,
-                "percentual": 0.0
-            },
-            {
-                "adquirente": "Policard",
-                "valor": 7357.3,
-                "percentual": 0.02
-            },
-            {
-                "adquirente": "Vegascard",
-                "valor": 254.2,
-                "percentual": 0.0
-            }
-        ]
-    },
-    "creditos":{
-        "valorTotaldias": 0.0,
-        "valorTotalMes": 0.0,
-        "totalAdquirentes": [
-            {
-                "adquirente": "Izi",
-                "valor": 845.01,
-                "percentual": 0.0
-            },
-            {
-                "adquirente": "Maxiscard",
-                "valor": 10661.65,
-                "percentual": 0.02
-            },
-            {
-                "adquirente": "TecBiz",
-                "valor": 1551.0,
-                "percentual": 0.0
-            },
-            {
-                "adquirente": "Triocard",
-                "valor": 19821.42,
-                "percentual": 0.05
-            },
-            {
-                "adquirente": "ViaSoft Pay",
-                "valor": 284.01,
-                "percentual": 0.0
-            },
-            {
-                "adquirente": "Alelo",
-                "valor": 898892.19,
-                "percentual": 2.08
-            },
-            {
-                "adquirente": "Verdecard",
-                "valor": 30262.55,
-                "percentual": 0.07
-            },
-            {
-                "adquirente": "VR",
-                "valor": 326399.44,
-                "percentual": 0.76
-            },
-            {
-                "adquirente": "Cielo",
-                "valor": 28440337.57,
-                "percentual": 65.88
-            },
-            {
-                "adquirente": "Vero",
-                "valor": 7448248.2,
-                "percentual": 17.25
-            },
-            {
-                "adquirente": "O2PlusCard",
-                "valor": 11946.71,
-                "percentual": 0.03
-            },
-            {
-                "adquirente": "Personal Card",
-                "valor": 540.66,
-                "percentual": 0.0
-            },
-            {
-                "adquirente": "Pluxee",
-                "valor": 513954.53,
-                "percentual": 1.19
-            },
-            {
-                "adquirente": "Onecard",
-                "valor": 669275.15,
-                "percentual": 1.55
-            },
-            {
-                "adquirente": "Valecard",
-                "valor": 5375.21,
-                "percentual": 0.01
-            },
-            {
-                "adquirente": "Tricard",
-                "valor": 8728.31,
-                "percentual": 0.02
-            },
-            {
-                "adquirente": "PicPay",
-                "valor": 626.97,
-                "percentual": 0.0
-            },
-            {
-                "adquirente": "Facecard",
-                "valor": 85434.2,
-                "percentual": 0.2
-            },
-            {
-                "adquirente": "Senff",
-                "valor": 4141146.5,
-                "percentual": 9.59
-            },
-            {
-                "adquirente": "Greencard",
-                "valor": 151183.95,
-                "percentual": 0.35
-            },
-            {
-                "adquirente": "Goodcard",
-                "valor": 1824.03,
-                "percentual": 0.0
-            },
-            {
-                "adquirente": "Romcard",
-                "valor": 815.76,
-                "percentual": 0.0
-            },
-            {
-                "adquirente": "Lecard",
-                "valor": 947.03,
-                "percentual": 0.0
-            },
-            {
-                "adquirente": "Flexocard",
-                "valor": 8224.92,
-                "percentual": 0.02
-            },
-            {
-                "adquirente": "Ticket",
-                "valor": 383152.84,
-                "percentual": 0.89
-            },
-            {
-                "adquirente": "Cooper Card",
-                "valor": 2114.66,
-                "percentual": 0.0
-            },
-            {
-                "adquirente": "Policard",
-                "valor": 7357.3,
-                "percentual": 0.02
-            },
-            {
-                "adquirente": "Vegascard",
-                "valor": 254.2,
-                "percentual": 0.0
-            }
-        ]
-    },
-    "ajustes":{
-        "valorTotaldias": 0.0,
-        "valorTotalMes": 0.0,
-        "totalAdquirentes": [
-            {
-                "adquirente": "Izi",
-                "valor": 845.01,
-                "percentual": 0.0
-            },
-            {
-                "adquirente": "Maxiscard",
-                "valor": 10661.65,
-                "percentual": 0.02
-            },
-            {
-                "adquirente": "TecBiz",
-                "valor": 1551.0,
-                "percentual": 0.0
-            },
-            {
-                "adquirente": "Triocard",
-                "valor": 19821.42,
-                "percentual": 0.05
-            },
-            {
-                "adquirente": "ViaSoft Pay",
-                "valor": 284.01,
-                "percentual": 0.0
-            },
-            {
-                "adquirente": "Alelo",
-                "valor": 898892.19,
-                "percentual": 2.08
-            },
-            {
-                "adquirente": "Verdecard",
-                "valor": 30262.55,
-                "percentual": 0.07
-            },
-            {
-                "adquirente": "VR",
-                "valor": 326399.44,
-                "percentual": 0.76
-            },
-            {
-                "adquirente": "Cielo",
-                "valor": 28440337.57,
-                "percentual": 65.88
-            },
-            {
-                "adquirente": "Vero",
-                "valor": 7448248.2,
-                "percentual": 17.25
-            },
-            {
-                "adquirente": "O2PlusCard",
-                "valor": 11946.71,
-                "percentual": 0.03
-            },
-            {
-                "adquirente": "Personal Card",
-                "valor": 540.66,
-                "percentual": 0.0
-            },
-            {
-                "adquirente": "Pluxee",
-                "valor": 513954.53,
-                "percentual": 1.19
-            },
-            {
-                "adquirente": "Onecard",
-                "valor": 669275.15,
-                "percentual": 1.55
-            },
-            {
-                "adquirente": "Valecard",
-                "valor": 5375.21,
-                "percentual": 0.01
-            },
-            {
-                "adquirente": "Tricard",
-                "valor": 8728.31,
-                "percentual": 0.02
-            },
-            {
-                "adquirente": "PicPay",
-                "valor": 626.97,
-                "percentual": 0.0
-            },
-            {
-                "adquirente": "Facecard",
-                "valor": 85434.2,
-                "percentual": 0.2
-            },
-            {
-                "adquirente": "Senff",
-                "valor": 4141146.5,
-                "percentual": 9.59
-            },
-            {
-                "adquirente": "Greencard",
-                "valor": 151183.95,
-                "percentual": 0.35
-            },
-            {
-                "adquirente": "Goodcard",
-                "valor": 1824.03,
-                "percentual": 0.0
-            },
-            {
-                "adquirente": "Romcard",
-                "valor": 815.76,
-                "percentual": 0.0
-            },
-            {
-                "adquirente": "Lecard",
-                "valor": 947.03,
-                "percentual": 0.0
-            },
-            {
-                "adquirente": "Flexocard",
-                "valor": 8224.92,
-                "percentual": 0.02
-            },
-            {
-                "adquirente": "Ticket",
-                "valor": 383152.84,
-                "percentual": 0.89
-            },
-            {
-                "adquirente": "Cooper Card",
-                "valor": 2114.66,
-                "percentual": 0.0
-            },
-            {
-                "adquirente": "Policard",
-                "valor": 7357.3,
-                "percentual": 0.02
-            },
-            {
-                "adquirente": "Vegascard",
-                "valor": 254.2,
-                "percentual": 0.0
-            }
-        ]
-    }
-}
-const [dashboardData, setDashboardData] = useState([])
-// função que gerencia o carregamento de tudo que será visto no Dashboard
-
-const loadDashboard = async () => {  
-  resetDashboard();
-  setIsLoadedSalesDashboard(false);
-  setIsLoadedCreditsDashboard(false);
-  setIsLoadedServicesDashboard(false);
-  setIsLoadedDashboard(false);
-
-  const apiCNPJ = localStorage.getItem('cnpj')
-  
-  let dashboardData
-
-  try {
-    if (!fetchingData) {
-      setFetchingData(true);
-    }
-    
-    if((apiCNPJ !== 'todos') && (apiCNPJ !== 'TODOS') && (apiCNPJ !== 'Todos')){
-      const params = {
-        cnpj: apiCNPJ,
-      }
-
-      let config = {
-        params,
-      }
-      const response = await api.get('dashboard', config)
-      dashboardData = response.data
-    } else if ((apiCNPJ === 'todos') || (apiCNPJ === 'TODOS') || (apiCNPJ === 'Todos')){
-      const params = {
-        grupo: localStorage.getItem('groupCode'),
-      }
-
-      let config = {
-        params,
-      }
-      const response = await api.get('dashboard', config)
-      dashboardData = response.data
-    } else {
-        const params = {
-          usuario: localStorage.getItem('userID'),
-        }
-
-        let config = {
-          params,
-        }
-        const response = await api.get('dashboard', config)
-        dashboardData = response.data // Changed from response to response.data
-      }
-    
-    // Transform API data to match the expected structure
-    const transformedData = transformApiData(dashboardData);
-    
-    const transformAdquirentesForChart = (adquirentesArray) => {
-      const labels = []
-      const data = []
-      
-      adquirentesArray.forEach(item => {
-        labels.push(item.adquirente)
-        data.push(item.valor)
-      })
-      
-      return { labels, data }
-    }
-    
-    const vendasChartData = transformAdquirentesForChart(transformedData.vendas.totalAdquirentes); // Using transformedData
-    const creditsChartData = transformAdquirentesForChart(transformedData.creditos.totalAdquirentes); // Using transformedData
-    const ajustesChartData = transformAdquirentesForChart(transformedData.ajustes.totalAdquirentes); // Using transformedData
-    
-    const totalVendas = transformedData.vendas.totalAdquirentes.reduce((sum, item) => sum + item.valor, 0); // Using transformedData
-    const totalCredits = transformedData.creditos.totalAdquirentes.reduce((sum, item) => sum + item.valor, 0); // Using transformedData
-    const totalAjustes = transformedData.ajustes.totalAdquirentes.reduce((sum, item) => sum + item.valor, 0); // Using transformedData
-    
-    setDashboardData(transformedData); // Setting transformedData instead of raw API data
-    
-    setSalesDashboard({
-      totalLast4: transformedData.vendas.valorTotaldias, // Using transformedData
-      totalMonth: transformedData.vendas.valorTotalMes, // Using transformedData
-      chart: {
-        data: vendasChartData.data,
-        labels: vendasChartData.labels
-      },
-      sales: transformedData.vendas.totalAdquirentes, // Using transformedData
-      totalAdmin: totalVendas
-    });
-    setIsLoadedSalesDashboard(true);
-    
-    setCreditsDashboard({
-      totalCreditsToday: transformedData.creditos.valorTotaldias, // Using transformedData
-      totalCreditsNext5: transformedData.creditos.valorTotalMes, // Using transformedData
-      chart: {
-        data: creditsChartData.data,
-        labels: creditsChartData.labels
-      },
-      credits: transformedData.creditos.totalAdquirentes, // Using transformedData
-      totalAdmin: totalCredits
-    })
-    setIsLoadedCreditsDashboard(true)
-    
-    setServicesDashboard({
-      totalServicesToday: transformedData.ajustes.valorTotaldias, // Using transformedData
-      totalServicesMonth: transformedData.ajustes.valorTotalMes, // Using transformedData
-      chart: {
-        data: ajustesChartData.data,
-        labels: ajustesChartData.labels
-      },
-      services: transformedData.ajustes.totalAdquirentes, // Using transformedData
-      totalAdmin: totalAjustes
-    })
-    setIsLoadedServicesDashboard(true)
-    
-    setIsLoadedDashboard(true)
-    setChangedOption(false)
-    setFetchingData(false)
-    
-    return transformedData // Return transformed data
-  } catch (error) {
-    console.log('Error in dashboard loading:', error)
-    setFetchingData(false)
-    
-    if (error.response && error.response.status === 401) {
-      logout()
-      return
-    }
-  }
-}
-
-// Add the transformation function (you can place it above loadDashboard or in a separate file)
-function transformApiData(apiData) {
-  const result = {
-    vendas: {
-      valorTotaldias: apiData.vendas?.valorTotaldias || 0,
-      valorTotalMes: apiData.vendas?.valorTotalMes || 0,
-      totalAdquirentes: []
-    },
-    creditos: {
-      valorTotaldias: apiData.creditos?.valorTotaldias || 0,
-      valorTotalMes: apiData.creditos?.valorTotalMes || 0,
-      totalAdquirentes: []
-    },
-    ajustes: {
-      valorTotaldias: apiData.ajustes?.valorTotaldias || 0,
-      valorTotalMes: apiData.ajustes?.valorTotalMes || 0,
-      totalAdquirentes: []
-    }
-  };
-
-  // Transform vendas
-  if (apiData.vendas?.resumo_Adquirentes_vendas) {
-    result.vendas.totalAdquirentes = apiData.vendas.resumo_Adquirentes_vendas.map(item => ({
-      adquirente: item.adquirente,
-      valor: item.valor || 0,
-      percentual: item.percentual || 0
-    }));
-  }
-
-  // Transform creditos
-  if (apiData.creditos?.resumo_Adquirentes_recebimentos) {
-    result.creditos.totalAdquirentes = apiData.creditos.resumo_Adquirentes_recebimentos.map(item => ({
-      adquirente: item.adquirente,
-      valor: item.valor || 0,
-      percentual: item.percentual || 0
-    }));
-  }
-
-  // Transform ajustes
-  if (apiData.ajustes?.resumo_Adquirentes_ajustes) {
-    result.ajustes.totalAdquirentes = apiData.ajustes.resumo_Adquirentes_ajustes.map(item => ({
-      adquirente: item.adquirente,
-      valor: item.valor || 0,
-      percentual: item.percentual || 0
-    }));
-  }
-
-  return result;
-}
-
-useEffect(()=>{
-  if(isLoadedSalesDashboard && isLoadedCreditsDashboard && isLoadedServicesDashboard){
-    setFetchingData(false)
-  }
-},[isLoadedSalesDashboard, isLoadedCreditsDashboard, isLoadedServicesDashboard])
-
-// >>> Página de Vendas <<< //
-const [salesPageArray, setSalesPageArray] = useState([])
-const [salesPageAdminArray, setSalesPageAdminArray] =  useState([])
-const [salesTotal, setSalesTotal] = useState({
-  debit: 0,
-  credit: 0,
-  voucher: 0,
-  total: 0,
-})
-const [salesDateRange, setSalesDateRange] = useState([new Date(), new Date()])
-
-// >>> Página de Créditos <<< //
-const [creditsPageArray, setCreditsPageArray] = useState([])
-const [creditsPageAdminArray, setCreditsPageAdminArray] = useState([])
-const [creditsTotal, setCreditsTotal] = useState({
-  debit: 0,
-  credit: 0,
-  voucher: 0,
-  total: 0,
-})
-const [creditsDateRange, setCreditsDateRange] = useState([new Date(), new Date()])
-
-// >>> Página de Serviços <<< //
-// FIXED: Changed servicesTotal from number to object to match newLoadTotalServices
-const [servicesPageArray, setServicesPageArray] = useState([])
-const [servicesPageAdminArray, setServicesPageAdminArray] = useState([])
-const [servicesDateRange, setServicesDateRange] = useState([new Date(), new Date()])
-const [servicesTotal, setServicesTotal] = useState({ total: 0 }); // FIXED: Now an object with total property
-
-// >>> Página de Taxas <<< //
-const [isLoadingTaxes, setIsLoadingTaxes] = useState(false)
-const [taxesPageArray, setTaxesPageArray] = useState([])
-
-	////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////
-	
-	// *** > Outras Funções Auxiliares < *** //
-
-	////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////
-
-	// Retorna novo array com os dados agrupados por adquirente (Vendas e Créditos)
-	function groupByAdmin(array) {
-
-		let sums = {
-			total: 0
-		}
-		
-		let tempSales = []
-		let separatedByAdquirente = []
-
-			array.forEach((sale) => {
-				sums.total += sale.valorBruto
-				tempSales.push(sale)
-
-				let entry = separatedByAdquirente.find(adquirente => adquirente.adminName === sale.adquirente.nomeAdquirente)
-				if (!entry) {
-					entry = {
-						id: separatedByAdquirente.length,
-						adminName: sale.adquirente.nomeAdquirente,
-						total: 0,
-						sales: []
-					}
-					separatedByAdquirente.push(entry)
-				}
-				entry.sales.push(sale)
-				entry.total += sale.valorBruto
-			})
-		return separatedByAdquirente
-	}
-
-	function groupServicesByAdmin(array) {
-    // Early return for invalid input
-    if (!array || !Array.isArray(array) || array.length === 0) {
-      return []
-    }
-
-    let separatedByAdquirente = []
-
-    array.forEach((sale) => {
-      // Skip if sale or required fields are missing
-      if (!sale) return
-      
-      const adminName = sale.nome_adquirente || sale.ADMINISTRADORA || sale.adquirente || 'Unknown'
-      const valor = Math.abs(Number(sale.valor || sale.VALOR || 0))
-      
-      // Skip if valor is invalid
-      if (isNaN(valor)) return
-
-      let entry = separatedByAdquirente.find(adq => adq.adminName === adminName)
-      if (!entry) {
-        entry = {
-          id: separatedByAdquirente.length,
-          adminName: adminName,
-          total: 0,
-          sales: []
-        }
-        separatedByAdquirente.push(entry)
-      }
-      entry.sales.push(sale)
-      entry.total += valor
-    })
-    
-    return separatedByAdquirente
-  }
-
-	////////////////////////////////////////////////////////////////////////////////////////
-
-	function loadTotalSales(array){
-		if(array.length > 0){
-			let temp = []
-			let totalCreditTemp = 0
-			let totalDebitTemp = 0
-			let totalVoucherTemp = 0
-			let total = 0
-	
-			array.forEach((venda)=>{
-				if(temp.length === 0){
-				let newObj = {
-					adminName: venda.adquirente.nomeAdquirente,
-					total: venda.valorBruto,
-					id: 0,
-					sales: []
-				}
-				temp.push(newObj)
-				}else{
-				let newObj = {
-					adminName: venda.adquirente.nomeAdquirente,
-					total: venda.valorBruto,
-					id: 0,
-					sales: []
-				}
-	
-				if(!(temp.find((objeto) => objeto.adminName === venda.adquirente.nomeAdquirente && objeto !== ( undefined || [] )))){
-					newObj.id = (temp.length)
-					temp.push(newObj)
-				}
-	
-				else{
-					for(let i = 0; i < temp.length; i++){
-						if(temp[i].adminName === venda.adquirente.nomeAdquirente){
-							temp[i].total += venda.valorBruto
-						}
-					}
-				}
-				}
-				// eslint-disable-next-line default-case
-				switch(venda.produto.descricaoProduto){
-				case 'Crédito':
-					totalCreditTemp += venda.valorBruto
-					break
-	
-				case 'Débito':
-					totalDebitTemp += venda.valorBruto
-					break
-	
-				case 'Voucher':
-					totalVoucherTemp += venda.valorBruto
-					break
-				}
-				total += venda.valorBruto
-			})
-				temp.forEach((adq) => {
-					let salesTemp = []
-					salesTemp.length = 0
-					array.forEach((vendasDia) => {
-						if(vendasDia.length > 0){
-							vendasDia.forEach((venda) => {
-								if(venda.adquirente.nomeAdquirente === adq.adminName){
-									salesTemp.push(venda)
-								}
-								adq.sales = salesTemp
-							})
-						}
-					})
-				})
-				let totalTemp = {debit: Number(totalDebitTemp), credit: Number(totalCreditTemp), voucher: Number(totalVoucherTemp), total: Number(total)}
-				
-				setSalesTotal(totalTemp)
-			}
-	}
-
-	function loadTotalCredits(array){
-		if(array.length > 0){
-			let temp = []
-			let totalCreditTemp = 0
-			let totalDebitTemp = 0
-			let totalVoucherTemp = 0
-			let total = 0
-	
-			array.forEach((venda)=>{
-				if(temp.length === 0){
-				let newObj = {
-					adminName: venda.adquirente.nomeAdquirente,
-					total: venda.valorLiquido,
-					id: 0,
-					sales: []
-				}
-				temp.push(newObj)
-				} else {
-				let newObj = {
-					adminName: venda.adquirente.nomeAdquirente,
-					total: venda.valorLiquido,
-					id: 0,
-					sales: []
-				}
-	
-				if(!(temp.find((objeto) => objeto.adminName === venda.adquirente.nomeAdquirente && objeto !== ( undefined || [] )))){
-					newObj.id = (temp.length)
-					temp.push(newObj)
-				}
-	
-				else{
-					for(let i = 0; i < temp.length; i++){
-						if(temp[i].adminName === venda.adquirente.nomeAdquirente){
-							temp[i].total += venda.valorLiquido
-						}
-					}
-				}
-				}
-				switch(venda.produto.descricaoProduto){
-				case 'Crédito':
-					totalCreditTemp += venda.valorLiquido
-					break
-	
-				case 'Débito':
-					totalDebitTemp += venda.valorLiquido
-					break
-	
-				case 'Voucher':
-					totalVoucherTemp += venda.valorLiquido
-					break
-				}
-				total += venda.valorLiquido
-			})
-				temp.forEach((adq) => {
-					let salesTemp = []
-					salesTemp.length = 0
-					array.forEach((vendasDia) => {
-						if(vendasDia.length > 0){
-							vendasDia.forEach((venda) => {
-								if(venda.adquirente.nomeAdquirente === adq.adminName){
-									salesTemp.push(venda)
-								}
-								adq.sales = salesTemp
-							})
-						}
-					})
-				})
-				let totalTemp = {debito: Number(totalDebitTemp), credito: Number(totalCreditTemp), voucher: Number(totalVoucherTemp), total: Number(total)}
-				setCreditsTotal(totalTemp)
-			}
-	}
-
-	////////////////////////////////////////////////////////////////////////////////////////
-
-	const resetAppValues = useCallback(() => {
-		setIsLoadedDashboard(false)
-		setIsLoadedSalesDashboard(false)
-		setIsLoadedCreditsDashboard(false)
-		setIsLoadedServicesDashboard(false)
-		setSalesPageArray([])
-		setSalesPageAdminArray([])
-		setSalesTotal({
-			debit: 0,
-			credit: 0,
-			voucher: 0,
-			total: 0,
-		})
-		setSalesDateRange([new Date(), new Date()])
-		setCreditsPageArray([])
-		setCreditsPageAdminArray([])
-		setCreditsTotal({
-			debit: 0,
-			credit: 0,
-			voucher: 0,
-			total: 0,
-		})
-		setCreditsDateRange([new Date(), new Date()])
-		setServicesPageArray([])
-		setServicesPageAdminArray([])
-		setServicesDateRange([new Date(), new Date()])
-		setServicesTotal({ total: 0 })
-		setSalesDashboard({
-			sales: [],
-			totalLast4: 0,
-			totalMonth: 0,
-			chart: {
-				data: [],
-				labels: []
-			}
-		})
-		setCreditsDashboard({
-			credits: [],
-			predictToday: 0,
-			predictNext5: 0,
-			chart: {
-				data: [],
-				labels: []
-			}
-		})
-		setServicesDashboard({
-			services: [],
-			totalToday: 0,
-			totalMonth: 0,
-			chart: {
-				data: [],
-				labels: []
-			}
-		})
-		setChartSales({data: [], labels: []})
-		setChartCredits({data: [], labels: []})
-		setChartServices({data: [], labels: []})
-
-		setErrorSales(false)
-		setErrorCredits(false)
-		setErrorServices(false)
-
-		setCanceled(false)
-		setCanceledSales(false)
-		setCanceledCredits(false)
-		setCanceledServices(false)
-		setIsSignedIn(false)
-		
-		// Don't reset theme here as it will be reloaded from user data
-	}, [])
-
-
-
-	async function loadOptions() {
-		try {
-			let params = {
-				codigo: localStorage.getItem('userID')
-			}
-  
-			let config = {
-				params: params
-			}
-  
-			const response = await api.get('Menu', config)
-			return response.data
-		} catch (error) {
-			console.error(error)
-			if (error.response.status === 401) {
-				logout()
-				return
-			}
-			return null
-		}
-	}
-
-	function clearCookies(){
-		Cookies.remove('apiKey')
-		Cookies.remove('accessToken')
-		Cookies.remove('id')
-		Cookies.remove('accounts')
-		Cookies.remove('itemID')
-	}
-
-
-
-	//////////////////////////////////////////////////////////////////
-
-	// funções de Manipulação de formato de Data
-
-function dateConvert(date) {
-  // Check if date is undefined, null, or empty
-  if (!date) {
-    console.warn('dateConvert received undefined or null date')
-    return ''
-  }
-  
-  // Ensure date is a string
-  if (typeof date !== 'string') {
-    // If it's a Date object, convert it
-    if (date instanceof Date && !isNaN(date.getTime())) {
-      const day = String(date.getDate()).padStart(2, '0')
-      const month = String(date.getMonth() + 1).padStart(2, '0')
-      const year = date.getFullYear()
-      return `${day}/${month}/${year}`
-    }
-    console.warn('dateConvert received non-string, non-Date value:', date)
-    return ''
-  }
-  
-  // Check if the string has the expected format (YYYY-MM-DD)
-  if (!date.includes('-')) {
-    console.warn('dateConvert received unexpected format:', date)
-    return date // Return as-is if it's already in another format
-  }
-  
-  try {
-    let parts = date.split('-')
-    
-    // Validate that we have exactly 3 parts
-    if (parts.length !== 3) {
-      console.warn('dateConvert received invalid date parts:', parts)
-      return date
-    }
-    
-    let year = parts[0]
-    let month = parts[1]
-    let day = parts[2]
-    
-    // Validate that all parts exist
-    if (!year || !month || !day) {
-      console.warn('dateConvert received incomplete date:', { year, month, day })
-      return date
-    }
-    
-    let convertedDate = day + '/' + month + '/' + year
-    return convertedDate
-  } catch (error) {
-    console.error('Error in dateConvert:', error)
-    return ''
-  }
-}
-
-function timeConvert(time){
-    if(!time) return ''
-    
+  // ===== LOAD GROUPS LIST =====
+  const loadGroupsList = async () => {
     try {
-        // Remove any 'undefined' strings and split by '-'
-        const cleanTime = time.replace(/undefined/g, '')
-        const parts = cleanTime.split('-').filter(part => part.trim() !== '')
-        
-        if (parts.length >= 3) {
-            return `${parts[0]}:${parts[1]}:${parts[2]}`
-        } else if (parts.length === 2) {
-            return `${parts[0]}:${parts[1]}`
-        } else if (parts.length === 1) {
-            return parts[0]
-        }
-        
-        return time // Return original if we can't parse it
+      const response = await api.get('/grupo')
+      const gru = response.data
+      setGroupsList(gru)
+      setClientsList(gru[0].CLIENTES)
+      return gru
     } catch (error) {
-        console.error('Error converting time:', error, time)
-        return time // Return original on error
-    }
-}
-
-	function dateConvertSearch(date) {
-		let newDate = dateConvertYYYYMMDD(date)
-
-		let parts = newDate.split('-')
-		let year = parts[0]
-		let month = parts[1]
-		let day = parts[2]
-  
-		let convertedDate = day + '-' + month + '-' + year
-		return convertedDate
-	}
-
-	function dateConvertYYYYMMDD(date){
-		return date.toISOString().split('T')[0]
-	}
-
-	function converteData(data){
-		const ano = data.getFullYear()
-		const mes = String(data.getMonth() + 1).padStart(2, '0')
-		const dia = String(data.getDate()).padStart(2, '0')
-		return `${ano}-${mes}-${dia}`
-	}
-
-	//////////////////////////////////////////////////////////////////	
-
-	function alerta(text){
-		toast.info(text, {
-			position: 'bottom-right',
-			autoClose: 5000,
-			hideProgressBar: true,
-			closeOnClick: true,
-			pauseOnHover: true,
-			draggable: true,
-			progress: undefined,
-			theme: 'light',
-		})
-	}
-
-  const exportSales = (data) => {
-    try {
-      
-      if (!data || data.length === 0) {
-        console.log('No data to export')
-        // Only clear if not already empty
-        if (salesTableData.length > 0) {
-          setSalesTableData([])
-        }
-        return
+      console.error(error)
+      if (error.response.status === 401) {
+        logout()
       }
-            
-      // Check if data is from new API (has uppercase fields like CNPJ, ADMINISTRADORA)
-      const isNewApiData = data[0] && data[0].CNPJ !== undefined
+      throw new Error(error.message)
+    }
+  }
+
+  // ===== API FUNCTIONS =====
+
+  // Format date to YYYY-MM-DD
+  const formatDateToYYYYMMDD = (date) => {
+    if (!date) return ''
+    
+    if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return date
+    }
+    
+    if (date instanceof Date) {
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      return `${year}-${month}-${day}`
+    }
+    
+    if (typeof date === 'string' && date.includes('/')) {
+      const [day, month, year] = date.split('/')
+      return `${year}-${month}-${day}`
+    }
+    
+    const dateObj = new Date(date)
+    if (!isNaN(dateObj.getTime())) {
+      const year = dateObj.getFullYear()
+      const month = String(dateObj.getMonth() + 1).padStart(2, '0')
+      const day = String(dateObj.getDate()).padStart(2, '0')
+      return `${year}-${month}-${day}`
+    }
+    
+    return ''
+  }
+
+  // ===== LOAD SALES =====
+  const newLoadSales = async (startDate, endDate, additionalFilters = {}) => {
+    try {
+      setErrorSales(false)
       
-      let transformedData = []
-      
-      if (isNewApiData) {        
-        // Transform new API data to match expected export structure
-        transformedData = data.map((item, index) => {
-          // Safely extract values with fallbacks
-          const cnpj = item.CNPJ || ''
-          const razaosocial = item.RAZAOSOCIAL || ''
-          const administradora = item.ADMINISTRADORA || ''
-          const bandeira = item.BANDEIRA || ''
-          const produto = (item.PRODUTO || '').trim()
-          const modalidade = item.MODALIDADE || ''
-          const valorBruto = item.VALORBRUTO || 0
-          const valorLiquido = item.VALORLIQUIDO || 0
-          const taxa = item.TAXA || 0
-          const desconto = item.DESCONTO || 0
-          const cartao = item.CARTAO || ''
-          const nsu = item.NSU || ''
-          const dataVenda = item.DATAVENDA || ''
-          const horaVenda = item.HORAVENDA || ''
-          const dataCredito = item.DATACREDITO || ''
-          const codigoAutorizacao = item.AUTORIZACAO || ''
-          const parcela = item.PARCELA || '0'
-          const status = item.STATUS || ''
-          const numeroPV = item.NUMEROPV || ''
-          const ro = item.RO || ''
+      const formattedStartDate = formatDateToYYYYMMDD(startDate)
+      const formattedEndDate = formatDateToYYYYMMDD(endDate)
           
-          return {
-            // Basic fields
-            cnpj: cnpj,
-            razaosocial: razaosocial,
-            numeroPV: numeroPV,
-            
-            // Nested objects to maintain compatibility with existing components
-            adquirente: {
-              codigoAdquirente: null,
-              nomeAdquirente: administradora
-            },
-            produto: {
-              codigoProduto: null,
-              descricaoProduto: produto
-            },
-            bandeira: {
-              codigoBandeira: null,
-              descricaoBandeira: bandeira
-            },
-            modalidade: {
-              codigoModalidade: null,
-              descricaoModalidade: modalidade
-            },
-            
-            // Financial fields
-            valorBruto: valorBruto,
-            valorLiquido: valorLiquido,
-            valorDesconto: desconto,
-            taxa: taxa,
-            
-            // Date fields
-            dataVenda: dataVenda,
-            dataCredito: dataCredito,
-            horaVenda: horaVenda,
-            
-            // Other fields
-            nsu: nsu,
-            cartao: cartao,
-            codigoAutorizacao: codigoAutorizacao,
-            quantidadeParcelas: parseInt(parcela) || 0,
-            status: status,
-            ro: ro
-          }
+      const cliente = JSON.parse(localStorage.getItem('selectedClientBody'))
+      const grupo = JSON.parse(localStorage.getItem('selectedGroupBody'))
+      const selectedBan = JSON.parse(localStorage.getItem('selectedBan'))
+      const selectedAdm = JSON.parse(localStorage.getItem('selectedAdm'))
+      
+      localStorage.setItem('dataInicial', formattedStartDate)
+      localStorage.setItem('dataFinal', formattedEndDate)
+      
+      let clientesString = "";
+      
+      if (cliente && cliente.label === 'TODOS') {
+        const clientCodes = grupo?.clients?.map(client => client.CODIGOCLIENTE) || [];
+        clientesString = clientCodes.join(', ');
+      } else if (cliente && cliente.cod) {
+        clientesString = String(cliente.cod);
+      } else if (cliente && cliente.value) {
+        clientesString = String(cliente.value);
+      } else {
+        const apiCNPJ = localStorage.getItem('cnpj')
+        const apiGroupCode = localStorage.getItem('groupCode')
+        clientesString = apiCNPJ === 'todos' ? String(apiGroupCode) : String(apiCNPJ)
+      }
+      
+      const bandeira = selectedBan?.value || additionalFilters.bandeira || "";
+      const adquirente = selectedAdm?.value || additionalFilters.adquirente || "";
+      const nomeGrupo = grupo?.label || localStorage.getItem('clientName') || "";
+      
+      const requestObject = {
+        dataInicial: formattedStartDate,
+        dataFinal: formattedEndDate,
+        clientes: clientesString,
+        nomeGrupo: nomeGrupo,
+        bandeira: bandeira,
+        adquirente: adquirente,
+        produto: additionalFilters.produto || "",
+        modalidade: additionalFilters.modalidade || "",
+        arquivo: "JSON",
+        modelo: "VENDA"
+      }
+
+      const response = await api.post('relatorios/detalhado', requestObject)
+      
+      setBtnDisabledSales(false)
+      
+      if (response.data.success === true && response.data.dados && response.data.dados.length > 0) {
+        return response.data.dados
+      } else if (response.data.success === true && (!response.data.dados || response.data.dados.length === 0)) {
+        toast.info(response.data.mensagem || "Nenhum dado encontrado para o período selecionado")
+        return []
+      } else {
+        toast.error(response.data.mensagem || "Erro ao carregar dados")
+        return []
+      }
+      
+    } catch (error) {
+      console.error('Error in newLoadSales:', error)
+      setBtnDisabledSales(false)
+      
+      if (error.code === 'ERR_CANCELED') {
+        setErrorSales(false)
+      } else if (error.response && error.response.status === 401) {
+        toast.error('Sessão Expirada')
+        logout()
+        return
+      } else {
+        toast.error('Erro ao Carregar Vendas: ' + (error.response?.data?.mensagem || error.message))
+        console.error('Error fetching vendas:', error)
+        setErrorSales(true)
+      }
+      return []
+    }
+  }
+
+  // ===== LOAD CREDITS =====
+  const newLoadCredits = async (startDate, endDate, additionalFilters = {}) => {
+    try {
+      setErrorCredits(false)
+      
+      const formattedStartDate = formatDateToYYYYMMDD(startDate)
+      const formattedEndDate = formatDateToYYYYMMDD(endDate)
+          
+      const cliente = JSON.parse(localStorage.getItem('selectedClientBody'))
+      const grupo = JSON.parse(localStorage.getItem('selectedGroupBody'))
+      const selectedBan = JSON.parse(localStorage.getItem('selectedBanCredits'))
+      const selectedAdm = JSON.parse(localStorage.getItem('selectedAdmCredits'))
+      
+      localStorage.setItem('dataInicial', formattedStartDate)
+      localStorage.setItem('dataFinal', formattedEndDate)
+      
+      let clientesString = "";
+      
+      if (cliente && cliente.label === 'TODOS') {
+        const clientCodes = grupo?.clients?.map(client => client.CODIGOCLIENTE) || [];
+        clientesString = clientCodes.join(', ');
+      } else if (cliente && cliente.cod) {
+        clientesString = String(cliente.cod);
+      } else if (cliente && cliente.value) {
+        clientesString = String(cliente.value);
+      } else {
+        const apiCNPJ = localStorage.getItem('cnpj')
+        const apiGroupCode = localStorage.getItem('groupCode')
+        clientesString = apiCNPJ === 'todos' ? String(apiGroupCode) : String(apiCNPJ)
+      }
+      
+      const bandeira = selectedBan?.codigoBandeira || additionalFilters.bandeira || "";
+      const adquirente = selectedAdm?.codigoAdquirente || additionalFilters.adquirente || "";
+      const nomeGrupo = grupo?.label || localStorage.getItem('clientName') || "";
+      
+      const requestObject = {
+        dataInicial: formattedStartDate,
+        dataFinal: formattedEndDate,
+        clientes: clientesString,
+        nomeGrupo: nomeGrupo,
+        bandeira: bandeira,
+        adquirente: adquirente,
+        produto: additionalFilters.produto || "",
+        modalidade: additionalFilters.modalidade || "",
+        arquivo: "JSON",
+        modelo: "RECEBIMENTO"
+      }
+          
+      const response = await api.post('relatorios/detalhado', requestObject)
+      
+      setBtnDisabledCredits(false)
+      
+      if (response.data.success === true && response.data.dados && response.data.dados.length > 0) {
+        return response.data.dados
+      } else if (response.data.success === true && (!response.data.dados || response.data.dados.length === 0)) {
+        toast.info(response.data.mensagem || "Nenhum dado encontrado para o período selecionado")
+        return []
+      } else {
+        toast.error(response.data.mensagem || "Erro ao carregar dados de créditos")
+        return []
+      }
+      
+    } catch (error) {
+      console.error('Error in newLoadCredits:', error)
+      setBtnDisabledCredits(false)
+      
+      if (error.code === 'ERR_CANCELED') {
+        setErrorCredits(false)
+      } else if (error.response && error.response.status === 401) {
+        toast.error('Sessão Expirada')
+        logout()
+        return
+      } else {
+        toast.error('Erro ao Carregar Créditos: ' + (error.response?.data?.mensagem || error.message))
+        console.error('Error fetching credits:', error)
+        setErrorCredits(true)
+      }
+      return []
+    }
+  }
+
+  // ===== LOAD SERVICES =====
+  const newLoadServices = async (startDate, endDate, additionalFilters = {}) => {
+    try {
+      setErrorServices(false)
+      
+      const formattedStartDate = formatDateToYYYYMMDD(startDate)
+      const formattedEndDate = formatDateToYYYYMMDD(endDate)
+          
+      const cliente = JSON.parse(localStorage.getItem('selectedClientBody'))
+      const grupo = JSON.parse(localStorage.getItem('selectedGroupBody'))
+      const selectedBan = JSON.parse(localStorage.getItem('selectedBanServices'))
+      const selectedAdm = JSON.parse(localStorage.getItem('selectedAdmServices'))
+      
+      localStorage.setItem('dataInicial', formattedStartDate)
+      localStorage.setItem('dataFinal', formattedEndDate)
+      
+      let clientesString = "";
+      
+      if (cliente && cliente.label === 'TODOS') {
+        const clientCodes = grupo?.clients?.map(client => client.CODIGOCLIENTE) || [];
+        clientesString = clientCodes.join(', ');
+      } else if (cliente && cliente.cod) {
+        clientesString = String(cliente.cod);
+      } else if (cliente && cliente.value) {
+        clientesString = String(cliente.value);
+      } else {
+        const apiCNPJ = localStorage.getItem('cnpj')
+        const apiGroupCode = localStorage.getItem('groupCode')
+        clientesString = apiCNPJ === 'todos' ? String(apiGroupCode) : String(apiCNPJ)
+      }
+      
+      const bandeira = selectedBan?.codigoBandeira || additionalFilters.bandeira || "";
+      const adquirente = selectedAdm?.codigoAdquirente || additionalFilters.adquirente || "";
+      const nomeGrupo = grupo?.label || localStorage.getItem('clientName') || "";
+      
+      const requestObject = {
+        dataInicial: formattedStartDate,
+        dataFinal: formattedEndDate,
+        clientes: clientesString,
+        nomeGrupo: nomeGrupo,
+        bandeira: bandeira,
+        adquirente: adquirente,
+        produto: additionalFilters.produto || "",
+        modalidade: additionalFilters.modalidade || "",
+        arquivo: "JSON",
+        modelo: "AJUSTES"
+      }
+      
+      const response = await api.post('relatorios/detalhado', requestObject)
+      
+      setBtnDisabledServices(false)
+      
+      if (response.data.success === true && response.data.dados && response.data.dados.length > 0) {
+        localStorage.setItem('servicesData', JSON.stringify(response.data.dados))
+        return response.data.dados
+      } else if (response.data.success === true && (!response.data.dados || response.data.dados.length === 0)) {
+        toast.info(response.data.mensagem || "Nenhum serviço/ajuste encontrado para o período selecionado")
+        return []
+      } else {
+        toast.error(response.data.mensagem || "Erro ao carregar dados de serviços/ajustes")
+        return []
+      }
+      
+    } catch (error) {
+      console.error('Error in newLoadServices:', error)
+      setBtnDisabledServices(false)
+      
+      if (error.code === 'ERR_CANCELED') {
+        setErrorServices(false)
+      } else if (error.response && error.response.status === 401) {
+        toast.error('Sessão Expirada')
+        logout()
+        return
+      } else {
+        toast.error('Erro ao Carregar Serviços/Ajustes: ' + (error.response?.data?.mensagem || error.message))
+        console.error('Error fetching services:', error)
+        setErrorServices(true)
+      }
+      return []
+    }
+  }
+
+  // ===== LOAD TOTAL SALES =====
+  const newLoadTotalSales = (salesArray) => {
+    if (!salesArray || salesArray.length === 0) {
+      const currentTotal = salesTotal;
+      if (currentTotal.debit !== 0 || currentTotal.credit !== 0 || currentTotal.voucher !== 0 || currentTotal.total !== 0) {
+        setSalesTotal({ debit: 0, credit: 0, voucher: 0, total: 0 })
+      }
+      return
+    }
+      
+    let totalCredito = 0
+    let totalDebito = 0
+    let totalVoucher = 0
+    let totalGeral = 0
+    
+    salesArray.forEach(sale => {
+      const valor = sale.VALORBRUTO || 0
+      const produto = (sale.PRODUTO || "").trim()
+      
+      totalGeral += valor
+      
+      if (produto === 'Crédito') {
+        totalCredito += valor
+      } else if (produto === 'Débito') {
+        totalDebito += valor
+      } else {
+        totalVoucher += valor
+      }
+    })
+    
+    const result = {
+      debit: totalDebito,
+      credit: totalCredito,
+      voucher: totalVoucher,
+      total: totalGeral
+    }
+      
+    const currentTotal = salesTotal;
+    if (currentTotal.debit !== result.debit ||
+        currentTotal.credit !== result.credit ||
+        currentTotal.voucher !== result.voucher ||
+        currentTotal.total !== result.total) {
+      setSalesTotal(result)
+    }
+  }
+
+  // ===== LOAD TOTAL CREDITS =====
+  const newLoadTotalCredits = (creditsArray) => {
+    if (!creditsArray || creditsArray.length === 0) {
+      setCreditsTotal({ debit: 0, credit: 0, voucher: 0, total: 0 })
+      return
+    }
+      
+    let totalCredito = 0
+    let totalDebito = 0
+    let totalVoucher = 0
+    let totalGeral = 0
+    
+    creditsArray.forEach(credit => {
+      const valor = Number(credit.VALORLIQUIDO) || 0
+      const produto = (credit.PRODUTO || "").trim()
+      
+      totalGeral += valor
+      
+      if (produto === 'Crédito') {
+        totalCredito += valor
+      } else if (produto === 'Débito') {
+        totalDebito += valor
+      } else if (produto === 'Voucher') {
+        totalVoucher += valor
+      }
+    })
+    
+    const result = {
+      debit: totalDebito,
+      credit: totalCredito,
+      voucher: totalVoucher,
+      total: totalGeral
+    }
+    
+    setCreditsTotal(result)
+  }
+
+  // ===== LOAD TOTAL SERVICES =====
+  const newLoadTotalServices = (servicesArray) => {
+    if (!servicesArray || servicesArray.length === 0) {
+      const currentTotal = servicesTotal;
+      if (currentTotal.total !== 0) {
+        setServicesTotal({ total: 0 })
+      }
+      return { total: 0 }
+    }
+      
+    let total = 0
+    
+    servicesArray.forEach(service => {
+      let valor = 0
+      
+      if (service.valor !== undefined && service.valor !== null) {
+        valor = Math.abs(Number(service.valor))
+      } else if (service.VALOR !== undefined && service.VALOR !== null) {
+        valor = Math.abs(Number(service.VALOR))
+      } else if (service.valorLiquido !== undefined && service.valorLiquido !== null) {
+        valor = Math.abs(Number(service.valorLiquido))
+      } else if (service.VALORLIQUIDO !== undefined && service.VALORLIQUIDO !== null) {
+        valor = Math.abs(Number(service.VALORLIQUIDO))
+      }
+      
+      if (isNaN(valor)) {
+        valor = 0
+      }
+      
+      total += valor
+    })
+    
+    if (isNaN(total)) {
+      total = 0
+    }
+    
+    const result = { total: total }
+      
+    const currentTotal = servicesTotal;
+    if (currentTotal.total !== result.total) {
+      setServicesTotal(result)
+    }
+    
+    return result
+  }
+
+  // ===== GROUP BY ADMIN =====
+  const newGroupByAdmin = (salesArray) => {
+    if (!salesArray || salesArray.length === 0) return []
+      
+    const adminMap = new Map()
+    
+    salesArray.forEach(sale => {
+      const adminName = sale.ADMINISTRADORA || 'Unknown'
+      const total = sale.VALORBRUTO || 0
+      
+      if (adminMap.has(adminName)) {
+        adminMap.set(adminName, adminMap.get(adminName) + total)
+      } else {
+        adminMap.set(adminName, total)
+      }
+    })
+    
+    const result = []
+    let id = 0
+    adminMap.forEach((total, adminName) => {
+      result.push({
+        id: id++,
+        adminName: adminName,
+        total: total,
+        sales: []
+      })
+    })
+    
+    return result
+  }
+
+  // ===== GROUP BY ADMIN CREDITS =====
+  const newGroupByAdminCredits = (creditsArray) => {
+    if (!creditsArray || creditsArray.length === 0) return []
+      
+    const adminMap = new Map()
+    
+    creditsArray.forEach(credit => {
+      const adminName = credit.ADMINISTRADORA || 'Unknown'
+      const total = Number(credit.VALORLIQUIDO) || 0
+      
+      if (adminMap.has(adminName)) {
+        adminMap.set(adminName, adminMap.get(adminName) + total)
+      } else {
+        adminMap.set(adminName, total)
+      }
+    })
+    
+    const result = []
+    let id = 0
+    adminMap.forEach((total, adminName) => {
+      result.push({
+        id: id++,
+        adminName: adminName,
+        total: total,
+        credits: []
+      })
+    })
+    
+    return result
+  }
+
+  // ===== GROUP BY ADMIN SERVICES =====
+  const newGroupByAdminServices = (servicesArray) => {
+    if (!servicesArray || servicesArray.length === 0) return []
+      
+    const adminMap = new Map()
+    
+    servicesArray.forEach(service => {
+      if (!service) return
+      
+      const adminName = service.nome_adquirente || 
+                       service.ADMINISTRADORA || 
+                       service.adquirente || 
+                       'Unknown'
+      
+      let valor = 0
+      if (service.valor !== undefined && service.valor !== null) {
+        valor = Math.abs(Number(service.valor))
+      } else if (service.VALOR !== undefined && service.VALOR !== null) {
+        valor = Math.abs(Number(service.VALOR))
+      } else if (service.valorLiquido !== undefined && service.valorLiquido !== null) {
+        valor = Math.abs(Number(service.valorLiquido))
+      } else if (service.VALORLIQUIDO !== undefined && service.VALORLIQUIDO !== null) {
+        valor = Math.abs(Number(service.VALORLIQUIDO))
+      }
+      
+      if (isNaN(valor)) return
+      
+      if (adminMap.has(adminName)) {
+        adminMap.set(adminName, adminMap.get(adminName) + valor)
+      } else {
+        adminMap.set(adminName, valor)
+      }
+    })
+    
+    const result = []
+    let id = 0
+    adminMap.forEach((total, adminName) => {
+      result.push({
+        id: id++,
+        adminName: adminName,
+        total: total,
+        services: []
+      })
+    })
+    
+    return result
+  }
+
+  // ===== LOAD DASHBOARD =====
+  const loadDashboard = async () => {
+    resetDashboard();
+    setIsLoadedSalesDashboard(false);
+    setIsLoadedCreditsDashboard(false);
+    setIsLoadedServicesDashboard(false);
+    setIsLoadedDashboard(false);
+
+    const apiCNPJ = localStorage.getItem('cnpj')
+    
+    let dashboardData
+
+    try {
+      if (!fetchingData) {
+        setFetchingData(true);
+      }
+      
+      if ((apiCNPJ !== 'todos') && (apiCNPJ !== 'TODOS') && (apiCNPJ !== 'Todos')) {
+        const params = { cnpj: apiCNPJ }
+        const config = { params }
+        const response = await api.get('dashboard', config)
+        dashboardData = response.data
+      } else if ((apiCNPJ === 'todos') || (apiCNPJ === 'TODOS') || (apiCNPJ === 'Todos')) {
+        const params = { grupo: localStorage.getItem('groupCode') }
+        const config = { params }
+        const response = await api.get('dashboard', config)
+        dashboardData = response.data
+      } else {
+        const params = { usuario: localStorage.getItem('userID') }
+        const config = { params }
+        const response = await api.get('dashboard', config)
+        dashboardData = response.data
+      }
+      
+      const transformedData = transformApiData(dashboardData);
+      
+      const transformAdquirentesForChart = (adquirentesArray) => {
+        const labels = []
+        const data = []
+        
+        adquirentesArray.forEach(item => {
+          labels.push(item.adquirente)
+          data.push(item.valor)
         })
         
-        
-      } else {
-        
-        // For old API data, ensure it has the required structure
-        transformedData = data.map((item, index) => ({
-          ...item,
-          adquirente: item.adquirente || { codigoAdquirente: null, nomeAdquirente: '' },
-          produto: item.produto || { codigoProduto: null, descricaoProduto: '' },
-          bandeira: item.bandeira || { codigoBandeira: null, descricaoBandeira: '' },
-          modalidade: item.modalidade || { codigoModalidade: null, descricaoModalidade: '' },
-          valorDesconto: item.valorDesconto || 0,
-          quantidadeParcelas: item.quantidadeParcelas || 0
-        }))
+        return { labels, data }
       }
       
-      // Compare with current salesTableData to prevent unnecessary updates
-      const currentData = salesTableData
-      const isDataSame = JSON.stringify(currentData) === JSON.stringify(transformedData)
+      const vendasChartData = transformAdquirentesForChart(transformedData.vendas.totalAdquirentes);
+      const creditsChartData = transformAdquirentesForChart(transformedData.creditos.totalAdquirentes);
+      const ajustesChartData = transformAdquirentesForChart(transformedData.ajustes.totalAdquirentes);
       
-      if (!isDataSame) {
-        setSalesTableData(transformedData)
-      } else {
-        console.log('Data unchanged, skipping update')
-      }
+      const totalVendas = transformedData.vendas.totalAdquirentes.reduce((sum, item) => sum + item.valor, 0);
+      const totalCredits = transformedData.creditos.totalAdquirentes.reduce((sum, item) => sum + item.valor, 0);
+      const totalAjustes = transformedData.ajustes.totalAdquirentes.reduce((sum, item) => sum + item.valor, 0);
       
+      setSalesDashboard({
+        totalLast4: transformedData.vendas.valorTotaldias,
+        totalMonth: transformedData.vendas.valorTotalMes,
+        chart: {
+          data: vendasChartData.data,
+          labels: vendasChartData.labels
+        },
+        sales: transformedData.vendas.totalAdquirentes,
+        totalAdmin: totalVendas
+      });
+      setIsLoadedSalesDashboard(true);
+      
+      setCreditsDashboard({
+        totalCreditsToday: transformedData.creditos.valorTotaldias,
+        totalCreditsNext5: transformedData.creditos.valorTotalMes,
+        chart: {
+          data: creditsChartData.data,
+          labels: creditsChartData.labels
+        },
+        credits: transformedData.creditos.totalAdquirentes,
+        totalAdmin: totalCredits
+      })
+      setIsLoadedCreditsDashboard(true)
+      
+      setServicesDashboard({
+        totalServicesToday: transformedData.ajustes.valorTotaldias,
+        totalServicesMonth: transformedData.ajustes.valorTotalMes,
+        chart: {
+          data: ajustesChartData.data,
+          labels: ajustesChartData.labels
+        },
+        services: transformedData.ajustes.totalAdquirentes,
+        totalAdmin: totalAjustes
+      })
+      setIsLoadedServicesDashboard(true)
+      
+      setIsLoadedDashboard(true)
+      setChangedOption(false)
+      setFetchingData(false)
+      
+      return transformedData
     } catch (error) {
-      console.error('Error in exportSales:', error)
-      console.error('Error stack:', error.stack)
+      console.log('Error in dashboard loading:', error)
+      setFetchingData(false)
+      
+      if (error.response && error.response.status === 401) {
+        logout()
+        return
+      }
+    }
+  }
+
+  // ===== TRANSFORM API DATA =====
+  function transformApiData(apiData) {
+    const result = {
+      vendas: {
+        valorTotaldias: apiData.vendas?.valorTotaldias || 0,
+        valorTotalMes: apiData.vendas?.valorTotalMes || 0,
+        totalAdquirentes: []
+      },
+      creditos: {
+        valorTotaldias: apiData.creditos?.valorTotaldias || 0,
+        valorTotalMes: apiData.creditos?.valorTotalMes || 0,
+        totalAdquirentes: []
+      },
+      ajustes: {
+        valorTotaldias: apiData.ajustes?.valorTotaldias || 0,
+        valorTotalMes: apiData.ajustes?.valorTotalMes || 0,
+        totalAdquirentes: []
+      }
+    };
+
+    if (apiData.vendas?.resumo_Adquirentes_vendas) {
+      result.vendas.totalAdquirentes = apiData.vendas.resumo_Adquirentes_vendas.map(item => ({
+        adquirente: item.adquirente,
+        valor: item.valor || 0,
+        percentual: item.percentual || 0
+      }));
+    }
+
+    if (apiData.creditos?.resumo_Adquirentes_recebimentos) {
+      result.creditos.totalAdquirentes = apiData.creditos.resumo_Adquirentes_recebimentos.map(item => ({
+        adquirente: item.adquirente,
+        valor: item.valor || 0,
+        percentual: item.percentual || 0
+      }));
+    }
+
+    if (apiData.ajustes?.resumo_Adquirentes_ajustes) {
+      result.ajustes.totalAdquirentes = apiData.ajustes.resumo_Adquirentes_ajustes.map(item => ({
+        adquirente: item.adquirente,
+        valor: item.valor || 0,
+        percentual: item.percentual || 0
+      }));
+    }
+
+    return result;
+  }
+
+  // ===== RESET DASHBOARD =====
+  const resetDashboard = () => {
+    setSalesDashboard(null)
+    setCreditsDashboard(null)
+    setServicesDashboard(null)
+  }
+
+  // ===== EXPORT FUNCTIONS =====
+  const exportSales = (data) => {
+    if (!data || data.length === 0) {
       if (salesTableData.length > 0) {
         setSalesTableData([])
       }
+      return
+    }
+        
+    const isNewApiData = data[0] && data[0].CNPJ !== undefined
+    
+    let transformedData = []
+    
+    if (isNewApiData) {
+      transformedData = data.map((item) => {
+        const cnpj = item.CNPJ || ''
+        const razaosocial = item.RAZAOSOCIAL || ''
+        const administradora = item.ADMINISTRADORA || ''
+        const bandeira = item.BANDEIRA || ''
+        const produto = (item.PRODUTO || '').trim()
+        const modalidade = item.MODALIDADE || ''
+        const valorBruto = item.VALORBRUTO || 0
+        const valorLiquido = item.VALORLIQUIDO || 0
+        const taxa = item.TAXA || 0
+        const desconto = item.DESCONTO || 0
+        const cartao = item.CARTAO || ''
+        const nsu = item.NSU || ''
+        const dataVenda = item.DATAVENDA || ''
+        const horaVenda = item.HORAVENDA || ''
+        const dataCredito = item.DATACREDITO || ''
+        const codigoAutorizacao = item.AUTORIZACAO || ''
+        const parcela = item.PARCELA || '0'
+        const status = item.STATUS || ''
+        const numeroPV = item.NUMEROPV || ''
+        const ro = item.RO || ''
+        
+        return {
+          cnpj: cnpj,
+          razaosocial: razaosocial,
+          numeroPV: numeroPV,
+          adquirente: {
+            codigoAdquirente: null,
+            nomeAdquirente: administradora
+          },
+          produto: {
+            codigoProduto: null,
+            descricaoProduto: produto
+          },
+          bandeira: {
+            codigoBandeira: null,
+            descricaoBandeira: bandeira
+          },
+          modalidade: {
+            codigoModalidade: null,
+            descricaoModalidade: modalidade
+          },
+          valorBruto: valorBruto,
+          valorLiquido: valorLiquido,
+          valorDesconto: desconto,
+          taxa: taxa,
+          dataVenda: dataVenda,
+          dataCredito: dataCredito,
+          horaVenda: horaVenda,
+          nsu: nsu,
+          cartao: cartao,
+          codigoAutorizacao: codigoAutorizacao,
+          quantidadeParcelas: parseInt(parcela) || 0,
+          status: status,
+          ro: ro
+        }
+      })
+    } else {
+      transformedData = data.map((item) => ({
+        ...item,
+        adquirente: item.adquirente || { codigoAdquirente: null, nomeAdquirente: '' },
+        produto: item.produto || { codigoProduto: null, descricaoProduto: '' },
+        bandeira: item.bandeira || { codigoBandeira: null, descricaoBandeira: '' },
+        modalidade: item.modalidade || { codigoModalidade: null, descricaoModalidade: '' },
+        valorDesconto: item.valorDesconto || 0,
+        quantidadeParcelas: item.quantidadeParcelas || 0
+      }))
+    }
+    
+    const currentData = salesTableData
+    const isDataSame = JSON.stringify(currentData) === JSON.stringify(transformedData)
+    
+    if (!isDataSame) {
+      setSalesTableData(transformedData)
     }
   }
 
-const exportCredits = (data) => {
-  if (!data || data.length === 0) {
-    console.log('No credits data to export')
-    return []
-  }
+  const exportCredits = (data) => {
+    if (!data || data.length === 0) {
+      return []
+    }
 
-
-  // Transform the data for export - using flat structure
-  const transformedData = data.map(item => {
-    return {
+    const transformedData = data.map(item => ({
       cnpj: item.CNPJ || '',
       adquirente: item.ADMINISTRADORA || '',
       bandeira: item.BANDEIRA || '',
@@ -3466,224 +1451,847 @@ const exportCredits = (data) => {
       numeroPV: item.NUMEROPV || '',
       ro: item.RO || '',
       razaoSocial: item.RAZAOSOCIAL || ''
+    }))
+
+    localStorage.setItem('creditsTableData', JSON.stringify(transformedData))
+    
+    if (typeof setCreditsTableData === 'function') {
+      setCreditsTableData(transformedData)
     }
-  })
-
-  
-  // Store in localStorage for the GerarRelatorio component to use
-  localStorage.setItem('creditsTableData', JSON.stringify(transformedData))
-  
-  // If you have a state setter for creditsTableData, use it
-  if (typeof setCreditsTableData === 'function') {
-    setCreditsTableData(transformedData)
+    
+    return transformedData
   }
-  
-  return transformedData
-}
 
-	function exportServices(array){
-		servicesTableData.length = 0
-		if(array.length === 0){
-			return
-		}
-		servicesTableData.length = 0
-		setServicesTableData([])
-		let arrayTemp = []
-		if (array.length > 0) {
-			array.map((venda) => {
-				arrayTemp.push({
-					cnpj: venda.cnpj,
-					razao_social: venda.razao_social,
-					codigo_estabelecimento: venda.codigo_estabelecimento,
-					adquirente: venda.nome_adquirente,
-					valor: venda.valor,
-					data: venda.data,
-					descricao: venda.descricao,
-				})
-			})
-			setServicesTableData(arrayTemp)
-		}
-		return servicesTableData
-	}
+  const exportServices = (array) => {
+    if (array.length === 0) {
+      setServicesTableData([])
+      return
+    }
+    
+    let arrayTemp = []
+    array.map((venda) => {
+      arrayTemp.push({
+        cnpj: venda.cnpj,
+        razao_social: venda.razao_social,
+        codigo_estabelecimento: venda.codigo_estabelecimento,
+        adquirente: venda.nome_adquirente,
+        valor: venda.valor,
+        data: venda.data,
+        descricao: venda.descricao,
+      })
+    })
+    setServicesTableData(arrayTemp)
+    return servicesTableData
+  }
 
-	function exportTaxes(array){
-		taxesTableData.length = 0
-		setTaxesTableData([])
-		let arrayTemp = []
-		if (array.length > 0){
-			array.map((taxa) => {
-				arrayTemp.push({
-					adquirente: taxa.adquirente,
-					bandeira: taxa.bandeira,
-					produto: taxa.produto,
-					modalidade: taxa.modalidade,
-					taxaPenultimoMes: taxa.taxaMedia.PenultimoMes,
-					taxaUltimoMes: taxa.taxaMediaUltimoMes,
-					taxaCadastrada: taxa.taxaCadastrada,
-					comparativo: taxa.comparativo,
-				})
-			})
-		}
-	}
+  // ===== LEGACY FUNCTIONS (keeping for compatibility) =====
+  const loadSales = async (startDate, endDate) => {
+    // Legacy function - kept for compatibility
+    try {
+      const response = await api.get('vendas', {
+        params: { datainicial: startDate, datafinal: endDate }
+      })
+      return response.data.VENDAS
+    } catch (error) {
+      console.error('Error in loadSales:', error)
+      return []
+    }
+  }
 
-	// Função que organiza array em ordem alfabética
+  const loadCredits = async (startDate, endDate) => {
+    try {
+      const response = await api.get('recebimentos', {
+        params: { dataInicial: startDate, dataFinal: endDate }
+      })
+      return response.data
+    } catch (error) {
+      console.error('Error in loadCredits:', error)
+      return []
+    }
+  }
 
-	const sortArray = (arrayAdq) => {
-		const sortedArray = [...arrayAdq].sort((a, b) => {
-			const nameA = a.adminName.toUpperCase()
-			const nameB = b.adminName.toUpperCase()
-			if (nameA < nameB) {
-				return -1
-			}
-			if (nameA > nameB) {
-				return 1
-			}
-			return 0
-		})
-		return sortedArray
-	}
+  const loadServices = async (startDate, endDate) => {
+    try {
+      const response = await api.get('ajustes', {
+        params: { dataInicial: startDate, dataFinal: endDate }
+      })
+      return response.data
+    } catch (error) {
+      console.error('Error in loadServices:', error)
+      return []
+    }
+  }
 
-	// Safe number formatting helper functions
-	const safeToFixed = (value, decimals = 2) => {
-		// Handle undefined, null, or invalid values
-		if (value === undefined || value === null) {
-			return (0).toFixed(decimals)
-		}
-		
-		// Convert to number if it's a string
-		let numValue = typeof value === 'string' ? parseFloat(value) : value
-		
-		// Check if conversion was successful
-		if (isNaN(numValue)) {
-			return (0).toFixed(decimals)
-		}
-		
-		return numValue.toFixed(decimals)
-	}
+  const loadTotalSales = (array) => {
+    // Legacy function
+    if (array && array.length > 0) {
+      newLoadTotalSales(array)
+    }
+  }
 
-	// Safe currency formatting
-	const safeCurrencyFormat = (value) => {
-		if (value === undefined || value === null) {
-			return 'R$ 0,00'
-		}
-		
-		let numValue = typeof value === 'string' ? parseFloat(value) : value
-		
-		if (isNaN(numValue)) {
-			return 'R$ 0,00'
-		}
-		
-		return numValue.toLocaleString('pt-BR', {
-			style: 'currency',
-			currency: 'BRL'
-		})
-	}
+  const loadTotalCredits = (array) => {
+    if (array && array.length > 0) {
+      newLoadTotalCredits(array)
+    }
+  }
 
-	// FIXED: Memoized context value
-	const contextValue = useMemo(() => ({
-		alerta,
-		isSignedIn, setIsSignedIn,
-		logout,
-		accessToken, setAccessToken,
-		refreshSession,
-		loadUser, updateUser,
-		userImg, setUserImg,
-    currentLogo, currentContext,
-    theme, toggleTheme,
+  const groupByAdmin = (array) => {
+    return newGroupByAdmin(array)
+  }
+
+  const groupServicesByAdmin = (array) => {
+    return newGroupByAdminServices(array)
+  }
+
+  // ===== OTHER API FUNCTIONS =====
+  const loadTaxes = async () => {
+    setIsLoadingTaxes(true)
+    try {
+      const apiClientCode = localStorage.getItem('clientCode')
+      if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
+        const response = await api.get('taxas', { params: { codigo: apiClientCode } })
+        return response.data
+      }
+      return []
+    } catch (error) {
+      console.error('Error fetching taxas:', error)
+      if (error.response && error.response.status === 401) {
+        logout()
+        return
+      }
+      return []
+    } finally {
+      setIsLoadingTaxes(false)
+    }
+  }
+
+  const addTax = async (tax) => {
+    setIsLoadingTaxes(true)
+    try {
+      const apiClientCode = localStorage.getItem('clientCode')
+      if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
+        await api.post('taxas', tax)
+        toast.success('Taxa cadastrada com sucesso')
+      }
+    } catch (error) {
+      console.error('Error adding tax:', error)
+      toast.error('Erro ao cadastrar taxa')
+      if (error.response && error.response.status === 401) {
+        logout()
+        return
+      }
+    } finally {
+      setIsLoadingTaxes(false)
+    }
+  }
+
+  const editTax = async (tax) => {
+    setIsLoadingTaxes(true)
+    try {
+      const body = JSON.stringify(tax)
+      const response = await fetch('https://app.salvalucro.com.br/api/v1/taxas', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: body,
+      })
+      if (response.ok) {
+        toast.success('Taxa alterada com sucesso!')
+      } else {
+        toast.error('Erro ao alterar taxa!')
+      }
+    } catch (error) {
+      console.error('Error updating tax:', error)
+      toast.error('Erro ao alterar taxa!')
+      if (error.response && error.response.status === 401) {
+        logout()
+        return
+      }
+    } finally {
+      setIsLoadingTaxes(false)
+    }
+  }
+
+  const deleteTax = async (tax) => {
+    setIsLoadingTaxes(true)
+    try {
+      await api.delete('taxas', { data: tax })
+      toast.success('Taxa deletada com sucesso!')
+    } catch (error) {
+      console.error('Error deleting tax:', error)
+      toast.error('Erro ao deletar taxa!')
+      if (error.response && error.response.status === 401) {
+        logout()
+        return
+      }
+    } finally {
+      setIsLoadingTaxes(false)
+    }
+  }
+
+  const loadBanks = async () => {
+    setIsLoadingBanks(true)
+    try {
+      const apiClientCode = localStorage.getItem('clientCode')
+      if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
+        const response = await api.get('banco', { params: { codigo: apiClientCode } })
+        return response.data
+      }
+      return []
+    } catch (error) {
+      console.error('Error fetching banco:', error)
+      if (error.response && error.response.status === 401) {
+        logout()
+        return
+      }
+      return []
+    } finally {
+      setIsLoadingBanks(false)
+    }
+  }
+
+  const addBank = async (bank) => {
+    setIsLoadingBanks(true)
+    try {
+      const apiClientCode = localStorage.getItem('clientCode')
+      if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
+        const response = await api.post('banco', bank)
+        if (response.data.success) {
+          toast.success(response.data.mensagem)
+        } else {
+          toast.error('Erro ao adicionar Banco!')
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao adicionar banco:', error)
+      toast.error('Erro ao adicionar banco')
+      if (error.response && error.response.status === 401) {
+        logout()
+        return
+      }
+    } finally {
+      setIsLoadingBanks(false)
+    }
+  }
+
+  const editBank = async (editedBank) => {
+    setIsLoadingBanks(true)
+    try {
+      const body = JSON.stringify(editedBank)
+      const response = await fetch('https://app.salvalucro.com.br/api/v1/banco', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: body,
+      })
+      if (response.ok) {
+        toast.success('Banco alterado com sucesso!')
+      } else {
+        toast.error('Erro ao alterar Banco!')
+      }
+    } catch (error) {
+      console.error('Erro ao Alterar Banco:', error)
+      toast.error('Erro ao alterar banco!')
+      if (error.response && error.response.status === 401) {
+        logout()
+        return
+      }
+    } finally {
+      setIsLoadingBanks(false)
+    }
+  }
+
+  const deleteBank = async (bankToDelete) => {
+    setIsLoadingBanks(true)
+    try {
+      await api.delete('banco', { data: bankToDelete })
+      toast.success('Banco deletado com sucesso!')
+    } catch (error) {
+      console.error('Error deleting bank:', error)
+      toast.error('Erro ao deletar banco!')
+      if (error.response && error.response.status === 401) {
+        logout()
+        return
+      }
+    } finally {
+      setIsLoadingBanks(false)
+    }
+  }
+
+  const loadCliAdq = async () => {
+    try {
+      const params = {
+        codigoCliente: localStorage.getItem('clientCode'),
+        codigoAdquirente: localStorage.getItem('admCode')
+      }
+      const response = await api.get('clienteAdquirente', { params })
+      return response.data
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const loadProducts = async () => {
+    try {
+      const response = await api.get('produto')
+      return response.data
+    } catch (error) {
+      console.log(error)
+      if (error.response && error.response.status === 401) {
+        logout()
+        return
+      }
+    }
+  }
+
+  const loadSubproducts = async () => {
+    try {
+      const params = { codigoAdquirente: localStorage.getItem('admCode') }
+      const response = await api.get('Subproduto', { params })
+      return response.data
+    } catch (error) {
+      console.log(error)
+      if (error.response && error.response.status === 401) {
+        logout()
+        return
+      }
+    }
+  }
+
+  const loadBanners = async () => {
+    try {
+      const response = await api.get('bandeira')
+      return response.data
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const loadAdmins = async () => {
+    try {
+      const response = await api.get('adquirente')
+      return response.data
+    } catch (error) {
+      console.log(error)
+      if (error.response && error.response.status === 401) {
+        logout()
+        return
+      }
+    }
+  }
+
+  const loadMods = async () => {
+    try {
+      const response = await api.get('Modalidade')
+      return response.data
+    } catch (error) {
+      console.log(error)
+      if (error.response && error.response.status === 401) {
+        logout()
+        return
+      }
+    }
+  }
+
+  const loadSysmo = async (obj) => {
+    setBtnDisabledSysmo(true)
+    try {
+      const params = {
+        tipo: obj.TIPO,
+        bandeira: obj.Bandeira,
+        adquirente: obj.Adquirente,
+        data: obj.Data
+      }
+      const response = await api.get('Sysmo', { params })
+      return response.data
+    } catch (error) {
+      setBtnDisabledSysmo(false)
+      console.log(error)
+      if (error.response && error.response.status === 401) {
+        logout()
+        return
+      }
+    }
+  }
+
+  const refreshSession = async () => {
+    try {
+      const refreshToken = localStorage.getItem('refreshToken')
+      if (!refreshToken) {
+        console.log('No refresh token available')
+        return
+      }
+      const response = await api.post('token/refresh/', {
+        refresh_token: refreshToken
+      })
+      localStorage.setItem('token', response.data.acess_token)
+      localStorage.setItem('refreshToken', response.data.refresh_token)
+    } catch (error) {
+      console.error('Error refreshing session:', error)
+      if (error.response && error.response.status === 401) {
+        logout()
+      }
+    }
+  }
+
+  const loadOptions = async () => {
+    try {
+      const params = { codigo: localStorage.getItem('userID') }
+      const response = await api.get('Menu', { params })
+      return response.data
+    } catch (error) {
+      console.error(error)
+      if (error.response.status === 401) {
+        logout()
+        return
+      }
+      return null
+    }
+  }
+
+  // ===== UTILITY FUNCTIONS =====
+  const dateConvert = (date) => {
+    if (!date) return ''
+    if (typeof date !== 'string') {
+      if (date instanceof Date && !isNaN(date.getTime())) {
+        const day = String(date.getDate()).padStart(2, '0')
+        const month = String(date.getMonth() + 1).padStart(2, '0')
+        const year = date.getFullYear()
+        return `${day}/${month}/${year}`
+      }
+      return ''
+    }
+    if (!date.includes('-')) return date
+    try {
+      const parts = date.split('-')
+      if (parts.length !== 3) return date
+      const year = parts[0]
+      const month = parts[1]
+      const day = parts[2]
+      return day + '/' + month + '/' + year
+    } catch (error) {
+      console.error('Error in dateConvert:', error)
+      return ''
+    }
+  }
+
+  const timeConvert = (time) => {
+    if (!time) return ''
+    try {
+      const cleanTime = time.replace(/undefined/g, '')
+      const parts = cleanTime.split('-').filter(part => part.trim() !== '')
+      if (parts.length >= 3) {
+        return `${parts[0]}:${parts[1]}:${parts[2]}`
+      } else if (parts.length === 2) {
+        return `${parts[0]}:${parts[1]}`
+      } else if (parts.length === 1) {
+        return parts[0]
+      }
+      return time
+    } catch (error) {
+      console.error('Error converting time:', error, time)
+      return time
+    }
+  }
+
+  const dateConvertSearch = (date) => {
+    const newDate = dateConvertYYYYMMDD(date)
+    const parts = newDate.split('-')
+    const year = parts[0]
+    const month = parts[1]
+    const day = parts[2]
+    return day + '-' + month + '-' + year
+  }
+
+  const dateConvertYYYYMMDD = (date) => {
+    return date.toISOString().split('T')[0]
+  }
+
+  const converteData = (data) => {
+    const ano = data.getFullYear()
+    const mes = String(data.getMonth() + 1).padStart(2, '0')
+    const dia = String(data.getDate()).padStart(2, '0')
+    return `${ano}-${mes}-${dia}`
+  }
+
+  const alerta = (text) => {
+    toast.info(text, {
+      position: 'bottom-right',
+      autoClose: 5000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'light',
+    })
+  }
+
+  const sortArray = (arrayAdq) => {
+    const sortedArray = [...arrayAdq].sort((a, b) => {
+      const nameA = a.adminName.toUpperCase()
+      const nameB = b.adminName.toUpperCase()
+      if (nameA < nameB) return -1
+      if (nameA > nameB) return 1
+      return 0
+    })
+    return sortedArray
+  }
+
+  const safeToFixed = (value, decimals = 2) => {
+    if (value === undefined || value === null) {
+      return (0).toFixed(decimals)
+    }
+    let numValue = typeof value === 'string' ? parseFloat(value) : value
+    if (isNaN(numValue)) {
+      return (0).toFixed(decimals)
+    }
+    return numValue.toFixed(decimals)
+  }
+
+  const safeCurrencyFormat = (value) => {
+    if (value === undefined || value === null) {
+      return 'R$ 0,00'
+    }
+    let numValue = typeof value === 'string' ? parseFloat(value) : value
+    if (isNaN(numValue)) {
+      return 'R$ 0,00'
+    }
+    return numValue.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    })
+  }
+
+  const clearCookies = () => {
+    Cookies.remove('apiKey')
+    Cookies.remove('accessToken')
+    Cookies.remove('id')
+    Cookies.remove('accounts')
+    Cookies.remove('itemID')
+  }
+
+  // ===== RESET APP VALUES =====
+  const resetAppValues = useCallback(() => {
+    setIsLoadedDashboard(false)
+    setIsLoadedSalesDashboard(false)
+    setIsLoadedCreditsDashboard(false)
+    setIsLoadedServicesDashboard(false)
+    setSalesPageArray([])
+    setSalesPageAdminArray([])
+    setSalesTotal({ debit: 0, credit: 0, voucher: 0, total: 0 })
+    setSalesDateRange([new Date(), new Date()])
+    setCreditsPageArray([])
+    setCreditsPageAdminArray([])
+    setCreditsTotal({ debit: 0, credit: 0, voucher: 0, total: 0 })
+    setCreditsDateRange([new Date(), new Date()])
+    setServicesPageArray([])
+    setServicesPageAdminArray([])
+    setServicesDateRange([new Date(), new Date()])
+    setServicesTotal({ total: 0 })
+    setSalesDashboard({
+      sales: [],
+      totalLast4: 0,
+      totalMonth: 0,
+      chart: { data: [], labels: [] }
+    })
+    setCreditsDashboard({
+      credits: [],
+      predictToday: 0,
+      predictNext5: 0,
+      chart: { data: [], labels: [] }
+    })
+    setServicesDashboard({
+      services: [],
+      totalToday: 0,
+      totalMonth: 0,
+      chart: { data: [], labels: [] }
+    })
+    setChartSales({ data: [], labels: [] })
+    setChartCredits({ data: [], labels: [] })
+    setChartServices({ data: [], labels: [] })
+    setErrorSales(false)
+    setErrorCredits(false)
+    setErrorServices(false)
+    setCanceled(false)
+    setCanceledSales(false)
+    setCanceledCredits(false)
+    setCanceledServices(false)
+    setIsSignedIn(false)
+  }, [])
+
+  // ===== CONTEXT VALUE =====
+  const contextValue = useMemo(() => ({
+    // Auth
+    isSignedIn,
+    setIsSignedIn,
+    logout,
+    accessToken,
+    setAccessToken,
+    refreshSession,
+    loadUser,
+    updateUser,
+    loginApp,
+    clientUserId,
+    
+    // Theme & Preferences
+    theme,
+    toggleTheme,
     userPreferences,
-    currentTheme,
+    isThemeLoaded,
     loadUserPreferences,
+    
+    // UI
+    userImg,
+    setUserImg,
+    currentLogo,
+    currentContext,
+    
+    // Dashboard
+    loadDashboard,
+    isLoadedDashboard,
+    setIsLoadedDashboard,
+    salesDashboard,
+    isLoadedSalesDashboard,
+    setIsLoadedSalesDashboard,
+    creditsDashboard,
+    isLoadedCreditsDashboard,
+    setIsLoadedCreditsDashboard,
+    servicesDashboard,
+    isLoadedServicesDashboard,
+    setIsLoadedServicesDashboard,
+    canceledSales,
+    setCanceledSales,
+    canceledCredits,
+    setCanceledCredits,
+    canceledServices,
+    setCanceledServices,
+    
+    // Sales
+    loadSales,
+    loadTotalSales,
+    newLoadSales,
+    newLoadTotalSales,
+    salesDateRange,
+    setSalesDateRange,
+    salesPageArray,
+    setSalesPageArray,
+    salesPageAdminArray,
+    setSalesPageAdminArray,
+    salesTotal,
+    setSalesTotal,
+    btnDisabledSales,
+    setBtnDisabledSales,
+    salesTableData,
+    setSalesTableData,
+    exportSales,
+    errorSales,
+    
+    // Credits
+    loadCredits,
+    loadTotalCredits,
+    newLoadCredits,
+    newLoadCreditsDataBanco: newLoadCredits,
+    newGroupByAdminCredits,
+    newLoadTotalCredits,
+    creditsPageArray,
+    setCreditsPageArray,
+    creditsPageAdminArray,
+    setCreditsPageAdminArray,
+    creditsDateRange,
+    setCreditsDateRange,
+    creditsTotal,
+    setCreditsTotal,
+    btnDisabledCredits,
+    setBtnDisabledCredits,
+    creditsTableData,
+    setCreditsTableData,
+    exportCredits,
+    errorCredits,
+    
+    // Services
+    loadServices,
+    newLoadServices,
+    newGroupByAdminServices,
+    newLoadTotalServices,
+    servicesPageArray,
+    setServicesPageArray,
+    servicesPageAdminArray,
+    setServicesPageAdminArray,
+    servicesDateRange,
+    setServicesDateRange,
+    btnDisabledServices,
+    setBtnDisabledServices,
+    servicesTableData,
+    setServicesTableData,
+    exportServices,
+    errorServices,
+    
+    // Taxes
+    loadTaxes,
+    isLoadingTaxes,
+    setIsLoadingTaxes,
+    addTax,
+    editTax,
+    deleteTax,
+    taxesTableData,
+    setTaxesTableData,
+    exportTaxes: (array) => {},
+    taxesPageArray,
+    setTaxesPageArray,
+    
+    // Banks
+    loadBanks,
+    isLoadingBanks,
+    setIsLoadingBanks,
+    addBank,
+    editBank,
+    deleteBank,
+    loadCliAdq,
+    
+    // Sysmo
+    loadSysmo,
+    btnDisabledSysmo,
+    setBtnDisabledSysmo,
+    
+    // Others
+    loadBanners,
+    loadAdmins,
+    loadMods,
+    loadProducts,
+    loadSubproducts,
+    groupByAdmin,
+    newGroupByAdmin,
+    groupServicesByAdmin,
+    exportName,
+    setExportName,
+    isCheckedCalendar,
+    setIsCheckedCalendar,
+    converteData,
+    dateConvert,
+    dateConvertSearch,
+    dateConvertYYYYMMDD,
+    fetchingData,
+    setFetchingData,
+    groupsList,
+    clientsList,
+    loadGroupsList,
+    setGroupsList,
+    displayClient,
+    displayGroup,
+    setDisplayGroup,
+    setDisplayClient,
+    changedOption,
+    setChangedOption,
+    canceled,
+    setCanceled,
+    resetAppValues,
+    safeToFixed,
+    safeCurrencyFormat,
+    alerta,
+    sortArray,
+  }), [
+    isSignedIn,
+    accessToken,
+    userImg,
+    salesTableData,
+    creditsTableData,
+    servicesTableData,
+    taxesTableData,
+    exportName,
+    isCheckedCalendar,
+    changedOption,
+    errorSales,
+    errorCredits,
+    errorServices,
+    fetchingData,
+    displayGroup,
+    displayClient,
+    canceledSales,
+    canceledCredits,
+    canceledServices,
+    groupsList,
+    clientsList,
+    btnDisabledSales,
+    btnDisabledCredits,
+    btnDisabledServices,
+    btnDisabledSysmo,
+    isLoadingTaxes,
+    isLoadingBanks,
+    isLoadedDashboard,
+    isLoadedSalesDashboard,
+    isLoadedCreditsDashboard,
+    isLoadedServicesDashboard,
+    canceled,
+    salesDashboard,
+    creditsDashboard,
+    servicesDashboard,
+    chartSales,
+    chartCredits,
+    chartServices,
+    salesPageArray,
+    salesPageAdminArray,
+    salesTotal,
+    salesDateRange,
+    creditsPageArray,
+    creditsPageAdminArray,
+    creditsTotal,
+    creditsDateRange,
+    servicesPageArray,
+    servicesPageAdminArray,
+    servicesDateRange,
+    servicesTotal,
+    taxesPageArray,
+    logout,
+    updateUser,
+    theme,
+    toggleTheme,
+    userPreferences,
+    isThemeLoaded,
+    loadUserPreferences,
+    currentLogo,
+    currentContext,
+    resetAppValues,
+  ])
 
-		// Dashboard //
-		loadDashboard, isLoadedDashboard, setIsLoadedDashboard,
-		salesDashboard, isLoadedSalesDashboard, setIsLoadedSalesDashboard,
-		creditsDashboard, isLoadedCreditsDashboard, setIsLoadedCreditsDashboard,
-		servicesDashboard, isLoadedServicesDashboard, setIsLoadedServicesDashboard,
-		canceledSales, setCanceledSales,
-		canceledCredits, setCanceledCredits,
-		canceledServices, setCanceledServices,
-		
-		// Vendas //
-		loadSales, loadTotalSales, newLoadSales, newLoadTotalSales,
-		salesDateRange, setSalesDateRange,
-		salesPageArray, setSalesPageArray,
-		salesPageAdminArray, setSalesPageAdminArray,
-		salesTotal, setSalesTotal,
-		btnDisabledSales, setBtnDisabledSales,
-		salesTableData, setSalesTableData,
-		exportSales, errorSales,
+  // ===== EFFECT FOR CANCELED REQUESTS =====
+  useEffect(() => {
+    if (canceled) {
+      resetAppValues()
+      setErrorSales(false)
+      setErrorCredits(false)
+      setErrorServices(false)
+      setIsLoadedSalesDashboard(false)
+      setIsLoadedCreditsDashboard(false)
+      setIsLoadedServicesDashboard(false)
+      setIsLoadedDashboard(false)
+      setFetchingData(false)
+    }
+  }, [canceled, resetAppValues])
 
-		// Creditos //
-		loadCredits, loadTotalCredits, newLoadCredits, newLoadCreditsDataBanco, newGroupByAdminCredits, newLoadTotalCredits,
-		creditsPageArray, setCreditsPageArray,
-		creditsPageAdminArray, setCreditsPageAdminArray,
-		creditsDateRange, setCreditsDateRange,
-		creditsTotal, setCreditsTotal,
-		btnDisabledCredits, setBtnDisabledCredits,
-		creditsTableData, setCreditsTableData,
-		exportCredits, errorCredits,
+  // ===== EFFECT FOR DASHBOARD LOAD COMPLETION =====
+  useEffect(() => {
+    if (isLoadedSalesDashboard && isLoadedCreditsDashboard && isLoadedServicesDashboard) {
+      setFetchingData(false)
+    }
+  }, [isLoadedSalesDashboard, isLoadedCreditsDashboard, isLoadedServicesDashboard])
 
-		// Serviços //
-		loadServices, newLoadServices, newGroupByAdminServices, newLoadTotalServices,
-		servicesPageArray, setServicesPageArray,
-		servicesPageAdminArray, setServicesPageAdminArray,
-		servicesDateRange, setServicesDateRange,
-		btnDisabledServices, setBtnDisabledServices,
-		servicesTableData, setServicesTableData,
-		exportServices, errorServices,
+  // ===== EFFECT FOR THEME TOGGLE COMPLETION =====
+  useEffect(() => {
+    if (isLoadedSalesDashboard && isLoadedCreditsDashboard && isLoadedServicesDashboard) {
+      setFetchingData(false)
+    }
+  }, [isLoadedSalesDashboard, isLoadedCreditsDashboard, isLoadedServicesDashboard])
 
-		// Taxas //
-		loadTaxes, isLoadingTaxes, setIsLoadingTaxes,
-		addTax, editTax, deleteTax,
-		taxesTableData, setTaxesTableData, exportTaxes,
-		taxesPageArray, setTaxesPageArray,
-
-		// Bancos //
-		loadBanks, isLoadingBanks, setIsLoadingBanks,
-		addBank, editBank, deleteBank,
-		loadCliAdq,
-
-		// Sysmo //
-		loadSysmo,
-		btnDisabledSysmo, setBtnDisabledSysmo,
-
-		// Outros //
-		loginApp, 
-		loadBanners, loadAdmins, loadMods, loadProducts, loadSubproducts,
-		groupByAdmin, newGroupByAdmin, groupServicesByAdmin,
-		exportName, setExportName,
-		isCheckedCalendar, setIsCheckedCalendar,
-		converteData, dateConvert, dateConvertSearch, dateConvertYYYYMMDD,
-		fetchingData, setFetchingData,
-		groupsList, clientsList,
-		loadGroupsList, setGroupsList,
-		displayClient, displayGroup,
-		setDisplayGroup, setDisplayClient,
-		changedOption, setChangedOption,
-		canceled, setCanceled,
-		resetAppValues,
-		clientUserId,
-		safeToFixed,
-		safeCurrencyFormat,
-	}), [
-		isSignedIn, accessToken, userImg, salesTableData, creditsTableData, servicesTableData, taxesTableData,
-		exportName, isCheckedCalendar, changedOption, errorSales, errorCredits, errorServices, fetchingData,
-		displayGroup, displayClient, canceledSales, canceledCredits, canceledServices, groupsList, clientsList,
-		btnDisabledSales, btnDisabledCredits, btnDisabledServices, btnDisabledSysmo, isLoadingTaxes, isLoadingBanks,
-		isLoadedDashboard, isLoadedSalesDashboard, isLoadedCreditsDashboard, isLoadedServicesDashboard, canceled,
-    salesDashboard, creditsDashboard, servicesDashboard, chartSales, chartCredits, chartServices,
-		salesPageArray, salesPageAdminArray, salesTotal, salesDateRange,
-		creditsPageArray, creditsPageAdminArray, creditsTotal, creditsDateRange,
-		servicesPageArray, servicesPageAdminArray, servicesDateRange, servicesTotal,
-		taxesPageArray,
-		logout, updateUser, theme, toggleTheme
-	])
-
-	return(
-		<AuthContext.Provider value={contextValue}>
-			{children}
-		</AuthContext.Provider>
-	)
+  return (
+    <AuthContext.Provider value={contextValue}>
+      {children}
+    </AuthContext.Provider>
+  )
 }
 
 export default AuthProvider

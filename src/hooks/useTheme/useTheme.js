@@ -1,48 +1,17 @@
-import { useState, useEffect } from 'react';
+// useTheme.js - Simplified to use context
 
-export const useTheme = (updateUser) => {
-    const [isChecked, setIsChecked] = useState(() => {
-        // Get theme from user data or localStorage
-        const userData = JSON.parse(localStorage.getItem('user'));
-        if (userData && userData.TEMA !== undefined) {
-            return userData.TEMA;
-        }
-        
-        const savedIsChecked = localStorage.getItem('isChecked');
-        return savedIsChecked ? JSON.parse(savedIsChecked) : false;
-    });
+import { useContext } from 'react'
+import { AuthContext } from '../contexts/auth'
 
-    const toggleTheme = () => {
-        const updatedChecked = !isChecked;
-        setIsChecked(updatedChecked);
-        
-        // Update localStorage
-        localStorage.setItem('isChecked', updatedChecked);
-        
-        // Update user data if available
-        const userData = JSON.parse(localStorage.getItem('user'));
-        if (userData) {
-            userData.TEMA = updatedChecked;
-            localStorage.setItem('user', JSON.stringify(userData));
-            if (updateUser) {
-                updateUser(userData);
-            }
-        }
-
-        // Apply to DOM
-        document.documentElement.setAttribute('data-theme', updatedChecked ? 'dark' : 'light');
-        
-        return updatedChecked;
-    };
-
-    // Initialize theme on mount
-    useEffect(() => {
-        document.documentElement.setAttribute('data-theme', isChecked ? 'dark' : 'light');
-    }, []);
-
-    return {
-        isChecked,
-        toggleTheme,
-        setIsChecked
-    };
-};
+export const useTheme = () => {
+  const { theme, toggleTheme } = useContext(AuthContext)
+  
+  return {
+    isChecked: theme,
+    toggleTheme,
+    setIsChecked: (value) => {
+      // This should only be used internally by the AuthProvider
+      console.warn('setIsChecked should not be used directly. Use toggleTheme instead.')
+    }
+  }
+}

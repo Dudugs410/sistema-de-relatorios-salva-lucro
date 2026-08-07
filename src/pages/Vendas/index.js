@@ -1,7 +1,5 @@
 import { useEffect, useContext, useState, useCallback, useMemo, useRef } from 'react'
-import Select from 'react-select'
 import './vendas.scss'
-import Joyride from 'react-joyride'
 import { AuthContext } from '../../contexts/auth'
 import { useLocation } from 'react-router-dom'
 import '../../index.scss'
@@ -19,8 +17,6 @@ const Vendas = () =>{
   const isInitialMountRef = useRef(true)
 
   const resetValues = () => {
-    setBandeira(null)
-    setAdministradora(null)
     setSalesPageArray([])
     setSalesPageAdminArray([])
     setBtnDisabledSales(false)
@@ -35,15 +31,30 @@ const Vendas = () =>{
     lastExportedDataRef.current = null
     // Reset tutorial state
     setRunTutorial(false)
+    
+    // Clear report-specific storage when resetting
+    localStorage.removeItem('reportBandeira')
+    localStorage.removeItem('reportAdquirente')
   }
+
+  // Clean up report data when component unmounts or route changes
+  useEffect(() => {
+    return () => {
+      localStorage.removeItem('reportBandeira')
+      localStorage.removeItem('reportAdquirente')
+    }
+  }, [])
+
+  // Clear report data when path changes (navigation)
+  useEffect(() => {
+    localStorage.removeItem('reportBandeira')
+    localStorage.removeItem('reportAdquirente')
+    localStorage.setItem('currentPath', location.pathname)
+  }, [location])
 
   useEffect(()=>{
     resetValues()
   },[])
-
-  useEffect(() => {
-      localStorage.setItem('currentPath', location.pathname)
-  }, [location])
 
   const [bandeira, setBandeira] = useState(null)
   const [administradora, setAdministradora] = useState(null)
@@ -58,16 +69,6 @@ const Vendas = () =>{
     }
     inicializar()
   },[])
-
-  const handleAdmin = (option) => {
-    setAdministradora(option?.codigoAdquirente || null)
-    localStorage.setItem('selectedAdm', JSON.stringify(option)) 
-  }
-
-  const handleBan = (option) => {
-    setBandeira(option?.codigoBandeira || null)
-    localStorage.setItem('selectedBan', JSON.stringify(option)) 
-  }
 
   const {
     salesPageArray, setSalesPageArray,
@@ -230,12 +231,38 @@ const Vendas = () =>{
       const startDate = salesDateRange[0]
       const endDate = salesDateRange[1]
       
+      // Get current filter values from localStorage
+      let adquirenteValue = administradora || ""
+      let bandeiraValue = bandeira || ""
+      
+      // If no values in state, try to get from localStorage
+      if (!adquirenteValue) {
+        const savedAdm = localStorage.getItem('reportAdquirente')
+        if (savedAdm) {
+          try {
+            const parsed = JSON.parse(savedAdm)
+            adquirenteValue = parsed?.codigoAdquirente || ""
+          } catch (e) {}
+        }
+      }
+      
+      if (!bandeiraValue) {
+        const savedBan = localStorage.getItem('reportBandeira')
+        if (savedBan) {
+          try {
+            const parsed = JSON.parse(savedBan)
+            bandeiraValue = parsed?.codigoBandeira || ""
+          } catch (e) {}
+        }
+      }
+      
       const filters = {
-        adquirente: administradora || "",
-        bandeira: bandeira || "",
+        adquirente: adquirenteValue,
+        bandeira: bandeiraValue,
       }  
       const data = await newLoadSales(startDate, endDate, filters)      
       setSalesPageArray(data)
+      
     } catch (error) {
       console.error('Error fetching sales data:', error)
       throw error
@@ -244,27 +271,6 @@ const Vendas = () =>{
 
   const handleDateRangeChange = (dateRange) => {
     setSalesDateRange(dateRange)
-  }
-
-  const CustomCheckbox = ({ isChecked, handleCheckboxChange }) => {
-    return (
-        <label className="checkbox-label">
-          <input
-              type="checkbox"
-              checked={isChecked}
-              onChange={handleCheckboxChange}
-              className='checkbox-input'
-          />
-          <span className='checkbox-custom'></span>
-          <span className='checkbox-icon'>
-              <FiCalendar className={`calendar-icon ${isCheckedCalendar ? 'isCheckedCalendar' : ''}`} size={20} />
-          </span>
-        </label>
-    )
-  }
-
-  const handleCheckboxChangeCalendar = () => {
-    setIsCheckedCalendar(!isCheckedCalendar)
   }
 
   const [runTutorial, setRunTutorial] = useState(false)
@@ -359,16 +365,6 @@ const Vendas = () =>{
     setRunTutorial(false)
   }
 
-  const getSelectedAdminOption = () => {
-    if (!administradora || listaAdministradoras.length === 0) return null
-    return listaAdministradoras.find(option => option.codigoAdquirente === administradora)
-  }
-
-  const getSelectedBanOption = () => {
-    if (!bandeira || listaBandeiras.length === 0) return null
-    return listaBandeiras.find(option => option.codigoBandeira === bandeira)
-  }
-
   return(
     <div className='page-content-vendas'>
       <div className='vendas-title-container'>
@@ -388,127 +384,27 @@ const Vendas = () =>{
               location={location}
               runTutorial={runTutorial}
               tutorialSteps={tutorialSteps}
+              listaBandeiras={listaBandeiras}
+              listaAdministradoras={listaAdministradoras}
+              showSelects={false} // Hide selects when data is shown
             />
           ) : (
             <>
-              {/* Joyride for calendar view */}
-              {runTutorial && (
-                <Joyride
-                  steps={tutorialSteps}
-                  run={runTutorial}
-                  continuous={true}
-                  scrollToFirstStep={true}
-                  showProgress={true}
-                  showSkipButton={true}
-                  scrollOffset={80}
-                  disableOverlayClose={true}
-                  styles={{
-                    options: {
-                      primaryColor: '#99cc33',
-                      textColor: '#0a3d70',
-                      zIndex: 10000,
-                    },
-                  }}
-                  callback={(data) => {
-                    if (data.status === 'finished' || data.status === 'skipped') {
-                      handleTutorialEnd()
-                    }
-                  }}
-                  locale={{
-                    back: 'Voltar',
-                    close: 'Fechar',
-                    last: 'Finalizar',
-                    next: 'Próximo',
-                    skip: 'Pular',
-                    nextLabelWithProgress: 'Próximo ({step} de {steps})',
-                  }}
-                />
-              )}
-              
-              <div className='select-container-calendario' data-tour="bandeiraadquirente-section">
-                <div className='select-wrapper'>
-                  <h5>Adquirente</h5>
-                  <Select 
-                    className='seletor-adq-select fixed-width-select' 
-                    id='adquirente'
-                    options={listaAdministradoras}
-                    getOptionLabel={(option) => option.nomeAdquirente}
-                    getOptionValue={(option) => option.codigoAdquirente}
-                    onChange={(option) => handleAdmin(option)}
-                    value={getSelectedAdminOption()}
-                    menuPortalTarget={document.body}
-                    menuPosition="fixed"
-                    placeholder="Selecione uma adquirente..."
-                    isClearable={true}
-                    styles={{
-                      control: (base) => ({
-                        ...base,
-                        minWidth: 250,
-                        width: '100%',
-                      }),
-                      menu: (base) => ({
-                        ...base,
-                        minWidth: 250,
-                        width: '100%',
-                      }),
-                      valueContainer: (base) => ({
-                        ...base,
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }),
-                      singleValue: (base) => ({
-                        ...base,
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        maxWidth: '90%',
-                      }),
-                    }}
-                  />
-                </div>
-                <div className='select-wrapper'>
-                  <h5>Bandeira</h5>
-                  <Select 
-                    className='seletor-adq-select fixed-width-select' 
-                    id='bandeira'
-                    options={listaBandeiras}
-                    getOptionLabel={(option) => option.descricaoBandeira}
-                    getOptionValue={(option) => option.codigoBandeira}
-                    onChange={(option) => handleBan(option)}
-                    value={getSelectedBanOption()}
-                    menuPortalTarget={document.body}
-                    menuPosition="fixed"
-                    placeholder="Selecione uma bandeira..."
-                    isClearable={true}
-                    styles={{
-                      control: (base) => ({
-                        ...base,
-                        minWidth: 250,
-                        width: '100%',
-                      }),
-                      menu: (base) => ({
-                        ...base,
-                        minWidth: 250,
-                        width: '100%',
-                      }),
-                      valueContainer: (base) => ({
-                        ...base,
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }),
-                      singleValue: (base) => ({
-                        ...base,
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        maxWidth: '90%',
-                      }),
-                    }}
-                  />
-                </div>
-              </div>
+              <NewDisplayData
+                dataArray={[]}
+                adminDataArray={[]}
+                totals={null}
+                onGoBack={resetValues}
+                setRunTutorial={setRunTutorial}
+                location={location}
+                runTutorial={runTutorial}
+                tutorialSteps={tutorialSteps}
+                listaBandeiras={listaBandeiras}
+                listaAdministradoras={listaAdministradoras}
+                showSelects={true} // Show selects when no data
+                onSearch={handleLoadData}
+                isSearching={btnDisabledSales}
+              />
               <div data-tour="calendario-section">
                 <MyCalendar
                   onLoadData={handleLoadData}

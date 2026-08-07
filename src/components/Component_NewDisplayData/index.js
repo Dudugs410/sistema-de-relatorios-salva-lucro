@@ -1,5 +1,6 @@
-// NewDisplayData.jsx - Complete fixed version with centralized Joyride
+// NewDisplayData.jsx - Complete fixed version with centralized Joyride and Selects
 import { useContext, useEffect, useState, useCallback, useMemo, useRef } from 'react'
+import Select from 'react-select'
 import NewTabelaGenerica from '../../components/NewTabelaGenerica'
 import TabelaGenericaAdm from '../../components/Componente_TabelaAdm'
 import TotalModalidadesComp from '../../components/Componente_TotalModalidades'
@@ -113,6 +114,34 @@ const formatDate = (date) => {
   return formatDateOnly(date)
 }
 
+// Custom Select styles to match the existing design
+const customSelectStyles = {
+  control: (base) => ({
+    ...base,
+    minWidth: 250,
+    width: '100%',
+    cursor: 'pointer',
+  }),
+  menu: (base) => ({
+    ...base,
+    minWidth: 250,
+    width: '100%',
+  }),
+  valueContainer: (base) => ({
+    ...base,
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  }),
+  singleValue: (base) => ({
+    ...base,
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    maxWidth: '90%',
+  }),
+}
+
 const NewDisplayData = ({ 
   dataArray, 
   adminDataArray, 
@@ -126,7 +155,17 @@ const NewDisplayData = ({
   tutorialSteps = [],
   customTableColumns = null,
   customFilterConfig = null,
-  customExportPage = null
+  customExportPage = null,
+  // New props for selects
+  listaBandeiras = [],
+  listaAdministradoras = [],
+  selectedBandeira = null,
+  selectedAdquirente = null,
+  onBandeiraChange = null,
+  onAdquirenteChange = null,
+  showSelects = true,
+  onSearch = null,
+  isSearching = false
 }) => {
   const { 
     clientUserId, 
@@ -138,7 +177,9 @@ const NewDisplayData = ({
     setCreditsTotal,
     exportSales,
     exportCredits,
-    exportServices
+    exportServices,
+    loadBanners,
+    loadAdmins
   } = useContext(AuthContext)
   
   const [exportPage, setExportPage] = useState('')
@@ -146,12 +187,89 @@ const NewDisplayData = ({
   const [currentFilteredData, setCurrentFilteredData] = useState(dataArray)
   const [hasLoadedTotals, setHasLoadedTotals] = useState(false)
   
+  // Local state for selects if not provided as props
+  const [localBandeira, setLocalBandeira] = useState(null)
+  const [localAdquirente, setLocalAdquirente] = useState(null)
+  const [localBandeiras, setLocalBandeiras] = useState(listaBandeiras)
+  const [localAdministradoras, setLocalAdministradoras] = useState(listaAdministradoras)
+  
   const tabelaGenericaRef = useRef(null)
   
   // Refs to prevent infinite loop
   const isProcessingRef = useRef(false)
   const lastDataArrayRef = useRef(null)
   const lastTotalsCallRef = useRef(null)
+
+  // Load bandeiras and administradoras if not provided
+  useEffect(() => {
+    const loadSelectData = async () => {
+      if (listaBandeiras.length === 0 && loadBanners) {
+        const banners = await loadBanners()
+        setLocalBandeiras(banners)
+      }
+      if (listaAdministradoras.length === 0 && loadAdmins) {
+        const admins = await loadAdmins()
+        setLocalAdministradoras(admins)
+      }
+    }
+    loadSelectData()
+  }, [listaBandeiras, listaAdministradoras, loadBanners, loadAdmins])
+
+  // Restore saved values from localStorage
+  useEffect(() => {
+    if (showSelects && !selectedBandeira && !selectedAdquirente) {
+      const savedBan = localStorage.getItem('reportBandeira')
+      const savedAdm = localStorage.getItem('reportAdquirente')
+      
+      if (savedBan && localBandeiras.length > 0) {
+        try {
+          const parsed = JSON.parse(savedBan)
+          const found = localBandeiras.find(b => b.codigoBandeira === parsed.codigoBandeira)
+          if (found) setLocalBandeira(found)
+        } catch (e) {}
+      }
+      
+      if (savedAdm && localAdministradoras.length > 0) {
+        try {
+          const parsed = JSON.parse(savedAdm)
+          const found = localAdministradoras.find(a => a.codigoAdquirente === parsed.codigoAdquirente)
+          if (found) setLocalAdquirente(found)
+        } catch (e) {}
+      }
+    }
+  }, [showSelects, localBandeiras, localAdministradoras, selectedBandeira, selectedAdquirente])
+
+  const handleLocalBandeiraChange = (option) => {
+    setLocalBandeira(option)
+    if (onBandeiraChange) {
+      onBandeiraChange(option)
+    }
+    // Store for report generation
+    if (option) {
+      localStorage.setItem('reportBandeira', JSON.stringify(option))
+    } else {
+      localStorage.removeItem('reportBandeira')
+    }
+  }
+
+  const handleLocalAdquirenteChange = (option) => {
+    setLocalAdquirente(option)
+    if (onAdquirenteChange) {
+      onAdquirenteChange(option)
+    }
+    // Store for report generation
+    if (option) {
+      localStorage.setItem('reportAdquirente', JSON.stringify(option))
+    } else {
+      localStorage.removeItem('reportAdquirente')
+    }
+  }
+
+  // Determine which values to use (props or local state)
+  const currentBandeira = selectedBandeira !== null ? selectedBandeira : localBandeira
+  const currentAdquirente = selectedAdquirente !== null ? selectedAdquirente : localAdquirente
+  const currentBandeiras = listaBandeiras.length > 0 ? listaBandeiras : localBandeiras
+  const currentAdministradoras = listaAdministradoras.length > 0 ? listaAdministradoras : localAdministradoras
 
   // Safe date conversion wrapper
   const safeDateConvert = useCallback((date) => {
@@ -323,7 +441,6 @@ const NewDisplayData = ({
           dataToExport = currentFilteredDataFromTable && currentFilteredDataFromTable.length > 0 ? currentFilteredDataFromTable : dataArray
         }
         
-        
         // Use custom export page if provided
         const exportPageType = customExportPage || currentPath
         
@@ -333,8 +450,6 @@ const NewDisplayData = ({
             break
           case 'openfinance':
             // Handle openfinance export
-            // You can implement a specific export function here
-            // Or fallback to a generic export
             if (exportSales) {
               await exportSales(dataToExport)
             } else {
@@ -659,6 +774,17 @@ const NewDisplayData = ({
     }
   }
 
+  // Helper function to get selected option value
+  const getSelectedAdminOption = () => {
+    if (!currentAdquirente || currentAdministradoras.length === 0) return null
+    return currentAdministradoras.find(option => option.codigoAdquirente === currentAdquirente)
+  }
+
+  const getSelectedBanOption = () => {
+    if (!currentBandeira || currentBandeiras.length === 0) return null
+    return currentBandeiras.find(option => option.codigoBandeira === currentBandeira)
+  }
+
   return (
     <>
       {/* Centralized Joyride - only render if there are steps */}
@@ -693,6 +819,48 @@ const NewDisplayData = ({
             nextLabelWithProgress: 'Próximo ({step} de {steps})',
           }}
         />
+      )}
+
+      {/* Selects section - only show if showSelects is true and no data is loaded yet */}
+      {showSelects && (!dataArray || dataArray.length === 0) && (
+        <div className='select-container-calendario' data-tour="bandeiraadquirente-section">
+          <div className='select-wrapper'>
+            <h5>Adquirente</h5>
+            <Select 
+              className='seletor-adq-select fixed-width-select' 
+              id='adquirente'
+              options={currentAdministradoras}
+              getOptionLabel={(option) => option.nomeAdquirente}
+              getOptionValue={(option) => option.codigoAdquirente}
+              onChange={(option) => handleLocalAdquirenteChange(option)}
+              value={getSelectedAdminOption()}
+              menuPortalTarget={document.body}
+              menuPosition="fixed"
+              placeholder="Selecione uma adquirente..."
+              isClearable={true}
+              styles={customSelectStyles}
+              isDisabled={isSearching || (dataArray && dataArray.length > 0)}
+            />
+          </div>
+          <div className='select-wrapper'>
+            <h5>Bandeira</h5>
+            <Select 
+              className='seletor-adq-select fixed-width-select' 
+              id='bandeira'
+              options={currentBandeiras}
+              getOptionLabel={(option) => option.descricaoBandeira}
+              getOptionValue={(option) => option.codigoBandeira}
+              onChange={(option) => handleLocalBandeiraChange(option)}
+              value={getSelectedBanOption()}
+              menuPortalTarget={document.body}
+              menuPosition="fixed"
+              placeholder="Selecione uma bandeira..."
+              isClearable={true}
+              styles={customSelectStyles}
+              isDisabled={isSearching || (dataArray && dataArray.length > 0)}
+            />
+          </div>
+        </div>
       )}
 
       {!hideTotals && totals && (exportPage === 'vendas' || exportPage === 'creditos') && (
@@ -746,14 +914,17 @@ const NewDisplayData = ({
         </div>
       )}
       
-      <div data-tour="exportacao-section">
-        <GerarRelatorio 
-          className='export' 
-          onExport={getExportFunction()}
-          filteredData={currentFilteredData}
-        />
-        <hr className='hr-global'/>
-      </div>
+      {/* Only show GerarRelatorio if there is data */}
+      {dataArray && dataArray.length > 0 && (
+        <div data-tour="exportacao-section">
+          <GerarRelatorio 
+            className='export' 
+            onExport={getExportFunction()}
+            filteredData={currentFilteredData}
+          />
+          <hr className='hr-global'/>
+        </div>
+      )}
       
       {!hideTables && (
         <div className='component-container-vendas'>

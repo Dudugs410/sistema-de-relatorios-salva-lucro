@@ -17,52 +17,18 @@ function Layout({ children }) {
   const [tenantInfo, setTenantInfo] = useState(null)
   const [sidebarVisible, setSidebarVisible] = useState(false)
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 946)
-  const [isThemeLoaded, setIsThemeLoaded] = useState(false)
   
-  // Get user preferences from context
-  const { 
-    userPreferences,
-    loadUserPreferences,
-    currentContext,
-    currentTheme
-  } = useContext(AuthContext)
+  // Get theme and loading state from context only
+  const { theme, isThemeLoaded } = useContext(AuthContext)
 
-  // Function to apply theme and context
-  const applyThemeAndContext = (context, theme) => {
-    // Apply context
-    if (context) {
-      document.documentElement.setAttribute('data-context', context)
-      localStorage.setItem('userContext', context)
-    }
-    
-    // Apply theme
-    if (theme !== undefined && theme !== null) {
-      const themeValue = theme ? 'dark' : 'light'
-      document.documentElement.setAttribute('data-theme', themeValue)
-      localStorage.setItem('userTheme', String(theme))
-    }
-  }
-
-  // Load user preferences on mount
+  // Apply theme whenever it changes
   useEffect(() => {
-    const loadPrefs = async () => {
-      try {
-        const userId = localStorage.getItem('userID')
-        if (userId) {
-          await loadUserPreferences(userId)
-        }
-        // Mark theme as loaded even if there's no user ID
-        setIsThemeLoaded(true)
-      } catch (error) {
-        // Silently fail - preferences will use defaults
-        setIsThemeLoaded(true)
-      }
+    if (isThemeLoaded) {
+      document.documentElement.setAttribute('data-theme', theme ? 'dark' : 'light')
     }
-    
-    loadPrefs()
-  }, [])
+  }, [theme, isThemeLoaded])
 
-  // Apply tenant context
+  // Load tenant info
   useEffect(() => {
     const tenant = getCurrentTenant()
     setTenantInfo(tenant)
@@ -72,64 +38,19 @@ function Layout({ children }) {
     }
   }, [])
 
-  // Apply theme and context preferences when they change
-  useEffect(() => {
-    applyThemeAndContext(currentContext, currentTheme)
-  }, [currentContext, currentTheme])
-
-  // Re-apply theme on route changes (handles browser back/forward)
-  useEffect(() => {
-    // Get cached values from localStorage
-    const cachedTheme = localStorage.getItem('userTheme')
-    const cachedContext = localStorage.getItem('userContext')
-    
-    // Re-apply if we have cached values
-    if (cachedContext || cachedTheme) {
-      // Only re-apply if currentContext/currentTheme aren't set yet
-      if (!currentContext && !currentTheme) {
-        applyThemeAndContext(
-          cachedContext || 'salvalucro',
-          cachedTheme !== null ? cachedTheme === 'true' : false
-        )
-      }
-    }
-    
-    // Also check sessionStorage as backup
-    const sessionTheme = sessionStorage.getItem('themeMode')
-    const sessionContext = sessionStorage.getItem('themeContext')
-    
-    if (sessionTheme || sessionContext) {
-      if (!currentContext && !currentTheme) {
-        applyThemeAndContext(
-          sessionContext || 'salvalucro',
-          sessionTheme === 'dark'
-        )
-      }
-    }
-    
-    // Force a re-application of the theme from context if available
-    if (currentContext || currentTheme !== undefined) {
-      applyThemeAndContext(currentContext, currentTheme)
-    }
-    
-    // Ensure the theme-applied attribute is present
-    document.documentElement.setAttribute('data-theme-applied', 'true')
-    
-  }, [location.pathname]) // This triggers on every route change
-
   // Handle window resize
   useEffect(() => {
     const handleResize = () => {
-      const mobile = window.innerWidth <= 946;
-      setIsMobile(mobile);
+      const mobile = window.innerWidth <= 946
+      setIsMobile(mobile)
       if (!mobile && sidebarVisible) {
-        setSidebarVisible(false);
+        setSidebarVisible(false)
       }
-    };
+    }
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [sidebarVisible]);
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [sidebarVisible])
 
   // Handle click outside to close sidebar on mobile
   useEffect(() => {
@@ -138,47 +59,47 @@ function Layout({ children }) {
           sidebarVisible && 
           !event.target.closest('.sidebar-content') && 
           !event.target.closest('.hamburger-button')) {
-        setSidebarVisible(false);
+        setSidebarVisible(false)
       }
-    };
+    }
 
     const handleEscapeKey = (event) => {
       if (event.key === 'Escape' && sidebarVisible) {
-        setSidebarVisible(false);
+        setSidebarVisible(false)
       }
-    };
+    }
 
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('touchstart', handleClickOutside);
-    document.addEventListener('keydown', handleEscapeKey);
+    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('touchstart', handleClickOutside)
+    document.addEventListener('keydown', handleEscapeKey)
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('touchstart', handleClickOutside);
-      document.removeEventListener('keydown', handleEscapeKey);
-    };
-  }, [sidebarVisible, isMobile]);
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('touchstart', handleClickOutside)
+      document.removeEventListener('keydown', handleEscapeKey)
+    }
+  }, [sidebarVisible, isMobile])
 
   // Prevent body scroll when sidebar is open on mobile
   useEffect(() => {
     if (sidebarVisible && isMobile) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden'
     } else {
-      document.body.style.overflow = '';
+      document.body.style.overflow = ''
     }
     
     return () => {
-      document.body.style.overflow = '';
-    };
-  }, [sidebarVisible, isMobile]);
+      document.body.style.overflow = ''
+    }
+  }, [sidebarVisible, isMobile])
 
   const toggleSidebar = () => {
-    setSidebarVisible(!sidebarVisible);
-  };
+    setSidebarVisible(!sidebarVisible)
+  }
 
   const closeSidebar = () => {
-    setSidebarVisible(false);
-  };
+    setSidebarVisible(false)
+  }
 
   // Show loading while theme is being loaded
   if (!isThemeLoaded) {
@@ -188,21 +109,55 @@ function Layout({ children }) {
         justifyContent: 'center',
         alignItems: 'center',
         height: '100vh',
-        backgroundColor: 'var(--bg-color, #ffffff)',
+        backgroundColor: '#ffffff',
         flexDirection: 'column',
         gap: '20px'
       }}>
-        <div className="spinner"></div>
+        <div className="spinner" style={{
+          width: '40px',
+          height: '40px',
+          border: '4px solid #f3f3f3',
+          borderTop: '4px solid #3498db',
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite'
+        }}></div>
         <p>Carregando preferências...</p>
+        <style>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
       </div>
     )
   }
 
   if (!tenantInfo) {
     return (
-      <div className="layout-loading">
-        <div className="spinner"></div>
+      <div className="layout-loading" style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        backgroundColor: '#ffffff',
+        flexDirection: 'column',
+        gap: '20px'
+      }}>
+        <div className="spinner" style={{
+          width: '40px',
+          height: '40px',
+          border: '4px solid #f3f3f3',
+          borderTop: '4px solid #3498db',
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite'
+        }}></div>
         <p>Carregando ambiente...</p>
+        <style>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
       </div>
     )
   }
@@ -215,6 +170,17 @@ function Layout({ children }) {
           className="hamburger-button"
           onClick={toggleSidebar}
           aria-label="Toggle menu"
+          style={{
+            position: 'fixed',
+            top: '10px',
+            left: '10px',
+            zIndex: 1000,
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: '8px',
+            color: 'var(--text-color, #333)'
+          }}
         >
           <FiMenu size={24} />
         </button>
@@ -223,27 +189,67 @@ function Layout({ children }) {
       {/* Overlay for mobile */}
       {isMobile && sidebarVisible && (
         <div 
-          className="sidebar-overlay" 
+          className="sidebar-overlay"
           onClick={closeSidebar}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            zIndex: 998
+          }}
         />
       )}
       
-      <div className='layout-content'>
+      <div className='layout-content' style={{
+        display: 'flex',
+        minHeight: '100vh'
+      }}>
         <div 
           className={`sidebar-content ${isMobile && sidebarVisible ? 'visible' : ''}`}
+          style={{
+            width: isMobile ? '280px' : '250px',
+            flexShrink: 0,
+            backgroundColor: 'var(--sidebar-bg, #fff)',
+            borderRight: '1px solid var(--border-color, #e0e0e0)',
+            transition: 'transform 0.3s ease',
+            position: isMobile ? 'fixed' : 'relative',
+            top: 0,
+            left: 0,
+            bottom: 0,
+            zIndex: 999,
+            transform: isMobile && !sidebarVisible ? 'translateX(-100%)' : 'translateX(0)',
+            overflowY: 'auto'
+          }}
         >
           <SidebarMenu />
         </div>
-        <div className='column-container'>
-          <div className='header-container-fixed'>
+        <div className='column-container' style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '100vh'
+        }}>
+          <div className='header-container-fixed' style={{
+            position: 'sticky',
+            top: 0,
+            zIndex: 100,
+            backgroundColor: 'var(--header-bg, #fff)',
+            borderBottom: '1px solid var(--border-color, #e0e0e0)'
+          }}>
             <Header />
           </div>
           <DadosGrupoCliente />
-          <main className="layout-main">
+          <main className="layout-main" style={{
+            flex: 1,
+            padding: '20px',
+            backgroundColor: 'var(--bg-color, #f5f5f5)'
+          }}>
             {children}
           </main>
         </div>
-        {/*<Footer/>*/}
       </div>
     </div>
   )
