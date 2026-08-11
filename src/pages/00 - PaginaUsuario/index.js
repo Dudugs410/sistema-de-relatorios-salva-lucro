@@ -16,7 +16,7 @@ import {
 import jwtDecode from 'jwt-decode'
 
 const ENABLE_CUSTOMIZATION = true
-
+//teste
 // Your specific user ID - change this to your actual user ID
 const SPECIAL_USER_ID = 167561 // Replace with your user ID
 
