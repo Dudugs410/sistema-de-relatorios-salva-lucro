@@ -23,6 +23,9 @@ const Dashboard = () => {
   const location = useLocation();
   const [runTutorial, setRunTutorial] = useState(false);
   const [activeDataType, setActiveDataType] = useState('vendas');
+  const [dashboardError, setDashboardError] = useState(false);
+  const [isRetrying, setIsRetrying] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const alerta = false;
   const [modalOpen, setModalOpen] = useState(alerta);
@@ -57,14 +60,13 @@ const Dashboard = () => {
   ]);
 
   const {  
-    loadDashboard, isLoadedDashboard,
+    loadDashboard, isLoadedDashboard, setIsLoadedDashboard,
     salesDashboard, isLoadedSalesDashboard, setIsLoadedSalesDashboard, loadSalesGroup, errorSales,
     creditsDashboard, isLoadedCreditsDashboard, setIsLoadedCreditsDashboard, loadCreditsGroup, errorCredits,
     servicesDashboard, isLoadedServicesDashboard, setIsLoadedServicesDashboard, loadServicesGroup, errorServices,
     changedOption, canceled, fetchingData, setFetchingData, setCanceled,
     canceledSales, canceledCredits, canceledServices,
     setCanceledSales, setCanceledCredits, setCanceledServices,
-    // Keep these from context but don't use them for theme
     userPreferences,
     currentContext,
     currentTheme
@@ -80,11 +82,115 @@ const Dashboard = () => {
     setCanceled(false);
   }, []);
 
+  // Reset ALL states when client/group changes
   useEffect(() => {
-    if (isLoadedDashboard === false) {
-      loadDashboard();
-    }
+    console.log('🔄 Client/Group changed, resetting all states');
+    // Reset error states
+    setDashboardError(false);
+    setErrorMessage('');
+    setIsRetrying(false);
+    
+    // IMPORTANT: Force reload by setting loaded states to false
+    setIsLoadedDashboard(false);
+    setIsLoadedSalesDashboard(false);
+    setIsLoadedCreditsDashboard(false);
+    setIsLoadedServicesDashboard(false);
+    
+    // Reset fetching state
+    setFetchingData(false);
+    
+    // Cancel any ongoing requests
+    cancelOngoingRequests();
+    
+    // Clear any canceled flags
+    setCanceledSales(false);
+    setCanceledCredits(false);
+    setCanceledServices(false);
+    setCanceled(false);
+    
   }, [changedOption]);
+
+  // Load dashboard with error handling
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        console.log('🔄 Starting dashboard load...');
+        setDashboardError(false);
+        setErrorMessage('');
+        setIsRetrying(false);
+        await loadDashboard();
+        console.log('✅ Dashboard loaded successfully');
+        // Success - clear any errors
+        setDashboardError(false);
+        setErrorMessage('');
+      } catch (error) {
+        console.error('❌ Failed to load dashboard:', error);
+        console.error('Error details:', {
+          message: error.message,
+          response: error.response,
+          status: error.response?.status,
+          data: error.response?.data
+        });
+        
+        // Set error message based on response
+        let message = 'Não foi possível carregar as informações do dashboard.';
+        if (error.response?.status === 500) {
+          message = 'Erro interno do servidor (500). Por favor, tente novamente mais tarde.';
+        } else if (error.response?.status === 404) {
+          message = 'Dados não encontrados. Por favor, verifique suas configurações.';
+        } else if (error.response?.data?.mensagem) {
+          message = error.response.data.mensagem;
+        }
+        setErrorMessage(message);
+        setDashboardError(true);
+        setIsRetrying(false);
+        // IMPORTANT: Mark as loaded so we stop showing the spinner
+        setIsLoadedDashboard(true);
+        setFetchingData(false);
+      }
+    };
+
+    // Only load if not already loaded, not in error state, and not fetching
+    if (!isLoadedDashboard && !dashboardError && !fetchingData) {
+      console.log('📊 Triggering dashboard load from useEffect');
+      loadData();
+    } else {
+      console.log('⏭️ Skipping dashboard load:', { 
+        isLoadedDashboard, 
+        dashboardError, 
+        fetchingData 
+      });
+    }
+  }, [changedOption, isLoadedDashboard, dashboardError, fetchingData]);
+
+  // Check for errors from context
+  useEffect(() => {
+    console.log('📊 Error states from context:', {
+      errorSales,
+      errorCredits,
+      errorServices,
+      isLoadedDashboard,
+      isLoadedSalesDashboard,
+      isLoadedCreditsDashboard,
+      isLoadedServicesDashboard,
+      fetchingData
+    });
+    
+    if (errorSales || errorCredits || errorServices) {
+      console.log('⚠️ Error detected in context, showing error message');
+      setErrorMessage('Erro ao carregar alguns dados do dashboard.');
+      setDashboardError(true);
+      setIsLoadedDashboard(true);
+      setFetchingData(false);
+    } else {
+      // If errors were cleared, reset error state
+      if (dashboardError && !errorSales && !errorCredits && !errorServices) {
+        console.log('✅ Errors cleared, resetting error state');
+        setDashboardError(false);
+        setErrorMessage('');
+      }
+    }
+  }, [errorSales, errorCredits, errorServices]);
 
   const handleTutorialEnd = () => {
     setRunTutorial(false);
@@ -206,6 +312,59 @@ const Dashboard = () => {
     })) || []
   }
 
+  // Error component
+  const DashboardError = ({ onRetry, message }) => (
+    <div className="dashboard-error-container">
+      <div className="error-card">
+        <div className="error-icon">⚠️</div>
+        <h3 className="error-title">Erro ao carregar dados</h3>
+        <p className="error-message">
+          {message || 'Não foi possível carregar as informações do dashboard. Por favor, tente novamente mais tarde ou entre em contato com o suporte.'}
+        </p>
+        <button 
+          className="btn btn-primary btn-retry"
+          onClick={onRetry}
+          disabled={isRetrying}
+        >
+          {isRetrying ? 'Carregando...' : 'Tentar Novamente'}
+        </button>
+      </div>
+    </div>
+  );
+
+  const handleRetry = async () => {
+    console.log('🔄 Retry button clicked');
+    setIsRetrying(true);
+    setDashboardError(false);
+    setErrorMessage('');
+    // Reset loaded state to allow retry
+    setIsLoadedDashboard(false);
+    setIsLoadedSalesDashboard(false);
+    setIsLoadedCreditsDashboard(false);
+    setIsLoadedServicesDashboard(false);
+    setFetchingData(false);
+    try {
+      await loadDashboard();
+      console.log('✅ Retry successful');
+      setDashboardError(false);
+      setErrorMessage('');
+    } catch (error) {
+      console.error('❌ Retry failed:', error);
+      let message = 'Não foi possível carregar as informações do dashboard.';
+      if (error.response?.status === 500) {
+        message = 'Erro interno do servidor (500). Por favor, tente novamente mais tarde.';
+      } else if (error.response?.data?.mensagem) {
+        message = error.response.data.mensagem;
+      }
+      setErrorMessage(message);
+      setDashboardError(true);
+      setIsLoadedDashboard(true);
+      setFetchingData(false);
+    } finally {
+      setIsRetrying(false);
+    }
+  };
+
   const renderModernView = () => {
     if (!currentData) return null
 
@@ -213,7 +372,14 @@ const Dashboard = () => {
     const totalValue = getTotalValue()
     const summaryData = getSummaryData()
 
+    // Show error message if dashboard failed to load
+    if (dashboardError) {
+      console.log('⚠️ Rendering error state');
+      return <DashboardError onRetry={handleRetry} message={errorMessage} />
+    }
+
     if (!isLoaded) {
+      console.log('⏳ Rendering loading state');
       return (
         <div className='chart-main-section' data-tour="main-chart">
           <LazyLoader />
@@ -221,6 +387,7 @@ const Dashboard = () => {
       )
     }
 
+    console.log('✅ Rendering dashboard data');
     return (
       <>
         {/* Chart Type Selector Cards */}

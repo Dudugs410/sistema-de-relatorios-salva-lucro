@@ -2650,7 +2650,10 @@ const mockDashboard =
 const [dashboardData, setDashboardData] = useState([])
 // função que gerencia o carregamento de tudo que será visto no Dashboard
 
-const loadDashboard = async () => {  
+// In AuthContext.js, update the loadDashboard function:
+
+const loadDashboard = async () => {
+  console.log('🔄 loadDashboard called');
   resetDashboard();
   setIsLoadedSalesDashboard(false);
   setIsLoadedCreditsDashboard(false);
@@ -2658,6 +2661,8 @@ const loadDashboard = async () => {
   setIsLoadedDashboard(false);
 
   const apiCNPJ = localStorage.getItem('cnpj')
+  console.log('📊 API CNPJ:', apiCNPJ);
+  console.log('📊 Group Code:', localStorage.getItem('groupCode'));
   
   let dashboardData
 
@@ -2666,37 +2671,38 @@ const loadDashboard = async () => {
       setFetchingData(true);
     }
     
-    if((apiCNPJ !== 'todos') && (apiCNPJ !== 'TODOS') && (apiCNPJ !== 'Todos')){
-      const params = {
-        cnpj: apiCNPJ,
-      }
-
-      let config = {
-        params,
-      }
-      const response = await api.get('dashboard', config)
-      dashboardData = response.data
-    } else if ((apiCNPJ === 'todos') || (apiCNPJ === 'TODOS') || (apiCNPJ === 'Todos')){
-      const params = {
-        grupo: localStorage.getItem('groupCode'),
-      }
-
-      let config = {
-        params,
-      }
-      const response = await api.get('dashboard', config)
-      dashboardData = response.data
-    } else {
+    let response;
+    
+    try {
+      if((apiCNPJ !== 'todos') && (apiCNPJ !== 'TODOS') && (apiCNPJ !== 'Todos')){
         const params = {
-          usuario: localStorage.getItem('userID'),
+          cnpj: apiCNPJ,
         }
-
-        let config = {
-          params,
+        let config = { params }
+        console.log('📡 Calling dashboard API with CNPJ:', params);
+        response = await api.get('dashboard', config)
+        console.log('✅ Dashboard API response received (CNPJ)');
+      } else {
+        const params = {
+          grupo: localStorage.getItem('groupCode'),
         }
-        const response = await api.get('dashboard', config)
-        dashboardData = response.data // Changed from response to response.data
+        let config = { params }
+        console.log('📡 Calling dashboard API with Group:', params);
+        response = await api.get('dashboard', config)
+        console.log('✅ Dashboard API response received (Group)');
       }
+      
+      dashboardData = response.data;
+      console.log('📊 Dashboard data:', dashboardData);
+      
+    } catch (apiError) {
+      console.error('❌ API Error loading dashboard:', apiError);
+      console.error('Error status:', apiError.response?.status);
+      console.error('Error data:', apiError.response?.data);
+      
+      // Throw the error to be caught by the outer try-catch
+      throw apiError;
+    }
     
     // Transform API data to match the expected structure
     const transformedData = transformApiData(dashboardData);
@@ -2713,48 +2719,48 @@ const loadDashboard = async () => {
       return { labels, data }
     }
     
-    const vendasChartData = transformAdquirentesForChart(transformedData.vendas.totalAdquirentes); // Using transformedData
-    const creditsChartData = transformAdquirentesForChart(transformedData.creditos.totalAdquirentes); // Using transformedData
-    const ajustesChartData = transformAdquirentesForChart(transformedData.ajustes.totalAdquirentes); // Using transformedData
+    const vendasChartData = transformAdquirentesForChart(transformedData.vendas.totalAdquirentes);
+    const creditsChartData = transformAdquirentesForChart(transformedData.creditos.totalAdquirentes);
+    const ajustesChartData = transformAdquirentesForChart(transformedData.ajustes.totalAdquirentes);
     
-    const totalVendas = transformedData.vendas.totalAdquirentes.reduce((sum, item) => sum + item.valor, 0); // Using transformedData
-    const totalCredits = transformedData.creditos.totalAdquirentes.reduce((sum, item) => sum + item.valor, 0); // Using transformedData
-    const totalAjustes = transformedData.ajustes.totalAdquirentes.reduce((sum, item) => sum + item.valor, 0); // Using transformedData
+    const totalVendas = transformedData.vendas.totalAdquirentes.reduce((sum, item) => sum + item.valor, 0);
+    const totalCredits = transformedData.creditos.totalAdquirentes.reduce((sum, item) => sum + item.valor, 0);
+    const totalAjustes = transformedData.ajustes.totalAdquirentes.reduce((sum, item) => sum + item.valor, 0);
     
-    setDashboardData(transformedData); // Setting transformedData instead of raw API data
+    setDashboardData(transformedData);
     
     setSalesDashboard({
-      totalLast4: transformedData.vendas.valorTotaldias, // Using transformedData
-      totalMonth: transformedData.vendas.valorTotalMes, // Using transformedData
+      totalLast4: transformedData.vendas.valorTotaldias,
+      totalMonth: transformedData.vendas.valorTotalMes,
       chart: {
         data: vendasChartData.data,
         labels: vendasChartData.labels
       },
-      sales: transformedData.vendas.totalAdquirentes, // Using transformedData
+      sales: transformedData.vendas.totalAdquirentes,
       totalAdmin: totalVendas
     });
     setIsLoadedSalesDashboard(true);
     
     setCreditsDashboard({
-      totalCreditsToday: transformedData.creditos.valorTotaldias, // Using transformedData
-      totalCreditsNext5: transformedData.creditos.valorTotalMes, // Using transformedData
+      totalCreditsToday: transformedData.creditos.valorTotaldias,
+      totalCreditsNext5: transformedData.creditos.valorTotalMes,
       chart: {
         data: creditsChartData.data,
         labels: creditsChartData.labels
       },
-      credits: transformedData.creditos.totalAdquirentes, // Using transformedData
+      credits: transformedData.creditos.totalAdquirentes,
       totalAdmin: totalCredits
     })
     setIsLoadedCreditsDashboard(true)
     
     setServicesDashboard({
-      totalServicesToday: transformedData.ajustes.valorTotaldias, // Using transformedData
-      totalServicesMonth: transformedData.ajustes.valorTotalMes, // Using transformedData
+      totalServicesToday: transformedData.ajustes.valorTotaldias,
+      totalServicesMonth: transformedData.ajustes.valorTotalMes,
       chart: {
         data: ajustesChartData.data,
         labels: ajustesChartData.labels
       },
-      services: transformedData.ajustes.totalAdquirentes, // Using transformedData
+      services: transformedData.ajustes.totalAdquirentes,
       totalAdmin: totalAjustes
     })
     setIsLoadedServicesDashboard(true)
@@ -2763,15 +2769,21 @@ const loadDashboard = async () => {
     setChangedOption(false)
     setFetchingData(false)
     
-    return transformedData // Return transformed data
-  } catch (error) {
-    console.log('Error in dashboard loading:', error)
-    setFetchingData(false)
+    return transformedData
     
+  } catch (error) {
+    console.error('❌ Error in loadDashboard:', error);
+    setFetchingData(false);
+    setIsLoadedDashboard(true); // Mark as loaded to stop spinner
+    
+    // Set error states
     if (error.response && error.response.status === 401) {
-      logout()
-      return
+      logout();
+      return;
     }
+    
+    // Re-throw the error so the component can handle it
+    throw error;
   }
 }
 
