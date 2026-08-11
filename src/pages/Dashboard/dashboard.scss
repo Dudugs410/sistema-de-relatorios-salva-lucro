@@ -366,6 +366,85 @@
       }
     }
   }
+
+  // Dashboard Error Styles
+  .dashboard-error-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 500px;
+    padding: 20px;
+    width: 100%;
+    animation: fadeIn 0.3s ease-in;
+  }
+
+  .error-card {
+    background: var(--background-color);
+    border-radius: 12px;
+    padding: 40px 48px;
+    max-width: 520px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+    border: 2px solid #ff6b6b;
+    transition: all 0.3s ease;
+
+    &:hover {
+      box-shadow: 0 6px 32px rgba(255, 107, 107, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .error-icon {
+      font-size: 56px;
+      margin-bottom: 16px;
+      display: block;
+      animation: pulse 2s infinite;
+    }
+
+    .error-title {
+      color: #ff6b6b;
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .error-message {
+      color: var(--font-color);
+      opacity: 0.8;
+      font-size: 15px;
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+
+    .btn-retry {
+      background: var(--secondary-color, #99cc33);
+      color: white;
+      border: none;
+      padding: 12px 32px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-width: 160px;
+
+      &:hover:not(:disabled) {
+        background: var(--secondary-color-dark, #7aa829);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(153, 204, 51, 0.3);
+      }
+
+      &:active:not(:disabled) {
+        transform: translateY(0);
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+    }
+  }
 }
 
 // ADD THIS - Global icon styles for theme switching
@@ -388,6 +467,27 @@
   }
   100% {
     transform: translateX(100%);
+  }
+}
+
+// Animation for error card
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
   }
 }
 
@@ -467,6 +567,19 @@
         color: var(--background-color);
       }
     }
+
+    .error-card {
+      background: var(--background-color);
+      border-color: #ff6b6b;
+      
+      .error-title {
+        color: #ff6b6b;
+      }
+      
+      .error-message {
+        color: var(--font-color);
+      }
+    }
   }
 }
 
@@ -513,6 +626,27 @@
     .summary-section h3 {
       display: block;
       text-align: center;
+    }
+
+    .error-card {
+      padding: 30px 20px;
+      
+      .error-icon {
+        font-size: 40px;
+      }
+      
+      .error-title {
+        font-size: 18px;
+      }
+      
+      .error-message {
+        font-size: 14px;
+      }
+      
+      .btn-retry {
+        width: 100%;
+        min-width: unset;
+      }
     }
   }
 }
