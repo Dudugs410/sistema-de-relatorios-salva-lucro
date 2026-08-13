@@ -338,13 +338,12 @@ const Servicos = () => {
   }
 
   return (
-    <div className='page-content-vendas'>
-      <div className='vendas-title-container'>
-        <h1 className='vendas-title'>Serviços</h1>
-      </div>
-      <hr className='hr-global' />
-      
+    <div className='page-content-vendas'>      
       <div className='component-container-vendas'>
+        <div className='vendas-title-container'>
+          <h1 className='vendas-title'>Serviços</h1>
+        </div>
+        <hr className='hr-global' />
         {servicesPageArray !== null ?
           servicesPageArray.length > 0 ? (
             <NewDisplayData 

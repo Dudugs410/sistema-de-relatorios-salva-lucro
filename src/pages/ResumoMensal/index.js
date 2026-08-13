@@ -245,172 +245,171 @@ const ResumoMensal = () => {
 
   return (
     <div className='appPage'>
-      <div className='page-vendas-background'>
-        <div className='page-content-vendas'>
+      <div className='page-content-vendas'>        
+        <div className='component-container-vendas'>
           <div className='vendas-title-container'>
             <h1 className='vendas-title'>Resumo Mensal</h1>
           </div>
           <hr className='hr-global' />
-          
-          <div className='component-container-vendas'>
-            {runTutorial &&
-              <Joyride
-                steps={steps}
-                run={runTutorial}
-                continuous={true}
-                scrollToFirstStep={false}
-                showProgress={true}
-                showSkipButton={true}
-                scrollOffset={80}
-                styles={{
-                  options: {
-                    primaryColor: '#99cc33',
-                    textColor: '#0a3d70',
-                    zIndex: 10000,
-                  }
-                }}
-                callback={(data) => {
-                  if (data.status === 'finished' || data.status === 'skipped') {
-                    handleTutorialEnd()
-                  }
-                }}
-                locale={{
-                  back: 'Voltar',
-                  close: 'Fechar',
-                  last: 'Finalizar',
-                  next: 'Próximo',
-                  skip: 'Pular',
-                  nextLabelWithProgress: 'Próximo ({step} de {steps})',
-                }}
-              />
-            }
-            
-            {/* Filters Section - exactly like Creditos page */}
-            <div data-tour="select-container-calendario" className='select-container-calendario'>
-              <div className='select-wrapper'>
-                <h5>Adquirente</h5>
-                <Select
-                  className='seletor-adq-select fixed-width-select'
-                  id='adquirente'
-                  options={listaAdministradoras}
-                  getOptionLabel={(option) => option.nomeAdquirente}
-                  getOptionValue={(option) => option.codigoAdquirente}
-                  onChange={(option) => handleAdmin(option)}
-                  value={getSelectedAdminOption()}
-                  menuPortalTarget={document.body}
-                  menuPosition="fixed"
-                  placeholder="Selecione uma adquirente..."
-                  isClearable={true}
-                  styles={{
-                    control: (base) => ({
-                      ...base,
-                      minWidth: 250,
-                      width: '100%',
-                    }),
-                    menu: (base) => ({
-                      ...base,
-                      minWidth: 250,
-                      width: '100%',
-                    }),
-                    valueContainer: (base) => ({
-                      ...base,
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                    }),
-                    singleValue: (base) => ({
-                      ...base,
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      maxWidth: '90%',
-                    }),
-                  }}
-                />
-              </div>
-              <div className='select-wrapper'>
-                <h5>Bandeira</h5>
-                <Select
-                  className='seletor-adq-select fixed-width-select'
-                  id='bandeira'
-                  options={listaBandeiras}
-                  getOptionLabel={(option) => option.descricaoBandeira}
-                  getOptionValue={(option) => option.codigoBandeira}
-                  onChange={(option) => handleBan(option)}
-                  value={getSelectedBanOption()}
-                  menuPortalTarget={document.body}
-                  menuPosition="fixed"
-                  placeholder="Selecione uma bandeira..."
-                  isClearable={true}
-                  styles={{
-                    control: (base) => ({
-                      ...base,
-                      minWidth: 250,
-                      width: '100%',
-                    }),
-                    menu: (base) => ({
-                      ...base,
-                      minWidth: 250,
-                      width: '100%',
-                    }),
-                    valueContainer: (base) => ({
-                      ...base,
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                    }),
-                    singleValue: (base) => ({
-                      ...base,
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      maxWidth: '90%',
-                    }),
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* Calendar Section */}
-            <div data-tour="calendario-section">
-              <MyCalendar 
-                getCalendarDate={handleDateRangeChange}
-              />
-            </div>
-
-            {/* Export Buttons Section - Only PDF export */}
-            <div data-tour="exportacao-section" className='container' style={{ marginTop: '0px' }}>
-              <div className='export-column'>
-                <button 
-                  className='btn btn-exportar btn-exportar-pdf' 
-                  onClick={handlePDFDownload}
-                  disabled={downloading}
-                  style={{ width: '100%' }}
-                >
-                  {downloading ? 'Gerando PDF...' : 'Download PDF'} <FiFilePlus />
-                </button>
-              </div>
-            </div>
-
-            <button 
-              className='btn btn-success-dados btn-tutorial px-2 py-1'
-              onClick={() => setRunTutorial(true)}
-              style={{
-                position: 'relative',
-                bottom: '0px',
-                right: '-10px',
-                zIndex: 10,
-                padding: '10px 15px',
-                background: 'none',
-                color: '#99cc33',
-                border: 'none',
-                borderRadius: '5px',
-                cursor: 'pointer'
+          {runTutorial &&
+            <Joyride
+              steps={steps}
+              run={runTutorial}
+              continuous={true}
+              scrollToFirstStep={false}
+              showProgress={true}
+              showSkipButton={true}
+              scrollOffset={80}
+              styles={{
+                options: {
+                  primaryColor: '#99cc33',
+                  textColor: '#0a3d70',
+                  zIndex: 10000,
+                }
               }}
-            >
-              <FiHelpCircle />
-            </button>
+              callback={(data) => {
+                if (data.status === 'finished' || data.status === 'skipped') {
+                  handleTutorialEnd()
+                }
+              }}
+              locale={{
+                back: 'Voltar',
+                close: 'Fechar',
+                last: 'Finalizar',
+                next: 'Próximo',
+                skip: 'Pular',
+                nextLabelWithProgress: 'Próximo ({step} de {steps})',
+              }}
+            />
+          }
+          
+          {/* Filters Section - exactly like Creditos page */}
+          <div data-tour="select-container-calendario" className='select-container-calendario'>
+            <div className='select-wrapper'>
+              <h5>Adquirente</h5>
+              <Select
+                className='seletor-adq-select fixed-width-select'
+                id='adquirente'
+                options={listaAdministradoras}
+                getOptionLabel={(option) => option.nomeAdquirente}
+                getOptionValue={(option) => option.codigoAdquirente}
+                onChange={(option) => handleAdmin(option)}
+                value={getSelectedAdminOption()}
+                menuPortalTarget={document.body}
+                menuPosition="fixed"
+                placeholder="Selecione uma adquirente..."
+                isClearable={true}
+                styles={{
+                  control: (base) => ({
+                    ...base,
+                    minWidth: 250,
+                    width: '100%',
+                  }),
+                  menu: (base) => ({
+                    ...base,
+                    minWidth: 250,
+                    width: '100%',
+                  }),
+                  valueContainer: (base) => ({
+                    ...base,
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }),
+                  singleValue: (base) => ({
+                    ...base,
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    maxWidth: '90%',
+                  }),
+                }}
+              />
+            </div>
+            <div className='select-wrapper'>
+              <h5>Bandeira</h5>
+              <Select
+                className='seletor-adq-select fixed-width-select'
+                id='bandeira'
+                options={listaBandeiras}
+                getOptionLabel={(option) => option.descricaoBandeira}
+                getOptionValue={(option) => option.codigoBandeira}
+                onChange={(option) => handleBan(option)}
+                value={getSelectedBanOption()}
+                menuPortalTarget={document.body}
+                menuPosition="fixed"
+                placeholder="Selecione uma bandeira..."
+                isClearable={true}
+                styles={{
+                  control: (base) => ({
+                    ...base,
+                    minWidth: 250,
+                    width: '100%',
+                  }),
+                  menu: (base) => ({
+                    ...base,
+                    minWidth: 250,
+                    width: '100%',
+                  }),
+                  valueContainer: (base) => ({
+                    ...base,
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }),
+                  singleValue: (base) => ({
+                    ...base,
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    maxWidth: '90%',
+                  }),
+                }}
+              />
+            </div>
           </div>
+
+          {/* Calendar Section */}
+          <div data-tour="calendario-section">
+            <MyCalendar 
+              getCalendarDate={handleDateRangeChange}
+            />
+          </div>
+
+          {/* Export Buttons Section - Only PDF export */}
+          <div data-tour="exportacao-section" className='container' style={{ marginTop: '0px' }}>
+            <div className='export-column'>
+              <button 
+                className='btn btn-exportar btn-exportar-pdf' 
+                onClick={handlePDFDownload}
+                disabled={downloading}
+                style={{ width: '100%' }}
+              >
+                {downloading ? 'Gerando PDF...' : 'Download PDF'} <FiFilePlus />
+              </button>
+            </div>
+          </div>
+
+          <hr className='hr-global'/>
+
+          <button 
+            className='btn btn-success-dados btn-tutorial px-2 py-1'
+            onClick={() => setRunTutorial(true)}
+            style={{
+              position: 'relative',
+              bottom: '0px',
+              right: '-10px',
+              zIndex: 10,
+              padding: '10px 15px',
+              background: 'none',
+              color: '#99cc33',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer'
+            }}
+          >
+            <FiHelpCircle />
+          </button>
         </div>
       </div>
     </div>

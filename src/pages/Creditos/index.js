@@ -305,11 +305,11 @@ const Creditos = () => {
 
   return (
     <div className='page-content-vendas'>
-      <div className='vendas-title-container'>
-        <h1 className='vendas-title'>Calendário de Créditos</h1>
-      </div>
-      <hr className='hr-global' />
       <div className='component-container-vendas' data-tour="calendario-section">
+        <div className='vendas-title-container'>
+          <h1 className='vendas-title'>Calendário de Créditos</h1>
+        </div>
+        <hr className='hr-global' />
         {creditsPageArray !== null ?
           (creditsPageArray.length > 0 ? (
             <NewDisplayData
