@@ -616,12 +616,11 @@ const OpenFinance = () => {
 
   return (
     <div className='page-content-global'>
-      <div className='title-container-global'>
-        <h1 className='title-global'>Extrato Bancário</h1>
-      </div>
-      <hr className='hr-global'/>
-
       <div className='component-container-vendas'>
+        <div className='title-container-global'>
+          <h1 className='title-global'>Extrato Bancário</h1>
+        </div>
+        <hr className='hr-global'/>
         {!isDataLoaded ? (
           <>
             {/* Joyride for initial view */}

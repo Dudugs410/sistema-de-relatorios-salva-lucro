@@ -257,14 +257,12 @@ const PrevisaoRecebimentos = () => {
 
   return (
     <div className='appPage'>
-      <div className='page-vendas-background'>
-        <div className='page-content-vendas'>
+      <div className='page-content-vendas'>        
+        <div className='component-container-vendas'>
           <div className='vendas-title-container'>
             <h1 className='vendas-title'>Previsão de Recebimentos</h1>
           </div>
           <hr className='hr-global' />
-          
-          <div className='component-container-vendas'>
             {runTutorial &&
               <Joyride
                 steps={steps}
@@ -296,7 +294,7 @@ const PrevisaoRecebimentos = () => {
                 }}
               />
             }
-            
+          
             {/* Filters Section - exactly like Creditos page */}
             <div data-tour="select-container-calendario" className='select-container-calendario'>
               <div className='select-wrapper'>
@@ -428,9 +426,8 @@ const PrevisaoRecebimentos = () => {
                 cursor: 'pointer'
               }}
             >
-              <FiHelpCircle />
-            </button>
-          </div>
+            <FiHelpCircle />
+          </button>
         </div>
       </div>
     </div>

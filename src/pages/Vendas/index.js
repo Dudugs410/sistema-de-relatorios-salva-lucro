@@ -370,13 +370,12 @@ const Vendas = () =>{
   }
 
   return(
-    <div className='page-content-vendas'>
-      <div className='vendas-title-container'>
-        <h1 className='vendas-title'>Calendário de Vendas</h1>
-      </div>
-      <hr className='hr-global'/>
-      
+    <div className='page-content-vendas'>      
       <div className='component-container-vendas'>
+        <div className='vendas-title-container'>
+          <h1 className='vendas-title'>Calendário de Vendas</h1>
+        </div>
+        <hr className='hr-global'/>
         {salesPageArray !== null ? (
           salesPageArray.length > 0 ? (
             <NewDisplayData
