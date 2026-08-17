@@ -40,6 +40,12 @@
   }
 }
 
+.select-container-open-finance{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
 // Badge styles
 .badge-success {
   background-color: #d4edda;

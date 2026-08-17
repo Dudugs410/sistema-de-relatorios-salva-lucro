@@ -804,8 +804,8 @@ const OpenFinance = () => {
               />
             )}
 
-            <div className='select-container-open-finance' data-tour="cliente-section">
-              <div className='select-wrapper'>
+            <div className='select-container-open-finance'>
+              <div className='select-wrapper' data-tour="cliente-section">
                 <h5>Cliente / Filial</h5>
                 <Select
                   className='seletor-cliente-select fixed-width-select'
@@ -846,10 +846,7 @@ const OpenFinance = () => {
                   })}
                 />
               </div>
-            </div>
-
-            <div className='select-container-open-finance' data-tour="banco-section">
-              <div className='select-wrapper'>
+              <div className='select-wrapper' data-tour="banco-section">
                 <h5>Banco</h5>
                 <Select
                   className='seletor-banco-select fixed-width-select'
