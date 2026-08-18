@@ -731,7 +731,7 @@ const NewDisplayData = ({
 
       {/* Show custom totals for openfinance in a grid layout */}
       {!hideTotals && totals && isOpenFinance && (
-        <div data-tour="totals-section" className="modalidade-section">
+        <div data-tour="totals-section" className="content-container-modalidade">
           <div className="total-container-modalidade">
             <div className='text-container-modalidade'>
               <span className="summary-label">Total de Transações</span>
