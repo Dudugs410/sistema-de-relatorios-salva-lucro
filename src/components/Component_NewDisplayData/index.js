@@ -153,6 +153,9 @@ const NewDisplayData = ({
   const lastDataArrayRef = useRef(null)
   const lastTotalsCallRef = useRef(null)
 
+  // Check if we're on openfinance page
+  const isOpenFinance = customExportPage === 'openfinance'
+
   // Safe date conversion wrapper
   const safeDateConvert = useCallback((date) => {
     if (!date) return 'N/A'
@@ -293,6 +296,23 @@ const NewDisplayData = ({
           { key: 'DESCRICAOAJUSTE', header: 'Descrição' }
         ]
       
+      case 'openfinance':
+        return [
+          { key: 'date', header: 'Data' },
+          { key: 'description', header: 'Descrição' },
+          { key: 'type', header: 'Tipo' },
+          { 
+            key: 'amount', 
+            header: 'Valor',
+            render: (item) => {
+              const valor = Number(item?.amount) || 0
+              return <span className={valor >= 0 ? 'green-global' : 'red-global'}>{formatCurrency(valor)}</span>
+            }
+          },
+          { key: 'category', header: 'Categoria' },
+          { key: 'bank', header: 'Banco' }
+        ]
+      
       default:
         return []
     }
@@ -310,6 +330,12 @@ const NewDisplayData = ({
 
   const getExportFunction = useCallback(() => {
     const exportData = async () => {
+      // Don't export for openfinance
+      if (isOpenFinance) {
+        console.log('Export not available for OpenFinance')
+        return
+      }
+
       if (!tabelaGenericaRef.current && !hideTables) {
         console.warn('Table reference not available')
         return
@@ -323,7 +349,6 @@ const NewDisplayData = ({
           dataToExport = currentFilteredDataFromTable && currentFilteredDataFromTable.length > 0 ? currentFilteredDataFromTable : dataArray
         }
         
-        
         // Use custom export page if provided
         const exportPageType = customExportPage || currentPath
         
@@ -332,24 +357,8 @@ const NewDisplayData = ({
             await exportSales(dataToExport)
             break
           case 'openfinance':
-            // Handle openfinance export
-            // You can implement a specific export function here
-            // Or fallback to a generic export
-            if (exportSales) {
-              await exportSales(dataToExport)
-            } else {
-              // Create a simple CSV download
-              const csvContent = "data:text/csv;charset=utf-8," 
-                + Object.keys(dataToExport[0] || {}).join(",") + "\n"
-                + dataToExport.map(row => Object.values(row).join(",")).join("\n")
-              const encodedUri = encodeURI(csvContent)
-              const link = document.createElement("a")
-              link.setAttribute("href", encodedUri)
-              link.setAttribute("download", `extrato_bancario_${new Date().toISOString().split('T')[0]}.csv`)
-              document.body.appendChild(link)
-              link.click()
-              document.body.removeChild(link)
-            }
+            // Handle openfinance export - disabled for now
+            console.log('OpenFinance export not implemented')
             break
           case '/creditos':
             await exportCredits(dataToExport)
@@ -369,7 +378,7 @@ const NewDisplayData = ({
     }
 
     return exportData
-  }, [currentPath, exportSales, exportCredits, exportServices, dataArray, hideTables, customExportPage])
+  }, [currentPath, exportSales, exportCredits, exportServices, dataArray, hideTables, customExportPage, isOpenFinance])
 
   const getTotalUpdateFunction = useCallback(() => {
     // If custom export page, don't update totals through context
@@ -553,6 +562,17 @@ const NewDisplayData = ({
             dependentKey: 'adquirente'
           }
         }
+      case 'openfinance':
+        return {
+          type: {
+            label: 'Tipo',
+            accessor: (item) => item?.type || '',
+          },
+          category: {
+            label: 'Categoria',
+            accessor: (item) => item?.category || '',
+          }
+        }
       default:
         return {}
     }
@@ -709,51 +729,53 @@ const NewDisplayData = ({
         </div>
       )}
 
-      {/* Show custom totals for openfinance */}
-      {!hideTotals && totals && customExportPage === 'openfinance' && (
-        <div data-tour="totals-section" className="summary-cards">
-          <div className="summary-card">
-            <span className="summary-label">Total de Transações</span>
-            <span className="summary-value">{totals?.count || 0}</span>
+      {/* Show custom totals for openfinance in a grid layout */}
+      {!hideTotals && totals && isOpenFinance && (
+        <div data-tour="totals-section" className="modalidade-section">
+          <div className="total-container-modalidade">
+            <div className='text-container-modalidade'>
+              <span className="summary-label">Total de Transações</span>
+              <span className="summary-value">{totals?.count || 0}</span>              
+            </div>
           </div>
-          <div className="summary-card">
-            <span className="summary-label">Total Receitas</span>
-            <span className="summary-value text-success">
-              {(totals?.income || 0).toLocaleString('pt-BR', {
-                style: 'currency',
-                currency: 'BRL'
-              })}
-            </span>
+          <div className="total-container-modalidade">
+            <div className='text-container-modalidade'>
+              <span className="summary-label">Total Receitas</span>
+              <span className="summary-value text-success">
+                {formatCurrency(totals?.income || 0)}
+              </span>
+            </div>
           </div>
-          <div className="summary-card">
-            <span className="summary-label">Total Despesas</span>
+          <div className="total-container-modalidade">
+            <div className='text-container-modalidade'>
+              <span className="summary-label">Total Despesas</span>
             <span className="summary-value text-danger">
-              {(totals?.expense || 0).toLocaleString('pt-BR', {
-                style: 'currency',
-                currency: 'BRL'
-              })}
+              {formatCurrency(totals?.expense || 0)}
             </span>
+            </div>
           </div>
-          <div className="summary-card">
-            <span className="summary-label">Saldo</span>
+          <div className="total-container-modalidade">
+            <div className='text-container-modalidade'>
+                          <span className="summary-label">Saldo</span>
             <span className={`summary-value ${(totals?.total || 0) >= 0 ? 'text-success' : 'text-danger'}`}>
-              {(totals?.total || 0).toLocaleString('pt-BR', {
-                style: 'currency',
-                currency: 'BRL'
-              })}
+              {formatCurrency(totals?.total || 0)}
             </span>
+            </div>
           </div>
         </div>
       )}
       
-      <div data-tour="exportacao-section">
-        <GerarRelatorio 
-          className='export' 
-          onExport={getExportFunction()}
-          filteredData={currentFilteredData}
-        />
-        <hr className='hr-global'/>
-      </div>
+      {/* Hide export component for openfinance */}
+      {!isOpenFinance && (
+        <div data-tour="exportacao-section">
+          <GerarRelatorio 
+            className='export' 
+            onExport={getExportFunction()}
+            filteredData={currentFilteredData}
+          />
+          <hr className='hr-global'/>
+        </div>
+      )}
       
       {!hideTables && (
         <div className='component-container-vendas'>
@@ -762,7 +784,7 @@ const NewDisplayData = ({
               <TabelaGenericaAdm Array={adminDataArray} />
             </div>
           )}
-          <div data-tour={customExportPage === 'openfinance' ? "tabela-section" : "tabelavendas-section"}>
+          <div data-tour={isOpenFinance ? "tabela-section" : "tabelavendas-section"}>
             {tableProps && (
               <NewTabelaGenerica {...tableProps} />
             )}
