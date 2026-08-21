@@ -756,8 +756,8 @@ const NewDisplayData = ({
           </div>
           <div className="total-container-modalidade">
             <div className='text-container-modalidade'>
-                          <span className="summary-label">Saldo</span>
-            <span className={`summary-value ${(totals?.total || 0) >= 0 ? 'text-success' : 'text-danger'}`}>
+              <span className="summary-label">Saldo</span>
+              <span className={`summary-value ${(totals?.total || 0) >= 0 ? 'text-success' : 'text-danger'}`}>
               {formatCurrency(totals?.total || 0)}
             </span>
             </div>

@@ -154,11 +154,77 @@
           sessionStorage.setItem('themeInitialized', 'true');
           sessionStorage.setItem('themeContext', finalContext);
           sessionStorage.setItem('themeMode', finalTheme);
+
+          function getTenantFromURL() {
+            const path = window.location.pathname;
+            const pathSegments = path.split('/').filter(seg => seg.length > 0);
+            
+            // If no segments, default to salvalucro3
+            if (pathSegments.length === 0) {
+              return 'salvalucro3';
+            }
+            
+            // First segment is the tenant
+            return pathSegments[0];
+          }
+
+          // Map tenant paths to display names and favicon paths
+          const tenantConfig = {
+            'salvalucro3': {
+              title: 'SALVALUCRO | Financeiro',
+              favicon: '%PUBLIC_URL%/favicon.ico',
+              appleTouchIcon: '%PUBLIC_URL%/logo192.png'
+            },
+            'sifra_react': {
+              title: 'SIFRA',
+              favicon: '%PUBLIC_URL%/favicon-sifra.ico',
+              appleTouchIcon: '%PUBLIC_URL%/logo192-sifra.png'
+            },
+            'mg_react': {
+              title: 'MG Soluções',
+              favicon: '%PUBLIC_URL%/favicon-mg.ico',
+              appleTouchIcon: '%PUBLIC_URL%/logo192-mg.png'
+            },
+            'carddigital_react': {
+              title: 'CARD DIGITAL | Conciliação',
+              favicon: '%PUBLIC_URL%/favicon-carddigitalSP.ico',
+              appleTouchIcon: '%PUBLIC_URL%/logo192-carddigital.png'
+            },
+            'superjur_react': {
+              title: 'SUPERJUR',
+              favicon: '%PUBLIC_URL%/favicon-superjur.ico',
+              appleTouchIcon: '%PUBLIC_URL%/logo192-superjur.png'
+            }
+          };
+
+          // Get tenant from URL
+          const tenantKey = getTenantFromURL();
+          const config = tenantConfig[tenantKey] || tenantConfig['salvalucro3'];
+          
+          // Set the document title
+          document.title = config.title;
+          
+          // Update favicon
+          const faviconLink = document.querySelector("link[rel='icon']");
+          if (faviconLink) {
+            faviconLink.href = config.favicon;
+          }
+          
+          // Update apple-touch-icon
+          const appleTouchLink = document.querySelector("link[rel='apple-touch-icon']");
+          if (appleTouchLink) {
+            appleTouchLink.href = config.appleTouchIcon;
+          }
+          
+          // Also store tenant in sessionStorage for React to use
+          sessionStorage.setItem('currentTenant', tenantKey);
           
         } catch(e) {
           console.error('Theme initialization error:', e);
           document.documentElement.setAttribute('data-context', 'salvalucro');
           document.documentElement.setAttribute('data-theme', 'light');
+          // Fallback title
+          document.title = 'SALVALUCRO | Financeiro';
         }
       })();
     </script>
