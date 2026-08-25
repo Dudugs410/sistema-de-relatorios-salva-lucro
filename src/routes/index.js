@@ -1,3 +1,4 @@
+// src/routes.js (or RoutesApp.js)
 import React, { useEffect } from "react"
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom"
 
@@ -32,7 +33,6 @@ function RoutesApp() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    // Salva o caminho atual (relativo ao basename)
     const currentPath = location.pathname
     if (currentPath !== '/' && currentPath !== '/login') {
       sessionStorage.setItem('currentPath', currentPath)
@@ -45,17 +45,13 @@ function RoutesApp() {
     const currentPath = location.pathname
 
     if (!isSignedIn) {
-      // Se não está logado, vai para login (relativo ao basename)
       if (currentPath !== '/' && currentPath !== '/login') {
         navigate('/login')
       }
     } else {
-      // Se está logado
       if (currentPath === '/' || currentPath === '/login') {
-        // Se está na página de login ou raiz, redireciona para dashboard
         navigate('/dashboard')
       } else if (savedPath && savedPath !== currentPath) {
-        // Se tem um caminho salvo e é diferente do atual, navega para ele
         navigate(savedPath)
       }
     }
@@ -67,7 +63,7 @@ function RoutesApp() {
       <Route path="/" element={<Login />} />
       <Route path="/login" element={<Login />} />
       
-      {/* Rotas privadas */}
+      {/* Rotas privadas - only Private component needed */}
       <Route path="/usuario" element={<Private><Usuario /></Private>} />
       <Route path="/dashboard" element={<Private><Dashboard /></Private>} />
       <Route path="/vendas" element={<Private><Vendas /></Private>} />
@@ -79,7 +75,7 @@ function RoutesApp() {
       <Route path="/taxas" element={<Private><Taxas /></Private>} />
       <Route path="/extrato" element={<Private><Extrato /></Private>} />
       <Route path="/cadastrodebancos" element={<Private><CadastroDeBancos /></Private>} />
-      <Route path="/openfinance" element={<Private><OpenFinance/></Private>} />
+      <Route path="/openfinance" element={<Private><OpenFinance /></Private>} />
 
       {/* Rotas comentadas para uso futuro */}
       {/*
@@ -96,7 +92,18 @@ function RoutesApp() {
       */}
       
       {/* Rota de fallback para 404 */}
-      <Route path="*" element={<div>Página não encontrada</div>} />
+      <Route path="*" element={
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          height: '100vh',
+          fontSize: '24px',
+          color: '#666'
+        }}>
+          Página não encontrada
+        </div>
+      } />
     </Routes>
   )
 }

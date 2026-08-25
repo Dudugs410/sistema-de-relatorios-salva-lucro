@@ -1,3 +1,4 @@
+// src/components/Sidebar/Sidebar.js
 import React, { useContext, useState, useEffect } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './Sidebar.scss'
@@ -115,6 +116,13 @@ const Sidebar = () => {
     const safeNavigate = (path) => {
         if (!path) return;
         
+        // Check if user has access to this route
+        const userRoutes = JSON.parse(localStorage.getItem('userRoutes') || '[]');
+        if (!userRoutes.includes(path)) {
+            console.warn('Access denied to:', path);
+            return;
+        }
+        
         if (isOnUsuarioPage()) {
             const event = new CustomEvent('sidebar-navigate', { detail: { path } })
             window.dispatchEvent(event)
@@ -203,6 +211,24 @@ const Sidebar = () => {
             .filter(item => item !== null)
     }
 
+    // Helper function to store menus in localStorage
+    const storeMenusInLocalStorage = (transformedMenus) => {
+        // Store full menu structure
+        localStorage.setItem('userMenus', JSON.stringify(transformedMenus))
+        
+        // Store flat routes for easier checking
+        const flatRoutes = transformedMenus.flatMap(item => {
+            if (item.children && item.children.length > 0) {
+                return item.children.map(child => child.rota).filter(Boolean)
+            }
+            return item.rota ? [item.rota] : []
+        }).filter(Boolean)
+        localStorage.setItem('userRoutes', JSON.stringify(flatRoutes))
+        
+        // Dispatch event to notify other components
+        window.dispatchEvent(new Event('menu-updated'))
+    }
+
     const testDirectFetch = () => {
         const testUserId = localStorage.getItem('userId') || '167561'
         
@@ -211,6 +237,7 @@ const Sidebar = () => {
             .then(data => {
                 const transformed = transformMenuData(data)
                 setOptionsWithIcons(transformed)
+                storeMenusInLocalStorage(transformed)
                 setLoading(false)
             })
             .catch(error => {
@@ -247,11 +274,15 @@ const Sidebar = () => {
             if (response.data && Array.isArray(response.data)) {
                 const transformedMenus = transformMenuData(response.data)
                 setOptionsWithIcons(transformedMenus)
+                storeMenusInLocalStorage(transformedMenus)
             } else if (response.data && response.data.data && Array.isArray(response.data.data)) {
                 const transformedMenus = transformMenuData(response.data.data)
                 setOptionsWithIcons(transformedMenus)
+                storeMenusInLocalStorage(transformedMenus)
             } else {
                 setOptionsWithIcons([])
+                localStorage.setItem('userMenus', JSON.stringify([]))
+                localStorage.setItem('userRoutes', JSON.stringify([]))
             }
         } catch (error) {
             console.error('Error fetching menus:', error)
