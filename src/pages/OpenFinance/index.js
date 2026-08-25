@@ -8,7 +8,7 @@ import MyCalendar from '../../components/Componente_Calendario'
 import NewDisplayData from '../../components/Component_NewDisplayData'
 import api from '../../services/api'
 import { toast } from 'react-toastify'
-import { FiHelpCircle } from 'react-icons/fi'
+import { FiHelpCircle, FiUsers, FiUser } from 'react-icons/fi'
 import '../../styles/global.scss'
 import './OpenFinance.scss'
 
@@ -168,9 +168,33 @@ const customSelectStyles = {
   }),
 }
 
+// Helper function to get icon based on type
+const getIcon = (type) => {
+  switch(type) {
+    case 'users':
+      return <FiUsers size={16} />;
+    case 'user':
+      return <FiUser size={16} />;
+    default:
+      return null;
+  }
+}
+
+const formatOptionLabel = ({ label, iconType }) => (
+  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+    {getIcon(iconType)}
+    <span>{label}</span>
+  </div>
+)
+
 const OpenFinance = () => {
   const location = useLocation()
   const { dateConvert } = useContext(AuthContext)
+
+  // State for client selection
+  const [clientOptions, setClientOptions] = useState([])
+  const [selectedClient, setSelectedClient] = useState(null)
+  const [loadingClients, setLoadingClients] = useState(false)
 
   // State for bank selection
   const [bankCode, setBankCode] = useState(null)
@@ -191,23 +215,94 @@ const OpenFinance = () => {
   const [isDataLoaded, setIsDataLoaded] = useState(false)
   const [runTutorial, setRunTutorial] = useState(false)
 
-  // Load bank options from API
-  const loadBankOptions = useCallback(async () => {
+  // Load client options from localStorage (same as SeletorCliente)
+  const loadClientOptions = useCallback(() => {
+    try {
+      setLoadingClients(true)
+      
+      // Get groups from localStorage
+      const groupsStorage = localStorage.getItem('groupsStorage')
+      if (!groupsStorage) {
+        toast.error('Nenhum grupo encontrado')
+        setLoadingClients(false)
+        return
+      }
+
+      const groups = JSON.parse(groupsStorage)
+      
+      // Create client options from all groups
+      const allClients = []
+      
+      groups.forEach(group => {
+        if (group.CLIENTES && group.CLIENTES.length > 0) {
+          group.CLIENTES.forEach(client => {
+            // Check if client already exists in the list (deduplicate by CNPJ)
+            const exists = allClients.some(c => c.value === client.CNPJ)
+            if (!exists) {
+              allClients.push({
+                value: client.CNPJ,
+                label: client.NOMECLIENTE,
+                cod: client.CODIGOCLIENTE,
+                groupName: group.NOMEGRUPO,
+                iconType: 'user'
+              })
+            }
+          })
+        }
+      })
+
+      // Sort clients by name
+      const sortedClients = allClients.sort((a, b) => a.label.localeCompare(b.label))
+      setClientOptions(sortedClients)
+
+      // Restore previously selected client from localStorage
+      const savedClient = localStorage.getItem('selectedOFClient')
+      if (savedClient) {
+        try {
+          const parsedClient = JSON.parse(savedClient)
+          const foundClient = sortedClients.find(c => c.cod === parsedClient.cod)
+          if (foundClient) {
+            setSelectedClient(foundClient)
+          }
+        } catch (e) {
+          console.error('Error parsing saved client:', e)
+        }
+      }
+    } catch (error) {
+      console.error('Error loading client options:', error)
+      toast.error('Erro ao carregar lista de clientes')
+    } finally {
+      setLoadingClients(false)
+    }
+  }, [])
+
+  // Load bank options based on selected client
+  const loadBankOptions = useCallback(async (clientCode) => {
+    if (!clientCode) {
+      setBankOptions([])
+      setBankCode(null)
+      return
+    }
+
     try {
       setLoadingBanks(true)
-      const response = await api.get('/banco')
       
-      // Filter banks with NOME and CODIGOBANCO, then deduplicate by CODIGOBANCO
+      const response = await api.get('/banco', {
+        params: {
+          codigoCliente: clientCode
+        }
+      })
+      
+      // Filter banks with NOME and CODIGO, then deduplicate by CODIGO
       const banksMap = new Map()
       
       response.data
-        .filter(bank => bank.NOME && bank.CODIGOBANCO)
+        .filter(bank => bank.NOME && bank.CODIGO)
         .forEach(bank => {
-          // Use CODIGOBANCO as key to deduplicate
-          const key = bank.CODIGOBANCO
+          const key = bank.CODIGO
           if (!banksMap.has(key)) {
             banksMap.set(key, {
-              codigoBanco: bank.CODIGOBANCO,
+              codigoBanco: bank.CODIGO,
               nomeBanco: bank.NOME
             })
           }
@@ -218,36 +313,63 @@ const OpenFinance = () => {
         .sort((a, b) => a.nomeBanco.localeCompare(b.nomeBanco))
       
       setBankOptions(banks)
-      
-      // Restore previously selected bank from localStorage
-      const savedBank = localStorage.getItem('selectedBank')
-      if (savedBank) {
-        try {
-          const parsedBank = JSON.parse(savedBank)
-          const foundBank = banks.find(b => b.codigoBanco === parsedBank.codigoBanco)
-          if (foundBank) {
-            setBankCode(foundBank.codigoBanco)
+
+      // Auto-select first bank if available
+      if (banks.length > 0) {
+        const savedBank = localStorage.getItem('selectedOFBank')
+        if (savedBank) {
+          try {
+            const parsedBank = JSON.parse(savedBank)
+            const foundBank = banks.find(b => b.codigoBanco === parsedBank.codigoBanco)
+            if (foundBank) {
+              setBankCode(foundBank.codigoBanco)
+            } else {
+              setBankCode(banks[0].codigoBanco)
+            }
+          } catch (e) {
+            setBankCode(banks[0].codigoBanco)
           }
-        } catch (e) {
-          console.error('Error parsing saved bank:', e)
+        } else {
+          setBankCode(banks[0].codigoBanco)
         }
+      } else {
+        setBankCode(null)
+        toast.info('Nenhum banco encontrado para este cliente')
       }
     } catch (error) {
       console.error('Error loading bank options:', error)
       toast.error('Erro ao carregar lista de bancos')
+      setBankOptions([])
+      setBankCode(null)
     } finally {
       setLoadingBanks(false)
     }
   }, [])
 
-  // Load bank options on component mount
+  // Load clients on component mount
   useEffect(() => {
-    loadBankOptions()
-  }, [loadBankOptions])
+    loadClientOptions()
+  }, [loadClientOptions])
+
+  // Load banks when client changes
+  useEffect(() => {
+    if (selectedClient && selectedClient.cod) {
+      // Store client in localStorage
+      localStorage.setItem('selectedOFClient', JSON.stringify(selectedClient))
+      // Store clientCode for API calls
+      localStorage.setItem('OFclientCode', selectedClient.cod)
+      // Load banks for this client
+      loadBankOptions(selectedClient.cod)
+    } else {
+      setBankOptions([])
+      setBankCode(null)
+      localStorage.removeItem('selectedOFClient')
+      localStorage.removeItem('OFclientCode')
+    }
+  }, [selectedClient, loadBankOptions])
 
   // Reset values
   const resetValues = useCallback(() => {
-    setBankCode(null)
     setBankData([])
     setBankDataAdmin([])
     setBtnDisabled(false)
@@ -261,13 +383,19 @@ const OpenFinance = () => {
     setRunTutorial(false)
   }, [])
 
+  // Handle client selection
+  const handleClientChange = (option) => {
+    setSelectedClient(option)
+    resetValues()
+  }
+
   // Handle bank selection
   const handleBankChange = (option) => {
     setBankCode(option?.codigoBanco || null)
     if (option) {
-      localStorage.setItem('selectedBank', JSON.stringify(option))
+      localStorage.setItem('selectedOFBank', JSON.stringify(option))
     } else {
-      localStorage.removeItem('selectedBank')
+      localStorage.removeItem('selectedOFBank')
     }
   }
 
@@ -332,7 +460,8 @@ const OpenFinance = () => {
             TipoTransacao: item.Categoria === 'Income' ? 'Receita' : 'Despesa',
             CnpjFormatado: formatCNPJ(item.CnpjPagador || item.CnpjRecebedor),
             NOMEBANCO: bankName,
-            CODIGOBANCO: bankCode
+            CODIGO: bankCode,
+            CLIENTE: selectedClient?.label || 'Cliente não informado'
           }))
 
           setBankData(processedData)
@@ -390,7 +519,7 @@ const OpenFinance = () => {
       toast.error(error.response?.data?.message || 'Erro ao carregar dados bancários')
       resetValues()
     }
-  }, [bankCode, dateRange, bankOptions, resetValues])
+  }, [bankCode, dateRange, bankOptions, selectedClient, resetValues])
 
   // Get selected bank option
   const getSelectedBankOption = useCallback(() => {
@@ -536,6 +665,12 @@ const OpenFinance = () => {
   // Tutorial steps
   const [tutorialSteps, setTutorialSteps] = useState([
     {
+      target: '[data-tour="cliente-section"]',
+      content: 'Selecione o cliente/filial desejado para consultar o extrato.',
+      disableBeacon: true,
+      placement: 'bottom',
+    },
+    {
       target: '[data-tour="banco-section"]',
       content: 'Selecione o banco desejado para consultar o extrato.',
       disableBeacon: true,
@@ -557,6 +692,12 @@ const OpenFinance = () => {
   useEffect(() => {
     if (bankData && bankData.length > 0) {
       const newSteps = [
+        {
+          target: '[data-tour="cliente-section"]',
+          content: 'Selecione o cliente/filial desejado para consultar o extrato.',
+          disableBeacon: true,
+          placement: 'bottom',
+        },
         {
           target: '[data-tour="banco-section"]',
           content: 'Selecione o banco desejado para consultar o extrato.',
@@ -593,6 +734,12 @@ const OpenFinance = () => {
       setTutorialSteps(newSteps)
     } else {
       setTutorialSteps([
+        {
+          target: '[data-tour="cliente-section"]',
+          content: 'Selecione o cliente/filial desejado para consultar o extrato.',
+          disableBeacon: true,
+          placement: 'bottom',
+        },
         {
           target: '[data-tour="banco-section"]',
           content: 'Selecione o banco desejado para consultar o extrato.',
@@ -657,8 +804,49 @@ const OpenFinance = () => {
               />
             )}
 
-            <div className='select-container-open-finance' data-tour="banco-section">
-              <div className='select-wrapper'>
+            <div className='select-container-open-finance'>
+              <div className='select-wrapper' data-tour="cliente-section">
+                <h5>Cliente / Filial</h5>
+                <Select
+                  className='seletor-cliente-select fixed-width-select'
+                  id='cliente'
+                  options={clientOptions}
+                  getOptionLabel={(option) => option.label}
+                  getOptionValue={(option) => option.cod}
+                  onChange={handleClientChange}
+                  value={selectedClient}
+                  menuPortalTarget={document.body}
+                  menuPosition="fixed"
+                  placeholder={loadingClients ? "Carregando clientes..." : "Selecione um cliente/filial..."}
+                  isClearable={true}
+                  isLoading={loadingClients}
+                  isDisabled={loadingClients}
+                  formatOptionLabel={formatOptionLabel}
+                  styles={customSelectStyles}
+                  theme={(theme) => ({
+                    ...theme,
+                    colors: {
+                      ...theme.colors,
+                      primary: 'var(--secondary-color)',
+                      primary75: 'var(--secondary-color)',
+                      primary50: 'rgba(var(--secondary-color-rgb), 0.5)',
+                      primary25: 'rgba(var(--secondary-color-rgb), 0.25)',
+                      neutral0: 'var(--background-color)',
+                      neutral5: 'var(--background-color)',
+                      neutral10: 'var(--background-color)',
+                      neutral20: 'var(--bs-border-color)',
+                      neutral30: 'var(--bs-border-color)',
+                      neutral40: 'var(--font-color)',
+                      neutral50: 'var(--font-color)',
+                      neutral60: 'var(--font-color)',
+                      neutral70: 'var(--font-color)',
+                      neutral80: 'var(--font-color)',
+                      neutral90: 'var(--font-color)',
+                    },
+                  })}
+                />
+              </div>
+              <div className='select-wrapper' data-tour="banco-section">
                 <h5>Banco</h5>
                 <Select
                   className='seletor-banco-select fixed-width-select'
@@ -670,10 +858,10 @@ const OpenFinance = () => {
                   value={getSelectedBankOption()}
                   menuPortalTarget={document.body}
                   menuPosition="fixed"
-                  placeholder={loadingBanks ? "Carregando bancos..." : "Selecione um banco..."}
+                  placeholder={!selectedClient ? "Selecione um cliente primeiro" : loadingBanks ? "Carregando bancos..." : "Selecione um banco..."}
                   isClearable={true}
                   isLoading={loadingBanks}
-                  isDisabled={loadingBanks}
+                  isDisabled={!selectedClient || loadingBanks}
                   styles={customSelectStyles}
                   theme={(theme) => ({
                     ...theme,
@@ -704,7 +892,7 @@ const OpenFinance = () => {
               <MyCalendar
                 onLoadData={loadBankData}
                 getCalendarDate={handleDateRangeChange}
-                btnDisabled={btnDisabled || loadingBanks}
+                btnDisabled={btnDisabled || loadingBanks || !bankCode || !selectedClient}
                 customButtonText="Pesquisar"
               />
             </div>
