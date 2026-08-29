@@ -18,6 +18,9 @@ export default function Private({ children }) {
   const location = useLocation()
   const tenant = getTenantFromURL()
 
+  // DEFINE ROUTES THAT ARE ALWAYS ACCESSIBLE (system routes, not in menu)
+  const alwaysAccessibleRoutes = ['/usuario']
+
   const validateToken = (token) => {
     try {
       if (!token) return false;
@@ -42,6 +45,11 @@ export default function Private({ children }) {
   // Check if the current route is accessible based on menu permissions
   const checkMenuAccess = (path) => {
     try {
+      // Always allow system routes
+      if (alwaysAccessibleRoutes.includes(path)) {
+        return true;
+      }
+
       // Get user's menu permissions from localStorage
       const menus = JSON.parse(localStorage.getItem('userMenus') || '[]');
       
@@ -97,7 +105,7 @@ export default function Private({ children }) {
     setHasMenuAccess(hasAccess);
     
     // If user doesn't have access to the current route, redirect to dashboard
-    if (!hasAccess && currentPath !== '/dashboard' && currentPath !== '/usuario') {
+    if (!hasAccess && currentPath !== '/dashboard' && !alwaysAccessibleRoutes.includes(currentPath)) {
       console.warn('Access denied to:', currentPath);
       navigate('/dashboard');
       return;
@@ -117,7 +125,7 @@ export default function Private({ children }) {
       const hasAccess = checkMenuAccess(currentPath);
       setHasMenuAccess(hasAccess);
       
-      if (!hasAccess && currentPath !== '/dashboard' && currentPath !== '/usuario') {
+      if (!hasAccess && currentPath !== '/dashboard' && !alwaysAccessibleRoutes.includes(currentPath)) {
         navigate('/dashboard');
       }
     };

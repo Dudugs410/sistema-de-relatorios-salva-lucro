@@ -361,7 +361,7 @@ const Creditos = () => {
                 <div className='select-wrapper'>
                   <h5>Adquirente</h5>
                   <Select
-                    className='seletor-adq-select fixed-width-select'
+                    className='seletor-adq-select fixed-width-select '
                     id='adquirente'
                     options={listaAdministradoras}
                     getOptionLabel={(option) => option.nomeAdquirente}

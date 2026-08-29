@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable default-case */
 import { React, createContext, useState, useEffect, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useUserPreferences } from '../hooks/useUserPreferences/useUserPreferences'
@@ -7,12 +5,10 @@ import Cookies from 'js-cookie'
 import api, { cancelOngoingRequests } from '../services/api'
 
 import md5 from 'md5'
-
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import jwtDecode from 'jwt-decode'
 import defaultImg from '../assets/LOGO AZUL.png'
-import { imageToBase64 } from '../components/utils/base64'
 
 //imagens de Logo
 import salvalucro from '../assets/LogoTopo.png'
@@ -20,32 +16,157 @@ import sifra from '../assets/logoSifra.png'
 import MG from '../assets/logoMG transparente.png'
 import superjur from '../assets/logoSuperjur outline.png'
 import carddigital from '../assets/logoCardDigital outline.png'
-import SPECIAL from '../assets/PLACEHOLDER.png'
 
 import _ from 'lodash'
 
 import { getIconPathByCode, DEFAULT_ICON_PATH, ICON_MAP } from '../util/iconRegistry'
-// ===== IMPORT DO TENANT =====
 import { getCurrentTenant, getLogoByContext, getTenantFromURL } from '../util/tenant'
-
 export const AuthContext = createContext({})
 
 function AuthProvider({ children }){
-	const [isSignedIn, setIsSignedIn] = useState(false)
-	const [accessToken, setAccessToken] = useState(undefined)
+const [isSignedIn, setIsSignedIn] = useState(() => {
+  return localStorage.getItem('isSignedIn') === 'true'
+})
+const [accessToken, setAccessToken] = useState(undefined)
+const [clientUserId, setClientUserId] = useState()
+const [userImg, setUserImg] = useState('')
+const [theme, setTheme] = useState(() => {
+  const userData = JSON.parse(localStorage.getItem('user'))
+  if (userData?.TEMA !== undefined) return userData.TEMA === true
+  return false
+})
+const [colorScheme, setColorScheme] = useState(() => {
+  return localStorage.getItem('appContext') || 'salvalucro'
+})
+const [currentContext, setCurrentContext] = useState(() => {
+  return localStorage.getItem('appContext') || 'salvalucro'
+})
+const [currentLogo, setCurrentLogo] = useState(() => {
+  const savedContext = localStorage.getItem('appContext') || 'salvalucro'
+  return getLogoByContext(savedContext) || salvalucro
+})
+const [userPreferences, setUserPreferences] = useState(null)
 
-	const [clientUserId, setClientUserId] = useState()
-  const [userImg, setUserImg] = useState('')
+const { loadUserPrefs, saveUserPrefs, createDefaultPreferences, forceRefreshPreferences } = useUserPreferences()
+
+
+const applyPreferences = useCallback((prefs) => {
+  if (!prefs) return
   
-  // Theme state
-  const [theme, setTheme] = useState(false) // false = light, true = dark
+  // Apply theme
+  if (prefs.TEMA !== undefined) {
+    const themeValue = prefs.TEMA === true || prefs.TEMA === 'true'
+    setTheme(themeValue)
+    document.documentElement.setAttribute('data-theme', themeValue ? 'dark' : 'light')
+    localStorage.setItem('appTheme', themeValue ? 'dark' : 'light')
+    localStorage.setItem('isChecked', JSON.stringify(themeValue))
+  }
+  
+  // Apply color scheme
+  if (prefs.ESQUEMACORES) {
+    const scheme = prefs.ESQUEMACORES
+    setColorScheme(scheme)
+    setCurrentContext(scheme)
+    document.documentElement.setAttribute('data-context', scheme)
+    localStorage.setItem('appContext', scheme)
+    localStorage.setItem('selectedContext', scheme)
+    
+    // Update logo
+    const logo = getLogoByContext(scheme)
+    if (logo) {
+      setCurrentLogo(logo)
+    }
+  }
+  
+  // Apply icon - PRESERVE the icon from preferences
+  if (prefs.ICONE) {
+    const iconPath = getIconPathByCode(prefs.ICONE)
+    if (iconPath) {
+      setUserImg(iconPath)
+      localStorage.setItem('userIconCode', prefs.ICONE)
+    }
+  } else {
+    // Fallback: if no icon in preferences, try to get from localStorage
+    const savedIconCode = localStorage.getItem('userIconCode')
+    if (savedIconCode) {
+      const iconPath = getIconPathByCode(parseInt(savedIconCode))
+      if (iconPath) {
+        setUserImg(iconPath)
+      }
+    }
+  }
+}, [])
 
-  ////////////////////////////////////////////////////////////////
+const updatePreferences = useCallback(async (updates) => {
+  const userId = localStorage.getItem('userID')
+  const token = localStorage.getItem('token')
+  
+  if (!userId || !token) return false
+  
+  try {
+    // Get the current preferences from cache first (most recent)
+    let currentPrefs = await loadUserPrefs()
+    
+    // If no preferences exist, get from localStorage fallback
+    if (!currentPrefs) {
+      const userData = JSON.parse(localStorage.getItem('user'))
+      const identidadeVisual = userData?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro'
+      
+      let defaultIconCode = 1
+      switch (identidadeVisual) {
+        case 'sifra': defaultIconCode = 7; break
+        case 'mg': defaultIconCode = 6; break
+        case 'superjur': defaultIconCode = 8; break
+        case 'carddigital': defaultIconCode = 9; break
+        default: defaultIconCode = 1; break
+      }
+      
+      currentPrefs = {
+        TEMA: false,
+        ICONE: defaultIconCode,
+        ESQUEMACORES: identidadeVisual
+      }
+    }
+    
+    const getCurrentDate = () => new Date().toISOString().split('T')[0]
+    const now = getCurrentDate()
+    
+    // IMPORTANT: Only update the fields that are provided, keep everything else
+    const body = {
+      USUCODIGO: parseInt(userId),
+      TEMA: updates.theme !== undefined ? updates.theme : (currentPrefs.TEMA || false),
+      ICONE: updates.iconCode !== undefined ? updates.iconCode : (currentPrefs.ICONE || 1),
+      ESQUEMACORES: updates.colorScheme !== undefined ? updates.colorScheme : (currentPrefs.ESQUEMACORES || 'salvalucro'),
+      USUARIOMODIFICACAO: parseInt(userId),
+      DATAMODIFICACAO: now,
+      USUARIOINSERCAO: parseInt(userId),
+      DATAINSERCAO: now,
+      ATIVO: true
+    }
+    
+    if (currentPrefs.CODIGO) {
+      body.CODIGO = currentPrefs.CODIGO
+    }
+    
+    const result = await saveUserPrefs(body)
+    
+    if (result) {
+      // Force refresh from API to get the latest
+      const freshPrefs = await forceRefreshPreferences()
+      if (freshPrefs) {
+        setUserPreferences(freshPrefs)
+        applyPreferences(freshPrefs)
+      }
+      return true
+    }
+    
+    return false
+  } catch (error) {
+    console.error('Error updating preferences:', error)
+    return false
+  }
+}, [loadUserPrefs, saveUserPrefs, forceRefreshPreferences, applyPreferences])
 
-  const {
-    loadUserPrefs,
-    saveUserPrefs,
-  } = useUserPreferences()
 
 	////////////////////////////////////////////////////////////////
 
@@ -78,8 +199,29 @@ function AuthProvider({ children }){
 
   // ===== LOGO STATE - Inicializa com base no tenant da URL =====
   const initialTenant = getTenantFromURL();
-  const [currentLogo, setCurrentLogo] = useState(initialTenant?.logo || salvalucro)
-  const [currentContext, setCurrentContext] = useState(initialTenant?.contextKey || 'SL')
+  
+  useEffect(() => {
+  const loadPreferences = async () => {
+    const token = localStorage.getItem('token')
+    const userId = localStorage.getItem('userID')
+    
+    if (token && userId) {
+      let prefs = await loadUserPrefs()
+      
+      if (!prefs) {
+        const userData = JSON.parse(localStorage.getItem('user'))
+        prefs = await createDefaultPreferences(userId, userData)
+      }
+      
+      if (prefs) {
+        setUserPreferences(prefs)
+        applyPreferences(prefs)
+      }
+    }
+  }
+  
+  loadPreferences()
+}, [])
 
   // ===== FUNÇÃO PARA CARREGAR LOGO DO TENANT =====
   const loadLogoFromTenant = useCallback(() => {
@@ -135,64 +277,54 @@ function AuthProvider({ children }){
   }, [currentContext]);
 
   // Theme toggle function
-  const toggleTheme = useCallback(async () => {
-    const newTheme = !theme
-    setTheme(newTheme)
-    
-    document.documentElement.setAttribute('data-theme', newTheme ? 'dark' : 'light')
-    localStorage.setItem('appTheme', newTheme ? 'dark' : 'light')
-    
-    const userId = localStorage.getItem('userID')
-    const token = localStorage.getItem('token')
-    
-    if (userId && token) {
-      try {
-        let existingPrefs = null
-        try {
-          const prefsResponse = await api.get('PreferenciasUsuario', {
-            params: { codigo: userId }
-          })
-          existingPrefs = prefsResponse.data
-        } catch (e) {
-          console.log('No existing preferences found')
-        }
-        
-        const getCurrentDate = () => new Date().toISOString().split('T')[0]
-        const now = getCurrentDate()
-        
-        const currentIconCode = existingPrefs?.ICONE || 1
-        const currentColorScheme = existingPrefs?.ESQUEMACORES || 'salvalucro'
-        
-        const payload = {
-          USUCODIGO: parseInt(userId),
-          TEMA: newTheme,
-          ICONE: currentIconCode,
-          ESQUEMACORES: currentColorScheme,
-          USUARIOMODIFICACAO: parseInt(userId),
-          DATAMODIFICACAO: now,
-          USUARIOINSERCAO: parseInt(userId),
-          DATAINSERCAO: now,
-          ATIVO: true
-        }
-        
-        if (existingPrefs?.CODIGO) {
-          payload.CODIGO = existingPrefs.CODIGO
-          await api.put('PreferenciasUsuario', payload)
-        } else {
-          await api.post('PreferenciasUsuario', payload)
-        }
-        
-        const userData = JSON.parse(localStorage.getItem('user'))
-        if (userData) {
-          userData.TEMA = newTheme
-          localStorage.setItem('user', JSON.stringify(userData))
-        }
-        
-      } catch (error) {
-        console.error('Failed to save theme to database:', error)
-      }
-    }
-  }, [theme])
+const toggleTheme = useCallback(async () => {
+  const newTheme = !theme
+  // Get current preferences to preserve icon and color scheme
+  const currentPrefs = await loadUserPrefs()
+  
+  const result = await updatePreferences({ 
+    theme: newTheme,
+    iconCode: currentPrefs?.ICONE || parseInt(localStorage.getItem('userIconCode')) || 1,
+    colorScheme: currentPrefs?.ESQUEMACORES || localStorage.getItem('appContext') || 'salvalucro'
+  })
+  
+  if (result) {
+    return true
+  }
+  return false
+}, [theme, updatePreferences, loadUserPrefs])
+
+const updateColorScheme = useCallback(async (scheme) => {
+  // Get current preferences first to preserve the icon
+  const currentPrefs = await loadUserPrefs()
+  const currentIcon = currentPrefs?.ICONE || parseInt(localStorage.getItem('userIconCode')) || 1
+  
+  const result = await updatePreferences({ 
+    colorScheme: scheme,
+    iconCode: currentIcon  // Explicitly preserve the icon
+  })
+  
+  if (result) {
+    return true
+  }
+  return false
+}, [updatePreferences, loadUserPrefs])
+
+const updateIcon = useCallback(async (iconCode) => {
+  // Get current preferences first to preserve the color scheme
+  const currentPrefs = await loadUserPrefs()
+  const currentColorScheme = currentPrefs?.ESQUEMACORES || localStorage.getItem('appContext') || 'salvalucro'
+  
+  const result = await updatePreferences({ 
+    iconCode: iconCode,
+    colorScheme: currentColorScheme  // Explicitly preserve the color scheme
+  })
+  
+  if (result) {
+    return true
+  }
+  return false
+}, [updatePreferences, loadUserPrefs])
 
   // Load theme from user data when user changes
   useEffect(() => {
@@ -210,9 +342,6 @@ function AuthProvider({ children }){
     
     loadThemeFromUser()
   }, [clientUserId])
-
-  // ===== NÃO SOBRESCREVER O LOGO COM O savedContext =====
-  // Este useEffect foi removido/substituído pela lógica acima
 
   useEffect(() => {
     if (currentContext) {
@@ -250,7 +379,6 @@ function AuthProvider({ children }){
   }
 
 const [currentTheme, setCurrentTheme] = useState(false);
-const [userPreferences, setUserPreferences] = useState(null);
 
 // Function to load user preferences from API
 const loadUserPreferences = useCallback(async (userId) => {
@@ -410,44 +538,48 @@ const loginApp = async (login, password) => {
         }
       }
 
-      // ===== DETERMINE CONTEXT - PRIORITIZE URL TENANT =====
-      // Primeiro tenta da URL
+      // ===== DETERMINE THEME VALUE =====
+      // Get theme from preferences first, then fallback to user data
+      let themeValue = false
+      if (userPreferences?.TEMA !== undefined && userPreferences?.TEMA !== null) {
+        themeValue = userPreferences.TEMA === true || userPreferences.TEMA === 'true'
+      } else if (user?.TEMA !== undefined && user?.TEMA !== null) {
+        themeValue = user.TEMA === true || user.TEMA === 'true'
+      }
+
+      // ===== DETERMINE COLOR SCHEME =====
       const urlTenant = getTenantFromURL();
       let context = urlTenant?.contextKey || 'SL';
       let logo = urlTenant?.logo || salvalucro;
-      
-      // Se não tiver tenant na URL, usa o das preferências
+
+      // If no tenant in URL, use preferences
       if (!urlTenant) {
         context = userPreferences?.ESQUEMACORES || user?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro';
         logo = getLogoByContext(context) || salvalucro;
       }
 
-      // ===== DETERMINE THEME =====
-      let themeValue
-      if (userPreferences?.TEMA !== undefined && userPreferences?.TEMA !== null) {
-        themeValue = userPreferences.TEMA === true || userPreferences.TEMA === 'true'
-      } else {
-        themeValue = user.TEMA === true || user.TEMA === 'true'
-      }
+      // ===== APPLY THEME =====
+      setTheme(themeValue)
+      document.documentElement.setAttribute('data-theme', themeValue ? 'dark' : 'light')
+      localStorage.setItem('appTheme', themeValue ? 'dark' : 'light')
 
-      // ===== APPLY EVERYTHING TO DOM AND STORAGE =====
-      setCurrentContext(context)
+      // ===== APPLY COLOR SCHEME =====
+      setColorScheme(context)
       document.documentElement.setAttribute('data-context', context)
       localStorage.setItem('appContext', context)
       localStorage.setItem('selectedContext', context)
       
-      setTheme(themeValue)
-      document.documentElement.setAttribute('data-theme', themeValue ? 'dark' : 'light')
-      localStorage.setItem('appTheme', themeValue ? 'dark' : 'light')
+      // ===== APPLY CONTEXT =====
+      setCurrentContext(context)
       
-      // Set logo from URL tenant (not from preferences)
+      // ===== SET LOGO =====
       if (logo) {
         setCurrentLogo(logo)
       } else {
         setCurrentLogo(salvalucro)
       }
 
-      // Apply icon
+      // ===== APPLY ICON =====
       if (userPreferences?.ICONE) {
         localStorage.setItem('userIconCode', userPreferences.ICONE)
         const iconPath = getIconPathByCode(userPreferences.ICONE)
@@ -520,19 +652,6 @@ const loginApp = async (login, password) => {
           api.post('/LogAcesso', body)
         }
         
-        const getLoginLog = async () => {
-          let params = {
-            codigo: userId
-          }
-
-          let config = {
-            params: params
-          }
-
-          let res = await api.get('/LogAcesso', config)
-          return res
-        }
-
         try {
           await loginLog()
         } catch (error) {
@@ -595,6 +714,16 @@ const loginApp = async (login, password) => {
   }
 }
 
+const loadThemeFromAPI = useCallback(async (userId) => {
+  const prefs = await loadUserPrefs()
+  if (prefs) {
+    setUserPreferences(prefs)
+    applyPreferences(prefs)
+    return prefs
+  }
+  return null
+}, [loadUserPrefs, applyPreferences])
+
 const loadUser = async (userId) => {
   let params = { codigo: userId }
   let config = { params: params }
@@ -629,19 +758,20 @@ const loadUser = async (userId) => {
 }
 
   /////desloga usuário
-	const logout = useCallback(() => {
-		clearCookies()
-		localStorage.clear()
-		cancelOngoingRequests()
-		resetAppValues()
-    localStorage.removeItem('isSignedIn')
-    localStorage.removeItem('selectedContext')
-    sessionStorage.removeItem('currentPath')
-		localStorage.setItem('isSignedIn', false)
-    setTheme(false)
-    document.documentElement.setAttribute('data-theme', 'light')
-		navigate('/')
-	}, [navigate])
+const logout = useCallback(() => {
+  clearCookies()
+  localStorage.clear()
+  cancelOngoingRequests()
+  resetAppValues()
+  localStorage.setItem('isSignedIn', false)
+  setIsSignedIn(false)
+  setTheme(false)
+  setColorScheme('salvalucro')
+  setCurrentContext('salvalucro')
+  document.documentElement.setAttribute('data-theme', 'light')
+  document.documentElement.setAttribute('data-context', 'salvalucro')
+  navigate('/')
+}, [navigate])
 
   // FIXED: Memoized updateUser function
   const updateUser = useCallback(async (userObj) => {
@@ -3602,9 +3732,13 @@ const exportCredits = (data) => {
 		userImg, setUserImg,
     currentLogo, currentContext,
     theme, toggleTheme,
+    colorScheme, setColorScheme, updateColorScheme,
+    updateIcon,
+    updatePreferences,
     userPreferences,
     currentTheme,
     loadUserPreferences,
+    applyPreferences,
 
 		// Dashboard //
 		loadDashboard, isLoadedDashboard, setIsLoadedDashboard,

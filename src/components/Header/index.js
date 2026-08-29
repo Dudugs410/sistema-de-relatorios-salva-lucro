@@ -22,8 +22,12 @@ const Header = () => {
         setIsCheckedCalendar(!isCheckedCalendar)
     }, [isCheckedCalendar, setIsCheckedCalendar])
 
-    const handleCheckboxChange = useCallback(() => {
-        toggleTheme();
+const handleCheckboxChange = useCallback(async () => {
+    const result = await toggleTheme()
+    if (result) {
+        // Theme was updated successfully
+        console.log('Theme updated')
+    }
     }, [toggleTheme])
     
     const [optionsWithIcons, setOptionsWithIcons] = useState([])

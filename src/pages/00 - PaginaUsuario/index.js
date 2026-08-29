@@ -16,12 +16,16 @@ import {
 import jwtDecode from 'jwt-decode'
 
 const ENABLE_CUSTOMIZATION = true
-//teste
-// Your specific user ID - change this to your actual user ID
-const SPECIAL_USER_ID = 167561 // Replace with your user ID
+const SPECIAL_USER_ID = 167561
 
 const Usuario = () => {
-  const { userImg, setUserImg, loadUser, logout, updateUser, theme } = useContext(AuthContext)
+  const { 
+    userImg, setUserImg, 
+    loadUser, logout, updateUser, 
+    theme,
+    colorScheme,
+    updateColorScheme
+  } = useContext(AuthContext)
   const { loadUserPrefs, saveUserPrefs } = useUserPreferences()
   const navigate = useNavigate()
   const location = useLocation()
@@ -29,19 +33,17 @@ const Usuario = () => {
   const [imageLoading, setImageLoading] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
   const [activeRightPanel, setActiveRightPanel] = useState(null)
-  const [selectedScheme, setSelectedScheme] = useState('salvalucro')
+  const [selectedScheme, setSelectedScheme] = useState(colorScheme || 'salvalucro')
   const [schemeColors, setSchemeColors] = useState({})
   const [selectedIcon, setSelectedIcon] = useState(null)
   const [saving, setSaving] = useState(false)
   const [currentSavedIconCode, setCurrentSavedIconCode] = useState(null)
   const [defaultIcon, setDefaultIcon] = useState(null)
   
-  // Unsaved changes tracking
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
-  const [originalScheme, setOriginalScheme] = useState('salvalucro')
+  const [originalScheme, setOriginalScheme] = useState(colorScheme || 'salvalucro')
   const [originalIconCode, setOriginalIconCode] = useState(null)
   
-  // Modal state
   const [showNavigationModal, setShowNavigationModal] = useState(false)
   const [pendingAction, setPendingAction] = useState(null)
   const [pendingDestination, setPendingDestination] = useState(null)
@@ -49,27 +51,22 @@ const Usuario = () => {
   const user = JSON.parse(localStorage.getItem('user')) || {}
   const currentUserId = user?.CODIGO || user?.USUCODIGO
   const isSpecialUser = currentUserId === SPECIAL_USER_ID
-  // This should come from the user's group, not from preferences
   const identidadeVisual = user?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro'
 
-  // Get selectable icons based on user's role
-  const colorIcons = getSelectableColorIcons() // Only the 5 basic colors
+  const colorIcons = getSelectableColorIcons()
   const adminExclusiveIcons = getAdminIcons()
   const secretIcons = getSecretIcons()
   const isAdmin = user?.ADMIN === true || user?.role === 'admin' || user?.tipo === 'admin' || user?.GRUPO?.NOME === 'ADMINISTRADORES'
 
-  // Set default icon based on user's visual identity (from GRUPO)
   useEffect(() => {
     const defaultIconData = getUserDefaultIcon(identidadeVisual)
     setDefaultIcon(defaultIconData)
   }, [identidadeVisual])
 
-  // Get default icon path for fallback
   const getDefaultIconPath = () => {
     return getDefaultIconByVisualIdentity(identidadeVisual).path
   }
 
-  // Handle browser refresh/close warning
   useEffect(() => {
     const handleBeforeUnload = (e) => {
       if (hasUnsavedChanges) {
@@ -83,7 +80,6 @@ const Usuario = () => {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload)
   }, [hasUnsavedChanges])
 
-  // Listen for sidebar navigation events
   useEffect(() => {
     const handleSidebarNavigation = (event) => {
       const { path } = event.detail || {}
@@ -102,7 +98,6 @@ const Usuario = () => {
     return () => window.removeEventListener('sidebar-navigate', handleSidebarNavigation)
   }, [hasUnsavedChanges, location.pathname, navigate])
 
-  // Function to get the default color scheme based on user's IDENTIDADEVISUAL
   const getDefaultColorScheme = () => {
     switch (identidadeVisual) {
       case 'sifra':
@@ -118,10 +113,7 @@ const Usuario = () => {
     }
   }
 
-  // Function to get colors for a specific scheme and theme
   const getSchemeColors = (schemeId, theme) => {
-    // For colorblind schemes, return the actual rendered colors immediately
-    // without trying to read from DOM
     const colorblindColors = {
       'CB-PROTANOPIA': { 
         light: { primary: '#0055A4', secondary: '#FFB347' }, 
@@ -145,13 +137,11 @@ const Usuario = () => {
       }
     }
 
-    // If it's a colorblind scheme, return the colors immediately
     if (colorblindColors[schemeId]) {
       const colors = colorblindColors[schemeId][theme] || colorblindColors[schemeId].light
       return { primary: colors.primary, secondary: colors.secondary }
     }
 
-    // For regular schemes, try to read from DOM
     try {
       const tempDiv = document.createElement('div')
       tempDiv.setAttribute('data-context', schemeId)
@@ -161,7 +151,6 @@ const Usuario = () => {
       tempDiv.style.pointerEvents = 'none'
       document.body.appendChild(tempDiv)
       
-      // Force multiple reflows to ensure styles are applied
       tempDiv.offsetHeight
       tempDiv.offsetHeight
       
@@ -169,12 +158,8 @@ const Usuario = () => {
       let primaryColor = computedStyle.getPropertyValue('--primary-color').trim()
       let secondaryColor = computedStyle.getPropertyValue('--secondary-color').trim()
       
-      // Remove the temporary element
       document.body.removeChild(tempDiv)
       
-      // Debug log to see what's being read
-      
-      // If colors were successfully read and are valid, return them
       if (primaryColor && primaryColor !== '' && primaryColor !== 'undefined') {
         return { primary: primaryColor, secondary: secondaryColor }
       }
@@ -182,7 +167,6 @@ const Usuario = () => {
       console.warn('Error reading colors from DOM for scheme:', schemeId, error)
     }
 
-    // Fallback for regular schemes when DOM reading fails
     const fallbackColors = {
       'salvalucro': { light: { primary: '#0a3d70', secondary: '#99cc33' }, dark: { primary: '#141414', secondary: '#99cc33' } },
       'sifra': { light: { primary: '#0a3d70', secondary: '#e0ca00' }, dark: { primary: '#141414', secondary: '#a19100' } },
@@ -209,7 +193,6 @@ const Usuario = () => {
     return fallbackColors[schemeId]?.[theme] || { primary: '#cccccc', secondary: '#cccccc' }
   }
 
-  // Available color schemes with names
   const colorSchemes = [
     getDefaultColorScheme(),
     { id: 'SPECIAL', name: 'Especial (Rosa/Roxo)' },
@@ -227,7 +210,6 @@ const Usuario = () => {
     { id: 'ALT-12', name: 'Vermelho Cereja' },
     { id: 'ALT-13', name: '2007 Original' },
     { id: 'ALT-14', name: 'Rosa' },
-    // Colorblind-friendly options
     { id: 'CB-PROTANOPIA', name: '♿ Protanopia (Vermelho-Deficiente)' },
     { id: 'CB-DEUTERANOPIA', name: '♿ Deuteranopia (Verde-Deficiente)' },
     { id: 'CB-TRITANOPIA', name: '♿ Tritanopia (Azul-Deficiente)' },
@@ -235,7 +217,6 @@ const Usuario = () => {
     { id: 'CB-HIGH-CONTRAST', name: '♿ Alto Contraste' }
   ]
 
-  // Load all scheme colors on component mount
   useEffect(() => {
     const colors = {}
     colorSchemes.forEach(scheme => {
@@ -247,14 +228,14 @@ const Usuario = () => {
     setSchemeColors(colors)
   }, [])
 
-  // Load saved preferences from API on component mount
   useEffect(() => {
     const loadCurrentPreferences = async () => {
       const prefs = await loadUserPrefs()
       if (prefs?.ESQUEMACORES) {
-        setSelectedScheme(prefs.ESQUEMACORES)
-        setOriginalScheme(prefs.ESQUEMACORES)
-        document.documentElement.setAttribute('data-context', prefs.ESQUEMACORES)
+        const scheme = prefs.ESQUEMACORES
+        setSelectedScheme(scheme)
+        setOriginalScheme(scheme)
+        updateColorScheme(scheme)
       }
       if (prefs?.ICONE) {
         setOriginalIconCode(prefs.ICONE)
@@ -262,14 +243,12 @@ const Usuario = () => {
       }
     }
     loadCurrentPreferences()
-  }, [])
+  }, [loadUserPrefs, updateColorScheme])
 
-  // Save current changes
   const saveCurrentChanges = async () => {
     setSaving(true)
     
     try {
-      // Save icon if selected and changed
       if (selectedIcon && originalIconCode !== selectedIcon.code) {
         const token = localStorage.getItem('token')
         const user = await loadUser(jwtDecode(token).id)
@@ -299,7 +278,6 @@ const Usuario = () => {
         setCurrentSavedIconCode(selectedIcon.code)
       }
       
-      // Save color scheme if changed
       if (originalScheme !== selectedScheme) {
         const token = localStorage.getItem('token')
         const user = await loadUser(jwtDecode(token).id)
@@ -324,7 +302,7 @@ const Usuario = () => {
         }
         
         await saveUserPrefs(body)
-        document.documentElement.setAttribute('data-context', selectedScheme)
+        updateColorScheme(selectedScheme)
         setOriginalScheme(selectedScheme)
       }
       
@@ -339,7 +317,6 @@ const Usuario = () => {
     }
   }
 
-  // Handle navigation/save/discard
   const handleNavigationConfirm = async (shouldSave) => {
     setShowNavigationModal(false)
     
@@ -355,13 +332,11 @@ const Usuario = () => {
         }
       }
     } else {
-      // Discard changes
       setHasUnsavedChanges(false)
       setSelectedIcon(null)
       setSelectedScheme(originalScheme)
       document.documentElement.setAttribute('data-context', originalScheme)
       
-      // Revert icon
       const prefs = await loadUserPrefs()
       const allSelectableIcons = [...colorIcons, ...adminExclusiveIcons, ...secretIcons, defaultIcon]
       const savedIcon = allSelectableIcons.find(icon => icon.code === prefs?.ICONE)
@@ -382,7 +357,6 @@ const Usuario = () => {
     setPendingDestination(null)
   }
 
-  // Function to handle icon selection
   const handleIconSelect = (icon) => {
     if (!ENABLE_CUSTOMIZATION) return
     setSelectedIcon(icon)
@@ -392,7 +366,6 @@ const Usuario = () => {
     }
   }
 
-  // Apply icon and save
   const handleApplyIcon = async () => {
     if (!ENABLE_CUSTOMIZATION || !selectedIcon) {
       alert('Por favor, selecione um ícone primeiro.')
@@ -439,7 +412,6 @@ const Usuario = () => {
     setSaving(false)
   }
 
-  // Function to trigger icon selection panel
   const handleImageClick = () => {
     if (!ENABLE_CUSTOMIZATION) return
     setActiveRightPanel('icons')
@@ -447,7 +419,6 @@ const Usuario = () => {
     setHasUnsavedChanges(false)
   }
 
-  // Apply color scheme and save
   const handleApplyColorScheme = async () => {
     if (!ENABLE_CUSTOMIZATION) return
     
@@ -478,7 +449,7 @@ const Usuario = () => {
     const success = await saveUserPrefs(body)
     
     if (success) {
-      document.documentElement.setAttribute('data-context', selectedScheme)
+      updateColorScheme(selectedScheme)
       setOriginalScheme(selectedScheme)
       setHasUnsavedChanges(false)
       alert(`Esquema de cores "${colorSchemes.find(s => s.id === selectedScheme)?.name}" salvo com sucesso!`)
@@ -489,7 +460,6 @@ const Usuario = () => {
     setSaving(false)
   }
 
-  // Preview color scheme
   const previewColorScheme = (schemeId) => {
     if (!ENABLE_CUSTOMIZATION) return
     document.documentElement.setAttribute('data-context', schemeId)
@@ -499,7 +469,6 @@ const Usuario = () => {
     }
   }
 
-  // Handle panel change
   const handlePanelChange = (panelName) => {
     if (hasUnsavedChanges && activeRightPanel !== panelName) {
       setPendingAction('panel')
@@ -512,7 +481,6 @@ const Usuario = () => {
     }
   }
 
-  // Handle logout
   const handleLogout = () => {
     if (hasUnsavedChanges) {
       setPendingAction('logout')
@@ -522,27 +490,22 @@ const Usuario = () => {
     }
   }
 
-  // Check if an icon is selected
   const isIconSelected = (icon) => {
     return selectedIcon && selectedIcon.id === icon.id
   }
 
-  // Check if an icon is currently saved
   const isCurrentIcon = (icon) => {
     return currentSavedIconCode === icon.code
   }
 
-  // Check if color scheme has pending changes
   const isSchemePending = (schemeId) => {
     return hasUnsavedChanges && selectedScheme === schemeId && originalScheme !== schemeId
   }
 
-  // Check if icon has pending changes
   const isIconPending = (icon) => {
     return hasUnsavedChanges && isIconSelected(icon) && originalIconCode !== icon.code
   }
 
-  // Close panel
   const handleClosePanel = () => {
     if (hasUnsavedChanges) {
       const confirmClose = window.confirm('Você tem alterações não salvas. Deseja sair sem salvar?')
@@ -603,7 +566,6 @@ const Usuario = () => {
       <NavigationModal />
       <div className='page-background-global'>
         <div className='page-content-global user-page'>
-          {/* Left/Menu Section */}
           <div className='user-menu-section'>
             <div className='user-card'>
               <div 
@@ -640,7 +602,6 @@ const Usuario = () => {
                 <b className='text-global' style={{'margin': '0'}}>{user?.EMAIL || ''}</b>
               </div>
               
-              {/* Top buttons container */}
               {ENABLE_CUSTOMIZATION && (
                 <div className='top-buttons-container'>
                   <button className='btn btn-global user-btn' onClick={() => handlePanelChange('icons')}>Trocar Ícone</button>
@@ -648,24 +609,20 @@ const Usuario = () => {
                 </div>
               )}
               
-              {/* Sair button container */}
               <div className='sair-button-container'>
                 <button className='btn btn-danger btn-global user-btn user-btn-sair' onClick={handleLogout}>Sair</button>
               </div>              
             </div>
           </div>
 
-          {/* Right/Content Section */}
           {ENABLE_CUSTOMIZATION && (
             <div className={`user-content-section ${activeRightPanel ? 'active' : ''}`}>
-              {/* Empty State - shown when no panel is active */}
               {!activeRightPanel && (
                 <div className="empty-state">
                   <div className="empty-icon">✨</div>
                 </div>
               )}
               
-              {/* Icons Selection Panel */}
               {activeRightPanel === 'icons' && (
                 <div className="preferences-panel icons-panel">
                   <div className="panel-header">
@@ -674,14 +631,12 @@ const Usuario = () => {
                   </div>
                   
                   <div className="panel-content">
-                    {/* Unsaved changes banner */}
                     {hasUnsavedChanges && (
                       <div className="unsaved-banner">
                         <span>⚠️ Você tem alterações não salvas</span>
                       </div>
                     )}
                     
-                    {/* Exclusive Icons Section - Only for specific users */}
                     {isSpecialUser && secretIcons.length > 0 && (
                       <>
                         <div className="icons-section">
@@ -709,7 +664,6 @@ const Usuario = () => {
                       </>
                     )}
                     
-                    {/* Admin Exclusive Icons Section */}
                     {isAdmin && adminExclusiveIcons.length > 0 && (
                       <>
                         <div className="icons-section">
@@ -736,7 +690,6 @@ const Usuario = () => {
                       </>
                     )}
                     
-                    {/* Color Icons Section - Only the 5 basic colors */}
                     <div className="icons-section">
                       <h4 className="section-title">Ícones de Cores</h4>
                       <div className="icons-grid">
@@ -758,7 +711,6 @@ const Usuario = () => {
                       </div>
                     </div>
 
-                    {/* Default Icon Section - Based on user's visual identity */}
                     {defaultIcon && (
                       <div className="icons-section">
                         <h4 className="section-title">Ícone Padrão da Empresa</h4>
@@ -793,7 +745,6 @@ const Usuario = () => {
                 </div>
               )}
 
-              {/* Preferences Panel */}
               {activeRightPanel === 'preferences' && (
                 <div className="preferences-panel">
                   <div className="panel-header">
@@ -802,7 +753,6 @@ const Usuario = () => {
                   </div>
                   
                   <div className="panel-content">
-                    {/* Unsaved changes banner */}
                     {hasUnsavedChanges && (
                       <div className="unsaved-banner">
                         <span>⚠️ Você tem alterações não salvas</span>
