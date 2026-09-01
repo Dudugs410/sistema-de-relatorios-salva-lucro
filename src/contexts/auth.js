@@ -446,6 +446,7 @@ const loginApp = async (login, password) => {
         localStorage.setItem('isChecked', user.TEMA)
       } catch (error) {
         console.log(error)
+        logout()
       }
 
       // ===== LOAD PREFERENCES FROM API =====
@@ -694,6 +695,7 @@ const loginApp = async (login, password) => {
         console.error('Authentication failed:', error)
         Cookies.remove('pluggy_api_key')
         Cookies.remove('pluggy_client_id')
+        logout()
         throw error
       }
 
@@ -797,10 +799,7 @@ const logout = useCallback(() => {
     } catch (error) {
       toast.dismiss()
       toast.error('Erro ao atualizar usuário!')
-      if (error.response && error.response.status === 401) {
-        logout()
-        return
-      }
+      logout()
     }
   }, [logout])
 
@@ -815,9 +814,7 @@ const logout = useCallback(() => {
 			return gru
 		} catch (error) {
 			console.error(error)
-			if (error.response.status === 401) {
-				logout()
-			}
+			logout()
 			throw new Error(error.message)
 		}
 	}
