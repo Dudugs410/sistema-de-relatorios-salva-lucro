@@ -452,13 +452,15 @@ const OpenFinance = () => {
 
           const data = response.data || []
           
-          // Process data
+          // Process data - preserve original fields from API
           const processedData = data.map(item => ({
-            ...item,
+            ...item, // Keep all original fields
             DataFormatada: item.Data ? formatDateOnly(item.Data) : '',
             ValorFormatado: item.Valor ? formatCurrency(item.Valor) : 'R$ 0,00',
-            TipoTransacao: item.Categoria === 'Income' ? 'Receita' : 'Despesa',
-            CnpjFormatado: formatCNPJ(item.CnpjPagador || item.CnpjRecebedor),
+            CategoriaDisplay: item.Categoria || 'N/A',
+            CnpjPagadorFormatado: item.CnpjPagador ? formatCNPJ(item.CnpjPagador) : 'N/A',
+            CnpjRecebedorFormatado: item.CnpjRecebedor ? formatCNPJ(item.CnpjRecebedor) : 'N/A',
+            OperacaoDisplay: item.Operação === 1 ? 'Crédito' : item.Operação === -1 ? 'Débito' : 'Outros',
             NOMEBANCO: bankName,
             CODIGO: bankCode,
             CLIENTE: selectedClient?.label || 'Cliente não informado'
@@ -474,17 +476,18 @@ const OpenFinance = () => {
           processedData.forEach(item => {
             const valor = item.Valor || 0
             totalGeneral += valor
-            if (item.Categoria === 'Income') {
+            // Consider positive values as income (Crédito) and negative as expense (Débito)
+            if (item.Operação === 1) {
               totalIncome += valor
-            } else {
-              totalExpense += valor
+            } else if (item.Operação === -1) {
+              totalExpense += Math.abs(valor)
             }
           })
 
           setBankTotal({
             total: totalGeneral,
             income: totalIncome,
-            expense: Math.abs(totalExpense),
+            expense: totalExpense,
             count: processedData.length
           })
 
@@ -527,7 +530,7 @@ const OpenFinance = () => {
     return bankOptions.find(option => option.codigoBanco === bankCode)
   }, [bankCode, bankOptions])
 
-  // Get table columns for bank data
+  // Get table columns for bank data - MODIFIED with correct headers
   const getTableColumns = useCallback(() => {
     return [
       { 
@@ -536,8 +539,7 @@ const OpenFinance = () => {
         accessor: (item) => {
           if (!item?.Data) return 'N/A'
           try {
-            const date = new Date(item.Data)
-            return date.toLocaleDateString('pt-BR')
+            return formatDateOnly(item.Data)
           } catch {
             return 'N/A'
           }
@@ -545,7 +547,8 @@ const OpenFinance = () => {
       },
       { 
         key: 'Descrição', 
-        header: 'Descrição'
+        header: 'Descrição',
+        accessor: (item) => item?.Descrição || 'N/A'
       },
       { 
         key: 'Valor', 
@@ -565,25 +568,15 @@ const OpenFinance = () => {
       { 
         key: 'Categoria', 
         header: 'Categoria',
-        render: (item) => {
-          const isIncome = item?.Categoria === 'Income'
-          return (
-            <span className={isIncome ? 'badge-success' : 'badge-danger'}>
-              {isIncome ? 'Receita' : 'Despesa'}
-            </span>
-          )
-        }
+        accessor: (item) => item?.Categoria || 'N/A'
       },
       { 
         key: 'Operação', 
         header: 'Operação',
         render: (item) => {
-          const opMap = {
-            1: 'Crédito',
-            2: 'Débito',
-            3: 'Estorno'
-          }
-          return opMap[item?.Operação] || 'Outros'
+          if (item?.Operação === 1) return 'Crédito'
+          if (item?.Operação === -1) return 'Débito'
+          return 'Outros'
         }
       },
       { 
@@ -592,19 +585,13 @@ const OpenFinance = () => {
         render: (item) => {
           const cnpj = item?.CnpjPagador || ''
           if (!cnpj) return 'N/A'
-          const cleaned = cnpj.replace(/\D/g, '')
-          if (cleaned.length === 14) {
-            return cleaned.replace(
-              /(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,
-              '$1.$2.$3/$4-$5'
-            )
-          }
-          return cnpj
+          return formatCNPJ(cnpj)
         }
       },
       { 
         key: 'NomePagador', 
-        header: 'Pagador'
+        header: 'Pagador',
+        accessor: (item) => item?.NomePagador || 'N/A'
       },
       { 
         key: 'CnpjRecebedor', 
@@ -612,46 +599,35 @@ const OpenFinance = () => {
         render: (item) => {
           const cnpj = item?.CnpjRecebedor || ''
           if (!cnpj) return 'N/A'
-          const cleaned = cnpj.replace(/\D/g, '')
-          if (cleaned.length === 14) {
-            return cleaned.replace(
-              /(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,
-              '$1.$2.$3/$4-$5'
-            )
-          }
-          return cnpj
+          return formatCNPJ(cnpj)
         }
       },
       { 
         key: 'NomeRecebedor', 
-        header: 'Recebedor'
+        header: 'Recebedor',
+        accessor: (item) => item?.NomeRecebedor || 'N/A'
       },
       { 
         key: 'Complemento', 
-        header: 'Complemento'
+        header: 'Complemento',
+        accessor: (item) => item?.Complemento || 'N/A'
       }
     ]
   }, [])
 
-  // Get filter config
+  // Get filter config - MODIFIED for correct fields
   const getFilterConfig = useCallback(() => {
     return {
       categoria: {
         label: 'Categoria',
-        accessor: (item) => {
-          if (item?.Categoria === 'Income') return 'Receita'
-          return 'Despesa'
-        }
+        accessor: (item) => item?.Categoria || 'N/A'
       },
       operacao: {
         label: 'Operação',
         accessor: (item) => {
-          const opMap = {
-            1: 'Crédito',
-            2: 'Débito',
-            3: 'Estorno'
-          }
-          return opMap[item?.Operação] || 'Outros'
+          if (item?.Operação === 1) return 'Crédito'
+          if (item?.Operação === -1) return 'Débito'
+          return 'Outros'
         }
       }
     }
@@ -940,6 +916,7 @@ const OpenFinance = () => {
             />
           </>
         )}
+        <hr className='hr-global'/>
       </div>
     </div>
   )

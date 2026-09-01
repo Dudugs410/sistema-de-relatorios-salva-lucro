@@ -210,9 +210,9 @@ const Usuario = () => {
     { id: 'ALT-12', name: 'Vermelho Cereja' },
     { id: 'ALT-13', name: '2007 Original' },
     { id: 'ALT-14', name: 'Rosa' },
-    { id: 'CB-PROTANOPIA', name: '♿ Protanopia (Vermelho-Deficiente)' },
-    { id: 'CB-DEUTERANOPIA', name: '♿ Deuteranopia (Verde-Deficiente)' },
-    { id: 'CB-TRITANOPIA', name: '♿ Tritanopia (Azul-Deficiente)' },
+    { id: 'CB-PROTANOPIA', name: '♿ Protanopia (Vermelho)' },
+    { id: 'CB-DEUTERANOPIA', name: '♿ Deuteranopia (Verde)' },
+    { id: 'CB-TRITANOPIA', name: '♿ Tritanopia (Azul)' },
     { id: 'CB-MONOCHROMACY', name: '♿ Monocromático (Preto & Branco)' },
     { id: 'CB-HIGH-CONTRAST', name: '♿ Alto Contraste' }
   ]

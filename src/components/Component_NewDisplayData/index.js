@@ -108,6 +108,19 @@ const formatTimeOnly = (isoDateTime) => {
   }
 }
 
+// Format CNPJ helper
+const formatCNPJ = (cnpj) => {
+  if (!cnpj) return 'N/A'
+  const cleaned = cnpj.replace(/\D/g, '')
+  if (cleaned.length === 14) {
+    return cleaned.replace(
+      /(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,
+      '$1.$2.$3/$4-$5'
+    )
+  }
+  return cnpj
+}
+
 // Safe date conversion wrapper for backward compatibility
 const formatDate = (date) => {
   return formatDateOnly(date)
@@ -297,20 +310,84 @@ const NewDisplayData = ({
         ]
       
       case 'openfinance':
+        // MODIFIED: Correct headers matching API response
         return [
-          { key: 'date', header: 'Data' },
-          { key: 'description', header: 'Descrição' },
-          { key: 'type', header: 'Tipo' },
           { 
-            key: 'amount', 
-            header: 'Valor',
-            render: (item) => {
-              const valor = Number(item?.amount) || 0
-              return <span className={valor >= 0 ? 'green-global' : 'red-global'}>{formatCurrency(valor)}</span>
+            key: 'Data', 
+            header: 'Data',
+            accessor: (item) => {
+              if (!item?.Data) return 'N/A'
+              try {
+                return formatDateOnly(item.Data)
+              } catch {
+                return 'N/A'
+              }
             }
           },
-          { key: 'category', header: 'Categoria' },
-          { key: 'bank', header: 'Banco' }
+          { 
+            key: 'Descrição', 
+            header: 'Descrição',
+            accessor: (item) => item?.Descrição || 'N/A'
+          },
+          { 
+            key: 'Valor', 
+            header: 'Valor',
+            render: (item) => {
+              const valor = Number(item?.Valor) || 0
+              return (
+                <span className={valor >= 0 ? 'green-global' : 'red-global'}>
+                  {formatCurrency(valor)}
+                </span>
+              )
+            }
+          },
+          { 
+            key: 'Categoria', 
+            header: 'Categoria',
+            accessor: (item) => item?.Categoria || 'N/A'
+          },
+          { 
+            key: 'Operação', 
+            header: 'Operação',
+            render: (item) => {
+              if (item?.Operação === 1) return 'Crédito'
+              if (item?.Operação === -1) return 'Débito'
+              return 'Outros'
+            }
+          },
+          { 
+            key: 'CnpjPagador', 
+            header: 'CNPJ Pagador',
+            render: (item) => {
+              const cnpj = item?.CnpjPagador || ''
+              if (!cnpj) return 'N/A'
+              return formatCNPJ(cnpj)
+            }
+          },
+          { 
+            key: 'NomePagador', 
+            header: 'Pagador',
+            accessor: (item) => item?.NomePagador || 'N/A'
+          },
+          { 
+            key: 'CnpjRecebedor', 
+            header: 'CNPJ Recebedor',
+            render: (item) => {
+              const cnpj = item?.CnpjRecebedor || ''
+              if (!cnpj) return 'N/A'
+              return formatCNPJ(cnpj)
+            }
+          },
+          { 
+            key: 'NomeRecebedor', 
+            header: 'Recebedor',
+            accessor: (item) => item?.NomeRecebedor || 'N/A'
+          },
+          { 
+            key: 'Complemento', 
+            header: 'Complemento',
+            accessor: (item) => item?.Complemento || 'N/A'
+          }
         ]
       
       default:
@@ -563,14 +640,19 @@ const NewDisplayData = ({
           }
         }
       case 'openfinance':
+        // MODIFIED: Correct filters matching API response
         return {
-          type: {
-            label: 'Tipo',
-            accessor: (item) => item?.type || '',
-          },
-          category: {
+          categoria: {
             label: 'Categoria',
-            accessor: (item) => item?.category || '',
+            accessor: (item) => item?.Categoria || 'N/A'
+          },
+          operacao: {
+            label: 'Operação',
+            accessor: (item) => {
+              if (item?.Operação === 1) return 'Crédito'
+              if (item?.Operação === -1) return 'Débito'
+              return 'Outros'
+            }
           }
         }
       default:
@@ -764,6 +846,8 @@ const NewDisplayData = ({
           </div>
         </div>
       )}
+
+      <hr className='hr-global' />
       
       {/* Hide export component for openfinance */}
       {!isOpenFinance && (
