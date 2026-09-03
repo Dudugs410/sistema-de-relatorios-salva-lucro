@@ -1,433 +1,433 @@
-import { useEffect, useContext, useState } from 'react'
-import { useLocation } from 'react-router-dom'
-import { AuthContext } from '../../contexts/auth'
-import Cookies from 'js-cookie'
-import '../../styles/global.scss'
-import './cadastroDeBancos.scss'
-import { FiPlus } from 'react-icons/fi'
+// Bancos.jsx
+import { useEffect, useState, useCallback } from 'react'
+import Select from 'react-select'
 import { toast } from 'react-toastify'
-import ConfirmDelete from '../../components/Componente_ConfirmDelete'
-import LazyLoader from '../../components/Componente_LazyLoader/index.js'
-import Overlay from '../../components/Component_Overlay/index.js'
+import Joyride from 'react-joyride'
+import { FiHelpCircle, FiUsers, FiUser, FiPlus } from 'react-icons/fi'
+import api from '../../services/api'
+import TabelaBancos from './TabelaBancos'
+import './Bancos.scss'
 
-import BanksTable from './BanksTable'
-import ModalNewBank from './ModalNewBank'
-import ModalEditBank from './ModalEditBank'
-import ModalLoading from './ModalLoading'
-import TransferList from '../../components/TransferList/transferList.js'
-
-const CadastroDeBancos = () => {
-    const location = useLocation()
-    const {
-        loadBanners,
-        loadAdmins,
-        loadProducts,
-        loadSubproducts,
-        loadMods,
-        loadCliAdq,
-        loadBanks,
-        isLoadingBanks,
-        addBank,
-        editBank,
-        deleteBank,
-        changedOption,
-    } = useContext(AuthContext)
-
-    const cliOptions = JSON.parse(localStorage.getItem('clientOptions'))
-
-    const [bannersList, setBannersList] = useState([])
-    const [adminsList, setAdminsList] = useState([])
-    const [productList, setProductList] = useState([])
-    const [subproductList, setSubproductList] = useState([])
-    const [modList, setModList] = useState([])
-    const [cliAdqList, setCliAdqList] = useState([])
-    const [banksList, setBanksList] = useState([])
-
-    const [clientCode, setClientCode] = useState(localStorage.getItem('clientCode'))
-    const [banOptions, setBanOptions] = useState([])
-    const [admOptions, setAdmOptions] = useState([])
-    const [productOptions, setProductOptions] = useState([])
-    const [subproductOptions, setSubproductOptions] = useState([])
-    const [cliAdqOptions, setCliAdqOptions] = useState([])
-
-    const [isSelected, setIsSelected] = useState(false)
-
-    const [isModalOpen, setIsModalOpen] = useState(false)
-    const [isModalEditOpen, setIsModalEditOpen] = useState(false)
-    const [isLoading, setIsLoading] = useState(false)
-
-    useEffect(() => {
-        localStorage.setItem('currentPath', location.pathname)
-    }, [])
-
-    useEffect(() => {
-        async function inicialize() {
-            if (bannersList.length === 0) {
-                const response = await loadBanners()
-                setBannersList(response)
-            }
-
-            if (adminsList.length === 0) {
-                const response = await loadAdmins()
-                setAdminsList(response)
-            }
-
-            if (productList.length === 0) {
-                const response = await loadProducts()
-                setProductList(response)
-            }
-
-            if (modList.length === 0) {
-                const response = await loadMods()
-                setModList(response)
-            }
-
-            if (clientCode !== 'todos') {
-                const response = await loadBanks()
-                setBanksList(response)
-            }
-        }
-        inicialize()
-    }, [])
-
-    useEffect(() => {
-        if (bannersList) {
-            if (bannersList.length > 0) {
-                const bannersListOptions = bannersList.map(banner => ({ value: banner.codigoBandeira, label: banner.descricaoBandeira }))
-                setBanOptions(bannersListOptions)
-            }
-        }
-    }, [bannersList])
-
-    useEffect(() => {
-        if (adminsList) {
-            if (adminsList.length > 0) {
-                const adminsListOptions = adminsList.map(admin => ({ value: admin.codigoAdquirente, label: admin.nomeAdquirente }))
-                setAdmOptions(adminsListOptions)
-            }
-        }
-    }, [adminsList])
-
-    useEffect(() => {
-        if (productList) {
-            if (productList.length > 0) {
-                const productListOptions = productList.map(prod => ({ value: prod.codigoProduto, label: prod.descricaoProduto }))
-                setProductOptions(productListOptions)
-            }
-        }
-    }, [productList])
-
-    useEffect(() => {
-        setClientCode(localStorage.getItem('clientCode'))
-        setBanksList([])
-    }, [changedOption])
-
-    useEffect(() => {
-        const loadbank = async () => {
-            if ((clientCode === 'todos') || (clientCode === 'TODOS')) {
-                setBanksList([])
-            } else {
-                const response = await loadBanks()
-                setBanksList(response)
-            }
-        }
-        loadbank()
-    }, [clientCode])
-
-    // Update cliAdqOptions when cliAdqList changes
-    useEffect(() => {
-        if (cliAdqList && (cliAdqList.length > 0)) {
-            const cliAdqListOptions = cliAdqList.map(sub => ({ value: sub.codigoClienteAdquirente, label: sub.codigoEstabelecimento }))
-            setCliAdqOptions(cliAdqListOptions)
-        } else {
-            setCliAdqOptions([])
-        }
-    }, [cliAdqList])
-
-    useEffect(() => {
-        if (subproductList && (subproductList.length > 0)) {
-            const subproductListOptions = subproductList.map(sub => ({ value: sub.codigoSubProduto, label: sub.Modalidade.descricaoModalidade }))
-            setSubproductOptions(subproductListOptions)
-        } else {
-            setSubproductOptions([])
-        }
-    }, [subproductList])
-
-    // Fetch cliAdqList when isSelected changes
-    useEffect(() => {
-        const fetchCliAdqList = async () => {
-            if (isSelected) {
-                const clientCode = localStorage.getItem('clientCode')
-                const admCode = localStorage.getItem('admCode')
-                if (clientCode !== '0' && admCode !== '0') {
-                    try {
-                        const response = await loadCliAdq()
-                        setCliAdqList(response)
-                    } catch (error) {
-                        console.error('Error fetching cliAdqList:', error)
-                    } finally {
-                        setIsSelected(false)
-                    }
-                } else {
-                    setIsSelected(false)
-                }
-            }
-        }
-
-        const fetchSubProductList = async () => {
-            if (isSelected) {
-                const admCode = localStorage.getItem('admCode')
-                if (admCode !== '0') {
-                    try {
-                        const response = await loadSubproducts()
-                        setSubproductList(response)
-                    } catch (error) {
-                        console.error('Error fetching subproductList:', error)
-                    } finally {
-                        setIsSelected(false)
-                    }
-                } else {
-                    setIsSelected(false)
-                }
-            }
-        }
-        fetchCliAdqList()
-        fetchSubProductList()
-    }, [isSelected])
-
-    const fetchSUPname = async (SUPCODIGO) => {
-        try {
-            const subProducts = await loadSubproducts()
-            const subProductName = getSubproductDescription(SUPCODIGO, subProducts)
-            return subProductName
-        } catch (error) {
-            console.error('Error fetching subproductList:', error)
-        }
-    }
-
-    const handleAdd = () =>{
-        setCliAdqOptions([])
-        localStorage.setItem('admCode', 0)
-        setIsModalOpen(true)
-    }
-    
-    const [editableBank, setEditableBank] = useState()
-    
-    const handleEdit = async (object, index) => {
-        localStorage.setItem('admCode', object.ADQCODIGO)
-        setIsLoading(true)
-
-        localStorage.setItem('editIndex', index)
-        const SUPlabel = await fetchSUPname(object.SUPCODIGO) // Wait for SUPlabel to be defined
-        const response = await loadSubproducts()
-        setSubproductList(response)
-
-        const resp = await loadCliAdq()
-        setCliAdqList(resp)
-    
-        setEditableBank({
-            cliAdq: { label: object.CODIGOESTABELECIMENTO, value: object.CLDCODIGO },
-            codigoCliente: object.CLICODIGO,
-            bandeira: { label: getBannerName(object.BADCODIGO, bannersList), value: object.BADCODIGO },
-            adquirente: { label: getAdminName(object.ADQCODIGO, adminsList), value: object.ADQCODIGO },
-            produto: { label: getProductDescription(object.PROCODIGO, productList), value: object.PROCODIGO },
-            subproduto: { label: SUPlabel, value: object.SUPCODIGO },
-            banco: object.BANCO,
-            agencia: object.AGENCIA,
-            conta: object.CONTA,
-            codigoBancoCliente: object.CODIGO,
-            codigoEstabelecimento: object.CODIGOESTABELECIMENTO,
-        })
-        setIsLoading(false)
-        setIsModalEditOpen(true)
-    }
-
-    const resetValues = () => {
-        setEditableBank({            
-            codigoEstabelecimento: '',
-            codigoCliente: '',
-            codigoClienteAdquirente: '',
-            bandeira: { label: 'Selecione', value: 0 },
-            administradora: { label: 'Selecione', value: 0 },
-            produto: { label: 'Selecione', value: 0 },
-            subproduto: { label: 'Selecione', value: 0 },
-            banco: '',
-            agencia: '',
-            conta: '',})
-        setIsModalEditOpen(false)
-    }
-
-    const [isOverlayVisible, setOverlayVisible] = useState(false)
-
-    const handleDelete = async (object) => {
-      const onConfirm = async () => {
-        setOverlayVisible(false)
-        // Perform the delete operation here
-        const toBeDeleted = {
-          CodigoEstabelecimento: object.CODIGOESTABELECIMENTO,
-          CodigoCliente: object.CLICODIGO,
-          CodigoClienteAdquirente: object.CLDCODIGO,
-          Bandeira: object.BADCODIGO,
-          Adquirente: object.ADQCODIGO,
-          Produto: object.PROCODIGO,
-          Subproduto: object.SUPCODIGO,
-          Banco: object.BANCO,
-          Agencia: object.AGENCIA,
-          Conta: object.CONTA,
-          CodigoBancoCliente: object.CODIGO,
-        }
-  
-        try {
-          toast.dismiss()
-          await toast.promise(deleteBank(toBeDeleted), {
-            pending: 'Carregando...',
-            error: 'Ocorreu um Erro',
-          })
-          // Optimistically update state
-          setBanksList(prevBanksList => prevBanksList.filter(bank => bank.CODIGO !== object.CODIGO))
-          handleCancel()
-        } catch (error) {
-          console.error('Error handling delete:', error)
-        }
-        toast.dismiss()
-      }
-  
-      const onCancel = () => {
-        setOverlayVisible(false)
-        toast.dismiss()
-      }
-  
-      setOverlayVisible(true)
-      toast(
-        <ConfirmDelete onConfirm={onConfirm} onCancel={onCancel} />,
-        {
-          position: "bottom-center",
-          autoClose: false,
-          closeOnClick: false,
-          closeButton: false,
-          draggable: false,
-        }
-      )
-    }
-
-    const handleCancel = () => {
-        resetValues()
-        setIsModalEditOpen(false)
-    }
-
-    const getAdminName = (adqCodigo, adminsList) => {
-        const admin = adminsList.find(admin => admin.codigoAdquirente === adqCodigo)
-        return admin ? admin.nomeAdquirente : 'Desconhecido'
-    }
-
-    const getBannerName = (banCodigo, bannersList) => {
-        const banner = bannersList.find(banner => banner.codigoBandeira === banCodigo)
-        return banner ? banner.descricaoBandeira : 'Desconhecido'
-    }
-
-    const getProductDescription = (prodCodigo, productList) => {
-        const product = productList.find(product => product.codigoProduto === prodCodigo)
-        return product ? product.descricaoProduto : 'Desconhecido'
-    }
-
-    const getSubproductDescription = (subprodCodigo, subproductList) => {
-        const subproduct = subproductList.find(subproduct => subproduct.codigoSubProduto === subprodCodigo)
-        return subproduct ? subproduct.Modalidade.descricaoModalidade : 'Desconhecido'
-    }
-
-    const closeModal = () => {
-        setIsModalOpen(false)
-        setIsModalEditOpen(false)
-    }
-
-    return (
-        <div className='appPage'>
-            <Overlay isVisible={isOverlayVisible} />
-            {isLoading && (<ModalLoading />)}
-            <div className='page-background-global'>
-                <div className='page-content-global'>
-                    <div className='page-content-bancos'>
-                        <div className='title-container-global'>
-                            <h1 className='title-global'>Cadastramento de Bancos</h1>
-                        </div>
-                        <hr className='hr-global'/>
-                        <div className='container-global' style={{margin: '0', flexDirection: 'column', alignItems: 'center'}}>
-                            { ((banksList && banksList.length > 0) && (clientCode !== ('todos' || undefined))) && 
-                                <div>
-                                    <h3 className='subtitle' style={{width: '100%', display: 'flex', flexDirection: 'column', alignContent: 'center', textAlign: 'center'}}>Cliente: {JSON.parse(localStorage.getItem('selectedClient')).label}</h3>
-                                    <hr className='hr-global'/>
-                                </div>
-                            }
-                            { ((banksList && banksList.length === 0) && (clientCode !== ('todos' || undefined)) && (isLoadingBanks === false)) && 
-                                <>
-                                    <span className='subtitle'>Sem Bancos Cadastrados</span>
-                                    <br/>
-                                    <button className='btn btn-primary btn-global' onClick={()=>{setIsModalOpen(true)}}><FiPlus className='icon' />Adicionar</button>
-                                </>
-                            }
-                            {
-                                clientCode === ('todos' || undefined) ?
-                                    <span className='subtitle'>Selecione um cliente para exibir seus bancos cadastrados</span>
-                                    : 
-                                    <></>
-                            }
-                        </div>
-                    </div>
-                    {
-                        isLoadingBanks ? 
-                            <LazyLoader /> 
-                            : ( banksList && banksList.length > 0 ?  
-                                <>
-                                    <BanksTable 
-                                        banksList={banksList} 
-                                        adminsList={adminsList} 
-                                        bannersList={bannersList} 
-                                        productList={productList} 
-                                        onAdd={handleAdd} 
-                                        onEdit={handleEdit} 
-                                        onDelete={handleDelete} 
-                                    />
-                                    <TransferList/>
-                                </>
-                            : <></> )
-                        }
-                    <div className='modal-container' style={{ display: (isModalOpen || isModalEditOpen) ? 'block' : 'none' }}>
-                        {isModalOpen && (
-                            <ModalNewBank
-                                onClose={closeModal}
-                                setIsSelected={setIsSelected}
-                                cliAdqOptions={cliAdqOptions}
-                                cliOptions={cliOptions}
-                                admOptions={admOptions}
-                                banOptions={banOptions}
-                                productOptions={productOptions}
-                                subproductOptions={subproductOptions}
-                                addBank={addBank}
-                                loadBanks={loadBanks}
-                                setBanksList={setBanksList}
-                            />
-                        )}
-                        {isModalEditOpen && (
-                            <ModalEditBank 
-                                editableBank={editableBank}
-                                onClose={closeModal}
-                                setIsSelected={setIsSelected}
-                                cliAdqOptions={cliAdqOptions}
-                                cliOptions={cliOptions}
-                                admOptions={admOptions}
-                                banOptions={banOptions}
-                                productOptions={productOptions}
-                                subproductOptions={subproductOptions}
-                                editBank={editBank}
-                                loadBanks={loadBanks}
-                                setBanksList={setBanksList}
-                            />
-                        )}
-                    </div>
-                </div>
-            </div>
-        </div>
-    )
+// Custom Select styles
+const customSelectStyles = {
+  control: (base, { isFocused }) => ({
+    ...base,
+    minWidth: 250,
+    width: '100%',
+    backgroundColor: 'var(--background-color)',
+    borderColor: isFocused ? 'var(--secondary-color)' : 'var(--bs-border-color)',
+    color: 'var(--font-color)',
+    '&:hover': {
+      borderColor: 'var(--secondary-color)',
+    },
+    boxShadow: isFocused ? '0 0 0 1px var(--secondary-color)' : 'none',
+  }),
+  menu: (base) => ({
+    ...base,
+    backgroundColor: 'var(--background-color)',
+    borderColor: 'var(--bs-border-color)',
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+    zIndex: 9999,
+  }),
+  menuList: (base) => ({
+    ...base,
+    backgroundColor: 'var(--background-color)',
+    padding: '4px 0',
+    '::-webkit-scrollbar': {
+      width: '8px',
+      height: '8px',
+    },
+    '::-webkit-scrollbar-track': {
+      background: 'rgba(255, 255, 255, 0.1)',
+    },
+    '::-webkit-scrollbar-thumb': {
+      background: 'var(--secondary-color)',
+      borderRadius: '4px',
+    },
+    '::-webkit-scrollbar-thumb:hover': {
+      background: 'var(--primary-color)',
+    },
+  }),
+  option: (base, { isFocused, isSelected }) => ({
+    ...base,
+    backgroundColor: isSelected 
+      ? 'var(--secondary-color)' 
+      : isFocused 
+        ? 'rgba(var(--secondary-color-rgb), 0.2)' 
+        : 'transparent',
+    color: isSelected ? 'var(--primary-color)' : 'var(--font-color)',
+    cursor: 'pointer',
+    padding: '8px 12px',
+    '&:active': {
+      backgroundColor: 'var(--secondary-color)',
+      color: 'var(--primary-color)',
+    },
+  }),
+  singleValue: (base) => ({
+    ...base,
+    color: 'var(--font-color)',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    maxWidth: '90%',
+  }),
+  input: (base) => ({
+    ...base,
+    color: 'var(--font-color)',
+  }),
+  placeholder: (base) => ({
+    ...base,
+    color: 'var(--font-color)',
+    opacity: 0.6,
+  }),
+  valueContainer: (base) => ({
+    ...base,
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  }),
+  dropdownIndicator: (base) => ({
+    ...base,
+    color: 'var(--font-color)',
+    '&:hover': {
+      color: 'var(--secondary-color)',
+    },
+  }),
+  clearIndicator: (base) => ({
+    ...base,
+    color: 'var(--font-color)',
+    '&:hover': {
+      color: 'var(--secondary-color)',
+    },
+  }),
+  indicatorSeparator: (base) => ({
+    ...base,
+    backgroundColor: 'var(--bs-border-color)',
+  }),
+  noOptionsMessage: (base) => ({
+    ...base,
+    color: 'var(--font-color)',
+  }),
+  loadingMessage: (base) => ({
+    ...base,
+    color: 'var(--font-color)',
+  }),
 }
 
-export default CadastroDeBancos
+// Helper function to get icon based on type
+const getIcon = (type) => {
+  switch(type) {
+    case 'users':
+      return <FiUsers size={16} />
+    case 'user':
+      return <FiUser size={16} />
+    default:
+      return null
+  }
+}
+
+const formatOptionLabel = ({ label, iconType }) => (
+  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+    {getIcon(iconType)}
+    <span>{label}</span>
+  </div>
+)
+
+const Bancos = () => {
+  // State for client selection
+  const [clientOptions, setClientOptions] = useState([])
+  const [selectedClient, setSelectedClient] = useState(null)
+  const [loadingClients, setLoadingClients] = useState(false)
+
+  // State for banks data
+  const [banksList, setBanksList] = useState([])
+  const [isLoadingBanks, setIsLoadingBanks] = useState(false)
+  const [isDataLoaded, setIsDataLoaded] = useState(false)
+
+  // State for tutorial
+  const [runTutorial, setRunTutorial] = useState(false)
+  const [tutorialSteps] = useState([
+    {
+      target: '[data-tour="cliente-section"]',
+      content: 'Selecione o cliente/filial para visualizar os bancos cadastrados.',
+      disableBeacon: true,
+      placement: 'bottom',
+    },
+    {
+      target: '[data-tour="pesquisar-section"]',
+      content: 'Clique em "Pesquisar" para carregar a lista de bancos.',
+      placement: 'bottom',
+    },
+    {
+      target: '[data-tour="tabela-section"]',
+      content: 'Lista de bancos cadastrados para o cliente selecionado.',
+      placement: 'bottom',
+    },
+  ])
+
+  // Load client options from localStorage
+  const loadClientOptions = useCallback(() => {
+    try {
+      setLoadingClients(true)
+      
+      const groupsStorage = localStorage.getItem('groupsStorage')
+      if (!groupsStorage) {
+        toast.error('Nenhum grupo encontrado')
+        setLoadingClients(false)
+        return
+      }
+
+      const groups = JSON.parse(groupsStorage)
+      const allClients = []
+      
+      groups.forEach(group => {
+        if (group.CLIENTES && group.CLIENTES.length > 0) {
+          group.CLIENTES.forEach(client => {
+            const exists = allClients.some(c => c.value === client.CNPJ)
+            if (!exists) {
+              allClients.push({
+                value: client.CNPJ,
+                label: client.NOMECLIENTE,
+                cod: client.CODIGOCLIENTE,
+                groupName: group.NOMEGRUPO,
+                iconType: 'user'
+              })
+            }
+          })
+        }
+      })
+
+      const sortedClients = allClients.sort((a, b) => a.label.localeCompare(b.label))
+      setClientOptions(sortedClients)
+
+      // Reset selected client on page load - user must select one
+      setSelectedClient(null)
+      setBanksList([])
+      setIsDataLoaded(false)
+      localStorage.removeItem('selectedBancosClient')
+    } catch (error) {
+      console.error('Error loading client options:', error)
+      toast.error('Erro ao carregar lista de clientes')
+    } finally {
+      setLoadingClients(false)
+    }
+  }, [])
+
+  // Load banks for selected client
+  const loadBanks = useCallback(async () => {
+    if (!selectedClient || !selectedClient.cod) {
+      toast.warning('Selecione um cliente primeiro')
+      return
+    }
+
+    try {
+      setIsLoadingBanks(true)
+      toast.dismiss()
+
+      const response = await api.get('/banco', {
+        params: {
+          codigo: selectedClient.cod
+        }
+      })
+
+      const data = response.data || []
+      
+      console.log('API Response - All banks:', data)
+      console.log('Total banks from API:', data.length)
+      console.log('Selected Client Code:', selectedClient.cod)
+      
+      // Set the banks list directly from the API response
+      // No filtering - just display whatever the API returns
+      setBanksList(data)
+      setIsDataLoaded(true)
+      
+      if (data.length === 0) {
+        toast.info('Não há bancos cadastrados para o cliente selecionado')
+      } else {
+        toast.success(`Encontrados ${data.length} bancos para este cliente`)
+      }
+      
+    } catch (error) {
+      console.error('Error loading banks:', error)
+      toast.error(error.response?.data?.message || 'Erro ao carregar bancos')
+      setBanksList([])
+      setIsDataLoaded(true)
+    } finally {
+      setIsLoadingBanks(false)
+    }
+  }, [selectedClient])
+
+  // Load clients on component mount
+  useEffect(() => {
+    loadClientOptions()
+  }, [loadClientOptions])
+
+  // Handle client selection
+  const handleClientChange = (option) => {
+    setSelectedClient(option)
+    setBanksList([])
+    setIsDataLoaded(false)
+  }
+
+  // Handle search button click
+  const handleSearch = (e) => {
+    e.preventDefault()
+    loadBanks()
+  }
+
+  // Reset values and go back
+  const resetValues = () => {
+    setBanksList([])
+    setIsDataLoaded(false)
+    setSelectedClient(null)
+    setRunTutorial(false)
+    localStorage.removeItem('selectedBancosClient')
+  }
+
+  // Handle add bank
+  const handleAddBank = () => {
+    toast.info('Funcionalidade de adicionar banco em desenvolvimento')
+  }
+
+  // Handle edit bank
+  const handleEditBank = (bank) => {
+    toast.info(`Editar banco: ${bank.NOMECEDENTE || bank.CODIGOBANCO}`)
+    console.log('Edit bank:', bank)
+  }
+
+  // Handle view cards
+  const handleViewCards = (bank) => {
+    toast.info(`Ver cartões do banco: ${bank.NOMECEDENTE || bank.CODIGOBANCO}`)
+    console.log('View cards for bank:', bank)
+  }
+
+  return (
+    <div className='page-content-global'>
+      <div className='component-container-vendas'>
+        <div className='title-container-global'>
+          <h1 className='title-global'>Cadastro de Bancos</h1>
+        </div>
+        <hr className='hr-global'/>
+
+        {!isDataLoaded ? (
+          <>
+            {/* Joyride for initial view */}
+            {runTutorial && (
+              <Joyride
+                steps={tutorialSteps}
+                run={runTutorial}
+                continuous={true}
+                scrollToFirstStep={true}
+                showProgress={true}
+                showSkipButton={true}
+                scrollOffset={80}
+                disableOverlayClose={true}
+                styles={{
+                  options: {
+                    primaryColor: '#99cc33',
+                    textColor: '#0a3d70',
+                    zIndex: 10000,
+                  },
+                }}
+                callback={(data) => {
+                  if (data.status === 'finished' || data.status === 'skipped') {
+                    setRunTutorial(false)
+                  }
+                }}
+                locale={{
+                  back: 'Voltar',
+                  close: 'Fechar',
+                  last: 'Finalizar',
+                  next: 'Próximo',
+                  skip: 'Pular',
+                  nextLabelWithProgress: 'Próximo ({step} de {steps})',
+                }}
+              />
+            )}
+
+            <div className='select-container-bancos'>
+              <div className='select-wrapper' data-tour="cliente-section">
+                <h5>Cliente / Filial</h5>
+                <Select
+                  className='seletor-cliente-select fixed-width-select'
+                  id='cliente'
+                  options={clientOptions}
+                  getOptionLabel={(option) => option.label}
+                  getOptionValue={(option) => option.cod}
+                  onChange={handleClientChange}
+                  value={selectedClient}
+                  menuPortalTarget={document.body}
+                  menuPosition="fixed"
+                  placeholder={loadingClients ? "Carregando clientes..." : "Selecione um cliente/filial..."}
+                  isClearable={true}
+                  isLoading={loadingClients}
+                  isDisabled={loadingClients}
+                  formatOptionLabel={formatOptionLabel}
+                  styles={customSelectStyles}
+                  theme={(theme) => ({
+                    ...theme,
+                    colors: {
+                      ...theme.colors,
+                      primary: 'var(--secondary-color)',
+                      primary75: 'var(--secondary-color)',
+                      primary50: 'rgba(var(--secondary-color-rgb), 0.5)',
+                      primary25: 'rgba(var(--secondary-color-rgb), 0.25)',
+                      neutral0: 'var(--background-color)',
+                      neutral5: 'var(--background-color)',
+                      neutral10: 'var(--background-color)',
+                      neutral20: 'var(--bs-border-color)',
+                      neutral30: 'var(--bs-border-color)',
+                      neutral40: 'var(--font-color)',
+                      neutral50: 'var(--font-color)',
+                      neutral60: 'var(--font-color)',
+                      neutral70: 'var(--font-color)',
+                      neutral80: 'var(--font-color)',
+                      neutral90: 'var(--font-color)',
+                    },
+                  })}
+                />
+              </div>
+
+              <div className='select-wrapper' data-tour="pesquisar-section">
+                <h5>&nbsp;</h5>
+                <button 
+                  className='btn btn-search'
+                  onClick={handleSearch}
+                  disabled={!selectedClient || isLoadingBanks}
+                >
+                  {isLoadingBanks ? 'Carregando...' : 'Pesquisar'}
+                </button>
+              </div>
+            </div>
+
+            <button 
+              className='btn btn-tutorial'
+              onClick={() => {
+                setRunTutorial(false)
+                setTimeout(() => {
+                  setRunTutorial(true)
+                }, 50)
+              }}
+            >
+              <FiHelpCircle />
+            </button>
+          </>
+        ) : (
+          <>
+            <TabelaBancos 
+              banksList={banksList}
+              selectedClient={selectedClient}
+              onRefresh={loadBanks}
+              onGoBack={resetValues}
+              onAddBank={handleAddBank}
+              onEditBank={handleEditBank}
+              onViewCards={handleViewCards}
+            />
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
+
+export default Bancos

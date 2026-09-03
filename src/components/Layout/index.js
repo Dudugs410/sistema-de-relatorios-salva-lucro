@@ -5,7 +5,7 @@ import Footer from "../Footer"
 import SeletorCliente from "../SeletorCliente"
 import '../../styles/global.scss'
 import './layout.scss'
-import '../../pages/CadastroDeBancos/cadastroDeBancos.scss'
+import '../../pages/CadastroDeBancos/Bancos.scss'
 import SidebarMenu from '../Componente_SidebarMenu'
 import DadosGrupoCliente from "../Componente_DadosGrupoCliente"
 import { getCurrentTenant } from '../../util/tenant'

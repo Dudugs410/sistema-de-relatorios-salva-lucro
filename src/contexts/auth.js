@@ -426,86 +426,190 @@ const loadUserPreferences = useCallback(async (userId) => {
 
 const loginApp = async (login, password) => {
   resetAppValues()
+  
+  // Helper function to show error toast (stays on screen until user clicks)
+  const showErrorToast = (message) => {
+    toast.dismiss()
+    toast.error(message, {
+      position: "top-right",
+      autoClose: false, // Won't auto-close
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      closeButton: true, // User must click the close button or the toast
+    })
+  }
+
+  // Helper function to show success toast
+  const showSuccessToast = (message) => {
+    toast.dismiss()
+    toast.success(message, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    })
+  }
+
+  // Show loading toast
+  const loadingToastId = toast.loading('Realizando login...', {
+    position: "top-right",
+    autoClose: false,
+    hideProgressBar: false,
+    closeOnClick: false,
+    pauseOnHover: true,
+    draggable: true,
+  })
+
   try {
-    const response = await api.post('token', { client_id: login, client_secret: md5(password) })
+    // ===== LOGIN ATTEMPT =====
+    let response
+    try {
+      response = await api.post('token', { client_id: login, client_secret: md5(password) })
+    } catch (error) {
+      resetAppValues()
+      toast.dismiss(loadingToastId)
+      
+      // Check if it's a network error
+      if (error.request && !error.response) {
+        showErrorToast('Erro ao fazer login. Entre em contato com o administrador do sistema.')
+      } else {
+        // For any other error, show the generic message
+        showErrorToast('Erro ao fazer login. Entre em contato com o administrador do sistema.')
+      }
+      
+      console.error('Login error:', error)
+      return
+    }
+
     const responseData = response.data
+    
+    // Validate response structure
+    if (!responseData || typeof responseData !== 'object') {
+      resetAppValues()
+      toast.dismiss(loadingToastId)
+      showErrorToast('Erro ao fazer login. Entre em contato com o administrador do sistema.')
+      console.error('Invalid response structure:', responseData)
+      return
+    }
+
+    // ===== CHECK LOGIN SUCCESS =====
+    // Check if the response indicates login failure
+    let loggedSuccessfully = false
+    try {
+      // Check if sucess flag exists
+      if (responseData.sucess !== undefined && responseData.sucess !== null) {
+        loggedSuccessfully = JSON.parse(responseData.sucess)
+      }
+    } catch (error) {
+      console.error('Error parsing success flag:', error)
+    }
+
+    // If login failed, check the message
+    if (!loggedSuccessfully) {
+      resetAppValues()
+      toast.dismiss(loadingToastId)
+      
+      // Check if the message indicates invalid credentials
+      if (responseData.message && typeof responseData.message === 'string') {
+        const messageLower = responseData.message.toLowerCase()
+        if (messageLower.includes('credenciais inválidas') || 
+            messageLower.includes('credenciais invalidas') ||
+            messageLower.includes('senha incorreta') ||
+            messageLower.includes('usuário ou senha inválidos') ||
+            messageLower.includes('usuario ou senha invalidos')) {
+          showErrorToast('Senha Incorreta')
+        } else {
+          showErrorToast('Erro ao fazer login. Entre em contato com o administrador do sistema.')
+        }
+      } else {
+        // If there's no message, check if it's a 401 status
+        if (error.response && error.response.status === 401) {
+          showErrorToast('Senha Incorreta')
+        } else {
+          showErrorToast('Erro ao fazer login. Entre em contato com o administrador do sistema.')
+        }
+      }
+      
+      console.error('Login failed:', responseData)
+      return
+    }
+
+    // If we got here, login was successful
+    if (!responseData.acess_token) {
+      resetAppValues()
+      toast.dismiss(loadingToastId)
+      showErrorToast('Erro ao fazer login. Entre em contato com o administrador do sistema.')
+      console.error('Missing access token in response:', responseData)
+      return
+    }
+
+    // Store tokens
     localStorage.setItem('token', responseData.acess_token)
     localStorage.setItem('refreshToken', responseData.refresh_token)
-    const userId = jwtDecode(responseData.acess_token).id
+    
+    // Decode JWT token
+    let decodedToken
+    try {
+      decodedToken = jwtDecode(responseData.acess_token)
+    } catch (error) {
+      resetAppValues()
+      toast.dismiss(loadingToastId)
+      showErrorToast('Erro ao fazer login. Entre em contato com o administrador do sistema.')
+      console.error('JWT decode error:', error)
+      return
+    }
+
+    if (!decodedToken || !decodedToken.id) {
+      resetAppValues()
+      toast.dismiss(loadingToastId)
+      showErrorToast('Erro ao fazer login. Entre em contato com o administrador do sistema.')
+      console.error('Invalid token structure:', decodedToken)
+      return
+    }
+
+    const userId = decodedToken.id
     localStorage.setItem('userID', userId)
     Cookies.set('userID', userId)
-    const loggedSuccessfully = JSON.parse(responseData.sucess)
 
-    if (loggedSuccessfully) {
-      localStorage.setItem('currentPath', '/dashboard')
-      setClientUserId(userId)
-      let user
-      try {
-        user = await loadUser(userId)
-        localStorage.setItem('user', JSON.stringify(user))
-        localStorage.setItem('isChecked', user.TEMA)
-      } catch (error) {
-        console.log(error)
-        logout()
+    localStorage.setItem('currentPath', '/dashboard')
+    setClientUserId(userId)
+
+    // ===== LOAD USER DATA =====
+    let user
+    try {
+      user = await loadUser(userId)
+      if (!user) {
+        resetAppValues()
+        toast.dismiss(loadingToastId)
+        showErrorToast('Erro ao fazer login. Entre em contato com o administrador do sistema.')
+        return
       }
+      localStorage.setItem('user', JSON.stringify(user))
+      localStorage.setItem('isChecked', user.TEMA)
+    } catch (error) {
+      console.error('Error loading user:', error)
+      resetAppValues()
+      toast.dismiss(loadingToastId)
+      showErrorToast('Erro ao fazer login. Entre em contato com o administrador do sistema.')
+      return
+    }
 
-      // ===== LOAD PREFERENCES FROM API =====
-      let userPreferences = null
+    // ===== LOAD/CREATE USER PREFERENCES =====
+    let userPreferences = null
+    try {
+      const prefsResponse = await api.get('PreferenciasUsuario', {
+        params: { codigo: userId }
+      })
+      userPreferences = prefsResponse.data
       
-      try {
-        const prefsResponse = await api.get('PreferenciasUsuario', {
-          params: { codigo: userId }
-        })
-        userPreferences = prefsResponse.data
+      if (!userPreferences || userPreferences === null) {
+        const getCurrentDate = () => new Date().toISOString().split('T')[0]
+        const now = getCurrentDate()
         
-        if (!userPreferences || userPreferences === null) {
-          
-          const getCurrentDate = () => new Date().toISOString().split('T')[0]
-          const now = getCurrentDate()
-          
-          let defaultIconCode = 1
-          let defaultColorScheme = user?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro'
-          
-          switch (user?.GRUPO?.IDENTIDADEVISUAL) {
-            case 'sifra':
-              defaultIconCode = 7
-              defaultColorScheme = 'sifra'
-              break
-            case 'mg':
-              defaultIconCode = 6
-              defaultColorScheme = 'mg'
-              break
-            case 'superjur':
-              defaultIconCode = 8
-              defaultColorScheme = 'superjur'
-              break
-            case 'carddigital':
-              defaultIconCode = 9
-              defaultColorScheme = 'carddigital'
-              break
-            default:
-              defaultIconCode = 1
-              defaultColorScheme = 'salvalucro'
-              break
-          }
-          
-          const defaultPayload = {
-            USUCODIGO: parseInt(userId),
-            TEMA: false,
-            ICONE: defaultIconCode,
-            ESQUEMACORES: defaultColorScheme,
-            USUARIOMODIFICACAO: parseInt(userId),
-            DATAMODIFICACAO: now,
-            USUARIOINSERCAO: parseInt(userId),
-            DATAINSERCAO: now,
-            ATIVO: true
-          }
-          
-          const createResponse = await api.post('PreferenciasUsuario', defaultPayload)
-          userPreferences = createResponse.data
-        }
-      } catch (error) {
-        console.error('Error loading/creating preferences:', error)
         let defaultIconCode = 1
         let defaultColorScheme = user?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro'
         
@@ -532,55 +636,117 @@ const loginApp = async (login, password) => {
             break
         }
         
-        userPreferences = {
+        const defaultPayload = {
+          USUCODIGO: parseInt(userId),
           TEMA: false,
           ICONE: defaultIconCode,
-          ESQUEMACORES: defaultColorScheme
+          ESQUEMACORES: defaultColorScheme,
+          USUARIOMODIFICACAO: parseInt(userId),
+          DATAMODIFICACAO: now,
+          USUARIOINSERCAO: parseInt(userId),
+          DATAINSERCAO: now,
+          ATIVO: true
+        }
+        
+        try {
+          const createResponse = await api.post('PreferenciasUsuario', defaultPayload)
+          userPreferences = createResponse.data
+        } catch (error) {
+          console.error('Error creating preferences:', error)
+          // Fallback to default preferences
+          userPreferences = {
+            TEMA: false,
+            ICONE: defaultIconCode,
+            ESQUEMACORES: defaultColorScheme
+          }
         }
       }
+    } catch (error) {
+      console.error('Error loading preferences:', error)
+      // Set default preferences
+      let defaultIconCode = 1
+      let defaultColorScheme = user?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro'
+      
+      switch (user?.GRUPO?.IDENTIDADEVISUAL) {
+        case 'sifra':
+          defaultIconCode = 7
+          defaultColorScheme = 'sifra'
+          break
+        case 'mg':
+          defaultIconCode = 6
+          defaultColorScheme = 'mg'
+          break
+        case 'superjur':
+          defaultIconCode = 8
+          defaultColorScheme = 'superjur'
+          break
+        case 'carddigital':
+          defaultIconCode = 9
+          defaultColorScheme = 'carddigital'
+          break
+        default:
+          defaultIconCode = 1
+          defaultColorScheme = 'salvalucro'
+          break
+      }
+      
+      userPreferences = {
+        TEMA: false,
+        ICONE: defaultIconCode,
+        ESQUEMACORES: defaultColorScheme
+      }
+    }
 
-      // ===== DETERMINE THEME VALUE =====
-      // Get theme from preferences first, then fallback to user data
-      let themeValue = false
+    // ===== APPLY THEME =====
+    let themeValue = false
+    try {
       if (userPreferences?.TEMA !== undefined && userPreferences?.TEMA !== null) {
         themeValue = userPreferences.TEMA === true || userPreferences.TEMA === 'true'
       } else if (user?.TEMA !== undefined && user?.TEMA !== null) {
         themeValue = user.TEMA === true || user.TEMA === 'true'
       }
+    } catch (error) {
+      console.error('Error applying theme:', error)
+      // Keep default theme
+    }
 
-      // ===== DETERMINE COLOR SCHEME =====
-      const urlTenant = getTenantFromURL();
-      let context = urlTenant?.contextKey || 'SL';
-      let logo = urlTenant?.logo || salvalucro;
-
-      // If no tenant in URL, use preferences
-      if (!urlTenant) {
-        context = userPreferences?.ESQUEMACORES || user?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro';
-        logo = getLogoByContext(context) || salvalucro;
+    // ===== GET TENANT CONTEXT =====
+    let context = 'SL'
+    let logo = salvalucro
+    
+    try {
+      const urlTenant = getTenantFromURL()
+      if (urlTenant?.contextKey) {
+        context = urlTenant.contextKey
+        logo = urlTenant.logo || salvalucro
+      } else {
+        context = userPreferences?.ESQUEMACORES || user?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro'
+        logo = getLogoByContext(context) || salvalucro
       }
+    } catch (error) {
+      console.error('Error getting tenant context:', error)
+      // Keep default context
+    }
 
-      // ===== APPLY THEME =====
+    // ===== APPLY UI SETTINGS =====
+    try {
       setTheme(themeValue)
       document.documentElement.setAttribute('data-theme', themeValue ? 'dark' : 'light')
       localStorage.setItem('appTheme', themeValue ? 'dark' : 'light')
 
-      // ===== APPLY COLOR SCHEME =====
       setColorScheme(context)
       document.documentElement.setAttribute('data-context', context)
       localStorage.setItem('appContext', context)
       localStorage.setItem('selectedContext', context)
       
-      // ===== APPLY CONTEXT =====
       setCurrentContext(context)
       
-      // ===== SET LOGO =====
       if (logo) {
         setCurrentLogo(logo)
       } else {
         setCurrentLogo(salvalucro)
       }
 
-      // ===== APPLY ICON =====
       if (userPreferences?.ICONE) {
         localStorage.setItem('userIconCode', userPreferences.ICONE)
         const iconPath = getIconPathByCode(userPreferences.ICONE)
@@ -588,131 +754,172 @@ const loginApp = async (login, password) => {
           setUserImg(iconPath)
         }
       }
+    } catch (error) {
+      console.error('Error applying UI settings:', error)
+      // Continue with default UI settings
+    }
 
-      // ===== UPDATE USER IF NEEDED =====
-      const handleUpdateUser = async () => {
-        try{
-          if(user.TEMA === undefined || user.TEMA === null){
-            user.TEMA = false
-            await updateUser(user)
-            localStorage.setItem('user', JSON.stringify(user))
-          }
-        } catch (error){
-          console.log(error)
-        }
+    // ===== UPDATE USER IF NEEDED =====
+    try {
+      if (user.TEMA === undefined || user.TEMA === null) {
+        user.TEMA = false
+        await updateUser(user)
+        localStorage.setItem('user', JSON.stringify(user))
       }
+    } catch (error) {
+      console.error('Error updating user:', error)
+      // Continue with login
+    }
 
-      if(user.TEMA === undefined || user.TEMA === null){
-        await handleUpdateUser()
-      }
-
-      // ===== SAVE USER DATA =====
+    // ===== SAVE USER DATA =====
+    try {
       const userData = { NOME: user.NOME, EMAIL: user.EMAIL }
       localStorage.setItem('GRUCODIGO', user.GRUCODIGO)
       localStorage.setItem('isSignedIn', true)
       localStorage.setItem('userData', JSON.stringify(userData))
+    } catch (error) {
+      console.error('Error saving user data:', error)
+      resetAppValues()
+      toast.dismiss(loadingToastId)
+      showErrorToast('Erro ao fazer login. Entre em contato com o administrador do sistema.')
+      return
+    }
 
-      // ===== LOGIN LOG =====
+    // ===== LOGIN LOG (non-critical) =====
+    try {
+      const loginLog = async () => {
+        function getBrazilianISOTime() {
+          const now = new Date()
+          
+          const dateTimeParts = new Intl.DateTimeFormat('en-US', {
+            timeZone: 'America/Sao_Paulo',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            fractionalSecondDigits: 3,
+            hour12: false,
+          }).formatToParts(now)
+          
+          const { year, month, day, hour, minute, second, fractionalSecond } = 
+            dateTimeParts.reduce((acc, part) => {
+            acc[part.type] = part.value
+            return acc
+            }, {})
+          return `${year}-${month}-${day}T${hour}:${minute}:${second}.${fractionalSecond}`
+        }
+
+        const currentDateTime = getBrazilianISOTime()
+
+        let body = {
+          USUCODIGO: userId,
+          USULOGIN: login.toUpperCase(),
+          ACESSOPERMITIDO: 'S',
+          APLICACAO: 'ReactApp',
+          DATAHORA: currentDateTime,
+        }
+
+        await api.post('/LogAcesso', body)
+      }
+      
       try {
-        const clientUserId = userId
-
-        const loginLog = async () => {
-          function getBrazilianISOTime() {
-            const now = new Date()
-            
-            const dateTimeParts = new Intl.DateTimeFormat('en-US', {
-              timeZone: 'America/Sao_Paulo',
-              year: 'numeric',
-              month: '2-digit',
-              day: '2-digit',
-              hour: '2-digit',
-              minute: '2-digit',
-              second: '2-digit',
-              fractionalSecondDigits: 3,
-              hour12: false,
-            }).formatToParts(now)
-            
-            const { year, month, day, hour, minute, second, fractionalSecond } = 
-              dateTimeParts.reduce((acc, part) => {
-              acc[part.type] = part.value
-              return acc
-              }, {})
-            return `${year}-${month}-${day}T${hour}:${minute}:${second}.${fractionalSecond}`;
-          }
-
-          const currentDateTime = getBrazilianISOTime()
-
-          let body = {
-            USUCODIGO: userId,
-            USULOGIN: login.toUpperCase(),
-            ACESSOPERMITIDO: 'S',
-            APLICACAO: 'ReactApp',
-            DATAHORA: currentDateTime,
-          }
-
-          api.post('/LogAcesso', body)
-        }
-        
-        try {
-          await loginLog()
-        } catch (error) {
-          console.log(error)
-        }
-    
-        // ===== PLUGGY AUTH =====
-        const response = await fetch('https://api.pluggy.ai/auth', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            clientId: "7cee8f27-cbfa-4a19-b14d-306f9656787a",
-            clientSecret: "01e4edaf-639a-40ae-945a-4a04ab652bad",
-            itemOptions: {
-              clientUserId: clientUserId
-            }
-          })
-        })
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json()
-
-        Cookies.set('pluggy_api_key', data.apiKey, {
-          expires: 1,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'strict'
-        })
-
-        Cookies.set('pluggy_client_id', clientUserId, {
-          expires: 1,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'strict'
-        })
+        await loginLog()
       } catch (error) {
-        console.error('Authentication failed:', error)
-        Cookies.remove('pluggy_api_key')
-        Cookies.remove('pluggy_client_id')
-        logout()
-        throw error
+        console.error('Error logging login:', error)
+        // Continue with login even if log fails
+      }
+    } catch (error) {
+      console.error('Error in login log:', error)
+      // Continue with login
+    }
+
+    // ===== PLUGGY AUTHENTICATION (non-critical) =====
+    try {
+      const response = await fetch('https://api.pluggy.ai/auth', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          clientId: "7cee8f27-cbfa-4a19-b14d-306f9656787a",
+          clientSecret: "01e4edaf-639a-40ae-945a-4a04ab652bad",
+          itemOptions: {
+            clientUserId: userId
+          }
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
       }
 
-      // ===== LOAD OPTIONS AND GROUPS =====
+      const data = await response.json()
+
+      if (!data || !data.apiKey) {
+        throw new Error('Resposta inválida do serviço Pluggy')
+      }
+
+      Cookies.set('pluggy_api_key', data.apiKey, {
+        expires: 1,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict'
+      })
+
+      Cookies.set('pluggy_client_id', userId, {
+        expires: 1,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict'
+      })
+    } catch (error) {
+      console.error('Pluggy authentication failed:', error)
+      Cookies.remove('pluggy_api_key')
+      Cookies.remove('pluggy_client_id')
+      // Continue with login even if Pluggy fails
+    }
+
+    // ===== LOAD OPTIONS AND GROUPS =====
+    try {
       const opt = await loadOptions()
+      if (!opt) {
+        resetAppValues()
+        toast.dismiss(loadingToastId)
+        showErrorToast('Erro ao fazer login. Entre em contato com o administrador do sistema.')
+        return
+      }
       localStorage.setItem('options', JSON.stringify(opt))
       
       const gru = await loadGroupsList()
+      if (!gru || gru.length === 0) {
+        resetAppValues()
+        toast.dismiss(loadingToastId)
+        showErrorToast('Erro ao fazer login. Entre em contato com o administrador do sistema.')
+        return
+      }
       localStorage.setItem('groupsStorage', JSON.stringify(gru))
       localStorage.setItem('groupCode', gru[0].CODIGOGRUPO)
       localStorage.setItem('cnpj', 'todos')
-      
-      setIsSignedIn(true)
+    } catch (error) {
+      console.error('Error loading options/groups:', error)
+      resetAppValues()
+      toast.dismiss(loadingToastId)
+      showErrorToast('Erro ao fazer login. Entre em contato com o administrador do sistema.')
+      return
     }
+    
+    // ===== LOGIN SUCCESS =====
+    setIsSignedIn(true)
+    
+    // Update loading toast to success
+    toast.dismiss(loadingToastId)
+    showSuccessToast('Login realizado com sucesso!')
+    
   } catch (error) {
     console.error('Login error:', error)
-    alert(error.message)
+    resetAppValues()
+    toast.dismiss(loadingToastId)
+    showErrorToast('Erro ao fazer login. Entre em contato com o administrador do sistema.')
   }
 }
 

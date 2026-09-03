@@ -74,8 +74,8 @@ function RoutesApp() {
       <Route path="/resumo-mensal" element={<Private><ResumoMensal /></Private>} />
       <Route path="/taxas" element={<Private><Taxas /></Private>} />
       <Route path="/extrato" element={<Private><Extrato /></Private>} />
-      <Route path="/cadastrodebancos" element={<Private><CadastroDeBancos /></Private>} />
-      <Route path="/openfinance" element={<Private><OpenFinance /></Private>} />
+      {/*<Route path="/cadastrodebancos" element={<Private><CadastroDeBancos /></Private>} />*/}
+      {<Route path="/openfinance" element={<Private><OpenFinance /></Private>} />}
 
       {/* Rotas comentadas para uso futuro */}
       {/*

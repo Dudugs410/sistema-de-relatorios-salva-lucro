@@ -40,6 +40,49 @@
   }
 }
 
+.tab-navigation {
+  display: flex;
+  gap: 4px;
+  margin: 16px 0 8px 0;
+  border-bottom: 2px solid var(--bs-border-color);
+  padding-bottom: 0;
+
+  .tab-button {
+    padding: 10px 24px;
+    background: none;
+    border: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--font-color);
+    opacity: 0.6;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    border-radius: 4px 4px 0 0;
+
+    &:hover {
+      opacity: 1;
+      background-color: rgba(var(--secondary-color-rgb), 0.05);
+    }
+
+    &.active {
+      opacity: 1;
+      color: var(--secondary-color);
+      
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background-color: var(--secondary-color);
+        border-radius: 2px 2px 0 0;
+      }
+    }
+  }
+}
+
 .select-container-open-finance{
   display: flex;
   flex-direction: row;

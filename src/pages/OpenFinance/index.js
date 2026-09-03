@@ -6,6 +6,7 @@ import { AuthContext } from '../../contexts/auth'
 import Joyride from 'react-joyride'
 import MyCalendar from '../../components/Componente_Calendario'
 import NewDisplayData from '../../components/Component_NewDisplayData'
+import CadastroBanco from './CadastroBanco' // Import the new registration component
 import api from '../../services/api'
 import { toast } from 'react-toastify'
 import { FiHelpCircle, FiUsers, FiUser } from 'react-icons/fi'
@@ -190,6 +191,9 @@ const formatOptionLabel = ({ label, iconType }) => (
 const OpenFinance = () => {
   const location = useLocation()
   const { dateConvert } = useContext(AuthContext)
+
+  // Tab state
+  const [activeTab, setActiveTab] = useState('extrato') // 'extrato' or 'cadastro'
 
   // State for client selection
   const [clientOptions, setClientOptions] = useState([])
@@ -403,6 +407,16 @@ const OpenFinance = () => {
   const handleDateRangeChange = (dateRange) => {
     setDateRange(dateRange)
   }
+
+  // Handle bank registered callback
+  const handleBankRegistered = useCallback((newBank) => {
+    // Optionally refresh bank list or show success message
+    toast.success(`Banco ${newBank?.Banco || ''} cadastrado com sucesso!`)
+    // Refresh bank options for the current client
+    if (selectedClient && selectedClient.cod) {
+      loadBankOptions(selectedClient.cod)
+    }
+  }, [selectedClient, loadBankOptions])
 
   // Load bank statement data
   const loadBankData = useCallback(async (e) => {
@@ -743,179 +757,209 @@ const OpenFinance = () => {
         <div className='title-container-global'>
           <h1 className='title-global'>Extrato Bancário</h1>
         </div>
+        
+        {/* Tab Navigation */}
+        <div className="tab-navigation">
+          <button 
+            className={`tab-button ${activeTab === 'extrato' ? 'active' : ''}`}
+            onClick={() => setActiveTab('extrato')}
+          >
+            Extrato
+          </button>
+          <button 
+            className={`tab-button ${activeTab === 'cadastro' ? 'active' : ''}`}
+            onClick={() => setActiveTab('cadastro')}
+          >
+            Cadastro
+          </button>
+        </div>
+        
         <hr className='hr-global'/>
-        {!isDataLoaded ? (
+        
+        {/* Tab Content */}
+        {activeTab === 'extrato' ? (
           <>
-            {/* Joyride for initial view */}
-            {runTutorial && (
-              <Joyride
-                steps={tutorialSteps}
-                run={runTutorial}
-                continuous={true}
-                scrollToFirstStep={true}
-                showProgress={true}
-                showSkipButton={true}
-                scrollOffset={80}
-                disableOverlayClose={true}
-                styles={{
-                  options: {
-                    primaryColor: '#99cc33',
-                    textColor: '#0a3d70',
-                    zIndex: 10000,
-                  },
-                }}
-                callback={(data) => {
-                  if (data.status === 'finished' || data.status === 'skipped') {
-                    setRunTutorial(false)
-                  }
-                }}
-                locale={{
-                  back: 'Voltar',
-                  close: 'Fechar',
-                  last: 'Finalizar',
-                  next: 'Próximo',
-                  skip: 'Pular',
-                  nextLabelWithProgress: 'Próximo ({step} de {steps})',
-                }}
-              />
+            {!isDataLoaded ? (
+              <>
+                {/* Joyride for initial view */}
+                {runTutorial && (
+                  <Joyride
+                    steps={tutorialSteps}
+                    run={runTutorial}
+                    continuous={true}
+                    scrollToFirstStep={true}
+                    showProgress={true}
+                    showSkipButton={true}
+                    scrollOffset={80}
+                    disableOverlayClose={true}
+                    styles={{
+                      options: {
+                        primaryColor: '#99cc33',
+                        textColor: '#0a3d70',
+                        zIndex: 10000,
+                      },
+                    }}
+                    callback={(data) => {
+                      if (data.status === 'finished' || data.status === 'skipped') {
+                        setRunTutorial(false)
+                      }
+                    }}
+                    locale={{
+                      back: 'Voltar',
+                      close: 'Fechar',
+                      last: 'Finalizar',
+                      next: 'Próximo',
+                      skip: 'Pular',
+                      nextLabelWithProgress: 'Próximo ({step} de {steps})',
+                    }}
+                  />
+                )}
+
+                <div className='select-container-open-finance'>
+                  <div className='select-wrapper' data-tour="cliente-section">
+                    <h5>Cliente / Filial</h5>
+                    <Select
+                      className='seletor-cliente-select fixed-width-select'
+                      id='cliente'
+                      options={clientOptions}
+                      getOptionLabel={(option) => option.label}
+                      getOptionValue={(option) => option.cod}
+                      onChange={handleClientChange}
+                      value={selectedClient}
+                      menuPortalTarget={document.body}
+                      menuPosition="fixed"
+                      placeholder={loadingClients ? "Carregando clientes..." : "Selecione um cliente/filial..."}
+                      isClearable={true}
+                      isLoading={loadingClients}
+                      isDisabled={loadingClients}
+                      formatOptionLabel={formatOptionLabel}
+                      styles={customSelectStyles}
+                      theme={(theme) => ({
+                        ...theme,
+                        colors: {
+                          ...theme.colors,
+                          primary: 'var(--secondary-color)',
+                          primary75: 'var(--secondary-color)',
+                          primary50: 'rgba(var(--secondary-color-rgb), 0.5)',
+                          primary25: 'rgba(var(--secondary-color-rgb), 0.25)',
+                          neutral0: 'var(--background-color)',
+                          neutral5: 'var(--background-color)',
+                          neutral10: 'var(--background-color)',
+                          neutral20: 'var(--bs-border-color)',
+                          neutral30: 'var(--bs-border-color)',
+                          neutral40: 'var(--font-color)',
+                          neutral50: 'var(--font-color)',
+                          neutral60: 'var(--font-color)',
+                          neutral70: 'var(--font-color)',
+                          neutral80: 'var(--font-color)',
+                          neutral90: 'var(--font-color)',
+                        },
+                      })}
+                    />
+                  </div>
+                  <div className='select-wrapper' data-tour="banco-section">
+                    <h5>Banco</h5>
+                    <Select
+                      className='seletor-banco-select fixed-width-select'
+                      id='banco'
+                      options={bankOptions}
+                      getOptionLabel={(option) => `${option.nomeBanco} (${option.codigoBanco})`}
+                      getOptionValue={(option) => option.codigoBanco}
+                      onChange={handleBankChange}
+                      value={getSelectedBankOption()}
+                      menuPortalTarget={document.body}
+                      menuPosition="fixed"
+                      placeholder={!selectedClient ? "Selecione um cliente primeiro" : loadingBanks ? "Carregando bancos..." : "Selecione um banco..."}
+                      isClearable={true}
+                      isLoading={loadingBanks}
+                      isDisabled={!selectedClient || loadingBanks}
+                      styles={customSelectStyles}
+                      theme={(theme) => ({
+                        ...theme,
+                        colors: {
+                          ...theme.colors,
+                          primary: 'var(--secondary-color)',
+                          primary75: 'var(--secondary-color)',
+                          primary50: 'rgba(var(--secondary-color-rgb), 0.5)',
+                          primary25: 'rgba(var(--secondary-color-rgb), 0.25)',
+                          neutral0: 'var(--background-color)',
+                          neutral5: 'var(--background-color)',
+                          neutral10: 'var(--background-color)',
+                          neutral20: 'var(--bs-border-color)',
+                          neutral30: 'var(--bs-border-color)',
+                          neutral40: 'var(--font-color)',
+                          neutral50: 'var(--font-color)',
+                          neutral60: 'var(--font-color)',
+                          neutral70: 'var(--font-color)',
+                          neutral80: 'var(--font-color)',
+                          neutral90: 'var(--font-color)',
+                        },
+                      })}
+                    />
+                  </div>
+                </div>
+
+                <div data-tour="calendario-section">
+                  <MyCalendar
+                    onLoadData={loadBankData}
+                    getCalendarDate={handleDateRangeChange}
+                    btnDisabled={btnDisabled || loadingBanks || !bankCode || !selectedClient}
+                    customButtonText="Pesquisar"
+                  />
+                </div>
+
+                <button 
+                  className='btn btn-success-dados btn-tutorial px-2 py-1'
+                  onClick={() => {
+                    setRunTutorial(false);
+                    setTimeout(() => {
+                      setRunTutorial(true);
+                    }, 50);
+                  }}
+                  style={{
+                    position: 'relative',
+                    bottom: '0px',
+                    right: '-10px',
+                    zIndex: 10,
+                    padding: '10px 15px',
+                    background: 'none',
+                    color: '#99cc33',
+                    border: 'none',
+                    borderRadius: '5px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <FiHelpCircle />
+                </button>
+              </>
+            ) : (
+              <>
+                <NewDisplayData
+                  dataArray={bankData}
+                  adminDataArray={bankDataAdmin}
+                  totals={bankTotal}
+                  onGoBack={handleGoBack}
+                  setRunTutorial={setRunTutorial}
+                  location={location}
+                  runTutorial={runTutorial}
+                  tutorialSteps={tutorialSteps}
+                  hideTotals={false}
+                  hideTables={false}
+                  customTableColumns={getTableColumns()}
+                  customFilterConfig={getFilterConfig()}
+                  customExportPage="openfinance"
+                />
+              </>
             )}
-
-            <div className='select-container-open-finance'>
-              <div className='select-wrapper' data-tour="cliente-section">
-                <h5>Cliente / Filial</h5>
-                <Select
-                  className='seletor-cliente-select fixed-width-select'
-                  id='cliente'
-                  options={clientOptions}
-                  getOptionLabel={(option) => option.label}
-                  getOptionValue={(option) => option.cod}
-                  onChange={handleClientChange}
-                  value={selectedClient}
-                  menuPortalTarget={document.body}
-                  menuPosition="fixed"
-                  placeholder={loadingClients ? "Carregando clientes..." : "Selecione um cliente/filial..."}
-                  isClearable={true}
-                  isLoading={loadingClients}
-                  isDisabled={loadingClients}
-                  formatOptionLabel={formatOptionLabel}
-                  styles={customSelectStyles}
-                  theme={(theme) => ({
-                    ...theme,
-                    colors: {
-                      ...theme.colors,
-                      primary: 'var(--secondary-color)',
-                      primary75: 'var(--secondary-color)',
-                      primary50: 'rgba(var(--secondary-color-rgb), 0.5)',
-                      primary25: 'rgba(var(--secondary-color-rgb), 0.25)',
-                      neutral0: 'var(--background-color)',
-                      neutral5: 'var(--background-color)',
-                      neutral10: 'var(--background-color)',
-                      neutral20: 'var(--bs-border-color)',
-                      neutral30: 'var(--bs-border-color)',
-                      neutral40: 'var(--font-color)',
-                      neutral50: 'var(--font-color)',
-                      neutral60: 'var(--font-color)',
-                      neutral70: 'var(--font-color)',
-                      neutral80: 'var(--font-color)',
-                      neutral90: 'var(--font-color)',
-                    },
-                  })}
-                />
-              </div>
-              <div className='select-wrapper' data-tour="banco-section">
-                <h5>Banco</h5>
-                <Select
-                  className='seletor-banco-select fixed-width-select'
-                  id='banco'
-                  options={bankOptions}
-                  getOptionLabel={(option) => `${option.nomeBanco} (${option.codigoBanco})`}
-                  getOptionValue={(option) => option.codigoBanco}
-                  onChange={handleBankChange}
-                  value={getSelectedBankOption()}
-                  menuPortalTarget={document.body}
-                  menuPosition="fixed"
-                  placeholder={!selectedClient ? "Selecione um cliente primeiro" : loadingBanks ? "Carregando bancos..." : "Selecione um banco..."}
-                  isClearable={true}
-                  isLoading={loadingBanks}
-                  isDisabled={!selectedClient || loadingBanks}
-                  styles={customSelectStyles}
-                  theme={(theme) => ({
-                    ...theme,
-                    colors: {
-                      ...theme.colors,
-                      primary: 'var(--secondary-color)',
-                      primary75: 'var(--secondary-color)',
-                      primary50: 'rgba(var(--secondary-color-rgb), 0.5)',
-                      primary25: 'rgba(var(--secondary-color-rgb), 0.25)',
-                      neutral0: 'var(--background-color)',
-                      neutral5: 'var(--background-color)',
-                      neutral10: 'var(--background-color)',
-                      neutral20: 'var(--bs-border-color)',
-                      neutral30: 'var(--bs-border-color)',
-                      neutral40: 'var(--font-color)',
-                      neutral50: 'var(--font-color)',
-                      neutral60: 'var(--font-color)',
-                      neutral70: 'var(--font-color)',
-                      neutral80: 'var(--font-color)',
-                      neutral90: 'var(--font-color)',
-                    },
-                  })}
-                />
-              </div>
-            </div>
-
-            <div data-tour="calendario-section">
-              <MyCalendar
-                onLoadData={loadBankData}
-                getCalendarDate={handleDateRangeChange}
-                btnDisabled={btnDisabled || loadingBanks || !bankCode || !selectedClient}
-                customButtonText="Pesquisar"
-              />
-            </div>
-
-            <button 
-              className='btn btn-success-dados btn-tutorial px-2 py-1'
-              onClick={() => {
-                setRunTutorial(false);
-                setTimeout(() => {
-                  setRunTutorial(true);
-                }, 50);
-              }}
-              style={{
-                position: 'relative',
-                bottom: '0px',
-                right: '-10px',
-                zIndex: 10,
-                padding: '10px 15px',
-                background: 'none',
-                color: '#99cc33',
-                border: 'none',
-                borderRadius: '5px',
-                cursor: 'pointer'
-              }}
-            >
-              <FiHelpCircle />
-            </button>
           </>
         ) : (
-          <>
-            <NewDisplayData
-              dataArray={bankData}
-              adminDataArray={bankDataAdmin}
-              totals={bankTotal}
-              onGoBack={handleGoBack}
-              setRunTutorial={setRunTutorial}
-              location={location}
-              runTutorial={runTutorial}
-              tutorialSteps={tutorialSteps}
-              hideTotals={false}
-              hideTables={false}
-              customTableColumns={getTableColumns()}
-              customFilterConfig={getFilterConfig()}
-              customExportPage="openfinance"
-            />
-          </>
+          /* Cadastro Tab Content */
+          <CadastroBanco 
+            selectedClient={selectedClient}
+            onBankRegistered={handleBankRegistered}
+          />
         )}
+        
         <hr className='hr-global'/>
       </div>
     </div>

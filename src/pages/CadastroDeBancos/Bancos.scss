@@ -1,0 +1,144 @@
+// Bancos.scss
+@import '../../styles/variables';
+
+.select-container-bancos {
+    display: flex;
+    justify-content: space-evenly;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.select-wrapper {
+    flex: 1;
+    min-width: 0;
+    max-width: 350px;
+
+    h5 {
+        margin-bottom: 8px;
+        font-size: 14px;
+        color: var(--font-color);
+    }
+}
+
+.fixed-width-select {
+    width: 100%;
+}
+
+.fixed-width-select .react-select__control {
+    min-width: 250px;
+    width: 100%;
+    cursor: pointer;
+}
+
+.fixed-width-select .react-select__value-container {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fixed-width-select .react-select__single-value {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: calc(100% - 20px);
+}
+
+.fixed-width-select .react-select__menu {
+    min-width: 250px;
+    width: 100%;
+}
+
+.btn-search {
+    width: 100%;
+    padding: 10px 24px;
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    height: 42px;
+
+    &:hover:not(:disabled) {
+        filter: brightness(0.9);
+        transform: translateY(-1px);
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+}
+
+.btn-tutorial {
+    position: relative;
+    bottom: 0px;
+    right: -10px;
+    z-index: 10;
+    padding: 10px 15px;
+    background: none;
+    color: var(--secondary-color);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.2rem;
+
+    &:hover {
+        opacity: 0.8;
+    }
+}
+
+.container-bancos-info {
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.info-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 30px;
+    background-color: rgba(var(--secondary-color-rgb), 0.05);
+    border: 1px dashed var(--bs-border-color);
+    border-radius: 12px;
+    min-width: 300px;
+
+    span {
+        font-size: 1.1rem;
+        color: var(--font-color);
+        opacity: 0.7;
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .select-container-bancos {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+
+    .select-wrapper {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .fixed-width-select .react-select__control {
+        min-width: 100%;
+    }
+
+    .info-message {
+        min-width: unset;
+        width: 100%;
+        padding: 20px;
+    }
+
+    .btn-tutorial {
+        right: 0;
+    }
+}

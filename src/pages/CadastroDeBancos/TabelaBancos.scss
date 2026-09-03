@@ -1,0 +1,873 @@
+// TabelaBancos.scss
+.tabela-bancos-container {
+    width: 100%;
+    padding: 16px 0;
+}
+
+.tabela-bancos-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 12px;
+
+    .header-info {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+
+        .subtitle {
+            margin: 0;
+            font-size: 1.1rem;
+            color: var(--font-color);
+            font-weight: 600;
+        }
+
+        .bank-count {
+            font-size: 0.9rem;
+            color: var(--font-color);
+            opacity: 0.7;
+            padding: 4px 12px;
+            background-color: rgba(var(--secondary-color-rgb), 0.1);
+            border-radius: 20px;
+        }
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+
+        .btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+
+            &:hover {
+                filter: brightness(0.9);
+                transform: translateY(-1px);
+            }
+
+            .icon {
+                font-size: 1rem;
+            }
+        }
+
+        .btn-add {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-refresh {
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+            border: 1px solid var(--secondary-color);
+
+            &:hover {
+                background-color: var(--secondary-color);
+                color: var(--primary-color);
+            }
+        }
+    }
+}
+
+// Desktop Table View
+.tabela-bancos-wrapper {
+    overflow-x: auto;
+    margin: 16px 0;
+    border-radius: 8px;
+    border: 1px solid var(--bs-border-color);
+}
+
+.tabela-bancos {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    background-color: var(--background-color);
+
+    thead {
+        background-color: var(--secondary-color);
+        color: var(--primary-color);
+
+        tr {
+            th {
+                padding: 12px 16px;
+                text-align: left;
+                font-weight: 600;
+                font-size: 0.85rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                white-space: nowrap;
+                position: sticky;
+                top: 0;
+                z-index: 10;
+            }
+
+            th.col-actions {
+                text-align: center;
+                min-width: 100px;
+            }
+        }
+    }
+
+    tbody {
+        tr {
+            border-bottom: 1px solid var(--bs-border-color);
+            transition: background-color 0.2s;
+
+            &:hover {
+                background-color: rgba(var(--secondary-color-rgb), 0.05);
+            }
+
+            &:last-child {
+                border-bottom: none;
+            }
+
+            td {
+                padding: 10px 16px;
+                color: var(--font-color);
+                vertical-align: middle;
+            }
+
+            .col-actions {
+                text-align: center;
+                min-width: 100px;
+            }
+
+            .col-cliente {
+                font-weight: 500;
+                max-width: 200px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .col-codigo {
+                font-weight: 600;
+                color: var(--secondary-color);
+                font-family: monospace;
+            }
+
+            .col-nome-banco {
+                font-weight: 500;
+                max-width: 200px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .col-conta {
+                font-family: monospace;
+                font-size: 0.85rem;
+            }
+
+            .col-cnpj {
+                font-family: monospace;
+                font-size: 0.85rem;
+            }
+
+            .col-razao-social {
+                max-width: 200px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .action-buttons {
+                display: flex;
+                gap: 8px;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .btn-action {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 32px;
+                height: 32px;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                transition: all 0.2s;
+                font-size: 0.9rem;
+
+                &:hover {
+                    transform: scale(1.1);
+                }
+
+                svg {
+                    width: 16px;
+                    height: 16px;
+                }
+            }
+
+            .btn-edit {
+                background-color: rgba(40, 167, 69, 0.15);
+                color: #28a745;
+
+                &:hover {
+                    background-color: #28a745;
+                    color: white;
+                }
+            }
+
+            .btn-cards {
+                background-color: rgba(0, 123, 255, 0.15);
+                color: #007bff;
+
+                &:hover {
+                    background-color: #007bff;
+                    color: white;
+                }
+            }
+        }
+    }
+}
+
+// Mobile Card View
+.tabela-bancos-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 16px 0;
+}
+
+.bank-card {
+    background-color: var(--background-color);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 8px;
+    padding: 16px;
+    transition: all 0.2s;
+
+    &:hover {
+        border-color: var(--secondary-color);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .bank-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--bs-border-color);
+
+        .bank-card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+
+            .bank-card-code {
+                font-weight: 600;
+                color: var(--secondary-color);
+                font-family: monospace;
+                font-size: 1.1rem;
+                padding: 2px 8px;
+                background-color: rgba(var(--secondary-color-rgb), 0.1);
+                border-radius: 4px;
+            }
+
+            .bank-card-name {
+                font-weight: 500;
+                font-size: 1rem;
+                color: var(--font-color);
+            }
+        }
+
+        .bank-card-actions {
+            display: flex;
+            gap: 6px;
+
+            .btn-action {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 32px;
+                height: 32px;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                transition: all 0.2s;
+                font-size: 0.9rem;
+
+                &:hover {
+                    transform: scale(1.1);
+                }
+
+                svg {
+                    width: 16px;
+                    height: 16px;
+                }
+            }
+
+            .btn-edit {
+                background-color: rgba(40, 167, 69, 0.15);
+                color: #28a745;
+
+                &:hover {
+                    background-color: #28a745;
+                    color: white;
+                }
+            }
+
+            .btn-cards {
+                background-color: rgba(0, 123, 255, 0.15);
+                color: #007bff;
+
+                &:hover {
+                    background-color: #007bff;
+                    color: white;
+                }
+            }
+        }
+    }
+
+    .bank-card-body {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        .bank-card-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+
+            .bank-card-label {
+                font-size: 0.8rem;
+                font-weight: 600;
+                color: var(--font-color);
+                opacity: 0.6;
+                text-transform: uppercase;
+                letter-spacing: 0.3px;
+            }
+
+            .bank-card-value {
+                font-size: 0.9rem;
+                color: var(--font-color);
+                font-weight: 500;
+                text-align: right;
+                word-break: break-word;
+                max-width: 60%;
+            }
+        }
+    }
+}
+
+// Pagination
+.tabela-bancos-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 16px 0;
+    margin-top: 8px;
+
+    .pagination-info {
+        font-size: 0.85rem;
+        color: var(--font-color);
+        opacity: 0.7;
+    }
+
+    .pagination-controls {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    .btn-pagination {
+        padding: 6px 14px;
+        background-color: transparent;
+        color: var(--font-color);
+        border: 1px solid var(--bs-border-color);
+        border-radius: 6px;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        min-height: 34px;
+        min-width: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:hover:not(:disabled) {
+            background-color: rgba(var(--secondary-color-rgb), 0.1);
+            border-color: var(--secondary-color);
+        }
+
+        &:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+    }
+
+    .btn-pagination-icon {
+        padding: 6px 10px;
+        
+        svg {
+            width: 16px;
+            height: 16px;
+        }
+    }
+
+    .pagination-pages {
+        display: flex;
+        gap: 4px;
+    }
+
+    .btn-page {
+        min-width: 34px;
+        height: 34px;
+        padding: 0 8px;
+        background-color: transparent;
+        color: var(--font-color);
+        border: 1px solid var(--bs-border-color);
+        border-radius: 6px;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &:hover:not(.active) {
+            background-color: rgba(var(--secondary-color-rgb), 0.1);
+            border-color: var(--secondary-color);
+        }
+
+        &.active {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            border-color: var(--secondary-color);
+            font-weight: 600;
+        }
+    }
+}
+
+// Empty state
+.tabela-bancos-empty {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+    padding: 40px 20px;
+
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        text-align: center;
+
+        .empty-icon {
+            font-size: 3rem;
+            opacity: 0.5;
+        }
+
+        h4 {
+            margin: 0;
+            font-size: 1.2rem;
+            color: var(--font-color);
+            font-weight: 600;
+        }
+
+        p {
+            margin: 0;
+            color: var(--font-color);
+            opacity: 0.6;
+            font-size: 0.95rem;
+        }
+
+        .btn-add-empty {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 8px;
+
+            &:hover {
+                filter: brightness(0.9);
+                transform: translateY(-1px);
+            }
+
+            .icon {
+                font-size: 1.1rem;
+            }
+        }
+    }
+}
+
+// Floating button
+.floating-button-container {
+    position: fixed;
+    bottom: 45px;
+    left: 20px;
+    z-index: 1000;
+}
+
+.btn-floating-new-search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+    border: solid var(--primary-color) 1px;
+    border-radius: 50px;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        background-color: var(--primary-color);
+        color: var(--secondary-color);
+        filter: brightness(0.95);
+        border: solid var(--secondary-color) 1px;
+    }
+
+    .floating-button-icon {
+        font-size: 18px;
+    }
+
+    .floating-button-text {
+        white-space: nowrap;
+    }
+}
+
+// Responsive styles
+@media (max-width: 992px) {
+    .tabela-bancos {
+        font-size: 0.8rem;
+
+        thead tr th,
+        tbody tr td {
+            padding: 8px 12px;
+        }
+
+        .col-cliente,
+        .col-nome-banco,
+        .col-razao-social {
+            max-width: 120px;
+        }
+
+        .col-actions {
+            min-width: 80px;
+        }
+
+        .btn-action {
+            width: 28px;
+            height: 28px;
+            font-size: 0.8rem;
+
+            svg {
+                width: 14px;
+                height: 14px;
+            }
+        }
+    }
+
+    .tabela-bancos-pagination {
+        .btn-pagination {
+            min-height: 30px;
+            min-width: 30px;
+            font-size: 0.8rem;
+        }
+
+        .btn-page {
+            min-width: 30px;
+            height: 30px;
+            font-size: 0.8rem;
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .tabela-bancos-header {
+        flex-direction: column;
+        align-items: flex-start;
+
+        .header-info {
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .header-actions {
+            width: 100%;
+            
+            .btn {
+                flex: 1;
+                justify-content: center;
+                font-size: 0.8rem;
+                padding: 6px 12px;
+            }
+        }
+    }
+
+    .tabela-bancos-pagination {
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+
+        .pagination-controls {
+            width: 100%;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-pagination {
+            min-height: 28px;
+            min-width: 28px;
+            font-size: 0.75rem;
+            padding: 4px 8px;
+        }
+
+        .btn-page {
+            min-width: 28px;
+            height: 28px;
+            font-size: 0.75rem;
+            padding: 0 6px;
+        }
+    }
+
+    .floating-button-container {
+        bottom: 15px;
+        left: 15px;
+    }
+
+    .btn-floating-new-search {
+        padding: 10px 18px;
+        font-size: 14px;
+        gap: 8px;
+
+        .floating-button-text {
+            font-size: 13px;
+        }
+
+        .floating-button-icon {
+            font-size: 14px;
+        }
+    }
+
+    .tabela-bancos-empty {
+        min-height: 200px;
+
+        .empty-state {
+            .empty-icon {
+                font-size: 2.5rem;
+            }
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .bank-card {
+        padding: 12px;
+
+        .bank-card-header {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 8px;
+            padding-bottom: 10px;
+
+            .bank-card-title {
+                .bank-card-code {
+                    font-size: 1rem;
+                }
+
+                .bank-card-name {
+                    font-size: 0.9rem;
+                }
+            }
+
+            .bank-card-actions {
+                justify-content: flex-end;
+            }
+        }
+
+        .bank-card-body {
+            .bank-card-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 2px;
+                padding: 6px 0;
+
+                .bank-card-label {
+                    font-size: 0.7rem;
+                }
+
+                .bank-card-value {
+                    font-size: 0.85rem;
+                    max-width: 100%;
+                    text-align: left;
+                }
+            }
+        }
+    }
+
+    .tabela-bancos-pagination {
+        .pagination-controls {
+            gap: 4px;
+        }
+
+        .btn-pagination {
+            min-height: 24px;
+            min-width: 24px;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+        }
+
+        .btn-pagination-icon {
+            padding: 2px 6px;
+            
+            svg {
+                width: 12px;
+                height: 12px;
+            }
+        }
+
+        .btn-page {
+            min-width: 24px;
+            height: 24px;
+            font-size: 0.7rem;
+            padding: 0 4px;
+        }
+
+        .pagination-info {
+            font-size: 0.7rem;
+        }
+    }
+
+    .floating-button-container {
+        bottom: 10px;
+        left: 15px;
+    }
+
+    .btn-floating-new-search {
+        padding: 8px 14px;
+
+        .floating-button-text {
+            font-size: 12px;
+        }
+
+        .floating-button-icon {
+            font-size: 12px;
+        }
+    }
+
+    .tabela-bancos-header {
+        .header-actions {
+            .btn {
+                font-size: 0.7rem;
+                padding: 4px 8px;
+            }
+        }
+    }
+}
+
+// Dark mode support
+.dark-mode {
+    .tabela-bancos-wrapper {
+        border-color: var(--bs-border-color);
+    }
+
+    .tabela-bancos {
+        thead {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+        }
+
+        tbody {
+            tr {
+                border-bottom-color: var(--bs-border-color);
+
+                &:hover {
+                    background-color: rgba(var(--secondary-color-rgb), 0.1);
+                }
+            }
+
+            .btn-edit {
+                background-color: rgba(40, 167, 69, 0.25);
+                
+                &:hover {
+                    background-color: #28a745;
+                    color: white;
+                }
+            }
+
+            .btn-cards {
+                background-color: rgba(0, 123, 255, 0.25);
+                
+                &:hover {
+                    background-color: #007bff;
+                    color: white;
+                }
+            }
+        }
+    }
+
+    .bank-card {
+        background-color: var(--background-color);
+        border-color: var(--bs-border-color);
+
+        &:hover {
+            border-color: var(--secondary-color);
+        }
+
+        .bank-card-header {
+            border-bottom-color: var(--bs-border-color);
+        }
+    }
+
+    .btn-floating-new-search {
+        border-color: var(--secondary-color);
+    }
+
+    .tabela-bancos-pagination {
+        .btn-pagination {
+            &:hover:not(:disabled) {
+                background-color: rgba(var(--secondary-color-rgb), 0.2);
+            }
+        }
+
+        .btn-page {
+            &:hover:not(.active) {
+                background-color: rgba(var(--secondary-color-rgb), 0.2);
+            }
+
+            &.active {
+                background-color: var(--secondary-color);
+                color: var(--primary-color);
+            }
+        }
+    }
+
+    .tabela-bancos-empty {
+        .btn-add-empty {
+            &:hover {
+                filter: brightness(1.1);
+            }
+        }
+    }
+}
