@@ -6,7 +6,6 @@ import { AuthContext } from '../../contexts/auth'
 import Joyride from 'react-joyride'
 import MyCalendar from '../../components/Componente_Calendario'
 import NewDisplayData from '../../components/Component_NewDisplayData'
-import CadastroBanco from './CadastroBanco' // Import the new registration component
 import api from '../../services/api'
 import { toast } from 'react-toastify'
 import { FiHelpCircle, FiUsers, FiUser } from 'react-icons/fi'
@@ -192,9 +191,6 @@ const OpenFinance = () => {
   const location = useLocation()
   const { dateConvert } = useContext(AuthContext)
 
-  // Tab state
-  const [activeTab, setActiveTab] = useState('extrato') // 'extrato' or 'cadastro'
-
   // State for client selection
   const [clientOptions, setClientOptions] = useState([])
   const [selectedClient, setSelectedClient] = useState(null)
@@ -219,12 +215,11 @@ const OpenFinance = () => {
   const [isDataLoaded, setIsDataLoaded] = useState(false)
   const [runTutorial, setRunTutorial] = useState(false)
 
-  // Load client options from localStorage (same as SeletorCliente)
+  // Load client options from localStorage
   const loadClientOptions = useCallback(() => {
     try {
       setLoadingClients(true)
       
-      // Get groups from localStorage
       const groupsStorage = localStorage.getItem('groupsStorage')
       if (!groupsStorage) {
         toast.error('Nenhum grupo encontrado')
@@ -233,14 +228,11 @@ const OpenFinance = () => {
       }
 
       const groups = JSON.parse(groupsStorage)
-      
-      // Create client options from all groups
       const allClients = []
       
       groups.forEach(group => {
         if (group.CLIENTES && group.CLIENTES.length > 0) {
           group.CLIENTES.forEach(client => {
-            // Check if client already exists in the list (deduplicate by CNPJ)
             const exists = allClients.some(c => c.value === client.CNPJ)
             if (!exists) {
               allClients.push({
@@ -255,11 +247,9 @@ const OpenFinance = () => {
         }
       })
 
-      // Sort clients by name
       const sortedClients = allClients.sort((a, b) => a.label.localeCompare(b.label))
       setClientOptions(sortedClients)
 
-      // Restore previously selected client from localStorage
       const savedClient = localStorage.getItem('selectedOFClient')
       if (savedClient) {
         try {
@@ -297,7 +287,6 @@ const OpenFinance = () => {
         }
       })
       
-      // Filter banks with NOME and CODIGO, then deduplicate by CODIGO
       const banksMap = new Map()
       
       response.data
@@ -312,13 +301,11 @@ const OpenFinance = () => {
           }
         })
       
-      // Convert Map to array and sort by name
       const banks = Array.from(banksMap.values())
         .sort((a, b) => a.nomeBanco.localeCompare(b.nomeBanco))
       
       setBankOptions(banks)
 
-      // Auto-select first bank if available
       if (banks.length > 0) {
         const savedBank = localStorage.getItem('selectedOFBank')
         if (savedBank) {
@@ -358,11 +345,8 @@ const OpenFinance = () => {
   // Load banks when client changes
   useEffect(() => {
     if (selectedClient && selectedClient.cod) {
-      // Store client in localStorage
       localStorage.setItem('selectedOFClient', JSON.stringify(selectedClient))
-      // Store clientCode for API calls
       localStorage.setItem('OFclientCode', selectedClient.cod)
-      // Load banks for this client
       loadBankOptions(selectedClient.cod)
     } else {
       setBankOptions([])
@@ -408,16 +392,6 @@ const OpenFinance = () => {
     setDateRange(dateRange)
   }
 
-  // Handle bank registered callback
-  const handleBankRegistered = useCallback((newBank) => {
-    // Optionally refresh bank list or show success message
-    toast.success(`Banco ${newBank?.Banco || ''} cadastrado com sucesso!`)
-    // Refresh bank options for the current client
-    if (selectedClient && selectedClient.cod) {
-      loadBankOptions(selectedClient.cod)
-    }
-  }, [selectedClient, loadBankOptions])
-
   // Load bank statement data
   const loadBankData = useCallback(async (e) => {
     if (e) e.preventDefault()
@@ -439,7 +413,6 @@ const OpenFinance = () => {
       const startDate = dateRange[0]
       const endDate = dateRange[1]
       
-      // Format dates for API
       const formatDateForAPI = (date) => {
         if (date instanceof Date) {
           return date.toISOString().split('T')[0]
@@ -450,84 +423,112 @@ const OpenFinance = () => {
       const dataInicial = formatDateForAPI(startDate)
       const dataFinal = formatDateForAPI(endDate)
 
-      // Get bank name for display
       const selectedBank = bankOptions.find(b => b.codigoBanco === bankCode)
       const bankName = selectedBank?.nomeBanco || 'Banco não informado'
 
-      await toast.promise(
-        async () => {
-          const response = await api.get('/ExtratoBancario', {
-            params: {
-              codigoBanco: bankCode,
-              DataInicial: dataInicial,
-              DataFinal: dataFinal
-            }
+      // Show loading toast
+      const loadingToastId = toast.loading('Carregando dados bancários...', {
+        position: "top-right",
+        autoClose: false,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+      })
+
+      try {
+        const response = await api.get('/ExtratoBancario', {
+          params: {
+            codigoBanco: bankCode,
+            DataInicial: dataInicial,
+            DataFinal: dataFinal
+          }
+        })
+
+        const data = response.data || []
+        
+        // Check if there's no data
+        if (!data || data.length === 0) {
+          toast.dismiss(loadingToastId)
+          toast.info('Não há dados para o período/banco selecionados', {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
           })
-
-          const data = response.data || []
-          
-          // Process data - preserve original fields from API
-          const processedData = data.map(item => ({
-            ...item, // Keep all original fields
-            DataFormatada: item.Data ? formatDateOnly(item.Data) : '',
-            ValorFormatado: item.Valor ? formatCurrency(item.Valor) : 'R$ 0,00',
-            CategoriaDisplay: item.Categoria || 'N/A',
-            CnpjPagadorFormatado: item.CnpjPagador ? formatCNPJ(item.CnpjPagador) : 'N/A',
-            CnpjRecebedorFormatado: item.CnpjRecebedor ? formatCNPJ(item.CnpjRecebedor) : 'N/A',
-            OperacaoDisplay: item.Operação === 1 ? 'Crédito' : item.Operação === -1 ? 'Débito' : 'Outros',
-            NOMEBANCO: bankName,
-            CODIGO: bankCode,
-            CLIENTE: selectedClient?.label || 'Cliente não informado'
-          }))
-
-          setBankData(processedData)
-
-          // Calculate totals
-          let totalIncome = 0
-          let totalExpense = 0
-          let totalGeneral = 0
-
-          processedData.forEach(item => {
-            const valor = item.Valor || 0
-            totalGeneral += valor
-            // Consider positive values as income (Crédito) and negative as expense (Débito)
-            if (item.Operação === 1) {
-              totalIncome += valor
-            } else if (item.Operação === -1) {
-              totalExpense += Math.abs(valor)
-            }
-          })
-
-          setBankTotal({
-            total: totalGeneral,
-            income: totalIncome,
-            expense: totalExpense,
-            count: processedData.length
-          })
-
-          // Group by bank for admin view
-          const adminMap = new Map()
-          processedData.forEach(item => {
-            const bankNameItem = item.NOMEBANCO || 'Banco não informado'
-            if (!adminMap.has(bankNameItem)) {
-              adminMap.set(bankNameItem, {
-                adminName: bankNameItem,
-                total: 0
-              })
-            }
-            adminMap.get(bankNameItem).total += item.Valor || 0
-          })
-
-          setBankDataAdmin(Array.from(adminMap.values()))
-
-          setIsDataLoaded(true)
-        },
-        {
-          pending: 'Carregando dados bancários...',
-          success: 'Dados carregados com sucesso!',
-          error: 'Erro ao carregar dados'
+          setBtnDisabled(false)
+          return
         }
-      )
+        
+        const processedData = data.map(item => ({
+          ...item,
+          DataFormatada: item.Data ? formatDateOnly(item.Data) : '',
+          ValorFormatado: item.Valor ? formatCurrency(item.Valor) : 'R$ 0,00',
+          CategoriaDisplay: item.Categoria || 'N/A',
+          CnpjPagadorFormatado: item.CnpjPagador ? formatCNPJ(item.CnpjPagador) : 'N/A',
+          CnpjRecebedorFormatado: item.CnpjRecebedor ? formatCNPJ(item.CnpjRecebedor) : 'N/A',
+          OperacaoDisplay: item.Operação === 1 ? 'Crédito' : item.Operação === -1 ? 'Débito' : 'Outros',
+          NOMEBANCO: bankName,
+          CODIGO: bankCode,
+          CLIENTE: selectedClient?.label || 'Cliente não informado'
+        }))
+
+        setBankData(processedData)
+
+        let totalIncome = 0
+        let totalExpense = 0
+        let totalGeneral = 0
+
+        processedData.forEach(item => {
+          const valor = item.Valor || 0
+          totalGeneral += valor
+          if (item.Operação === 1) {
+            totalIncome += valor
+          } else if (item.Operação === -1) {
+            totalExpense += Math.abs(valor)
+          }
+        })
+
+        setBankTotal({
+          total: totalGeneral,
+          income: totalIncome,
+          expense: totalExpense,
+          count: processedData.length
+        })
+
+        const adminMap = new Map()
+        processedData.forEach(item => {
+          const bankNameItem = item.NOMEBANCO || 'Banco não informado'
+          if (!adminMap.has(bankNameItem)) {
+            adminMap.set(bankNameItem, {
+              adminName: bankNameItem,
+              total: 0
+            })
+          }
+          adminMap.get(bankNameItem).total += item.Valor || 0
+        })
+
+        setBankDataAdmin(Array.from(adminMap.values()))
+        setIsDataLoaded(true)
+
+        toast.dismiss(loadingToastId)
+        toast.success(`Dados carregados com sucesso! Encontradas ${processedData.length} transações.`, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        })
+
+      } catch (error) {
+        toast.dismiss(loadingToastId)
+        console.error('Error loading bank data:', error)
+        toast.error(error.response?.data?.message || 'Erro ao carregar dados bancários')
+        resetValues()
+      }
 
       setBtnDisabled(false)
     } catch (error) {
@@ -544,7 +545,7 @@ const OpenFinance = () => {
     return bankOptions.find(option => option.codigoBanco === bankCode)
   }, [bankCode, bankOptions])
 
-  // Get table columns for bank data - MODIFIED with correct headers
+  // Get table columns for bank data
   const getTableColumns = useCallback(() => {
     return [
       { 
@@ -629,7 +630,7 @@ const OpenFinance = () => {
     ]
   }, [])
 
-  // Get filter config - MODIFIED for correct fields
+  // Get filter config
   const getFilterConfig = useCallback(() => {
     return {
       categoria: {
@@ -757,209 +758,180 @@ const OpenFinance = () => {
         <div className='title-container-global'>
           <h1 className='title-global'>Extrato Bancário</h1>
         </div>
-        
-        {/* Tab Navigation */}
-        <div className="tab-navigation">
-          <button 
-            className={`tab-button ${activeTab === 'extrato' ? 'active' : ''}`}
-            onClick={() => setActiveTab('extrato')}
-          >
-            Extrato
-          </button>
-          <button 
-            className={`tab-button ${activeTab === 'cadastro' ? 'active' : ''}`}
-            onClick={() => setActiveTab('cadastro')}
-          >
-            Cadastro
-          </button>
-        </div>
-        
         <hr className='hr-global'/>
         
-        {/* Tab Content */}
-        {activeTab === 'extrato' ? (
+        {!isDataLoaded ? (
           <>
-            {!isDataLoaded ? (
-              <>
-                {/* Joyride for initial view */}
-                {runTutorial && (
-                  <Joyride
-                    steps={tutorialSteps}
-                    run={runTutorial}
-                    continuous={true}
-                    scrollToFirstStep={true}
-                    showProgress={true}
-                    showSkipButton={true}
-                    scrollOffset={80}
-                    disableOverlayClose={true}
-                    styles={{
-                      options: {
-                        primaryColor: '#99cc33',
-                        textColor: '#0a3d70',
-                        zIndex: 10000,
-                      },
-                    }}
-                    callback={(data) => {
-                      if (data.status === 'finished' || data.status === 'skipped') {
-                        setRunTutorial(false)
-                      }
-                    }}
-                    locale={{
-                      back: 'Voltar',
-                      close: 'Fechar',
-                      last: 'Finalizar',
-                      next: 'Próximo',
-                      skip: 'Pular',
-                      nextLabelWithProgress: 'Próximo ({step} de {steps})',
-                    }}
-                  />
-                )}
-
-                <div className='select-container-open-finance'>
-                  <div className='select-wrapper' data-tour="cliente-section">
-                    <h5>Cliente / Filial</h5>
-                    <Select
-                      className='seletor-cliente-select fixed-width-select'
-                      id='cliente'
-                      options={clientOptions}
-                      getOptionLabel={(option) => option.label}
-                      getOptionValue={(option) => option.cod}
-                      onChange={handleClientChange}
-                      value={selectedClient}
-                      menuPortalTarget={document.body}
-                      menuPosition="fixed"
-                      placeholder={loadingClients ? "Carregando clientes..." : "Selecione um cliente/filial..."}
-                      isClearable={true}
-                      isLoading={loadingClients}
-                      isDisabled={loadingClients}
-                      formatOptionLabel={formatOptionLabel}
-                      styles={customSelectStyles}
-                      theme={(theme) => ({
-                        ...theme,
-                        colors: {
-                          ...theme.colors,
-                          primary: 'var(--secondary-color)',
-                          primary75: 'var(--secondary-color)',
-                          primary50: 'rgba(var(--secondary-color-rgb), 0.5)',
-                          primary25: 'rgba(var(--secondary-color-rgb), 0.25)',
-                          neutral0: 'var(--background-color)',
-                          neutral5: 'var(--background-color)',
-                          neutral10: 'var(--background-color)',
-                          neutral20: 'var(--bs-border-color)',
-                          neutral30: 'var(--bs-border-color)',
-                          neutral40: 'var(--font-color)',
-                          neutral50: 'var(--font-color)',
-                          neutral60: 'var(--font-color)',
-                          neutral70: 'var(--font-color)',
-                          neutral80: 'var(--font-color)',
-                          neutral90: 'var(--font-color)',
-                        },
-                      })}
-                    />
-                  </div>
-                  <div className='select-wrapper' data-tour="banco-section">
-                    <h5>Banco</h5>
-                    <Select
-                      className='seletor-banco-select fixed-width-select'
-                      id='banco'
-                      options={bankOptions}
-                      getOptionLabel={(option) => `${option.nomeBanco} (${option.codigoBanco})`}
-                      getOptionValue={(option) => option.codigoBanco}
-                      onChange={handleBankChange}
-                      value={getSelectedBankOption()}
-                      menuPortalTarget={document.body}
-                      menuPosition="fixed"
-                      placeholder={!selectedClient ? "Selecione um cliente primeiro" : loadingBanks ? "Carregando bancos..." : "Selecione um banco..."}
-                      isClearable={true}
-                      isLoading={loadingBanks}
-                      isDisabled={!selectedClient || loadingBanks}
-                      styles={customSelectStyles}
-                      theme={(theme) => ({
-                        ...theme,
-                        colors: {
-                          ...theme.colors,
-                          primary: 'var(--secondary-color)',
-                          primary75: 'var(--secondary-color)',
-                          primary50: 'rgba(var(--secondary-color-rgb), 0.5)',
-                          primary25: 'rgba(var(--secondary-color-rgb), 0.25)',
-                          neutral0: 'var(--background-color)',
-                          neutral5: 'var(--background-color)',
-                          neutral10: 'var(--background-color)',
-                          neutral20: 'var(--bs-border-color)',
-                          neutral30: 'var(--bs-border-color)',
-                          neutral40: 'var(--font-color)',
-                          neutral50: 'var(--font-color)',
-                          neutral60: 'var(--font-color)',
-                          neutral70: 'var(--font-color)',
-                          neutral80: 'var(--font-color)',
-                          neutral90: 'var(--font-color)',
-                        },
-                      })}
-                    />
-                  </div>
-                </div>
-
-                <div data-tour="calendario-section">
-                  <MyCalendar
-                    onLoadData={loadBankData}
-                    getCalendarDate={handleDateRangeChange}
-                    btnDisabled={btnDisabled || loadingBanks || !bankCode || !selectedClient}
-                    customButtonText="Pesquisar"
-                  />
-                </div>
-
-                <button 
-                  className='btn btn-success-dados btn-tutorial px-2 py-1'
-                  onClick={() => {
-                    setRunTutorial(false);
-                    setTimeout(() => {
-                      setRunTutorial(true);
-                    }, 50);
-                  }}
-                  style={{
-                    position: 'relative',
-                    bottom: '0px',
-                    right: '-10px',
-                    zIndex: 10,
-                    padding: '10px 15px',
-                    background: 'none',
-                    color: '#99cc33',
-                    border: 'none',
-                    borderRadius: '5px',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <FiHelpCircle />
-                </button>
-              </>
-            ) : (
-              <>
-                <NewDisplayData
-                  dataArray={bankData}
-                  adminDataArray={bankDataAdmin}
-                  totals={bankTotal}
-                  onGoBack={handleGoBack}
-                  setRunTutorial={setRunTutorial}
-                  location={location}
-                  runTutorial={runTutorial}
-                  tutorialSteps={tutorialSteps}
-                  hideTotals={false}
-                  hideTables={false}
-                  customTableColumns={getTableColumns()}
-                  customFilterConfig={getFilterConfig()}
-                  customExportPage="openfinance"
-                />
-              </>
+            {/* Joyride for initial view */}
+            {runTutorial && (
+              <Joyride
+                steps={tutorialSteps}
+                run={runTutorial}
+                continuous={true}
+                scrollToFirstStep={true}
+                showProgress={true}
+                showSkipButton={true}
+                scrollOffset={80}
+                disableOverlayClose={true}
+                styles={{
+                  options: {
+                    primaryColor: '#99cc33',
+                    textColor: '#0a3d70',
+                    zIndex: 10000,
+                  },
+                }}
+                callback={(data) => {
+                  if (data.status === 'finished' || data.status === 'skipped') {
+                    setRunTutorial(false)
+                  }
+                }}
+                locale={{
+                  back: 'Voltar',
+                  close: 'Fechar',
+                  last: 'Finalizar',
+                  next: 'Próximo',
+                  skip: 'Pular',
+                  nextLabelWithProgress: 'Próximo ({step} de {steps})',
+                }}
+              />
             )}
+
+            <div className='select-container-open-finance'>
+              <div className='select-wrapper' data-tour="cliente-section">
+                <h5>Cliente / Filial</h5>
+                <Select
+                  className='seletor-cliente-select fixed-width-select'
+                  id='cliente'
+                  options={clientOptions}
+                  getOptionLabel={(option) => option.label}
+                  getOptionValue={(option) => option.cod}
+                  onChange={handleClientChange}
+                  value={selectedClient}
+                  menuPortalTarget={document.body}
+                  menuPosition="fixed"
+                  placeholder={loadingClients ? "Carregando clientes..." : "Selecione um cliente/filial..."}
+                  isClearable={true}
+                  isLoading={loadingClients}
+                  isDisabled={loadingClients}
+                  formatOptionLabel={formatOptionLabel}
+                  styles={customSelectStyles}
+                  theme={(theme) => ({
+                    ...theme,
+                    colors: {
+                      ...theme.colors,
+                      primary: 'var(--secondary-color)',
+                      primary75: 'var(--secondary-color)',
+                      primary50: 'rgba(var(--secondary-color-rgb), 0.5)',
+                      primary25: 'rgba(var(--secondary-color-rgb), 0.25)',
+                      neutral0: 'var(--background-color)',
+                      neutral5: 'var(--background-color)',
+                      neutral10: 'var(--background-color)',
+                      neutral20: 'var(--bs-border-color)',
+                      neutral30: 'var(--bs-border-color)',
+                      neutral40: 'var(--font-color)',
+                      neutral50: 'var(--font-color)',
+                      neutral60: 'var(--font-color)',
+                      neutral70: 'var(--font-color)',
+                      neutral80: 'var(--font-color)',
+                      neutral90: 'var(--font-color)',
+                    },
+                  })}
+                />
+              </div>
+              <div className='select-wrapper' data-tour="banco-section">
+                <h5>Banco</h5>
+                <Select
+                  className='seletor-banco-select fixed-width-select'
+                  id='banco'
+                  options={bankOptions}
+                  getOptionLabel={(option) => `${option.nomeBanco} (${option.codigoBanco})`}
+                  getOptionValue={(option) => option.codigoBanco}
+                  onChange={handleBankChange}
+                  value={getSelectedBankOption()}
+                  menuPortalTarget={document.body}
+                  menuPosition="fixed"
+                  placeholder={!selectedClient ? "Selecione um cliente primeiro" : loadingBanks ? "Carregando bancos..." : "Selecione um banco..."}
+                  isClearable={true}
+                  isLoading={loadingBanks}
+                  isDisabled={!selectedClient || loadingBanks}
+                  styles={customSelectStyles}
+                  theme={(theme) => ({
+                    ...theme,
+                    colors: {
+                      ...theme.colors,
+                      primary: 'var(--secondary-color)',
+                      primary75: 'var(--secondary-color)',
+                      primary50: 'rgba(var(--secondary-color-rgb), 0.5)',
+                      primary25: 'rgba(var(--secondary-color-rgb), 0.25)',
+                      neutral0: 'var(--background-color)',
+                      neutral5: 'var(--background-color)',
+                      neutral10: 'var(--background-color)',
+                      neutral20: 'var(--bs-border-color)',
+                      neutral30: 'var(--bs-border-color)',
+                      neutral40: 'var(--font-color)',
+                      neutral50: 'var(--font-color)',
+                      neutral60: 'var(--font-color)',
+                      neutral70: 'var(--font-color)',
+                      neutral80: 'var(--font-color)',
+                      neutral90: 'var(--font-color)',
+                    },
+                  })}
+                />
+              </div>
+            </div>
+
+            <div data-tour="calendario-section">
+              <MyCalendar
+                onLoadData={loadBankData}
+                getCalendarDate={handleDateRangeChange}
+                btnDisabled={btnDisabled || loadingBanks || !bankCode || !selectedClient}
+                customButtonText="Pesquisar"
+              />
+            </div>
+
+            <button 
+              className='btn btn-success-dados btn-tutorial px-2 py-1'
+              onClick={() => {
+                setRunTutorial(false);
+                setTimeout(() => {
+                  setRunTutorial(true);
+                }, 50);
+              }}
+              style={{
+                position: 'relative',
+                bottom: '0px',
+                right: '-10px',
+                zIndex: 10,
+                padding: '10px 15px',
+                background: 'none',
+                color: '#99cc33',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer'
+              }}
+            >
+              <FiHelpCircle />
+            </button>
           </>
         ) : (
-          /* Cadastro Tab Content */
-          <CadastroBanco 
-            selectedClient={selectedClient}
-            onBankRegistered={handleBankRegistered}
-          />
+          <>
+            <NewDisplayData
+              dataArray={bankData}
+              adminDataArray={bankDataAdmin}
+              totals={bankTotal}
+              onGoBack={handleGoBack}
+              setRunTutorial={setRunTutorial}
+              location={location}
+              runTutorial={runTutorial}
+              tutorialSteps={tutorialSteps}
+              hideTotals={false}
+              hideTables={false}
+              customTableColumns={getTableColumns()}
+              customFilterConfig={getFilterConfig()}
+              customExportPage="openfinance"
+            />
+          </>
         )}
-        
         <hr className='hr-global'/>
       </div>
     </div>

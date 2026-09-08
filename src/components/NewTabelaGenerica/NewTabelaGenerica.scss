@@ -1119,3 +1119,76 @@ button:focus-visible {
     color: rgb(16, 167, 16) !important;
   }
 }
+
+// Add to NewTabelaGenerica.scss
+
+.card-header-full-width {
+  justify-content: center !important;
+  text-align: center;
+  padding: 12px 16px !important;
+  
+  .marquee-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    
+    &.marquee-full-width {
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 100% !important;
+    }
+    
+    .react-fast-marquee,
+    .marquee-container {
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 100% !important;
+    }
+  }
+  
+  strong {
+    width: 100%;
+    text-align: center;
+    font-size: 1rem;
+    color: white !important;
+    word-break: break-word;
+    white-space: normal;
+    line-height: 1.4;
+  }
+}
+
+// For mobile, ensure the header takes full width
+@media (max-width: 768px) {
+  .card-header-full-width {
+    flex: 1;
+    width: 100%;
+    
+    .marquee-container {
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 100% !important;
+      
+      &.marquee-full-width {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 100% !important;
+      }
+    }
+    
+    strong {
+      font-size: 0.95rem;
+      width: 100%;
+      text-align: center;
+      white-space: normal;
+      word-break: break-word;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .card-header-full-width {
+    strong {
+      font-size: 0.85rem;
+    }
+  }
+}

@@ -40,53 +40,12 @@
   }
 }
 
-.tab-navigation {
-  display: flex;
-  gap: 4px;
-  margin: 16px 0 8px 0;
-  border-bottom: 2px solid var(--bs-border-color);
-  padding-bottom: 0;
-
-  .tab-button {
-    padding: 10px 24px;
-    background: none;
-    border: none;
-    font-size: 0.95rem;
-    font-weight: 500;
-    color: var(--font-color);
-    opacity: 0.6;
-    cursor: pointer;
-    transition: all 0.2s;
-    position: relative;
-    border-radius: 4px 4px 0 0;
-
-    &:hover {
-      opacity: 1;
-      background-color: rgba(var(--secondary-color-rgb), 0.05);
-    }
-
-    &.active {
-      opacity: 1;
-      color: var(--secondary-color);
-      
-      &::after {
-        content: '';
-        position: absolute;
-        bottom: -2px;
-        left: 0;
-        right: 0;
-        height: 2px;
-        background-color: var(--secondary-color);
-        border-radius: 2px 2px 0 0;
-      }
-    }
-  }
-}
-
-.select-container-open-finance{
+.select-container-open-finance {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
 // Badge styles
@@ -108,22 +67,134 @@
   font-weight: 500;
 }
 
-// Responsive
+// ============================================
+// Responsive Fixes for OpenFinance Table
+// ============================================
+
+// Make the table responsive on smaller screens
 @media (max-width: 768px) {
   .page-content-global {
     padding: 10px;
+  }
+  
+  .select-container-open-finance {
+    flex-direction: column;
+    gap: 15px;
     
-    .component-container-open-finance {
-      .select-container-open-finance {
-        flex-direction: column;
+    .select-wrapper {
+      min-width: 100%;
+      width: 100%;
+      
+      .fixed-width-select {
+        min-width: 100%;
+        width: 100%;
+      }
+      
+      .react-select__control {
+        min-width: 100% !important;
+        width: 100% !important;
+      }
+    }
+  }
+
+  // Fix for the table on mobile
+  .component-container-vendas {
+    overflow-x: auto;
+    
+    .tabela-generica-wrapper {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      
+      table {
+        min-width: 650px;
+        font-size: 0.8rem;
         
-        .select-wrapper {
-          min-width: 100%;
-          
-          .fixed-width-select {
-            min-width: 100%;
-          }
+        thead th,
+        tbody td {
+          padding: 6px 8px;
+          white-space: nowrap;
         }
+        
+        // Make some columns wrap on mobile
+        .col-descricao,
+        .col-complemento,
+        .col-nome-pagador,
+        .col-nome-recebedor {
+          white-space: normal;
+          word-break: break-word;
+          max-width: 120px;
+        }
+      }
+    }
+  }
+
+  // Fix totals section on mobile
+  .content-container-modalidade {
+    flex-direction: column !important;
+    gap: 10px !important;
+    
+    .total-container-modalidade {
+      width: 100% !important;
+      padding: 12px !important;
+      
+      .text-container-modalidade {
+        .summary-label {
+          font-size: 12px !important;
+        }
+        .summary-value {
+          font-size: 16px !important;
+        }
+      }
+    }
+  }
+
+  // Fix floating button on mobile
+  .floating-button-container {
+    bottom: 15px !important;
+    left: 15px !important;
+    
+    .btn-floating-new-search {
+      padding: 8px 16px !important;
+      font-size: 13px !important;
+      
+      .floating-button-text {
+        font-size: 12px !important;
+      }
+      
+      .floating-button-icon {
+        font-size: 14px !important;
+      }
+    }
+  }
+}
+
+// Extra small screens
+@media (max-width: 480px) {
+  .component-container-vendas {
+    .tabela-generica-wrapper {
+      table {
+        min-width: 550px;
+        font-size: 0.7rem;
+        
+        thead th,
+        tbody td {
+          padding: 4px 6px;
+        }
+      }
+    }
+  }
+
+  .floating-button-container {
+    .btn-floating-new-search {
+      padding: 6px 12px !important;
+      font-size: 11px !important;
+      
+      .floating-button-text {
+        font-size: 10px !important;
+      }
+      
+      .floating-button-icon {
+        font-size: 12px !important;
       }
     }
   }

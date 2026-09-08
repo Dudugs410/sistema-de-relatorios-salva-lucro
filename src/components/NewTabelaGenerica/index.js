@@ -77,15 +77,37 @@ const tableConfig = {
       { key: 'status', label: 'Status', path: 'STATUS' },
       { key: 'codigoAjuste', label: 'Código', path: 'CODIGOAJUSTE' }
     ]
+  },
+  openfinance: {
+    title: 'Extrato Bancário',
+    filters: [
+      { key: 'categoria', label: 'Categoria', path: 'Categoria' },
+      { key: 'operacao', label: 'Operação', path: 'Operação' }
+    ],
+    mobileCards: [
+      // Only Descrição in header - first item in the array will be the header
+      { key: 'descricao', label: 'Descrição', path: 'Descrição', fullWidth: true },
+      // All other fields go in the card body
+      { key: 'data', label: 'Data', path: 'Data', format: 'date' },
+      { key: 'valor', label: 'Valor', path: 'Valor', format: 'currency', className: 'green-global' },
+      { key: 'categoria', label: 'Categoria', path: 'Categoria', badge: true },
+      { key: 'operacao', label: 'Operação', path: 'Operação' },
+      { key: 'cnpjPagador', label: 'CNPJ Pagador', path: 'CnpjPagador' },
+      { key: 'nomePagador', label: 'Pagador', path: 'NomePagador' },
+      { key: 'cnpjRecebedor', label: 'CNPJ Recebedor', path: 'CnpjRecebedor' },
+      { key: 'nomeRecebedor', label: 'Recebedor', path: 'NomeRecebedor' },
+      { key: 'complemento', label: 'Complemento', path: 'Complemento' }
+    ]
   }
 }
 
-const ConditionalMarquee = ({ children, speed = 50, gradient = false, className = "" }) => {
+const ConditionalMarquee = ({ children, speed = 50, gradient = false, className = "", fullWidth = false }) => {
   const text = typeof children === 'string' ? children : '';
   
-  if (text.length > 10) {
+  // If fullWidth is true or text is long, use marquee
+  if (fullWidth || text.length > 10) {
     return (
-      <div className="marquee-container">
+      <div className={`marquee-container ${fullWidth ? 'marquee-full-width' : ''}`}>
         <Marquee speed={speed} gradient={gradient} className={className} delay={1}>
           {children}
         </Marquee>
@@ -94,7 +116,7 @@ const ConditionalMarquee = ({ children, speed = 50, gradient = false, className 
   }
   
   return (
-    <div className="marquee-container static-text">
+    <div className={`marquee-container static-text ${fullWidth ? 'marquee-full-width' : ''}`}>
       <span className={className}>
         {children}
       </span>
@@ -182,6 +204,8 @@ const NewTabelaGenerica = forwardRef(({
         return { filter1: 'selectedBanCredits', filter2: 'selectedAdmCredits' }
       case 'servicos':
         return { filter1: 'selectedBanServices', filter2: 'selectedAdmServices' }
+      case 'openfinance':
+        return { filter1: 'selectedOFCategoria', filter2: 'selectedOFOperacao' }
       default:
         return { filter1: 'selectedBan', filter2: 'selectedAdm' }
     }
@@ -195,6 +219,8 @@ const NewTabelaGenerica = forwardRef(({
         return { first: 'bandeira', second: 'adquirente' }
       case 'servicos':
         return { first: 'tipoAjuste', second: 'adquirente' }
+      case 'openfinance':
+        return { first: 'categoria', second: 'operacao' }
       default:
         return { first: 'bandeira', second: 'adquirente' }
     }
@@ -271,6 +297,25 @@ const NewTabelaGenerica = forwardRef(({
             accessor: (item) => item.TIPOAJUSTE || '',
             codeAccessor: (item) => item.CODIGOAJUSTE || null,
             dependentKey: 'adquirente'
+          }
+        }
+      case 'openfinance':
+        return {
+          categoria: {
+            label: 'Categoria',
+            accessor: (item) => item.Categoria || '',
+            codeAccessor: (item) => item.Categoria || null,
+            dependentKey: 'operacao'
+          },
+          operacao: {
+            label: 'Operação',
+            accessor: (item) => {
+              if (item.Operação === 1) return 'Crédito'
+              if (item.Operação === -1) return 'Débito'
+              return 'Outros'
+            },
+            codeAccessor: (item) => item.Operação || null,
+            dependentKey: 'categoria'
           }
         }
       default:
@@ -442,7 +487,8 @@ const NewTabelaGenerica = forwardRef(({
     const tableLabels = {
       vendas: 'Vendas',
       creditos: 'Créditos', 
-      servicos: 'Ajustes/Serviços'
+      servicos: 'Ajustes/Serviços',
+      openfinance: 'Extrato Bancário'
     }
 
     const label = tableLabels[tableType] || 'Dados'
@@ -490,6 +536,14 @@ const NewTabelaGenerica = forwardRef(({
           codigoAjuste: obj.code,
           descricaoAjuste: value
         }
+      } else if (filterKey === 'categoria') {
+        filterObj = {
+          categoria: value
+        }
+      } else if (filterKey === 'operacao') {
+        filterObj = {
+          operacao: value
+        }
       }
       
       setSelectedFilterObjects(prev => ({
@@ -498,9 +552,9 @@ const NewTabelaGenerica = forwardRef(({
       }))
       
       const storageKeys = getStorageKeys()
-      if (filterKey === 'bandeira' || filterKey === 'tipoAjuste') {
+      if (filterKey === 'bandeira' || filterKey === 'tipoAjuste' || filterKey === 'categoria') {
         localStorage.setItem(storageKeys.filter1, JSON.stringify(filterObj))
-      } else if (filterKey === 'adquirente') {
+      } else if (filterKey === 'adquirente' || filterKey === 'operacao') {
         localStorage.setItem(storageKeys.filter2, JSON.stringify(filterObj))
       }
     } else {
@@ -510,9 +564,9 @@ const NewTabelaGenerica = forwardRef(({
       }))
       
       const storageKeys = getStorageKeys()
-      if (filterKey === 'bandeira' || filterKey === 'tipoAjuste') {
+      if (filterKey === 'bandeira' || filterKey === 'tipoAjuste' || filterKey === 'categoria') {
         localStorage.removeItem(storageKeys.filter1)
-      } else if (filterKey === 'adquirente') {
+      } else if (filterKey === 'adquirente' || filterKey === 'operacao') {
         localStorage.removeItem(storageKeys.filter2)
       }
     }
@@ -601,6 +655,8 @@ const NewTabelaGenerica = forwardRef(({
           
           if (tableType === 'servicos') {
             filterValue = parsedFilter.descricaoAjuste
+          } else if (tableType === 'openfinance') {
+            filterValue = parsedFilter.categoria
           } else {
             filterValue = parsedFilter.descricaoBandeira
           }
@@ -617,8 +673,16 @@ const NewTabelaGenerica = forwardRef(({
       if (savedSecondFilter && savedSecondFilter !== 'null' && savedSecondFilter !== 'undefined') {
         try {
           const parsedFilter = JSON.parse(savedSecondFilter)
-          if (parsedFilter && parsedFilter.nomeAdquirente) {
-            initialFilters[filterKeys.second] = parsedFilter.nomeAdquirente
+          let filterValue = null
+          
+          if (tableType === 'openfinance') {
+            filterValue = parsedFilter.operacao
+          } else {
+            filterValue = parsedFilter.nomeAdquirente
+          }
+          
+          if (filterValue) {
+            initialFilters[filterKeys.second] = filterValue
             initialObjects[filterKeys.second] = parsedFilter
           }
         } catch (e) {
@@ -672,77 +736,6 @@ const NewTabelaGenerica = forwardRef(({
 
   return (
     <>
-      {/*
-      // ============================================
-      // FILTER SECTION - COMMENTED OUT
-      // ============================================
-      showFilters && (
-        <>
-          <div className='date-container'>
-            <hr className='hr-global'/>
-            <div className='container-busca'>
-              <span className='span-busca'>
-                {getDateRangeText()}
-              </span>
-            </div>
-          </div>
-          <hr className='hr-global'/>
-          <div data-tour="bandeiraadquirente-section" className='container desktop-filters'>
-            {Object.keys(getFilterConfig()).map(filterKey => (
-              <div key={filterKey} className='export-column'>
-                <div className='filter-card'>
-                  <label className='filter-label'>{getFilterConfig()[filterKey].label}</label>
-                  <div className="custom-select-wrapper">
-                    <select 
-                      className='custom-select' 
-                      value={selectedFilters[filterKey] || ''}
-                      onChange={(e) => handleFilterChange(filterKey, e.target.value)}
-                      style={{
-                        backgroundColor: 'var(--background-color, #ffffff)',
-                        color: 'var(--primary-color, #0a3d70)',
-                        WebkitTextFillColor: 'var(--primary-color, #0a3d70)',
-                      }}
-                    >
-                      <option value=''>Todas</option>
-                      {getAvailableOptions(filterKey)?.map(option => (
-                        <option 
-                          key={option} 
-                          value={option}
-                          style={{
-                            backgroundColor: 'var(--background-color, #ffffff)',
-                            color: 'var(--primary-color, #0a3d70)',
-                            WebkitTextFillColor: 'var(--primary-color, #0a3d70)',
-                          }}
-                        >
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              </div>
-            ))}
-            
-            {Object.keys(selectedFilters).some(key => selectedFilters[key]) && (
-              <div className="export-column">
-                <div className='filter-card'>
-                  <label className='filter-label'>&nbsp;</label>
-                  <button 
-                    className="clear-filters-btn"
-                    onClick={clearFilters}
-                  >
-                    <FiFilter />
-                    Limpar Filtros
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-          <hr className='hr-global'/>
-        </>
-      )
-      */}
-
       {error && (
         <div className="alert alert-danger mb-3 mobile-alert">
           {error}
@@ -790,8 +783,9 @@ const NewTabelaGenerica = forwardRef(({
             <div className="mobile-cards">
               {currentItems.map((item, index) => (
                 <div key={index} className="sale-card">
-                  <div className="card-header">
-                    {config.mobileCards.slice(0, 2).map((field, idx) => {
+                  <div className="card-header card-header-full-width">
+                    {/* Only render the first field (Descrição) in the header with full width */}
+                    {config.mobileCards.slice(0, 1).map((field, idx) => {
                       let value
                       if (field.path) {
                         if (field.path.includes('.')) {
@@ -805,16 +799,19 @@ const NewTabelaGenerica = forwardRef(({
                       const formattedValue = formatValue(value, field.format)
                       
                       return field.badge ? (
-                        <ConditionalMarquee key={field.key} className="badge">
+                        <ConditionalMarquee key={field.key} className="badge" fullWidth={field.fullWidth}>
                           {formattedValue || field.label}
                         </ConditionalMarquee>
                       ) : (
-                        <strong key={field.key}>{formattedValue || 'N/A'}</strong>
+                        <ConditionalMarquee key={field.key} className="" fullWidth={field.fullWidth}>
+                          {formattedValue || 'N/A'}
+                        </ConditionalMarquee>
                       )
                     })}
                   </div>
                   <div className="card-body">
-                    {chunkArray(config.mobileCards.slice(2), 2).map((row, rowIndex) => (
+                    {/* All remaining fields (from index 1 onwards) go in the card body */}
+                    {chunkArray(config.mobileCards.slice(1), 2).map((row, rowIndex) => (
                       <div key={rowIndex} className="card-row">
                         {row.map(field => {
                           let value
