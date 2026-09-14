@@ -1,11 +1,12 @@
 // Bancos.jsx
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useContext } from 'react'
 import Select from 'react-select'
 import { toast } from 'react-toastify'
 import Joyride from 'react-joyride'
-import { FiHelpCircle, FiUsers, FiUser, FiPlus } from 'react-icons/fi'
-import api from '../../services/api'
+import { FiHelpCircle, FiUsers, FiUser } from 'react-icons/fi'
+import { AuthContext } from '../../contexts/auth'
 import TabelaBancos from './TabelaBancos'
+import ModalBanco from './ModalBanco'
 import './Bancos.scss'
 
 // Custom Select styles
@@ -134,6 +135,13 @@ const formatOptionLabel = ({ label, iconType }) => (
 )
 
 const Bancos = () => {
+  const { 
+    loadBanks,
+    addBank,
+    editBank,
+    deleteBank,
+  } = useContext(AuthContext)
+
   // State for client selection
   const [clientOptions, setClientOptions] = useState([])
   const [selectedClient, setSelectedClient] = useState(null)
@@ -143,6 +151,11 @@ const Bancos = () => {
   const [banksList, setBanksList] = useState([])
   const [isLoadingBanks, setIsLoadingBanks] = useState(false)
   const [isDataLoaded, setIsDataLoaded] = useState(false)
+
+  // State for modal
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editingBank, setEditingBank] = useState(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   // State for tutorial
   const [runTutorial, setRunTutorial] = useState(false)
@@ -213,49 +226,39 @@ const Bancos = () => {
     }
   }, [])
 
-  // Load banks for selected client
-  const loadBanks = useCallback(async () => {
+  // Load banks for selected client using context's loadBanks (GET /banco/cliente)
+  const fetchBanks = useCallback(async () => {
     if (!selectedClient || !selectedClient.cod) {
       toast.warning('Selecione um cliente primeiro')
       return
     }
 
+    // loadBanks reads clientCode from localStorage
+    localStorage.setItem('clientCode', selectedClient.cod)
+
     try {
       setIsLoadingBanks(true)
       toast.dismiss()
 
-      const response = await api.get('/banco', {
-        params: {
-          codigo: selectedClient.cod
-        }
-      })
+      const data = await loadBanks() || []
 
-      const data = response.data || []
-      
-      console.log('API Response - All banks:', data)
-      console.log('Total banks from API:', data.length)
-      console.log('Selected Client Code:', selectedClient.cod)
-      
-      // Set the banks list directly from the API response
-      // No filtering - just display whatever the API returns
       setBanksList(data)
       setIsDataLoaded(true)
-      
+
       if (data.length === 0) {
         toast.info('Não há bancos cadastrados para o cliente selecionado')
       } else {
         toast.success(`Encontrados ${data.length} bancos para este cliente`)
       }
-      
     } catch (error) {
       console.error('Error loading banks:', error)
-      toast.error(error.response?.data?.message || 'Erro ao carregar bancos')
+      toast.error('Erro ao carregar bancos')
       setBanksList([])
       setIsDataLoaded(true)
     } finally {
       setIsLoadingBanks(false)
     }
-  }, [selectedClient])
+  }, [selectedClient, loadBanks])
 
   // Load clients on component mount
   useEffect(() => {
@@ -272,7 +275,7 @@ const Bancos = () => {
   // Handle search button click
   const handleSearch = (e) => {
     e.preventDefault()
-    loadBanks()
+    fetchBanks()
   }
 
   // Reset values and go back
@@ -284,15 +287,20 @@ const Bancos = () => {
     localStorage.removeItem('selectedBancosClient')
   }
 
-  // Handle add bank
+  // Handle add bank - opens modal
   const handleAddBank = () => {
-    toast.info('Funcionalidade de adicionar banco em desenvolvimento')
+    if (!selectedClient) {
+      toast.warning('Selecione um cliente primeiro')
+      return
+    }
+    setEditingBank(null)
+    setIsModalOpen(true)
   }
 
-  // Handle edit bank
+  // Handle edit bank - opens modal with bank data
   const handleEditBank = (bank) => {
-    toast.info(`Editar banco: ${bank.NOMECEDENTE || bank.CODIGOBANCO}`)
-    console.log('Edit bank:', bank)
+    setEditingBank(bank)
+    setIsModalOpen(true)
   }
 
   // Handle view cards
@@ -300,6 +308,55 @@ const Bancos = () => {
     toast.info(`Ver cartões do banco: ${bank.NOMECEDENTE || bank.CODIGOBANCO}`)
     console.log('View cards for bank:', bank)
   }
+
+  // Close modal
+  const closeModal = () => {
+    setIsModalOpen(false)
+    setEditingBank(null)
+  }
+
+  // Handle save (add or edit) — modal builds the payload including CODIGO when editing
+  const handleSaveBank = useCallback(async (payload) => {
+    setIsSubmitting(true)
+    try {
+      const result = editingBank
+        ? await editBank(payload)   // payload includes CODIGO from the modal
+        : await addBank(payload)    // addBank strips CODIGO internally
+
+      if (result && result.success) {
+        await fetchBanks()
+        setIsModalOpen(false)
+        setEditingBank(null)
+      }
+      return result
+    } catch (error) {
+      console.error('Error saving bank:', error)
+      return { success: false }
+    } finally {
+      setIsSubmitting(false)
+    }
+  }, [editingBank, addBank, editBank, fetchBanks])
+
+  // Handle delete — receives the full bank object and builds the payload matching the API body
+  const handleDeleteBank = useCallback(async (bank) => {
+    const payload = {
+      CODIGO: bank.CODIGO,
+      CLICODIGO: bank.CLICODIGO,
+      CODIGOBANCO: bank.CODIGOBANCO,
+      NOME: bank.NOME,
+      NOMECEDENTE: bank.NOMECEDENTE,
+      CNPJCEDENTE: bank.CNPJCEDENTE,
+      CODIGOAGENCIA: bank.CODIGOAGENCIA,
+      NUMEROCONTA: bank.NUMEROCONTA,
+      DIGITOCONTA: bank.DIGITOCONTA,
+    }
+
+    const result = await deleteBank(payload)
+    if (result && result.success) {
+      await fetchBanks()
+    }
+    return result
+  }, [deleteBank, fetchBanks])
 
   return (
     <div className='page-content-global'>
@@ -417,15 +474,28 @@ const Bancos = () => {
             <TabelaBancos 
               banksList={banksList}
               selectedClient={selectedClient}
-              onRefresh={loadBanks}
+              onRefresh={fetchBanks}
               onGoBack={resetValues}
               onAddBank={handleAddBank}
               onEditBank={handleEditBank}
               onViewCards={handleViewCards}
+              onDeleteBank={handleDeleteBank}
             />
           </>
         )}
       </div>
+
+      {/* Modal for Add/Edit Bank */}
+      {isModalOpen && (
+        <ModalBanco
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          onSave={handleSaveBank}
+          bank={editingBank}
+          selectedClient={selectedClient}
+          isSubmitting={isSubmitting}
+        />
+      )}
     </div>
   )
 }

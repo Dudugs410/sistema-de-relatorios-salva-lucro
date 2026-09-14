@@ -1,6 +1,6 @@
 @import '../../styles/variables';
 
-.app-page-vendas{
+.app-page-vendas {
     display: contents;
     flex-direction: column;
     align-items: center;
@@ -8,7 +8,7 @@
     transition: all .4s;
 }
 
-.page-content{
+.page-content {
     height: 100%;
     width: 100%;
     display: flex;
@@ -16,25 +16,20 @@
     transition: all .4s;
 }
 
-.select-container-calendario{
-    display: flex;
-    justify-content: space-evenly;
-}
-
-.content{
+.content {
     height: 100%;
     width: 100%;
     padding: 0px;
 }
 
-.page-vendas-background{
+.page-vendas-background {
     display: flex;
     justify-content: center;
     transition: all .4s;
-    background-color: var(--background-color)
+    background-color: var(--background-color);
 }
 
-.page-content-vendas{
+.page-content-vendas {
     width: 95%;
     padding: 1%;
     display: flex;
@@ -48,13 +43,13 @@
     background-color: var(--background-color);
 }
 
-.vendas-title{
+.vendas-title {
     margin: 0;
     transition: all .4s;
     color: var(--primary-color);
 }
 
-.vendas-title-container{
+.vendas-title-container {
     text-align: center;
     border-bottom: solid white 1px;
     width: 100%;
@@ -65,7 +60,7 @@
     background-color: var(--secondary-color);
 }
 
-.hr-vendas{
+.hr-vendas {
     margin: 1rem 0;
     color: white;
     border: 0;
@@ -73,44 +68,42 @@
     opacity: .25;
 }
 
-.component-container-vendas{
+.component-container-vendas {
     width: 100%;
     display: flex;
     flex-direction: column;
 }
 
-.container-busca{
+.container-busca {
     display: inline-flex;
     width: 100%;
     justify-content: space-evenly;
 }
 
-.span-busca{
+.span-busca {
     text-align: center;
     display: flex;
     font-family: Arial, Helvetica, sans-serif;
     color: var(--font-color);
 }
 
-@import '../../styles/variables';
-
-.header-bg-image{
+.header-bg-image {
     display: inline-table;
     width: 100%;
-    height: 74.77px; 
+    height: 74.77px;
     background-image: url("../../assets/img-login.jpg");
     background-repeat: no-repeat;
     background-size: cover;
 }
 
-.header-container{
+.header-container {
     display: inline-flex;
     width: 100%;
     justify-content: flex-end;
     align-items: center;
 }
 
-.header-bg{
+.header-bg {
     width: 100%;
     color: white;
     font-weight: bold;
@@ -138,9 +131,9 @@
     align-content: center;
     justify-content: space-around;
     align-items: center;
-  }
-  
-  .slider:before {
+}
+
+.slider:before {
     position: absolute;
     content: "";
     height: 16px;
@@ -150,51 +143,51 @@
     background-color: white;
     transition: 0.4s;
     border-radius: 50%;
-  }
-  
-  input:checked + .slider {
-    background-color: #35495a;
-  }
-  
-  input:checked + .slider:before {
-    transform: translateX(31px);
-  }
+}
 
-  .switch {
+input:checked + .slider {
+    background-color: #35495a;
+}
+
+input:checked + .slider:before {
+    transform: translateX(31px);
+}
+
+.switch {
     position: relative;
     display: inline-block;
     width: 60px;
     height: 24px;
-  }
-  
-  .switch input {
-    display: none;
-  }
+}
 
-  .checkbox-label {
+.switch input {
+    display: none;
+}
+
+.checkbox-label {
     display: flex;
     align-items: center;
     cursor: pointer;
     flex-direction: row;
     padding-left: 10px;
 }
-    
-.checkbox-input {
-display: none;
-}
-    
-.checkbox-custom {
-position: relative;
-display: inline-block;
-width: 20px;
-height: 20px;
-border: 2px solid #ccc;
-border-radius: 4px;
-margin-right: 8px;
-border-color: var(--primary-color);
 
+.checkbox-input {
+    display: none;
 }
-    
+
+.checkbox-custom {
+    position: relative;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    margin-right: 8px;
+    border-color: var(--primary-color);
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
 .checkbox-input:checked + .checkbox-custom {
     border-color: var(--secondary-color);
     background-color: var(--secondary-color);
@@ -206,16 +199,12 @@ border-color: var(--primary-color);
     bottom: 1px;
     margin-right: 8px;
 }
-    
+
 .checkbox-label:hover .checkbox-custom {
-border-color: #999;
+    border-color: #999;
 }
 
-.checkbox-custom {
-transition: background-color 0.3s, border-color 0.3s;
-}
-
-.navbar-customer-wrapper{
+.navbar-customer-wrapper {
     display: flex;
     flex-direction: row;
     width: 100%;
@@ -236,32 +225,33 @@ transition: background-color 0.3s, border-color 0.3s;
     position: relative;
 }
 
-@media (max-width: 946px){
+@media (max-width: 946px) {
     .toggle-container {
-      left: 50px;
-  }
+        left: 50px;
+    }
 }
 
-@media screen and (max-width: 869px){
+@media screen and (max-width: 869px) {
     .page-content-vendas {
-    width: 100%;
-    padding: 1%;
-    margin-left: 0%;
-    flex-direction: row;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-    border-radius: 0;
+        width: 100%;
+        padding: 1%;
+        margin-left: 0%;
+        flex-direction: row;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        border-radius: 0;
     }
 
-    .page-vendas-background{
+    .page-vendas-background {
         display: flex;
         justify-content: center;
         transition: all .4s;
     }
 }
 
-// Add these styles to your existing SCSS file
-
+// ============================================
+// Select styling — unified with Bancos page
+// ============================================
 .select-container-calendario {
     display: flex;
     justify-content: space-evenly;
@@ -271,21 +261,20 @@ transition: background-color 0.3s, border-color 0.3s;
 
 .select-wrapper {
     flex: 1;
-    min-width: 0; // Allows flex item to shrink below content size
-    max-width: 300px;
-}
+    min-width: 0;
+    max-width: 350px;
 
-.select-wrapper h5 {
-    margin-bottom: 8px;
-    font-size: 14px;
-    color: var(--font-color);
+    h5 {
+        margin-bottom: 8px;
+        font-size: 14px;
+        color: var(--font-color);
+    }
 }
 
 .fixed-width-select {
     width: 100%;
 }
 
-// Override react-select default behavior
 .fixed-width-select .react-select__control {
     min-width: 250px;
     width: 100%;
@@ -317,12 +306,12 @@ transition: background-color 0.3s, border-color 0.3s;
         align-items: stretch;
         gap: 15px;
     }
-    
+
     .select-wrapper {
         max-width: 100%;
         width: 100%;
     }
-    
+
     .fixed-width-select .react-select__control {
         min-width: 100%;
     }

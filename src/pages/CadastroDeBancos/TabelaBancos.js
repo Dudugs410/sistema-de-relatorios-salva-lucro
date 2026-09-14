@@ -1,6 +1,19 @@
 // TabelaBancos.jsx
 import { useState, useMemo, useEffect } from 'react'
-import { FiPlus, FiEdit, FiCreditCard, FiRefreshCw, FiChevronLeft, FiChevronRight, FiChevronsLeft, FiChevronsRight } from 'react-icons/fi'
+import { 
+  FiPlus, 
+  FiEdit, 
+  FiCreditCard, 
+  FiTrash2, 
+  FiRefreshCw, 
+  FiChevronLeft, 
+  FiChevronRight, 
+  FiChevronsLeft, 
+  FiChevronsRight, 
+  FiSearch, 
+  FiX,
+  FiAlertTriangle
+} from 'react-icons/fi'
 import './TabelaBancos.scss'
 
 const TabelaBancos = ({ 
@@ -10,26 +23,70 @@ const TabelaBancos = ({
   onGoBack, 
   onAddBank, 
   onEditBank, 
-  onViewCards 
+  onViewCards,
+  onDeleteBank
 }) => {
   const [currentPage, setCurrentPage] = useState(1)
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [searchField, setSearchField] = useState('all')
   const itemsPerPage = 15
 
-  // Check screen size for responsive layout
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768)
-    }
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
+  // Delete confirmation state
+  const [bankToDelete, setBankToDelete] = useState(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  // Filter options for the search dropdown
+  const filterOptions = [
+    { value: 'all', label: 'Todos os campos' },
+    { value: 'CODIGO', label: 'Código' },
+    { value: 'CODIGOBANCO', label: 'Código Banco' },
+    { value: 'NOME', label: 'Nome do Banco' },
+    { value: 'NOMECEDENTE', label: 'Nome Cedente' },
+    { value: 'CNPJCEDENTE', label: 'CNPJ Cedente' },
+    { value: 'CODIGOAGENCIA', label: 'Agência' },
+    { value: 'NUMEROCONTA', label: 'Conta' },
+    { value: 'CARTEIRA', label: 'Carteira' },
+  ]
+
+  // Filter banks based on search term
+  const filteredBanks = useMemo(() => {
+    if (!banksList || banksList.length === 0) return []
+    
+    if (!searchTerm.trim()) return banksList
+    
+    const term = searchTerm.toLowerCase().trim()
+    
+    return banksList.filter(bank => {
+      if (searchField === 'all') {
+        return (
+          (bank.CODIGO?.toString() || '').toLowerCase().includes(term) ||
+          (bank.CODIGOBANCO || '').toLowerCase().includes(term) ||
+          (bank.NOME || '').toLowerCase().includes(term) ||
+          (bank.NOMECEDENTE || '').toLowerCase().includes(term) ||
+          (bank.CNPJCEDENTE || '').toLowerCase().includes(term) ||
+          (bank.CODIGOAGENCIA || '').toLowerCase().includes(term) ||
+          (bank.NUMEROCONTA || '').toLowerCase().includes(term) ||
+          (bank.CARTEIRA || '').toLowerCase().includes(term) ||
+          (bank.CLICODIGO?.toString() || '').includes(term)
+        )
+      } else {
+        const value = bank[searchField]
+        if (value === null || value === undefined) return false
+        return value.toString().toLowerCase().includes(term)
+      }
+    })
+  }, [banksList, searchTerm, searchField])
 
   // Pagination logic
-  const totalPages = Math.ceil(banksList.length / itemsPerPage)
+  const totalPages = Math.ceil(filteredBanks.length / itemsPerPage)
   const startIndex = (currentPage - 1) * itemsPerPage
   const endIndex = startIndex + itemsPerPage
-  const currentBanks = banksList.slice(startIndex, endIndex)
+  const currentBanks = filteredBanks.slice(startIndex, endIndex)
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchTerm, searchField])
 
   // Reset to first page when banks list changes
   useMemo(() => {
@@ -78,45 +135,54 @@ const TabelaBancos = ({
     }
   }
 
-  // Handle first page
-  const goToFirstPage = () => {
-    setCurrentPage(1)
-  }
-
-  // Handle last page
-  const goToLastPage = () => {
-    setCurrentPage(totalPages)
-  }
-
-  // Handle previous page
+  const goToFirstPage = () => setCurrentPage(1)
+  const goToLastPage = () => setCurrentPage(totalPages)
   const goToPreviousPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1)
-    }
+    if (currentPage > 1) setCurrentPage(currentPage - 1)
   }
-
-  // Handle next page
   const goToNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1)
-    }
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1)
   }
 
-  // Handle edit bank
   const handleEdit = (bank) => {
-    if (onEditBank) {
-      onEditBank(bank)
-    }
+    if (onEditBank) onEditBank(bank)
   }
 
-  // Handle view cards
   const handleViewCards = (bank) => {
-    if (onViewCards) {
-      onViewCards(bank)
+    if (onViewCards) onViewCards(bank)
+  }
+
+  // Open delete confirmation
+  const handleDeleteClick = (bank) => {
+    setBankToDelete(bank)
+  }
+
+  // Confirm delete — passes the full bank object to the parent
+  const handleDeleteConfirm = async () => {
+    if (!bankToDelete) return
+
+    setIsDeleting(true)
+    try {
+      await onDeleteBank(bankToDelete)
+      setBankToDelete(null)
+    } catch (error) {
+      console.error('Error deleting bank:', error)
+    } finally {
+      setIsDeleting(false)
     }
   }
 
-  // If no banks found, show empty state
+  // Cancel delete
+  const handleDeleteCancel = () => {
+    setBankToDelete(null)
+  }
+
+  const clearSearch = () => {
+    setSearchTerm('')
+    setSearchField('all')
+  }
+
+  // If no banks found
   if (banksList.length === 0) {
     return (
       <div className="tabela-bancos-container">
@@ -125,18 +191,14 @@ const TabelaBancos = ({
             <h3 className="subtitle">
               Cliente: {selectedClient?.label || 'Não selecionado'}
             </h3>
-            <span className="bank-count">
-              Total de bancos: 0
-            </span>
+            <span className="bank-count">Total de bancos: 0</span>
           </div>
           <div className="header-actions">
             <button className="btn btn-add" onClick={onAddBank}>
-              <FiPlus className="icon" />
-              Adicionar Banco
+              <FiPlus className="icon" /> Adicionar Banco
             </button>
             <button className="btn btn-refresh" onClick={onRefresh}>
-              <FiRefreshCw className="icon" />
-              Atualizar
+              <FiRefreshCw className="icon" /> Atualizar
             </button>
           </div>
         </div>
@@ -149,8 +211,7 @@ const TabelaBancos = ({
             <h4>Nenhum banco encontrado</h4>
             <p>Não há bancos cadastrados para o cliente selecionado</p>
             <button className="btn btn-add-empty" onClick={onAddBank}>
-              <FiPlus className="icon" />
-              Adicionar Banco
+              <FiPlus className="icon" /> Adicionar Banco
             </button>
           </div>
         </div>
@@ -174,143 +235,122 @@ const TabelaBancos = ({
             Cliente: {selectedClient?.label || 'Não selecionado'}
           </h3>
           <span className="bank-count">
-            Total de bancos: {banksList.length}
+            Total de bancos: {filteredBanks.length}
+            {banksList.length !== filteredBanks.length && ` (${banksList.length} total)`}
           </span>
         </div>
         <div className="header-actions">
           <button className="btn btn-add" onClick={onAddBank}>
-            <FiPlus className="icon" />
-            Adicionar Banco
+            <FiPlus className="icon" /> Adicionar Banco
           </button>
           <button className="btn btn-refresh" onClick={onRefresh}>
-            <FiRefreshCw className="icon" />
-            Atualizar
+            <FiRefreshCw className="icon" /> Atualizar
           </button>
         </div>
       </div>
 
       <hr className="hr-global" />
 
-      {/* Desktop Table View */}
-      {!isMobile ? (
-        <div className="tabela-bancos-wrapper">
-          <table className="tabela-bancos">
-            <thead>
-              <tr>
-                <th className="col-actions">Ações</th>
-                <th>Cliente</th>
-                <th>Código</th>
-                <th>Nome do Banco</th>
-                <th>Conta</th>
-                <th>CNPJ</th>
-                <th>Razão Social</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentBanks.map((bank, index) => (
-                <tr key={bank.CODIGO || index}>
-                  <td className="col-actions">
-                    <div className="action-buttons">
-                      <button 
-                        className="btn-action btn-edit"
-                        onClick={() => handleEdit(bank)}
-                        title="Editar banco"
-                      >
-                        <FiEdit />
-                      </button>
-                      <button 
-                        className="btn-action btn-cards"
-                        onClick={() => handleViewCards(bank)}
-                        title="Ver cartões"
-                      >
-                        <FiCreditCard />
-                      </button>
-                    </div>
-                  </td>
-                  <td className="col-cliente">
-                    {selectedClient?.label || 'N/A'}
-                  </td>
-                  <td className="col-codigo">
-                    {bank.CODIGOBANCO || 'N/A'}
-                  </td>
-                  <td className="col-nome-banco">
-                    {bank.NOME || 'N/A'}
-                  </td>
-                  <td className="col-conta">
-                    {bank.NUMEROCONTA || 'N/A'}
-                    {bank.DIGITOCONTA && `-${bank.DIGITOCONTA}`}
-                    {bank.CODIGOAGENCIA && ` (Ag: ${bank.CODIGOAGENCIA})`}
-                  </td>
-                  <td className="col-cnpj">
-                    {formatCNPJ(bank.CNPJCEDENTE)}
-                  </td>
-                  <td className="col-razao-social">
-                    {bank.NOMECEDENTE || 'N/A'}
-                  </td>
-                </tr>
+      {/* Search/Filter Bar */}
+      <div className="tabela-bancos-search">
+        <div className="search-group">
+          <div className="search-field">
+            <label>Buscar em:</label>
+            <select 
+              value={searchField}
+              onChange={(e) => setSearchField(e.target.value)}
+              className="search-select"
+            >
+              {filterOptions.map(opt => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
               ))}
-            </tbody>
-          </table>
+            </select>
+          </div>
+          <div className="search-input-wrapper">
+            <FiSearch className="search-icon" />
+            <input
+              type="text"
+              placeholder="Digite para buscar..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="search-input"
+            />
+            {searchTerm && (
+              <button className="btn-clear-search" onClick={clearSearch}>
+                <FiX />
+              </button>
+            )}
+          </div>
         </div>
-      ) : (
-        /* Mobile Card View */
-        <div className="tabela-bancos-cards">
-          {currentBanks.map((bank, index) => (
-            <div key={bank.CODIGO || index} className="bank-card">
-              <div className="bank-card-header">
-                <div className="bank-card-title">
-                  <span className="bank-card-code">{bank.CODIGOBANCO || 'N/A'}</span>
-                  <span className="bank-card-name">{bank.NOME || 'N/A'}</span>
-                </div>
-                <div className="bank-card-actions">
-                  <button 
-                    className="btn-action btn-edit"
-                    onClick={() => handleEdit(bank)}
-                    title="Editar banco"
-                  >
-                    <FiEdit />
-                  </button>
-                  <button 
-                    className="btn-action btn-cards"
-                    onClick={() => handleViewCards(bank)}
-                    title="Ver cartões"
-                  >
-                    <FiCreditCard />
-                  </button>
-                </div>
-              </div>
-              <div className="bank-card-body">
-                <div className="bank-card-row">
-                  <span className="bank-card-label">Cliente:</span>
-                  <span className="bank-card-value">{selectedClient?.label || 'N/A'}</span>
-                </div>
-                <div className="bank-card-row">
-                  <span className="bank-card-label">Conta:</span>
-                  <span className="bank-card-value">
-                    {bank.NUMEROCONTA || 'N/A'}
-                    {bank.DIGITOCONTA && `-${bank.DIGITOCONTA}`}
-                    {bank.CODIGOAGENCIA && ` (Ag: ${bank.CODIGOAGENCIA})`}
-                  </span>
-                </div>
-                <div className="bank-card-row">
-                  <span className="bank-card-label">CNPJ:</span>
-                  <span className="bank-card-value">{formatCNPJ(bank.CNPJCEDENTE)}</span>
-                </div>
-                <div className="bank-card-row">
-                  <span className="bank-card-label">Razão Social:</span>
-                  <span className="bank-card-value">{bank.NOMECEDENTE || 'N/A'}</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      </div>
+
+      <hr className="hr-global" />
+
+      {/* Table */}
+      <div className="tabela-bancos-wrapper">
+        <table className="tabela-bancos">
+          <thead>
+            <tr>
+              <th className="col-actions">Ações</th>
+              <th>Cliente</th>
+              <th>Código</th>
+              <th>Nome do Banco</th>
+              <th>Conta</th>
+              <th>CNPJ</th>
+              <th>Razão Social</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentBanks.map((bank, index) => (
+              <tr key={bank.CODIGO || index}>
+                <td className="col-actions">
+                  <div className="action-buttons">
+                    <button 
+                      className="btn-action btn-edit"
+                      onClick={() => handleEdit(bank)}
+                      title="Editar banco"
+                    >
+                      <FiEdit />
+                    </button>
+                    <button 
+                      className="btn-action btn-cards"
+                      onClick={() => handleViewCards(bank)}
+                      title="Ver cartões"
+                    >
+                      <FiCreditCard />
+                    </button>
+                    <button 
+                      className="btn-action btn-delete"
+                      onClick={() => handleDeleteClick(bank)}
+                      title="Excluir banco"
+                    >
+                      <FiTrash2 />
+                    </button>
+                  </div>
+                </td>
+                <td className="col-cliente">{selectedClient?.label || 'N/A'}</td>
+                <td className="col-codigo">{bank.CODIGOBANCO || 'N/A'}</td>
+                <td className="col-nome-banco">{bank.NOME || 'N/A'}</td>
+                <td className="col-conta">
+                  {bank.NUMEROCONTA || 'N/A'}
+                  {bank.DIGITOCONTA && `-${bank.DIGITOCONTA}`}
+                  {bank.CODIGOAGENCIA && ` (Ag: ${bank.CODIGOAGENCIA})`}
+                </td>
+                <td className="col-cnpj">{formatCNPJ(bank.CNPJCEDENTE)}</td>
+                <td className="col-razao-social">{bank.NOMECEDENTE || 'N/A'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="tabela-bancos-pagination">
           <div className="pagination-info">
-            Mostrando {startIndex + 1} - {Math.min(endIndex, banksList.length)} de {banksList.length} bancos
+            Mostrando {startIndex + 1} - {Math.min(endIndex, filteredBanks.length)} de {filteredBanks.length} bancos
           </div>
           <div className="pagination-controls">
             <button 
@@ -321,7 +361,6 @@ const TabelaBancos = ({
             >
               <FiChevronsLeft />
             </button>
-            
             <button 
               className="btn-pagination btn-pagination-icon"
               onClick={goToPreviousPage}
@@ -330,7 +369,6 @@ const TabelaBancos = ({
             >
               <FiChevronLeft />
             </button>
-            
             <div className="pagination-pages">
               {getVisiblePages().map(page => (
                 <button
@@ -342,7 +380,6 @@ const TabelaBancos = ({
                 </button>
               ))}
             </div>
-            
             <button 
               className="btn-pagination btn-pagination-icon"
               onClick={goToNextPage}
@@ -351,7 +388,6 @@ const TabelaBancos = ({
             >
               <FiChevronRight />
             </button>
-            
             <button 
               className="btn-pagination btn-pagination-icon"
               onClick={goToLastPage}
@@ -364,13 +400,81 @@ const TabelaBancos = ({
         </div>
       )}
 
-      {/* Floating button to go back */}
+      {/* Floating button */}
       <div className='floating-button-container'>
         <button className='btn-floating-new-search' onClick={onGoBack}>
           <span className='floating-button-icon'>🔍</span>
           <span className='floating-button-text'>Nova Consulta</span>
         </button>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {bankToDelete && (
+        <div className="modal-overlay" onClick={handleDeleteCancel}>
+          <div className="modal-container modal-container-small" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Confirmar Exclusão</h2>
+              <button className="modal-close" onClick={handleDeleteCancel}>
+                <FiX />
+              </button>
+            </div>
+
+            <div className="modal-body-confirm">
+              <div className="confirm-icon">
+                <FiAlertTriangle />
+              </div>
+              <p className="confirm-message">
+                Tem certeza que deseja excluir este banco?
+              </p>
+              <div className="confirm-details">
+                <div className="confirm-detail-row">
+                  <span className="detail-label">Banco:</span>
+                  <span className="detail-value">
+                    {bankToDelete.CODIGOBANCO} - {bankToDelete.NOME}
+                  </span>
+                </div>
+                <div className="confirm-detail-row">
+                  <span className="detail-label">Cedente:</span>
+                  <span className="detail-value">{bankToDelete.NOMECEDENTE || 'N/A'}</span>
+                </div>
+                <div className="confirm-detail-row">
+                  <span className="detail-label">Agência:</span>
+                  <span className="detail-value">{bankToDelete.CODIGOAGENCIA || 'N/A'}</span>
+                </div>
+                <div className="confirm-detail-row">
+                  <span className="detail-label">Conta:</span>
+                  <span className="detail-value">
+                    {bankToDelete.NUMEROCONTA || 'N/A'}
+                    {bankToDelete.DIGITOCONTA && `-${bankToDelete.DIGITOCONTA}`}
+                  </span>
+                </div>
+              </div>
+              <p className="confirm-warning">
+                Esta ação não pode ser desfeita.
+              </p>
+            </div>
+
+            <div className="modal-actions">
+              <button 
+                type="button" 
+                className="btn btn-cancel" 
+                onClick={handleDeleteCancel}
+                disabled={isDeleting}
+              >
+                Cancelar
+              </button>
+              <button 
+                type="button" 
+                className="btn btn-delete-confirm" 
+                onClick={handleDeleteConfirm}
+                disabled={isDeleting}
+              >
+                {isDeleting ? 'Excluindo...' : 'Excluir'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

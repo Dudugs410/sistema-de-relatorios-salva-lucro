@@ -2190,136 +2190,180 @@ const deleteTax = async (tax) => {
   }
 }
 
-//Bancos
 const [isLoadingBanks, setIsLoadingBanks] = useState(false)
 
-// retorna array de bancos
-const loadBanks = async () => {
+const loadBanks = useCallback(async () => {
   setIsLoadingBanks(true)
   try {
     const apiClientCode = localStorage.getItem('clientCode')
-    if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
-      let params = {
-        codigo: apiClientCode
-      }
-
-      let config = {
-        params: params
-      }
-
-      const response = await api.get('banco', config)
-      return response.data
-    } else {
+    if (!apiClientCode || apiClientCode.toLowerCase() === 'todos') {
       return []
     }
+
+    const response = await api.get('banco/cliente', {
+      params: { codigoCliente: apiClientCode }
+    })
+    return response.data || []
   } catch (error) {
-    console.error('Error fetching banco:', error)
+    console.error('Error fetching banco by client:', error)
     if (error.response && error.response.status === 401) {
       logout()
-      return
+      return []
     }
     return []
   } finally {
     setIsLoadingBanks(false)
   }
-}
+}, [logout])
 
-// adiciona novo banco
-const addBank = async (bank) => {
-  setIsLoadingBanks(true)
+const loadBanksByCNPJ = useCallback(async (cnpj) => {
+  if (!cnpj) return []
   try {
-    const apiClientCode = localStorage.getItem('clientCode')
-    if (apiClientCode && apiClientCode.toLowerCase() !== 'todos') {
-      let body = bank
-      const response = await api.post('banco', body)
-      if (response.data.success) {
-        toast.dismiss()
-        toast.success(response.data.mensagem)
-      } else {
-        toast.dismiss()
-        toast.error('Erro ao adicionar Banco!')
-      }
-    } else {
-      console.log('código do cliente inválido:', apiClientCode)
-    }
-
+    const response = await api.get('banco/cnpj', {
+      params: { cnpj }
+    })
+    return response.data || []
   } catch (error) {
-    console.error('Erro ao adicionar banco:', error)
+    console.error('Error fetching banco by CNPJ:', error)
     if (error.response && error.response.status === 401) {
       logout()
-      return
+      return []
     }
+    return []
+  }
+}, [logout])
+
+const loadBanksByCodigo = useCallback(async (codigoBanco) => {
+  if (!codigoBanco) return []
+  try {
+    const response = await api.get('banco/codigo', {
+      params: { codigoBanco }
+    })
+    return response.data || []
+  } catch (error) {
+    console.error('Error fetching banco by codigo:', error)
+    if (error.response && error.response.status === 401) {
+      logout()
+      return []
+    }
+    return []
+  }
+}, [logout])
+
+const loadBankSelectOptions = useCallback(async () => {
+  try {
+    const response = await api.get('banco/lista')
+    const data = response.data || []
+
+    const options = data
+      .filter(item => item.CODIGO !== undefined && item.CODIGO !== null && item.NOME)
+      .map(item => ({
+        value: String(item.CODIGO),
+        label: String(item.NOME),
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label))
+
+    return options
+  } catch (error) {
+    console.error('Error fetching bank list for registration:', error)
+    if (error.response && error.response.status === 401) {
+      logout()
+      return []
+    }
+    return []
+  }
+}, [logout])
+
+const addBank = useCallback(async (bank) => {
+  setIsLoadingBanks(true)
+  try {
+    const { CODIGO, ...payloadWithoutCodigo } = bank
+
+    const response = await api.post('banco', payloadWithoutCodigo)
+
+    if (response.data?.success || response.status === 200 || response.status === 201) {
+      toast.dismiss()
+      toast.success(response.data?.mensagem || 'Banco adicionado com sucesso!')
+      return { success: true, data: response.data }
+    } else {
+      toast.dismiss()
+      toast.error(response.data?.mensagem || 'Erro ao adicionar Banco!')
+      return { success: false }
+    }
+  } catch (error) {
+    console.error('Erro ao adicionar banco:', error)
+    toast.dismiss()
+    toast.error(error.response?.data?.mensagem || 'Erro ao adicionar banco!')
+    if (error.response && error.response.status === 401) {
+      logout()
+    }
+    return { success: false }
   } finally {
     setIsLoadingBanks(false)
   }
-}
+}, [logout])
 
-// edita banco
-const editBank = async (editedBank) => {
+const editBank = useCallback(async (editedBank) => {
   setIsLoadingBanks(true)
   try {
-      let body = JSON.stringify(editedBank)
-      const response = await fetch('https://app.salvalucro.com.br/api/v1/banco', {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
-      body: body,
-      })
+    // CODIGO must be present for PUT
+    if (!editedBank.CODIGO) {
+      toast.dismiss()
+      toast.error('Código do banco não informado para edição.')
+      return { success: false }
+    }
 
-      const responseData = await response.json()
+    const response = await api.put('banco', editedBank)
 
-      if (response.ok) {
-        toast.dismiss()
-        toast.success('Banco alterado com sucesso!')
-      } else {
-        toast.dismiss()
-        toast.error('Erro ao alterar Banco!')
-      }
+    if (response.status === 200 || response.status === 204) {
+      toast.dismiss()
+      toast.success(response.data?.mensagem || 'Banco alterado com sucesso!')
+      return { success: true, data: response.data }
+    } else {
+      toast.dismiss()
+      toast.error(response.data?.mensagem || 'Erro ao alterar Banco!')
+      return { success: false }
+    }
   } catch (error) {
     console.error('Erro ao Alterar Banco:', error)
     toast.dismiss()
-    toast.error('Erro ao alterar banco!')
+    toast.error(error.response?.data?.mensagem || 'Erro ao alterar banco!')
     if (error.response && error.response.status === 401) {
       logout()
-      return
     }
+    return { success: false }
   } finally {
     setIsLoadingBanks(false)
-  }   
-}
+  }
+}, [logout])
 
-// deleta banco
-const deleteBank = async (bankToDelete) => {
+const deleteBank = useCallback(async (bankToDelete) => {
   setIsLoadingBanks(true)
   try {
-    let body = bankToDelete
-    api.delete('banco', {
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      data: body
-    })
-    .then(response => {
+    // CODIGO must be present for DELETE
+    if (!bankToDelete.CODIGO) {
       toast.dismiss()
-      toast.success('Banco deletado com sucesso!')
-    })
-    .catch(error => {
-      toast.dismiss()
-      toast.error('Erro ao deletar taxa!')
-    })
-    setIsLoadingBanks(false)
+      toast.error('Código do banco não informado para exclusão.')
+      return { success: false }
+    }
+
+    const response = await api.delete('banco', { data: bankToDelete })
+
+    toast.dismiss()
+    toast.success(response.data?.mensagem || 'Banco deletado com sucesso!')
+    return { success: true, data: response.data }
   } catch (error) {
-    console.error('Error fetching vendas:', error)
-    setIsLoadingBanks(false)
+    console.error('Erro ao deletar banco:', error)
+    toast.dismiss()
+    toast.error(error.response?.data?.mensagem || 'Erro ao deletar banco!')
     if (error.response && error.response.status === 401) {
       logout()
-      return
     }
-    return
+    return { success: false }
+  } finally {
+    setIsLoadingBanks(false)
   }
-}
+}, [logout])
 
 const loadCliAdq = async () => {
   try {
@@ -3989,8 +4033,8 @@ const exportCredits = (data) => {
 		taxesPageArray, setTaxesPageArray,
 
 		// Bancos //
-		loadBanks, isLoadingBanks, setIsLoadingBanks,
-		addBank, editBank, deleteBank,
+		loadBanks, isLoadingBanks, setIsLoadingBanks, loadBankSelectOptions,
+		addBank, editBank, deleteBank, loadBanksByCNPJ, loadBanksByCodigo,
 		loadCliAdq,
 
 		// Sysmo //
@@ -4020,6 +4064,7 @@ const exportCredits = (data) => {
 		exportName, isCheckedCalendar, changedOption, errorSales, errorCredits, errorServices, fetchingData,
 		displayGroup, displayClient, canceledSales, canceledCredits, canceledServices, groupsList, clientsList,
 		btnDisabledSales, btnDisabledCredits, btnDisabledServices, btnDisabledSysmo, isLoadingTaxes, isLoadingBanks,
+    loadBankSelectOptions, loadBanks, loadBanksByCNPJ, loadBanksByCodigo, loadBankSelectOptions,
 		isLoadedDashboard, isLoadedSalesDashboard, isLoadedCreditsDashboard, isLoadedServicesDashboard, canceled,
     salesDashboard, creditsDashboard, servicesDashboard, chartSales, chartCredits, chartServices,
 		salesPageArray, salesPageAdminArray, salesTotal, salesDateRange,

@@ -1,4 +1,4 @@
-// src/pages/CreditosDataBanco/index.js
+// src/pages/ResumoMensal/index.js
 import { useEffect, useContext, useState, useCallback } from 'react'
 import Select from 'react-select'
 import '../Vendas/vendas.scss'
@@ -10,6 +10,99 @@ import MyCalendar from '../../components/Componente_Calendario'
 import { toast } from 'react-toastify'
 import { FiHelpCircle, FiFilePlus } from 'react-icons/fi'
 import api from '../../services/api'
+
+// Custom Select styles — same as Bancos/Vendas/Creditos
+const customSelectStyles = {
+  control: (base, { isFocused }) => ({
+    ...base,
+    minWidth: 250,
+    width: '100%',
+    backgroundColor: 'var(--background-color)',
+    borderColor: isFocused ? 'var(--secondary-color)' : 'var(--bs-border-color)',
+    color: 'var(--font-color)',
+    '&:hover': { borderColor: 'var(--secondary-color)' },
+    boxShadow: isFocused ? '0 0 0 1px var(--secondary-color)' : 'none',
+  }),
+  menu: (base) => ({
+    ...base,
+    backgroundColor: 'var(--background-color)',
+    borderColor: 'var(--bs-border-color)',
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+    zIndex: 9999,
+  }),
+  menuList: (base) => ({
+    ...base,
+    backgroundColor: 'var(--background-color)',
+    padding: '4px 0',
+    '::-webkit-scrollbar': { width: '8px', height: '8px' },
+    '::-webkit-scrollbar-track': { background: 'rgba(255, 255, 255, 0.1)' },
+    '::-webkit-scrollbar-thumb': { background: 'var(--secondary-color)', borderRadius: '4px' },
+    '::-webkit-scrollbar-thumb:hover': { background: 'var(--primary-color)' },
+  }),
+  option: (base, { isFocused, isSelected }) => ({
+    ...base,
+    backgroundColor: isSelected
+      ? 'var(--secondary-color)'
+      : isFocused
+        ? 'rgba(var(--secondary-color-rgb), 0.2)'
+        : 'transparent',
+    color: isSelected ? 'var(--primary-color)' : 'var(--font-color)',
+    cursor: 'pointer',
+    padding: '8px 12px',
+    '&:active': { backgroundColor: 'var(--secondary-color)', color: 'var(--primary-color)' },
+  }),
+  singleValue: (base) => ({
+    ...base,
+    color: 'var(--font-color)',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    maxWidth: '90%',
+  }),
+  input: (base) => ({ ...base, color: 'var(--font-color)' }),
+  placeholder: (base) => ({ ...base, color: 'var(--font-color)', opacity: 0.6 }),
+  valueContainer: (base) => ({
+    ...base,
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  }),
+  dropdownIndicator: (base) => ({
+    ...base,
+    color: 'var(--font-color)',
+    '&:hover': { color: 'var(--secondary-color)' },
+  }),
+  clearIndicator: (base) => ({
+    ...base,
+    color: 'var(--font-color)',
+    '&:hover': { color: 'var(--secondary-color)' },
+  }),
+  indicatorSeparator: (base) => ({ ...base, backgroundColor: 'var(--bs-border-color)' }),
+  noOptionsMessage: (base) => ({ ...base, color: 'var(--font-color)' }),
+  loadingMessage: (base) => ({ ...base, color: 'var(--font-color)' }),
+}
+
+const themeConfig = (theme) => ({
+  ...theme,
+  colors: {
+    ...theme.colors,
+    primary: 'var(--secondary-color)',
+    primary75: 'var(--secondary-color)',
+    primary50: 'rgba(var(--secondary-color-rgb), 0.5)',
+    primary25: 'rgba(var(--secondary-color-rgb), 0.25)',
+    neutral0: 'var(--background-color)',
+    neutral5: 'var(--background-color)',
+    neutral10: 'var(--background-color)',
+    neutral20: 'var(--bs-border-color)',
+    neutral30: 'var(--bs-border-color)',
+    neutral40: 'var(--font-color)',
+    neutral50: 'var(--font-color)',
+    neutral60: 'var(--font-color)',
+    neutral70: 'var(--font-color)',
+    neutral80: 'var(--font-color)',
+    neutral90: 'var(--font-color)',
+  },
+})
 
 const ResumoMensal = () => {
   const location = useLocation()
@@ -61,34 +154,26 @@ const ResumoMensal = () => {
     creditsDateRange, setCreditsDateRange
   } = useContext(AuthContext)
 
-  // Format date to YYYY-MM-DD for API
   const formatDateToYYYYMMDD = (date) => {
     if (!date) return ''
-    
-    if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
-      return date
-    }
-    
+    if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) return date
     if (date instanceof Date) {
       const year = date.getFullYear()
       const month = String(date.getMonth() + 1).padStart(2, '0')
       const day = String(date.getDate()).padStart(2, '0')
       return `${year}-${month}-${day}`
     }
-    
     return ''
   }
 
-  // Get the request object for API
   const getRequestObject = (format) => {
     const cliente = JSON.parse(localStorage.getItem('selectedClientBody'))
     const grupo = JSON.parse(localStorage.getItem('selectedGroupBody'))
     const bandeiraObj = JSON.parse(localStorage.getItem('selectedBanCredits')) || ''
     const adquirenteObj = JSON.parse(localStorage.getItem('selectedAdmCredits')) || ''
-    
-    // Get clientes string
+
     let clientesString = ""
-    
+
     if (cliente && cliente.label === 'TODOS') {
       const clientCodes = grupo?.clients?.map(client => client.CODIGOCLIENTE) || []
       clientesString = clientCodes.join(', ')
@@ -106,10 +191,9 @@ const ResumoMensal = () => {
     const ban = bandeiraObj?.codigoBandeira || ''
     const adq = adquirenteObj?.codigoAdquirente || ''
 
-    // Get dates from dateRange or creditsDateRange
     let dataInicial = ''
     let dataFinal = ''
-    
+
     if (dateRange && dateRange.length === 2) {
       dataInicial = formatDateToYYYYMMDD(dateRange[0])
       dataFinal = formatDateToYYYYMMDD(dateRange[1])
@@ -127,41 +211,38 @@ const ResumoMensal = () => {
       adquirente: adq,
       produto: '',
       modalidade: '',
-      arquivo: format, // 'PDF' only now
+      arquivo: format,
       modelo: 'RESUMO'
     }
   }
 
-  // PDF download handler (only PDF is available)
   const handlePDFDownload = async () => {
     setDownloading(true)
-    
+
     try {
       const requestObject = getRequestObject('PDF')
-            
+
       const response = await api.post('relatorios/detalhado', requestObject)
-      
+
       if (response.data.success === true && response.data.formato === 'PDF') {
-        // Convert base64 to blob and download
         const binaryData = atob(response.data.base64)
         const arrayBuffer = new ArrayBuffer(binaryData.length)
         const uint8Array = new Uint8Array(arrayBuffer)
         for (let i = 0; i < binaryData.length; i++) {
           uint8Array[i] = binaryData.charCodeAt(i)
         }
-        
+
         const mimeType = 'application/pdf'
         const fileExtension = 'pdf'
         const blob = new Blob([arrayBuffer], { type: mimeType })
         const url = URL.createObjectURL(blob)
-        
+
         const a = document.createElement('a')
         a.href = url
-        
-        // Create filename with date range
+
         let startDateStr = ''
         let endDateStr = ''
-        
+
         if (dateRange && dateRange.length === 2) {
           startDateStr = formatDateToYYYYMMDD(dateRange[0])
           endDateStr = formatDateToYYYYMMDD(dateRange[1])
@@ -169,7 +250,7 @@ const ResumoMensal = () => {
           startDateStr = formatDateToYYYYMMDD(creditsDateRange[0])
           endDateStr = formatDateToYYYYMMDD(creditsDateRange[1])
         }
-        
+
         const dateRangeStr = startDateStr === endDateStr ? startDateStr : `${startDateStr}_a_${endDateStr}`
 
         const requestGroup = JSON.parse(localStorage.getItem('selectedGroupBody'))
@@ -178,16 +259,16 @@ const ResumoMensal = () => {
         const isTodos = cliente?.label === 'TODOS'
         const clientName = cliente?.label || localStorage.getItem('clientName') || ""
 
-        const fileName = isTodos 
+        const fileName = isTodos
           ? `Relatório_Gerencial_${requestGroupName}_TODAS_FILIAIS_${dateRangeStr}.${fileExtension}`
           : `Relatório_Gerencial_${requestGroupName}_${clientName}_${dateRangeStr}.${fileExtension}`
-        
+
         a.download = fileName
         document.body.appendChild(a)
         a.click()
         document.body.removeChild(a)
         URL.revokeObjectURL(url)
-        
+
         toast.success('PDF baixado com sucesso!')
       } else {
         console.error('API returned unsuccessful response:', response.data)
@@ -206,19 +287,16 @@ const ResumoMensal = () => {
     setCreditsDateRange(dateRange)
   }
 
-  // Get the selected option object for Adquirente
   const getSelectedAdminOption = () => {
     if (!administradora || listaAdministradoras.length === 0) return null
     return listaAdministradoras.find(option => option.codigoAdquirente === administradora)
   }
 
-  // Get the selected option object for Bandeira
   const getSelectedBanOption = () => {
     if (!bandeira || listaBandeiras.length === 0) return null
     return listaBandeiras.find(option => option.codigoBandeira === bandeira)
   }
 
-  // Joyride state
   const [runTutorial, setRunTutorial] = useState(false)
   const [steps, setSteps] = useState([
     {
@@ -245,7 +323,7 @@ const ResumoMensal = () => {
 
   return (
     <div className='appPage'>
-      <div className='page-content-vendas'>        
+      <div className='page-content-vendas'>
         <div className='component-container-vendas'>
           <div className='vendas-title-container'>
             <h1 className='vendas-title'>Resumo Mensal</h1>
@@ -282,8 +360,7 @@ const ResumoMensal = () => {
               }}
             />
           }
-          
-          {/* Filters Section - exactly like Creditos page */}
+
           <div data-tour="select-container-calendario" className='select-container-calendario'>
             <div className='select-wrapper'>
               <h5>Adquirente</h5>
@@ -299,31 +376,8 @@ const ResumoMensal = () => {
                 menuPosition="fixed"
                 placeholder="Selecione uma adquirente..."
                 isClearable={true}
-                styles={{
-                  control: (base) => ({
-                    ...base,
-                    minWidth: 250,
-                    width: '100%',
-                  }),
-                  menu: (base) => ({
-                    ...base,
-                    minWidth: 250,
-                    width: '100%',
-                  }),
-                  valueContainer: (base) => ({
-                    ...base,
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }),
-                  singleValue: (base) => ({
-                    ...base,
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    maxWidth: '90%',
-                  }),
-                }}
+                styles={customSelectStyles}
+                theme={themeConfig}
               />
             </div>
             <div className='select-wrapper'>
@@ -340,47 +394,22 @@ const ResumoMensal = () => {
                 menuPosition="fixed"
                 placeholder="Selecione uma bandeira..."
                 isClearable={true}
-                styles={{
-                  control: (base) => ({
-                    ...base,
-                    minWidth: 250,
-                    width: '100%',
-                  }),
-                  menu: (base) => ({
-                    ...base,
-                    minWidth: 250,
-                    width: '100%',
-                  }),
-                  valueContainer: (base) => ({
-                    ...base,
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }),
-                  singleValue: (base) => ({
-                    ...base,
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    maxWidth: '90%',
-                  }),
-                }}
+                styles={customSelectStyles}
+                theme={themeConfig}
               />
             </div>
           </div>
 
-          {/* Calendar Section */}
           <div data-tour="calendario-section">
-            <MyCalendar 
+            <MyCalendar
               getCalendarDate={handleDateRangeChange}
             />
           </div>
 
-          {/* Export Buttons Section - Only PDF export */}
           <div data-tour="exportacao-section" className='container' style={{ marginTop: '0px' }}>
             <div className='export-column'>
-              <button 
-                className='btn btn-exportar btn-exportar-pdf' 
+              <button
+                className='btn btn-exportar btn-exportar-pdf'
                 onClick={handlePDFDownload}
                 disabled={downloading}
                 style={{ width: '100%' }}
@@ -392,7 +421,7 @@ const ResumoMensal = () => {
 
           <hr className='hr-global'/>
 
-          <button 
+          <button
             className='btn btn-success-dados btn-tutorial px-2 py-1'
             onClick={() => setRunTutorial(true)}
             style={{

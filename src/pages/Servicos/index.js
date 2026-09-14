@@ -1,5 +1,5 @@
 import './servicos.scss'
-import { useContext, useEffect, useState, useRef } from 'react' 
+import { useContext, useEffect, useState, useRef } from 'react'
 import Select from 'react-select'
 import { AuthContext } from '../../contexts/auth'
 import { useLocation } from 'react-router-dom'
@@ -7,6 +7,99 @@ import MyCalendar from '../../components/Componente_Calendario'
 import { toast } from 'react-toastify'
 import NewDisplayData from '../../components/Component_NewDisplayData'
 import api from '../../services/api'
+
+// Custom Select styles — same as Bancos/Vendas
+const customSelectStyles = {
+  control: (base, { isFocused }) => ({
+    ...base,
+    minWidth: 250,
+    width: '100%',
+    backgroundColor: 'var(--background-color)',
+    borderColor: isFocused ? 'var(--secondary-color)' : 'var(--bs-border-color)',
+    color: 'var(--font-color)',
+    '&:hover': { borderColor: 'var(--secondary-color)' },
+    boxShadow: isFocused ? '0 0 0 1px var(--secondary-color)' : 'none',
+  }),
+  menu: (base) => ({
+    ...base,
+    backgroundColor: 'var(--background-color)',
+    borderColor: 'var(--bs-border-color)',
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+    zIndex: 9999,
+  }),
+  menuList: (base) => ({
+    ...base,
+    backgroundColor: 'var(--background-color)',
+    padding: '4px 0',
+    '::-webkit-scrollbar': { width: '8px', height: '8px' },
+    '::-webkit-scrollbar-track': { background: 'rgba(255, 255, 255, 0.1)' },
+    '::-webkit-scrollbar-thumb': { background: 'var(--secondary-color)', borderRadius: '4px' },
+    '::-webkit-scrollbar-thumb:hover': { background: 'var(--primary-color)' },
+  }),
+  option: (base, { isFocused, isSelected }) => ({
+    ...base,
+    backgroundColor: isSelected
+      ? 'var(--secondary-color)'
+      : isFocused
+        ? 'rgba(var(--secondary-color-rgb), 0.2)'
+        : 'transparent',
+    color: isSelected ? 'var(--primary-color)' : 'var(--font-color)',
+    cursor: 'pointer',
+    padding: '8px 12px',
+    '&:active': { backgroundColor: 'var(--secondary-color)', color: 'var(--primary-color)' },
+  }),
+  singleValue: (base) => ({
+    ...base,
+    color: 'var(--font-color)',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    maxWidth: '90%',
+  }),
+  input: (base) => ({ ...base, color: 'var(--font-color)' }),
+  placeholder: (base) => ({ ...base, color: 'var(--font-color)', opacity: 0.6 }),
+  valueContainer: (base) => ({
+    ...base,
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  }),
+  dropdownIndicator: (base) => ({
+    ...base,
+    color: 'var(--font-color)',
+    '&:hover': { color: 'var(--secondary-color)' },
+  }),
+  clearIndicator: (base) => ({
+    ...base,
+    color: 'var(--font-color)',
+    '&:hover': { color: 'var(--secondary-color)' },
+  }),
+  indicatorSeparator: (base) => ({ ...base, backgroundColor: 'var(--bs-border-color)' }),
+  noOptionsMessage: (base) => ({ ...base, color: 'var(--font-color)' }),
+  loadingMessage: (base) => ({ ...base, color: 'var(--font-color)' }),
+}
+
+const themeConfig = (theme) => ({
+  ...theme,
+  colors: {
+    ...theme.colors,
+    primary: 'var(--secondary-color)',
+    primary75: 'var(--secondary-color)',
+    primary50: 'rgba(var(--secondary-color-rgb), 0.5)',
+    primary25: 'rgba(var(--secondary-color-rgb), 0.25)',
+    neutral0: 'var(--background-color)',
+    neutral5: 'var(--background-color)',
+    neutral10: 'var(--background-color)',
+    neutral20: 'var(--bs-border-color)',
+    neutral30: 'var(--bs-border-color)',
+    neutral40: 'var(--font-color)',
+    neutral50: 'var(--font-color)',
+    neutral60: 'var(--font-color)',
+    neutral70: 'var(--font-color)',
+    neutral80: 'var(--font-color)',
+    neutral90: 'var(--font-color)',
+  },
+})
 
 const Servicos = () => {
   const location = useLocation()
@@ -74,12 +167,12 @@ const Servicos = () => {
   useEffect(() => {
     if (isProcessingRef.current) return
     if (servicesPageArray.length === 0) return
-    
+
     const currentSignature = JSON.stringify(servicesPageArray)
     if (currentSignature === lastProcessedArrayRef.current) return
-    
+
     isProcessingRef.current = true
-    
+
     try {
       const groupedData = newGroupByAdminServices(servicesPageArray)
       if (JSON.stringify(groupedData) !== JSON.stringify(servicesPageAdminArray)) {
@@ -136,12 +229,12 @@ const Servicos = () => {
       const grupo = JSON.parse(localStorage.getItem('selectedGroupBody') || '{}')
       const dataInicial = localStorage.getItem('dataInicial')
       const dataFinal = localStorage.getItem('dataFinal')
-      
+
       const bandeiraObj = JSON.parse(localStorage.getItem('selectedBanServices') || '{}')
       const adquirenteObj = JSON.parse(localStorage.getItem('selectedAdmServices') || '{}')
-      
+
       let clientesString = ""
-      
+
       if (cliente && cliente.label === 'TODOS') {
         const clientCodes = grupo?.clients?.map(client => client.CODIGOCLIENTE) || []
         clientesString = clientCodes.join(', ')
@@ -193,17 +286,17 @@ const Servicos = () => {
 
   const downloadReport = async (format) => {
     setDownloading(true)
-    
+
     try {
       const requestObject = getRequestObject(format)
-      
+
       if (!requestObject.dataInicial || !requestObject.dataFinal) {
         toast.warning('Please select valid dates before downloading')
         return
       }
-      
+
       const response = await api.post('relatorios/detalhado', requestObject)
-      
+
       if (response.data.success === true && response.data.formato === format) {
         const binaryData = atob(response.data.base64)
         const arrayBuffer = new ArrayBuffer(binaryData.length)
@@ -211,28 +304,28 @@ const Servicos = () => {
         for (let i = 0; i < binaryData.length; i++) {
           uint8Array[i] = binaryData.charCodeAt(i)
         }
-        
-        const mimeType = format === 'PDF' 
-          ? 'application/pdf' 
+
+        const mimeType = format === 'PDF'
+          ? 'application/pdf'
           : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         const fileExtension = format === 'PDF' ? 'pdf' : 'xlsx'
         const blob = new Blob([arrayBuffer], { type: mimeType })
         const url = URL.createObjectURL(blob)
-        
+
         const a = document.createElement('a')
         a.href = url
-        
+
         const startDate = formatDateToYYYYMMDD(servicesDateRange?.[0])
         const endDate = formatDateToYYYYMMDD(servicesDateRange?.[1])
         const dateRangeStr = startDate === endDate ? startDate : `${startDate}_a_${endDate}`
         const fileName = `Relatorio_Servicos_${dateRangeStr}.${fileExtension}`
-        
+
         a.download = fileName
         document.body.appendChild(a)
         a.click()
         document.body.removeChild(a)
         URL.revokeObjectURL(url)
-        
+
         toast.success(`Relatório ${format} baixado com sucesso!`)
       } else {
         toast.error(response.data.mensagem || `Erro ao gerar relatório ${format}`)
@@ -276,29 +369,29 @@ const Servicos = () => {
       setBtnDisabledServices(false)
     }
   }
-  
+
   async function loadData() {
     try {
       const startDate = servicesDateRange?.[0]
       const endDate = servicesDateRange?.[1]
-      
+
       if (!startDate || !endDate) {
         toast.warning('Por favor, selecione um período de datas')
         throw new Error('Date range not selected')
       }
-      
-      const formattedStartDate = startDate instanceof Date 
+
+      const formattedStartDate = startDate instanceof Date
         ? startDate.toLocaleDateString('pt-BR')
         : startDate
-      const formattedEndDate = endDate instanceof Date 
+      const formattedEndDate = endDate instanceof Date
         ? endDate.toLocaleDateString('pt-BR')
         : endDate
-      
+
       const servicesData = await newLoadServices(formattedStartDate, formattedEndDate)
-      
+
       lastProcessedArrayRef.current = null
       setServicesPageArray(servicesData || [])
-      
+
       return servicesData
     } catch (error) {
       toast.dismiss()
@@ -338,7 +431,7 @@ const Servicos = () => {
   }
 
   return (
-    <div className='page-content-vendas'>      
+    <div className='page-content-vendas'>
       <div className='component-container-vendas'>
         <div className='vendas-title-container'>
           <h1 className='vendas-title'>Serviços</h1>
@@ -346,10 +439,10 @@ const Servicos = () => {
         <hr className='hr-global' />
         {servicesPageArray !== null ?
           servicesPageArray.length > 0 ? (
-            <NewDisplayData 
-              dataArray={servicesPageArray} 
-              adminDataArray={servicesPageAdminArray} 
-              totals={calculateServicesTotal(servicesPageArray)} 
+            <NewDisplayData
+              dataArray={servicesPageArray}
+              adminDataArray={servicesPageAdminArray}
+              totals={calculateServicesTotal(servicesPageArray)}
               onGoBack={resetValues}
               location={location}
               hideTotals={true}
@@ -371,31 +464,8 @@ const Servicos = () => {
                     menuPosition="fixed"
                     placeholder="Selecione uma adquirente..."
                     isClearable={true}
-                    styles={{
-                      control: (base) => ({
-                        ...base,
-                        minWidth: 250,
-                        width: '100%',
-                      }),
-                      menu: (base) => ({
-                        ...base,
-                        minWidth: 250,
-                        width: '100%',
-                      }),
-                      valueContainer: (base) => ({
-                        ...base,
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }),
-                      singleValue: (base) => ({
-                        ...base,
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        maxWidth: '90%',
-                      }),
-                    }}
+                    styles={customSelectStyles}
+                    theme={themeConfig}
                   />
                 </div>
                 <div className='select-wrapper'>
@@ -412,38 +482,15 @@ const Servicos = () => {
                     menuPosition="fixed"
                     placeholder="Selecione uma bandeira..."
                     isClearable={true}
-                    styles={{
-                      control: (base) => ({
-                        ...base,
-                        minWidth: 250,
-                        width: '100%',
-                      }),
-                      menu: (base) => ({
-                        ...base,
-                        minWidth: 250,
-                        width: '100%',
-                      }),
-                      valueContainer: (base) => ({
-                        ...base,
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }),
-                      singleValue: (base) => ({
-                        ...base,
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        maxWidth: '90%',
-                      }),
-                    }}
+                    styles={customSelectStyles}
+                    theme={themeConfig}
                   />
                 </div>
               </div>
 
-              <MyCalendar 
-                onLoadData={handleLoadData} 
-                getCalendarDate={handleDateRangeChange} 
+              <MyCalendar
+                onLoadData={handleLoadData}
+                getCalendarDate={handleDateRangeChange}
                 btnDisabled={btnDisabledServices}
               />
             </>

@@ -1,5 +1,6 @@
 @import '../../styles/_variables.scss';
-.page-content{
+
+.page-content {
     height: 100%;
     width: 100%;
     display: flex;
@@ -7,14 +8,14 @@
     transition: all .4s;
 }
 
-.content{
+.content {
     display: block;
     height: 100%;
     width: 100%;
     padding: 0px;
 }
 
-.app-page-servicos{
+.app-page-servicos {
     display: contents;
     flex-direction: column;
     align-items: center;
@@ -22,15 +23,14 @@
     transition: all .4s;
 }
 
-.page-servicos-background{
+.page-servicos-background {
     display: flex;
     justify-content: center;
     transition: all .4s;
     background-color: var(--background-color);
-
 }
 
-.page-content-servicos{
+.page-content-servicos {
     width: 80%;
     padding: 1%;
     display: flex;
@@ -42,10 +42,9 @@
     margin-bottom: 54px;
     transition: all .4s;
     background-color: var(--background-color);
-
 }
 
-.servicos-title-container{
+.servicos-title-container {
     text-align: center;
     border-bottom: solid white 1px;
     transition: all .4s;
@@ -56,14 +55,13 @@
     background-color: var(--secondary-color);
 }
 
-.servicos-title{
+.servicos-title {
     margin: 0;
     transition: all .4s;
     color: var(--font-color);
-
 }
 
-.hr-recebimentos{
+.hr-recebimentos {
     margin: 1rem 0;
     color: white;
     border: 0;
@@ -71,21 +69,69 @@
     opacity: .25;
 }
 
-.component-container-servicos{
+.component-container-servicos {
     width: 100%;
     display: flex;
     flex-direction: column;
-
 }
 
-@media screen and (max-width: 869px){
+// ============================================
+// Select styling — unified with Bancos/Vendas
+// ============================================
+.select-container-calendario {
+    display: flex;
+    justify-content: space-evenly;
+    gap: 20px;
+    flex-wrap: wrap;
+}
 
-    .page-content-servicos{
+.select-wrapper {
+    flex: 1;
+    min-width: 0;
+    max-width: 350px;
+
+    h5 {
+        margin-bottom: 8px;
+        font-size: 14px;
+        color: var(--font-color);
+    }
+}
+
+.fixed-width-select {
+    width: 100%;
+}
+
+.fixed-width-select .react-select__control {
+    min-width: 250px;
+    width: 100%;
+    cursor: pointer;
+}
+
+.fixed-width-select .react-select__value-container {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fixed-width-select .react-select__single-value {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: calc(100% - 20px);
+}
+
+.fixed-width-select .react-select__menu {
+    min-width: 250px;
+    width: 100%;
+}
+
+@media screen and (max-width: 869px) {
+    .page-content-servicos {
         width: 100%;
         border-radius: 0px;
     }
 
-    .page-servicos-background{
+    .page-servicos-background {
         background-color: var(--background-color);
     }
 
@@ -104,14 +150,13 @@
         justify-content: flex-end;
     }
 
-    .container-ajustes{
+    .container-ajustes {
         display: flex;
         width: 100%;
         flex-direction: column;
         flex-wrap: wrap;
         align-content: center;
         align-items: center;
-
     }
 
     .card-resumo-content-container {
@@ -169,5 +214,22 @@
         border-radius: 20px;
         margin: 2%;
     }
+}
 
+// Responsive select adjustments
+@media (max-width: 768px) {
+    .select-container-calendario {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+
+    .select-wrapper {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .fixed-width-select .react-select__control {
+        min-width: 100%;
+    }
 }
