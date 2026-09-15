@@ -454,7 +454,7 @@ const PrevisaoRecebimentos = () => {
             }}
           >
             <FiHelpCircle />
-          </button>
+          </button> 
         </div>
       </div>
     </div>

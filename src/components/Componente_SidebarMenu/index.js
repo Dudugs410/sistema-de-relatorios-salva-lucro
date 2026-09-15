@@ -9,6 +9,7 @@ import { AuthContext } from '../../contexts/auth'
 import { useNavigate, useLocation } from 'react-router-dom'
 import api from '../../services/api';
 import { getTenantFromURL } from '../../util/tenant';
+import { IoReceiptOutline } from "react-icons/io5";
 
 // Icon mapping object - maps icon names from API to React Icon components
 const iconComponentMap = {
@@ -104,6 +105,8 @@ const Sidebar = () => {
             'Gerenciais': FiTable,
             'Resumo Mensal': FiFileText,
             'Serviços': FiTool,
+            'cadastro': IoReceiptOutline,
+            'extrato': IoReceiptOutline,
         }
         
         return fallbackIconMap[menuName] || FiLink
@@ -158,7 +161,6 @@ const Sidebar = () => {
 
     const transformMenuData = (menuData) => {
         if (!menuData || !Array.isArray(menuData)) return []
-        
         return menuData
             .filter(item => item.parentId === 0)
             .map(parent => {
@@ -166,8 +168,7 @@ const Sidebar = () => {
                     ? parent.Menus.filter(child => child.rota)
                     : []
                 
-                const childrenCount = validChildren.length
-                
+                // Resolve parent icon
                 let parentIcon = null;
                 if (parent.icone) {
                     parentIcon = getIconFromApi(parent.icone);
@@ -175,40 +176,46 @@ const Sidebar = () => {
                 if (!parentIcon) {
                     parentIcon = getFallbackIconForMenu(parent.nome);
                 }
+
+                // EXCEPTION: "Dashboard" remains a direct link without submenus
+                const isDashboard = parent.nome?.toLowerCase() === 'dashboard' || parent.rota === '/dashboard';
                 
-                if (childrenCount === 0) {
-                    return null
-                } else if (childrenCount === 1) {
-                    const child = validChildren[0]
+                if (isDashboard) {
                     return {
                         nome: parent.nome,
                         icone: parentIcon,
-                        rota: child.rota,
-                        id: parent.id
-                    }
-                } else {
-                    const childrenWithIcons = validChildren.map(child => {
-                        let childIcon = null;
-                        if (child.icone) {
-                            childIcon = getIconFromApi(child.icone);
-                        }
-                        return {
-                            nome: child.nome,
-                            rota: child.rota,
-                            icone: childIcon,
-                            id: child.id
-                        };
-                    });
-                    
-                    return {
-                        nome: parent.nome,
-                        icone: parentIcon,
-                        children: childrenWithIcons,
+                        rota: parent.rota || (validChildren[0] ? validChildren[0].rota : '/dashboard'),
                         id: parent.id
                     }
                 }
+
+                // Hide parents without valid routes or children
+                if (validChildren.length === 0 && !parent.rota) {
+                    return null
+                }
+
+                // Map submenus/children for all non-Dashboard options
+                const childrenWithIcons = validChildren.map(child => {
+                    let childIcon = null;
+                    if (child.icone) {
+                        childIcon = getIconFromApi(child.icone);
+                    }
+                    return {
+                        nome: child.nome,
+                        rota: child.rota,
+                        icone: childIcon,
+                        id: child.id
+                    };
+                });
+
+                return {
+                    nome: parent.nome,
+                    icone: parentIcon,
+                    children: childrenWithIcons,
+                    id: parent.id
+                }
             })
-            .filter(item => item !== null)
+        .filter(item => item !== null)
     }
 
     // Helper function to store menus in localStorage

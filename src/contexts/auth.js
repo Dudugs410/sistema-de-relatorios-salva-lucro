@@ -1254,6 +1254,38 @@ const newLoadSales = async (startDate, endDate, additionalFilters = {}) => {
   }
 }
 
+// DELETE /cupomvenda/{ID}
+// ============================================
+const deleteSale = useCallback(async (sale) => {
+  try {
+    // ⚠️ ASSUMPTION: the ID is NSU. Change to whatever field is correct.
+    const saleId = sale?.NSU
+
+    if (!saleId) {
+      toast.dismiss()
+      toast.error('Não foi possível identificar o cupom de venda para exclusão.')
+      return { success: false }
+    }
+
+    const response = await api.delete(`cupomvenda/${saleId}`)
+
+    toast.dismiss()
+    toast.success(response.data?.mensagem || 'Cupom de venda excluído com sucesso!')
+    return { success: true, data: response.data }
+  } catch (error) {
+    console.error('Erro ao excluir cupom de venda:', error)
+
+    if (error.response && error.response.status === 401) {
+      logout()
+      return { success: false }
+    }
+
+    toast.dismiss()
+    toast.error(error.response?.data?.mensagem || 'Erro ao excluir cupom de venda!')
+    return { success: false }
+  }
+}, [logout])
+
 const newGroupByAdmin = (salesArray) => {
   if (!salesArray || salesArray.length === 0) return []
     
@@ -3998,7 +4030,7 @@ const exportCredits = (data) => {
 		canceledServices, setCanceledServices,
 		
 		// Vendas //
-		loadSales, loadTotalSales, newLoadSales, newLoadTotalSales,
+		loadSales, loadTotalSales, newLoadSales, newLoadTotalSales, deleteSale,
 		salesDateRange, setSalesDateRange,
 		salesPageArray, setSalesPageArray,
 		salesPageAdminArray, setSalesPageAdminArray,
