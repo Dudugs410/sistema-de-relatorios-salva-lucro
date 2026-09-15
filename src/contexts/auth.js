@@ -1136,27 +1136,26 @@ const formatDateToYYYYMMDD = (date) => {
 const newLoadSales = async (startDate, endDate, additionalFilters = {}) => {
   try {
     setErrorSales(false)
-    
-    // Format dates to YYYY-MM-DD
+
     const formatDateToYYYYMMDD = (date) => {
       if (!date) return ''
-      
+
       if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
         return date
       }
-      
+
       if (date instanceof Date) {
         const year = date.getFullYear()
         const month = String(date.getMonth() + 1).padStart(2, '0')
         const day = String(date.getDate()).padStart(2, '0')
         return `${year}-${month}-${day}`
       }
-      
+
       if (typeof date === 'string' && date.includes('/')) {
         const [day, month, year] = date.split('/')
         return `${year}-${month}-${day}`
       }
-      
+
       const dateObj = new Date(date)
       if (!isNaN(dateObj.getTime())) {
         const year = dateObj.getFullYear()
@@ -1164,45 +1163,44 @@ const newLoadSales = async (startDate, endDate, additionalFilters = {}) => {
         const day = String(dateObj.getDate()).padStart(2, '0')
         return `${year}-${month}-${day}`
       }
-      
+
       return ''
     }
-    
+
     const formattedStartDate = formatDateToYYYYMMDD(startDate)
     const formattedEndDate = formatDateToYYYYMMDD(endDate)
-        
-    // Get stored data from localStorage
+
     const cliente = JSON.parse(localStorage.getItem('selectedClientBody'))
     const grupo = JSON.parse(localStorage.getItem('selectedGroupBody'))
     const selectedBan = JSON.parse(localStorage.getItem('selectedBan'))
     const selectedAdm = JSON.parse(localStorage.getItem('selectedAdm'))
-    
-    // Store formatted dates in localStorage
+
     localStorage.setItem('dataInicial', formattedStartDate)
     localStorage.setItem('dataFinal', formattedEndDate)
-    
-    // Determine client codes as a comma-separated string
-    let clientesString = "";
-    
+
+    let clientesString = ""
+
     if (cliente && cliente.label === 'TODOS') {
-      const clientCodes = grupo?.clients?.map(client => client.CODIGOCLIENTE) || [];
-      clientesString = clientCodes.join(', ');
+      const clientCodes = grupo?.clients?.map(client => client.CODIGOCLIENTE) || []
+      clientesString = clientCodes.join(', ')
     } else if (cliente && cliente.cod) {
-      clientesString = String(cliente.cod);
+      clientesString = String(cliente.cod)
     } else if (cliente && cliente.value) {
-      clientesString = String(cliente.value);
+      clientesString = String(cliente.value)
     } else {
       const apiCNPJ = localStorage.getItem('cnpj')
       const apiGroupCode = localStorage.getItem('groupCode')
       clientesString = apiCNPJ === 'todos' ? String(apiGroupCode) : String(apiCNPJ)
     }
-    
-    // Get filter values
-    const bandeira = selectedBan?.value || additionalFilters.bandeira || "";
-    const adquirente = selectedAdm?.value || additionalFilters.adquirente || "";
-    const nomeGrupo = grupo?.label || localStorage.getItem('clientName') || "";
-    
-    // Build the request object
+
+    const bandeira = selectedBan?.value || additionalFilters.bandeira || ""
+    const adquirente = selectedAdm?.value || additionalFilters.adquirente || ""
+    const nomeGrupo = grupo?.label || localStorage.getItem('clientName') || ""
+
+    const endpoint = additionalFilters.endpoint || 'relatorios/detalhado'
+    const modelo = additionalFilters.modelo || 'VENDA'
+    const arquivo = additionalFilters.arquivo || 'JSON'
+
     const requestObject = {
       dataInicial: formattedStartDate,
       dataFinal: formattedEndDate,
@@ -1212,20 +1210,15 @@ const newLoadSales = async (startDate, endDate, additionalFilters = {}) => {
       adquirente: adquirente,
       produto: additionalFilters.produto || "",
       modalidade: additionalFilters.modalidade || "",
-      arquivo: "JSON",
-      modelo: "VENDA"
+      arquivo: arquivo,
+      modelo: modelo
     }
 
-    const response = await api.post('relatorios/detalhado', requestObject)
-    
+    const response = await api.post(endpoint, requestObject)
+
     setBtnDisabledSales(false)
-    
-    // Fix: Check boolean, not string comparison
+
     if (response.data.success === true && response.data.dados && response.data.dados.length > 0) {
-      
-      // Store in localStorage for export
-      //localStorage.setItem('salesData', JSON.stringify(response.data.dados))
-      
       return response.data.dados
     } else if (response.data.success === true && (!response.data.dados || response.data.dados.length === 0)) {
       toast.info(response.data.mensagem || "Nenhum dado encontrado para o período selecionado")
@@ -1234,12 +1227,12 @@ const newLoadSales = async (startDate, endDate, additionalFilters = {}) => {
       toast.error(response.data.mensagem || "Erro ao carregar dados")
       return []
     }
-    
+
   } catch (error) {
     console.error('Error in newLoadSales:', error)
     setBtnDisabledSales(false)
-    
-    if(error.code === 'ERR_CANCELED'){
+
+    if (error.code === 'ERR_CANCELED') {
       setErrorSales(false)
     } else if (error.response && error.response.status === 401) {
       toast.error('Sessão Expirada')
@@ -3734,132 +3727,89 @@ function timeConvert(time){
 		})
 	}
 
-  const exportSales = (data) => {
-    try {
-      
-      if (!data || data.length === 0) {
-        console.log('No data to export')
-        // Only clear if not already empty
-        if (salesTableData.length > 0) {
-          setSalesTableData([])
-        }
-        return
-      }
-            
-      // Check if data is from new API (has uppercase fields like CNPJ, ADMINISTRADORA)
-      const isNewApiData = data[0] && data[0].CNPJ !== undefined
-      
-      let transformedData = []
-      
-      if (isNewApiData) {        
-        // Transform new API data to match expected export structure
-        transformedData = data.map((item, index) => {
-          // Safely extract values with fallbacks
-          const cnpj = item.CNPJ || ''
-          const razaosocial = item.RAZAOSOCIAL || ''
-          const administradora = item.ADMINISTRADORA || ''
-          const bandeira = item.BANDEIRA || ''
-          const produto = (item.PRODUTO || '').trim()
-          const modalidade = item.MODALIDADE || ''
-          const valorBruto = item.VALORBRUTO || 0
-          const valorLiquido = item.VALORLIQUIDO || 0
-          const taxa = item.TAXA || 0
-          const desconto = item.DESCONTO || 0
-          const cartao = item.CARTAO || ''
-          const nsu = item.NSU || ''
-          const dataVenda = item.DATAVENDA || ''
-          const horaVenda = item.HORAVENDA || ''
-          const dataCredito = item.DATACREDITO || ''
-          const codigoAutorizacao = item.AUTORIZACAO || ''
-          const parcela = item.PARCELA || '0'
-          const status = item.STATUS || ''
-          const numeroPV = item.NUMEROPV || ''
-          const ro = item.RO || ''
-          
-          return {
-            // Basic fields
-            cnpj: cnpj,
-            razaosocial: razaosocial,
-            numeroPV: numeroPV,
-            
-            // Nested objects to maintain compatibility with existing components
-            adquirente: {
-              codigoAdquirente: null,
-              nomeAdquirente: administradora
-            },
-            produto: {
-              codigoProduto: null,
-              descricaoProduto: produto
-            },
-            bandeira: {
-              codigoBandeira: null,
-              descricaoBandeira: bandeira
-            },
-            modalidade: {
-              codigoModalidade: null,
-              descricaoModalidade: modalidade
-            },
-            
-            // Financial fields
-            valorBruto: valorBruto,
-            valorLiquido: valorLiquido,
-            valorDesconto: desconto,
-            taxa: taxa,
-            
-            // Date fields
-            dataVenda: dataVenda,
-            dataCredito: dataCredito,
-            horaVenda: horaVenda,
-            
-            // Other fields
-            nsu: nsu,
-            cartao: cartao,
-            codigoAutorizacao: codigoAutorizacao,
-            quantidadeParcelas: parseInt(parcela) || 0,
-            status: status,
-            ro: ro
-          }
-        })
-        
-        
-      } else {
-        
-        // For old API data, ensure it has the required structure
-        transformedData = data.map((item, index) => ({
-          ...item,
-          adquirente: item.adquirente || { codigoAdquirente: null, nomeAdquirente: '' },
-          produto: item.produto || { codigoProduto: null, descricaoProduto: '' },
-          bandeira: item.bandeira || { codigoBandeira: null, descricaoBandeira: '' },
-          modalidade: item.modalidade || { codigoModalidade: null, descricaoModalidade: '' },
-          valorDesconto: item.valorDesconto || 0,
-          quantidadeParcelas: item.quantidadeParcelas || 0
-        }))
-      }
-      
-      // Compare with current salesTableData to prevent unnecessary updates
-      const currentData = salesTableData
-      const isDataSame = JSON.stringify(currentData) === JSON.stringify(transformedData)
-      
-      if (!isDataSame) {
-        setSalesTableData(transformedData)
-      } else {
-        console.log('Data unchanged, skipping update')
-      }
-      
-    } catch (error) {
-      console.error('Error in exportSales:', error)
-      console.error('Error stack:', error.stack)
+  const exportSales = useCallback(async (data, mode = 'VENDA') => {
+    if (!data || data.length === 0) {
+      console.log('No data to export')
       if (salesTableData.length > 0) {
         setSalesTableData([])
       }
+      return
     }
-  }
 
-const exportCredits = (data) => {
-  if (!data || data.length === 0) {
-    console.log('No credits data to export')
-    return []
-  }
+    // If the user chose the RESUMO mode, hit /relatorios/resumido first
+    if (mode === 'RESUMO') {
+      try {
+        const startDate = localStorage.getItem('dataInicial')
+        const endDate = localStorage.getItem('dataFinal')
+
+        const resumoData = await newLoadSales(startDate, endDate, {
+          endpoint: 'relatorios/resumido',
+          modelo: 'RESUMO',
+          arquivo: 'JSON', // or 'PDF' if you prefer the file
+        })
+
+        if (!resumoData || resumoData.length === 0) {
+          toast.info('Nenhum dado resumido encontrado para exportar')
+          return
+        }
+
+        // Hand the resumido rows to the export pipeline
+        setSalesTableData(resumoData)
+
+        // If you have a separate export function that generates the file
+        // from the resumido shape, call it here. For now, just log:
+        console.log('Resumido data ready for export:', resumoData)
+        return resumoData
+      } catch (error) {
+        console.error('Error exporting resumido:', error)
+        toast.error('Erro ao gerar relatório resumido')
+        return
+      }
+    }
+
+    // Default: detalhado (existing behavior)
+    const isNewApiData = data[0] && data[0].CNPJ !== undefined
+
+    let transformedData = []
+
+    if (isNewApiData) {
+      transformedData = data.map((item) => ({
+        cnpj: item.CNPJ || '',
+        razaosocial: item.RAZAOSOCIAL || '',
+        numeroPV: item.NUMEROPV || '',
+        adquirente: { codigoAdquirente: null, nomeAdquirente: item.ADMINISTRADORA || '' },
+        produto:    { codigoProduto: null,    descricaoProduto: (item.PRODUTO || '').trim() },
+        bandeira:   { codigoBandeira: null,   descricaoBandeira: item.BANDEIRA || '' },
+        modalidade: { codigoModalidade: null, descricaoModalidade: item.MODALIDADE || '' },
+        valorBruto: item.VALORBRUTO || 0,
+        valorLiquido: item.VALORLIQUIDO || 0,
+        valorDesconto: item.DESCONTO || 0,
+        taxa: item.TAXA || 0,
+        dataVenda: item.DATAVENDA || '',
+        dataCredito: item.DATACREDITO || '',
+        horaVenda: item.HORAVENDA || '',
+        nsu: item.NSU || '',
+        cartao: item.CARTAO || '',
+        codigoAutorizacao: item.AUTORIZACAO || '',
+        quantidadeParcelas: parseInt(item.PARCELA) || 0,
+        status: item.STATUS || '',
+        ro: item.RO || '',
+      }))
+    } else {
+      transformedData = data
+    }
+
+    const isDataSame = JSON.stringify(salesTableData) === JSON.stringify(transformedData)
+    if (!isDataSame) {
+      setSalesTableData(transformedData)
+    }
+  }, [salesTableData, newLoadSales])
+
+  const exportCredits = (data) => {
+    if (!data || data.length === 0) {
+      console.log('No credits data to export')
+      return []
+    }
 
 
   // Transform the data for export - using flat structure

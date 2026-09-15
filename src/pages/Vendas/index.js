@@ -7,10 +7,9 @@ import { useLocation } from 'react-router-dom'
 import '../../index.scss'
 import MyCalendar from '../../components/Componente_Calendario'
 import { toast } from 'react-toastify'
-import { FiCalendar, FiHelpCircle, FiUsers, FiUser } from 'react-icons/fi'
+import { FiCalendar, FiHelpCircle } from 'react-icons/fi'
 import NewDisplayData from '../../components/Component_NewDisplayData'
 
-// Custom Select styles — same as Bancos
 const customSelectStyles = {
   control: (base, { isFocused }) => ({
     ...base,
@@ -19,9 +18,7 @@ const customSelectStyles = {
     backgroundColor: 'var(--background-color)',
     borderColor: isFocused ? 'var(--secondary-color)' : 'var(--bs-border-color)',
     color: 'var(--font-color)',
-    '&:hover': {
-      borderColor: 'var(--secondary-color)',
-    },
+    '&:hover': { borderColor: 'var(--secondary-color)' },
     boxShadow: isFocused ? '0 0 0 1px var(--secondary-color)' : 'none',
   }),
   menu: (base) => ({
@@ -35,20 +32,10 @@ const customSelectStyles = {
     ...base,
     backgroundColor: 'var(--background-color)',
     padding: '4px 0',
-    '::-webkit-scrollbar': {
-      width: '8px',
-      height: '8px',
-    },
-    '::-webkit-scrollbar-track': {
-      background: 'rgba(255, 255, 255, 0.1)',
-    },
-    '::-webkit-scrollbar-thumb': {
-      background: 'var(--secondary-color)',
-      borderRadius: '4px',
-    },
-    '::-webkit-scrollbar-thumb:hover': {
-      background: 'var(--primary-color)',
-    },
+    '::-webkit-scrollbar': { width: '8px', height: '8px' },
+    '::-webkit-scrollbar-track': { background: 'rgba(255, 255, 255, 0.1)' },
+    '::-webkit-scrollbar-thumb': { background: 'var(--secondary-color)', borderRadius: '4px' },
+    '::-webkit-scrollbar-thumb:hover': { background: 'var(--primary-color)' },
   }),
   option: (base, { isFocused, isSelected }) => ({
     ...base,
@@ -60,10 +47,7 @@ const customSelectStyles = {
     color: isSelected ? 'var(--primary-color)' : 'var(--font-color)',
     cursor: 'pointer',
     padding: '8px 12px',
-    '&:active': {
-      backgroundColor: 'var(--secondary-color)',
-      color: 'var(--primary-color)',
-    },
+    '&:active': { backgroundColor: 'var(--secondary-color)', color: 'var(--primary-color)' },
   }),
   singleValue: (base) => ({
     ...base,
@@ -73,15 +57,8 @@ const customSelectStyles = {
     textOverflow: 'ellipsis',
     maxWidth: '90%',
   }),
-  input: (base) => ({
-    ...base,
-    color: 'var(--font-color)',
-  }),
-  placeholder: (base) => ({
-    ...base,
-    color: 'var(--font-color)',
-    opacity: 0.6,
-  }),
+  input: (base) => ({ ...base, color: 'var(--font-color)' }),
+  placeholder: (base) => ({ ...base, color: 'var(--font-color)', opacity: 0.6 }),
   valueContainer: (base) => ({
     ...base,
     whiteSpace: 'nowrap',
@@ -91,29 +68,16 @@ const customSelectStyles = {
   dropdownIndicator: (base) => ({
     ...base,
     color: 'var(--font-color)',
-    '&:hover': {
-      color: 'var(--secondary-color)',
-    },
+    '&:hover': { color: 'var(--secondary-color)' },
   }),
   clearIndicator: (base) => ({
     ...base,
     color: 'var(--font-color)',
-    '&:hover': {
-      color: 'var(--secondary-color)',
-    },
+    '&:hover': { color: 'var(--secondary-color)' },
   }),
-  indicatorSeparator: (base) => ({
-    ...base,
-    backgroundColor: 'var(--bs-border-color)',
-  }),
-  noOptionsMessage: (base) => ({
-    ...base,
-    color: 'var(--font-color)',
-  }),
-  loadingMessage: (base) => ({
-    ...base,
-    color: 'var(--font-color)',
-  }),
+  indicatorSeparator: (base) => ({ ...base, backgroundColor: 'var(--bs-border-color)' }),
+  noOptionsMessage: (base) => ({ ...base, color: 'var(--font-color)' }),
+  loadingMessage: (base) => ({ ...base, color: 'var(--font-color)' }),
 }
 
 const themeConfig = (theme) => ({
@@ -141,7 +105,6 @@ const themeConfig = (theme) => ({
 const Vendas = () => {
   const location = useLocation()
 
-  // Refs to track data changes and prevent infinite loops
   const lastProcessedDataRef = useRef(null)
   const lastExportedDataRef = useRef(null)
   const isInitialMountRef = useRef(true)
@@ -149,6 +112,7 @@ const Vendas = () => {
   const resetValues = () => {
     setBandeira(null)
     setAdministradora(null)
+    setTipoRelatorio({ value: 'detalhado', label: 'Detalhado' })
     setSalesPageArray([])
     setSalesPageAdminArray([])
     setBtnDisabledSales(false)
@@ -174,6 +138,7 @@ const Vendas = () => {
 
   const [bandeira, setBandeira] = useState(null)
   const [administradora, setAdministradora] = useState(null)
+  const [tipoRelatorio, setTipoRelatorio] = useState({ value: 'detalhado', label: 'Detalhado' })
 
   const [listaBandeiras, setListaBandeiras] = useState([])
   const [listaAdministradoras, setListaAdministradoras] = useState([])
@@ -209,7 +174,6 @@ const Vendas = () => {
     isCheckedCalendar, setIsCheckedCalendar,
   } = useContext(AuthContext)
 
-  // Memoize the grouped data to prevent recreation on every render
   const memoizedGroupedData = useMemo(() => {
     if (salesPageArray && salesPageArray.length > 0) {
       return newGroupByAdmin(salesPageArray)
@@ -356,12 +320,18 @@ const Vendas = () => {
         adquirente: administradora || "",
         bandeira: bandeira || "",
       }
+
       const data = await newLoadSales(startDate, endDate, filters)
       setSalesPageArray(data)
     } catch (error) {
       console.error('Error fetching sales data:', error)
       throw error
     }
+  }
+
+  const handleTipoRelatorioChange = (option) => {
+    const newTipo = option || { value: 'detalhado', label: 'Detalhado' }
+    setTipoRelatorio(newTipo)
   }
 
   const handleDateRangeChange = (dateRange) => {
@@ -424,6 +394,12 @@ const Vendas = () => {
           placement: 'bottom',
         })
       }
+
+      newSteps.push({
+        target: '[data-tour="tipo-relatorio-section"]',
+        content: 'Escolha entre relatório Detalhado ou Resumido.',
+        placement: 'bottom',
+      })
 
       newSteps.push({
         target: '[data-tour="exportacao-section"]',
@@ -507,6 +483,8 @@ const Vendas = () => {
               location={location}
               runTutorial={runTutorial}
               tutorialSteps={tutorialSteps}
+              tipoRelatorio={tipoRelatorio}
+              onTipoRelatorioChange={handleTipoRelatorioChange}
             />
           ) : (
             <>

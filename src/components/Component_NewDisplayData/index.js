@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState, useCallback, useMemo, useRef } from 'react'
+import Select from 'react-select'
 import NewTabelaGenerica from '../../components/NewTabelaGenerica'
 import TabelaGenericaAdm from '../../components/Componente_TabelaAdm'
 import TotalModalidadesComp from '../../components/Componente_TotalModalidades'
@@ -12,13 +13,10 @@ const safeToFixed = (value, decimals = 2) => {
   if (value === undefined || value === null || value === '') {
     return (0).toFixed(decimals)
   }
-
   let numValue = typeof value === 'string' ? parseFloat(value) : Number(value)
-
   if (isNaN(numValue)) {
     return (0).toFixed(decimals)
   }
-
   return numValue.toFixed(decimals)
 }
 
@@ -26,13 +24,10 @@ const formatCurrency = (value) => {
   if (value === undefined || value === null || value === '') {
     return 'R$ 0,00'
   }
-
   let numValue = typeof value === 'string' ? parseFloat(value) : Number(value)
-
   if (isNaN(numValue)) {
     return 'R$ 0,00'
   }
-
   return numValue.toLocaleString('pt-BR', {
     style: 'currency',
     currency: 'BRL'
@@ -41,7 +36,6 @@ const formatCurrency = (value) => {
 
 const formatDateOnly = (isoDate) => {
   if (!isoDate) return 'N/A'
-
   try {
     if (typeof isoDate === 'string' && isoDate.includes('T')) {
       const datePart = isoDate.split('T')[0]
@@ -50,19 +44,16 @@ const formatDateOnly = (isoDate) => {
         return `${day}/${month}/${year}`
       }
     }
-
     if (typeof isoDate === 'string' && isoDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
       const [year, month, day] = isoDate.split('-')
       return `${day}/${month}/${year}`
     }
-
     if (isoDate instanceof Date && !isNaN(isoDate.getTime())) {
       const day = String(isoDate.getDate()).padStart(2, '0')
       const month = String(isoDate.getMonth() + 1).padStart(2, '0')
       const year = isoDate.getFullYear()
       return `${day}/${month}/${year}`
     }
-
     return isoDate || 'N/A'
   } catch (error) {
     console.error('Error formatting date:', error)
@@ -72,24 +63,20 @@ const formatDateOnly = (isoDate) => {
 
 const formatTimeOnly = (isoDateTime) => {
   if (!isoDateTime) return 'N/A'
-
   try {
     if (typeof isoDateTime === 'string' && isoDateTime.includes('T')) {
       const timePart = isoDateTime.split('T')[1]
       return timePart.split('.')[0]
     }
-
     if (typeof isoDateTime === 'string' && isoDateTime.match(/^\d{2}:\d{2}:\d{2}/)) {
       return isoDateTime.split('.')[0]
     }
-
     if (isoDateTime instanceof Date && !isNaN(isoDateTime.getTime())) {
       const hours = String(isoDateTime.getHours()).padStart(2, '0')
       const minutes = String(isoDateTime.getMinutes()).padStart(2, '0')
       const seconds = String(isoDateTime.getSeconds()).padStart(2, '0')
       return `${hours}:${minutes}:${seconds}`
     }
-
     return 'N/A'
   } catch (error) {
     console.error('Error formatting time:', error)
@@ -113,6 +100,102 @@ const formatDate = (date) => {
   return formatDateOnly(date)
 }
 
+const tipoRelatorioOptions = [
+  { value: 'detalhado', label: 'Detalhado' },
+  { value: 'resumido', label: 'Resumido' },
+]
+
+const tipoRelatorioSelectStyles = {
+  control: (base, { isFocused }) => ({
+    ...base,
+    minWidth: 200,
+    width: '100%',
+    backgroundColor: 'var(--background-color)',
+    borderColor: isFocused ? 'var(--secondary-color)' : 'var(--bs-border-color)',
+    color: 'var(--font-color)',
+    '&:hover': { borderColor: 'var(--secondary-color)' },
+    boxShadow: isFocused ? '0 0 0 1px var(--secondary-color)' : 'none',
+  }),
+  menuPortal: (base) => ({
+    ...base,
+    zIndex: 99999,
+  }),
+  menu: (base) => ({
+    ...base,
+    backgroundColor: 'var(--background-color)',
+    borderColor: 'var(--bs-border-color)',
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+    zIndex: 99999,
+  }),
+  menuList: (base) => ({
+    ...base,
+    backgroundColor: 'var(--background-color)',
+    padding: '4px 0',
+  }),
+  option: (base, { isFocused, isSelected }) => ({
+    ...base,
+    backgroundColor: isSelected
+      ? 'var(--secondary-color)'
+      : isFocused
+        ? 'rgba(var(--secondary-color-rgb), 0.2)'
+        : 'transparent',
+    color: isSelected ? 'var(--primary-color)' : 'var(--font-color)',
+    cursor: 'pointer',
+    padding: '8px 12px',
+  }),
+  singleValue: (base) => ({
+    ...base,
+    color: 'var(--font-color)',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    maxWidth: '90%',
+  }),
+  input: (base) => ({ ...base, color: 'var(--font-color)' }),
+  placeholder: (base) => ({ ...base, color: 'var(--font-color)', opacity: 0.6 }),
+  valueContainer: (base) => ({
+    ...base,
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  }),
+  dropdownIndicator: (base) => ({
+    ...base,
+    color: 'var(--font-color)',
+    '&:hover': { color: 'var(--secondary-color)' },
+  }),
+  clearIndicator: (base) => ({
+    ...base,
+    color: 'var(--font-color)',
+    '&:hover': { color: 'var(--secondary-color)' },
+  }),
+  indicatorSeparator: (base) => ({ ...base, backgroundColor: 'var(--bs-border-color)' }),
+  noOptionsMessage: (base) => ({ ...base, color: 'var(--font-color)' }),
+  loadingMessage: (base) => ({ ...base, color: 'var(--font-color)' }),
+}
+
+const tipoRelatorioTheme = (theme) => ({
+  ...theme,
+  colors: {
+    ...theme.colors,
+    primary: 'var(--secondary-color)',
+    primary75: 'var(--secondary-color)',
+    primary50: 'rgba(var(--secondary-color-rgb), 0.5)',
+    primary25: 'rgba(var(--secondary-color-rgb), 0.25)',
+    neutral0: 'var(--background-color)',
+    neutral5: 'var(--background-color)',
+    neutral10: 'var(--background-color)',
+    neutral20: 'var(--bs-border-color)',
+    neutral30: 'var(--bs-border-color)',
+    neutral40: 'var(--font-color)',
+    neutral50: 'var(--font-color)',
+    neutral60: 'var(--font-color)',
+    neutral70: 'var(--font-color)',
+    neutral80: 'var(--font-color)',
+    neutral90: 'var(--font-color)',
+  },
+})
+
 const NewDisplayData = ({ 
   dataArray, 
   adminDataArray, 
@@ -126,7 +209,9 @@ const NewDisplayData = ({
   tutorialSteps = [],
   customTableColumns = null,
   customFilterConfig = null,
-  customExportPage = null
+  customExportPage = null,
+  tipoRelatorio = null,
+  onTipoRelatorioChange = null,
 }) => {
   const { 
     clientUserId, 
@@ -138,8 +223,7 @@ const NewDisplayData = ({
     setCreditsTotal,
     exportSales,
     exportCredits,
-    exportServices,
-    deleteSale
+    exportServices
   } = useContext(AuthContext)
 
   const [exportPage, setExportPage] = useState('')
@@ -154,29 +238,6 @@ const NewDisplayData = ({
   const lastTotalsCallRef = useRef(null)
 
   const isOpenFinance = customExportPage === 'openfinance'
-
-  const canDeleteSale = useMemo(() => {
-    try {
-      const user = JSON.parse(localStorage.getItem('user') || '{}')
-      const flag = user?.GRUPO?.ACESSORESTRITOPROCESSO
-
-      if (flag === undefined || flag === null) return false
-
-      if (typeof flag === 'boolean') return flag === false
-
-      if (typeof flag === 'string') {
-        const normalized = flag.trim().toLowerCase()
-        return normalized === 'false' || normalized === '0'
-      }
-
-      if (typeof flag === 'number') return flag === 0
-
-      return false
-    } catch (error) {
-      console.error('Error reading ACESSORESTRITOPROCESSO:', error)
-      return false
-    }
-  }, [])
 
   const safeDateConvert = useCallback((date) => {
     if (!date) return 'N/A'
@@ -432,8 +493,11 @@ const NewDisplayData = ({
         const exportPageType = customExportPage || currentPath
 
         switch(exportPageType) {
-          case '/vendas': 
-            await exportSales(dataToExport)
+          case '/vendas':
+            await exportSales(
+              dataToExport,
+              tipoRelatorio?.value === 'resumido' ? 'RESUMO' : 'VENDA'
+            )
             break
           case 'openfinance':
             console.log('OpenFinance export not implemented')
@@ -447,7 +511,7 @@ const NewDisplayData = ({
           case '/servicos':
             await exportServices(dataToExport)
             break
-          default: 
+          default:
             console.warn('No export function for current path:', currentPath)
         }
       } catch (error) {
@@ -456,7 +520,17 @@ const NewDisplayData = ({
     }
 
     return exportData
-  }, [currentPath, exportSales, exportCredits, exportServices, dataArray, hideTables, customExportPage, isOpenFinance])
+  }, [
+    currentPath,
+    exportSales,
+    exportCredits,
+    exportServices,
+    dataArray,
+    hideTables,
+    customExportPage,
+    isOpenFinance,
+    tipoRelatorio
+  ])
 
   const getTotalUpdateFunction = useCallback(() => {
     if (customExportPage) {
@@ -715,22 +789,9 @@ const NewDisplayData = ({
       showFilters: true,
       textColor: "green-global",
       filterConfig: getFilterConfig(),
-      enableDependentFilters: true,
-      canDeleteSale: exportPage === 'vendas' && canDeleteSale,
-      onDeleteSale: deleteSale,
+      enableDependentFilters: true
     }
-  }, [
-    exportPage, 
-    dataArray, 
-    getTableColumns, 
-    getDateRange, 
-    getExportFunction, 
-    handleTotalUpdate, 
-    getFilterConfig, 
-    hideTables,
-    canDeleteSale,
-    deleteSale
-  ])
+  }, [exportPage, dataArray, getTableColumns, getDateRange, getExportFunction, handleTotalUpdate, getFilterConfig, hideTables])
 
   const getButtonText = () => {
     if (customExportPage === 'openfinance') {
@@ -844,11 +905,32 @@ const NewDisplayData = ({
       <hr className='hr-global' />
 
       {!isOpenFinance && (
-        <div data-tour="exportacao-section">
+        <div data-tour="exportacao-section" className="export-area">
+          {exportPage === 'vendas' && tipoRelatorio && onTipoRelatorioChange && (
+            <div className="tipo-relatorio-wrapper" data-tour="tipo-relatorio-section">
+              <label className="tipo-relatorio-label">Tipo de Relatório</label>
+              <Select
+                className="tipo-relatorio-select"
+                options={tipoRelatorioOptions}
+                getOptionLabel={(option) => option.label}
+                getOptionValue={(option) => option.value}
+                onChange={(option) => onTipoRelatorioChange(option)}
+                value={tipoRelatorio}
+                menuPortalTarget={document.body}
+                menuPosition="fixed"
+                isClearable={false}
+                isSearchable={false}
+                styles={tipoRelatorioSelectStyles}
+                theme={tipoRelatorioTheme}
+              />
+            </div>
+          )}
+
           <GerarRelatorio 
             className='export' 
             onExport={getExportFunction()}
             filteredData={currentFilteredData}
+            tipoRelatorio={tipoRelatorio}
           />
           <hr className='hr-global'/>
         </div>

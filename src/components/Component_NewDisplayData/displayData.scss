@@ -284,3 +284,35 @@
     }
   }
 }
+
+.export-area {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+}
+
+.tipo-relatorio-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 260px;
+
+  .tipo-relatorio-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--font-color);
+    margin: 0;
+  }
+
+  .tipo-relatorio-select {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .tipo-relatorio-wrapper {
+    max-width: 100%;
+    width: 100%;
+  }
+}
