@@ -46,12 +46,7 @@ export default function GerarRelatorio({ onExport, filteredData, tipoRelatorio }
   }, [currentDateTime])
 
   const getModelo = () => {
-    const currentPath = localStorage.getItem('currentPath')
-
-    if (currentPath === '/vendas' && tipoRelatorio?.value === 'resumido') {
-      return 'RESUMO'
-    }
-
+  const currentPath = localStorage.getItem('currentPath')
     switch (currentPath) {
       case '/vendas':
         return 'VENDA'

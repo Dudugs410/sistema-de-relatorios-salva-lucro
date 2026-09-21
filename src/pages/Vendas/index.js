@@ -295,6 +295,14 @@ const Vendas = () => {
     toast.error('Ocorreu um erro ao carregar os dados de vendas. A página foi redefinida.')
   }
 
+  const refreshSales = useCallback(async () => {
+    try {
+      await loadData()
+    } catch (error) {
+      console.error('Error refreshing sales:', error)
+    }
+  }, [])
+
   async function handleLoadData(e) {
     e.preventDefault()
     try {
@@ -485,6 +493,7 @@ const Vendas = () => {
               tutorialSteps={tutorialSteps}
               tipoRelatorio={tipoRelatorio}
               onTipoRelatorioChange={handleTipoRelatorioChange}
+              onRefreshSales={refreshSales}
             />
           ) : (
             <>

@@ -1137,97 +1137,105 @@ const newLoadSales = async (startDate, endDate, additionalFilters = {}) => {
   try {
     setErrorSales(false)
 
-    const formatDateToYYYYMMDD = (date) => {
+    const formatDateToDDMMYYYY = (date) => {
       if (!date) return ''
 
-      if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      if (typeof date === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(date)) {
         return date
       }
 
-      if (date instanceof Date) {
-        const year = date.getFullYear()
-        const month = String(date.getMonth() + 1).padStart(2, '0')
-        const day = String(date.getDate()).padStart(2, '0')
-        return `${year}-${month}-${day}`
+      if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        const [year, month, day] = date.split('-')
+        return `${day}/${month}/${year}`
       }
 
-      if (typeof date === 'string' && date.includes('/')) {
-        const [day, month, year] = date.split('/')
-        return `${year}-${month}-${day}`
+      if (date instanceof Date) {
+        const day = String(date.getDate()).padStart(2, '0')
+        const month = String(date.getMonth() + 1).padStart(2, '0')
+        const year = date.getFullYear()
+        return `${day}/${month}/${year}`
       }
 
       const dateObj = new Date(date)
       if (!isNaN(dateObj.getTime())) {
-        const year = dateObj.getFullYear()
-        const month = String(dateObj.getMonth() + 1).padStart(2, '0')
         const day = String(dateObj.getDate()).padStart(2, '0')
-        return `${year}-${month}-${day}`
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0')
+        const year = dateObj.getFullYear()
+        return `${day}/${month}/${year}`
       }
 
       return ''
     }
 
-    const formattedStartDate = formatDateToYYYYMMDD(startDate)
-    const formattedEndDate = formatDateToYYYYMMDD(endDate)
+    const formattedStartDate = formatDateToDDMMYYYY(startDate)
+    const formattedEndDate = formatDateToDDMMYYYY(endDate)
 
-    const cliente = JSON.parse(localStorage.getItem('selectedClientBody'))
-    const grupo = JSON.parse(localStorage.getItem('selectedGroupBody'))
-    const selectedBan = JSON.parse(localStorage.getItem('selectedBan'))
-    const selectedAdm = JSON.parse(localStorage.getItem('selectedAdm'))
+    const cnpjStorage = localStorage.getItem('cnpj')
 
-    localStorage.setItem('dataInicial', formattedStartDate)
-    localStorage.setItem('dataFinal', formattedEndDate)
+    let url = 'vendas'
+    const queryParts = []
 
-    let clientesString = ""
+    queryParts.push(`dataInicial=${formattedStartDate}`)
+    queryParts.push(`dataFinal=${formattedEndDate}`)
 
-    if (cliente && cliente.label === 'TODOS') {
-      const clientCodes = grupo?.clients?.map(client => client.CODIGOCLIENTE) || []
-      clientesString = clientCodes.join(', ')
-    } else if (cliente && cliente.cod) {
-      clientesString = String(cliente.cod)
-    } else if (cliente && cliente.value) {
-      clientesString = String(cliente.value)
+    if (!cnpjStorage || cnpjStorage.trim().toLowerCase() === 'todos') {
+      const groupCode = localStorage.getItem('groupCode')
+
+      if (!groupCode) {
+        toast.warning('Nenhum grupo selecionado para consultar vendas.')
+        return []
+      }
+
+      queryParts.push(`codigoGrupo=${groupCode}`)
     } else {
-      const apiCNPJ = localStorage.getItem('cnpj')
-      const apiGroupCode = localStorage.getItem('groupCode')
-      clientesString = apiCNPJ === 'todos' ? String(apiGroupCode) : String(apiCNPJ)
+      queryParts.push(`cnpj=${cnpjStorage}`)
     }
 
-    const bandeira = selectedBan?.value || additionalFilters.bandeira || ""
-    const adquirente = selectedAdm?.value || additionalFilters.adquirente || ""
-    const nomeGrupo = grupo?.label || localStorage.getItem('clientName') || ""
+    url += `?${queryParts.join('&')}`
 
-    const endpoint = additionalFilters.endpoint || 'relatorios/detalhado'
-    const modelo = additionalFilters.modelo || 'VENDA'
-    const arquivo = additionalFilters.arquivo || 'JSON'
-
-    const requestObject = {
-      dataInicial: formattedStartDate,
-      dataFinal: formattedEndDate,
-      clientes: clientesString,
-      nomeGrupo: nomeGrupo,
-      bandeira: bandeira,
-      adquirente: adquirente,
-      produto: additionalFilters.produto || "",
-      modalidade: additionalFilters.modalidade || "",
-      arquivo: arquivo,
-      modelo: modelo
-    }
-
-    const response = await api.post(endpoint, requestObject)
+    const response = await api.get(url)
 
     setBtnDisabledSales(false)
 
-    if (response.data.success === true && response.data.dados && response.data.dados.length > 0) {
-      return response.data.dados
-    } else if (response.data.success === true && (!response.data.dados || response.data.dados.length === 0)) {
-      toast.info(response.data.mensagem || "Nenhum dado encontrado para o período selecionado")
-      return []
-    } else {
-      toast.error(response.data.mensagem || "Erro ao carregar dados")
+    const rawVendas = response?.data?.VENDAS
+
+    if (!Array.isArray(rawVendas) || rawVendas.length === 0) {
+      toast.info(response?.data?.MENSAGEM || 'Nenhum dado encontrado para o período selecionado')
       return []
     }
 
+    const normalizedVendas = rawVendas.map((item) => ({
+      ID: item.id,
+      CODIGOVENDA: item.codigoVenda,
+      CNPJ: item.cnpj,
+      RAZAOSOCIAL: item.razaosocial,
+      NUMEROPV: item.numeroPV,
+      DATAVENDA: item.dataVenda,
+      HORAVENDA: item.horaVenda,
+      NSU: item.nsu,
+      BIN: item.bin,
+      CARTAO: item.cartao,
+      ADMINISTRADORA: item.adquirente?.nomeAdquirente,
+      CODIGOADMINISTRADORA: item.adquirente?.codigoAdquirente,
+      PRODUTO: item.produto?.descricaoProduto,
+      CODIGOPRODUTO: item.produto?.codigoProduto,
+      BANDEIRA: item.bandeira?.descricaoBandeira,
+      CODIGOBANDEIRA: item.bandeira?.codigoBandeira,
+      MODALIDADE: item.modalidade?.descricaoModalidade,
+      CODIGOMODALIDADE: item.modalidade?.codigoModalidade,
+      VALORBRUTO: item.valorBruto,
+      DESCONTO: item.valorDesconto,
+      VALORLIQUIDO: item.valorLiquido,
+      TAXA: item.taxa,
+      DATACREDITO: item.dataCredito,
+      PARCELA: item.quantidadeParcelas,
+      AUTORIZACAO: item.codigoAutorizacao,
+      TERMINAL: item.terminal,
+      TID: item.tid,
+      PARCELAS: item.parcelas || [],
+    }))
+
+    return normalizedVendas
   } catch (error) {
     console.error('Error in newLoadSales:', error)
     setBtnDisabledSales(false)
@@ -1237,22 +1245,18 @@ const newLoadSales = async (startDate, endDate, additionalFilters = {}) => {
     } else if (error.response && error.response.status === 401) {
       toast.error('Sessão Expirada')
       logout()
-      return
+      return []
     } else {
-      toast.error('Erro ao Carregar Vendas: ' + (error.response?.data?.mensagem || error.message))
-      console.error('Error fetching vendas:', error)
+      toast.error('Erro ao Carregar Vendas: ' + (error.response?.data?.MENSAGEM || error.response?.data?.mensagem || error.message))
       setErrorSales(true)
     }
     return []
   }
 }
 
-// DELETE /cupomvenda/{ID}
-// ============================================
 const deleteSale = useCallback(async (sale) => {
   try {
-    // ⚠️ ASSUMPTION: the ID is NSU. Change to whatever field is correct.
-    const saleId = sale?.NSU
+    const saleId = sale?.ID
 
     if (!saleId) {
       toast.dismiss()
@@ -1260,10 +1264,14 @@ const deleteSale = useCallback(async (sale) => {
       return { success: false }
     }
 
-    const response = await api.delete(`cupomvenda/${saleId}`)
+    const response = await api.delete('CupomVenda/codigo', {
+      params: {
+        codigo: saleId,
+      },
+    })
 
     toast.dismiss()
-    toast.success(response.data?.mensagem || 'Cupom de venda excluído com sucesso!')
+    toast.success(response.data?.mensagem || response.data?.MENSAGEM || 'Cupom de venda excluído com sucesso!')
     return { success: true, data: response.data }
   } catch (error) {
     console.error('Erro ao excluir cupom de venda:', error)
@@ -1274,7 +1282,7 @@ const deleteSale = useCallback(async (sale) => {
     }
 
     toast.dismiss()
-    toast.error(error.response?.data?.mensagem || 'Erro ao excluir cupom de venda!')
+    toast.error(error.response?.data?.mensagem || error.response?.data?.MENSAGEM || 'Erro ao excluir cupom de venda!')
     return { success: false }
   }
 }, [logout])

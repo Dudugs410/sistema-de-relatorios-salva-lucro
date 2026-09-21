@@ -143,6 +143,7 @@ const NewTabelaGenerica = forwardRef(({
   filterConfig: customFilterConfig,
   enableDependentFilters = false,
   onDeleteSale,
+  onRefreshSales = null,
   canDeleteSale = false,
 }, ref) => {
   const { 
@@ -679,11 +680,14 @@ const NewTabelaGenerica = forwardRef(({
       const result = await onDeleteSale(saleToDelete)
       if (result && result.success) {
         setSaleToDelete(null)
+        if (onRefreshSales) {
+          await onRefreshSales()
+        }
       }
     } finally {
       setIsDeletingSale(false)
     }
-  }, [saleToDelete, onDeleteSale])
+  }, [saleToDelete, onDeleteSale, onRefreshSales])
 
   useEffect(() => {
     if (isInitialLoadRef.current && dataArray.length > 0) {

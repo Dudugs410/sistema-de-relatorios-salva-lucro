@@ -212,6 +212,7 @@ const NewDisplayData = ({
   customExportPage = null,
   tipoRelatorio = null,
   onTipoRelatorioChange = null,
+  onRefreshSales = null,
 }) => {
   const { 
     clientUserId, 
@@ -223,7 +224,8 @@ const NewDisplayData = ({
     setCreditsTotal,
     exportSales,
     exportCredits,
-    exportServices
+    exportServices,
+    deleteSale
   } = useContext(AuthContext)
 
   const [exportPage, setExportPage] = useState('')
@@ -238,6 +240,29 @@ const NewDisplayData = ({
   const lastTotalsCallRef = useRef(null)
 
   const isOpenFinance = customExportPage === 'openfinance'
+
+  const canDeleteSale = useMemo(() => {
+    try {
+      const user = JSON.parse(localStorage.getItem('user') || '{}')
+      const flag = user?.GRUPO?.ACESSORESTRITOPROCESSO
+
+      if (flag === undefined || flag === null) return false
+
+      if (typeof flag === 'boolean') return flag === false
+
+      if (typeof flag === 'string') {
+        const normalized = flag.trim().toLowerCase()
+        return normalized === 'false' || normalized === '0'
+      }
+
+      if (typeof flag === 'number') return flag === 0
+
+      return false
+    } catch (error) {
+      console.error('Error reading ACESSORESTRITOPROCESSO:', error)
+      return false
+    }
+  }, [])
 
   const safeDateConvert = useCallback((date) => {
     if (!date) return 'N/A'
@@ -789,9 +814,24 @@ const NewDisplayData = ({
       showFilters: true,
       textColor: "green-global",
       filterConfig: getFilterConfig(),
-      enableDependentFilters: true
+      enableDependentFilters: true,
+      canDeleteSale: exportPage === 'vendas' && canDeleteSale,
+      onDeleteSale: deleteSale,
+      onRefreshSales: onRefreshSales,
     }
-  }, [exportPage, dataArray, getTableColumns, getDateRange, getExportFunction, handleTotalUpdate, getFilterConfig, hideTables])
+  }, [
+    exportPage,
+    dataArray,
+    getTableColumns,
+    getDateRange,
+    getExportFunction,
+    handleTotalUpdate,
+    getFilterConfig,
+    hideTables,
+    canDeleteSale,
+    deleteSale,
+    onRefreshSales,
+  ])
 
   const getButtonText = () => {
     if (customExportPage === 'openfinance') {
