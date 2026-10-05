@@ -426,22 +426,20 @@ const loadUserPreferences = useCallback(async (userId) => {
 
 const loginApp = async (login, password) => {
   resetAppValues()
-  
-  // Helper function to show error toast (stays on screen until user clicks)
+
   const showErrorToast = (message) => {
     toast.dismiss()
     toast.error(message, {
       position: "top-right",
-      autoClose: false, // Won't auto-close
+      autoClose: false,
       hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: true,
       draggable: true,
-      closeButton: true, // User must click the close button or the toast
+      closeButton: true,
     })
   }
 
-  // Helper function to show success toast
   const showSuccessToast = (message) => {
     toast.dismiss()
     toast.success(message, {
@@ -454,7 +452,6 @@ const loginApp = async (login, password) => {
     })
   }
 
-  // Show loading toast
   const loadingToastId = toast.loading('Realizando login...', {
     position: "top-right",
     autoClose: false,
@@ -465,29 +462,25 @@ const loginApp = async (login, password) => {
   })
 
   try {
-    // ===== LOGIN ATTEMPT =====
     let response
     try {
       response = await api.post('token', { client_id: login, client_secret: md5(password) })
     } catch (error) {
       resetAppValues()
       toast.dismiss(loadingToastId)
-      
-      // Check if it's a network error
+
       if (error.request && !error.response) {
         showErrorToast('Erro ao fazer login. Entre em contato com o administrador do sistema.')
       } else {
-        // For any other error, show the generic message
         showErrorToast('Erro ao fazer login. Entre em contato com o administrador do sistema.')
       }
-      
+
       console.error('Login error:', error)
       return
     }
 
     const responseData = response.data
-    
-    // Validate response structure
+
     if (!responseData || typeof responseData !== 'object') {
       resetAppValues()
       toast.dismiss(loadingToastId)
@@ -496,11 +489,8 @@ const loginApp = async (login, password) => {
       return
     }
 
-    // ===== CHECK LOGIN SUCCESS =====
-    // Check if the response indicates login failure
     let loggedSuccessfully = false
     try {
-      // Check if sucess flag exists
       if (responseData.sucess !== undefined && responseData.sucess !== null) {
         loggedSuccessfully = JSON.parse(responseData.sucess)
       }
@@ -508,15 +498,13 @@ const loginApp = async (login, password) => {
       console.error('Error parsing success flag:', error)
     }
 
-    // If login failed, check the message
     if (!loggedSuccessfully) {
       resetAppValues()
       toast.dismiss(loadingToastId)
-      
-      // Check if the message indicates invalid credentials
+
       if (responseData.message && typeof responseData.message === 'string') {
         const messageLower = responseData.message.toLowerCase()
-        if (messageLower.includes('credenciais inválidas') || 
+        if (messageLower.includes('credenciais inválidas') ||
             messageLower.includes('credenciais invalidas') ||
             messageLower.includes('senha incorreta') ||
             messageLower.includes('usuário ou senha inválidos') ||
@@ -526,19 +514,17 @@ const loginApp = async (login, password) => {
           showErrorToast('Erro ao fazer login. Entre em contato com o administrador do sistema.')
         }
       } else {
-        // If there's no message, check if it's a 401 status
         if (error.response && error.response.status === 401) {
           showErrorToast('Senha Incorreta')
         } else {
           showErrorToast('Erro ao fazer login. Entre em contato com o administrador do sistema.')
         }
       }
-      
+
       console.error('Login failed:', responseData)
       return
     }
 
-    // If we got here, login was successful
     if (!responseData.acess_token) {
       resetAppValues()
       toast.dismiss(loadingToastId)
@@ -547,11 +533,9 @@ const loginApp = async (login, password) => {
       return
     }
 
-    // Store tokens
     localStorage.setItem('token', responseData.acess_token)
     localStorage.setItem('refreshToken', responseData.refresh_token)
-    
-    // Decode JWT token
+
     let decodedToken
     try {
       decodedToken = jwtDecode(responseData.acess_token)
@@ -598,6 +582,42 @@ const loginApp = async (login, password) => {
       return
     }
 
+    // ===== CHECK IF ACCOUNT IS BLOCKED =====
+    const isBlocked =
+      user.CONTABLOQUEADA === true ||
+      user.CONTABLOQUEADA === 'true' ||
+      user.CONTABLOQUEADA === 1 ||
+      user.CONTABLOQUEADA === '1'
+
+    if (isBlocked) {
+      resetAppValues()
+      toast.dismiss(loadingToastId)
+      localStorage.clear()
+      Cookies.remove('userID')
+
+      toast.error(
+        'Olá! No momento, o acesso ao sistema está temporariamente indisponível devido a uma pendência financeira.\n\n' +
+        'Para verificar a situação e realizar a regularização, entre em contato conosco pelo WhatsApp: (51) 9149-2740.\n\n' +
+        'Estamos à disposição para ajudar!',
+        {
+          position: "top-center",
+          autoClose: false,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: false,
+          closeButton: true,
+          style: {
+            whiteSpace: 'pre-line',
+            maxWidth: '520px',
+          },
+        }
+      )
+
+      console.warn('Login blocked: account has financial pending (CONTABLOQUEADA = true)')
+      return
+    }
+
     // ===== LOAD/CREATE USER PREFERENCES =====
     let userPreferences = null
     try {
@@ -605,14 +625,14 @@ const loginApp = async (login, password) => {
         params: { codigo: userId }
       })
       userPreferences = prefsResponse.data
-      
+
       if (!userPreferences || userPreferences === null) {
         const getCurrentDate = () => new Date().toISOString().split('T')[0]
         const now = getCurrentDate()
-        
+
         let defaultIconCode = 1
         let defaultColorScheme = user?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro'
-        
+
         switch (user?.GRUPO?.IDENTIDADEVISUAL) {
           case 'sifra':
             defaultIconCode = 7
@@ -635,7 +655,7 @@ const loginApp = async (login, password) => {
             defaultColorScheme = 'salvalucro'
             break
         }
-        
+
         const defaultPayload = {
           USUCODIGO: parseInt(userId),
           TEMA: false,
@@ -647,13 +667,12 @@ const loginApp = async (login, password) => {
           DATAINSERCAO: now,
           ATIVO: true
         }
-        
+
         try {
           const createResponse = await api.post('PreferenciasUsuario', defaultPayload)
           userPreferences = createResponse.data
         } catch (error) {
           console.error('Error creating preferences:', error)
-          // Fallback to default preferences
           userPreferences = {
             TEMA: false,
             ICONE: defaultIconCode,
@@ -663,10 +682,10 @@ const loginApp = async (login, password) => {
       }
     } catch (error) {
       console.error('Error loading preferences:', error)
-      // Set default preferences
+
       let defaultIconCode = 1
       let defaultColorScheme = user?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro'
-      
+
       switch (user?.GRUPO?.IDENTIDADEVISUAL) {
         case 'sifra':
           defaultIconCode = 7
@@ -689,7 +708,7 @@ const loginApp = async (login, password) => {
           defaultColorScheme = 'salvalucro'
           break
       }
-      
+
       userPreferences = {
         TEMA: false,
         ICONE: defaultIconCode,
@@ -707,13 +726,12 @@ const loginApp = async (login, password) => {
       }
     } catch (error) {
       console.error('Error applying theme:', error)
-      // Keep default theme
     }
 
     // ===== GET TENANT CONTEXT =====
     let context = 'SL'
     let logo = salvalucro
-    
+
     try {
       const urlTenant = getTenantFromURL()
       if (urlTenant?.contextKey) {
@@ -725,7 +743,6 @@ const loginApp = async (login, password) => {
       }
     } catch (error) {
       console.error('Error getting tenant context:', error)
-      // Keep default context
     }
 
     // ===== APPLY UI SETTINGS =====
@@ -738,9 +755,9 @@ const loginApp = async (login, password) => {
       document.documentElement.setAttribute('data-context', context)
       localStorage.setItem('appContext', context)
       localStorage.setItem('selectedContext', context)
-      
+
       setCurrentContext(context)
-      
+
       if (logo) {
         setCurrentLogo(logo)
       } else {
@@ -756,11 +773,11 @@ const loginApp = async (login, password) => {
       }
     } catch (error) {
       console.error('Error applying UI settings:', error)
-      // Continue with default UI settings
     }
 
     // ===== UPDATE USER IF NEEDED =====
     try {
+      console.log('updateUser if Needed: user.TEMA =', user.TEMA)
       if (user.TEMA === undefined || user.TEMA === null) {
         user.TEMA = false
         await updateUser(user)
@@ -768,7 +785,6 @@ const loginApp = async (login, password) => {
       }
     } catch (error) {
       console.error('Error updating user:', error)
-      // Continue with login
     }
 
     // ===== SAVE USER DATA =====
@@ -790,7 +806,7 @@ const loginApp = async (login, password) => {
       const loginLog = async () => {
         function getBrazilianISOTime() {
           const now = new Date()
-          
+
           const dateTimeParts = new Intl.DateTimeFormat('en-US', {
             timeZone: 'America/Sao_Paulo',
             year: 'numeric',
@@ -802,11 +818,11 @@ const loginApp = async (login, password) => {
             fractionalSecondDigits: 3,
             hour12: false,
           }).formatToParts(now)
-          
-          const { year, month, day, hour, minute, second, fractionalSecond } = 
+
+          const { year, month, day, hour, minute, second, fractionalSecond } =
             dateTimeParts.reduce((acc, part) => {
-            acc[part.type] = part.value
-            return acc
+              acc[part.type] = part.value
+              return acc
             }, {})
           return `${year}-${month}-${day}T${hour}:${minute}:${second}.${fractionalSecond}`
         }
@@ -823,16 +839,14 @@ const loginApp = async (login, password) => {
 
         await api.post('/LogAcesso', body)
       }
-      
+
       try {
         await loginLog()
       } catch (error) {
         console.error('Error logging login:', error)
-        // Continue with login even if log fails
       }
     } catch (error) {
       console.error('Error in login log:', error)
-      // Continue with login
     }
 
     // ===== PLUGGY AUTHENTICATION (non-critical) =====
@@ -876,7 +890,6 @@ const loginApp = async (login, password) => {
       console.error('Pluggy authentication failed:', error)
       Cookies.remove('pluggy_api_key')
       Cookies.remove('pluggy_client_id')
-      // Continue with login even if Pluggy fails
     }
 
     // ===== LOAD OPTIONS AND GROUPS =====
@@ -889,7 +902,7 @@ const loginApp = async (login, password) => {
         return
       }
       localStorage.setItem('options', JSON.stringify(opt))
-      
+
       const gru = await loadGroupsList()
       if (!gru || gru.length === 0) {
         resetAppValues()
@@ -907,14 +920,13 @@ const loginApp = async (login, password) => {
       showErrorToast('Erro ao fazer login. Entre em contato com o administrador do sistema.')
       return
     }
-    
+
     // ===== LOGIN SUCCESS =====
     setIsSignedIn(true)
-    
-    // Update loading toast to success
+
     toast.dismiss(loadingToastId)
     showSuccessToast('Login realizado com sucesso!')
-    
+
   } catch (error) {
     console.error('Login error:', error)
     resetAppValues()
@@ -982,33 +994,53 @@ const logout = useCallback(() => {
   navigate('/')
 }, [navigate])
 
-  // FIXED: Memoized updateUser function
-  const updateUser = useCallback(async (userObj) => {
-    try {
-        let body = JSON.stringify(userObj)
-
-        const response = await fetch('https://app.salvalucro.com.br/api/v1/usuario', {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          },
-          body: body,
-        })
-
-        const responseData = await response.json()
-        
-        if (responseData && responseData.CODIGO) {
-          localStorage.setItem('user', JSON.stringify(responseData))
-        }
-        
-        return responseData
-    } catch (error) {
-      toast.dismiss()
-      toast.error('Erro ao atualizar usuário!')
-      logout()
+const updateUser = useCallback(async (userObj) => {
+  try {
+    if (!userObj || !userObj.CODIGO) {
+      console.warn('[updateUser] Invalid user object, skipping PUT')
+      return null
     }
-  }, [logout])
+
+    const payload = {
+      CODIGO: userObj.CODIGO,
+      NOME: userObj.NOME,
+      EMAIL: userObj.EMAIL,
+      LOGIN: userObj.LOGIN,
+      GRUCODIGO: userObj.GRUCODIGO,
+      SEDCODIGO: userObj.SEDCODIGO,
+      NECESSITATROCASENHA: userObj.NECESSITATROCASENHA,
+      CONTABLOQUEADA: userObj.CONTABLOQUEADA,
+      TEMA: userObj.TEMA === true || userObj.TEMA === 'true',
+      ATIVO: userObj.ATIVO
+    }
+
+    const response = await fetch('https://app.salvalucro.com.br/api/v1/usuario', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify(payload),
+    })
+
+    let responseData = null
+    try {
+      const text = await response.text()
+      responseData = text ? JSON.parse(text) : null
+    } catch (parseErr) {
+      console.warn('[updateUser] Could not parse response:', parseErr)
+    }
+
+    if (responseData && responseData.CODIGO) {
+      localStorage.setItem('user', JSON.stringify(responseData))
+    }
+
+    return responseData
+  } catch (error) {
+    console.error('[updateUser] Error:', error)
+    return null
+  }
+}, [])
 
 	// funções que retornam arrays com Grupos, Clientes, Bandeiras e Adquirentes, respectivamente //
 

@@ -1,20 +1,41 @@
-// TabelaBancos.jsx
 import { useState, useMemo, useEffect } from 'react'
-import { 
-  FiPlus, 
-  FiEdit, 
-  FiCreditCard, 
-  FiTrash2, 
-  FiRefreshCw, 
-  FiChevronLeft, 
-  FiChevronRight, 
-  FiChevronsLeft, 
-  FiChevronsRight, 
-  FiSearch, 
+import {
+  FiPlus,
+  FiEdit,
+  FiCreditCard,
+  FiTrash2,
+  FiRefreshCw,
+  FiChevronLeft,
+  FiChevronRight,
+  FiChevronsLeft,
+  FiChevronsRight,
+  FiSearch,
   FiX,
   FiAlertTriangle
 } from 'react-icons/fi'
+import ListaDomicilios from '../../components/ListaDomicilios'
+import ModalDomicilio from '../../components/ModalDomicilio'
 import './TabelaBancos.scss'
+
+function ListaDomiciliosWrapper({ banco }) {
+  const [addOpen, setAddOpen] = useState(false)
+
+  const handleCreated = () => {
+    window.dispatchEvent(new Event('domicilio-created'))
+  }
+
+  return (
+    <>
+      <ListaDomicilios banco={banco} onAddClick={() => setAddOpen(true)} />
+      <ModalDomicilio
+        isOpen={addOpen}
+        onClose={() => setAddOpen(false)}
+        banco={banco}
+        onCreated={handleCreated}
+      />
+    </>
+  )
+}
 
 const TabelaBancos = ({ 
   banksList, 
@@ -31,11 +52,12 @@ const TabelaBancos = ({
   const [searchField, setSearchField] = useState('all')
   const itemsPerPage = 15
 
-  // Delete confirmation state
   const [bankToDelete, setBankToDelete] = useState(null)
   const [isDeleting, setIsDeleting] = useState(false)
 
-  // Filter options for the search dropdown
+  const [domicilioModalOpen, setDomicilioModalOpen] = useState(false)
+  const [selectedBankForDomicilio, setSelectedBankForDomicilio] = useState(null)
+
   const filterOptions = [
     { value: 'all', label: 'Todos os campos' },
     { value: 'CODIGO', label: 'Código' },
@@ -48,7 +70,6 @@ const TabelaBancos = ({
     { value: 'CARTEIRA', label: 'Carteira' },
   ]
 
-  // Filter banks based on search term
   const filteredBanks = useMemo(() => {
     if (!banksList || banksList.length === 0) return []
     
@@ -77,23 +98,19 @@ const TabelaBancos = ({
     })
   }, [banksList, searchTerm, searchField])
 
-  // Pagination logic
   const totalPages = Math.ceil(filteredBanks.length / itemsPerPage)
   const startIndex = (currentPage - 1) * itemsPerPage
   const endIndex = startIndex + itemsPerPage
   const currentBanks = filteredBanks.slice(startIndex, endIndex)
 
-  // Reset to first page when filters change
   useEffect(() => {
     setCurrentPage(1)
   }, [searchTerm, searchField])
 
-  // Reset to first page when banks list changes
   useMemo(() => {
     setCurrentPage(1)
   }, [banksList])
 
-  // Get visible page numbers (max 3 backward, 3 forward)
   const getVisiblePages = () => {
     const visiblePages = []
     
@@ -115,7 +132,6 @@ const TabelaBancos = ({
     return visiblePages
   }
 
-  // Format CNPJ helper
   const formatCNPJ = (cnpj) => {
     if (!cnpj) return 'N/A'
     const cleaned = cnpj.replace(/\D/g, '')
@@ -128,7 +144,6 @@ const TabelaBancos = ({
     return cnpj
   }
 
-  // Handle page change
   const goToPage = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page)
@@ -149,15 +164,19 @@ const TabelaBancos = ({
   }
 
   const handleViewCards = (bank) => {
-    if (onViewCards) onViewCards(bank)
+    setSelectedBankForDomicilio(bank)
+    setDomicilioModalOpen(true)
   }
 
-  // Open delete confirmation
+  const closeDomicilioModal = () => {
+    setDomicilioModalOpen(false)
+    setSelectedBankForDomicilio(null)
+  }
+
   const handleDeleteClick = (bank) => {
     setBankToDelete(bank)
   }
 
-  // Confirm delete — passes the full bank object to the parent
   const handleDeleteConfirm = async () => {
     if (!bankToDelete) return
 
@@ -172,7 +191,6 @@ const TabelaBancos = ({
     }
   }
 
-  // Cancel delete
   const handleDeleteCancel = () => {
     setBankToDelete(null)
   }
@@ -182,7 +200,6 @@ const TabelaBancos = ({
     setSearchField('all')
   }
 
-  // If no banks found
   if (banksList.length === 0) {
     return (
       <div className="tabela-bancos-container">
@@ -228,7 +245,6 @@ const TabelaBancos = ({
 
   return (
     <div className="tabela-bancos-container">
-      {/* Header */}
       <div className="tabela-bancos-header">
         <div className="header-info">
           <h3 className="subtitle">
@@ -251,7 +267,6 @@ const TabelaBancos = ({
 
       <hr className="hr-global" />
 
-      {/* Search/Filter Bar */}
       <div className="tabela-bancos-search">
         <div className="search-group">
           <div className="search-field">
@@ -288,7 +303,6 @@ const TabelaBancos = ({
 
       <hr className="hr-global" />
 
-      {/* Table */}
       <div className="tabela-bancos-wrapper">
         <table className="tabela-bancos">
           <thead>
@@ -317,7 +331,7 @@ const TabelaBancos = ({
                     <button 
                       className="btn-action btn-cards"
                       onClick={() => handleViewCards(bank)}
-                      title="Ver cartões"
+                      title="Ver domicílios bancários"
                     >
                       <FiCreditCard />
                     </button>
@@ -346,7 +360,6 @@ const TabelaBancos = ({
         </table>
       </div>
 
-      {/* Pagination */}
       {totalPages > 1 && (
         <div className="tabela-bancos-pagination">
           <div className="pagination-info">
@@ -400,7 +413,6 @@ const TabelaBancos = ({
         </div>
       )}
 
-      {/* Floating button */}
       <div className='floating-button-container'>
         <button className='btn-floating-new-search' onClick={onGoBack}>
           <span className='floating-button-icon'>🔍</span>
@@ -408,7 +420,6 @@ const TabelaBancos = ({
         </button>
       </div>
 
-      {/* Delete Confirmation Modal */}
       {bankToDelete && (
         <div className="modal-overlay" onClick={handleDeleteCancel}>
           <div className="modal-container modal-container-small" onClick={(e) => e.stopPropagation()}>
@@ -471,6 +482,28 @@ const TabelaBancos = ({
               >
                 {isDeleting ? 'Excluindo...' : 'Excluir'}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {domicilioModalOpen && selectedBankForDomicilio && (
+        <div className="modal-overlay" onClick={closeDomicilioModal}>
+          <div
+            className="modal-container"
+            style={{ maxWidth: '960px' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-header">
+              <h2>
+                Domicílios — {selectedBankForDomicilio.NOME || selectedBankForDomicilio.CODIGOBANCO}
+              </h2>
+              <button className="modal-close" onClick={closeDomicilioModal}>
+                <FiX />
+              </button>
+            </div>
+            <div style={{ padding: '0 24px 24px' }}>
+              <ListaDomiciliosWrapper banco={selectedBankForDomicilio} />
             </div>
           </div>
         </div>
