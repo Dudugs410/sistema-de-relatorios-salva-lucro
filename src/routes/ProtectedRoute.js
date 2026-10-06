@@ -9,6 +9,15 @@ const ProtectedRoute = ({ children, requiredRoute }) => {
   useEffect(() => {
     const checkAccess = () => {
       try {
+        // DEFINE ROUTES THAT ARE ALWAYS ACCESSIBLE (system routes, not in menu)
+        const alwaysAccessibleRoutes = ['/usuario'];
+        
+        // If it's an always accessible route, grant access immediately
+        if (alwaysAccessibleRoutes.includes(requiredRoute)) {
+          setHasAccess(true);
+          return;
+        }
+
         // Get user's menu permissions from localStorage
         const menus = JSON.parse(localStorage.getItem('userMenus') || '[]');
         

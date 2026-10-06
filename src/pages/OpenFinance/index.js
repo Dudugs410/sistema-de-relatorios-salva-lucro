@@ -12,7 +12,6 @@ import { FiHelpCircle, FiUsers, FiUser } from 'react-icons/fi'
 import '../../styles/global.scss'
 import './OpenFinance.scss'
 
-// Format currency helper
 const formatCurrency = (value) => {
   if (value === undefined || value === null || value === '') {
     return 'R$ 0,00'
@@ -27,7 +26,6 @@ const formatCurrency = (value) => {
   })
 }
 
-// Format date from ISO to Brazilian format
 const formatDateOnly = (isoDate) => {
   if (!isoDate) return 'N/A'
   try {
@@ -49,7 +47,6 @@ const formatDateOnly = (isoDate) => {
   }
 }
 
-// Format CNPJ
 const formatCNPJ = (cnpj) => {
   if (!cnpj) return 'N/A'
   const cleaned = cnpj.replace(/\D/g, '')
@@ -62,7 +59,6 @@ const formatCNPJ = (cnpj) => {
   return cnpj
 }
 
-// Custom Select styles with theme support
 const customSelectStyles = {
   control: (base, { isFocused }) => ({
     ...base,
@@ -168,7 +164,28 @@ const customSelectStyles = {
   }),
 }
 
-// Helper function to get icon based on type
+const themeConfig = (theme) => ({
+  ...theme,
+  colors: {
+    ...theme.colors,
+    primary: 'var(--secondary-color)',
+    primary75: 'var(--secondary-color)',
+    primary50: 'rgba(var(--secondary-color-rgb), 0.5)',
+    primary25: 'rgba(var(--secondary-color-rgb), 0.25)',
+    neutral0: 'var(--background-color)',
+    neutral5: 'var(--background-color)',
+    neutral10: 'var(--background-color)',
+    neutral20: 'var(--bs-border-color)',
+    neutral30: 'var(--bs-border-color)',
+    neutral40: 'var(--font-color)',
+    neutral50: 'var(--font-color)',
+    neutral60: 'var(--font-color)',
+    neutral70: 'var(--font-color)',
+    neutral80: 'var(--font-color)',
+    neutral90: 'var(--font-color)',
+  },
+})
+
 const getIcon = (type) => {
   switch(type) {
     case 'users':
@@ -189,19 +206,16 @@ const formatOptionLabel = ({ label, iconType }) => (
 
 const OpenFinance = () => {
   const location = useLocation()
-  const { dateConvert } = useContext(AuthContext)
+  const { dateConvert, loadBanks } = useContext(AuthContext)
 
-  // State for client selection
   const [clientOptions, setClientOptions] = useState([])
   const [selectedClient, setSelectedClient] = useState(null)
   const [loadingClients, setLoadingClients] = useState(false)
 
-  // State for bank selection
   const [bankCode, setBankCode] = useState(null)
   const [bankOptions, setBankOptions] = useState([])
   const [loadingBanks, setLoadingBanks] = useState(false)
 
-  // State for data
   const [bankData, setBankData] = useState([])
   const [bankDataAdmin, setBankDataAdmin] = useState([])
   const [bankTotal, setBankTotal] = useState({
@@ -215,12 +229,10 @@ const OpenFinance = () => {
   const [isDataLoaded, setIsDataLoaded] = useState(false)
   const [runTutorial, setRunTutorial] = useState(false)
 
-  // Load client options from localStorage (same as SeletorCliente)
   const loadClientOptions = useCallback(() => {
     try {
       setLoadingClients(true)
-      
-      // Get groups from localStorage
+
       const groupsStorage = localStorage.getItem('groupsStorage')
       if (!groupsStorage) {
         toast.error('Nenhum grupo encontrado')
@@ -229,14 +241,11 @@ const OpenFinance = () => {
       }
 
       const groups = JSON.parse(groupsStorage)
-      
-      // Create client options from all groups
       const allClients = []
-      
+
       groups.forEach(group => {
         if (group.CLIENTES && group.CLIENTES.length > 0) {
           group.CLIENTES.forEach(client => {
-            // Check if client already exists in the list (deduplicate by CNPJ)
             const exists = allClients.some(c => c.value === client.CNPJ)
             if (!exists) {
               allClients.push({
@@ -251,11 +260,9 @@ const OpenFinance = () => {
         }
       })
 
-      // Sort clients by name
       const sortedClients = allClients.sort((a, b) => a.label.localeCompare(b.label))
       setClientOptions(sortedClients)
 
-      // Restore previously selected client from localStorage
       const savedClient = localStorage.getItem('selectedOFClient')
       if (savedClient) {
         try {
@@ -276,7 +283,6 @@ const OpenFinance = () => {
     }
   }, [])
 
-  // Load bank options based on selected client
   const loadBankOptions = useCallback(async (clientCode) => {
     if (!clientCode) {
       setBankOptions([])
@@ -286,55 +292,42 @@ const OpenFinance = () => {
 
     try {
       setLoadingBanks(true)
-      
-      const response = await api.get('/banco', {
-        params: {
-          codigoCliente: clientCode
-        }
-      })
-      
-      // Filter banks with NOME and CODIGO, then deduplicate by CODIGO
-      const banksMap = new Map()
-      
-      response.data
-        .filter(bank => bank.NOME && bank.CODIGO)
-        .forEach(bank => {
-          const key = bank.CODIGO
-          if (!banksMap.has(key)) {
-            banksMap.set(key, {
-              codigoBanco: bank.CODIGO,
-              nomeBanco: bank.NOME
-            })
-          }
-        })
-      
-      // Convert Map to array and sort by name
-      const banks = Array.from(banksMap.values())
-        .sort((a, b) => a.nomeBanco.localeCompare(b.nomeBanco))
-      
-      setBankOptions(banks)
 
-      // Auto-select first bank if available
-      if (banks.length > 0) {
+      // loadBanks reads clientCode from localStorage and calls /banco/cliente?codigoCliente=X
+      localStorage.setItem('clientCode', clientCode)
+
+      const banksData = await loadBanks() || []
+
+      const options = banksData
+        .filter(bank => bank && bank.CODIGO !== undefined && bank.CODIGO !== null)
+        .map(bank => ({
+          value: String(bank.CODIGO),
+          label: String(bank.NOME || bank.NOMECEDENTE || bank.CODIGOBANCO || 'Banco sem nome'),
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label))
+
+      setBankOptions(options)
+
+      if (options.length > 0) {
         const savedBank = localStorage.getItem('selectedOFBank')
         if (savedBank) {
           try {
             const parsedBank = JSON.parse(savedBank)
-            const foundBank = banks.find(b => b.codigoBanco === parsedBank.codigoBanco)
+            const foundBank = options.find(b => String(b.value) === String(parsedBank.value))
             if (foundBank) {
-              setBankCode(foundBank.codigoBanco)
+              setBankCode(foundBank.value)
             } else {
-              setBankCode(banks[0].codigoBanco)
+              setBankCode(options[0].value)
             }
           } catch (e) {
-            setBankCode(banks[0].codigoBanco)
+            setBankCode(options[0].value)
           }
         } else {
-          setBankCode(banks[0].codigoBanco)
+          setBankCode(options[0].value)
         }
       } else {
         setBankCode(null)
-        toast.info('Nenhum banco encontrado para este cliente')
+        toast.info('Nenhum banco cadastrado para este cliente')
       }
     } catch (error) {
       console.error('Error loading bank options:', error)
@@ -344,21 +337,20 @@ const OpenFinance = () => {
     } finally {
       setLoadingBanks(false)
     }
-  }, [])
+  }, [loadBanks])
 
-  // Load clients on component mount
   useEffect(() => {
     loadClientOptions()
   }, [loadClientOptions])
 
-  // Load banks when client changes
   useEffect(() => {
     if (selectedClient && selectedClient.cod) {
-      // Store client in localStorage
       localStorage.setItem('selectedOFClient', JSON.stringify(selectedClient))
-      // Store clientCode for API calls
       localStorage.setItem('OFclientCode', selectedClient.cod)
-      // Load banks for this client
+
+      setBankOptions([])
+      setBankCode(null)
+
       loadBankOptions(selectedClient.cod)
     } else {
       setBankOptions([])
@@ -368,7 +360,6 @@ const OpenFinance = () => {
     }
   }, [selectedClient, loadBankOptions])
 
-  // Reset values
   const resetValues = useCallback(() => {
     setBankData([])
     setBankDataAdmin([])
@@ -383,15 +374,13 @@ const OpenFinance = () => {
     setRunTutorial(false)
   }, [])
 
-  // Handle client selection
   const handleClientChange = (option) => {
     setSelectedClient(option)
     resetValues()
   }
 
-  // Handle bank selection
   const handleBankChange = (option) => {
-    setBankCode(option?.codigoBanco || null)
+    setBankCode(option?.value || null)
     if (option) {
       localStorage.setItem('selectedOFBank', JSON.stringify(option))
     } else {
@@ -399,15 +388,13 @@ const OpenFinance = () => {
     }
   }
 
-  // Handle date range change from calendar
   const handleDateRangeChange = (dateRange) => {
     setDateRange(dateRange)
   }
 
-  // Load bank statement data
   const loadBankData = useCallback(async (e) => {
     if (e) e.preventDefault()
-    
+
     if (!bankCode) {
       toast.warning('Por favor, selecione um banco')
       return
@@ -424,8 +411,7 @@ const OpenFinance = () => {
 
       const startDate = dateRange[0]
       const endDate = dateRange[1]
-      
-      // Format dates for API
+
       const formatDateForAPI = (date) => {
         if (date instanceof Date) {
           return date.toISOString().split('T')[0]
@@ -436,81 +422,110 @@ const OpenFinance = () => {
       const dataInicial = formatDateForAPI(startDate)
       const dataFinal = formatDateForAPI(endDate)
 
-      // Get bank name for display
-      const selectedBank = bankOptions.find(b => b.codigoBanco === bankCode)
-      const bankName = selectedBank?.nomeBanco || 'Banco não informado'
+      const selectedBank = bankOptions.find(b => String(b.value) === String(bankCode))
+      const bankName = selectedBank?.label || 'Banco não informado'
 
-      await toast.promise(
-        async () => {
-          const response = await api.get('/ExtratoBancario', {
-            params: {
-              codigoBanco: bankCode,
-              DataInicial: dataInicial,
-              DataFinal: dataFinal
-            }
+      const loadingToastId = toast.loading('Carregando dados bancários...', {
+        position: "top-right",
+        autoClose: false,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+      })
+
+      try {
+        const response = await api.get('/ExtratoBancario', {
+          params: {
+            codigoBanco: bankCode,
+            DataInicial: dataInicial,
+            DataFinal: dataFinal
+          }
+        })
+
+        const data = response.data || []
+
+        if (!data || data.length === 0) {
+          toast.dismiss(loadingToastId)
+          toast.info('Não há dados para o período/banco selecionados', {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
           })
-
-          const data = response.data || []
-          
-          // Process data
-          const processedData = data.map(item => ({
-            ...item,
-            DataFormatada: item.Data ? formatDateOnly(item.Data) : '',
-            ValorFormatado: item.Valor ? formatCurrency(item.Valor) : 'R$ 0,00',
-            TipoTransacao: item.Categoria === 'Income' ? 'Receita' : 'Despesa',
-            CnpjFormatado: formatCNPJ(item.CnpjPagador || item.CnpjRecebedor),
-            NOMEBANCO: bankName,
-            CODIGO: bankCode,
-            CLIENTE: selectedClient?.label || 'Cliente não informado'
-          }))
-
-          setBankData(processedData)
-
-          // Calculate totals
-          let totalIncome = 0
-          let totalExpense = 0
-          let totalGeneral = 0
-
-          processedData.forEach(item => {
-            const valor = item.Valor || 0
-            totalGeneral += valor
-            if (item.Categoria === 'Income') {
-              totalIncome += valor
-            } else {
-              totalExpense += valor
-            }
-          })
-
-          setBankTotal({
-            total: totalGeneral,
-            income: totalIncome,
-            expense: Math.abs(totalExpense),
-            count: processedData.length
-          })
-
-          // Group by bank for admin view
-          const adminMap = new Map()
-          processedData.forEach(item => {
-            const bankNameItem = item.NOMEBANCO || 'Banco não informado'
-            if (!adminMap.has(bankNameItem)) {
-              adminMap.set(bankNameItem, {
-                adminName: bankNameItem,
-                total: 0
-              })
-            }
-            adminMap.get(bankNameItem).total += item.Valor || 0
-          })
-
-          setBankDataAdmin(Array.from(adminMap.values()))
-
-          setIsDataLoaded(true)
-        },
-        {
-          pending: 'Carregando dados bancários...',
-          success: 'Dados carregados com sucesso!',
-          error: 'Erro ao carregar dados'
+          setBtnDisabled(false)
+          return
         }
-      )
+
+        const processedData = data.map(item => ({
+          ...item,
+          DataFormatada: item.Data ? formatDateOnly(item.Data) : '',
+          ValorFormatado: item.Valor ? formatCurrency(item.Valor) : 'R$ 0,00',
+          CategoriaDisplay: item.Categoria || 'N/A',
+          CnpjPagadorFormatado: item.CnpjPagador ? formatCNPJ(item.CnpjPagador) : 'N/A',
+          CnpjRecebedorFormatado: item.CnpjRecebedor ? formatCNPJ(item.CnpjRecebedor) : 'N/A',
+          OperacaoDisplay: item.Operação === 1 ? 'Crédito' : item.Operação === -1 ? 'Débito' : 'Outros',
+          NOMEBANCO: bankName,
+          CODIGO: bankCode,
+          CLIENTE: selectedClient?.label || 'Cliente não informado'
+        }))
+
+        setBankData(processedData)
+
+        let totalIncome = 0
+        let totalExpense = 0
+        let totalGeneral = 0
+
+        processedData.forEach(item => {
+          const valor = item.Valor || 0
+          totalGeneral += valor
+          if (item.Operação === 1) {
+            totalIncome += valor
+          } else if (item.Operação === -1) {
+            totalExpense += Math.abs(valor)
+          }
+        })
+
+        setBankTotal({
+          total: totalGeneral,
+          income: totalIncome,
+          expense: totalExpense,
+          count: processedData.length
+        })
+
+        const adminMap = new Map()
+        processedData.forEach(item => {
+          const bankNameItem = item.NOMEBANCO || 'Banco não informado'
+          if (!adminMap.has(bankNameItem)) {
+            adminMap.set(bankNameItem, {
+              adminName: bankNameItem,
+              total: 0
+            })
+          }
+          adminMap.get(bankNameItem).total += item.Valor || 0
+        })
+
+        setBankDataAdmin(Array.from(adminMap.values()))
+        setIsDataLoaded(true)
+
+        toast.dismiss(loadingToastId)
+        toast.success(`Dados carregados com sucesso! Encontradas ${processedData.length} transações.`, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        })
+
+      } catch (error) {
+        toast.dismiss(loadingToastId)
+        console.error('Error loading bank data:', error)
+        toast.error(error.response?.data?.message || 'Erro ao carregar dados bancários')
+        resetValues()
+      }
 
       setBtnDisabled(false)
     } catch (error) {
@@ -521,34 +536,32 @@ const OpenFinance = () => {
     }
   }, [bankCode, dateRange, bankOptions, selectedClient, resetValues])
 
-  // Get selected bank option
   const getSelectedBankOption = useCallback(() => {
     if (!bankCode || bankOptions.length === 0) return null
-    return bankOptions.find(option => option.codigoBanco === bankCode)
+    return bankOptions.find(option => String(option.value) === String(bankCode))
   }, [bankCode, bankOptions])
 
-  // Get table columns for bank data
   const getTableColumns = useCallback(() => {
     return [
-      { 
-        key: 'Data', 
+      {
+        key: 'Data',
         header: 'Data',
         accessor: (item) => {
           if (!item?.Data) return 'N/A'
           try {
-            const date = new Date(item.Data)
-            return date.toLocaleDateString('pt-BR')
+            return formatDateOnly(item.Data)
           } catch {
             return 'N/A'
           }
         }
       },
-      { 
-        key: 'Descrição', 
-        header: 'Descrição'
+      {
+        key: 'Descrição',
+        header: 'Descrição',
+        accessor: (item) => item?.Descrição || 'N/A'
       },
-      { 
-        key: 'Valor', 
+      {
+        key: 'Valor',
         header: 'Valor',
         render: (item) => {
           const valor = Number(item?.Valor) || 0
@@ -562,107 +575,77 @@ const OpenFinance = () => {
           )
         }
       },
-      { 
-        key: 'Categoria', 
+      {
+        key: 'Categoria',
         header: 'Categoria',
-        render: (item) => {
-          const isIncome = item?.Categoria === 'Income'
-          return (
-            <span className={isIncome ? 'badge-success' : 'badge-danger'}>
-              {isIncome ? 'Receita' : 'Despesa'}
-            </span>
-          )
-        }
+        accessor: (item) => item?.Categoria || 'N/A'
       },
-      { 
-        key: 'Operação', 
+      {
+        key: 'Operação',
         header: 'Operação',
         render: (item) => {
-          const opMap = {
-            1: 'Crédito',
-            2: 'Débito',
-            3: 'Estorno'
-          }
-          return opMap[item?.Operação] || 'Outros'
+          if (item?.Operação === 1) return 'Crédito'
+          if (item?.Operação === -1) return 'Débito'
+          return 'Outros'
         }
       },
-      { 
-        key: 'CnpjPagador', 
+      {
+        key: 'CnpjPagador',
         header: 'CNPJ Pagador',
         render: (item) => {
           const cnpj = item?.CnpjPagador || ''
           if (!cnpj) return 'N/A'
-          const cleaned = cnpj.replace(/\D/g, '')
-          if (cleaned.length === 14) {
-            return cleaned.replace(
-              /(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,
-              '$1.$2.$3/$4-$5'
-            )
-          }
-          return cnpj
+          return formatCNPJ(cnpj)
         }
       },
-      { 
-        key: 'NomePagador', 
-        header: 'Pagador'
+      {
+        key: 'NomePagador',
+        header: 'Pagador',
+        accessor: (item) => item?.NomePagador || 'N/A'
       },
-      { 
-        key: 'CnpjRecebedor', 
+      {
+        key: 'CnpjRecebedor',
         header: 'CNPJ Recebedor',
         render: (item) => {
           const cnpj = item?.CnpjRecebedor || ''
           if (!cnpj) return 'N/A'
-          const cleaned = cnpj.replace(/\D/g, '')
-          if (cleaned.length === 14) {
-            return cleaned.replace(
-              /(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,
-              '$1.$2.$3/$4-$5'
-            )
-          }
-          return cnpj
+          return formatCNPJ(cnpj)
         }
       },
-      { 
-        key: 'NomeRecebedor', 
-        header: 'Recebedor'
+      {
+        key: 'NomeRecebedor',
+        header: 'Recebedor',
+        accessor: (item) => item?.NomeRecebedor || 'N/A'
       },
-      { 
-        key: 'Complemento', 
-        header: 'Complemento'
+      {
+        key: 'Complemento',
+        header: 'Complemento',
+        accessor: (item) => item?.Complemento || 'N/A'
       }
     ]
   }, [])
 
-  // Get filter config
   const getFilterConfig = useCallback(() => {
     return {
       categoria: {
         label: 'Categoria',
-        accessor: (item) => {
-          if (item?.Categoria === 'Income') return 'Receita'
-          return 'Despesa'
-        }
+        accessor: (item) => item?.Categoria || 'N/A'
       },
       operacao: {
         label: 'Operação',
         accessor: (item) => {
-          const opMap = {
-            1: 'Crédito',
-            2: 'Débito',
-            3: 'Estorno'
-          }
-          return opMap[item?.Operação] || 'Outros'
+          if (item?.Operação === 1) return 'Crédito'
+          if (item?.Operação === -1) return 'Débito'
+          return 'Outros'
         }
       }
     }
   }, [])
 
-  // Handle go back
   const handleGoBack = () => {
     resetValues()
   }
 
-  // Tutorial steps
   const [tutorialSteps, setTutorialSteps] = useState([
     {
       target: '[data-tour="cliente-section"]',
@@ -768,9 +751,9 @@ const OpenFinance = () => {
           <h1 className='title-global'>Extrato Bancário</h1>
         </div>
         <hr className='hr-global'/>
+
         {!isDataLoaded ? (
           <>
-            {/* Joyride for initial view */}
             {runTutorial && (
               <Joyride
                 steps={tutorialSteps}
@@ -823,27 +806,7 @@ const OpenFinance = () => {
                   isDisabled={loadingClients}
                   formatOptionLabel={formatOptionLabel}
                   styles={customSelectStyles}
-                  theme={(theme) => ({
-                    ...theme,
-                    colors: {
-                      ...theme.colors,
-                      primary: 'var(--secondary-color)',
-                      primary75: 'var(--secondary-color)',
-                      primary50: 'rgba(var(--secondary-color-rgb), 0.5)',
-                      primary25: 'rgba(var(--secondary-color-rgb), 0.25)',
-                      neutral0: 'var(--background-color)',
-                      neutral5: 'var(--background-color)',
-                      neutral10: 'var(--background-color)',
-                      neutral20: 'var(--bs-border-color)',
-                      neutral30: 'var(--bs-border-color)',
-                      neutral40: 'var(--font-color)',
-                      neutral50: 'var(--font-color)',
-                      neutral60: 'var(--font-color)',
-                      neutral70: 'var(--font-color)',
-                      neutral80: 'var(--font-color)',
-                      neutral90: 'var(--font-color)',
-                    },
-                  })}
+                  theme={themeConfig}
                 />
               </div>
               <div className='select-wrapper' data-tour="banco-section">
@@ -852,8 +815,8 @@ const OpenFinance = () => {
                   className='seletor-banco-select fixed-width-select'
                   id='banco'
                   options={bankOptions}
-                  getOptionLabel={(option) => `${option.nomeBanco} (${option.codigoBanco})`}
-                  getOptionValue={(option) => option.codigoBanco}
+                  getOptionLabel={(option) => option.label}
+                  getOptionValue={(option) => option.value}
                   onChange={handleBankChange}
                   value={getSelectedBankOption()}
                   menuPortalTarget={document.body}
@@ -863,27 +826,7 @@ const OpenFinance = () => {
                   isLoading={loadingBanks}
                   isDisabled={!selectedClient || loadingBanks}
                   styles={customSelectStyles}
-                  theme={(theme) => ({
-                    ...theme,
-                    colors: {
-                      ...theme.colors,
-                      primary: 'var(--secondary-color)',
-                      primary75: 'var(--secondary-color)',
-                      primary50: 'rgba(var(--secondary-color-rgb), 0.5)',
-                      primary25: 'rgba(var(--secondary-color-rgb), 0.25)',
-                      neutral0: 'var(--background-color)',
-                      neutral5: 'var(--background-color)',
-                      neutral10: 'var(--background-color)',
-                      neutral20: 'var(--bs-border-color)',
-                      neutral30: 'var(--bs-border-color)',
-                      neutral40: 'var(--font-color)',
-                      neutral50: 'var(--font-color)',
-                      neutral60: 'var(--font-color)',
-                      neutral70: 'var(--font-color)',
-                      neutral80: 'var(--font-color)',
-                      neutral90: 'var(--font-color)',
-                    },
-                  })}
+                  theme={themeConfig}
                 />
               </div>
             </div>
@@ -897,7 +840,7 @@ const OpenFinance = () => {
               />
             </div>
 
-            <button 
+            <button
               className='btn btn-success-dados btn-tutorial px-2 py-1'
               onClick={() => {
                 setRunTutorial(false);
@@ -940,6 +883,7 @@ const OpenFinance = () => {
             />
           </>
         )}
+        <hr className='hr-global'/>
       </div>
     </div>
   )

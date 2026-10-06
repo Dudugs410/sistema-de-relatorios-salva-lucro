@@ -1088,3 +1088,270 @@
   --sidebar-font-color: #FFFFFF;
   --subtitle-color: #4D4DFF;
 }
+
+//////////////////////////////////////////////////////////
+
+// ============================================
+// THEME-AWARE SELECT STYLES
+// ============================================
+
+// Base select styling using theme variables
+select,
+select.form-select,
+select.custom-select,
+select.form-control,
+select[class*="select"],
+.filter-select,
+.filter-group select,
+.NewTabelaGenerica select,
+.component-container-vendas select,
+.date-picker-container select {
+  // Use theme variables for background and text
+  background-color: var(--table-background, #ffffff) !important;
+  color: var(--font-color, #333333) !important;
+  -webkit-text-fill-color: var(--font-color, #333333) !important;
+  border-color: var(--bs-border-color, #dee2e6) !important;
+  border: 1px solid var(--bs-border-color, #dee2e6) !important;
+  border-radius: 4px !important;
+  padding: 6px 12px !important;
+  min-height: 38px !important;
+  
+  // Options should also follow theme
+  option,
+  optgroup {
+    background-color: var(--table-background, #ffffff) !important;
+    color: var(--font-color, #333333) !important;
+    -webkit-text-fill-color: var(--font-color, #333333) !important;
+    padding: 4px 8px !important;
+  }
+  
+  // Focus states
+  &:focus,
+  &:active {
+    background-color: var(--table-background, #ffffff) !important;
+    color: var(--font-color, #333333) !important;
+    -webkit-text-fill-color: var(--font-color, #333333) !important;
+    border-color: var(--secondary-color, #99cc33) !important;
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(var(--secondary-color-rgb, 153, 204, 51), 0.25) !important;
+  }
+  
+  // Hover state
+  &:hover:not(:disabled) {
+    background-color: var(--table-background, #ffffff) !important;
+    color: var(--font-color, #333333) !important;
+    border-color: var(--secondary-color, #99cc33) !important;
+  }
+  
+  // Disabled state
+  &:disabled {
+    opacity: 0.6 !important;
+    background-color: var(--table-background, #ffffff) !important;
+    color: var(--font-color, #333333) !important;
+  }
+}
+
+// Ensure select options in dropdown menu follow theme
+select option:hover,
+select option:focus,
+select option:active,
+select option:checked {
+  background-color: var(--secondary-color, #99cc33) !important;
+  color: var(--primary-color, #0a3d70) !important;
+  -webkit-text-fill-color: var(--primary-color, #0a3d70) !important;
+}
+
+// ============================================
+// DARK THEME OVERRIDES (for browsers that don't handle CSS variables well)
+// ============================================
+
+// For dark themes, explicitly set dark backgrounds and light text
+[data-theme="dark"] {
+  select,
+  select option,
+  select optgroup,
+  .filter-select,
+  .filter-group select,
+  .NewTabelaGenerica select,
+  .component-container-vendas select,
+  .date-picker-container select {
+    background-color: #2d2d2d !important;
+    color: #e0e0e0 !important;
+    -webkit-text-fill-color: #e0e0e0 !important;
+    border-color: #404040 !important;
+    
+    option {
+      background-color: #2d2d2d !important;
+      color: #e0e0e0 !important;
+      -webkit-text-fill-color: #e0e0e0 !important;
+    }
+    
+    &:focus,
+    &:active {
+      background-color: #2d2d2d !important;
+      color: #e0e0e0 !important;
+      -webkit-text-fill-color: #e0e0e0 !important;
+      border-color: var(--secondary-color, #99cc33) !important;
+      box-shadow: 0 0 0 2px rgba(153, 204, 51, 0.3) !important;
+    }
+  }
+  
+  // Selected/hovered options in dropdown
+  select option:hover,
+  select option:focus,
+  select option:active,
+  select option:checked {
+    background-color: rgba(153, 204, 51, 0.3) !important;
+    color: #e0e0e0 !important;
+    -webkit-text-fill-color: #e0e0e0 !important;
+  }
+}
+
+// ============================================
+// LIGHT THEME OVERRIDES (for consistency)
+// ============================================
+
+[data-theme="light"] {
+  select,
+  select option,
+  select optgroup,
+  .filter-select,
+  .filter-group select,
+  .NewTabelaGenerica select,
+  .component-container-vendas select,
+  .date-picker-container select {
+    background-color: #ffffff !important;
+    color: #333333 !important;
+    -webkit-text-fill-color: #333333 !important;
+    border-color: #dee2e6 !important;
+    
+    option {
+      background-color: #ffffff !important;
+      color: #333333 !important;
+      -webkit-text-fill-color: #333333 !important;
+    }
+  }
+}
+
+// ============================================
+// CONTEXT-SPECIFIC SELECT STYLES
+// ============================================
+
+// SalvaLucro context
+[data-context="salvalucro"] {
+  select,
+  select option,
+  .filter-select,
+  .filter-group select,
+  .NewTabelaGenerica select,
+  .component-container-vendas select {
+    border-color: var(--modalidades-border, rgb(10, 61, 112)) !important;
+    
+    &:focus {
+      border-color: var(--secondary-color, #99cc33) !important;
+      box-shadow: 0 0 0 2px rgba(10, 61, 112, 0.2) !important;
+    }
+  }
+}
+
+// SIFRA context
+[data-context="sifra"] {
+  select,
+  select option,
+  .filter-select,
+  .filter-group select,
+  .NewTabelaGenerica select,
+  .component-container-vendas select {
+    border-color: var(--modalidades-border, rgb(10, 61, 112)) !important;
+    
+    &:focus {
+      border-color: var(--secondary-color, #e0ca00) !important;
+      box-shadow: 0 0 0 2px rgba(10, 61, 112, 0.2) !important;
+    }
+  }
+}
+
+// MG context
+[data-context="mg"] {
+  select,
+  select option,
+  .filter-select,
+  .filter-group select,
+  .NewTabelaGenerica select,
+  .component-container-vendas select {
+    border-color: var(--modalidades-border, #6b74b5) !important;
+    
+    &:focus {
+      border-color: var(--secondary-color, #99cc33) !important;
+      box-shadow: 0 0 0 2px rgba(107, 116, 181, 0.2) !important;
+    }
+  }
+}
+
+// Card Digital context
+[data-context="carddigital"] {
+  select,
+  select option,
+  .filter-select,
+  .filter-group select,
+  .NewTabelaGenerica select,
+  .component-container-vendas select {
+    border-color: var(--modalidades-border, rgb(23, 102, 155)) !important;
+    
+    &:focus {
+      border-color: var(--secondary-color, #4cc593) !important;
+      box-shadow: 0 0 0 2px rgba(23, 102, 155, 0.2) !important;
+    }
+  }
+}
+
+// Superjur context
+[data-context="superjur"] {
+  select,
+  select option,
+  .filter-select,
+  .filter-group select,
+  .NewTabelaGenerica select,
+  .component-container-vendas select {
+    border-color: var(--modalidades-border, rgb(117, 139, 73)) !important;
+    
+    &:focus {
+      border-color: var(--secondary-color, #bebc30) !important;
+      box-shadow: 0 0 0 2px rgba(117, 139, 73, 0.2) !important;
+    }
+  }
+}
+
+// All ALT contexts (generic)
+[data-context^="ALT-"] {
+  select,
+  select option,
+  .filter-select,
+  .filter-group select,
+  .NewTabelaGenerica select,
+  .component-container-vendas select {
+    border-color: var(--modalidades-border) !important;
+    
+    &:focus {
+      border-color: var(--secondary-color) !important;
+      box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.2) !important;
+    }
+  }
+}
+
+// Colorblind contexts (generic)
+[data-context^="CB-"] {
+  select,
+  select option,
+  .filter-select,
+  .filter-group select,
+  .NewTabelaGenerica select,
+  .component-container-vendas select {
+    border-color: var(--modalidades-border) !important;
+    
+    &:focus {
+      border-color: var(--secondary-color) !important;
+      box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.2) !important;
+    }
+  }
+}

@@ -10,10 +10,101 @@ import { toast } from 'react-toastify'
 import { FiCalendar, FiHelpCircle } from 'react-icons/fi'
 import NewDisplayData from '../../components/Component_NewDisplayData'
 
-const Vendas = () =>{
+const customSelectStyles = {
+  control: (base, { isFocused }) => ({
+    ...base,
+    minWidth: 250,
+    width: '100%',
+    backgroundColor: 'var(--background-color)',
+    borderColor: isFocused ? 'var(--secondary-color)' : 'var(--bs-border-color)',
+    color: 'var(--font-color)',
+    '&:hover': { borderColor: 'var(--secondary-color)' },
+    boxShadow: isFocused ? '0 0 0 1px var(--secondary-color)' : 'none',
+  }),
+  menu: (base) => ({
+    ...base,
+    backgroundColor: 'var(--background-color)',
+    borderColor: 'var(--bs-border-color)',
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+    zIndex: 9999,
+  }),
+  menuList: (base) => ({
+    ...base,
+    backgroundColor: 'var(--background-color)',
+    padding: '4px 0',
+    '::-webkit-scrollbar': { width: '8px', height: '8px' },
+    '::-webkit-scrollbar-track': { background: 'rgba(255, 255, 255, 0.1)' },
+    '::-webkit-scrollbar-thumb': { background: 'var(--secondary-color)', borderRadius: '4px' },
+    '::-webkit-scrollbar-thumb:hover': { background: 'var(--primary-color)' },
+  }),
+  option: (base, { isFocused, isSelected }) => ({
+    ...base,
+    backgroundColor: isSelected
+      ? 'var(--secondary-color)'
+      : isFocused
+        ? 'rgba(var(--secondary-color-rgb), 0.2)'
+        : 'transparent',
+    color: isSelected ? 'var(--primary-color)' : 'var(--font-color)',
+    cursor: 'pointer',
+    padding: '8px 12px',
+    '&:active': { backgroundColor: 'var(--secondary-color)', color: 'var(--primary-color)' },
+  }),
+  singleValue: (base) => ({
+    ...base,
+    color: 'var(--font-color)',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    maxWidth: '90%',
+  }),
+  input: (base) => ({ ...base, color: 'var(--font-color)' }),
+  placeholder: (base) => ({ ...base, color: 'var(--font-color)', opacity: 0.6 }),
+  valueContainer: (base) => ({
+    ...base,
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  }),
+  dropdownIndicator: (base) => ({
+    ...base,
+    color: 'var(--font-color)',
+    '&:hover': { color: 'var(--secondary-color)' },
+  }),
+  clearIndicator: (base) => ({
+    ...base,
+    color: 'var(--font-color)',
+    '&:hover': { color: 'var(--secondary-color)' },
+  }),
+  indicatorSeparator: (base) => ({ ...base, backgroundColor: 'var(--bs-border-color)' }),
+  noOptionsMessage: (base) => ({ ...base, color: 'var(--font-color)' }),
+  loadingMessage: (base) => ({ ...base, color: 'var(--font-color)' }),
+}
+
+const themeConfig = (theme) => ({
+  ...theme,
+  colors: {
+    ...theme.colors,
+    primary: 'var(--secondary-color)',
+    primary75: 'var(--secondary-color)',
+    primary50: 'rgba(var(--secondary-color-rgb), 0.5)',
+    primary25: 'rgba(var(--secondary-color-rgb), 0.25)',
+    neutral0: 'var(--background-color)',
+    neutral5: 'var(--background-color)',
+    neutral10: 'var(--background-color)',
+    neutral20: 'var(--bs-border-color)',
+    neutral30: 'var(--bs-border-color)',
+    neutral40: 'var(--font-color)',
+    neutral50: 'var(--font-color)',
+    neutral60: 'var(--font-color)',
+    neutral70: 'var(--font-color)',
+    neutral80: 'var(--font-color)',
+    neutral90: 'var(--font-color)',
+  },
+})
+
+const Vendas = () => {
   const location = useLocation()
 
-  // Refs to track data changes and prevent infinite loops
   const lastProcessedDataRef = useRef(null)
   const lastExportedDataRef = useRef(null)
   const isInitialMountRef = useRef(true)
@@ -21,6 +112,7 @@ const Vendas = () =>{
   const resetValues = () => {
     setBandeira(null)
     setAdministradora(null)
+    setTipoRelatorio({ value: 'detalhado', label: 'Detalhado' })
     setSalesPageArray([])
     setSalesPageAdminArray([])
     setBtnDisabledSales(false)
@@ -33,40 +125,40 @@ const Vendas = () =>{
     salesTableData.length = 0
     lastProcessedDataRef.current = null
     lastExportedDataRef.current = null
-    // Reset tutorial state
     setRunTutorial(false)
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     resetValues()
-  },[])
+  }, [])
 
   useEffect(() => {
-      localStorage.setItem('currentPath', location.pathname)
+    localStorage.setItem('currentPath', location.pathname)
   }, [location])
 
   const [bandeira, setBandeira] = useState(null)
   const [administradora, setAdministradora] = useState(null)
+  const [tipoRelatorio, setTipoRelatorio] = useState({ value: 'detalhado', label: 'Detalhado' })
 
   const [listaBandeiras, setListaBandeiras] = useState([])
   const [listaAdministradoras, setListaAdministradoras] = useState([])
 
-  useEffect(()=>{
-    const inicializar = async () =>{
+  useEffect(() => {
+    const inicializar = async () => {
       setListaBandeiras(await loadBanners())
       setListaAdministradoras(await loadAdmins())
     }
     inicializar()
-  },[])
+  }, [])
 
   const handleAdmin = (option) => {
     setAdministradora(option?.codigoAdquirente || null)
-    localStorage.setItem('selectedAdm', JSON.stringify(option)) 
+    localStorage.setItem('selectedAdm', JSON.stringify(option))
   }
 
   const handleBan = (option) => {
     setBandeira(option?.codigoBandeira || null)
-    localStorage.setItem('selectedBan', JSON.stringify(option)) 
+    localStorage.setItem('selectedBan', JSON.stringify(option))
   }
 
   const {
@@ -78,11 +170,10 @@ const Vendas = () =>{
     btnDisabledSales, setBtnDisabledSales,
     newGroupByAdmin,
     loadBanners, loadAdmins,
-    exportSales, 
+    exportSales,
     isCheckedCalendar, setIsCheckedCalendar,
   } = useContext(AuthContext)
 
-  // Memoize the grouped data to prevent recreation on every render
   const memoizedGroupedData = useMemo(() => {
     if (salesPageArray && salesPageArray.length > 0) {
       return newGroupByAdmin(salesPageArray)
@@ -90,7 +181,6 @@ const Vendas = () =>{
     return []
   }, [salesPageArray, newGroupByAdmin])
 
-  // Update admin array only when memoized value changes
   useEffect(() => {
     if (memoizedGroupedData.length > 0 && JSON.stringify(memoizedGroupedData) !== JSON.stringify(salesPageAdminArray)) {
       setSalesPageAdminArray(memoizedGroupedData)
@@ -99,23 +189,22 @@ const Vendas = () =>{
     }
   }, [memoizedGroupedData, salesPageAdminArray, setSalesPageAdminArray])
 
-  // Memoize the totals calculation to prevent unnecessary updates
   const memoizedTotals = useMemo(() => {
     if (!salesPageArray || salesPageArray.length === 0) {
       return { debit: 0, credit: 0, voucher: 0, total: 0 }
     }
-    
+
     let totalCredito = 0
     let totalDebito = 0
     let totalVoucher = 0
     let totalGeral = 0
-    
+
     salesPageArray.forEach(sale => {
       const valor = sale.VALORBRUTO || 0
       const produto = (sale.PRODUTO || "").trim()
-      
+
       totalGeral += valor
-      
+
       if (produto === 'Crédito') {
         totalCredito += valor
       } else if (produto === 'Débito') {
@@ -124,7 +213,7 @@ const Vendas = () =>{
         totalVoucher += valor
       }
     })
-    
+
     return {
       debit: totalDebito,
       credit: totalCredito,
@@ -133,7 +222,6 @@ const Vendas = () =>{
     }
   }, [salesPageArray])
 
-  // Update sales total when memoized values change
   useEffect(() => {
     const currentTotal = salesTotal
     if (currentTotal.debit !== memoizedTotals.debit ||
@@ -144,12 +232,11 @@ const Vendas = () =>{
     }
   }, [memoizedTotals, salesTotal, setSalesTotal])
 
-  // Memoize the transformed data for export to prevent unnecessary transformations
   const memoizedExportData = useMemo(() => {
     if (!salesPageArray || salesPageArray.length === 0) return []
-    
+
     const isNewApiData = salesPageArray[0] && salesPageArray[0].CNPJ !== undefined
-    
+
     if (isNewApiData) {
       return salesPageArray.map((item) => ({
         cnpj: item.CNPJ || '',
@@ -186,16 +273,15 @@ const Vendas = () =>{
         ro: item.RO || ''
       }))
     }
-    
+
     return salesPageArray
   }, [salesPageArray])
 
-  // Update sales table data when memoized export data changes
   useEffect(() => {
     if (memoizedExportData.length > 0) {
       const currentData = salesTableData
       const isDataSame = JSON.stringify(currentData) === JSON.stringify(memoizedExportData)
-      
+
       if (!isDataSame) {
         setSalesTableData(memoizedExportData)
       }
@@ -208,6 +294,14 @@ const Vendas = () =>{
     resetValues()
     toast.error('Ocorreu um erro ao carregar os dados de vendas. A página foi redefinida.')
   }
+
+  const refreshSales = useCallback(async () => {
+    try {
+      await loadData()
+    } catch (error) {
+      console.error('Error refreshing sales:', error)
+    }
+  }, [])
 
   async function handleLoadData(e) {
     e.preventDefault()
@@ -229,17 +323,23 @@ const Vendas = () =>{
     try {
       const startDate = salesDateRange[0]
       const endDate = salesDateRange[1]
-      
+
       const filters = {
         adquirente: administradora || "",
         bandeira: bandeira || "",
-      }  
-      const data = await newLoadSales(startDate, endDate, filters)      
+      }
+
+      const data = await newLoadSales(startDate, endDate, filters)
       setSalesPageArray(data)
     } catch (error) {
       console.error('Error fetching sales data:', error)
       throw error
     }
+  }
+
+  const handleTipoRelatorioChange = (option) => {
+    const newTipo = option || { value: 'detalhado', label: 'Detalhado' }
+    setTipoRelatorio(newTipo)
   }
 
   const handleDateRangeChange = (dateRange) => {
@@ -248,18 +348,18 @@ const Vendas = () =>{
 
   const CustomCheckbox = ({ isChecked, handleCheckboxChange }) => {
     return (
-        <label className="checkbox-label">
-          <input
-              type="checkbox"
-              checked={isChecked}
-              onChange={handleCheckboxChange}
-              className='checkbox-input'
-          />
-          <span className='checkbox-custom'></span>
-          <span className='checkbox-icon'>
-              <FiCalendar className={`calendar-icon ${isCheckedCalendar ? 'isCheckedCalendar' : ''}`} size={20} />
-          </span>
-        </label>
+      <label className="checkbox-label">
+        <input
+          type="checkbox"
+          checked={isChecked}
+          onChange={handleCheckboxChange}
+          className='checkbox-input'
+        />
+        <span className='checkbox-custom'></span>
+        <span className='checkbox-icon'>
+          <FiCalendar className={`calendar-icon ${isCheckedCalendar ? 'isCheckedCalendar' : ''}`} size={20} />
+        </span>
+      </label>
     )
   }
 
@@ -290,48 +390,52 @@ const Vendas = () =>{
 
   useEffect(() => {
     if (salesPageArray && salesPageArray.length > 0) {
-      const isAjustes = location.pathname === '/servicos';
-      
-      let newSteps = [];
-      
-      // Only show modalidade for vendas and creditos, not for ajustes
+      const isAjustes = location.pathname === '/servicos'
+
+      let newSteps = []
+
       if (!isAjustes) {
         newSteps.push({
           target: '[data-tour="modalidade-section"]',
           content: 'Valores totais das vendas exibidas, por modalidade.',
           disableBeacon: true,
           placement: 'bottom',
-        });
+        })
       }
-      
+
+      newSteps.push({
+        target: '[data-tour="tipo-relatorio-section"]',
+        content: 'Escolha entre relatório Detalhado ou Resumido.',
+        placement: 'bottom',
+      })
+
       newSteps.push({
         target: '[data-tour="exportacao-section"]',
         content: 'Exporta as vendas sendo exibidas para os formatos Excel ou PDF.',
         placement: 'bottom',
-      });
-      
+      })
+
       newSteps.push({
         target: '[data-tour="tabelavendas-section"]',
         content: 'Vendas do período selecionado. Podem ser filtradas por bandeira/adquirente.',
         placement: 'bottom',
-      });
-      
-      // Only show totaladq for vendas and creditos, not for ajustes
+      })
+
       if (!isAjustes) {
         newSteps.push({
           target: '[data-tour="totaladq-section"]',
           content: 'Valores totais das vendas sendo exibidas, separadas por adquirente.',
           placement: 'bottom',
-        });
+        })
       }
-      
+
       newSteps.push({
         target: '[data-tour="botaovoltar-section"]',
         content: 'Retorna ao calendário, possibilitando realizar uma nova consulta.',
         placement: 'bottom',
-      });
-      
-      setTutorialSteps(newSteps);
+      })
+
+      setTutorialSteps(newSteps)
     } else {
       setTutorialSteps([
         {
@@ -351,9 +455,9 @@ const Vendas = () =>{
           content: 'Tendo a data selecionada, clique em "Pesquisar" para realizar a consulta das vendas da data ou período selecionado.',
           placement: 'bottom',
         },
-      ]);
+      ])
     }
-  }, [salesPageArray, location.pathname]);
+  }, [salesPageArray, location.pathname])
 
   const handleTutorialEnd = () => {
     setRunTutorial(false)
@@ -369,8 +473,8 @@ const Vendas = () =>{
     return listaBandeiras.find(option => option.codigoBandeira === bandeira)
   }
 
-  return(
-    <div className='page-content-vendas'>      
+  return (
+    <div className='page-content-vendas'>
       <div className='component-container-vendas'>
         <div className='vendas-title-container'>
           <h1 className='vendas-title'>Calendário de Vendas</h1>
@@ -387,10 +491,12 @@ const Vendas = () =>{
               location={location}
               runTutorial={runTutorial}
               tutorialSteps={tutorialSteps}
+              tipoRelatorio={tipoRelatorio}
+              onTipoRelatorioChange={handleTipoRelatorioChange}
+              onRefreshSales={refreshSales}
             />
           ) : (
             <>
-              {/* Joyride for calendar view */}
               {runTutorial && (
                 <Joyride
                   steps={tutorialSteps}
@@ -423,12 +529,12 @@ const Vendas = () =>{
                   }}
                 />
               )}
-              
+
               <div className='select-container-calendario' data-tour="bandeiraadquirente-section">
                 <div className='select-wrapper'>
                   <h5>Adquirente</h5>
-                  <Select 
-                    className='seletor-adq-select fixed-width-select' 
+                  <Select
+                    className='seletor-adq-select fixed-width-select'
                     id='adquirente'
                     options={listaAdministradoras}
                     getOptionLabel={(option) => option.nomeAdquirente}
@@ -439,37 +545,14 @@ const Vendas = () =>{
                     menuPosition="fixed"
                     placeholder="Selecione uma adquirente..."
                     isClearable={true}
-                    styles={{
-                      control: (base) => ({
-                        ...base,
-                        minWidth: 250,
-                        width: '100%',
-                      }),
-                      menu: (base) => ({
-                        ...base,
-                        minWidth: 250,
-                        width: '100%',
-                      }),
-                      valueContainer: (base) => ({
-                        ...base,
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }),
-                      singleValue: (base) => ({
-                        ...base,
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        maxWidth: '90%',
-                      }),
-                    }}
+                    styles={customSelectStyles}
+                    theme={themeConfig}
                   />
                 </div>
                 <div className='select-wrapper'>
                   <h5>Bandeira</h5>
-                  <Select 
-                    className='seletor-adq-select fixed-width-select' 
+                  <Select
+                    className='seletor-adq-select fixed-width-select'
                     id='bandeira'
                     options={listaBandeiras}
                     getOptionLabel={(option) => option.descricaoBandeira}
@@ -480,34 +563,12 @@ const Vendas = () =>{
                     menuPosition="fixed"
                     placeholder="Selecione uma bandeira..."
                     isClearable={true}
-                    styles={{
-                      control: (base) => ({
-                        ...base,
-                        minWidth: 250,
-                        width: '100%',
-                      }),
-                      menu: (base) => ({
-                        ...base,
-                        minWidth: 250,
-                        width: '100%',
-                      }),
-                      valueContainer: (base) => ({
-                        ...base,
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }),
-                      singleValue: (base) => ({
-                        ...base,
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        maxWidth: '90%',
-                      }),
-                    }}
+                    styles={customSelectStyles}
+                    theme={themeConfig}
                   />
                 </div>
               </div>
+
               <div data-tour="calendario-section">
                 <MyCalendar
                   onLoadData={handleLoadData}
@@ -517,15 +578,15 @@ const Vendas = () =>{
               </div>
             </>
           )
-        ) : null }
+        ) : null}
         <>
-          <button 
+          <button
             className='btn btn-success-dados btn-tutorial px-2 py-1'
             onClick={() => {
-              setRunTutorial(false);
+              setRunTutorial(false)
               setTimeout(() => {
-                setRunTutorial(true);
-              }, 50);
+                setRunTutorial(true)
+              }, 50)
             }}
             style={{
               position: 'relative',

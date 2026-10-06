@@ -10,7 +10,9 @@ import {
   FiSkipForward, 
   FiFilter, 
   FiChevronDown, 
-  FiChevronUp 
+  FiChevronUp,
+  FiTrash2,
+  FiAlertTriangle
 } from 'react-icons/fi'
 import Marquee from "react-fast-marquee";
 
@@ -77,102 +79,43 @@ const tableConfig = {
       { key: 'status', label: 'Status', path: 'STATUS' },
       { key: 'codigoAjuste', label: 'Código', path: 'CODIGOAJUSTE' }
     ]
+  },
+  openfinance: {
+    title: 'Extrato Bancário',
+    filters: [
+      { key: 'categoria', label: 'Categoria', path: 'Categoria' },
+      { key: 'operacao', label: 'Operação', path: 'Operação' }
+    ],
+    mobileCards: [
+      { key: 'descricao', label: 'Descrição', path: 'Descrição', fullWidth: true },
+      { key: 'data', label: 'Data', path: 'Data', format: 'date' },
+      { key: 'valor', label: 'Valor', path: 'Valor', format: 'currency', className: 'green-global' },
+      { key: 'categoria', label: 'Categoria', path: 'Categoria', badge: true },
+      { key: 'operacao', label: 'Operação', path: 'Operação' },
+      { key: 'cnpjPagador', label: 'CNPJ Pagador', path: 'CnpjPagador' },
+      { key: 'nomePagador', label: 'Pagador', path: 'NomePagador' },
+      { key: 'cnpjRecebedor', label: 'CNPJ Recebedor', path: 'CnpjRecebedor' },
+      { key: 'nomeRecebedor', label: 'Recebedor', path: 'NomeRecebedor' },
+      { key: 'complemento', label: 'Complemento', path: 'Complemento' }
+    ]
   }
 }
 
-// Helper function to find the full bandeira/adquirente/servico object from the data array
-const findFilterObject = (value, filterKey, dataArray, tableType) => {
-  if (!value || !dataArray || dataArray.length === 0) return null
-  
-  const uniqueMap = new Map()
-  
-  dataArray.forEach(item => {
-    let displayName = null
-    let code = null
-    
-    if (tableType === 'vendas') {
-      if (filterKey === 'bandeira') {
-        displayName = item.BANDEIRA
-        code = item.CODIGOBANDEIRA
-        if (displayName === value && code && !uniqueMap.has(code)) {
-          uniqueMap.set(code, {
-            codigoBandeira: code,
-            descricaoBandeira: displayName
-          })
-        }
-      } else if (filterKey === 'adquirente') {
-        displayName = item.ADMINISTRADORA
-        code = item.CODIGOADMINISTRADORA
-        if (displayName === value && code && !uniqueMap.has(code)) {
-          uniqueMap.set(code, {
-            codigoAdquirente: code,
-            nomeAdquirente: displayName
-          })
-        }
-      }
-    } else if (tableType === 'creditos') {
-      if (filterKey === 'bandeira') {
-        displayName = item.BANDEIRA
-        code = item.CODIGOBANDEIRA
-        if (displayName === value && code && !uniqueMap.has(code)) {
-          uniqueMap.set(code, {
-            codigoBandeira: code,
-            descricaoBandeira: displayName
-          })
-        }
-      } else if (filterKey === 'adquirente') {
-        displayName = item.ADMINISTRADORA
-        code = item.CODIGOADMINISTRADORA
-        if (displayName === value && code && !uniqueMap.has(code)) {
-          uniqueMap.set(code, {
-            codigoAdquirente: code,
-            nomeAdquirente: displayName
-          })
-        }
-      }
-    } else if (tableType === 'servicos') {
-      if (filterKey === 'tipoAjuste') {
-        displayName = item.TIPOAJUSTE
-        code = item.CODIGOAJUSTE || Math.abs(displayName?.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) || 0)
-        if (displayName === value && !uniqueMap.has(code)) {
-          uniqueMap.set(code, {
-            codigoAjuste: code,
-            descricaoAjuste: displayName
-          })
-        }
-      } else if (filterKey === 'adquirente') {
-        displayName = item.ADMINISTRADORA
-        code = item.CODIGOADMINISTRADORA
-        if (displayName === value && code && !uniqueMap.has(code)) {
-          uniqueMap.set(code, {
-            codigoAdquirente: code,
-            nomeAdquirente: displayName
-          })
-        }
-      }
-    }
-  })
-  
-  const result = uniqueMap.size > 0 ? Array.from(uniqueMap.values())[0] : null
-  
-  return result
-}
-
-const ConditionalMarquee = ({ children, speed = 50, gradient = false, className = "" }) => {
+const ConditionalMarquee = ({ children, speed = 50, gradient = false, className = "", fullWidth = false }) => {
   const text = typeof children === 'string' ? children : '';
-  
-  if (text.length > 10) {
+
+  if (fullWidth || text.length > 10) {
     return (
-      <div className="marquee-container">
+      <div className={`marquee-container ${fullWidth ? 'marquee-full-width' : ''}`}>
         <Marquee speed={speed} gradient={gradient} className={className} delay={1}>
           {children}
         </Marquee>
       </div>
     );
   }
-  
+
   return (
-    <div className="marquee-container static-text">
+    <div className={`marquee-container static-text ${fullWidth ? 'marquee-full-width' : ''}`}>
       <span className={className}>
         {children}
       </span>
@@ -199,6 +142,9 @@ const NewTabelaGenerica = forwardRef(({
   expandAll = false,
   filterConfig: customFilterConfig,
   enableDependentFilters = false,
+  onDeleteSale,
+  onRefreshSales = null,
+  canDeleteSale = false,
 }, ref) => {
   const { 
     isDarkTheme, 
@@ -210,6 +156,7 @@ const NewTabelaGenerica = forwardRef(({
   const [dataExibicao, setDataExibicao] = useState([])
   const [allFilterOptions, setAllFilterOptions] = useState({})
   const [selectedFilters, setSelectedFilters] = useState({})
+  const [selectedFilterObjects, setSelectedFilterObjects] = useState({})
   const [showMobileFilters, setShowMobileFilters] = useState(false)
   const [isMobileView, setIsMobileView] = useState(false)
   const [expandedRow, setExpandedRow] = useState(null)
@@ -222,11 +169,14 @@ const NewTabelaGenerica = forwardRef(({
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage] = useState(15)
   const [isDataProcessed, setIsDataProcessed] = useState(false)
+  const [saleToDelete, setSaleToDelete] = useState(null)
+  const [isDeletingSale, setIsDeletingSale] = useState(false)
 
   const lastFilteredDataRef = useRef(null)
   const isUpdatingRef = useRef(false)
   const onTotalUpdateRef = useRef(onTotalUpdate)
   const lastNotifiedDataRef = useRef(null)
+  const isInitialLoadRef = useRef(true)
 
   useEffect(() => {
     onTotalUpdateRef.current = onTotalUpdate
@@ -235,8 +185,20 @@ const NewTabelaGenerica = forwardRef(({
   const config = useMemo(() => tableConfig[tableType] || {}, [tableType])
 
   useImperativeHandle(ref, () => ({
-    getFilteredData: () => dataExibicao
-  }), [dataExibicao])
+    getFilteredData: () => dataExibicao,
+    getFilterCodes: () => {
+      const codes = {}
+      Object.keys(selectedFilterObjects).forEach(key => {
+        const obj = selectedFilterObjects[key]
+        if (obj) {
+          if (key === 'bandeira') codes.bandeira = obj.codigoBandeira
+          else if (key === 'adquirente') codes.adquirente = obj.codigoAdquirente
+          else if (key === 'tipoAjuste') codes.tipoAjuste = obj.codigoAjuste
+        }
+      })
+      return codes
+    }
+  }), [dataExibicao, selectedFilterObjects])
 
   const getStorageKeys = useCallback(() => {
     switch(tableType) {
@@ -246,6 +208,8 @@ const NewTabelaGenerica = forwardRef(({
         return { filter1: 'selectedBanCredits', filter2: 'selectedAdmCredits' }
       case 'servicos':
         return { filter1: 'selectedBanServices', filter2: 'selectedAdmServices' }
+      case 'openfinance':
+        return { filter1: 'selectedOFCategoria', filter2: 'selectedOFOperacao' }
       default:
         return { filter1: 'selectedBan', filter2: 'selectedAdm' }
     }
@@ -259,6 +223,8 @@ const NewTabelaGenerica = forwardRef(({
         return { first: 'bandeira', second: 'adquirente' }
       case 'servicos':
         return { first: 'tipoAjuste', second: 'adquirente' }
+      case 'openfinance':
+        return { first: 'categoria', second: 'operacao' }
       default:
         return { first: 'bandeira', second: 'adquirente' }
     }
@@ -268,10 +234,10 @@ const NewTabelaGenerica = forwardRef(({
     const checkMobile = () => {
       setIsMobileView(window.innerWidth < 768)
     }
-    
+
     checkMobile()
     window.addEventListener('resize', checkMobile)
-    
+
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
@@ -288,101 +254,22 @@ const NewTabelaGenerica = forwardRef(({
     }
   }, [dataArray, expandAll])
 
-  // Load saved filters from localStorage on component mount
-  useEffect(() => {
-    const storageKeys = getStorageKeys()
-    const filterKeys = getFilterKeys()
-    const savedFirstFilter = localStorage.getItem(storageKeys.filter1)
-    const savedSecondFilter = localStorage.getItem(storageKeys.filter2)
-    
-    const initialFilters = {}
-    
-    if (savedFirstFilter && savedFirstFilter !== 'null' && savedFirstFilter !== 'undefined') {
-      try {
-        const parsedFilter = JSON.parse(savedFirstFilter)
-        let filterValue = null
-        
-        if (tableType === 'servicos') {
-          filterValue = parsedFilter.descricaoAjuste
-        } else {
-          filterValue = parsedFilter.descricaoBandeira
-        }
-        
-        if (filterValue) {
-          initialFilters[filterKeys.first] = filterValue
-        }
-      } catch (e) {
-        console.error('Error parsing saved filter:', e)
-      }
-    }
-    
-    if (savedSecondFilter && savedSecondFilter !== 'null' && savedSecondFilter !== 'undefined') {
-      try {
-        const parsedFilter = JSON.parse(savedSecondFilter)
-        if (parsedFilter && parsedFilter.nomeAdquirente) {
-          initialFilters[filterKeys.second] = parsedFilter.nomeAdquirente
-        }
-      } catch (e) {
-        console.error('Error parsing saved filter:', e)
-      }
-    }
-    
-    if (Object.keys(initialFilters).length > 0) {
-      setSelectedFilters(prev => ({ ...prev, ...initialFilters }))
-    }
-  }, [getStorageKeys, getFilterKeys, tableType])
-
-  // Update localStorage when first filter changes
-  useEffect(() => {
-    const storageKeys = getStorageKeys()
-    const filterKeys = getFilterKeys()
-    const filterValue = selectedFilters[filterKeys.first]
-    
-    
-    if (filterValue && dataArray && dataArray.length > 0) {
-      const filterObject = findFilterObject(filterValue, filterKeys.first, dataArray, tableType)
-      if (filterObject) {
-        localStorage.setItem(storageKeys.filter1, JSON.stringify(filterObject))
-      } else {
-        localStorage.removeItem(storageKeys.filter1)
-      }
-    } else if (!filterValue) {
-      localStorage.removeItem(storageKeys.filter1)
-    }
-  }, [selectedFilters, dataArray, tableType, getStorageKeys, getFilterKeys])
-
-  // Update localStorage when second filter changes
-  useEffect(() => {
-    const storageKeys = getStorageKeys()
-    const filterKeys = getFilterKeys()
-    const filterValue = selectedFilters[filterKeys.second]
-      
-    if (filterValue && dataArray && dataArray.length > 0) {
-      const filterObject = findFilterObject(filterValue, filterKeys.second, dataArray, tableType)
-      if (filterObject) {
-        localStorage.setItem(storageKeys.filter2, JSON.stringify(filterObject))
-      } else {
-        localStorage.removeItem(storageKeys.filter2)
-      }
-    } else if (!filterValue) {
-      localStorage.removeItem(storageKeys.filter2)
-    }
-  }, [selectedFilters, dataArray, tableType, getStorageKeys, getFilterKeys])
-
   const getFilterConfig = useCallback(() => {
     if (customFilterConfig) return customFilterConfig
-    
+
     switch(tableType) {
       case 'vendas':
         return {
           adquirente: {
             label: 'Adquirente',
             accessor: (item) => item.ADMINISTRADORA || '',
+            codeAccessor: (item) => item.CODIGOADMINISTRADORA || null,
             dependentKey: 'bandeira'
           },
           bandeira: {
             label: 'Bandeira', 
             accessor: (item) => item.BANDEIRA || '',
+            codeAccessor: (item) => item.CODIGOBANDEIRA || null,
             dependentKey: 'adquirente'
           }
         }
@@ -391,11 +278,13 @@ const NewTabelaGenerica = forwardRef(({
           adquirente: {
             label: 'Adquirente',
             accessor: (item) => item.ADMINISTRADORA || '',
+            codeAccessor: (item) => item.CODIGOADMINISTRADORA || null,
             dependentKey: 'bandeira'
           },
           bandeira: {
             label: 'Bandeira', 
             accessor: (item) => item.BANDEIRA || '',
+            codeAccessor: (item) => item.CODIGOBANDEIRA || null,
             dependentKey: 'adquirente'
           }
         }
@@ -404,12 +293,33 @@ const NewTabelaGenerica = forwardRef(({
           adquirente: {
             label: 'Adquirente',
             accessor: (item) => item.ADMINISTRADORA || '',
+            codeAccessor: (item) => item.CODIGOADMINISTRADORA || null,
             dependentKey: 'tipoAjuste'
           },
           tipoAjuste: {
             label: 'Tipo de Ajuste',
             accessor: (item) => item.TIPOAJUSTE || '',
+            codeAccessor: (item) => item.CODIGOAJUSTE || null,
             dependentKey: 'adquirente'
+          }
+        }
+      case 'openfinance':
+        return {
+          categoria: {
+            label: 'Categoria',
+            accessor: (item) => item.Categoria || '',
+            codeAccessor: (item) => item.Categoria || null,
+            dependentKey: 'operacao'
+          },
+          operacao: {
+            label: 'Operação',
+            accessor: (item) => {
+              if (item.Operação === 1) return 'Crédito'
+              if (item.Operação === -1) return 'Débito'
+              return 'Outros'
+            },
+            codeAccessor: (item) => item.Operação || null,
+            dependentKey: 'categoria'
           }
         }
       default:
@@ -417,11 +327,37 @@ const NewTabelaGenerica = forwardRef(({
     }
   }, [tableType, customFilterConfig])
 
-  const tableColumns = useMemo(() => columns || [], [columns])
+  const tableColumns = useMemo(() => {
+    const baseColumns = columns || []
+
+    if (tableType === 'vendas' && canDeleteSale) {
+      return [
+        ...baseColumns,
+        {
+          key: '__delete',
+          header: 'Excluir',
+          render: (item) => (
+            <button
+              type="button"
+              className="btn-action btn-delete"
+              title="Excluir cupom de venda"
+              onClick={(e) => {
+                e.stopPropagation()
+                setSaleToDelete(item)
+              }}
+            >
+              <FiTrash2 />
+            </button>
+          ),
+        },
+      ]
+    }
+
+    return baseColumns
+  }, [columns, tableType, canDeleteSale])
 
   const isExpandable = expandable || config.expandable
 
-  // Initialize filter options
   useEffect(() => {
     if (!showFilters || dataArray.length === 0) {
       if (Object.keys(allFilterOptions).length > 0) {
@@ -431,28 +367,33 @@ const NewTabelaGenerica = forwardRef(({
     }
 
     const filterConfig = getFilterConfig()
-    
+
     const allOptions = {}
     Object.keys(filterConfig).forEach(filterKey => {
       const uniqueValues = new Set()
-      
+      const uniqueObjects = {}
+
       dataArray.forEach(item => {
         const value = filterConfig[filterKey].accessor(item)
-        if (value) {
+        const code = filterConfig[filterKey].codeAccessor ? filterConfig[filterKey].codeAccessor(item) : null
+        if (value && code) {
           uniqueValues.add(value)
+          uniqueObjects[value] = { value, code }
         }
       })
 
-      allOptions[filterKey] = [...uniqueValues].sort((a, b) => a.localeCompare(b))
+      allOptions[filterKey] = {
+        values: [...uniqueValues].sort((a, b) => a.localeCompare(b)),
+        objects: uniqueObjects
+      }
     })
 
     setAllFilterOptions(allOptions)
   }, [dataArray, showFilters, getFilterConfig])
 
-  // Main filtering logic
   useEffect(() => {
     if (isUpdatingRef.current) return
-    
+
     if (dataArray.length === 0) {
       if (dataExibicao.length !== 0) {
         setDataExibicao([])
@@ -466,7 +407,7 @@ const NewTabelaGenerica = forwardRef(({
     let filteredData = dataArray
 
     const hasActiveFilters = Object.keys(selectedFilters).some(key => selectedFilters[key])
-    
+
     if (hasActiveFilters) {
       Object.keys(selectedFilters).forEach(filterKey => {
         if (selectedFilters[filterKey] && filterConfig[filterKey]) {
@@ -476,30 +417,29 @@ const NewTabelaGenerica = forwardRef(({
         }
       })
     }
-    
+
     const filteredDataSignature = JSON.stringify(filteredData)
-    
+
     if (filteredDataSignature !== lastFilteredDataRef.current) {
       isUpdatingRef.current = true
       lastFilteredDataRef.current = filteredDataSignature
       setDataExibicao(filteredData)
       setCurrentPage(1)
-      
+
       if (onTotalUpdateRef.current && isDataProcessed && filteredData.length !== dataExibicao.length) {
         onTotalUpdateRef.current(filteredData)
       }
-      
+
       setTimeout(() => {
         isUpdatingRef.current = false
       }, 100)
     }
-    
+
     if (!isDataProcessed && dataArray.length > 0) {
       setIsDataProcessed(true)
     }
   }, [dataArray, selectedFilters, getFilterConfig, dataExibicao.length, isDataProcessed])
 
-  // Update parent component when dataExibicao changes
   useEffect(() => {
     if (onTotalUpdateRef.current && dataExibicao && dataExibicao.length > 0) {
       const dataSignature = JSON.stringify(dataExibicao)
@@ -512,7 +452,7 @@ const NewTabelaGenerica = forwardRef(({
 
   const toggleRow = useCallback(async (row) => {
     const rowId = row.id || row.document || row.contractNumber || Math.random()
-    
+
     if (expandAll) {
       const newExpandedRows = new Set(expandedRows)
       if (newExpandedRows.has(rowId)) {
@@ -525,7 +465,7 @@ const NewTabelaGenerica = forwardRef(({
       const isExpanding = expandedRow !== rowId
       setExpandedRow(isExpanding ? rowId : null)
     }
-    
+
     if (onRowClick) {
       onRowClick(row)
     }
@@ -564,7 +504,7 @@ const NewTabelaGenerica = forwardRef(({
 
   const getDateRangeText = useCallback(() => {
     if (!dateRange || dateRange.length < 2) return ''
-    
+
     const formatDate = (date) => {
       if (date instanceof Date) {
         return date.toLocaleDateString('pt-BR')
@@ -574,11 +514,12 @@ const NewTabelaGenerica = forwardRef(({
 
     const formattedStart = formatDate(dateRange[0])
     const formattedEnd = formatDate(dateRange[1])
-    
+
     const tableLabels = {
       vendas: 'Vendas',
       creditos: 'Créditos', 
-      servicos: 'Ajustes/Serviços'
+      servicos: 'Ajustes/Serviços',
+      openfinance: 'Extrato Bancário'
     }
 
     const label = tableLabels[tableType] || 'Dados'
@@ -599,22 +540,80 @@ const NewTabelaGenerica = forwardRef(({
   }, [dateRange, tableType])
 
   const handleFilterChange = useCallback((filterKey, value) => {
+    const filterConfig = getFilterConfig()
+    const filterObjects = allFilterOptions[filterKey]?.objects || {}
+
     setSelectedFilters(prev => ({
       ...prev,
       [filterKey]: value || ''
     }))
-  }, [])
+
+    if (value && filterObjects[value]) {
+      const obj = filterObjects[value]
+      let filterObj = null
+
+      if (filterKey === 'bandeira') {
+        filterObj = {
+          codigoBandeira: obj.code,
+          descricaoBandeira: value
+        }
+      } else if (filterKey === 'adquirente') {
+        filterObj = {
+          codigoAdquirente: obj.code,
+          nomeAdquirente: value
+        }
+      } else if (filterKey === 'tipoAjuste') {
+        filterObj = {
+          codigoAjuste: obj.code,
+          descricaoAjuste: value
+        }
+      } else if (filterKey === 'categoria') {
+        filterObj = {
+          categoria: value
+        }
+      } else if (filterKey === 'operacao') {
+        filterObj = {
+          operacao: value
+        }
+      }
+
+      setSelectedFilterObjects(prev => ({
+        ...prev,
+        [filterKey]: filterObj
+      }))
+
+      const storageKeys = getStorageKeys()
+      if (filterKey === 'bandeira' || filterKey === 'tipoAjuste' || filterKey === 'categoria') {
+        localStorage.setItem(storageKeys.filter1, JSON.stringify(filterObj))
+      } else if (filterKey === 'adquirente' || filterKey === 'operacao') {
+        localStorage.setItem(storageKeys.filter2, JSON.stringify(filterObj))
+      }
+    } else {
+      setSelectedFilterObjects(prev => ({
+        ...prev,
+        [filterKey]: null
+      }))
+
+      const storageKeys = getStorageKeys()
+      if (filterKey === 'bandeira' || filterKey === 'tipoAjuste' || filterKey === 'categoria') {
+        localStorage.removeItem(storageKeys.filter1)
+      } else if (filterKey === 'adquirente' || filterKey === 'operacao') {
+        localStorage.removeItem(storageKeys.filter2)
+      }
+    }
+  }, [getFilterConfig, allFilterOptions, getStorageKeys])
 
   const clearFilters = useCallback(() => {
     const storageKeys = getStorageKeys()
     setSelectedFilters({})
+    setSelectedFilterObjects({})
     localStorage.removeItem(storageKeys.filter1)
     localStorage.removeItem(storageKeys.filter2)
   }, [getStorageKeys])
 
   const getAvailableOptions = useCallback((filterKey) => {
     if (!enableDependentFilters) {
-      return allFilterOptions[filterKey] || []
+      return allFilterOptions[filterKey]?.values || []
     }
 
     const filterConfig = getFilterConfig()
@@ -622,7 +621,7 @@ const NewTabelaGenerica = forwardRef(({
     const currentDependentValue = selectedFilters[dependentKey]
 
     if (!currentDependentValue) {
-      return allFilterOptions[filterKey] || []
+      return allFilterOptions[filterKey]?.values || []
     }
 
     const availableValues = new Set()
@@ -646,7 +645,7 @@ const NewTabelaGenerica = forwardRef(({
 
   const formatValue = useCallback((value, formatType) => {
     if (value === null || value === undefined || value === '') return ''
-    
+
     switch (formatType) {
       case 'currency':
         return Number(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
@@ -668,6 +667,89 @@ const NewTabelaGenerica = forwardRef(({
     }
     return chunks
   }, [])
+
+  const handleDeleteSaleCancel = useCallback(() => {
+    setSaleToDelete(null)
+  }, [])
+
+  const handleDeleteSaleConfirm = useCallback(async () => {
+    if (!saleToDelete || !onDeleteSale) return
+
+    setIsDeletingSale(true)
+    try {
+      const result = await onDeleteSale(saleToDelete)
+      if (result && result.success) {
+        setSaleToDelete(null)
+        if (onRefreshSales) {
+          await onRefreshSales()
+        }
+      }
+    } finally {
+      setIsDeletingSale(false)
+    }
+  }, [saleToDelete, onDeleteSale, onRefreshSales])
+
+  useEffect(() => {
+    if (isInitialLoadRef.current && dataArray.length > 0) {
+      const storageKeys = getStorageKeys()
+      const filterKeys = getFilterKeys()
+
+      const savedFirstFilter = localStorage.getItem(storageKeys.filter1)
+      const savedSecondFilter = localStorage.getItem(storageKeys.filter2)
+
+      const initialFilters = {}
+      const initialObjects = {}
+
+      if (savedFirstFilter && savedFirstFilter !== 'null' && savedFirstFilter !== 'undefined') {
+        try {
+          const parsedFilter = JSON.parse(savedFirstFilter)
+          let filterValue = null
+
+          if (tableType === 'servicos') {
+            filterValue = parsedFilter.descricaoAjuste
+          } else if (tableType === 'openfinance') {
+            filterValue = parsedFilter.categoria
+          } else {
+            filterValue = parsedFilter.descricaoBandeira
+          }
+
+          if (filterValue) {
+            initialFilters[filterKeys.first] = filterValue
+            initialObjects[filterKeys.first] = parsedFilter
+          }
+        } catch (e) {
+          console.error('Error parsing saved filter:', e)
+        }
+      }
+
+      if (savedSecondFilter && savedSecondFilter !== 'null' && savedSecondFilter !== 'undefined') {
+        try {
+          const parsedFilter = JSON.parse(savedSecondFilter)
+          let filterValue = null
+
+          if (tableType === 'openfinance') {
+            filterValue = parsedFilter.operacao
+          } else {
+            filterValue = parsedFilter.nomeAdquirente
+          }
+
+          if (filterValue) {
+            initialFilters[filterKeys.second] = filterValue
+            initialObjects[filterKeys.second] = parsedFilter
+          }
+        } catch (e) {
+          console.error('Error parsing saved filter:', e)
+        }
+      }
+
+      if (Object.keys(initialFilters).length > 0) {
+        setSelectedFilters(prev => ({ ...prev, ...initialFilters }))
+        setSelectedFilterObjects(prev => ({ ...prev, ...initialObjects }))
+      }
+
+      isInitialLoadRef.current = false
+    }
+  }, [dataArray, getStorageKeys, getFilterKeys, tableType])
 
   if (tableType === 'admin') {
     return (
@@ -706,59 +788,6 @@ const NewTabelaGenerica = forwardRef(({
 
   return (
     <>
-      {showFilters && (
-        <>
-          <div className='date-container'>
-
-
-            <hr className='hr-global'/>
-            <div className='container-busca'>
-              <span className='span-busca'>
-                {getDateRangeText()}
-              </span>
-            </div>
-          </div>
-          <hr className='hr-global'/>
-                      <div data-tour="bandeiraadquirente-section" className='container desktop-filters'>
-              {Object.keys(getFilterConfig()).map(filterKey => (
-                <div key={filterKey} className='export-column'>
-                  <div className='filter-card'>
-                    <label className='filter-label'>{getFilterConfig()[filterKey].label}</label>
-                    <div className="custom-select-wrapper">
-                      <select 
-                        className='custom-select' 
-                        value={selectedFilters[filterKey] || ''}
-                        onChange={(e) => handleFilterChange(filterKey, e.target.value)}
-                      >
-                        <option value=''>Todas</option>
-                        {getAvailableOptions(filterKey)?.map(option => (
-                          <option key={option} value={option}>{option}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              ))}
-              
-              {Object.keys(selectedFilters).some(key => selectedFilters[key]) && (
-                <div className="export-column">
-                  <div className='filter-card'>
-                    <label className='filter-label'>&nbsp;</label>
-                    <button 
-                      className="clear-filters-btn"
-                      onClick={clearFilters}
-                    >
-                      <FiFilter />
-                      Limpar Filtros
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-            <hr className='hr-global'/>
-        </>
-      )}
-
       {error && (
         <div className="alert alert-danger mb-3 mobile-alert">
           {error}
@@ -802,13 +831,12 @@ const NewTabelaGenerica = forwardRef(({
             </table>
           )}
 
-          {/* Mobile Cards - Fixed for services */}
           {isMobileView && config.mobileCards && config.mobileCards.length > 0 ? (
             <div className="mobile-cards">
               {currentItems.map((item, index) => (
                 <div key={index} className="sale-card">
-                  <div className="card-header">
-                    {config.mobileCards.slice(0, 2).map((field, idx) => {
+                  <div className="card-header card-header-full-width">
+                    {config.mobileCards.slice(0, 1).map((field, idx) => {
                       let value
                       if (field.path) {
                         if (field.path.includes('.')) {
@@ -820,18 +848,20 @@ const NewTabelaGenerica = forwardRef(({
                         value = item[field.key]
                       }
                       const formattedValue = formatValue(value, field.format)
-                      
+
                       return field.badge ? (
-                        <ConditionalMarquee key={field.key} className="badge">
+                        <ConditionalMarquee key={field.key} className="badge" fullWidth={field.fullWidth}>
                           {formattedValue || field.label}
                         </ConditionalMarquee>
                       ) : (
-                        <strong key={field.key}>{formattedValue || 'N/A'}</strong>
+                        <ConditionalMarquee key={field.key} className="" fullWidth={field.fullWidth}>
+                          {formattedValue || 'N/A'}
+                        </ConditionalMarquee>
                       )
                     })}
                   </div>
                   <div className="card-body">
-                    {chunkArray(config.mobileCards.slice(2), 2).map((row, rowIndex) => (
+                    {chunkArray(config.mobileCards.slice(1), 2).map((row, rowIndex) => (
                       <div key={rowIndex} className="card-row">
                         {row.map(field => {
                           let value
@@ -845,7 +875,7 @@ const NewTabelaGenerica = forwardRef(({
                             value = item[field.key]
                           }
                           const formattedValue = formatValue(value, field.format)
-                          
+
                           return (
                             <div key={field.key} className="card-col">
                               <small>{field.label}</small>
@@ -864,7 +894,6 @@ const NewTabelaGenerica = forwardRef(({
               ))}
             </div>
           ) : isMobileView && (
-            // Fallback mobile view when no mobileCards config exists
             <div className="mobile-cards-fallback">
               {currentItems.map((item, index) => (
                 <div key={index} className="sale-card-fallback">
@@ -969,6 +998,75 @@ const NewTabelaGenerica = forwardRef(({
           </div>
           <hr className='hr-global'/>
         </>
+      )}
+
+      {saleToDelete && (
+        <div className="modal-overlay" onClick={handleDeleteSaleCancel}>
+          <div 
+            className="modal-container modal-container-small" 
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-header">
+              <h2>Excluir Cupom de Venda</h2>
+              <button className="modal-close" onClick={handleDeleteSaleCancel}>
+                ×
+              </button>
+            </div>
+
+            <div className="modal-body-confirm">
+              <div className="confirm-icon">
+                <FiAlertTriangle />
+              </div>
+              <p className="confirm-message">
+                Tem certeza que deseja excluir este cupom de venda?
+              </p>
+              <div className="confirm-details">
+                <div className="confirm-detail-row">
+                  <span className="detail-label">Adquirente:</span>
+                  <span className="detail-value">{saleToDelete.ADMINISTRADORA || 'N/A'}</span>
+                </div>
+                <div className="confirm-detail-row">
+                  <span className="detail-label">NSU:</span>
+                  <span className="detail-value">{saleToDelete.NSU || 'N/A'}</span>
+                </div>
+                <div className="confirm-detail-row">
+                  <span className="detail-label">Data Venda:</span>
+                  <span className="detail-value">
+                    {formatValue(saleToDelete.DATAVENDA, 'date') || 'N/A'}
+                  </span>
+                </div>
+                <div className="confirm-detail-row">
+                  <span className="detail-label">Valor Bruto:</span>
+                  <span className="detail-value">
+                    {formatValue(saleToDelete.VALORBRUTO, 'currency') || 'N/A'}
+                  </span>
+                </div>
+              </div>
+              <p className="confirm-warning">
+                Esta ação não pode ser desfeita.
+              </p>
+            </div>
+
+            <div className="modal-actions">
+              <button
+                type="button"
+                className="btn btn-cancel"
+                onClick={handleDeleteSaleCancel}
+                disabled={isDeletingSale}
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                className="btn btn-delete-confirm"
+                onClick={handleDeleteSaleConfirm}
+                disabled={isDeletingSale}
+              >
+                {isDeletingSale ? 'Excluindo...' : 'Excluir'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </>
   )

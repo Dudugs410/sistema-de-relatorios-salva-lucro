@@ -1,5 +1,5 @@
-// NewDisplayData.jsx - Complete fixed version with centralized Joyride
 import { useContext, useEffect, useState, useCallback, useMemo, useRef } from 'react'
+import Select from 'react-select'
 import NewTabelaGenerica from '../../components/NewTabelaGenerica'
 import TabelaGenericaAdm from '../../components/Componente_TabelaAdm'
 import TotalModalidadesComp from '../../components/Componente_TotalModalidades'
@@ -9,18 +9,14 @@ import '../../index.scss'
 import './displayData.scss'
 import { AuthContext } from '../../contexts/auth'
 
-// Safe number formatting utilities
 const safeToFixed = (value, decimals = 2) => {
   if (value === undefined || value === null || value === '') {
     return (0).toFixed(decimals)
   }
-  
   let numValue = typeof value === 'string' ? parseFloat(value) : Number(value)
-  
   if (isNaN(numValue)) {
     return (0).toFixed(decimals)
   }
-  
   return numValue.toFixed(decimals)
 }
 
@@ -28,47 +24,36 @@ const formatCurrency = (value) => {
   if (value === undefined || value === null || value === '') {
     return 'R$ 0,00'
   }
-  
   let numValue = typeof value === 'string' ? parseFloat(value) : Number(value)
-  
   if (isNaN(numValue)) {
     return 'R$ 0,00'
   }
-  
   return numValue.toLocaleString('pt-BR', {
     style: 'currency',
     currency: 'BRL'
   })
 }
 
-// Format date from ISO format (YYYY-MM-DDTHH:MM:SS) to Brazilian format (DD/MM/YYYY)
 const formatDateOnly = (isoDate) => {
   if (!isoDate) return 'N/A'
-  
   try {
-    // Handle ISO format: "2026-05-01T00:00:00"
     if (typeof isoDate === 'string' && isoDate.includes('T')) {
-      const datePart = isoDate.split('T')[0] // Gets "2026-05-01"
+      const datePart = isoDate.split('T')[0]
       const [year, month, day] = datePart.split('-')
       if (year && month && day) {
         return `${day}/${month}/${year}`
       }
     }
-    
-    // Handle if it's already in YYYY-MM-DD format
     if (typeof isoDate === 'string' && isoDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
       const [year, month, day] = isoDate.split('-')
       return `${day}/${month}/${year}`
     }
-    
-    // Handle Date object
     if (isoDate instanceof Date && !isNaN(isoDate.getTime())) {
       const day = String(isoDate.getDate()).padStart(2, '0')
       const month = String(isoDate.getMonth() + 1).padStart(2, '0')
       const year = isoDate.getFullYear()
       return `${day}/${month}/${year}`
     }
-    
     return isoDate || 'N/A'
   } catch (error) {
     console.error('Error formatting date:', error)
@@ -76,31 +61,22 @@ const formatDateOnly = (isoDate) => {
   }
 }
 
-// Format time from ISO format (1900-01-01THH:MM:SS) to just HH:MM:SS
 const formatTimeOnly = (isoDateTime) => {
   if (!isoDateTime) return 'N/A'
-  
   try {
-    // Handle ISO format with T separator: "1900-01-01T09:37:03"
     if (typeof isoDateTime === 'string' && isoDateTime.includes('T')) {
-      const timePart = isoDateTime.split('T')[1] // Gets "09:37:03"
-      // Remove any milliseconds if present
+      const timePart = isoDateTime.split('T')[1]
       return timePart.split('.')[0]
     }
-    
-    // Handle if it's already just a time string
     if (typeof isoDateTime === 'string' && isoDateTime.match(/^\d{2}:\d{2}:\d{2}/)) {
       return isoDateTime.split('.')[0]
     }
-    
-    // Handle Date object
     if (isoDateTime instanceof Date && !isNaN(isoDateTime.getTime())) {
       const hours = String(isoDateTime.getHours()).padStart(2, '0')
       const minutes = String(isoDateTime.getMinutes()).padStart(2, '0')
       const seconds = String(isoDateTime.getSeconds()).padStart(2, '0')
       return `${hours}:${minutes}:${seconds}`
     }
-    
     return 'N/A'
   } catch (error) {
     console.error('Error formatting time:', error)
@@ -108,10 +84,117 @@ const formatTimeOnly = (isoDateTime) => {
   }
 }
 
-// Safe date conversion wrapper for backward compatibility
+const formatCNPJ = (cnpj) => {
+  if (!cnpj) return 'N/A'
+  const cleaned = cnpj.replace(/\D/g, '')
+  if (cleaned.length === 14) {
+    return cleaned.replace(
+      /(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,
+      '$1.$2.$3/$4-$5'
+    )
+  }
+  return cnpj
+}
+
 const formatDate = (date) => {
   return formatDateOnly(date)
 }
+
+const tipoRelatorioOptions = [
+  { value: 'detalhado', label: 'Detalhado' },
+  { value: 'resumido', label: 'Resumido' },
+]
+
+const tipoRelatorioSelectStyles = {
+  control: (base, { isFocused }) => ({
+    ...base,
+    minWidth: 200,
+    width: '100%',
+    backgroundColor: 'var(--background-color)',
+    borderColor: isFocused ? 'var(--secondary-color)' : 'var(--bs-border-color)',
+    color: 'var(--font-color)',
+    '&:hover': { borderColor: 'var(--secondary-color)' },
+    boxShadow: isFocused ? '0 0 0 1px var(--secondary-color)' : 'none',
+  }),
+  menuPortal: (base) => ({
+    ...base,
+    zIndex: 99999,
+  }),
+  menu: (base) => ({
+    ...base,
+    backgroundColor: 'var(--background-color)',
+    borderColor: 'var(--bs-border-color)',
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+    zIndex: 99999,
+  }),
+  menuList: (base) => ({
+    ...base,
+    backgroundColor: 'var(--background-color)',
+    padding: '4px 0',
+  }),
+  option: (base, { isFocused, isSelected }) => ({
+    ...base,
+    backgroundColor: isSelected
+      ? 'var(--secondary-color)'
+      : isFocused
+        ? 'rgba(var(--secondary-color-rgb), 0.2)'
+        : 'transparent',
+    color: isSelected ? 'var(--primary-color)' : 'var(--font-color)',
+    cursor: 'pointer',
+    padding: '8px 12px',
+  }),
+  singleValue: (base) => ({
+    ...base,
+    color: 'var(--font-color)',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    maxWidth: '90%',
+  }),
+  input: (base) => ({ ...base, color: 'var(--font-color)' }),
+  placeholder: (base) => ({ ...base, color: 'var(--font-color)', opacity: 0.6 }),
+  valueContainer: (base) => ({
+    ...base,
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  }),
+  dropdownIndicator: (base) => ({
+    ...base,
+    color: 'var(--font-color)',
+    '&:hover': { color: 'var(--secondary-color)' },
+  }),
+  clearIndicator: (base) => ({
+    ...base,
+    color: 'var(--font-color)',
+    '&:hover': { color: 'var(--secondary-color)' },
+  }),
+  indicatorSeparator: (base) => ({ ...base, backgroundColor: 'var(--bs-border-color)' }),
+  noOptionsMessage: (base) => ({ ...base, color: 'var(--font-color)' }),
+  loadingMessage: (base) => ({ ...base, color: 'var(--font-color)' }),
+}
+
+const tipoRelatorioTheme = (theme) => ({
+  ...theme,
+  colors: {
+    ...theme.colors,
+    primary: 'var(--secondary-color)',
+    primary75: 'var(--secondary-color)',
+    primary50: 'rgba(var(--secondary-color-rgb), 0.5)',
+    primary25: 'rgba(var(--secondary-color-rgb), 0.25)',
+    neutral0: 'var(--background-color)',
+    neutral5: 'var(--background-color)',
+    neutral10: 'var(--background-color)',
+    neutral20: 'var(--bs-border-color)',
+    neutral30: 'var(--bs-border-color)',
+    neutral40: 'var(--font-color)',
+    neutral50: 'var(--font-color)',
+    neutral60: 'var(--font-color)',
+    neutral70: 'var(--font-color)',
+    neutral80: 'var(--font-color)',
+    neutral90: 'var(--font-color)',
+  },
+})
 
 const NewDisplayData = ({ 
   dataArray, 
@@ -126,7 +209,10 @@ const NewDisplayData = ({
   tutorialSteps = [],
   customTableColumns = null,
   customFilterConfig = null,
-  customExportPage = null
+  customExportPage = null,
+  tipoRelatorio = null,
+  onTipoRelatorioChange = null,
+  onRefreshSales = null,
 }) => {
   const { 
     clientUserId, 
@@ -138,25 +224,46 @@ const NewDisplayData = ({
     setCreditsTotal,
     exportSales,
     exportCredits,
-    exportServices
+    exportServices,
+    deleteSale
   } = useContext(AuthContext)
-  
+
   const [exportPage, setExportPage] = useState('')
   const [currentPath, setCurrentPath] = useState(location.pathname)
   const [currentFilteredData, setCurrentFilteredData] = useState(dataArray)
   const [hasLoadedTotals, setHasLoadedTotals] = useState(false)
-  
+
   const tabelaGenericaRef = useRef(null)
-  
-  // Refs to prevent infinite loop
+
   const isProcessingRef = useRef(false)
   const lastDataArrayRef = useRef(null)
   const lastTotalsCallRef = useRef(null)
 
-  // Check if we're on openfinance page
   const isOpenFinance = customExportPage === 'openfinance'
 
-  // Safe date conversion wrapper
+  const canDeleteSale = useMemo(() => {
+    try {
+      const user = JSON.parse(localStorage.getItem('user') || '{}')
+      const flag = user?.GRUPO?.ACESSORESTRITOPROCESSO
+
+      if (flag === undefined || flag === null) return false
+
+      if (typeof flag === 'boolean') return flag === false
+
+      if (typeof flag === 'string') {
+        const normalized = flag.trim().toLowerCase()
+        return normalized === 'false' || normalized === '0'
+      }
+
+      if (typeof flag === 'number') return flag === 0
+
+      return false
+    } catch (error) {
+      console.error('Error reading ACESSORESTRITOPROCESSO:', error)
+      return false
+    }
+  }, [])
+
   const safeDateConvert = useCallback((date) => {
     if (!date) return 'N/A'
     try {
@@ -167,9 +274,7 @@ const NewDisplayData = ({
     }
   }, [])
 
-  // Memoize this to prevent recreation
   const getTableColumns = useCallback((tableType) => {
-    // If custom columns provided, use them
     if (customTableColumns) {
       return customTableColumns
     }
@@ -225,7 +330,7 @@ const NewDisplayData = ({
           { key: 'NUMEROPV', header: 'Número PV' },
           { key: 'RO', header: 'RO' }
         ]
-      
+
       case 'creditos':
         return [
           { key: 'CNPJ', header: 'CNPJ' },
@@ -275,7 +380,7 @@ const NewDisplayData = ({
           { key: 'AGENCIA', header: 'Agência' },
           { key: 'CONTA', header: 'Conta' }
         ]
-      
+
       case 'servicos':
       case 'ajustes':
         return [
@@ -285,7 +390,6 @@ const NewDisplayData = ({
             key: 'VALOR', 
             header: 'Valor',
             render: (item) => {
-              // Use VALORLIQUIDO if available, fallback to VALORBRUTO
               const valor = item?.VALORLIQUIDO !== undefined && item?.VALORLIQUIDO !== null 
                 ? item.VALORLIQUIDO 
                 : item?.VALORBRUTO
@@ -295,24 +399,87 @@ const NewDisplayData = ({
           { key: 'ADMINISTRADORA', header: 'Adquirente' },
           { key: 'DESCRICAOAJUSTE', header: 'Descrição' }
         ]
-      
+
       case 'openfinance':
         return [
-          { key: 'date', header: 'Data' },
-          { key: 'description', header: 'Descrição' },
-          { key: 'type', header: 'Tipo' },
           { 
-            key: 'amount', 
-            header: 'Valor',
-            render: (item) => {
-              const valor = Number(item?.amount) || 0
-              return <span className={valor >= 0 ? 'green-global' : 'red-global'}>{formatCurrency(valor)}</span>
+            key: 'Data', 
+            header: 'Data',
+            accessor: (item) => {
+              if (!item?.Data) return 'N/A'
+              try {
+                return formatDateOnly(item.Data)
+              } catch {
+                return 'N/A'
+              }
             }
           },
-          { key: 'category', header: 'Categoria' },
-          { key: 'bank', header: 'Banco' }
+          { 
+            key: 'Descrição', 
+            header: 'Descrição',
+            accessor: (item) => item?.Descrição || 'N/A'
+          },
+          { 
+            key: 'Valor', 
+            header: 'Valor',
+            render: (item) => {
+              const valor = Number(item?.Valor) || 0
+              return (
+                <span className={valor >= 0 ? 'green-global' : 'red-global'}>
+                  {formatCurrency(valor)}
+                </span>
+              )
+            }
+          },
+          { 
+            key: 'Categoria', 
+            header: 'Categoria',
+            accessor: (item) => item?.Categoria || 'N/A'
+          },
+          { 
+            key: 'Operação', 
+            header: 'Operação',
+            render: (item) => {
+              if (item?.Operação === 1) return 'Crédito'
+              if (item?.Operação === -1) return 'Débito'
+              return 'Outros'
+            }
+          },
+          { 
+            key: 'CnpjPagador', 
+            header: 'CNPJ Pagador',
+            render: (item) => {
+              const cnpj = item?.CnpjPagador || ''
+              if (!cnpj) return 'N/A'
+              return formatCNPJ(cnpj)
+            }
+          },
+          { 
+            key: 'NomePagador', 
+            header: 'Pagador',
+            accessor: (item) => item?.NomePagador || 'N/A'
+          },
+          { 
+            key: 'CnpjRecebedor', 
+            header: 'CNPJ Recebedor',
+            render: (item) => {
+              const cnpj = item?.CnpjRecebedor || ''
+              if (!cnpj) return 'N/A'
+              return formatCNPJ(cnpj)
+            }
+          },
+          { 
+            key: 'NomeRecebedor', 
+            header: 'Recebedor',
+            accessor: (item) => item?.NomeRecebedor || 'N/A'
+          },
+          { 
+            key: 'Complemento', 
+            header: 'Complemento',
+            accessor: (item) => item?.Complemento || 'N/A'
+          }
         ]
-      
+
       default:
         return []
     }
@@ -330,7 +497,6 @@ const NewDisplayData = ({
 
   const getExportFunction = useCallback(() => {
     const exportData = async () => {
-      // Don't export for openfinance
       if (isOpenFinance) {
         console.log('Export not available for OpenFinance')
         return
@@ -343,21 +509,22 @@ const NewDisplayData = ({
 
       try {
         let dataToExport = dataArray
-        
+
         if (!hideTables && tabelaGenericaRef.current) {
           const currentFilteredDataFromTable = tabelaGenericaRef.current.getFilteredData()
           dataToExport = currentFilteredDataFromTable && currentFilteredDataFromTable.length > 0 ? currentFilteredDataFromTable : dataArray
         }
-        
-        // Use custom export page if provided
+
         const exportPageType = customExportPage || currentPath
-        
+
         switch(exportPageType) {
-          case '/vendas': 
-            await exportSales(dataToExport)
+          case '/vendas':
+            await exportSales(
+              dataToExport,
+              tipoRelatorio?.value === 'resumido' ? 'RESUMO' : 'VENDA'
+            )
             break
           case 'openfinance':
-            // Handle openfinance export - disabled for now
             console.log('OpenFinance export not implemented')
             break
           case '/creditos':
@@ -369,7 +536,7 @@ const NewDisplayData = ({
           case '/servicos':
             await exportServices(dataToExport)
             break
-          default: 
+          default:
             console.warn('No export function for current path:', currentPath)
         }
       } catch (error) {
@@ -378,14 +545,23 @@ const NewDisplayData = ({
     }
 
     return exportData
-  }, [currentPath, exportSales, exportCredits, exportServices, dataArray, hideTables, customExportPage, isOpenFinance])
+  }, [
+    currentPath,
+    exportSales,
+    exportCredits,
+    exportServices,
+    dataArray,
+    hideTables,
+    customExportPage,
+    isOpenFinance,
+    tipoRelatorio
+  ])
 
   const getTotalUpdateFunction = useCallback(() => {
-    // If custom export page, don't update totals through context
     if (customExportPage) {
       return null
     }
-    
+
     switch(currentPath) {
       case '/vendas': return setSalesTotal
       case '/creditos': return setCreditsTotal
@@ -394,16 +570,13 @@ const NewDisplayData = ({
     }
   }, [currentPath, setSalesTotal, setCreditsTotal, customExportPage])
 
-  // Memoize loadTotals to prevent recreation
   const loadTotals = useCallback((array, tableType) => {
     if(!array || array.length === 0) return
-    
-    // For openfinance, use custom totals
+
     if (customExportPage === 'openfinance') {
-      // Totals are already calculated in the parent component
       return
     }
-    
+
     if (tableType === 'vendas') {
       let totalCreditoTemp = 0
       let totalDebitoTemp = 0
@@ -414,9 +587,9 @@ const NewDisplayData = ({
         if (!venda) return
         const produto = (venda.PRODUTO || "").trim()
         const valor = Number(venda.VALORBRUTO) || 0
-        
+
         totalTemp += valor
-        
+
         if (produto === 'Crédito') {
           totalCreditoTemp += valor
         } else if (produto === 'Débito') {
@@ -432,7 +605,7 @@ const NewDisplayData = ({
         voucher: totalVoucherTemp, 
         total: totalTemp 
       }
-      
+
       const updateFunction = getTotalUpdateFunction()
       if (updateFunction) {
         updateFunction(totalResult)
@@ -442,14 +615,14 @@ const NewDisplayData = ({
       let totalDebito = 0
       let totalVoucher = 0
       let totalGeral = 0
-      
+
       array.forEach((credito) => {
         if (!credito) return
         const valor = Number(credito.VALORLIQUIDO) || 0
         const produto = (credito.PRODUTO || "").trim()
-        
+
         totalGeral += valor
-        
+
         if (produto === 'Crédito') {
           totalCredito += valor
         } else if (produto === 'Débito') {
@@ -458,14 +631,14 @@ const NewDisplayData = ({
           totalVoucher += valor
         }
       })
-      
+
       const totalResult = {
         debit: totalDebito,
         credit: totalCredito,
         voucher: totalVoucher,
         total: totalGeral
       }
-      
+
       const updateFunction = getTotalUpdateFunction()
       if (updateFunction) {
         updateFunction(totalResult)
@@ -473,7 +646,7 @@ const NewDisplayData = ({
     } else if (tableType === 'servicos' || tableType === 'ajustes') {
       let totalBruto = 0
       let totalLiquido = 0
-      
+
       array.forEach((item) => {
         if (!item) return
         const valorBruto = Number(item.VALORBRUTO) || 0
@@ -481,46 +654,39 @@ const NewDisplayData = ({
         totalBruto += Math.abs(valorBruto)
         totalLiquido += Math.abs(valorLiquido)
       })
-      
+
       const totalResult = {
         totalBruto: totalBruto,
         totalLiquido: totalLiquido,
         total: totalLiquido
       }
-      
+
     }
   }, [getTotalUpdateFunction, customExportPage])
 
-  // FIXED: handleTotalUpdate - NO STATE UPDATES to prevent loop
   const handleTotalUpdate = useCallback((data) => {
-    // Prevent processing if already processing or no data
     if (isProcessingRef.current || !exportPage || !data) return
-    
-    // Check if this exact data was already processed
+
     const dataSignature = JSON.stringify(data)
     if (dataSignature === lastTotalsCallRef.current) return
-    
+
     isProcessingRef.current = true
     lastTotalsCallRef.current = dataSignature
-    
-    // Only call loadTotals, don't update currentFilteredData
-    // This prevents the loop because currentFilteredData doesn't change
+
     loadTotals(data, exportPage)
-    
-    // Reset processing flag after a short delay
+
     setTimeout(() => {
       isProcessingRef.current = false
     }, 100)
   }, [exportPage, loadTotals])
 
   const getFilterConfig = useCallback(() => {
-    // If custom filter config provided, use it
     if (customFilterConfig) {
       return customFilterConfig
     }
-    
+
     if (!exportPage) return {}
-    
+
     switch(exportPage) {
       case 'vendas':
         return {
@@ -564,13 +730,17 @@ const NewDisplayData = ({
         }
       case 'openfinance':
         return {
-          type: {
-            label: 'Tipo',
-            accessor: (item) => item?.type || '',
-          },
-          category: {
+          categoria: {
             label: 'Categoria',
-            accessor: (item) => item?.category || '',
+            accessor: (item) => item?.Categoria || 'N/A'
+          },
+          operacao: {
+            label: 'Operação',
+            accessor: (item) => {
+              if (item?.Operação === 1) return 'Crédito'
+              if (item?.Operação === -1) return 'Débito'
+              return 'Outros'
+            }
           }
         }
       default:
@@ -578,13 +748,12 @@ const NewDisplayData = ({
     }
   }, [exportPage, customFilterConfig])
 
-  // Set export page based on path or custom
   useEffect(() => {
     if (customExportPage) {
       setExportPage(customExportPage)
       return
     }
-    
+
     const path = location.pathname
     setCurrentPath(path)
     localStorage.setItem('currentPath', path)
@@ -602,7 +771,6 @@ const NewDisplayData = ({
     }
   }, [location.pathname, customExportPage])
 
-  // Handle dataArray changes - only update when actually changed
   useEffect(() => {
     if (dataArray && dataArray.length > 0 && !hasLoadedTotals && !hideTotals) {
       const dataSignature = JSON.stringify(dataArray)
@@ -613,7 +781,6 @@ const NewDisplayData = ({
     }
   }, [dataArray, hasLoadedTotals, hideTotals])
 
-  // Separate effect for loading totals - only runs when dataArray changes
   useEffect(() => {
     if (dataArray && dataArray.length > 0 && !hasLoadedTotals && !hideTotals) {
       loadTotals(dataArray, exportPage)
@@ -624,19 +791,17 @@ const NewDisplayData = ({
     }
   }, [dataArray, exportPage, hideTotals, hasLoadedTotals, loadTotals])
 
-  // Memoize table props - stable reference
   const tableProps = useMemo(() => {
     if (hideTables) return null
     if (!exportPage || !dataArray || dataArray.length === 0) return null
-    
-    // Determine table type for columns
+
     let tableType = exportPage
     if (exportPage === 'ajustes') {
       tableType = 'servicos'
     } else if (exportPage === 'openfinance') {
       tableType = 'openfinance'
     }
-    
+
     return {
       ref: tabelaGenericaRef,
       array: dataArray,
@@ -649,15 +814,30 @@ const NewDisplayData = ({
       showFilters: true,
       textColor: "green-global",
       filterConfig: getFilterConfig(),
-      enableDependentFilters: true
+      enableDependentFilters: true,
+      canDeleteSale: exportPage === 'vendas' && canDeleteSale,
+      onDeleteSale: deleteSale,
+      onRefreshSales: onRefreshSales,
     }
-  }, [exportPage, dataArray, getTableColumns, getDateRange, getExportFunction, handleTotalUpdate, getFilterConfig, hideTables])
+  }, [
+    exportPage,
+    dataArray,
+    getTableColumns,
+    getDateRange,
+    getExportFunction,
+    handleTotalUpdate,
+    getFilterConfig,
+    hideTables,
+    canDeleteSale,
+    deleteSale,
+    onRefreshSales,
+  ])
 
   const getButtonText = () => {
     if (customExportPage === 'openfinance') {
       return 'Nova Consulta de Extrato'
     }
-    
+
     switch(currentPath) {
       case '/vendas':
         return 'Nova Consulta de Vendas'
@@ -672,7 +852,6 @@ const NewDisplayData = ({
     }
   }
 
-  // Handle tutorial end
   const handleTutorialEnd = () => {
     if (setRunTutorial) {
       setRunTutorial(false)
@@ -681,7 +860,6 @@ const NewDisplayData = ({
 
   return (
     <>
-      {/* Centralized Joyride - only render if there are steps */}
       {runTutorial && tutorialSteps && tutorialSteps.length > 0 && (
         <Joyride
           steps={tutorialSteps}
@@ -729,7 +907,6 @@ const NewDisplayData = ({
         </div>
       )}
 
-      {/* Show custom totals for openfinance in a grid layout */}
       {!hideTotals && totals && isOpenFinance && (
         <div data-tour="totals-section" className="content-container-modalidade">
           <div className="total-container-modalidade">
@@ -764,19 +941,41 @@ const NewDisplayData = ({
           </div>
         </div>
       )}
-      
-      {/* Hide export component for openfinance */}
+
+      <hr className='hr-global' />
+
       {!isOpenFinance && (
-        <div data-tour="exportacao-section">
+        <div data-tour="exportacao-section" className="export-area">
+          {exportPage === 'vendas' && tipoRelatorio && onTipoRelatorioChange && (
+            <div className="tipo-relatorio-wrapper" data-tour="tipo-relatorio-section">
+              <label className="tipo-relatorio-label">Tipo de Relatório</label>
+              <Select
+                className="tipo-relatorio-select"
+                options={tipoRelatorioOptions}
+                getOptionLabel={(option) => option.label}
+                getOptionValue={(option) => option.value}
+                onChange={(option) => onTipoRelatorioChange(option)}
+                value={tipoRelatorio}
+                menuPortalTarget={document.body}
+                menuPosition="fixed"
+                isClearable={false}
+                isSearchable={false}
+                styles={tipoRelatorioSelectStyles}
+                theme={tipoRelatorioTheme}
+              />
+            </div>
+          )}
+
           <GerarRelatorio 
             className='export' 
             onExport={getExportFunction()}
             filteredData={currentFilteredData}
+            tipoRelatorio={tipoRelatorio}
           />
           <hr className='hr-global'/>
         </div>
       )}
-      
+
       {!hideTables && (
         <div className='component-container-vendas'>
           {adminDataArray && adminDataArray.length > 0 && (exportPage === 'vendas' || exportPage === 'creditos') && (
@@ -792,7 +991,7 @@ const NewDisplayData = ({
           <hr className='hr-global' />
         </div>
       )}
-      
+
       <div className='floating-button-container'>
         <button 
           data-tour="botaovoltar-section"

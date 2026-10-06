@@ -10,9 +10,102 @@ import NewDisplayData from '../../components/Component_NewDisplayData'
 import { toast } from 'react-toastify'
 import { FiHelpCircle } from 'react-icons/fi'
 
+// Custom Select styles — same as Bancos/Vendas
+const customSelectStyles = {
+  control: (base, { isFocused }) => ({
+    ...base,
+    minWidth: 250,
+    width: '100%',
+    backgroundColor: 'var(--background-color)',
+    borderColor: isFocused ? 'var(--secondary-color)' : 'var(--bs-border-color)',
+    color: 'var(--font-color)',
+    '&:hover': { borderColor: 'var(--secondary-color)' },
+    boxShadow: isFocused ? '0 0 0 1px var(--secondary-color)' : 'none',
+  }),
+  menu: (base) => ({
+    ...base,
+    backgroundColor: 'var(--background-color)',
+    borderColor: 'var(--bs-border-color)',
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+    zIndex: 9999,
+  }),
+  menuList: (base) => ({
+    ...base,
+    backgroundColor: 'var(--background-color)',
+    padding: '4px 0',
+    '::-webkit-scrollbar': { width: '8px', height: '8px' },
+    '::-webkit-scrollbar-track': { background: 'rgba(255, 255, 255, 0.1)' },
+    '::-webkit-scrollbar-thumb': { background: 'var(--secondary-color)', borderRadius: '4px' },
+    '::-webkit-scrollbar-thumb:hover': { background: 'var(--primary-color)' },
+  }),
+  option: (base, { isFocused, isSelected }) => ({
+    ...base,
+    backgroundColor: isSelected
+      ? 'var(--secondary-color)'
+      : isFocused
+        ? 'rgba(var(--secondary-color-rgb), 0.2)'
+        : 'transparent',
+    color: isSelected ? 'var(--primary-color)' : 'var(--font-color)',
+    cursor: 'pointer',
+    padding: '8px 12px',
+    '&:active': { backgroundColor: 'var(--secondary-color)', color: 'var(--primary-color)' },
+  }),
+  singleValue: (base) => ({
+    ...base,
+    color: 'var(--font-color)',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    maxWidth: '90%',
+  }),
+  input: (base) => ({ ...base, color: 'var(--font-color)' }),
+  placeholder: (base) => ({ ...base, color: 'var(--font-color)', opacity: 0.6 }),
+  valueContainer: (base) => ({
+    ...base,
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  }),
+  dropdownIndicator: (base) => ({
+    ...base,
+    color: 'var(--font-color)',
+    '&:hover': { color: 'var(--secondary-color)' },
+  }),
+  clearIndicator: (base) => ({
+    ...base,
+    color: 'var(--font-color)',
+    '&:hover': { color: 'var(--secondary-color)' },
+  }),
+  indicatorSeparator: (base) => ({ ...base, backgroundColor: 'var(--bs-border-color)' }),
+  noOptionsMessage: (base) => ({ ...base, color: 'var(--font-color)' }),
+  loadingMessage: (base) => ({ ...base, color: 'var(--font-color)' }),
+}
+
+const themeConfig = (theme) => ({
+  ...theme,
+  colors: {
+    ...theme.colors,
+    primary: 'var(--secondary-color)',
+    primary75: 'var(--secondary-color)',
+    primary50: 'rgba(var(--secondary-color-rgb), 0.5)',
+    primary25: 'rgba(var(--secondary-color-rgb), 0.25)',
+    neutral0: 'var(--background-color)',
+    neutral5: 'var(--background-color)',
+    neutral10: 'var(--background-color)',
+    neutral20: 'var(--bs-border-color)',
+    neutral30: 'var(--bs-border-color)',
+    neutral40: 'var(--font-color)',
+    neutral50: 'var(--font-color)',
+    neutral60: 'var(--font-color)',
+    neutral70: 'var(--font-color)',
+    neutral80: 'var(--font-color)',
+    neutral90: 'var(--font-color)',
+  },
+})
+
 const Creditos = () => {
   const location = useLocation()
-  
+
   // Add a ref to track if initial load has happened
   const initialLoadDoneRef = useRef(false)
 
@@ -26,15 +119,11 @@ const Creditos = () => {
       voucher: 0,
       total: 0
     })
-    // Clear select states
     setAdministradora(null)
     setBandeira(null)
-    // Clear localStorage items
     localStorage.removeItem('selectedAdmCredits')
     localStorage.removeItem('selectedBanCredits')
-    // Reset ref
     initialLoadDoneRef.current = false
-    // Reset tutorial state
     setRunTutorial(false)
   }, [])
 
@@ -85,23 +174,23 @@ const Creditos = () => {
   // Format date to YYYY-MM-DD for API
   const formatDateToYYYYMMDD = (date) => {
     if (!date) return ''
-    
+
     if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
       return date
     }
-    
+
     if (date instanceof Date) {
       const year = date.getFullYear()
       const month = String(date.getMonth() + 1).padStart(2, '0')
       const day = String(date.getDate()).padStart(2, '0')
       return `${year}-${month}-${day}`
     }
-    
+
     if (typeof date === 'string' && date.includes('/')) {
       const [day, month, year] = date.split('/')
       return `${year}-${month}-${day}`
     }
-    
+
     return ''
   }
 
@@ -124,35 +213,29 @@ const Creditos = () => {
 
   async function loadData() {
     try {
-      // Get dates from creditsDateRange
       const startDate = creditsDateRange[0]
       const endDate = creditsDateRange[1]
-      
-      // Format dates for API
+
       const formattedStartDate = formatDateToYYYYMMDD(startDate)
       const formattedEndDate = formatDateToYYYYMMDD(endDate)
-      
-      // Store formatted dates in localStorage for export
+
       localStorage.setItem('dataInicial', formattedStartDate)
       localStorage.setItem('dataFinal', formattedEndDate)
-      
-      // Call the new API function
+
       const creditsData = await newLoadCredits(formattedStartDate, formattedEndDate)
-      
-      
+
       if (creditsData && creditsData.length > 0) {
-        // Calculate totals by produto
         let totalCredito = 0
         let totalDebito = 0
         let totalVoucher = 0
         let totalGeral = 0
-        
+
         creditsData.forEach(credit => {
           const valor = Number(credit.VALORLIQUIDO) || 0
           const produto = (credit.PRODUTO || "").trim()
-          
+
           totalGeral += valor
-          
+
           if (produto === 'Crédito') {
             totalCredito += valor
           } else if (produto === 'Débito') {
@@ -161,22 +244,19 @@ const Creditos = () => {
             totalVoucher += valor
           }
         })
-        
+
         const totals = {
           debit: totalDebito,
           credit: totalCredito,
           voucher: totalVoucher,
           total: totalGeral
         }
-        
-        
+
         setCreditsTotal(totals)
-        
-        // Group by admin for the admin table
+
         const groupedData = newGroupByAdminCredits(creditsData)
         setCreditsPageAdminArray(groupedData)
-        
-        // Set the main data array
+
         setCreditsPageArray(creditsData)
       } else {
         setCreditsPageArray([])
@@ -188,7 +268,7 @@ const Creditos = () => {
           total: 0
         })
       }
-      
+
       initialLoadDoneRef.current = true
       return creditsData
     } catch (error) {
@@ -211,13 +291,11 @@ const Creditos = () => {
     setCreditsDateRange(dateRange)
   }
 
-  // Get the selected option object for Adquirente
   const getSelectedAdminOption = () => {
     if (!administradora || listaAdministradoras.length === 0) return null
     return listaAdministradoras.find(option => option.codigoAdquirente === administradora)
   }
 
-  // Get the selected option object for Bandeira
   const getSelectedBanOption = () => {
     if (!bandeira || listaBandeiras.length === 0) return null
     return listaBandeiras.find(option => option.codigoBandeira === bandeira)
@@ -324,7 +402,6 @@ const Creditos = () => {
             />
           ) : (
             <>
-              {/* Joyride for calendar view */}
               {runTutorial && (
                 <Joyride
                   steps={tutorialSteps}
@@ -356,7 +433,7 @@ const Creditos = () => {
                   }}
                 />
               )}
-              
+
               <div className='select-container-calendario' data-tour="select-container-calendario">
                 <div className='select-wrapper'>
                   <h5>Adquirente</h5>
@@ -372,31 +449,8 @@ const Creditos = () => {
                     menuPosition="fixed"
                     placeholder="Selecione uma adquirente..."
                     isClearable={true}
-                    styles={{
-                      control: (base) => ({
-                        ...base,
-                        minWidth: 250,
-                        width: '100%',
-                      }),
-                      menu: (base) => ({
-                        ...base,
-                        minWidth: 250,
-                        width: '100%',
-                      }),
-                      valueContainer: (base) => ({
-                        ...base,
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }),
-                      singleValue: (base) => ({
-                        ...base,
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        maxWidth: '90%',
-                      }),
-                    }}
+                    styles={customSelectStyles}
+                    theme={themeConfig}
                   />
                 </div>
                 <div className='select-wrapper'>
@@ -413,31 +467,8 @@ const Creditos = () => {
                     menuPosition="fixed"
                     placeholder="Selecione uma bandeira..."
                     isClearable={true}
-                    styles={{
-                      control: (base) => ({
-                        ...base,
-                        minWidth: 250,
-                        width: '100%',
-                      }),
-                      menu: (base) => ({
-                        ...base,
-                        minWidth: 250,
-                        width: '100%',
-                      }),
-                      valueContainer: (base) => ({
-                        ...base,
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }),
-                      singleValue: (base) => ({
-                        ...base,
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        maxWidth: '90%',
-                      }),
-                    }}
+                    styles={customSelectStyles}
+                    theme={themeConfig}
                   />
                 </div>
               </div>

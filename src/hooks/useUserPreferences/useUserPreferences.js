@@ -1,10 +1,42 @@
 import { useCallback } from 'react'
 import api from '../../services/api'
-import { getIconPathByCode, DEFAULT_ICON_CODE, VISUAL_IDENTITY_ICONS } from '../../util/iconRegistry'
+import { getIconPathByCode, DEFAULT_ICON_CODE } from '../../util/iconRegistry'
 
 export const useUserPreferences = () => {
-  // GET user preferences from API
-  const loadUserPrefs = useCallback(async () => {
+  const CACHE_KEY = 'userPreferencesCache'
+  const CACHE_TIMESTAMP_KEY = 'userPreferencesTimestamp'
+  const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
+
+  const getCachedPreferences = useCallback(() => {
+    try {
+      const cached = localStorage.getItem(CACHE_KEY)
+      const timestamp = localStorage.getItem(CACHE_TIMESTAMP_KEY)
+      
+      if (!cached || !timestamp) return null
+      
+      const age = Date.now() - parseInt(timestamp)
+      if (age > CACHE_DURATION) {
+        localStorage.removeItem(CACHE_KEY)
+        localStorage.removeItem(CACHE_TIMESTAMP_KEY)
+        return null
+      }
+      
+      return JSON.parse(cached)
+    } catch {
+      return null
+    }
+  }, [])
+
+  const setCachedPreferences = useCallback((prefs) => {
+    try {
+      localStorage.setItem(CACHE_KEY, JSON.stringify(prefs))
+      localStorage.setItem(CACHE_TIMESTAMP_KEY, String(Date.now()))
+    } catch (error) {
+      console.error('Error caching preferences:', error)
+    }
+  }, [])
+
+  const loadUserPrefs = useCallback(async (forceRefresh = false) => {
     const userId = localStorage.getItem('userID')
     const token = localStorage.getItem('token')
     
@@ -12,43 +44,38 @@ export const useUserPreferences = () => {
       return null
     }
 
+    if (!forceRefresh) {
+      const cached = getCachedPreferences()
+      if (cached) {
+        return cached
+      }
+    }
+
     try {
       const response = await api.get('PreferenciasUsuario', {
         params: { codigo: userId }
       })
       
-      // Validate response data
-      if (!response.data || response.data === null) {
-        return null
-      }
+      if (!response.data) return null
       
-      // Ensure the response has the expected structure
-      if (typeof response.data !== 'object') {
-        return null
-      }
-      
+      setCachedPreferences(response.data)
       return response.data
     } catch (error) {
-      if (error.response?.status === 404) {
-        return null
-      }
+      if (error.response?.status === 404) return null
       console.error('Error loading user preferences:', error)
       return null
     }
-  }, [])
+  }, [getCachedPreferences, setCachedPreferences])
 
-  // Create default preferences for a user with safe fallbacks
   const createDefaultPreferences = useCallback(async (userId, userData = null) => {
     const getCurrentDate = () => new Date().toISOString().split('T')[0]
     const now = getCurrentDate()
     
-    // SAFE: Get user data with fallbacks
-    let identidadeVisual = 'salvalucro' // Default fallback
+    let identidadeVisual = 'salvalucro'
     let defaultIconCode = DEFAULT_ICON_CODE
     let defaultColorScheme = 'salvalucro'
     
     try {
-      // Use provided userData or fetch it
       let userInfo = userData
       if (!userInfo) {
         const userResponse = await api.get('usuario', {
@@ -57,11 +84,8 @@ export const useUserPreferences = () => {
         userInfo = userResponse.data
       }
       
-      // SAFE: Navigate through nested objects with optional chaining
       identidadeVisual = userInfo?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro'
       
-      
-      // Set default icon based on identity visual (with fallback)
       switch (identidadeVisual) {
         case 'sifra':
           defaultIconCode = 7
@@ -86,7 +110,6 @@ export const useUserPreferences = () => {
       }
     } catch (error) {
       console.error('Error getting user data for default preferences:', error)
-      // Keep fallback values
     }
     
     const payload = {
@@ -103,44 +126,50 @@ export const useUserPreferences = () => {
     
     try {
       const response = await api.post('PreferenciasUsuario', payload)
+      setCachedPreferences(response.data)
       return response.data
     } catch (error) {
-      console.error('❌ Error creating default preferences:', error)
+      console.error('Error creating default preferences:', error)
       return null
     }
-  }, [])
+  }, [setCachedPreferences])
 
-  // Get or create preferences
-  const getOrCreatePreferences = useCallback(async (userId, userData = null) => {
+  const saveUserPrefs = useCallback(async (body) => {
     try {
-      let prefs = await loadUserPrefs()
-      
-      if (!prefs) {
-        prefs = await createDefaultPreferences(userId, userData)
+      let response
+      if (body.CODIGO) {
+        response = await api.put('PreferenciasUsuario', body)
+      } else {
+        response = await api.post('PreferenciasUsuario', body)
       }
       
-      return prefs
-    } catch (error) {
-      console.error('Error in getOrCreatePreferences:', error)
-      return null
-    }
-  }, [loadUserPrefs, createDefaultPreferences])
-
-  // SAVE user preferences to API
-  const saveUserPrefs = useCallback(async (body) => {
-    try { 
-      const response = await api.post('PreferenciasUsuario', body)
-      return true
+      if (response.data) {
+        setCachedPreferences(response.data)
+      }
+      
+      return response.data || true
     } catch (error) {
       console.error('Error saving preferences:', error)
       return false
     }
+  }, [setCachedPreferences])
+
+  const clearCache = useCallback(() => {
+    localStorage.removeItem(CACHE_KEY)
+    localStorage.removeItem(CACHE_TIMESTAMP_KEY)
   }, [])
+
+  const forceRefreshPreferences = useCallback(async () => {
+    return await loadUserPrefs(true)
+  }, [loadUserPrefs])
 
   return {
     loadUserPrefs,
     saveUserPrefs,
-    getOrCreatePreferences,
     createDefaultPreferences,
+    forceRefreshPreferences,
+    getCachedPreferences,
+    setCachedPreferences,
+    clearCache,
   }
 }
