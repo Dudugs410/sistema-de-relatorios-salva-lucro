@@ -10,9 +10,9 @@ const pluggyApi = axios.create({
 
 pluggyApi.interceptors.request.use(
     (config) => {
-      const apiKey = Cookies.get('pluggy_api_key'); // Replace 'apiKey' with your storage key
+      const apiKey = Cookies.get('pluggy_api_key');
       if (apiKey) {
-        config.headers['X-API-KEY'] = apiKey; // Use the header name your API expects
+        config.headers['X-API-KEY'] = apiKey;
       }
       return config;
     },

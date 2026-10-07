@@ -11,7 +11,6 @@ const Relogio = () => {
             setCurrentTime(currentDate)
         } catch (error) {
             console.error('Error fetching current date and time:', error)
-            // Fallback to local time if API fails
             setCurrentTime(new Date())
         }
     }, [])
@@ -23,7 +22,6 @@ const Relogio = () => {
     useEffect(() => {
         if (!currentTime) return
         
-        // Update every second instead of 60 times per second
         const intervalId = setInterval(() => {
             setCurrentTime(new Date())
         }, 1000)
@@ -31,7 +29,7 @@ const Relogio = () => {
         return () => {
             clearInterval(intervalId)
         }
-    }, [currentTime]) // Only start interval when we have initial time
+    }, [currentTime])
   
     return (
         <div>

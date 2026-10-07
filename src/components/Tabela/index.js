@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import 'tabelaPluggy.scss'
+import './tabelaPluggy.scss'
 
 const Tabela = ({ data, clickRow }) => {
   const isSingleObject = !Array.isArray(data) && typeof data === 'object'

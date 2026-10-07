@@ -1,5 +1,4 @@
 :root {
-  /* Current Theme Colors */
   --primary-color: rgb(10, 61, 112);
   --secondary-color: #99cc33;
   --background-color: #fff;
@@ -17,7 +16,6 @@
   --calendar-neighbor-bg: rgb(187, 187, 187);
   --sidebar-font-color: white;
   --subtitle-color: rgb(10, 61, 112);
-  /* Light Theme Colors */
   --primary-color-light: rgb(10, 61, 112);
   --secondary-color-light: rgb(153, 204, 51);
   --background-color-light: #fff;
@@ -35,7 +33,6 @@
   --calendar-neighbor-bg-light: rgb(187, 187, 187);
   --sidebar-font-color-light: white;
   --subtitle-light: rgb(10, 61, 112);
-  /* Dark Theme Colors */
   --primary-color-dark: rgb(35, 31, 32);
   --secondary-color-dark: darkgray;
   --background-color-dark: rgb(20, 20, 20);
@@ -76,7 +73,6 @@
 .data-group-area {
   display: flex;
   padding-bottom: 1%;
-  /* height: 400px; */
   flex-direction: column;
   align-content: center;
   align-items: center;
@@ -107,7 +103,6 @@
   font-family: sans-serif;
   font-size: 1.5em;
   margin-top: 8px;
-  /* margin-left: 2.5%; */
   align-self: center;
   padding: 5px;
   border-radius: 20px;
@@ -177,4 +172,4 @@
   .graph-data {
     border-radius: 0px;
   }
-}/*# sourceMappingURL=dashboard.css.map */
+}

@@ -1,14 +1,12 @@
 import React, { useState } from 'react'
-import './radio.scss' // Import the SCSS file with the custom radio styles
+import './radio.scss'
 
 const RadioSelect = ({ options, onSelect }) => {
-  // State to hold the selected option
   const [selectedOption, setSelectedOption] = useState(null)
 
-  // Function to handle option selection
   const handleOptionChange = (optionValue) => {
     setSelectedOption(optionValue)
-    onSelect(optionValue) // Execute the function passed as prop
+    onSelect(optionValue)
   }
 
   return (

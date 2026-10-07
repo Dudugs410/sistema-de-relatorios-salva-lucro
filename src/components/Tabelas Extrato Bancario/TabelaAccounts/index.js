@@ -379,7 +379,6 @@ const TabelaAccounts = ({ data, clickRow, loadBills, loadTransactions }) => {
         </div>
       )}
       
-      {/* Desktop Table */}
       <div className='table-wrapper desktop-only'>
         <table className='table table-striped table-hover det-table-global'>
           <thead>
@@ -483,7 +482,6 @@ const TabelaAccounts = ({ data, clickRow, loadBills, loadTransactions }) => {
         </table>
       </div>
       
-      {/* Mobile Card View */}
       <div className='mobile-only'>
         <MobileCardView />
       </div>

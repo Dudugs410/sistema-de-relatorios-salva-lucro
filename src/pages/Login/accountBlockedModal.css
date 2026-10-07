@@ -1,0 +1,62 @@
+.account-blocked-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background-color: rgba(0, 0, 0, 0.55);
+}
+
+.account-blocked-modal {
+  width: 100%;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 28px 24px 24px;
+  border-radius: 16px;
+  text-align: center;
+  color: var(--font-color);
+  background-color: var(--background-color);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+
+.account-blocked-icon {
+  font-size: 2.6rem;
+  color: rgb(218, 100, 100);
+}
+
+.account-blocked-title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+.account-blocked-message p {
+  margin: 0 0 10px;
+  line-height: 1.5;
+}
+
+.account-blocked-message a {
+  font-weight: bold;
+  white-space: nowrap;
+  color: var(--highlight-color);
+}
+
+.account-blocked-button {
+  min-width: 140px;
+  margin-top: 4px;
+}
+
+@media (max-width: 480px) {
+  .account-blocked-modal {
+    padding: 22px 16px 18px;
+  }
+
+  .account-blocked-title {
+    font-size: 1.2rem;
+  }
+}

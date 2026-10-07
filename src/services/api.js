@@ -1,7 +1,7 @@
 import axios from 'axios'
 import Cookies from 'js-cookie'
 
-let globalAbortController = new AbortController() // Initialize global AbortController
+let globalAbortController = new AbortController()
 
 axios.defaults.headers.common['Content-Type'] = 'application/json'
 axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
@@ -22,8 +22,8 @@ api.interceptors.request.use(
   )
 
 export const cancelOngoingRequests = () => {
-  globalAbortController.abort(); // Cancel ongoing requests
-  globalAbortController = new AbortController(); // Reset the controller for future use
+  globalAbortController.abort();
+  globalAbortController = new AbortController();
 }
 
 export function config(){

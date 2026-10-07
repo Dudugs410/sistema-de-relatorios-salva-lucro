@@ -31,8 +31,6 @@
 }
 
 .select-component {
-  /* display: flex; */
-  /* flex-direction: column; */
   width: 48%;
 }
 
@@ -58,4 +56,4 @@
     width: 100%;
     flex-wrap: wrap;
   }
-}/*# sourceMappingURL=exportacao.css.map */
+}

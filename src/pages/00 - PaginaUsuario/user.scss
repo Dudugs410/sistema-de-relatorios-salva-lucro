@@ -25,7 +25,6 @@
   }
 }
 
-// Menu Section - Left side card
 .user-menu-section {
   flex-shrink: 0;
   width: 320px;
@@ -43,7 +42,6 @@
   }
 }
 
-// Content Section
 .user-content-section {
   flex: 1;
   min-width: 0;
@@ -56,7 +54,6 @@
     }
   }
   
-  // Empty state - shown when no panel is active
   &:not(.active) {
     background: var(--table-background);
     border: solid var(--secondary-color) 1px;
@@ -69,7 +66,6 @@
     max-height: calc(100vh - 120px);
     min-height: 400px;
     
-    // Subtle gradient background
     &::before {
       content: '';
       position: absolute;
@@ -101,7 +97,6 @@
     }
   }
   
-  // When panel is active, match height with left panel
   &.active {
     display: flex;
     flex-direction: column;
@@ -111,7 +106,7 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      border: solid var(--secondary-color) 1px;
+      border: solid var(--highlight-color) 1px;
       border-radius: 20px;
       background: var(--table-background);
       overflow: hidden;
@@ -156,8 +151,8 @@
         .save-btn {
           width: 100%;
           padding: 12px;
-          background-color: var(--secondary-color);
-          color: white;
+          background-color: var(--highlight-color);
+          color: var(--on-highlight-color);
           border: none;
           border-radius: 10px;
           cursor: pointer;
@@ -210,7 +205,6 @@
   }
 }
 
-// User Card Styles
 .user-card {
   display: flex;
   gap: 20px;
@@ -230,7 +224,6 @@
     height: auto;
   }
   
-  // Custom scrollbar for the card
   &::-webkit-scrollbar {
     width: 4px;
   }
@@ -357,27 +350,21 @@
   }
 }
 
-// ============================================
-// FIX: Maintain outline/border on menu buttons hover
-// ============================================
 
-// Fix for top buttons (Trocar Ícone, Preferências de Cores)
 .top-buttons-container .user-btn.btn-global {
-  //border: 1px solid var(--secondary-color) !important;
   background-color: var(--secondary-color) !important;
   color: var(--primary-color) !important;
   transition: all 0.2s ease !important;
   
   &:hover {
-    color: var(--secondary-color) !important;
-    border-color: var(--secondary-color) !important;
+    color: var(--highlight-color) !important;
+    border-color: var(--highlight-color) !important;
     background-color: rgba(var(--secondary-color-rgb, 0.1)) !important;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(var(--secondary-color-rgb, 0.2));
   }
 }
 
-// Sair button - keep red styling
 .user-btn {
   &.user-btn-sair {
     background-color: rgba(0, 0, 0, 0);
@@ -394,11 +381,7 @@
   }
 }
 
-// ============================================
-// END OF FIX
-// ============================================
 
-// Preferences Panel
 .preferences-panel {
   background-color: var(--table-background);
   border: solid var(--secondary-color) 1px;
@@ -496,7 +479,6 @@
     }
   }
   
-  // GRID LAYOUT for color schemes - Responsive columns
   .color-schemes-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -504,12 +486,10 @@
     max-width: 100%;
     overflow: hidden;
     
-    // Only use 2 columns when there's enough space (at least 1200px)
     @media (min-width: 1200px) {
       grid-template-columns: repeat(2, 1fr);
     }
     
-    // 3 columns on very large screens (at least 1600px)
     @media (min-width: 1600px) {
       grid-template-columns: repeat(3, 1fr);
     }
@@ -526,30 +506,28 @@
     word-break: break-word;
     
     &:hover {
-      //transform: translateY(-4px);
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.60);
-      border-color: var(--secondary-color);
+      border-color: var(--highlight-color);
     }
     
     &.selected {
-      border-color: var(--secondary-color);
-      background-color: var(--table-row-hover-color);
+      border-color: var(--highlight-color);
+      background-color: rgba(var(--highlight-color-rgb), 0.12);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
     
-    // Colorblind options styling
     &[data-colorblind="true"] {
       border-color: #4CAF50;
       
       &:hover {
         border-color: #45a049;
-        box-shadow: 0 8px 20px rgba(76, 175, 80, 0.2);
+        box-shadow: 0 8px 20px rgba(var(--highlight-color-rgb), 0.2);
       }
       
       &.selected {
-        border-color: #4CAF50;
-        background-color: rgba(76, 175, 80, 0.05);
-        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+        border-color: var(--highlight-color);
+        background-color: rgba(var(--highlight-color-rgb), 0.05);
+        box-shadow: 0 4px 12px rgba(var(--highlight-color-rgb), 0.2);
       }
     }
     
@@ -627,7 +605,6 @@
     }
   }
   
-  // Icons Grid - Responsive
   .icons-grid {
     display: grid;
     gap: 16px;
@@ -659,14 +636,13 @@
     min-width: 0;
     
     &:hover {
-      //transform: translateY(-4px);
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.60);
-      border-color: var(--secondary-color);
+      border-color: var(--highlight-color);
     }
     
     &.selected {
-      border-color: var(--secondary-color);
-      background-color: var(--table-row-hover-color);
+      border-color: var(--highlight-color);
+      background-color: rgba(var(--highlight-color-rgb), 0.12);
     }
     
     .icon-image-wrapper {
@@ -710,7 +686,7 @@
     }
     
     .current-badge {
-      color: #4caf50;
+      color: var(--highlight-color);
     }
     
     .temp-badge {
@@ -719,7 +695,6 @@
   }
 }
 
-// Icons Panel Section Title
 .icons-section {
   margin-bottom: 24px;
   
@@ -743,7 +718,6 @@
   }
 }
 
-// Unsaved changes banner
 .unsaved-banner {
   background-color: #ff9800;
   color: white;
@@ -756,7 +730,6 @@
   animation: pulse 1.5s infinite;
 }
 
-// Save button with changes
 .save-btn {
   transition: all 0.2s ease;
   
@@ -771,7 +744,6 @@
   }
 }
 
-// Pending badge for items
 .pending-badge {
   font-size: 0.6rem;
   color: #ff9800;
@@ -781,14 +753,12 @@
   margin-left: 8px;
 }
 
-// Pending card styling
 .color-scheme-card.pending,
 .icon-card.pending {
   border-color: #ff9800;
   box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.3);
 }
 
-// Exclusive badge
 .exclusive-badge {
   font-size: 0.6rem;
   color: #ff9800;
@@ -799,7 +769,6 @@
   display: inline-block;
 }
 
-// Special badge (kept for backward compatibility)
 .special-badge {
   font-size: 0.6rem;
   color: #ff9800;
@@ -812,8 +781,8 @@
 
 .applied-badge {
   font-size: 0.6rem;
-  color: #4caf50;
-  background: rgba(76, 175, 80, 0.15);
+  color: var(--highlight-color);
+  background: rgba(var(--highlight-color-rgb), 0.15);
   padding: 2px 6px;
   border-radius: 10px;
   margin-top: 4px;
@@ -830,7 +799,6 @@
   }
 }
 
-// Keyframes
 @keyframes slideIn {
   from {
     opacity: 0;
@@ -895,7 +863,6 @@
   }
 }
 
-// User Preferences Modal Styles
 .prefs-modal-overlay {
   position: fixed !important;
   top: 0 !important;
@@ -1011,7 +978,6 @@
   }
 }
 
-// Responsive adjustments
 @media (max-width: 1199px) {
   .preferences-panel {
     .color-schemes-grid {

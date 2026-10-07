@@ -20,7 +20,6 @@
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- APP VERSION - Increment on each deployment -->
     <script>
       (function() {
         const APP_VERSION = '2.1.7';
@@ -39,66 +38,22 @@
       })();
     </script>
     
-    <!-- INITIAL THEME - Prevent flash of unstyled content -->
     <script>
       (function() {
         try {
-          // Get saved theme and context from localStorage
-          const savedTheme = localStorage.getItem('appTheme');
-          const savedContext = localStorage.getItem('appContext') || 'salvalucro';
-          
-          // Apply immediately to prevent flash
+          var savedTheme = localStorage.getItem('appTheme') || 'light';
+          var savedContext = localStorage.getItem('appContext') || 'salvalucro';
+
           document.documentElement.setAttribute('data-context', savedContext);
-          
-          if (savedTheme) {
-            document.documentElement.setAttribute('data-theme', savedTheme);
-          } else {
-            document.documentElement.setAttribute('data-theme', 'light');
-          }
-          
-          // Mark as applied
+          document.documentElement.setAttribute('data-theme', savedTheme);
           document.documentElement.setAttribute('data-theme-applied', 'true');
-          
-          // Store in sessionStorage for backup
-          sessionStorage.setItem('themeMode', savedTheme || 'light');
-          sessionStorage.setItem('themeContext', savedContext);
-          
-          // Add style to prevent flash
-          const style = document.createElement('style');
-          style.textContent = `
-            /* Prevent flash of unstyled content */
-            html:not([data-theme-applied]) #root {
-              opacity: 0;
-            }
-            html[data-theme-applied] #root {
-              opacity: 1;
-              transition: opacity 0.1s ease-in;
-            }
-            
-            /* Theme variables - will be overridden by React but provides fallback */
-            :root {
-              --bg-color: #ffffff;
-              --text-color: #333333;
-              --border-color: #e0e0e0;
-              --header-bg: #ffffff;
-              --sidebar-bg: #ffffff;
-            }
-            
-            [data-theme="dark"] {
-              --bg-color: #1a1a1a;
-              --text-color: #ffffff;
-              --border-color: #333333;
-              --header-bg: #1a1a1a;
-              --sidebar-bg: #1a1a1a;
-            }
-          `;
+
+          var style = document.createElement('style');
+          style.textContent = 'html:not([data-theme-applied]) #root{opacity:0}html[data-theme-applied] #root{opacity:1;transition:opacity 0.1s ease-in}';
           document.head.appendChild(style);
-          
-        } catch(e) {
-          // Fallback on error
+        } catch (e) {
           document.documentElement.setAttribute('data-theme', 'light');
           document.documentElement.setAttribute('data-context', 'salvalucro');
-          console.error('Theme initialization error:', e);
         }
       })();
     </script>

@@ -3,7 +3,6 @@ import api from '../../services/api';
 import React, { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 
-// PDF Viewer Component
 function Base64PDFViewer({ base64String }) {
   const [pdfUrl, setPdfUrl] = useState(null);
 
@@ -43,7 +42,6 @@ function Base64PDFViewer({ base64String }) {
   );
 }
 
-// Excel Viewer Component
 function Base64ExcelViewer({ base64String }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
@@ -138,11 +136,10 @@ function Base64ExcelViewer({ base64String }) {
   );
 }
 
-// Main Component
 const Teste = () => {
   const [fileBase64, setFileBase64] = useState(null);
-  const [fileFormat, setFileFormat] = useState(null); // 'PDF' or 'XLSX'
-  const [selectedFormat, setSelectedFormat] = useState('XLSX'); // User selected format
+  const [fileFormat, setFileFormat] = useState(null);
+  const [selectedFormat, setSelectedFormat] = useState('XLSX');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [responseMessage, setResponseMessage] = useState(null);
@@ -206,7 +203,7 @@ const Teste = () => {
     const adquirente = JSON.parse(localStorage.getItem('selectedAdm')) || '';
     const produto = '';
     const modalidade = '';
-    const arquivo = selectedFormat; // Use the user's selected format
+    const arquivo = selectedFormat;
     const modelo = 'VENDA';
 
     let ban = bandeira?.codigoBandeira || '';
@@ -251,7 +248,6 @@ const Teste = () => {
     }
   };
 
-  // Function to download the file
   const downloadFile = () => {
     if (!fileBase64 || !fileFormat) return;
     
@@ -278,7 +274,6 @@ const Teste = () => {
 
   return (
     <div style={{ padding: '20px' }}>
-      {/* Format Selection Section */}
       <div style={{ 
         marginBottom: '20px', 
         padding: '15px', 
@@ -313,7 +308,6 @@ const Teste = () => {
         </div>
       </div>
 
-      {/* Generate Button */}
       <div style={{ marginBottom: '20px' }}>
         <button 
           type="button" 
@@ -333,7 +327,6 @@ const Teste = () => {
         </button>
       </div>
 
-      {/* Response Message */}
       {responseMessage && (
         <div style={{ 
           padding: '10px', 
@@ -346,7 +339,6 @@ const Teste = () => {
         </div>
       )}
 
-      {/* Error Message */}
       {error && (
         <div style={{ 
           padding: '10px', 
@@ -359,14 +351,12 @@ const Teste = () => {
         </div>
       )}
 
-      {/* Loading Indicator */}
       {loading && (
         <div style={{ textAlign: 'center', padding: '40px' }}>
           <p>Loading {selectedFormat} report...</p>
         </div>
       )}
 
-      {/* File Preview */}
       {fileBase64 && !loading && (
         <div style={{ marginTop: '20px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
@@ -394,7 +384,6 @@ const Teste = () => {
         </div>
       )}
       
-      {/* Debug info - optional, remove in production */}
       {process.env.NODE_ENV === 'development' && (
         <div style={{ marginTop: '20px', padding: '10px', backgroundColor: '#f0f0f0', fontSize: '12px' }}>
           <strong>Debug:</strong> File Base64 exists: {fileBase64 ? 'YES (length: ' + fileBase64.length + ')' : 'NO'} | 

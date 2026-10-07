@@ -57,6 +57,21 @@ const tableConfig = {
       { key: 'status', label: 'Status', path: 'STATUS' }
     ]
   },
+  openfinance: {
+    title: 'Extrato Bancário',
+    mobileCards: [
+      { key: 'data', label: 'Data', path: 'DataFormatada' },
+      { key: 'operacao', label: 'Operação', path: 'OperacaoDisplay', badge: true },
+      { key: 'descricao', label: 'Descrição', path: 'Descrição' },
+      { key: 'valor', label: 'Valor', path: 'Valor', format: 'currency' },
+      { key: 'categoria', label: 'Categoria', path: 'Categoria' },
+      { key: 'cnpjPagador', label: 'CNPJ Pagador', path: 'CnpjPagadorFormatado' },
+      { key: 'nomePagador', label: 'Pagador', path: 'NomePagador' },
+      { key: 'cnpjRecebedor', label: 'CNPJ Recebedor', path: 'CnpjRecebedorFormatado' },
+      { key: 'nomeRecebedor', label: 'Recebedor', path: 'NomeRecebedor' },
+      { key: 'complemento', label: 'Complemento', path: 'Complemento' }
+    ]
+  },
   servicos: {
     title: 'Serviços',
     filters: [
@@ -80,7 +95,6 @@ const tableConfig = {
   }
 }
 
-// Helper function to find the full bandeira/adquirente/servico object from the data array
 const findFilterObject = (value, filterKey, dataArray, tableType) => {
   if (!value || !dataArray || dataArray.length === 0) return null
   
@@ -288,7 +302,6 @@ const NewTabelaGenerica = forwardRef(({
     }
   }, [dataArray, expandAll])
 
-  // Load saved filters from localStorage on component mount
   useEffect(() => {
     const storageKeys = getStorageKeys()
     const filterKeys = getFilterKeys()
@@ -332,7 +345,6 @@ const NewTabelaGenerica = forwardRef(({
     }
   }, [getStorageKeys, getFilterKeys, tableType])
 
-  // Update localStorage when first filter changes
   useEffect(() => {
     const storageKeys = getStorageKeys()
     const filterKeys = getFilterKeys()
@@ -351,7 +363,6 @@ const NewTabelaGenerica = forwardRef(({
     }
   }, [selectedFilters, dataArray, tableType, getStorageKeys, getFilterKeys])
 
-  // Update localStorage when second filter changes
   useEffect(() => {
     const storageKeys = getStorageKeys()
     const filterKeys = getFilterKeys()
@@ -421,7 +432,6 @@ const NewTabelaGenerica = forwardRef(({
 
   const isExpandable = expandable || config.expandable
 
-  // Initialize filter options
   useEffect(() => {
     if (!showFilters || dataArray.length === 0) {
       if (Object.keys(allFilterOptions).length > 0) {
@@ -449,7 +459,6 @@ const NewTabelaGenerica = forwardRef(({
     setAllFilterOptions(allOptions)
   }, [dataArray, showFilters, getFilterConfig])
 
-  // Main filtering logic
   useEffect(() => {
     if (isUpdatingRef.current) return
     
@@ -499,7 +508,6 @@ const NewTabelaGenerica = forwardRef(({
     }
   }, [dataArray, selectedFilters, getFilterConfig, dataExibicao.length, isDataProcessed])
 
-  // Update parent component when dataExibicao changes
   useEffect(() => {
     if (onTotalUpdateRef.current && dataExibicao && dataExibicao.length > 0) {
       const dataSignature = JSON.stringify(dataExibicao)
@@ -773,7 +781,7 @@ const NewTabelaGenerica = forwardRef(({
         </div>
       )}
 
-      <div data-tour="tabelavendas-section" className='dropShadow vendas-view'>
+      <div data-tour="tabelavendas-section" className={`dropShadow vendas-view table-type-${tableType}`}>
         <div className='table-wrapper'>
           {!isMobileView && (
             <table className='table table-striped table-hover det-table-global desktop-table'>
@@ -802,7 +810,6 @@ const NewTabelaGenerica = forwardRef(({
             </table>
           )}
 
-          {/* Mobile Cards - Fixed for services */}
           {isMobileView && config.mobileCards && config.mobileCards.length > 0 ? (
             <div className="mobile-cards">
               {currentItems.map((item, index) => (
@@ -864,7 +871,6 @@ const NewTabelaGenerica = forwardRef(({
               ))}
             </div>
           ) : isMobileView && (
-            // Fallback mobile view when no mobileCards config exists
             <div className="mobile-cards-fallback">
               {currentItems.map((item, index) => (
                 <div key={index} className="sale-card-fallback">

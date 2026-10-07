@@ -46,7 +46,6 @@ const BuscarClienteServicos = () => {
 			if (dataBuscaServicos === '' || cnpjBuscaServicos === '') {
 				return 0
 			} else {
-				//adiciono .toLocaleDateString('pt-BR') às datas para que possamos comparar apenas o dia, mes e ano, sem levar em consideração a hora, minuto e segundos
 				if(buscou !== true){
 					toast.dismiss()
 					toast.success(dataBuscaServicos[0].toLocaleDateString('pt-BR') === dataBuscaServicos[1].toLocaleDateString('pt-BR') ? `executou a busca do dia ${dataBuscaServicos[0].toLocaleDateString('pt-BR')}` : `executou a busca do dia ${dataBuscaServicos[0].toLocaleDateString('pt-BR')} ao dia ${dataBuscaServicos[1].toLocaleDateString('pt-BR')}`)
@@ -88,7 +87,6 @@ const BuscarClienteServicos = () => {
 		setDetalhes(false)
 		setBuscou(false)
 		setTotaisGlobal({debito: 0, credito: 0, voucher: 0, liquido: 0})
-		// setArrayAdm()
 		setClicouPesquisar(false)
 	}
 

@@ -1,4 +1,3 @@
-// components/ContextSelector.scss
 .context-selector {
   position: fixed;
   top: 10px;
@@ -43,7 +42,7 @@
     cursor: pointer;
     
     &:checked {
-      accent-color: #0a3d70; // Your primary color
+      accent-color: #0a3d70;
     }
   }
 
@@ -54,7 +53,6 @@
   }
 }
 
-// Dark mode support
 @media (prefers-color-scheme: dark) {
   .context-selector {
     background: #333;

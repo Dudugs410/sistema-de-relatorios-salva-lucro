@@ -11,17 +11,17 @@
   height: 100%;
   min-height: 300px;
   max-height: 500px;
-  width: 100%; /* The container stays unrestricted */
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .chart-legend {
-  flex-shrink: 0; /* Prevent shrinking */
-  overflow: visible; /* Ensure all legend items are shown */
+  flex-shrink: 0;
+  overflow: visible;
 }
 
 .chartjs-render-monitor .chart-legend li span {
-  color: red; /* Change the color here */
-}/*# sourceMappingURL=grafico.css.map */
+  color: red;
+}

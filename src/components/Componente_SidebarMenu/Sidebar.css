@@ -28,7 +28,6 @@
   color: var(--background-color);
 }
 
-/* Parent hover and active styles */
 .navlink-parent {
   display: inline-flex;
   align-items: center;
@@ -45,7 +44,6 @@
   color: var(--font-color);
 }
 
-/* Child hover and active styles */
 .navlink-child {
   padding-left: 2rem !important;
   cursor: pointer;
@@ -67,18 +65,14 @@
 
 .navbar-expand-md .navbar-nav .nav-link {
   text-align: start;
-  /* padding-right: var(--bs-navbar-nav-link-padding-x); */
-  /* padding-left: var(--bs-navbar-nav-link-padding-x); */
 }
 
-/* Parent hover and active styles */
 .navlink-parent:hover,
 .navlink-parent.active-parent {
   background-color: var(--secondary-color);
   color: white;
 }
 
-/* Child hover and active styles */
 .navlink-child:hover,
 .navlink-child.active-child {
   background-color: var(--secondary-color);
@@ -105,7 +99,6 @@ ul {
 
 .navbar-expand-md .navbar-nav .nav-link {
   padding-right: var(--bs-navbar-nav-link-padding-x);
-  /* padding-left: var(--bs-navbar-nav-link-padding-x); */
 }
 
 .sidebar {
@@ -157,4 +150,4 @@ ul {
 
 .sidebar-content > button:hover {
   background-color: var(--secondary-color);
-}/*# sourceMappingURL=Sidebar.css.map */
+}

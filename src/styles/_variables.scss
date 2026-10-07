@@ -1,4 +1,3 @@
-// ===== DEFAULT ROOT VARIABLES (Fallback for when context isn't set) =====
 :root {
   --primary-color: #0a3d70;
   --primary-color-rgb: 10, 61, 112;
@@ -9,7 +8,6 @@
   --header-bg: rgba(10,61,112,0.945);
   --table-row-hover-bg: rgb(10, 61, 112);
   
-  // Your existing root variables
   --secondary-color-light: #99cc33;
   --default-font: Arial, Helvetica, sans-serif;
   --default-background: #fff;
@@ -18,7 +16,6 @@
   --default-font-app: var(--default-font);
 }
 
-// Default context (SL)
 [data-context="salvalucro"] {
   --primary-color: rgb(10, 61, 112);        
   --primary-color-rgb: 10, 61, 112;
@@ -61,7 +58,6 @@
   --subtitle-color: darkgray;
 }
 
-// SIFRA context
 [data-context="sifra"] {
   --primary-color: rgb(10, 61, 112);        
   --primary-color-rgb: 10, 61, 112;
@@ -104,7 +100,6 @@
   --subtitle-color: darkgray;
 }
 
-// MG context
 [data-context="mg"] {
   --primary-color: #6b74b5;        
   --primary-color-rgb: 107, 116, 181;
@@ -147,7 +142,6 @@
   --subtitle-color: #6b74b5;
 }
 
-// Superjur context
 [data-context="superjur"] {
   --primary-color: rgb(117, 139, 73);        
   --primary-color-rgb: 176, 207, 113;
@@ -190,7 +184,6 @@
   --subtitle-color: rgb(117, 139, 73);
 }
 
-// Card Digital context
 [data-context="carddigital"] {
   --primary-color: rgb(23, 102, 155);        
   --primary-color-rgb: 10, 61, 112;
@@ -233,7 +226,6 @@
   --subtitle-color: rgb(23, 102, 155);
 }
 
-// SPECIAL context
 [data-context="SPECIAL"] {
   --primary-color: rgb(150, 0, 100);
   --primary-color-rgb: 150, 0, 100;
@@ -276,7 +268,6 @@
   --subtitle-color: #ff66cc;
 }
 
-// ALT-1 context (Teal & Coral)
 [data-context="ALT-1"] {
   --primary-color: rgb(0, 100, 100);
   --primary-color-rgb: 0, 100, 100;
@@ -319,7 +310,6 @@
   --subtitle-color: #ff7f50;
 }
 
-// ALT-2 context (Navy & Gold)
 [data-context="ALT-2"] {
   --primary-color: rgb(25, 55, 120);
   --primary-color-rgb: 25, 55, 120;
@@ -362,7 +352,6 @@
   --subtitle-color: #ffd700;
 }
 
-// ALT-3 context (Forest & Peach)
 [data-context="ALT-3"] {
   --primary-color: rgb(40, 90, 50);
   --primary-color-rgb: 40, 90, 50;
@@ -405,7 +394,6 @@
   --subtitle-color: #ffc89a;
 }
 
-// ALT-4 context (Slate & Amber)
 [data-context="ALT-4"] {
   --primary-color: rgb(55, 70, 95);
   --primary-color-rgb: 55, 70, 95;
@@ -448,7 +436,6 @@
   --subtitle-color: #ffbe46;
 }
 
-// ALT-5 context (Berry & Mint)
 [data-context="ALT-5"] {
   --primary-color: rgb(110, 45, 90);
   --primary-color-rgb: 110, 45, 90;
@@ -491,7 +478,6 @@
   --subtitle-color: #5ac8a0;
 }
 
-// ALT-6 context (Plum & Honey)
 [data-context="ALT-6"] {
   --primary-color: rgb(90, 50, 120);
   --primary-color-rgb: 90, 50, 120;
@@ -534,7 +520,6 @@
   --subtitle-color: #ffc850;
 }
 
-// ALT-7 context (Ocean & Salmon)
 [data-context="ALT-7"] {
   --primary-color: rgb(20, 100, 120);
   --primary-color-rgb: 20, 100, 120;
@@ -577,7 +562,6 @@
   --subtitle-color: #ff826e;
 }
 
-// ALT-8 context (Olive & Terracotta)
 [data-context="ALT-8"] {
   --primary-color: rgb(70, 85, 45);
   --primary-color-rgb: 70, 85, 45;
@@ -620,7 +604,6 @@
   --subtitle-color: #d26e4b;
 }
 
-// ALT-9 context (Indigo & Lime)
 [data-context="ALT-9"] {
   --primary-color: rgb(55, 55, 130);
   --primary-color-rgb: 55, 55, 130;
@@ -663,7 +646,6 @@
   --subtitle-color: #b4e650;
 }
 
-// ALT-10 context (Charcoal & Rose)
 [data-context="ALT-10"] {
   --primary-color: rgb(60, 65, 75);
   --primary-color-rgb: 60, 65, 75;
@@ -706,7 +688,6 @@
   --subtitle-color: #e68296;
 }
 
-// ALT-11 context (Hatsune Miku - Teal and Electric Blue)
 [data-context="ALT-11"] {
   --primary-color: rgb(30, 120, 130);
   --primary-color-rgb: 30, 120, 130;
@@ -749,7 +730,6 @@
   --subtitle-color: #39c5bb;
 }
 
-// ALT-12 context (Kasane Teto - Cherry Red and Silver)
 [data-context="ALT-12"] {
   --primary-color: rgb(170, 45, 65);
   --primary-color-rgb: 170, 45, 65;
@@ -792,7 +772,6 @@
   --subtitle-color: #d44068;
 }
 
-// ALT-13 context (Hatsune Miku 2007 Original - YAMAHA Blue-Green)
 [data-context="ALT-13"] {
   --primary-color: rgb(0, 120, 117);
   --primary-color-rgb: 0, 120, 117;
@@ -835,7 +814,6 @@
   --subtitle-color: #1abfba;
 }
 
-// ALT-14 context (Megurine Luka - Pink & Pearl)
 [data-context="ALT-14"] {
   --primary-color: rgb(200, 60, 120);
   --primary-color-rgb: 200, 60, 120;
@@ -878,7 +856,6 @@
   --subtitle-color: #d46a9e;
 }
 
-// Colorblind-friendly color schemes
 [data-context="CB-PROTANOPIA"] {
   --primary-color: #0055A4;
   --primary-color-rgb: 0, 85, 164;

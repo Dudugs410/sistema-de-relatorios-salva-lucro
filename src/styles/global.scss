@@ -1,7 +1,5 @@
 @import './variables';
 
-// ===== THEME APPLICATION FIXES =====
-// Prevent FOUC (Flash of Unstyled Content)
 html {
   transition: background-color 0.2s ease, color 0.2s ease;
   
@@ -14,7 +12,6 @@ html.preload-transitions * {
   transition: none !important;
 }
 
-// Hide content until theme is applied
 html:not([data-theme-applied]) #root {
   opacity: 0;
 }
@@ -24,12 +21,10 @@ html[data-theme-applied] #root {
   transition: opacity 0.1s ease-in;
 }
 
-// Fallback: Hide if no theme attribute at all
 body:not([data-theme]) {
   opacity: 0;
 }
 
-// Loading state styles
 body:not([data-theme]) .app-loading {
   display: flex;
 }
@@ -38,10 +33,7 @@ body[data-theme] .app-loading {
   display: none;
 }
 
-// ===== THEME VARIABLES WITH FALLBACKS =====
-// These ensure the theme works even if variables aren't loaded
 :root {
-  // Default light theme (fallback)
   --primary-color: #0a3d70;
   --primary-color-rgb: 10, 61, 112;
   --secondary-color: #99cc33;
@@ -56,7 +48,6 @@ body[data-theme] .app-loading {
   --bs-border-color: #dee2e6;
 }
 
-// Force theme application for any edge cases
 [data-theme="dark"] {
   --primary-color: #99cc33;
   --primary-color-rgb: 153, 204, 51;
@@ -70,7 +61,6 @@ body[data-theme] .app-loading {
   --table-row-hover-bg: rgba(153, 204, 51, 0.1);
   --bs-border-color: #404040;
   
-  // Additional dark theme overrides
   background-color: var(--background-color);
   color: var(--font-color);
 }
@@ -92,14 +82,12 @@ body[data-theme] .app-loading {
   color: var(--font-color);
 }
 
-// Force background and text color on body
 body {
   background-color: var(--background-color);
   color: var(--font-color);
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-// ===== REST OF YOUR EXISTING STYLES =====
 .app-page-global{
     display: contents;
     flex-direction: column;
@@ -112,7 +100,6 @@ body {
     width: 100%;
     justify-content: center;
     transition: all 0.4s;
-    //background-color: var(--background-color);
     flex-direction: column;
     align-items: center;
 }
@@ -127,13 +114,11 @@ body {
     padding: 10px;
     margin-top: 10px;
     margin-bottom: 54px;
-    //background-color: var(--background-color);
 }
 
 .subtitle-global{
     text-align: center;
 }
-
 
 .title-container-global{
     text-align: center;
@@ -147,7 +132,7 @@ body {
 
 .subtitle-container-global{
     display: flex;
-    color: var(--font-color);
+    color: var(--on-secondary-color, var(--font-color));
     background-color: var(--secondary-color);
     padding: 10px;
     border-radius: 20px;
@@ -155,6 +140,9 @@ body {
     align-items: center;
     flex-direction: row;
 
+    .subtitle{
+        color: var(--on-secondary-color, var(--primary-color));
+    }
 }
 
 .title-global{
@@ -239,10 +227,6 @@ body {
     color: var(--subtitle-color)
 }
 
-///Botões
-
-// ===== STANDARDIZED BUTTON CLASS =====
-// Use this class for all buttons throughout the app
 .btn-standard {
     display: inline-flex;
     align-items: center;
@@ -264,34 +248,28 @@ body {
     user-select: none;
     min-width: 100px;
     
-    // Hover state
     &:hover:not(:disabled) {
         background-color: var(--primary-color);
         color: var(--secondary-color);
-        //transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(var(--primary-color-rgb, 10, 61, 112), 0.3);
     }
     
-    // Active/Click state
     &:active:not(:disabled) {
         transform: translateY(0);
         box-shadow: 0 2px 6px rgba(var(--primary-color-rgb, 10, 61, 112), 0.2);
     }
     
-    // Disabled state
     &:disabled {
         opacity: 0.6;
         cursor: not-allowed;
         transform: none;
     }
     
-    // Focus state for accessibility
     &:focus-visible {
         outline: 3px solid var(--secondary-color);
         outline-offset: 2px;
     }
     
-    // Variants
     &.btn-primary {
         background-color: var(--primary-color);
         color: white;
@@ -337,7 +315,6 @@ body {
         }
     }
     
-    // Size variants
     &.btn-sm {
         height: 2em;
         padding: 0 14px;
@@ -352,7 +329,6 @@ body {
         min-width: 140px;
     }
     
-    // Icon-only buttons
     &.btn-icon {
         min-width: 2.5em;
         padding: 0;
@@ -361,21 +337,18 @@ body {
     }
 }
 
-// ===== Mobile Responsive Button Sizes =====
 @media screen and (max-width: 768px) {
     .btn-standard {
-        height: 3em; // Bigger on mobile
+        height: 3em;
         padding: 0 24px;
         font-size: 16px;
         min-width: 120px;
         border-radius: 12px;
         
-        // Touch-friendly spacing
         &:hover:not(:disabled) {
             transform: translateY(-1px);
         }
         
-        // Size variants on mobile
         &.btn-sm {
             height: 2.5em;
             padding: 0 18px;
@@ -400,7 +373,7 @@ body {
 
 @media screen and (max-width: 480px) {
     .btn-standard {
-        height: 3.2em; // Even bigger on very small screens
+        height: 3.2em;
         padding: 0 20px;
         font-size: 15px;
         min-width: 100px;
@@ -428,7 +401,6 @@ body {
     }
 }
 
-// ===== LEGACY BUTTON CLASSES (keep for backward compatibility) =====
 .btn-global{
     width: 30%;
     display: flex;
@@ -464,7 +436,6 @@ body {
     }
 }
 
-// Mobile responsive - full width with better styling
 @media screen and (max-width: 768px) {
     .btn-global {
         width: 100% !important;
@@ -511,24 +482,9 @@ body {
     background-color: var(--primary-color);
 }
 
-.btn-tutorial{
-    position: absolute !important;
-    bottom: 45px !important;
-    right: 20px !important;
-    z-index: 10 !important;
-    padding: 10px 15px !important;
-    background: var(--primary-color) !important;
-    color: rgb(153, 204, 51) !important;
-    border: solid 1px !important;
-    border-radius: 25px !important;
-    cursor: pointer !important;
-}
-
 .money{
     color: var(--secondary-color) !important;
 }
-
-///select
 
 .select-disabled-global{
     background-color: var(--primary-color);
@@ -545,8 +501,6 @@ body {
     background-color: var(--primary-color);
     color: var(--secondary-color);
 }
-
-///tabela
 
 .table {
     --bs-table-color-type: initial;
@@ -581,12 +535,10 @@ body {
     border-color: (var(--primary-color))
 }
 
-
 .thead-global{
     background-color: var(--primary-color)
 }
 
-//Linhas e Background da tabela
 .det-table-global{
     min-height:30%;
     --bs-table-striped-color: var(--font-color);
@@ -606,7 +558,6 @@ body {
 
 }
 
-//Header da tabela
 .det-tr-top-global{
     position: sticky;
     top: 0;
@@ -653,34 +604,22 @@ tr{
     color:rgb(218, 100, 100);
 }
 
-///Paginas 
-
-///Modal
-
-///Scrollbar
-
-/* width */
 ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
 }
 
-/* Track */
 ::-webkit-scrollbar-track {
     background: rgba(255, 255, 255, 0.116)
 }
 
-/* Handle */
 ::-webkit-scrollbar-thumb {
     background: #888; 
 }
 
-/* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
     background: #555; 
 }
-
-//icones
 
 .icone-global{
     color: var(--font-color);

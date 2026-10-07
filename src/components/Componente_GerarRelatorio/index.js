@@ -23,7 +23,6 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 	const [tableData, setTableData] = useState([])
 	const [downloading, setDownloading] = useState(false)
 
-	// Update datetime
 	useEffect(() => {
 		const updateDateTime = () => {
 		  const now = new Date()
@@ -47,7 +46,6 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 		return () => clearInterval(intervalId)
 	}, [currentDateTime])
 
-	// Get modelo based on current path
 	const getModelo = () => {
 		const currentPath = localStorage.getItem('currentPath')
 		switch (currentPath) {
@@ -156,14 +154,12 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 		return ''
 	}
 
-	// Helper function to get the request object for the API
 	const getRequestObject = (format) => {
 		const cliente = JSON.parse(localStorage.getItem('selectedClientBody'))
 		const grupo = JSON.parse(localStorage.getItem('selectedGroupBody'))
 		const dataInicial = localStorage.getItem('dataInicial')
 		const dataFinal = localStorage.getItem('dataFinal')
 		
-		// Get bandeira and adquirente from report-specific localStorage keys
 		let bandeira = ''
 		let adquirente = ''
 		
@@ -189,7 +185,6 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 			adquirente = ''
 		}
 		
-		// Format date function
 		const formatDateToYYYYMMDD = (date) => {
 			if (!date) return ''
 			
@@ -220,7 +215,6 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 			return ''
 		}
 
-		// Get clientes string
 		let clientesString
 		if (cliente && cliente.label === 'TODOS') {
 			const clientCodes = grupo?.clients?.map(client => client.CODIGOCLIENTE) || []
@@ -233,7 +227,6 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 
 		const nomeGrupo = grupo?.label || ""
 
-		// Log the values for debugging
 		console.log('Report values:', {
 			bandeira,
 			adquirente,
@@ -249,25 +242,22 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 			adquirente: adquirente || '',
 			produto: '',
 			modalidade: '',
-			arquivo: format, // 'PDF' or 'XLSX'
-			modelo: getModelo() // 'VENDA', 'RECEBIMENTO', 'AJUSTE', or 'DATA_BANCO'
+			arquivo: format,
+			modelo: getModelo()
 		}
 	}
 
-	// Generic download function using the API
 	const downloadReport = async (format) => {
 		setDownloading(true)
 		
 		try {
 			const requestObject = getRequestObject(format)
 			
-			// Log the full request for debugging
 			console.log('Full request object:', requestObject)
 			
 			const response = await api.post('relatorios/detalhado', requestObject)
 			
 			if (response.data.success === true && response.data.formato === format) {
-				// Convert base64 to blob and download
 				const binaryData = atob(response.data.base64)
 				const arrayBuffer = new ArrayBuffer(binaryData.length)
 				const uint8Array = new Uint8Array(arrayBuffer)
@@ -294,7 +284,6 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 				document.body.removeChild(a)
 				URL.revokeObjectURL(url)
 				
-				// Success toast message
 				toast.success(`${format} baixado com sucesso!`)
 			} else {
 				console.error('API returned unsuccessful response:', response.data)
@@ -308,7 +297,6 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 		}
 	}
 
-	// Excel download handler
 	const exportToExcel = async () => {
 		if (!tableData || tableData.length === 0) {
 			toast.warning('Sem dados para exportar.')
@@ -317,7 +305,6 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 		await downloadReport('XLSX')
 	}
 
-	// PDF download handler
 	const generatePdf = async () => {
 		if (!tableData || tableData.length === 0) {
 			toast.warning('Sem dados para exportar.')
@@ -328,7 +315,7 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 
 	return(
 		<>
-			<div data-tour="exportacao-section" className='container'>
+			<div data-tour="exportacao-section" className='export-area'>
 				<div className='export-column'>
 					<button 
 						className="btn btn-exportar btn-exportar-excel" 

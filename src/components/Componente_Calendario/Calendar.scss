@@ -76,7 +76,6 @@
   font-weight: bold;
   transition: all 0.4s;
   color: var(--calendar-btn-navigation-color);
-  //variável específica?
 }
 
 .react-calendar__navigation{
@@ -118,19 +117,16 @@
   
 }
 
-//cores dos dias dos finais de semana
 
 .react-calendar__month-view__days__day--weekend {
   color: #d10000 !important;
   
 }
 
-//cores das Datas dos meses vizinhos que aparecem no calendário
 
 .react-calendar__month-view__days__day--neighboringMonth {
   color: var(--calendar-neighbor-color) !important;
   background-color: var(--calendar-neighbor-bg) !important;
-  //variável específica
 }
 
 .react-calendar__year-view .react-calendar__tile,
@@ -165,7 +161,6 @@
   transition: all 0.4s;
   color: var(--primary-color);
   background-color: var(--secondary-color);
-  //box-shadow:inset 0px 38px 0px 0px var(--secondary-color);
 
 }
 
@@ -262,25 +257,25 @@
 
 .react-calendar__tile {
   max-width: 100%;
-  padding: 0; /* Remove padding to ensure background fills tile */
+  padding: 0;
   background: none;
   text-align: center;
   line-height: 16px;
   color: gray;
   display: inline-block;
   box-sizing: border-box;
-  width: 100%; /* Ensure tile takes full width */
-  height: 100%; /* Ensure tile takes full height */
-  aspect-ratio: 1; /* Keep square aspect ratio */
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1;
 }
 
 .react-calendar__tile--active {
 
   transition: all 0.4s;
-  background-color: var(--secondary-color) !important; /* Full background color */
-  box-shadow: none; /* Remove inset shadow if unwanted */
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
+  background-color: var(--secondary-color) !important;
+  box-shadow: none;
+  width: 100%;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -288,8 +283,8 @@
 
 .react-calendar__tile--hasActive {
   background-color: var(--primary-color) !important;
-  width: 100%; /* Ensure it takes full width */
-  height: 100%; /* Ensure it takes full height */
+  width: 100%;
+  height: 100%;
 }
 
 .react-calendar__tile--active:enabled:hover,
@@ -303,43 +298,42 @@
 .react-calendar__tile--now {
   font-weight: bold;
   color: var(--calendar-now-color);
-  background-color: var(--primary-color) !important; /* Keep it consistent */
+  background-color: var(--primary-color) !important;
   &hover{
     background-color: var(--secondary-color) !important;
   }
 }
 
-///
 
 .react-calendar__tile--now {
   font-weight: bold;
-  color: var(--secondary-color) !important; // Define this variable in your styles
-  background-color: var(--primary-color); // Define this variable in your styles
-  border: solid var(--primary-color) 1px; // Example of making it circular
+  color: var(--secondary-color) !important;
+  background-color: var(--primary-color);
+  border: solid var(--primary-color) 1px;
 }
 
 .react-calendar__tile--active {
-  color: var(--primary-color) !important; // Define this variable
-  background-color: var(--secondary-color) !important; // Define this variable
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2); // Add a shadow for better distinction
+  color: var(--primary-color) !important;
+  background-color: var(--secondary-color) !important;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
 }
 
 .react-calendar__tile--range {
-  color: var(--primary-color !important); // Define this variable
-  background-color: var(--secondary-color) !important; // Define this variable
+  color: var(--primary-color !important);
+  background-color: var(--secondary-color) !important;
 }
 
 .react-calendar__tile--rangeStart,
 .react-calendar__tile--rangeEnd {
-  color: var(--primary-color) !important; // Define this variable
-  background-color: var(--secondary-color) !important; // Define this variable
+  color: var(--primary-color) !important;
+  background-color: var(--secondary-color) !important;
 }
 
 .react-calendar__tile--now:hover,
 .react-calendar__tile--active:hover,
 .react-calendar__tile--range:hover {
   transition: background-color 0.3s, color 0.3s;
-  background-color: var(--secondary-color) !important; // Define this variable
-  color: var(--primary-color) !important; // Define this variable
+  background-color: var(--secondary-color) !important;
+  color: var(--primary-color) !important;
 }
 

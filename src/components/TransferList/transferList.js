@@ -94,7 +94,6 @@ const TransferList = () => {
         </button>
       </div>
 
-      {/* Right Box */}
       <div className='transferlist-container'>
         <h5 className='h5-transfer'>Clientes Selecionados</h5>
         <ul className='transferlist-box-container'>

@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from 'react'
 import Select from 'react-select'
 import { AuthContext } from '../../contexts/auth'
 import { cancelOngoingRequests } from '../../services/api'
+import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import './Seletor.scss'
 import { FiChevronDown, FiUsers, FiUser, FiCheck } from 'react-icons/fi'
@@ -33,25 +34,24 @@ const SeletorCliente = ({ onClose }) => {
   const [selectedGroup, setSelectedGroup] = useState(null)
   const [selectedClient, setSelectedClient] = useState(null)
 
-  // Custom styling for react-select
   const customStyles = {
     control: (provided, state) => ({
       ...provided,
       backgroundColor: '#fff',
-      borderColor: state.isFocused ? '#99cc33' : '#d1d5db',
+      borderColor: state.isFocused ? 'var(--highlight-color)' : '#d1d5db',
       borderRadius: '8px',
       padding: '4px 8px',
       minHeight: '48px',
-      boxShadow: state.isFocused ? '0 0 0 3px rgba(153, 204, 51, 0.1)' : 'none',
+      boxShadow: state.isFocused ? '0 0 0 3px rgba(var(--highlight-color-rgb), 0.15)' : 'none',
       '&:hover': {
-        borderColor: '#99cc33'
+        borderColor: 'var(--highlight-color)'
       }
     }),
     option: (provided, state) => ({
       ...provided,
-      backgroundColor: state.isSelected ? '#99cc33' : 
-                      state.isFocused ? '#f0f7e6' : 'white',
-      color: state.isSelected ? 'white' : '#1f2937',
+      backgroundColor: state.isSelected ? 'var(--highlight-color)' : 
+                      state.isFocused ? 'rgba(var(--highlight-color-rgb), 0.12)' : 'white',
+      color: state.isSelected ? 'var(--on-highlight-color)' : '#1f2937',
       padding: '12px 16px',
       fontSize: '14px',
       display: 'flex',
@@ -82,12 +82,11 @@ const SeletorCliente = ({ onClose }) => {
       ...provided,
       color: '#6b7280',
       '&:hover': {
-        color: '#99cc33'
+        color: 'var(--highlight-color)'
       }
     })
   }
 
-  // Helper function to get icon based on type
   const getIcon = (type) => {
     switch(type) {
       case 'users':
@@ -133,7 +132,6 @@ const SeletorCliente = ({ onClose }) => {
         setDisplayClient(selectedClient.label)
       }
       
-      // Add a small delay for better UX
       await new Promise(resolve => setTimeout(resolve, 300))
       
       onClose()
@@ -168,12 +166,12 @@ const SeletorCliente = ({ onClose }) => {
           
           setSelectedGroup({
             ...initialGroup,
-            icon: undefined // Remove any icon property that might be a React component
+            icon: undefined
           })
           setClientOptions(initialClientOptions)
           setSelectedClient({
             ...initialClientOptions[0],
-            icon: undefined // Remove any icon property that might be a React component
+            icon: undefined
           })
           
           updateLocalStorage(initialGroup, initialClientOptions, initialClientOptions[0])
@@ -192,7 +190,7 @@ const SeletorCliente = ({ onClose }) => {
       if (!localStorage.getItem('selectedClient')) {
         setSelectedClient({
           ...options[0],
-          icon: undefined // Remove any icon property that might be a React component
+          icon: undefined
         })
         localStorage.setItem('selectedClient', JSON.stringify(options[0]))
       }
@@ -201,7 +199,6 @@ const SeletorCliente = ({ onClose }) => {
       localStorage.setItem('groupName', selectedGroup.label)
       localStorage.setItem('groupClients', JSON.stringify(selectedGroup.clients))
       
-      // Store without React components
       const groupToStore = {
         value: selectedGroup.value,
         label: selectedGroup.label,
@@ -253,7 +250,6 @@ const SeletorCliente = ({ onClose }) => {
   }
 
   const updateLocalStorage = (group, clientOptions, client) => {
-    // Store without React components
     const groupToStore = {
       value: group.value,
       label: group.label,
@@ -289,7 +285,6 @@ const SeletorCliente = ({ onClose }) => {
       const parsedGroup = JSON.parse(savedGroup)
       setSelectedGroup({
         ...parsedGroup,
-        // Ensure we don't have React components in the object
         icon: undefined
       })
     }
@@ -303,14 +298,12 @@ const SeletorCliente = ({ onClose }) => {
       const parsedClient = JSON.parse(savedClient)
       setSelectedClient({
         ...parsedClient,
-        // Ensure we don't have React components in the object
         icon: undefined
       })
     }
   }
 
   const handleGroupChange = (selected) => {
-    // Clean the selected object to remove any React components
     const cleanedSelected = {
       value: selected.value,
       label: selected.label,
@@ -322,7 +315,6 @@ const SeletorCliente = ({ onClose }) => {
     const options = getClientOptions(cleanedSelected)
     setClientOptions(options)
     
-    // Auto-select first client (clean it too)
     const firstClient = {
       ...options[0],
       icon: undefined
@@ -334,7 +326,6 @@ const SeletorCliente = ({ onClose }) => {
 
   const handleClientChange = (selected) => {
     cancelOngoingRequests()
-    // Clean the selected object to remove any React components
     const cleanedSelected = {
       value: selected.value,
       label: selected.label,

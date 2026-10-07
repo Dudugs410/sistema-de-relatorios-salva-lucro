@@ -1,4 +1,3 @@
-// hooks/useSessionTimeout.js
 import { useEffect, useRef, useCallback } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -13,20 +12,16 @@ const useSessionTimeout = (timeoutMinutes = 30) => {
     const isSignedIn = sessionStorage.getItem('isSignedIn') === 'true'
     const currentPath = location.pathname
     
-    // Clear all session storage
     sessionStorage.clear()
     
-    // Clear cookies
     Cookies.remove('userID')
     Cookies.remove('pluggy_client_id')
     Cookies.remove('pluggy_api_key')
     
-    // Notify user only if they were logged in
     if (isSignedIn && currentPath !== '/login') {
       toast.info(`Sessão expirada por inatividade de ${timeoutMinutes} minutos`)
     }
     
-    // Redirect to login
     if (currentPath !== '/login') {
       navigate('/login')
     }
@@ -64,7 +59,6 @@ const useSessionTimeout = (timeoutMinutes = 30) => {
     }
   }, [resetTimer])
   
-  // Check token expiration on route change
   useEffect(() => {
     const token = sessionStorage.getItem('token')
     if (token) {

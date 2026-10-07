@@ -172,7 +172,6 @@
     font-weight: 600;
 }
 
-// Table styles matching NewTabelaGenerica - NO BORDERS
 .table-responsive-md {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -218,7 +217,7 @@
             background-color: var(--table-hover, rgba(0, 123, 255, 0.08)) !important;
             
             .det-td-global {
-                color: var(--secondary-color) !important;
+                color: var(--highlight-color) !important;
             }
         }
         
@@ -244,7 +243,6 @@
     }
 }
 
-// Striped rows - theme aware
 [data-theme="light"] {
     .det-tr-global:nth-child(even) {
         background-color: rgba(0, 0, 0, 0.02);
@@ -261,7 +259,7 @@
     }
     
     .det-tr-global:hover {
-        background-color: rgba(153, 204, 51, 0.08) !important;
+        background-color: rgba(var(--highlight-color-rgb), 0.08) !important;
     }
 }
 
@@ -270,7 +268,6 @@
     overflow-x: auto;
 }
 
-// Scrollbar styling matching NewTabelaGenerica
 .table-responsive-md::-webkit-scrollbar {
     height: 8px;
 }

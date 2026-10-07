@@ -1,4 +1,3 @@
-// NewDisplayData.jsx - Complete fixed version with centralized Joyride and Selects
 import { useContext, useEffect, useState, useCallback, useMemo, useRef } from 'react'
 import Select from 'react-select'
 import NewTabelaGenerica from '../../components/NewTabelaGenerica'
@@ -10,7 +9,8 @@ import '../../index.scss'
 import './displayData.scss'
 import { AuthContext } from '../../contexts/auth'
 
-// Safe number formatting utilities
+import { getThemeColor } from '../../util/contextUtils'
+import { selectStyles, selectTheme } from '../../util/selectStyles'
 const safeToFixed = (value, decimals = 2) => {
   if (value === undefined || value === null || value === '') {
     return (0).toFixed(decimals)
@@ -42,27 +42,23 @@ const formatCurrency = (value) => {
   })
 }
 
-// Format date from ISO format (YYYY-MM-DDTHH:MM:SS) to Brazilian format (DD/MM/YYYY)
 const formatDateOnly = (isoDate) => {
   if (!isoDate) return 'N/A'
   
   try {
-    // Handle ISO format: "2026-05-01T00:00:00"
     if (typeof isoDate === 'string' && isoDate.includes('T')) {
-      const datePart = isoDate.split('T')[0] // Gets "2026-05-01"
+      const datePart = isoDate.split('T')[0]
       const [year, month, day] = datePart.split('-')
       if (year && month && day) {
         return `${day}/${month}/${year}`
       }
     }
     
-    // Handle if it's already in YYYY-MM-DD format
     if (typeof isoDate === 'string' && isoDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
       const [year, month, day] = isoDate.split('-')
       return `${day}/${month}/${year}`
     }
     
-    // Handle Date object
     if (isoDate instanceof Date && !isNaN(isoDate.getTime())) {
       const day = String(isoDate.getDate()).padStart(2, '0')
       const month = String(isoDate.getMonth() + 1).padStart(2, '0')
@@ -77,24 +73,19 @@ const formatDateOnly = (isoDate) => {
   }
 }
 
-// Format time from ISO format (1900-01-01THH:MM:SS) to just HH:MM:SS
 const formatTimeOnly = (isoDateTime) => {
   if (!isoDateTime) return 'N/A'
   
   try {
-    // Handle ISO format with T separator: "1900-01-01T09:37:03"
     if (typeof isoDateTime === 'string' && isoDateTime.includes('T')) {
-      const timePart = isoDateTime.split('T')[1] // Gets "09:37:03"
-      // Remove any milliseconds if present
+      const timePart = isoDateTime.split('T')[1]
       return timePart.split('.')[0]
     }
     
-    // Handle if it's already just a time string
     if (typeof isoDateTime === 'string' && isoDateTime.match(/^\d{2}:\d{2}:\d{2}/)) {
       return isoDateTime.split('.')[0]
     }
     
-    // Handle Date object
     if (isoDateTime instanceof Date && !isNaN(isoDateTime.getTime())) {
       const hours = String(isoDateTime.getHours()).padStart(2, '0')
       const minutes = String(isoDateTime.getMinutes()).padStart(2, '0')
@@ -109,37 +100,8 @@ const formatTimeOnly = (isoDateTime) => {
   }
 }
 
-// Safe date conversion wrapper for backward compatibility
 const formatDate = (date) => {
   return formatDateOnly(date)
-}
-
-// Custom Select styles to match the existing design
-const customSelectStyles = {
-  control: (base) => ({
-    ...base,
-    minWidth: 250,
-    width: '100%',
-    cursor: 'pointer',
-  }),
-  menu: (base) => ({
-    ...base,
-    minWidth: 250,
-    width: '100%',
-  }),
-  valueContainer: (base) => ({
-    ...base,
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-  }),
-  singleValue: (base) => ({
-    ...base,
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    maxWidth: '90%',
-  }),
 }
 
 const NewDisplayData = ({ 
@@ -156,7 +118,6 @@ const NewDisplayData = ({
   customTableColumns = null,
   customFilterConfig = null,
   customExportPage = null,
-  // New props for selects
   listaBandeiras = [],
   listaAdministradoras = [],
   selectedBandeira = null,
@@ -187,7 +148,6 @@ const NewDisplayData = ({
   const [currentFilteredData, setCurrentFilteredData] = useState(dataArray)
   const [hasLoadedTotals, setHasLoadedTotals] = useState(false)
   
-  // Local state for selects if not provided as props
   const [localBandeira, setLocalBandeira] = useState(null)
   const [localAdquirente, setLocalAdquirente] = useState(null)
   const [localBandeiras, setLocalBandeiras] = useState(listaBandeiras)
@@ -195,12 +155,10 @@ const NewDisplayData = ({
   
   const tabelaGenericaRef = useRef(null)
   
-  // Refs to prevent infinite loop
   const isProcessingRef = useRef(false)
   const lastDataArrayRef = useRef(null)
   const lastTotalsCallRef = useRef(null)
 
-  // Load bandeiras and administradoras if not provided
   useEffect(() => {
     const loadSelectData = async () => {
       if (listaBandeiras.length === 0 && loadBanners) {
@@ -215,7 +173,6 @@ const NewDisplayData = ({
     loadSelectData()
   }, [listaBandeiras, listaAdministradoras, loadBanners, loadAdmins])
 
-  // Restore saved values from localStorage
   useEffect(() => {
     if (showSelects && !selectedBandeira && !selectedAdquirente) {
       const savedBan = localStorage.getItem('reportBandeira')
@@ -244,7 +201,6 @@ const NewDisplayData = ({
     if (onBandeiraChange) {
       onBandeiraChange(option)
     }
-    // Store for report generation
     if (option) {
       localStorage.setItem('reportBandeira', JSON.stringify(option))
     } else {
@@ -257,7 +213,6 @@ const NewDisplayData = ({
     if (onAdquirenteChange) {
       onAdquirenteChange(option)
     }
-    // Store for report generation
     if (option) {
       localStorage.setItem('reportAdquirente', JSON.stringify(option))
     } else {
@@ -265,13 +220,11 @@ const NewDisplayData = ({
     }
   }
 
-  // Determine which values to use (props or local state)
   const currentBandeira = selectedBandeira !== null ? selectedBandeira : localBandeira
   const currentAdquirente = selectedAdquirente !== null ? selectedAdquirente : localAdquirente
   const currentBandeiras = listaBandeiras.length > 0 ? listaBandeiras : localBandeiras
   const currentAdministradoras = listaAdministradoras.length > 0 ? listaAdministradoras : localAdministradoras
 
-  // Safe date conversion wrapper
   const safeDateConvert = useCallback((date) => {
     if (!date) return 'N/A'
     try {
@@ -282,9 +235,7 @@ const NewDisplayData = ({
     }
   }, [])
 
-  // Memoize this to prevent recreation
   const getTableColumns = useCallback((tableType) => {
-    // If custom columns provided, use them
     if (customTableColumns) {
       return customTableColumns
     }
@@ -400,7 +351,6 @@ const NewDisplayData = ({
             key: 'VALOR', 
             header: 'Valor',
             render: (item) => {
-              // Use VALORLIQUIDO if available, fallback to VALORBRUTO
               const valor = item?.VALORLIQUIDO !== undefined && item?.VALORLIQUIDO !== null 
                 ? item.VALORLIQUIDO 
                 : item?.VALORBRUTO
@@ -441,7 +391,6 @@ const NewDisplayData = ({
           dataToExport = currentFilteredDataFromTable && currentFilteredDataFromTable.length > 0 ? currentFilteredDataFromTable : dataArray
         }
         
-        // Use custom export page if provided
         const exportPageType = customExportPage || currentPath
         
         switch(exportPageType) {
@@ -449,11 +398,9 @@ const NewDisplayData = ({
             await exportSales(dataToExport)
             break
           case 'openfinance':
-            // Handle openfinance export
             if (exportSales) {
               await exportSales(dataToExport)
             } else {
-              // Create a simple CSV download
               const csvContent = "data:text/csv;charset=utf-8," 
                 + Object.keys(dataToExport[0] || {}).join(",") + "\n"
                 + dataToExport.map(row => Object.values(row).join(",")).join("\n")
@@ -487,7 +434,6 @@ const NewDisplayData = ({
   }, [currentPath, exportSales, exportCredits, exportServices, dataArray, hideTables, customExportPage])
 
   const getTotalUpdateFunction = useCallback(() => {
-    // If custom export page, don't update totals through context
     if (customExportPage) {
       return null
     }
@@ -500,13 +446,10 @@ const NewDisplayData = ({
     }
   }, [currentPath, setSalesTotal, setCreditsTotal, customExportPage])
 
-  // Memoize loadTotals to prevent recreation
   const loadTotals = useCallback((array, tableType) => {
     if(!array || array.length === 0) return
     
-    // For openfinance, use custom totals
     if (customExportPage === 'openfinance') {
-      // Totals are already calculated in the parent component
       return
     }
     
@@ -597,30 +540,23 @@ const NewDisplayData = ({
     }
   }, [getTotalUpdateFunction, customExportPage])
 
-  // FIXED: handleTotalUpdate - NO STATE UPDATES to prevent loop
   const handleTotalUpdate = useCallback((data) => {
-    // Prevent processing if already processing or no data
     if (isProcessingRef.current || !exportPage || !data) return
     
-    // Check if this exact data was already processed
     const dataSignature = JSON.stringify(data)
     if (dataSignature === lastTotalsCallRef.current) return
     
     isProcessingRef.current = true
     lastTotalsCallRef.current = dataSignature
     
-    // Only call loadTotals, don't update currentFilteredData
-    // This prevents the loop because currentFilteredData doesn't change
     loadTotals(data, exportPage)
     
-    // Reset processing flag after a short delay
     setTimeout(() => {
       isProcessingRef.current = false
     }, 100)
   }, [exportPage, loadTotals])
 
   const getFilterConfig = useCallback(() => {
-    // If custom filter config provided, use it
     if (customFilterConfig) {
       return customFilterConfig
     }
@@ -673,7 +609,6 @@ const NewDisplayData = ({
     }
   }, [exportPage, customFilterConfig])
 
-  // Set export page based on path or custom
   useEffect(() => {
     if (customExportPage) {
       setExportPage(customExportPage)
@@ -697,7 +632,6 @@ const NewDisplayData = ({
     }
   }, [location.pathname, customExportPage])
 
-  // Handle dataArray changes - only update when actually changed
   useEffect(() => {
     if (dataArray && dataArray.length > 0 && !hasLoadedTotals && !hideTotals) {
       const dataSignature = JSON.stringify(dataArray)
@@ -708,7 +642,6 @@ const NewDisplayData = ({
     }
   }, [dataArray, hasLoadedTotals, hideTotals])
 
-  // Separate effect for loading totals - only runs when dataArray changes
   useEffect(() => {
     if (dataArray && dataArray.length > 0 && !hasLoadedTotals && !hideTotals) {
       loadTotals(dataArray, exportPage)
@@ -719,12 +652,10 @@ const NewDisplayData = ({
     }
   }, [dataArray, exportPage, hideTotals, hasLoadedTotals, loadTotals])
 
-  // Memoize table props - stable reference
   const tableProps = useMemo(() => {
     if (hideTables) return null
     if (!exportPage || !dataArray || dataArray.length === 0) return null
     
-    // Determine table type for columns
     let tableType = exportPage
     if (exportPage === 'ajustes') {
       tableType = 'servicos'
@@ -767,14 +698,12 @@ const NewDisplayData = ({
     }
   }
 
-  // Handle tutorial end
   const handleTutorialEnd = () => {
     if (setRunTutorial) {
       setRunTutorial(false)
     }
   }
 
-  // Helper function to get selected option value
   const getSelectedAdminOption = () => {
     if (!currentAdquirente || currentAdministradoras.length === 0) return null
     return currentAdministradoras.find(option => option.codigoAdquirente === currentAdquirente)
@@ -787,7 +716,6 @@ const NewDisplayData = ({
 
   return (
     <>
-      {/* Centralized Joyride - only render if there are steps */}
       {runTutorial && tutorialSteps && tutorialSteps.length > 0 && (
         <Joyride
           steps={tutorialSteps}
@@ -800,7 +728,7 @@ const NewDisplayData = ({
           disableOverlayClose={true}
           styles={{
             options: {
-              primaryColor: '#99cc33',
+              primaryColor: getThemeColor('--highlight-color', '#99cc33'),
               textColor: '#0a3d70',
               zIndex: 10000,
             },
@@ -821,11 +749,10 @@ const NewDisplayData = ({
         />
       )}
 
-      {/* Selects section - only show if showSelects is true and no data is loaded yet */}
       {showSelects && (!dataArray || dataArray.length === 0) && (
-        <div className='select-container-calendario' data-tour="bandeiraadquirente-section">
-          <div className='select-wrapper'>
-            <h5>Adquirente</h5>
+        <div className='page-filters' data-tour="bandeiraadquirente-section">
+          <div className='page-filter'>
+            <h5 className='page-filter__label'>Adquirente</h5>
             <Select 
               className='seletor-adq-select fixed-width-select' 
               id='adquirente'
@@ -838,12 +765,13 @@ const NewDisplayData = ({
               menuPosition="fixed"
               placeholder="Selecione uma adquirente..."
               isClearable={true}
-              styles={customSelectStyles}
+              styles={selectStyles}
+              theme={selectTheme}
               isDisabled={isSearching || (dataArray && dataArray.length > 0)}
             />
           </div>
-          <div className='select-wrapper'>
-            <h5>Bandeira</h5>
+          <div className='page-filter'>
+            <h5 className='page-filter__label'>Bandeira</h5>
             <Select 
               className='seletor-adq-select fixed-width-select' 
               id='bandeira'
@@ -856,7 +784,8 @@ const NewDisplayData = ({
               menuPosition="fixed"
               placeholder="Selecione uma bandeira..."
               isClearable={true}
-              styles={customSelectStyles}
+              styles={selectStyles}
+              theme={selectTheme}
               isDisabled={isSearching || (dataArray && dataArray.length > 0)}
             />
           </div>
@@ -877,45 +806,11 @@ const NewDisplayData = ({
         </div>
       )}
 
-      {/* Show custom totals for openfinance */}
       {!hideTotals && totals && customExportPage === 'openfinance' && (
-        <div data-tour="totals-section" className="summary-cards">
-          <div className="summary-card">
-            <span className="summary-label">Total de Transações</span>
-            <span className="summary-value">{totals?.count || 0}</span>
-          </div>
-          <div className="summary-card">
-            <span className="summary-label">Total Receitas</span>
-            <span className="summary-value text-success">
-              {(totals?.income || 0).toLocaleString('pt-BR', {
-                style: 'currency',
-                currency: 'BRL'
-              })}
-            </span>
-          </div>
-          <div className="summary-card">
-            <span className="summary-label">Total Despesas</span>
-            <span className="summary-value text-danger">
-              {(totals?.expense || 0).toLocaleString('pt-BR', {
-                style: 'currency',
-                currency: 'BRL'
-              })}
-            </span>
-          </div>
-          <div className="summary-card">
-            <span className="summary-label">Saldo</span>
-            <span className={`summary-value ${(totals?.total || 0) >= 0 ? 'text-success' : 'text-danger'}`}>
-              {(totals?.total || 0).toLocaleString('pt-BR', {
-                style: 'currency',
-                currency: 'BRL'
-              })}
-            </span>
-          </div>
-        </div>
+        <TotalModalidadesComp totals={totals} type='openfinance' />
       )}
-      
-      {/* Only show GerarRelatorio if there is data */}
-      {dataArray && dataArray.length > 0 && (
+
+      {dataArray && dataArray.length > 0 && customExportPage !== 'openfinance' && (
         <div data-tour="exportacao-section">
           <GerarRelatorio 
             className='export' 
@@ -942,16 +837,18 @@ const NewDisplayData = ({
         </div>
       )}
       
-      <div className='floating-button-container'>
-        <button 
-          data-tour="botaovoltar-section"
-          className='btn-floating-new-search' 
-          onClick={onGoBack}
-        >
-          <span className='floating-button-icon'>🔍</span>
-          <span className='floating-button-text'>{getButtonText()}</span>
-        </button>
-      </div>
+      {dataArray && dataArray.length > 0 && (
+        <div className='floating-button-container'>
+          <button
+            data-tour="botaovoltar-section"
+            className='btn-floating-new-search'
+            onClick={onGoBack}
+          >
+            <span className='floating-button-icon'>🔍</span>
+            <span className='floating-button-text'>{getButtonText()}</span>
+          </button>
+        </div>
+      )}
     </>
   )
 }

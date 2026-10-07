@@ -10,6 +10,7 @@ import ConfirmDelete from '../../components/Componente_ConfirmDelete'
 import LazyLoader from '../../components/Componente_LazyLoader/index.js'
 import Overlay from '../../components/Component_Overlay/index.js'
 import TabelaCompTaxas from './TabelaCompTaxas.js'
+import PageShell from '../../components/PageShell'
 
 const Taxas = () => {
     const location = useLocation()
@@ -221,25 +222,24 @@ const Taxas = () => {
         )
     }
 
-    // Fixed: Correct syntax for react-select custom styles
     const customStyles = {
         control: (provided, state) => ({
             ...provided,
             backgroundColor: '#fff',
-            borderColor: state.isFocused ? '#99cc33' : '#d1d5db',
+            borderColor: state.isFocused ? 'var(--highlight-color)' : '#d1d5db',
             borderRadius: '8px',
             padding: '4px 8px',
             minHeight: '48px',
-            boxShadow: state.isFocused ? '0 0 0 3px rgba(153, 204, 51, 0.1)' : 'none',
+            boxShadow: state.isFocused ? '0 0 0 3px rgba(var(--highlight-color-rgb), 0.15)' : 'none',
             '&:hover': {
-                borderColor: '#99cc33'
+                borderColor: 'var(--highlight-color)'
             }
         }),
         option: (provided, state) => ({
             ...provided,
-            backgroundColor: state.isSelected ? '#99cc33' : 
-                            state.isFocused ? '#f0f7e6' : 'white',
-            color: state.isSelected ? 'white' : '#1f2937',
+            backgroundColor: state.isSelected ? 'var(--highlight-color)' : 
+                            state.isFocused ? 'rgba(var(--highlight-color-rgb), 0.12)' : 'white',
+            color: state.isSelected ? 'var(--on-highlight-color)' : '#1f2937',
             padding: '12px 16px',
             fontSize: '14px',
             display: 'flex',
@@ -262,7 +262,7 @@ const Taxas = () => {
         menu: (provided) => ({
             ...provided,
             borderRadius: '8px',
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)', // Fixed: Changed from box-shadow to boxShadow
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
             zIndex: 9999
         }),
         menuPortal: (base) => ({ ...base, zIndex: 9999 }),
@@ -270,12 +270,11 @@ const Taxas = () => {
             ...provided,
             color: '#6b7280',
             '&:hover': {
-                color: '#99cc33'
+                color: 'var(--highlight-color)'
             }
         })
     }
 
-    // Helper function to get icon component based on type
     const getIconComponent = (iconType) => {
         switch(iconType) {
             case 'flag':
@@ -298,7 +297,6 @@ const Taxas = () => {
         </div>
     )
 
-    // Pagination state
     const [currentPage, setCurrentPage] = useState(1)
     const [itemsPerPage] = useState(15)
     const [filter, setFilter] = useState('')
@@ -344,7 +342,6 @@ const Taxas = () => {
     const indexOfFirstItem = indexOfLastItem - itemsPerPage
     const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem)
 
-    // Modal Components
     const ModalNewTax = () => {
         const [selectedCli, setSelectedCli] = useState(() => {
             const cookieValue = localStorage.getItem('selectedClient')
@@ -767,18 +764,13 @@ const Taxas = () => {
     }
 
     return (
-        <div className='appPage'>
+        <>
             <Overlay isVisible={isOverlayVisible}/>
             <ModalNewTax />
             <ModalEditTax />
-            
-            <div className='page-background-global'>
-                <div className='page-content-global'>
+
+            <PageShell title='Cadastramento de Taxas'>
                     <div className='page-content-taxas'>
-                        <div className='title-container-global'>
-                            <h1 className='title-global'>Cadastramento de Taxas</h1>
-                        </div>
-                        <hr className='hr-global'/>
                         <div className='container-global' style={{margin: '0', flexDirection: 'column', alignItems: 'center'}}>
                             { ((taxesList && taxesList.length > 0) && (clientCode !== ('todos' || undefined))) && 
                             <div>    
@@ -913,9 +905,8 @@ const Taxas = () => {
                             )}
                         </>
                     ) : null}
-                </div>
-            </div>
-        </div>
+            </PageShell>
+        </>
     )
 }
 

@@ -44,24 +44,17 @@ export default function Private({ children }) {
     
     if (isSignedIn && (!token || !validateToken(token))) {
       logout();
-      // Redireciona para login mantendo o tenant
       navigate('/login');
       return;
     }
     
     if (!isSignedIn) {
-      // Salva a rota atual para redirecionar após login
-      if (currentPath !== '/login' && currentPath !== '/') {
-        sessionStorage.setItem('currentPath', currentPath);
-      }
       navigate('/login');
       return;
     }
     
-    // Se chegou aqui, token é válido
     setIsTokenValid(true);
     
-    // Se o usuário está logado e está na página de login, redireciona para dashboard
     if (currentPath === '/login' || currentPath === '/') {
       navigate('/dashboard');
     }
@@ -87,17 +80,12 @@ export default function Private({ children }) {
     setShowModal(true)
   }
 
-  // Atualiza o timeout baseado no tenant (opcional)
-  const inactivityTimeout = 10 * 60 * 1000; // 10 minutos padrão
-  // Você pode ter timeouts diferentes por tenant se quiser
-  // const inactivityTimeout = tenant?.timeout || 10 * 60 * 1000;
+  const inactivityTimeout = 10 * 60 * 1000;
 
   useUserActivity(stayLoggedIn, handleInactivity, inactivityTimeout, handleExpiryWarning)
 
-  // Função para logout com redirecionamento para tenant
   const handleLogout = () => {
     logout();
-    // Navega para o login do tenant atual
     navigate('/login');
   }
 

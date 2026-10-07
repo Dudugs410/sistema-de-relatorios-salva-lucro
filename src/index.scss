@@ -1,13 +1,11 @@
 @import './styles/variables';
 
-/* Prevent FOUC - hide content until theme is ready */
 html:not([data-context]) #root,
 html:not([data-theme]) #root {
   opacity: 0;
   visibility: hidden;
 }
 
-/* Fade in content smoothly once theme is applied */
 html[data-context][data-theme] #root {
   opacity: 1;
   visibility: visible;
@@ -35,7 +33,6 @@ html, body, .app, #root, .appPage, .app-page {
   background-color: var(--background-color);
 }
 
-/* Apply theme colors to body */
 body {
   background-color: var(--background-color);
   color: var(--font-color);
@@ -51,7 +48,6 @@ h6 {
   --bs-heading-color: var(--subtitle-color);
 }
 
-/* Headers with theme colors */
 h1, h2, h3, h4 {
   color: var(--primary-color);
 }
@@ -82,7 +78,6 @@ td, th {
   padding: 0;
 }
 
-/* Table theming */
 table {
   background-color: var(--table-background);
   color: var(--font-color);
@@ -107,7 +102,6 @@ tr:hover {
   filter: drop-shadow(5px 5px 10px #000);
 }
 
-/* Scrollbar theming based on theme */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -139,7 +133,6 @@ body, .app, #root, .appPage, .app-page {
   overflow-y: overlay;
 }
 
-/* Button theming */
 button {
   background-color: var(--primary-color);
   color: var(--text-on-primary);
@@ -152,14 +145,12 @@ button:hover {
   color: var(--text-on-secondary);
 }
 
-/* Card theming */
 .card, .panel {
   background-color: var(--bg-primary);
   border-color: var(--border-light);
   color: var(--text-primary);
 }
 
-/* Modal theming */
 .modal-content {
   background-color: var(--bg-primary);
   color: var(--text-primary);
@@ -175,7 +166,6 @@ button:hover {
   border-top-color: var(--border-light);
 }
 
-/* Form theming */
 input, select, textarea {
   background-color: var(--input-bg);
   border-color: var(--input-border);
@@ -187,7 +177,6 @@ input:focus, select:focus, textarea:focus {
   outline: none;
 }
 
-/* Navbar theming */
 .navbar {
   background-color: var(--bg-header);
 }
@@ -224,7 +213,6 @@ input:focus, select:focus, textarea:focus {
   }
 }
 
-/* Loading state while theme is initializing */
 .theme-loading {
   display: flex;
   justify-content: center;

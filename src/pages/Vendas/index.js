@@ -5,13 +5,14 @@ import { useLocation } from 'react-router-dom'
 import '../../index.scss'
 import MyCalendar from '../../components/Componente_Calendario'
 import { toast } from 'react-toastify'
-import { FiCalendar, FiHelpCircle } from 'react-icons/fi'
+import { FiCalendar } from 'react-icons/fi'
 import NewDisplayData from '../../components/Component_NewDisplayData'
+import PageShell from '../../components/PageShell'
+import TutorialButton from '../../components/TutorialButton'
 
 const Vendas = () =>{
   const location = useLocation()
 
-  // Refs to track data changes and prevent infinite loops
   const lastProcessedDataRef = useRef(null)
   const lastExportedDataRef = useRef(null)
   const isInitialMountRef = useRef(true)
@@ -29,15 +30,12 @@ const Vendas = () =>{
     salesTableData.length = 0
     lastProcessedDataRef.current = null
     lastExportedDataRef.current = null
-    // Reset tutorial state
     setRunTutorial(false)
     
-    // Clear report-specific storage when resetting
     localStorage.removeItem('reportBandeira')
     localStorage.removeItem('reportAdquirente')
   }
 
-  // Clean up report data when component unmounts or route changes
   useEffect(() => {
     return () => {
       localStorage.removeItem('reportBandeira')
@@ -45,7 +43,6 @@ const Vendas = () =>{
     }
   }, [])
 
-  // Clear report data when path changes (navigation)
   useEffect(() => {
     localStorage.removeItem('reportBandeira')
     localStorage.removeItem('reportAdquirente')
@@ -83,7 +80,6 @@ const Vendas = () =>{
     isCheckedCalendar, setIsCheckedCalendar,
   } = useContext(AuthContext)
 
-  // Memoize the grouped data to prevent recreation on every render
   const memoizedGroupedData = useMemo(() => {
     if (salesPageArray && salesPageArray.length > 0) {
       return newGroupByAdmin(salesPageArray)
@@ -91,7 +87,6 @@ const Vendas = () =>{
     return []
   }, [salesPageArray, newGroupByAdmin])
 
-  // Update admin array only when memoized value changes
   useEffect(() => {
     if (memoizedGroupedData.length > 0 && JSON.stringify(memoizedGroupedData) !== JSON.stringify(salesPageAdminArray)) {
       setSalesPageAdminArray(memoizedGroupedData)
@@ -100,7 +95,6 @@ const Vendas = () =>{
     }
   }, [memoizedGroupedData, salesPageAdminArray, setSalesPageAdminArray])
 
-  // Memoize the totals calculation to prevent unnecessary updates
   const memoizedTotals = useMemo(() => {
     if (!salesPageArray || salesPageArray.length === 0) {
       return { debit: 0, credit: 0, voucher: 0, total: 0 }
@@ -134,7 +128,6 @@ const Vendas = () =>{
     }
   }, [salesPageArray])
 
-  // Update sales total when memoized values change
   useEffect(() => {
     const currentTotal = salesTotal
     if (currentTotal.debit !== memoizedTotals.debit ||
@@ -145,7 +138,6 @@ const Vendas = () =>{
     }
   }, [memoizedTotals, salesTotal, setSalesTotal])
 
-  // Memoize the transformed data for export to prevent unnecessary transformations
   const memoizedExportData = useMemo(() => {
     if (!salesPageArray || salesPageArray.length === 0) return []
     
@@ -191,7 +183,6 @@ const Vendas = () =>{
     return salesPageArray
   }, [salesPageArray])
 
-  // Update sales table data when memoized export data changes
   useEffect(() => {
     if (memoizedExportData.length > 0) {
       const currentData = salesTableData
@@ -231,11 +222,9 @@ const Vendas = () =>{
       const startDate = salesDateRange[0]
       const endDate = salesDateRange[1]
       
-      // Get current filter values from localStorage
       let adquirenteValue = administradora || ""
       let bandeiraValue = bandeira || ""
       
-      // If no values in state, try to get from localStorage
       if (!adquirenteValue) {
         const savedAdm = localStorage.getItem('reportAdquirente')
         if (savedAdm) {
@@ -300,7 +289,6 @@ const Vendas = () =>{
       
       let newSteps = [];
       
-      // Only show modalidade for vendas and creditos, not for ajustes
       if (!isAjustes) {
         newSteps.push({
           target: '[data-tour="modalidade-section"]',
@@ -322,7 +310,6 @@ const Vendas = () =>{
         placement: 'bottom',
       });
       
-      // Only show totaladq for vendas and creditos, not for ajustes
       if (!isAjustes) {
         newSteps.push({
           target: '[data-tour="totaladq-section"]',
@@ -366,13 +353,7 @@ const Vendas = () =>{
   }
 
   return(
-    <div className='page-content-vendas'>
-      <div className='vendas-title-container'>
-        <h1 className='vendas-title'>Calendário de Vendas</h1>
-      </div>
-      <hr className='hr-global'/>
-      
-      <div className='component-container-vendas'>
+    <PageShell title='Calendário de Vendas'>
         {salesPageArray !== null ? (
           salesPageArray.length > 0 ? (
             <NewDisplayData
@@ -386,7 +367,7 @@ const Vendas = () =>{
               tutorialSteps={tutorialSteps}
               listaBandeiras={listaBandeiras}
               listaAdministradoras={listaAdministradoras}
-              showSelects={false} // Hide selects when data is shown
+              showSelects={false}
             />
           ) : (
             <>
@@ -401,7 +382,7 @@ const Vendas = () =>{
                 tutorialSteps={tutorialSteps}
                 listaBandeiras={listaBandeiras}
                 listaAdministradoras={listaAdministradoras}
-                showSelects={true} // Show selects when no data
+                showSelects={true}
                 onSearch={handleLoadData}
                 isSearching={btnDisabledSales}
               />
@@ -416,32 +397,14 @@ const Vendas = () =>{
           )
         ) : null }
         <>
-          <button 
-            className='btn btn-success-dados btn-tutorial px-2 py-1'
-            onClick={() => {
+          <TutorialButton onStart={() => {
               setRunTutorial(false);
               setTimeout(() => {
                 setRunTutorial(true);
               }, 50);
-            }}
-            style={{
-              position: 'relative',
-              bottom: '0px',
-              right: '-10px',
-              zIndex: 10,
-              padding: '10px 15px',
-              background: 'none',
-              color: '#99cc33',
-              border: 'none',
-              borderRadius: '5px',
-              cursor: 'pointer'
-            }}
-          >
-            <FiHelpCircle />
-          </button>
+            }} />
         </>
-      </div>
-    </div>
+    </PageShell>
   )
 }
 

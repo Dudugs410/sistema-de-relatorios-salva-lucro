@@ -5,11 +5,10 @@
     height: 100%;
     width: 100%;
     display: flex;
-    //background-color: rgba(0, 0, 0, 0.5);
     justify-content: center;
     align-items: center;
     border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Soft shadow effect */
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     border: solid var(--secondary-color) 1px;
 
 }
@@ -18,7 +17,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100px; /* Adjust height as needed */
+    height: 100px;
   }
   
   .lazy-loading-animation {
@@ -26,7 +25,7 @@
     align-items: center;
     padding: 20px;
     border-radius: 10px;
-    height: 100px; /* Adjust height as needed */
+    height: 100px;
     
   }
   
@@ -37,8 +36,8 @@
     height: 40px;
     animation: spin 1s linear infinite;
     margin-right: 20px;
-    transition: all 0.3s ease-in-out; /* Smooth transition */
-    border-top: 4px solid var(--secondary-color); /* Blue color for spinner */
+    transition: all 0.3s ease-in-out;
+    border-top: 4px solid var(--secondary-color);
   }
 
 
@@ -56,7 +55,7 @@
   .lazy-loading-text {
     font-size: 18px;
     color: #555;
-    transition: all 0.3s ease-in-out; /* Smooth transition */
+    transition: all 0.3s ease-in-out;
   }
   
   .lazy-loading-container:hover .lazy-loading-spinner {

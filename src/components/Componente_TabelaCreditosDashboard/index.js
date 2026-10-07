@@ -23,38 +23,34 @@ const TabelaCreditosDashboard = ({array}) =>{
 	const [banSelecionada, setBanSelecionada] = useState('')
 	const [adqSelecionada, setAdqSelecionada] = useState('')
 
-	//adicionando páginas à tabela:
 
 	const [currentPage, setCurrentPage] = useState(1)
-	const [itemsPerPage] = useState(15) // Number of items per page
+	const [itemsPerPage] = useState(15)
 
 	useEffect(() => {
-		setCurrentPage(1) // Reset page to 1 when data changes
+		setCurrentPage(1)
 	}, [array])
 
-	// Change page functions
 	const goToPrevPage = () => {
-		setCurrentPage((prevPage) => Math.max(prevPage - 1, 1)) // Decrease page by 1, minimum page is 1
+		setCurrentPage((prevPage) => Math.max(prevPage - 1, 1))
 	}
 
 	const goToNextPage = () => {
-		setCurrentPage((prevPage) => Math.min(prevPage + 1, Math.ceil(vendasExibicao.length / itemsPerPage))) // Increase page by 1, maximum page is calculated based on array length
+		setCurrentPage((prevPage) => Math.min(prevPage + 1, Math.ceil(vendasExibicao.length / itemsPerPage)))
 	}
 
 	const goToFirstPage = () => {
-		setCurrentPage(1) // Go to the first page
+		setCurrentPage(1)
 	}
     
 	const goToLastPage = () => {
-		setCurrentPage(Math.ceil(vendasExibicao.length / itemsPerPage)) // Go to the last page
+		setCurrentPage(Math.ceil(vendasExibicao.length / itemsPerPage))
 	}
   
-	// Calculate indexes for pagination
 	const indexOfLastItem = currentPage * itemsPerPage
 	const indexOfFirstItem = indexOfLastItem - itemsPerPage
 	const currentItems = vendasExibicao.slice(indexOfFirstItem, indexOfLastItem)
 
-	// // // // // // // // // // // // // // // // // // // // // // // // // // //
 
 	useEffect(()=>{
 		if(array){
@@ -102,21 +98,19 @@ const TabelaCreditosDashboard = ({array}) =>{
 
 	useEffect(() => {
 		if (adquirentesExistentes && adquirentesExistentes.length > 0) {
-			const sortedOptions = adquirentesExistentes.sort((a, b) => a.localeCompare(b)) // Sort options alphabetically by label
+			const sortedOptions = adquirentesExistentes.sort((a, b) => a.localeCompare(b))
 			setAdquirentesExistentes(sortedOptions)
 		}
 	}, [adquirentesExistentes])
 
 	useEffect(() => {
 		if (bandeirasExistentes && bandeirasExistentes.length > 0) {
-			const sortedOptions = bandeirasExistentes.sort((a, b) => a.localeCompare(b)) // Sort options alphabetically by label
+			const sortedOptions = bandeirasExistentes.sort((a, b) => a.localeCompare(b))
 			setBandeirasExistentes(sortedOptions)
 		}
 	}, [bandeirasExistentes])
 
-	///////////////////////////////////////////////////////////////////////////////////////////////////
 
-	// função que altera lista de adquirentes de acordo com a bandeira/adq selecionada, para que o usuário só tenha opções existentes
 	function atualizaADQ(){
 		const adquirentesTemp = []
 		const otherUniqueStringsSet = new Set()
@@ -255,16 +249,16 @@ const TabelaCreditosDashboard = ({array}) =>{
 					<button
 						className='btn btn-primary btn-global btn-skip'
 						onClick={goToFirstPage}
-						disabled={currentPage === 1} // Disable if already on the first page
+						disabled={currentPage === 1}
 					>
 						<FiSkipBack />
 					</button>
 					<button
 						className='btn btn-primary btn-global btn-navigate'
 						onClick={goToPrevPage}
-						disabled={currentPage === 1} // Disable if it's the first page
+						disabled={currentPage === 1}
 					>
-						<FiChevronLeft/> {/* Left arrow */}
+						<FiChevronLeft/>
 					</button>
 					<div className='pagina-atual'>
 						<span className='texto-paginacao'>Página </span>
@@ -273,14 +267,14 @@ const TabelaCreditosDashboard = ({array}) =>{
 					<button
 						className='btn btn-primary btn-global btn-navigate'
 						onClick={goToNextPage}
-						disabled={currentPage === Math.ceil(vendasExibicao.length / itemsPerPage)} // Disable if it's the last page
+						disabled={currentPage === Math.ceil(vendasExibicao.length / itemsPerPage)}
 					>
-						<FiChevronRight/> {/* Right arrow */}
+						<FiChevronRight/>
 					</button>
 					<button
 						className='btn btn-primary btn-global btn-skip'
 						onClick={goToLastPage}
-						disabled={currentPage === Math.ceil(vendasExibicao.length / itemsPerPage)} // Disable if already on the last page
+						disabled={currentPage === Math.ceil(vendasExibicao.length / itemsPerPage)}
 					>
 						<FiSkipForward />
 					</button>

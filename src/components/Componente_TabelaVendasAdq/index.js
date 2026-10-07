@@ -38,7 +38,6 @@ const TabelaVendasAdq = ({array}) =>{
 	},[vendasArray])
 
 	function carregaTotais(array){
-		//totais líquido:
 
 		if(array.length > 0){
 			let temp = []
@@ -114,7 +113,6 @@ const TabelaVendasAdq = ({array}) =>{
 			setTotaisGlobalCreditos(totalTemp)
 		}
 
-		//totais Bruto:
 
 		if(array.length > 0){
 			let temp = []
@@ -228,7 +226,6 @@ const TabelaVendasAdq = ({array}) =>{
 
 	},[vendasTeste])
 
-	// função que altera lista de adquirentes de acordo com a bandeira/adq selecionada, para que o usuário só tenha opções existentes
 	function atualizaADQ(){
 		const adquirentesTemp = []
 		const otherUniqueStringsSet = new Set()

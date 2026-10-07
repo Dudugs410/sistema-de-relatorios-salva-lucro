@@ -1,25 +1,105 @@
-// src/pages/CreditosDataBanco/index.js
 import { useEffect, useContext, useState, useCallback } from 'react'
 import Select from 'react-select'
-import '../Vendas/vendas.scss'
 import Joyride from 'react-joyride'
-import { AuthContext } from '../../contexts/auth'
 import { useLocation } from 'react-router-dom'
-import '../../index.scss'
-import MyCalendar from '../../components/Componente_Calendario'
 import { toast } from 'react-toastify'
-import { FiHelpCircle, FiFilePlus } from 'react-icons/fi'
+import { FiFilePlus } from 'react-icons/fi'
+import { AuthContext } from '../../contexts/auth'
+import MyCalendar from '../../components/Componente_Calendario'
 import api from '../../services/api'
+import { getThemeColor } from '../../util/contextUtils'
+import { formatDateToYYYYMMDD } from '../../util/formatters'
+import '../Vendas/vendas.scss'
+import '../../index.scss'
+import PageShell from '../../components/PageShell'
+import TutorialButton from '../../components/TutorialButton'
+import { selectStyles, selectTheme } from '../../util/selectStyles'
+
+const SELECTED_ADM_KEY = 'selectedAdmCredits'
+const SELECTED_BAN_KEY = 'selectedBanCredits'
+
+
+const TUTORIAL_STEPS = [
+  {
+    target: '[data-tour="bandeiraadquirente-section"]',
+    content: 'Selecione os filtros desejados para o relatório.',
+    disableBeacon: true,
+    placement: 'bottom',
+  },
+  {
+    target: '[data-tour="calendario-section"]',
+    content: 'Clique duas vezes em uma data para selecioná-la, ou uma vez em uma data inicial e uma vez em uma data final para selecionar o período começando e terminando nas datas selecionadas.',
+    disableBeacon: true,
+    placement: 'bottom',
+  },
+  {
+    target: '[data-tour="exportacao-section"]',
+    content: 'Gera o relatório gerencial do período selecionado em PDF.',
+    placement: 'bottom',
+  },
+]
+
+const readStoredJSON = (key) => {
+  try {
+    return JSON.parse(localStorage.getItem(key))
+  } catch {
+    return null
+  }
+}
+
+const resolveClients = () => {
+  const cliente = readStoredJSON('selectedClientBody')
+  const grupo = readStoredJSON('selectedGroupBody')
+  if (cliente?.label === 'TODOS') {
+    return (grupo?.clients?.map((client) => client.CODIGOCLIENTE) || []).join(', ')
+  }
+  if (cliente?.cod) return String(cliente.cod)
+  if (cliente?.value) return String(cliente.value)
+  const cnpj = localStorage.getItem('cnpj')
+  return cnpj === 'todos' ? String(localStorage.getItem('groupCode')) : String(cnpj)
+}
+
+const buildFileName = (dataInicial, dataFinal) => {
+  const dateRangeStr = dataInicial === dataFinal ? dataInicial : `${dataInicial}_a_${dataFinal}`
+  const groupName = readStoredJSON('selectedGroupBody')?.label || localStorage.getItem('clientName') || ''
+  const cliente = readStoredJSON('selectedClientBody')
+  const clientPart = cliente?.label === 'TODOS'
+    ? 'TODAS_FILIAIS'
+    : cliente?.label || localStorage.getItem('clientName') || ''
+  return `Relatório_Gerencial_${groupName}_${clientPart}_${dateRangeStr}.pdf`
+}
+
+const downloadBase64Pdf = (base64, fileName) => {
+  const binary = atob(base64)
+  const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0))
+  const url = URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }))
+  const link = document.createElement('a')
+  link.href = url
+  link.download = fileName
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  URL.revokeObjectURL(url)
+}
 
 const ResumoMensal = () => {
   const location = useLocation()
+  const { loadAdmins, loadBanners, creditsDateRange, setCreditsDateRange } = useContext(AuthContext)
+
+  const [bandeira, setBandeira] = useState(null)
+  const [administradora, setAdministradora] = useState(null)
+  const [dateRange, setDateRange] = useState(null)
+  const [downloading, setDownloading] = useState(false)
+  const [listaBandeiras, setListaBandeiras] = useState([])
+  const [listaAdministradoras, setListaAdministradoras] = useState([])
+  const [runTutorial, setRunTutorial] = useState(false)
 
   const resetValues = useCallback(() => {
     setAdministradora(null)
     setBandeira(null)
     setDateRange(null)
-    localStorage.removeItem('selectedAdmCredits')
-    localStorage.removeItem('selectedBanCredits')
+    localStorage.removeItem(SELECTED_ADM_KEY)
+    localStorage.removeItem(SELECTED_BAN_KEY)
   }, [])
 
   useEffect(() => {
@@ -30,390 +110,175 @@ const ResumoMensal = () => {
     localStorage.setItem('currentPath', location.pathname)
   }, [location])
 
-  const [bandeira, setBandeira] = useState(null)
-  const [administradora, setAdministradora] = useState(null)
-  const [dateRange, setDateRange] = useState(null)
-  const [downloading, setDownloading] = useState(false)
-
-  const [listaBandeiras, setListaBandeiras] = useState([])
-  const [listaAdministradoras, setListaAdministradoras] = useState([])
-
   useEffect(() => {
     const inicializar = async () => {
-      setListaBandeiras(await loadBanners())
-      setListaAdministradoras(await loadAdmins())
+      setListaBandeiras((await loadBanners()) || [])
+      setListaAdministradoras((await loadAdmins()) || [])
     }
     inicializar()
-  }, [])
+  }, [loadAdmins, loadBanners])
 
   const handleAdmin = (option) => {
     setAdministradora(option?.codigoAdquirente || null)
-    localStorage.setItem('selectedAdmCredits', JSON.stringify(option))
+    localStorage.setItem(SELECTED_ADM_KEY, JSON.stringify(option))
   }
 
   const handleBan = (option) => {
     setBandeira(option?.codigoBandeira || null)
-    localStorage.setItem('selectedBanCredits', JSON.stringify(option))
+    localStorage.setItem(SELECTED_BAN_KEY, JSON.stringify(option))
   }
 
-  const {
-    loadAdmins, loadBanners,
-    creditsDateRange, setCreditsDateRange
-  } = useContext(AuthContext)
-
-  // Format date to YYYY-MM-DD for API
-  const formatDateToYYYYMMDD = (date) => {
-    if (!date) return ''
-    
-    if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
-      return date
-    }
-    
-    if (date instanceof Date) {
-      const year = date.getFullYear()
-      const month = String(date.getMonth() + 1).padStart(2, '0')
-      const day = String(date.getDate()).padStart(2, '0')
-      return `${year}-${month}-${day}`
-    }
-    
-    return ''
+  const handleDateRangeChange = (range) => {
+    setDateRange(range)
+    setCreditsDateRange(range)
   }
 
-  // Get the request object for API
-  const getRequestObject = (format) => {
-    const cliente = JSON.parse(localStorage.getItem('selectedClientBody'))
-    const grupo = JSON.parse(localStorage.getItem('selectedGroupBody'))
-    const bandeiraObj = JSON.parse(localStorage.getItem('selectedBanCredits')) || ''
-    const adquirenteObj = JSON.parse(localStorage.getItem('selectedAdmCredits')) || ''
-    
-    // Get clientes string
-    let clientesString = ""
-    
-    if (cliente && cliente.label === 'TODOS') {
-      const clientCodes = grupo?.clients?.map(client => client.CODIGOCLIENTE) || []
-      clientesString = clientCodes.join(', ')
-    } else if (cliente && cliente.cod) {
-      clientesString = String(cliente.cod)
-    } else if (cliente && cliente.value) {
-      clientesString = String(cliente.value)
-    } else {
-      const apiCNPJ = localStorage.getItem('cnpj')
-      const apiGroupCode = localStorage.getItem('groupCode')
-      clientesString = apiCNPJ === 'todos' ? String(apiGroupCode) : String(apiCNPJ)
-    }
-
-    const nomeGrupo = grupo?.label || localStorage.getItem('clientName') || ""
-    const ban = bandeiraObj?.codigoBandeira || ''
-    const adq = adquirenteObj?.codigoAdquirente || ''
-
-    // Get dates from dateRange or creditsDateRange
-    let dataInicial = ''
-    let dataFinal = ''
-    
-    if (dateRange && dateRange.length === 2) {
-      dataInicial = formatDateToYYYYMMDD(dateRange[0])
-      dataFinal = formatDateToYYYYMMDD(dateRange[1])
-    } else if (creditsDateRange && creditsDateRange.length === 2) {
-      dataInicial = formatDateToYYYYMMDD(creditsDateRange[0])
-      dataFinal = formatDateToYYYYMMDD(creditsDateRange[1])
-    }
-
-    return {
-      dataInicial: dataInicial,
-      dataFinal: dataFinal,
-      clientes: clientesString,
-      nomeGrupo: nomeGrupo,
-      bandeira: ban,
-      adquirente: adq,
-      produto: '',
-      modalidade: '',
-      arquivo: format, // 'PDF' only now
-      modelo: 'RESUMO'
-    }
+  const getPeriod = () => {
+    const range = dateRange?.length === 2 ? dateRange : creditsDateRange
+    if (!range || range.length !== 2) return ['', '']
+    return [formatDateToYYYYMMDD(range[0]), formatDateToYYYYMMDD(range[1])]
   }
 
-  // PDF download handler (only PDF is available)
   const handlePDFDownload = async () => {
+    const [dataInicial, dataFinal] = getPeriod()
+    if (!dataInicial || !dataFinal) {
+      toast.warning('Selecione uma data ou período')
+      return
+    }
+
     setDownloading(true)
-    
     try {
-      const requestObject = getRequestObject('PDF')
-            
-      const response = await api.post('relatorios/detalhado', requestObject)
-      
+      const response = await api.post('relatorios/detalhado', {
+        dataInicial,
+        dataFinal,
+        clientes: resolveClients(),
+        nomeGrupo: readStoredJSON('selectedGroupBody')?.label || localStorage.getItem('clientName') || '',
+        bandeira: readStoredJSON(SELECTED_BAN_KEY)?.codigoBandeira || '',
+        adquirente: readStoredJSON(SELECTED_ADM_KEY)?.codigoAdquirente || '',
+        produto: '',
+        modalidade: '',
+        arquivo: 'PDF',
+        modelo: 'RESUMO',
+      })
+
       if (response.data.success === true && response.data.formato === 'PDF') {
-        // Convert base64 to blob and download
-        const binaryData = atob(response.data.base64)
-        const arrayBuffer = new ArrayBuffer(binaryData.length)
-        const uint8Array = new Uint8Array(arrayBuffer)
-        for (let i = 0; i < binaryData.length; i++) {
-          uint8Array[i] = binaryData.charCodeAt(i)
-        }
-        
-        const mimeType = 'application/pdf'
-        const fileExtension = 'pdf'
-        const blob = new Blob([arrayBuffer], { type: mimeType })
-        const url = URL.createObjectURL(blob)
-        
-        const a = document.createElement('a')
-        a.href = url
-        
-        // Create filename with date range
-        let startDateStr = ''
-        let endDateStr = ''
-        
-        if (dateRange && dateRange.length === 2) {
-          startDateStr = formatDateToYYYYMMDD(dateRange[0])
-          endDateStr = formatDateToYYYYMMDD(dateRange[1])
-        } else if (creditsDateRange && creditsDateRange.length === 2) {
-          startDateStr = formatDateToYYYYMMDD(creditsDateRange[0])
-          endDateStr = formatDateToYYYYMMDD(creditsDateRange[1])
-        }
-        
-        const dateRangeStr = startDateStr === endDateStr ? startDateStr : `${startDateStr}_a_${endDateStr}`
-
-        const requestGroup = JSON.parse(localStorage.getItem('selectedGroupBody'))
-        const requestGroupName = requestGroup?.label || localStorage.getItem('clientName') || ""
-        const cliente = JSON.parse(localStorage.getItem('selectedClientBody'))
-        const isTodos = cliente?.label === 'TODOS'
-        const clientName = cliente?.label || localStorage.getItem('clientName') || ""
-
-        const fileName = isTodos 
-          ? `Relatório_Gerencial_${requestGroupName}_TODAS_FILIAIS_${dateRangeStr}.${fileExtension}`
-          : `Relatório_Gerencial_${requestGroupName}_${clientName}_${dateRangeStr}.${fileExtension}`
-        
-        a.download = fileName
-        document.body.appendChild(a)
-        a.click()
-        document.body.removeChild(a)
-        URL.revokeObjectURL(url)
-        
+        downloadBase64Pdf(response.data.base64, buildFileName(dataInicial, dataFinal))
         toast.success('PDF baixado com sucesso!')
       } else {
         console.error('API returned unsuccessful response:', response.data)
-        toast.error(response.data.mensagem || 'Failed to generate PDF report')
+        toast.error(response.data.mensagem || 'Erro ao gerar o relatório em PDF')
       }
     } catch (err) {
       console.error('Error downloading PDF report:', err)
-      toast.error(err.response?.data?.mensagem || err.message || 'An error occurred while generating the PDF report')
+      toast.error(err.response?.data?.mensagem || err.message || 'Erro ao gerar o relatório em PDF')
     } finally {
       setDownloading(false)
     }
   }
 
-  const handleDateRangeChange = (dateRange) => {
-    setDateRange(dateRange)
-    setCreditsDateRange(dateRange)
-  }
+  const selectedAdminOption = listaAdministradoras.find((option) => option.codigoAdquirente === administradora) || null
+  const selectedBanOption = listaBandeiras.find((option) => option.codigoBandeira === bandeira) || null
 
-  // Get the selected option object for Adquirente
-  const getSelectedAdminOption = () => {
-    if (!administradora || listaAdministradoras.length === 0) return null
-    return listaAdministradoras.find(option => option.codigoAdquirente === administradora)
-  }
-
-  // Get the selected option object for Bandeira
-  const getSelectedBanOption = () => {
-    if (!bandeira || listaBandeiras.length === 0) return null
-    return listaBandeiras.find(option => option.codigoBandeira === bandeira)
-  }
-
-  // Joyride state
-  const [runTutorial, setRunTutorial] = useState(false)
-  const [steps, setSteps] = useState([
-    {
-      target: '[data-tour="select-container-calendario"]',
-      content: 'Selecione os filtros desejados para o relatório.',
-      disableBeacon: true,
-      placement: 'bottom'
-    },
-    {
-      target: '[data-tour="calendario-section"]',
-      content: 'Selecione a data ou período desejado.',
-      placement: 'bottom'
-    },
-    {
-      target: '[data-tour="exportacao-section"]',
-      content: 'Exporta os dados para o formato PDF.',
-      placement: 'bottom'
-    },
-  ])
-
-  const handleTutorialEnd = () => {
+  const startTutorial = () => {
     setRunTutorial(false)
+    setTimeout(() => setRunTutorial(true), 50)
   }
 
   return (
-    <div className='appPage'>
-      <div className='page-vendas-background'>
-        <div className='page-content-vendas'>
-          <div className='vendas-title-container'>
-            <h1 className='vendas-title'>Resumo Mensal</h1>
+    <PageShell title='Resumo Mensal'>
+        {runTutorial && (
+          <Joyride
+            steps={TUTORIAL_STEPS}
+            run={runTutorial}
+            continuous={true}
+            scrollToFirstStep={true}
+            showProgress={true}
+            showSkipButton={true}
+            scrollOffset={80}
+            disableOverlayClose={true}
+            styles={{
+              options: {
+                primaryColor: getThemeColor('--highlight-color', '#99cc33'),
+                textColor: '#0a3d70',
+                zIndex: 10000,
+              },
+            }}
+            callback={(data) => {
+              if (data.status === 'finished' || data.status === 'skipped') {
+                setRunTutorial(false)
+              }
+            }}
+            locale={{
+              back: 'Voltar',
+              close: 'Fechar',
+              last: 'Finalizar',
+              next: 'Próximo',
+              skip: 'Pular',
+              nextLabelWithProgress: 'Próximo ({step} de {steps})',
+            }}
+          />
+        )}
+
+        <div className='page-filters' data-tour="bandeiraadquirente-section">
+          <div className='page-filter'>
+            <h5 className='page-filter__label'>Adquirente</h5>
+            <Select
+              className='seletor-adq-select fixed-width-select'
+              id='adquirente'
+              options={listaAdministradoras}
+              getOptionLabel={(option) => option.nomeAdquirente}
+              getOptionValue={(option) => option.codigoAdquirente}
+              onChange={handleAdmin}
+              value={selectedAdminOption}
+              menuPortalTarget={document.body}
+              menuPosition="fixed"
+              placeholder="Selecione uma adquirente..."
+              isClearable={true}
+              styles={selectStyles}
+              theme={selectTheme}
+              isDisabled={downloading}
+            />
           </div>
-          <hr className='hr-global' />
-          
-          <div className='component-container-vendas'>
-            {runTutorial &&
-              <Joyride
-                steps={steps}
-                run={runTutorial}
-                continuous={true}
-                scrollToFirstStep={false}
-                showProgress={true}
-                showSkipButton={true}
-                scrollOffset={80}
-                styles={{
-                  options: {
-                    primaryColor: '#99cc33',
-                    textColor: '#0a3d70',
-                    zIndex: 10000,
-                  }
-                }}
-                callback={(data) => {
-                  if (data.status === 'finished' || data.status === 'skipped') {
-                    handleTutorialEnd()
-                  }
-                }}
-                locale={{
-                  back: 'Voltar',
-                  close: 'Fechar',
-                  last: 'Finalizar',
-                  next: 'Próximo',
-                  skip: 'Pular',
-                  nextLabelWithProgress: 'Próximo ({step} de {steps})',
-                }}
-              />
-            }
-            
-            {/* Filters Section - exactly like Creditos page */}
-            <div data-tour="select-container-calendario" className='select-container-calendario'>
-              <div className='select-wrapper'>
-                <h5>Adquirente</h5>
-                <Select
-                  className='seletor-adq-select fixed-width-select'
-                  id='adquirente'
-                  options={listaAdministradoras}
-                  getOptionLabel={(option) => option.nomeAdquirente}
-                  getOptionValue={(option) => option.codigoAdquirente}
-                  onChange={(option) => handleAdmin(option)}
-                  value={getSelectedAdminOption()}
-                  menuPortalTarget={document.body}
-                  menuPosition="fixed"
-                  placeholder="Selecione uma adquirente..."
-                  isClearable={true}
-                  styles={{
-                    control: (base) => ({
-                      ...base,
-                      minWidth: 250,
-                      width: '100%',
-                    }),
-                    menu: (base) => ({
-                      ...base,
-                      minWidth: 250,
-                      width: '100%',
-                    }),
-                    valueContainer: (base) => ({
-                      ...base,
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                    }),
-                    singleValue: (base) => ({
-                      ...base,
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      maxWidth: '90%',
-                    }),
-                  }}
-                />
-              </div>
-              <div className='select-wrapper'>
-                <h5>Bandeira</h5>
-                <Select
-                  className='seletor-adq-select fixed-width-select'
-                  id='bandeira'
-                  options={listaBandeiras}
-                  getOptionLabel={(option) => option.descricaoBandeira}
-                  getOptionValue={(option) => option.codigoBandeira}
-                  onChange={(option) => handleBan(option)}
-                  value={getSelectedBanOption()}
-                  menuPortalTarget={document.body}
-                  menuPosition="fixed"
-                  placeholder="Selecione uma bandeira..."
-                  isClearable={true}
-                  styles={{
-                    control: (base) => ({
-                      ...base,
-                      minWidth: 250,
-                      width: '100%',
-                    }),
-                    menu: (base) => ({
-                      ...base,
-                      minWidth: 250,
-                      width: '100%',
-                    }),
-                    valueContainer: (base) => ({
-                      ...base,
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                    }),
-                    singleValue: (base) => ({
-                      ...base,
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      maxWidth: '90%',
-                    }),
-                  }}
-                />
-              </div>
-            </div>
+          <div className='page-filter'>
+            <h5 className='page-filter__label'>Bandeira</h5>
+            <Select
+              className='seletor-adq-select fixed-width-select'
+              id='bandeira'
+              options={listaBandeiras}
+              getOptionLabel={(option) => option.descricaoBandeira}
+              getOptionValue={(option) => option.codigoBandeira}
+              onChange={handleBan}
+              value={selectedBanOption}
+              menuPortalTarget={document.body}
+              menuPosition="fixed"
+              placeholder="Selecione uma bandeira..."
+              isClearable={true}
+              styles={selectStyles}
+              theme={selectTheme}
+              isDisabled={downloading}
+            />
+          </div>
+        </div>
 
-            {/* Calendar Section */}
-            <div data-tour="calendario-section">
-              <MyCalendar 
-                getCalendarDate={handleDateRangeChange}
-              />
-            </div>
+        <div data-tour="calendario-section">
+          <MyCalendar getCalendarDate={handleDateRangeChange} />
+        </div>
 
-            {/* Export Buttons Section - Only PDF export */}
-            <div data-tour="exportacao-section" className='container' style={{ marginTop: '0px' }}>
-              <div className='export-column'>
-                <button 
-                  className='btn btn-exportar btn-exportar-pdf' 
-                  onClick={handlePDFDownload}
-                  disabled={downloading}
-                  style={{ width: '100%' }}
-                >
-                  {downloading ? 'Gerando PDF...' : 'Download PDF'} <FiFilePlus />
-                </button>
-              </div>
-            </div>
-
-            <button 
-              className='btn btn-success-dados btn-tutorial px-2 py-1'
-              onClick={() => setRunTutorial(true)}
-              style={{
-                position: 'relative',
-                bottom: '0px',
-                right: '-10px',
-                zIndex: 10,
-                padding: '10px 15px',
-                background: 'none',
-                color: '#99cc33',
-                border: 'none',
-                borderRadius: '5px',
-                cursor: 'pointer'
-              }}
+        <div data-tour="exportacao-section" className='export-area'>
+          <div className='export-column'>
+            <button
+              className='btn btn-exportar btn-exportar-pdf'
+              onClick={handlePDFDownload}
+              disabled={downloading}
             >
-              <FiHelpCircle />
+              {downloading ? 'Gerando PDF...' : 'Download PDF'} <FiFilePlus />
             </button>
           </div>
         </div>
-      </div>
-    </div>
+        <hr className='hr-global'/>
+
+        <TutorialButton onStart={startTutorial} />
+    </PageShell>
   )
 }
 

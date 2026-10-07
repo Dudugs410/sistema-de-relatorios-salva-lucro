@@ -204,11 +204,7 @@ const Taxas = () =>{
     }
 
 
-    //Monitorando o objeto da nova taxa a ser adicionada, e Salvando-o nos Cookies
 
-    //Lógica do Modal de Adição de nova taxa, permitindo também fechá-lo
-    //ao clicar fora da janela do Modal
-    /////////////////////////////////////////////////////////////////////
     
     const closeModal = () => {
         setIsModalOpen(false)
@@ -567,7 +563,6 @@ const Taxas = () =>{
             </div>
         );
     }
-    /////////////////////////////////////////////////////////////////////
     return(
       <div className='appPage'>
         <div className='page-background-global'>

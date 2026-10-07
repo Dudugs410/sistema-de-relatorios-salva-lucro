@@ -1,4 +1,3 @@
-/* ========== ROOT VARIABLES ========== */
 :root {
     --primary-color: rgb(10, 61, 112);
     --primary-color-rgb: 10, 61, 112;
@@ -7,14 +6,12 @@
     --overlay-opacity: 0.4;
 }
 
-/* ========== BASE STYLES ========== */
 .teste-bandeiras {
     border: solid red 2px;
     width: 100%;
     height: 100%;
 }
 
-/* ========== BODY LOGIN CONTAINER ========== */
 .body-login {
     height: 100%;
     width: 100%;
@@ -25,12 +22,9 @@
     background-repeat: no-repeat;
     border-radius: 4px;
     background-image: url("../../assets/background_images/background_login_001.jpeg");
-    /*background-color: rgb(10, 61, 112);*/
-    /*background-blend-mode: multiply;*/
     position: relative;
 }
 
-/* ========== BACKGROUND OVERLAY (DARK BLUE TINT) ========== */
 .bg-login {
     position: absolute;
     top: 0;
@@ -42,7 +36,6 @@
     pointer-events: none;
 }
 
-/* ========== FORM WRAPPER - 10% WHITE BACKGROUND ========== */
 .form-wrapper {
     position: relative;
     z-index: 1;
@@ -60,7 +53,6 @@
     border-bottom: none;
 }
 
-/* ========== FORM ========== */
 .form-login {
     color: white;
     height: 100%;
@@ -90,7 +82,6 @@
     padding-right: 30px;
 }
 
-/* ========== LOGO ========== */
 .img-login {
     display: flex;
     justify-content: center;
@@ -106,7 +97,6 @@
     transform: scale(1.05);
 }
 
-/* ========== FORM TITLE ========== */
 .form-title {
     color: white;
     font-size: 24px;
@@ -117,7 +107,6 @@
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
-/* ========== FORM ELEMENTS ========== */
 .titulo-Login {
     margin-top: 80%;
 }
@@ -131,7 +120,6 @@
     padding: 20px 0;
 }
 
-/* ========== INPUT FIELDS ========== */
 .input-login {
     border-radius: 12px;
     padding: 14px 18px;
@@ -171,7 +159,6 @@
     margin-top: 18px;
 }
 
-/* ========== BUTTON - Light Green Background ========== */
 .btn-primary {
     background: #99cc33;
     color: white;
@@ -227,7 +214,6 @@
     display: none;
 }
 
-/* ========== OTHER ELEMENTS ========== */
 .pw {
     font-size: 0.85em;
     color: rgba(255, 255, 255, 0.6);
@@ -264,7 +250,6 @@
     height: 100%;
 }
 
-/* ========== SOCIAL LOGIN BUTTONS (Optional) ========== */
 .social-login {
     display: flex;
     gap: 15px;
@@ -300,7 +285,6 @@
     font-size: 18px;
 }
 
-/* ========== ANIMATIONS ========== */
 @keyframes fadeInUp {
     from {
         opacity: 0;
@@ -326,7 +310,6 @@
 .form-login>*:nth-child(3) { animation-delay: 0.3s; }
 .form-login>*:nth-child(4) { animation-delay: 0.4s; }
 
-/* ========== RESPONSIVE - Medium Screens ========== */
 @media (max-width: 992px) {
     .body-login {
         justify-content: center;
@@ -349,7 +332,6 @@
     }
 }
 
-/* ========== RESPONSIVE - Small Screens ========== */
 @media (max-width: 600px) {
     .body-login {
         justify-content: center;
@@ -413,7 +395,6 @@
     }
 }
 
-/* ========== RESPONSIVE - Extra Small Screens ========== */
 @media (max-width: 400px) {
     .form-wrapper {
         width: 98%;
@@ -457,8 +438,6 @@
     }
 }
 
-/* ========== LOGO SIZE VARIANTS ========== */
-/* Default logo size (used for SalvaLucro, Sifra, CardDigital) */
 .img-login {
     display: flex;
     justify-content: center;
@@ -474,7 +453,6 @@
     transform: scale(1.05);
 }
 
-/* Large logo size (used for MG and SuperJur) */
 .img-login-large {
     height: 200px !important;
     width: 200px !important;
@@ -488,7 +466,6 @@
     transform: scale(1.05);
 }
 
-/* ========== RESPONSIVE ADJUSTMENTS ========== */
 @media (max-width: 600px) {
     .img-login {
         height: 45px;

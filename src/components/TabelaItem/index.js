@@ -5,14 +5,12 @@ import '../Tabela/tabelaPluggy.scss';
 
 const TabelaItem = ({ item }) => {
 
-  // Handle different data formats
   const dataArray = Array.isArray(item) ? item : item?.results ? item.results : [item];
   
   if (!item || dataArray.length === 0) {
     return <div className="no-data-message">No data available</div>;
   }
 
-  // Get headers from first item (handle empty first item)
   const firstItem = dataArray.find(i => i) || {};
   const headers = Object.keys(firstItem).filter(key => key !== 'id');
 

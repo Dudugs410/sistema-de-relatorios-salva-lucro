@@ -12,7 +12,6 @@ const SideBar = ({ options }) =>{
             const sidebarButton = document.querySelector('.side-bar-container .btn-primary')
             const collapseElement = document.getElementById('multiCollapseExample1')
             
-            // Check if click occurred outside the collapsed sidebar and the sidebar button is not clicked
             if (collapseElement && !collapseElement.contains(event.target) && event.target !== sidebarButton) {
                 const collapse = bootstrap.Collapse.getInstance(collapseElement)
                 if (collapse && !collapse._isTransitioning) {
@@ -21,11 +20,9 @@ const SideBar = ({ options }) =>{
             }
         }
 
-        // Add event listener to detect clicks on document body
         document.addEventListener('click', handleClickOutside)
         
         return () => {
-            // Remove event listener when component unmounts
             document.removeEventListener('click', handleClickOutside)
         }
     }, [])

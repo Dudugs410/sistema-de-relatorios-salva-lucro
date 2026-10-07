@@ -1,5 +1,4 @@
 :root {
-  /* Current Theme Colors */
   --primary-color: rgb(10, 61, 112);
   --secondary-color: #99cc33;
   --background-color: #fff;
@@ -17,7 +16,6 @@
   --calendar-neighbor-bg: rgb(187, 187, 187);
   --sidebar-font-color: white;
   --subtitle-color: rgb(10, 61, 112);
-  /* Light Theme Colors */
   --primary-color-light: rgb(10, 61, 112);
   --secondary-color-light: rgb(153, 204, 51);
   --background-color-light: #fff;
@@ -35,7 +33,6 @@
   --calendar-neighbor-bg-light: rgb(187, 187, 187);
   --sidebar-font-color-light: white;
   --subtitle-light: rgb(10, 61, 112);
-  /* Dark Theme Colors */
   --primary-color-dark: rgb(35, 31, 32);
   --secondary-color-dark: darkgray;
   --background-color-dark: rgb(20, 20, 20);
@@ -238,7 +235,6 @@
 }
 
 .li-button-content {
-  /* padding: 5px; */
   height: 100%;
   width: 100%;
   color: white;
@@ -317,7 +313,6 @@ img.img-header:hover {
   z-index: 1000000000000000000000000;
 }
 
-/* Styles for dropdown menu */
 .dropdown-menu {
   inset: 0px auto auto 0px;
   position: absolute;
@@ -326,7 +321,7 @@ img.img-header:hover {
   background: none;
   border: none;
   padding: 0;
-  z-index: 1000; /* Ensure the dropdown menu is above other elements */
+  z-index: 1000;
 }
 
 .dropdown-menu.show {
@@ -341,7 +336,7 @@ img.img-header:hover {
   background-color: white;
   border: 1px solid #ccc;
   padding: 5px;
-  z-index: 1000; /* Ensure the dropdown menu is above other elements */
+  z-index: 1000;
 }
 
 .dropdown-menu-normal.show {
@@ -416,7 +411,7 @@ a {
 }
 
 .checkbox-input {
-  display: none; /* Hide the default checkbox */
+  display: none;
 }
 
 .checkbox-custom {
@@ -440,10 +435,9 @@ a {
 }
 
 .checkbox-label:hover .checkbox-custom {
-  border-color: #999; /* Change border color on hover */
+  border-color: #999;
 }
 
-/* Animation example */
 .checkbox-custom {
   transition: background-color 0.3s, border-color 0.3s;
 }
@@ -634,7 +628,6 @@ a {
     position: relative;
     left: 50px;
   }
-  /* esconde texto do navbar em telas pequenas*/
   .li-btn-text {
     display: none;
   }
@@ -655,11 +648,8 @@ a {
   .toggle-container {
     display: inline-flex;
     align-items: center;
-    /* padding: 0 5px 0 5px; */
     flex-direction: row;
-    /* width: 100%; */
     justify-content: flex-end;
-    /* position: absolute; */
     left: 20px;
   }
 }
@@ -667,11 +657,8 @@ a {
   .toggle-container {
     display: inline-flex;
     align-items: center;
-    /* padding: 0 5px 0 5px; */
     flex-direction: row;
-    /* width: 100%; */
     justify-content: flex-end;
-    /* position: absolute; */
     left: 20px;
   }
-}/*# sourceMappingURL=header copy.css.map */
+}

@@ -1,4 +1,3 @@
-// Centralized icon registry - single source of truth for all icons
 import icon1 from '../assets/user_icons/ICON_LOGO_AZUL.png'
 import icon2 from '../assets/user_icons/ICON_LOGO_BRANCO.png'
 import icon3 from '../assets/user_icons/ICON_LOGO_PRETO.png'
@@ -14,7 +13,6 @@ import adminIcon3 from '../assets/user_icons/ADMIN_ICON_3.png'
 import secret00 from '../assets/user_icons/secret00.jpg'
 import secret01 from '../assets/user_icons/secret01.png'
 
-// Icon mapping - code to path
 export const ICON_MAP = {
   1: icon1,
   2: icon2,
@@ -32,7 +30,6 @@ export const ICON_MAP = {
   98: secret00,
 }
 
-// VISUAL IDENTITY ICONS - These are company logos (white-label partners)
 export const VISUAL_IDENTITY_ICONS = {
   'salvalucro': { code: 1, path: icon1, name: 'Salva Lucro' },
   'sifra': { code: 7, path: icon7, name: 'Sifra' },
@@ -41,12 +38,9 @@ export const VISUAL_IDENTITY_ICONS = {
   'carddigital': { code: 9, path: icon9, name: 'Card Digital' },
 }
 
-// Get default icon based on user's visual identity
 export const getDefaultIconByVisualIdentity = (identidadeVisual) => {
-  // Normalize the identity - trim and lowercase
   const normalizedIdentity = (identidadeVisual || 'salvalucro').trim().toLowerCase()
   
-  // Direct lookup
   if (VISUAL_IDENTITY_ICONS[normalizedIdentity]) {
     const visualIcon = VISUAL_IDENTITY_ICONS[normalizedIdentity]
     return {
@@ -59,7 +53,6 @@ export const getDefaultIconByVisualIdentity = (identidadeVisual) => {
     }
   }
   
-  // Fallback
   console.warn(`⚠️ Identity "${normalizedIdentity}" not found, using salvalucro`)
   const fallbackIcon = VISUAL_IDENTITY_ICONS['salvalucro']
   return {
@@ -72,10 +65,8 @@ export const getDefaultIconByVisualIdentity = (identidadeVisual) => {
   }
 }
 
-// Get the user's current default icon (based on visual identity)
 export const getUserDefaultIcon = getDefaultIconByVisualIdentity
 
-// Get selectable color icons (only the 5 basic colors)
 export const getSelectableColorIcons = () => {
   return [
     { id: 'icon1', name: 'Azul', path: icon1, code: 1, category: 'color' },
@@ -86,7 +77,6 @@ export const getSelectableColorIcons = () => {
   ]
 }
 
-// Get admin icons (only for admin users)
 export const getAdminIcons = () => {
   return [
     { id: 'admin1', name: 'Admin Especial 1', path: adminIcon1, code: 10, category: 'admin' },
@@ -95,7 +85,6 @@ export const getAdminIcons = () => {
   ]
 }
 
-// Get secret icons (only for special user)
 export const getSecretIcons = () => {
   return [
     { id: 'secret00', name: 'Ícone Secreto 00', path: secret00, code: 98, category: 'secret' },
@@ -103,7 +92,6 @@ export const getSecretIcons = () => {
   ]
 }
 
-// Get all selectable icons for a user based on their role
 export const getSelectableIcons = (isAdminUser, isSpecialUser, visualIdentity) => {
   let icons = [...getSelectableColorIcons()]
   if (isAdminUser) icons = [...icons, ...getAdminIcons()]
@@ -114,20 +102,15 @@ export const getSelectableIcons = (isAdminUser, isSpecialUser, visualIdentity) =
 export const DEFAULT_ICON_CODE = 1
 export const DEFAULT_ICON_PATH = ICON_MAP[DEFAULT_ICON_CODE]
 
-export const getIconPathByCode = (code) => {
-  if (!code || typeof code !== 'number') {
-    console.warn(`Invalid icon code: ${code}, using default`)
-    return ICON_MAP[1]
-  }
-  const icon = ICON_MAP[code]
+export const getIconPathByCode = (code, fallback = ICON_MAP[DEFAULT_ICON_CODE]) => {
+  const icon = ICON_MAP[parseInt(code, 10)]
   if (!icon) {
-    console.warn(`Icon code ${code} not found, using default`)
-    return ICON_MAP[1]
+    if (code != null) console.warn(`Icon code ${code} not found, using default`)
+    return fallback
   }
   return icon
 }
 
-// Get default icon safely - ALWAYS returns a valid path
 export const getSafeDefaultIcon = (userData = null) => {
   try {
     const identidadeVisual = userData?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro'
@@ -140,7 +123,6 @@ export const getSafeDefaultIcon = (userData = null) => {
   }
 }
 
-// Export individual icons for components that need direct access
 export {
   icon1, icon2, icon3, icon4, icon5,
   icon6, icon7, icon8, icon9,

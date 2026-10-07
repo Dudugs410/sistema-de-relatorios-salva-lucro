@@ -12,13 +12,15 @@ import PieChart from '../../components/GraficoDashboard';
 import { useLocation } from 'react-router-dom';
 import '../../index.scss';
 import LazyLoader from '../../components/Componente_LazyLoader/index.js';
-import { FiHelpCircle, FiSun, FiMoon } from 'react-icons/fi';
+import { FiSun, FiMoon } from 'react-icons/fi';
 import ModalAlerta from './ModalAlerta/index.js';
 
 import { LuCircleDollarSign } from "react-icons/lu";
 import { FaRegCreditCard } from "react-icons/fa6";
 import { LiaToolsSolid } from "react-icons/lia";
 
+import { getThemeColor } from '../../util/contextUtils'
+import TutorialButton from '../../components/TutorialButton'
 const Dashboard = () => {
   const location = useLocation();
   const [runTutorial, setRunTutorial] = useState(false);
@@ -64,13 +66,11 @@ const Dashboard = () => {
     changedOption, canceled, fetchingData, setFetchingData, setCanceled,
     canceledSales, canceledCredits, canceledServices,
     setCanceledSales, setCanceledCredits, setCanceledServices,
-    // Keep these from context but don't use them for theme
     userPreferences,
     currentContext,
     currentTheme
   } = useContext(AuthContext);
 
-  // Helper function to format currency with secondary color class
   const formatCurrency = (value) => {
     if (value === undefined || value === null) return 'R$ 0,00';
     return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -223,7 +223,6 @@ const Dashboard = () => {
 
     return (
       <>
-        {/* Chart Type Selector Cards */}
         <div className="chart-type-selector" data-tour="selector-cards">
           <div 
             className={`selector-card ${activeDataType === 'vendas' ? 'active' : ''}`}
@@ -268,7 +267,6 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Main Chart Section */}
         <div className="chart-main-section" data-tour="main-chart">
           <div className="chart-header">
             <h2>
@@ -296,7 +294,6 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Métricas Adicionais */}
         <div className="additional-metrics" data-tour="metrics-grid">
           <div className='subtitle-container-global'>
             <h3 className='subtitle'>Métricas Adicionais</h3>
@@ -355,7 +352,6 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Summary Section */}
         <div className="summary-section" data-tour="summary-section">
           <div className='subtitle-container-global'>
             <h3 className='subtitle'>Resumo por {dados === 'servicos' ? 'Tipo de Serviço' : 'Adquirente'}</h3>
@@ -407,7 +403,7 @@ const Dashboard = () => {
           disableOverlayClose={true}
           styles={{
             options: {
-              primaryColor: '#99cc33',
+              primaryColor: getThemeColor('--highlight-color', '#99cc33'),
               textColor: '#0a3d70',
               zIndex: 10000,
             }
@@ -436,24 +432,7 @@ const Dashboard = () => {
         </div>
       </div>    
       
-      <button 
-        className='btn btn-success-dados btn-tutorial px-2 py-1'
-        onClick={() => setRunTutorial(true)}
-        style={{
-          position: 'fixed',
-          bottom: '20px',
-          right: '20px',
-          zIndex: 10,
-          padding: '10px 15px',
-          background: 'none',
-          color: '#99cc33',
-          border: 'none',
-          borderRadius: '5px',
-          cursor: 'pointer'
-        }}
-      >
-        <FiHelpCircle />
-      </button>
+      <TutorialButton onStart={() => setRunTutorial(true)} />
     </>  
   )
 }

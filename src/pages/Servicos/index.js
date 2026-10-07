@@ -5,9 +5,12 @@ import { useLocation } from 'react-router-dom'
 import MyCalendar from '../../components/Componente_Calendario'
 import { toast } from 'react-toastify'
 import NewDisplayData from '../../components/Component_NewDisplayData'
-import { FiHelpCircle } from 'react-icons/fi'
+
 import Joyride from 'react-joyride'
 
+import { getThemeColor } from '../../util/contextUtils'
+import PageShell from '../../components/PageShell'
+import TutorialButton from '../../components/TutorialButton'
 const Servicos = () => {
   const location = useLocation()
   const [downloading, setDownloading] = useState(false)
@@ -24,12 +27,10 @@ const Servicos = () => {
     servicesTableData.length = 0
     lastProcessedArrayRef.current = null
     
-    // Clear report-specific storage when resetting
     localStorage.removeItem('reportBandeira')
     localStorage.removeItem('reportAdquirente')
   }
 
-  // Clean up report data when component unmounts or route changes
   useEffect(() => {
     return () => {
       localStorage.removeItem('reportBandeira')
@@ -37,7 +38,6 @@ const Servicos = () => {
     }
   }, [])
 
-  // Clear report data when path changes (navigation)
   useEffect(() => {
     localStorage.removeItem('reportBandeira')
     localStorage.removeItem('reportAdquirente')
@@ -162,7 +162,6 @@ const Servicos = () => {
         ? endDate.toLocaleDateString('pt-BR')
         : endDate
       
-      // Store formatted dates in localStorage for export
       const formattedStart = formatDateToYYYYMMDD(startDate)
       const formattedEnd = formatDateToYYYYMMDD(endDate)
       localStorage.setItem('dataInicial', formattedStart)
@@ -201,7 +200,6 @@ const Servicos = () => {
     return { total: total }
   }
 
-  // Joyride state
   const [runTutorial, setRunTutorial] = useState(false)
   const [tutorialSteps, setTutorialSteps] = useState([
     {
@@ -271,13 +269,7 @@ const Servicos = () => {
   }
 
   return (
-    <div className='page-content-vendas'>
-      <div className='vendas-title-container'>
-        <h1 className='vendas-title'>Serviços</h1>
-      </div>
-      <hr className='hr-global' />
-      
-      <div className='component-container-vendas'>
+    <PageShell title='Serviços'>
         {servicesPageArray !== null ?
           servicesPageArray.length > 0 ? (
             <NewDisplayData 
@@ -292,11 +284,10 @@ const Servicos = () => {
               tutorialSteps={tutorialSteps}
               listaBandeiras={listaBandeiras}
               listaAdministradoras={listaAdministradoras}
-              showSelects={false} // Hide selects when data is shown
+              showSelects={false}
             />
           ) : (
             <>
-              {/* Joyride for calendar view */}
               {runTutorial && (
                 <Joyride
                   steps={tutorialSteps}
@@ -308,7 +299,7 @@ const Servicos = () => {
                   scrollOffset={80}
                   styles={{
                     options: {
-                      primaryColor: '#99cc33',
+                      primaryColor: getThemeColor('--highlight-color', '#99cc33'),
                       textColor: '#0a3d70',
                       zIndex: 10000,
                     }
@@ -340,7 +331,7 @@ const Servicos = () => {
                 tutorialSteps={tutorialSteps}
                 listaBandeiras={listaBandeiras}
                 listaAdministradoras={listaAdministradoras}
-                showSelects={true} // Show selects when no data
+                showSelects={true}
                 onSearch={handleLoadData}
                 isSearching={btnDisabledServices}
               />
@@ -352,31 +343,13 @@ const Servicos = () => {
             </>
           )
         : null}
-        <button
-          className='btn btn-success-dados btn-tutorial px-2 py-1'
-          onClick={() => {
+        <TutorialButton onStart={() => {
             setRunTutorial(false);
             setTimeout(() => {
               setRunTutorial(true);
             }, 50);
-          }}
-          style={{
-            position: 'relative',
-            bottom: '0px',
-            right: '-10px',
-            zIndex: 10,
-            padding: '10px 15px',
-            background: 'none',
-            color: '#99cc33',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer'
-          }}
-        >
-          <FiHelpCircle />
-        </button>
-      </div>
-    </div>
+          }} />
+    </PageShell>
   )
 }
 

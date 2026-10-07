@@ -5,13 +5,11 @@ import { useState } from "react"
 const TabelaLoans = ({ data, clickRow }) => {
   const [expandedRow, setExpandedRow] = useState(null)
 
-  // Function to check if a value is an ISO date string
   const isISODate = (value) => {
     if (typeof value !== 'string') return false
     return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/.test(value)
   }
 
-  // Function to format ISO date to Brazilian format
   const formatToBrazilianDateTime = (isoString) => {
     try {
       const date = new Date(isoString)
@@ -30,7 +28,6 @@ const TabelaLoans = ({ data, clickRow }) => {
     }
   }
 
-  // Function to format date only (without time)
   const formatDate = (isoString) => {
     try {
       const date = new Date(isoString)
@@ -46,7 +43,6 @@ const TabelaLoans = ({ data, clickRow }) => {
     }
   }
 
-  // Function to format currency values
   const formatCurrency = (value, currencyCode) => {
     if (value === undefined || value === null || isNaN(Number(value))) {
       return '-'
@@ -61,7 +57,6 @@ const TabelaLoans = ({ data, clickRow }) => {
       }).format(numericValue)
     }
     
-    // Default formatting for other currencies
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: currencyCode || 'USD',
@@ -70,7 +65,6 @@ const TabelaLoans = ({ data, clickRow }) => {
     }).format(numericValue)
   }
 
-  // Define the headers and their corresponding data properties
   const headers = [
     { key: 'CET', label: 'CET' },
     { key: 'amortizationScheduled', label: 'Amortização Agendada', isMoney: true },
@@ -103,7 +97,6 @@ const TabelaLoans = ({ data, clickRow }) => {
     }
   }
 
-  // Mobile Card View Component
   const MobileCardView = () => {
     return (
       <div className="mobile-card-view">
@@ -268,7 +261,6 @@ const TabelaLoans = ({ data, clickRow }) => {
 
   return (
     <div className='dropShadow vendas-view'>
-      {/* Desktop Table */}
       <div className='table-wrapper desktop-only'>
         <table className='table table-no-children table-striped table-hover det-table-global'>
           <thead>
@@ -315,7 +307,6 @@ const TabelaLoans = ({ data, clickRow }) => {
         </table>
       </div>
       
-      {/* Mobile Card View */}
       <div className='mobile-only'>
         <MobileCardView />
       </div>

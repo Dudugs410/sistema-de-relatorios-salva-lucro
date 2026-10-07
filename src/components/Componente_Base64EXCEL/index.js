@@ -10,20 +10,16 @@ function Base64ExcelViewer({ base64String }) {
   React.useEffect(() => {
     if (base64String) {
       try {
-        // Convert base64 to binary string
         const binaryString = atob(base64String);
-        // Convert to array buffer
         const bytes = new Uint8Array(binaryString.length);
         for (let i = 0; i < binaryString.length; i++) {
           bytes[i] = binaryString.charCodeAt(i);
         }
         
-        // Parse with SheetJS
         const workbook = XLSX.read(bytes, { type: 'array' });
         const sheetNameList = workbook.SheetNames;
         setSheetNames(sheetNameList);
         
-        // Get first sheet data
         const firstSheet = workbook.Sheets[sheetNameList[0]];
         const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
         setData(jsonData);
@@ -53,7 +49,6 @@ function Base64ExcelViewer({ base64String }) {
 
   return (
     <div style={{ overflowX: 'auto' }}>
-      {/* Sheet Tabs */}
       {sheetNames.length > 1 && (
         <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', borderBottom: '1px solid #ddd' }}>
           {sheetNames.map((name, idx) => (
@@ -75,7 +70,6 @@ function Base64ExcelViewer({ base64String }) {
         </div>
       )}
       
-      {/* Data Table */}
       <table style={{ borderCollapse: 'collapse', width: '100%' }}>
         <tbody>
           {data.map((row, rowIndex) => (
@@ -101,7 +95,6 @@ function Base64ExcelViewer({ base64String }) {
   );
 }
 
-// Main component integrating with your API
 const Teste = () => {
   const [excelBase64, setExcelBase64] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -112,7 +105,7 @@ const Teste = () => {
     dataFinal: "2026-04-03",
     clientes: "4496",
     nomeGrupo: "3 AMORES",
-    arquivo: "XLSX", // Changed to XLSX
+    arquivo: "XLSX",
     modelo: "VENDA"
   };
 

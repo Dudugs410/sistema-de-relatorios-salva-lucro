@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Resizable } from 'react-resizable'
-import 'react-resizable/css/styles.css' // Import resizable styles
+import 'react-resizable/css/styles.css'
 import './resizable.scss'
 
 const ResizableComponent = ({ width, height, children }) => {

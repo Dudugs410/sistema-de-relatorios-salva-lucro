@@ -1,5 +1,4 @@
 :root {
-  /* Current Theme Colors */
   --primary-color: rgb(10, 61, 112);
   --secondary-color: #99cc33;
   --background-color: #fff;
@@ -17,7 +16,6 @@
   --calendar-neighbor-bg: rgb(187, 187, 187);
   --sidebar-font-color: white;
   --subtitle-color: rgb(10, 61, 112);
-  /* Light Theme Colors */
   --primary-color-light: rgb(10, 61, 112);
   --secondary-color-light: rgb(153, 204, 51);
   --background-color-light: #fff;
@@ -35,7 +33,6 @@
   --calendar-neighbor-bg-light: rgb(187, 187, 187);
   --sidebar-font-color-light: white;
   --subtitle-light: rgb(10, 61, 112);
-  /* Dark Theme Colors */
   --primary-color-dark: rgb(35, 31, 32);
   --secondary-color-dark: darkgray;
   --background-color-dark: rgb(20, 20, 20);
@@ -64,23 +61,17 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow-x: hidden; /* Prevent horizontal scroll */
+  overflow-x: hidden;
 }
 
 .layout-content {
   display: flex;
   flex: 1;
-  overflow-x: hidden; /* Prevent horizontal scroll */
+  overflow-x: hidden;
 }
 
 .navbar-title {
   display: flex;
-  /* flex-direction: column; */
-  /* align-self: start; */
-  /* padding-left: 20px; */
-  /* padding-top: 15px; */
-  /* font-size: x-large; */
-  /* z-index: 1; */
   justify-content: center;
   align-items: center;
   align-content: center;
@@ -109,14 +100,14 @@ img.img-header:hover {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  overflow-x: hidden; /* Prevent horizontal scroll */
-  overflow-y: auto; /* Allow vertical scroll */
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .children-content {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  overflow-y: auto; /* Allow vertical scroll */
-  width: 100%; /* Ensure full width is used */
-}/*# sourceMappingURL=layout.css.map */
+  overflow-y: auto;
+  width: 100%;
+}

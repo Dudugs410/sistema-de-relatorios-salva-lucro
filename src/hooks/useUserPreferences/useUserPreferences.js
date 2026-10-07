@@ -1,135 +1,92 @@
 import { useCallback } from 'react'
 import api from '../../services/api'
-import { getIconPathByCode, DEFAULT_ICON_CODE, VISUAL_IDENTITY_ICONS } from '../../util/iconRegistry'
+import { getDefaultPreferences, getUserIdentity, normalizeContext } from '../../util/contextUtils'
+
+const today = () => new Date().toISOString().split('T')[0]
+
+export const normalizePrefs = (raw, identity) => {
+  const data = Array.isArray(raw) ? raw[0] : raw
+  if (!data || typeof data !== 'object') return null
+  if (data.CODIGO == null && data.ICONE == null && data.ESQUEMACORES == null) return null
+
+  const defaults = getDefaultPreferences(identity)
+  const icon = parseInt(data.ICONE, 10)
+  return {
+    ...data,
+    TEMA: data.TEMA === true || data.TEMA === 'true',
+    ICONE: Number.isNaN(icon) ? defaults.ICONE : icon,
+    ESQUEMACORES: normalizeContext(data.ESQUEMACORES, defaults.ESQUEMACORES),
+  }
+}
 
 export const useUserPreferences = () => {
-  // GET user preferences from API
-  const loadUserPrefs = useCallback(async () => {
+  const fetchUserPrefs = useCallback(async (identity) => {
     const userId = localStorage.getItem('userID')
     const token = localStorage.getItem('token')
-    
-    if (!userId || !token) {
-      return null
-    }
+    if (!userId || !token) return { status: 'error', prefs: null }
 
     try {
-      const response = await api.get('PreferenciasUsuario', {
-        params: { codigo: userId }
-      })
-      
-      // Validate response data
-      if (!response.data || response.data === null) {
-        return null
-      }
-      
-      // Ensure the response has the expected structure
-      if (typeof response.data !== 'object') {
-        return null
-      }
-      
-      return response.data
+      const response = await api.get('PreferenciasUsuario', { params: { codigo: userId } })
+      const prefs = normalizePrefs(response.data, identity)
+      return { status: prefs ? 'found' : 'missing', prefs }
     } catch (error) {
-      if (error.response?.status === 404) {
-        return null
-      }
+      if (error.response?.status === 404) return { status: 'missing', prefs: null }
       console.error('Error loading user preferences:', error)
-      return null
+      return { status: 'error', prefs: null }
     }
   }, [])
 
-  // Create default preferences for a user with safe fallbacks
+  const loadUserPrefs = useCallback(async () => {
+    const { prefs } = await fetchUserPrefs(getUserIdentity())
+    return prefs
+  }, [fetchUserPrefs])
+
   const createDefaultPreferences = useCallback(async (userId, userData = null) => {
-    const getCurrentDate = () => new Date().toISOString().split('T')[0]
-    const now = getCurrentDate()
-    
-    // SAFE: Get user data with fallbacks
-    let identidadeVisual = 'salvalucro' // Default fallback
-    let defaultIconCode = DEFAULT_ICON_CODE
-    let defaultColorScheme = 'salvalucro'
-    
-    try {
-      // Use provided userData or fetch it
-      let userInfo = userData
-      if (!userInfo) {
-        const userResponse = await api.get('usuario', {
-          params: { codigo: userId }
-        })
+    let userInfo = userData
+    if (!userInfo) {
+      try {
+        const userResponse = await api.get('usuario', { params: { codigo: userId } })
         userInfo = userResponse.data
+      } catch (error) {
+        console.error('Error getting user data for default preferences:', error)
       }
-      
-      // SAFE: Navigate through nested objects with optional chaining
-      identidadeVisual = userInfo?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro'
-      
-      
-      // Set default icon based on identity visual (with fallback)
-      switch (identidadeVisual) {
-        case 'sifra':
-          defaultIconCode = 7
-          defaultColorScheme = 'sifra'
-          break
-        case 'mg':
-          defaultIconCode = 6
-          defaultColorScheme = 'mg'
-          break
-        case 'superjur':
-          defaultIconCode = 8
-          defaultColorScheme = 'superjur'
-          break
-        case 'carddigital':
-          defaultIconCode = 9
-          defaultColorScheme = 'carddigital'
-          break
-        default:
-          defaultIconCode = DEFAULT_ICON_CODE
-          defaultColorScheme = 'salvalucro'
-          break
-      }
-    } catch (error) {
-      console.error('Error getting user data for default preferences:', error)
-      // Keep fallback values
     }
-    
+
+    const identity = getUserIdentity(userInfo)
+    const now = today()
     const payload = {
-      USUCODIGO: parseInt(userId),
-      TEMA: false,
-      ICONE: defaultIconCode,
-      ESQUEMACORES: defaultColorScheme,
-      USUARIOMODIFICACAO: parseInt(userId),
+      USUCODIGO: parseInt(userId, 10),
+      ...getDefaultPreferences(identity),
+      USUARIOMODIFICACAO: parseInt(userId, 10),
       DATAMODIFICACAO: now,
-      USUARIOINSERCAO: parseInt(userId),
+      USUARIOINSERCAO: parseInt(userId, 10),
       DATAINSERCAO: now,
-      ATIVO: true
+      ATIVO: true,
     }
-    
+
     try {
       const response = await api.post('PreferenciasUsuario', payload)
-      return response.data
+      return normalizePrefs(response.data, identity) || payload
     } catch (error) {
-      console.error('❌ Error creating default preferences:', error)
+      console.error('Error creating default preferences:', error)
       return null
     }
   }, [])
 
-  // Get or create preferences
   const getOrCreatePreferences = useCallback(async (userId, userData = null) => {
-    try {
-      let prefs = await loadUserPrefs()
-      
-      if (!prefs) {
-        prefs = await createDefaultPreferences(userId, userData)
-      }
-      
-      return prefs
-    } catch (error) {
-      console.error('Error in getOrCreatePreferences:', error)
-      return null
-    }
-  }, [loadUserPrefs, createDefaultPreferences])
+    const { status, prefs } = await fetchUserPrefs(getUserIdentity(userData || undefined))
+    if (status === 'found') return prefs
+    if (status === 'missing') return createDefaultPreferences(userId, userData)
+    return null
+  }, [fetchUserPrefs, createDefaultPreferences])
 
-  // SAVE user preferences to API
   const saveUserPrefs = useCallback(async (body) => {
-    try { 
-      const response = await api.post('PreferenciasUsuario', body)
+    try {
+      if (body.CODIGO) {
+        await api.put('PreferenciasUsuario', body)
+      } else {
+        await api.post('PreferenciasUsuario', body)
+      }
       return true
     } catch (error) {
       console.error('Error saving preferences:', error)

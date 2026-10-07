@@ -1,5 +1,4 @@
 :root {
-  /* Current Theme Colors */
   --primary-color: rgb(10, 61, 112);
   --secondary-color: #99cc33;
   --background-color: #fff;
@@ -17,7 +16,6 @@
   --calendar-neighbor-bg: rgb(187, 187, 187);
   --sidebar-font-color: white;
   --subtitle-color: rgb(10, 61, 112);
-  /* Light Theme Colors */
   --primary-color-light: rgb(10, 61, 112);
   --secondary-color-light: rgb(153, 204, 51);
   --background-color-light: #fff;
@@ -35,7 +33,6 @@
   --calendar-neighbor-bg-light: rgb(187, 187, 187);
   --sidebar-font-color-light: white;
   --subtitle-light: rgb(10, 61, 112);
-  /* Dark Theme Colors */
   --primary-color-dark: rgb(35, 31, 32);
   --secondary-color-dark: darkgray;
   --background-color-dark: rgb(20, 20, 20);
@@ -125,7 +122,6 @@
   margin-top: 10px;
   margin-bottom: 54px;
   transition: all 0.4s;
-  /* flex-direction: column;*/
 }
 
 .css-13cymwt-control {
@@ -324,23 +320,19 @@ tr {
   color: rgb(218, 100, 100);
 }
 
-/* width */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 
-/* Track */
 ::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.116);
 }
 
-/* Handle */
 ::-webkit-scrollbar-thumb {
   background: #888;
 }
 
-/* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
@@ -376,4 +368,4 @@ tr {
     display: inline-flex;
     justify-content: center;
   }
-}/*# sourceMappingURL=global.css.map */
+}

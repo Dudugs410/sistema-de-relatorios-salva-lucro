@@ -29,7 +29,7 @@ export default function DateRangePicker(){
 				<DatePicker className='date-picker-css'
 					selected={dataInicial}
 					onChange={handleStartDateChange}
-					dateFormat={brazilianDateFormat} // Set the desired date format
+					dateFormat={brazilianDateFormat}
 					placeholderText="Selecione uma data"
 					selectsStart
 					startDate={dataInicial}
@@ -41,7 +41,7 @@ export default function DateRangePicker(){
 				<DatePicker className='date-picker-css'
 					selected={dataFinal}
 					onChange={handleEndDateChange}
-					dateFormat={brazilianDateFormat} // Set the desired date format
+					dateFormat={brazilianDateFormat}
 					placeholderText="Selecione uma data"
 					selectsEnd
 					startDate={dataInicial}

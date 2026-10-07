@@ -7,8 +7,7 @@ const PWAInstallerPrompt = ({
 }) => {
   const createStatus = (object) => {
     return {
-      isInstallAllowed: true, // Ensure it's initially true
-      // ... other status properties
+      isInstallAllowed: true,
     }
   }
   

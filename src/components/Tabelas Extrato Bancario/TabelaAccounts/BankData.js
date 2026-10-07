@@ -1,11 +1,9 @@
 const BankData = ({ data, clickRow }) => {
-  // Function to check if a value is an ISO date string
   const isISODate = (value) => {
     if (typeof value !== 'string') return false;
     return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/.test(value);
   };
 
-  // Function to format ISO date to Brazilian format
   const formatToBrazilianDateTime = (isoString) => {
     try {
       const date = new Date(isoString);
@@ -24,7 +22,6 @@ const BankData = ({ data, clickRow }) => {
     }
   };
 
-  // Function to format currency values
   const formatCurrency = (value, currencyCode) => {
     if (value === undefined || value === null || isNaN(Number(value))) {
       return '-';
@@ -39,7 +36,6 @@ const BankData = ({ data, clickRow }) => {
       }).format(numericValue);
     }
     
-    // Default formatting for other currencies
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: currencyCode || 'USD',
@@ -48,7 +44,6 @@ const BankData = ({ data, clickRow }) => {
     }).format(numericValue);
   };
 
-  // Define the headers and their corresponding data properties
   const headers = [
     { key: 'automaticallyInvestedBalance', label: 'Saldo Investido Automaticamente', isMoney: true },
     { key: 'closingBalance', label: 'Saldo de Fechamento', isMoney: true },

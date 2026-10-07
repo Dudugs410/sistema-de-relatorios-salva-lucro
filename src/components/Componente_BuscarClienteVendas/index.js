@@ -59,7 +59,6 @@ const BuscarClienteVendas = () => {
 		await loadVendas(dataBuscaVendas[0].toLocaleDateString('pt-BR'), dataBuscaVendas[1].toLocaleDateString('pt-BR'), cnpjBuscaVendas)
 			.then(() =>{
 				
-				//adiciono .toLocaleDateString('pt-BR') às datas para que possamos comparar apenas o dia, mes e ano, sem levar em consideração a hora, minuto e segundos
 				if(buscou !== true){
 					if(dataBuscaVendas[0].toLocaleDateString('pt-BR') === dataBuscaVendas[1].toLocaleDateString('pt-BR')){
 						alerta(`executou a busca do dia ${dataBuscaVendas[0].toLocaleDateString('pt-BR')}`)

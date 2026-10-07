@@ -11,6 +11,22 @@ import TabelaAccounts from '../../components/Tabelas Extrato Bancario/TabelaAcco
 import TabelaInvestments from '../../components/Tabelas Extrato Bancario/TabelaInvestments'
 import TabelaLoans from '../../components/Tabelas Extrato Bancario/TabelaLoans'
 import TabelaIdentity from '../../components/Tabelas Extrato Bancario/TabelaIdentity'
+import Tabela from '../../components/Tabela'
+import { toast } from 'react-toastify'
+
+const EMPTY_PLUGGY_DATA = { accounts: [], loans: [], investments: [], identity: [], bills: [] }
+
+const readPluggyData = () => {
+    try {
+        return { ...EMPTY_PLUGGY_DATA, ...(JSON.parse(localStorage.getItem('pluggyData')) || {}) }
+    } catch {
+        return { ...EMPTY_PLUGGY_DATA }
+    }
+}
+
+const savePluggyData = (key, value) => {
+    localStorage.setItem('pluggyData', JSON.stringify({ ...readPluggyData(), [key]: value }))
+}
 
 const Extrato = () => {
     const { 
@@ -74,10 +90,11 @@ const Extrato = () => {
             
             let response = await fetch('https://api.pluggy.ai/connect_token', options)
             let responseData = await response.json()
+            if (!responseData.accessToken) throw new Error(`Pluggy connect token not received (HTTP ${response.status})`)
             Cookies.set('pluggy_connect_token', responseData.accessToken)
             return responseData.accessToken
         } catch (error) {
-            console.log('error: ', error)
+            console.error('Erro ao obter token do Pluggy:', error)
             throw error
         }
     }
@@ -85,7 +102,12 @@ const Extrato = () => {
     const handleConnectClick = async() => {
         if(!Cookies.get('accessToken')){
             fetchToken()
-                .then(() => {
+                .catch(() => {
+                    toast.error('Não foi possível iniciar a conexão com o Pluggy')
+                    return null
+                })
+                .then((token) => {
+                    if (!token) return
                     if (widgetContainerRef.current) {
                         widgetContainerRef.current.innerHTML = ''
                     }
@@ -121,115 +143,45 @@ const Extrato = () => {
 
     const fetchClicked = async (row) => {
         Cookies.set('accountID', row.id)
-        let billsTemp = fetchBills()
+        fetchBills()
     }
 
-    const fetchAccounts = async () => {
+    const fetchCached = async (key, loader) => {
         setIsLoading(true)
-        let pluggyData = JSON.parse(localStorage.getItem('pluggyData'))
-        if(pluggyData.accounts.length === 0){
-            let dataTemp = await loadAccounts()
-            pluggyData.accounts = dataTemp
-            localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
-            setData(dataTemp)
-            setIsLoading(false)
-        } else {
-            setData(pluggyData.accounts)
+        try {
+            const cached = readPluggyData()[key]
+            if (cached && cached.length > 0) {
+                setData(cached)
+                return
+            }
+            const loaded = await loader()
+            savePluggyData(key, loaded)
+            setData(loaded)
+        } finally {
             setIsLoading(false)
         }
     }
 
-    const fetchIdentity = async () => {
-        setIsLoading(true)
-        let pluggyData = JSON.parse(localStorage.getItem('pluggyData'))
-        if(pluggyData && (pluggyData.identity.length === 0)){
-            let dataTemp = await loadIdentity()
-            pluggyData.identity = dataTemp
-            localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
-            setData(dataTemp)
-            setIsLoading(false)
-        } else {
-            setData(pluggyData.identity)
-            setIsLoading(false)
-        }
-    }
+    const fetchAccounts = () => fetchCached('accounts', loadAccounts)
+    const fetchIdentity = () => fetchCached('identity', loadIdentity)
+    const fetchLoans = () => fetchCached('loans', loadLoans)
+    const fetchInvestments = () => fetchCached('investments', loadInvestments)
+    const fetchBills = () => fetchCached('bills', loadBills)
 
-    const fetchLoans = async () => {
-        setIsLoading(true)
-        let pluggyData = JSON.parse(localStorage.getItem('pluggyData'))
-        if(pluggyData.loans.length === 0){
-            let dataTemp = await loadLoans()
-            pluggyData.loans = dataTemp
-            localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
-            setData(dataTemp)
-            setIsLoading(false)
-        } else {
-            setData(pluggyData.loans)
-            setIsLoading(false)
-        }
-    }
-
-    const fetchInvestments = async () => {
-        setIsLoading(true)
-        let pluggyData = JSON.parse(localStorage.getItem('pluggyData'))
-        if(pluggyData.investments.length === 0){
-            let dataTemp = await loadInvestments()
-            pluggyData.investments = dataTemp
-            localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
-            setData(dataTemp)
-            setIsLoading(false)
-        } else {
-            setData(pluggyData.investments)
-            setIsLoading(false)
-        }
-    }
-
-    const fetchBills = async () => {
-        setIsLoading(true)
-        let pluggyData = JSON.parse(localStorage.getItem('pluggyData'))
-        if(pluggyData.bills.length === 0){
-            let dataTemp = await loadBills()
-            pluggyData.bills = dataTemp
-            localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
-            setData(dataTemp)
-            setIsLoading(false)
-        } else {
-            setData(pluggyData.bills)
-            setIsLoading(false)
-        }
+    const REFRESH_LOADERS = {
+        'Contas': ['accounts', loadAccounts],
+        'Empréstimos': ['loans', loadLoans],
+        'Investimentos': ['investments', loadInvestments],
+        'Identidade': ['identity', loadIdentity],
     }
 
     const refresh = async () => {
-        let pluggyData = JSON.parse(localStorage.getItem('pluggyData'))
-        let dataTemp
-        switch (displayedMenu) {
-            case 'Contas':
-                dataTemp = await loadAccounts()
-                pluggyData.accounts = dataTemp
-                localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
-                setData(dataTemp)
-                break
-            case 'Empréstimos':
-                dataTemp = await loadLoans()
-                pluggyData.loans = dataTemp
-                localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
-                setData(dataTemp)                
-                break
-            case 'Investimentos':
-                dataTemp = await loadInvestments()
-                pluggyData.investments = dataTemp
-                localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
-                setData(dataTemp)                
-                break
-            case 'Identidade':
-                dataTemp = await loadIdentity()
-                pluggyData.identity = dataTemp
-                localStorage.setItem('pluggyData', JSON.stringify(pluggyData))
-                setData(dataTemp)          
-                break        
-            default:
-                break
-        }
+        const entry = REFRESH_LOADERS[displayedMenu]
+        if (!entry) return
+        const [key, loader] = entry
+        const loaded = await loader()
+        savePluggyData(key, loaded)
+        setData(loaded)
     }
 
     const handleSelectedProduct = (product) => {

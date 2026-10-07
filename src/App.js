@@ -1,124 +1,55 @@
-// App.js
-import 'bootstrap/dist/css/bootstrap.min.css'
-import 'react-icons'
-import AuthProvider from './contexts/auth'
-import { BrowserRouter } from 'react-router-dom'
-import RoutesApp from './routes'
-import React, { useEffect, useState, useContext } from 'react'
-import { ToastContainer } from 'react-toastify'
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'react-icons';
+import AuthProvider, { AuthContext } from './contexts/auth';
+import { BrowserRouter } from 'react-router-dom';
+import RoutesApp from './routes';
+import React, { useEffect, useState, useContext, useRef } from 'react';
+import { ToastContainer } from 'react-toastify';
 
-import './index.scss'
-import PluggyProvider from './contexts/pluggyContext'
-import { initializeContext } from './util/contextInitializer';
-import useSessionTimeout from './hooks/useSessionTimeout/useSessionTimeout'
-import ThemeSync from './components/ThemeSync'
-import { AuthContext } from './contexts/auth'
-import { useUserPreferences } from './hooks/useUserPreferences/useUserPreferences'
+import './index.scss';
+import PluggyProvider from './contexts/pluggyContext';
+import useSessionTimeout from './hooks/useSessionTimeout/useSessionTimeout';
+import ThemeSync from './components/ThemeSync';
 
-import { getIconPathByCode, getDefaultIconByVisualIdentity } from './util/iconRegistry'
-import { getTenantFromURL } from './util/tenant';
+const PREFS_REFRESH_AFTER_MS = 60 * 1000;
 
-initializeContext()
-
-// Component that loads user preferences on app start
 function PreferenceLoader({ children }) {
-  const { loadUserPrefs } = useUserPreferences()
-  const { setUserImg, isSignedIn, setIsSignedIn } = useContext(AuthContext) || {}
-  const [preferencesLoaded, setPreferencesLoaded] = useState(false)
-
-  useEffect(() => {
-    const loadPreferencesFromAPI = async () => {
-      const token = localStorage.getItem('token')
-      const userId = localStorage.getItem('userID')
-      const storedIsSignedIn = localStorage.getItem('isSignedIn') === 'true'
-      
-      const isLoggedIn = token && userId && (isSignedIn === true || storedIsSignedIn === true)
-      
-      if (isLoggedIn) {
-        
-        const prefs = await loadUserPrefs()
-        
-        if (prefs && setUserImg) {
-          
-          if (prefs.ESQUEMACORES) {
-            document.documentElement.setAttribute('data-context', prefs.ESQUEMACORES)
-          }
-          
-          if (prefs.TEMA !== undefined) {
-            const themeValue = prefs.TEMA === true || prefs.TEMA === 'true'
-            document.documentElement.setAttribute('data-theme', themeValue ? 'dark' : 'light')
-          }
-          
-          if (prefs.ICONE && setUserImg) {
-            const iconPath = getIconPathByCode(prefs.ICONE)
-            setUserImg(iconPath)
-            localStorage.setItem('userIconCode', prefs.ICONE)
-          }
-        } else if (setUserImg) {
-          const userData = JSON.parse(localStorage.getItem('user'))
-          const identidadeVisual = userData?.GRUPO?.IDENTIDADEVISUAL || 'salvalucro'
-          const defaultIcon = getDefaultIconByVisualIdentity(identidadeVisual)
-          setUserImg(defaultIcon.path)
-        }
-      } else {
-        const tenant = getTenantFromURL();
-        document.documentElement.setAttribute('data-context', tenant.contextKey || 'SL');
-        document.documentElement.setAttribute('data-theme', 'light')
-      }
-      setPreferencesLoaded(true)
-    }
-    
-    loadPreferencesFromAPI()
-  }, [])
-
-  if (!preferencesLoaded) {
-    return null
-  }
-
-  return <>{children}</>
+  const { isThemeLoaded } = useContext(AuthContext) || {};
+  if (!isThemeLoaded) return null;
+  return <>{children}</>;
 }
 
-// Component that handles page visibility and preference reload
 function PageVisibilityHandler({ children }) {
-  const { loadUserPrefs } = useUserPreferences()
-  const { setUserImg } = useContext(AuthContext) || {}
+  const { loadUserPreferences } = useContext(AuthContext) || {};
+  const hiddenAt = useRef(null);
 
   useEffect(() => {
-    const handleVisibilityChange = async () => {
-      if (!document.hidden) {
-        const token = localStorage.getItem('token')
-        const userId = localStorage.getItem('userID')
-        
-        if (token && userId) {
-          const prefs = await loadUserPrefs()
-          if (prefs) {
-            if (prefs.ESQUEMACORES) {
-              document.documentElement.setAttribute('data-context', prefs.ESQUEMACORES)
-            }
-            if (prefs.TEMA !== undefined) {
-              const themeValue = prefs.TEMA === true || prefs.TEMA === 'true'
-              document.documentElement.setAttribute('data-theme', themeValue ? 'dark' : 'light')
-            }
-            if (prefs.ICONE && setUserImg) {
-              const iconPath = getIconPathByCode(prefs.ICONE)
-              setUserImg(iconPath)
-            }
-          }
-        }
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        hiddenAt.current = Date.now();
+        return;
       }
-    }
-    
-    document.addEventListener('visibilitychange', handleVisibilityChange)
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
-  }, [loadUserPrefs, setUserImg])
+      const hiddenFor = hiddenAt.current ? Date.now() - hiddenAt.current : 0;
+      hiddenAt.current = null;
+      if (hiddenFor < PREFS_REFRESH_AFTER_MS) return;
 
-  return <>{children}</>
+      const token = localStorage.getItem('token');
+      const userId = localStorage.getItem('userID');
+      if (token && userId && loadUserPreferences) {
+        loadUserPreferences(userId);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [loadUserPreferences]);
+
+  return <>{children}</>;
 }
 
-// Component that uses the hook
 function AppContent() {
-  useSessionTimeout(30)
-  
+  useSessionTimeout(30);
+
   return (
     <>
       <AuthProvider>
@@ -126,7 +57,7 @@ function AppContent() {
           <PreferenceLoader>
             <PageVisibilityHandler>
               <ThemeSync>
-                <RoutesApp/>
+                <RoutesApp />
               </ThemeSync>
             </PageVisibilityHandler>
           </PreferenceLoader>
@@ -144,40 +75,30 @@ function AppContent() {
         pauseOnHover
       />
     </>
-  )
+  );
 }
 
-function App() {
-  const [basename, setBasename] = useState('/salvalucro3');
+const getBasename = () => {
+  const segments = window.location.pathname.split('/').filter((seg) => seg.length > 0);
+  return `/${segments[0] || 'salvalucro3'}`;
+};
 
-  useEffect(() => {
-    // Get the current path from window.location
-    const path = window.location.pathname;
-    
-    // Extract the first segment (tenant name)
-    const pathSegments = path.split('/').filter(seg => seg.length > 0);
-    const tenantPath = pathSegments[0] || 'salvalucro3';
-    
-    // Set basename to the tenant path
-    setBasename(`/${tenantPath}`);
-    
-  }, []);
+function App() {
+  const [basename] = useState(getBasename);
 
   useEffect(() => {
     const handlePageHide = () => {
-      const sensitiveData = ['token', 'refreshToken', 'user']
-      sensitiveData.forEach(key => sessionStorage.removeItem(key))
-    }
-    
-    window.addEventListener('pagehide', handlePageHide)
-    return () => window.removeEventListener('pagehide', handlePageHide)
-  }, [])
+      ['token', 'refreshToken', 'user'].forEach((key) => sessionStorage.removeItem(key));
+    };
+    window.addEventListener('pagehide', handlePageHide);
+    return () => window.removeEventListener('pagehide', handlePageHide);
+  }, []);
 
   return (
     <BrowserRouter basename={basename}>
       <AppContent />
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;

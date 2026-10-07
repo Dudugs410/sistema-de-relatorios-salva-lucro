@@ -1,6 +1,5 @@
 @import '../../styles/variables';
 
-// ===== MAIN LAYOUT WITH BACKGROUND IMAGE =====
 .layout {
     height: 100vh;
     display: flex;
@@ -52,14 +51,12 @@ img.img-header:hover{
     cursor: pointer !important;
   }
   
-  // ===== SIDEBAR WITH COLOR OVERLAY =====
   .sidebar-content {
     flex-shrink: 0;
     position: relative;
     overflow: hidden;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     
-    // Use soft light blend mode for brighter result
     &::before {
       content: '';
       position: absolute;
@@ -77,7 +74,6 @@ img.img-header:hover{
       z-index: 0;
     }
     
-    // Lighter glass-morphism with white tint
     background: rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -88,7 +84,6 @@ img.img-header:hover{
       z-index: 1;
     }
 
-    // Mobile styles
     @media (max-width: 946px) {
       position: fixed;
       left: 0;
@@ -105,7 +100,6 @@ img.img-header:hover{
       }
     }
 
-    // Desktop styles
     @media (min-width: 947px) {
       transform: translateX(0) !important;
       width: 250px;
@@ -167,7 +161,6 @@ img.img-header:hover{
     }
   }
 
-// ===== HAMBURGER BUTTON =====
 .hamburger-button {
     display: none;
     position: fixed;
@@ -197,13 +190,11 @@ img.img-header:hover{
       transform: scale(0.95);
     }
     
-    /* Show only on mobile */
     @media (max-width: 946px) {
       display: flex;
     }
 }
 
-// ===== SIDEBAR OVERLAY =====
 .sidebar-overlay {
     display: none;
     position: fixed;
@@ -215,7 +206,6 @@ img.img-header:hover{
     z-index: 999;
     animation: fadeIn 0.3s ease;
     
-    /* Show only on mobile */
     @media (max-width: 946px) {
       display: block;
     }
@@ -230,7 +220,6 @@ img.img-header:hover{
     }
 }
 
-// ===== RESPONSIVE STYLES =====
 @media screen and (max-width: 768px) {
   .navbar-title > img {
     width: 120px;

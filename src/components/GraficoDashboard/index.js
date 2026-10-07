@@ -45,7 +45,6 @@ const assignColor = (label) => {
   return labelColorMap.get(label);
 };
 
-// Simplified to only 2 display modes
 const DISPLAY_MODES = {
   CURRENCY: 'currency',
   BOTH: 'both'
@@ -503,44 +502,6 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
         </div>
       </div>
       
-    {/* Função: Exibir modal ao clicar em uma fatia do gráfico
-      {showAdmModal && selectedAdm && (
-        <Modal onClose={() => setShowAdmModal(false)}>
-          {tipo === '0' ? (
-            <NewTabelaGenerica
-              array={[selectedAdm]}
-              tableType="vendas"
-              columns={getTableColumns('vendas')}
-              showFilters={false}
-              enableResponsive={true}
-            />
-          ) : tipo === '1' ? (
-            <NewTabelaGenerica
-              array={[selectedAdm]}
-              tableType="creditos"
-              columns={getTableColumns('creditos')}
-              showFilters={false}
-              enableResponsive={true}
-            />
-          ) : tipo === '2' ? (
-            <NewTabelaGenerica
-              array={[selectedAdm]}
-              tableType="servicos"
-              columns={getTableColumns('servicos')}
-              showFilters={false}
-              enableResponsive={true}
-            />
-          ) : (
-            <div className="no-data-message">
-              <p>Dados da adquirente:</p>
-              <p><strong>Nome:</strong> {selectedAdm.adquirente}</p>
-              <p><strong>Valor:</strong> {selectedAdm.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
-              <p><strong>Percentual:</strong> {selectedAdm.percentual}%</p>
-            </div>
-          )}
-        </Modal>
-      )}
-    */}
     </div>
   );
 };

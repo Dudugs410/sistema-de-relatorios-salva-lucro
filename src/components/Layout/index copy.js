@@ -5,7 +5,7 @@ import { FiMail, FiPlusCircle, FiX } from "react-icons/fi"
 import { useEffect, useState } from "react"
 import '../../styles/global.scss'
 import './layout.scss'
-import '../../pages/CadastroDeBancos/cadastroDeBancos.scss'
+import '../../pages/CadastroDeBancos/Bancos.scss'
 import ImageUpload from "../Componente_ImageUpload"
 import SidebarMenu from "../Componente_SidebarMenu"
 
@@ -155,16 +155,6 @@ function Layout({ children }) {
         <SidebarMenu />
         <SeletorCliente />
         {children}
-        {/* lógica do botão CONTATO */}
-        {/*<div className='btn-contato-container'>
-          <button className='btn-global btn-contato' onClick={handleClick}>
-            <span><FiMail size={30} /></span>
-          </button>
-        </div>}
-        <span className='span-plus'><FiPlusCircle size={20} /></span>
-        {isModalOpen && (
-          <Contato />
-        )*/}
         <Footer />
       </div>
     </div>

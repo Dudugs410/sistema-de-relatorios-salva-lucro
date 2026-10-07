@@ -174,7 +174,6 @@ const TabelaIdentity = ({ data, clickRow }) => {
 
   return (
     <div className='dropShadow vendas-view'>
-      {/* Desktop Table */}
       <div className='table-wrapper desktop-only'>
         <table className='table table-no-children table-striped table-hover det-table-global'>
           <thead>
@@ -218,7 +217,6 @@ const TabelaIdentity = ({ data, clickRow }) => {
         </table>
       </div>
       
-      {/* Mobile Card View */}
       <div className='mobile-only'>
         <MobileCardView />
       </div>

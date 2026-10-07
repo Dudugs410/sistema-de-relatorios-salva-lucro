@@ -25,7 +25,6 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutori
   const [currentPath, setCurrentPath] = useState(location.pathname)
   const [currentFilteredData, setCurrentFilteredData] = useState(dataArray)
   
-  // Create ref to access NewTabelaGenerica methods
   const tabelaGenericaRef = useRef(null)
 
   const getTableColumns = useCallback((tableType) => {
@@ -159,7 +158,6 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutori
     }
   }, [currentPath, salesDateRange, creditsDateRange, servicesDateRange])
 
-  // Enhanced export function to use filtered data
   const getExportFunction = useCallback(() => {
     const exportData = async () => {
       if (!tabelaGenericaRef.current) {
@@ -168,7 +166,6 @@ const DisplayData = ({ dataArray, adminDataArray, totals, onGoBack, setRunTutori
       }
 
       try {
-        // Get the currently filtered data from the table
         const currentFilteredData = tabelaGenericaRef.current.getFilteredData()
         const dataToExport = currentFilteredData && currentFilteredData.length > 0 ? currentFilteredData : dataArray
         
@@ -255,7 +252,6 @@ const getTotalUpdateFunction = useCallback(() => {
               totalVoucherTemp += venda.VALORBRUTO
               break
             default:
-              // If produto contains Voucher, add to voucher
               if (produto.includes('Voucher')) {
                 totalVoucherTemp += venda.VALORBRUTO
               }
@@ -286,7 +282,6 @@ const getTotalUpdateFunction = useCallback(() => {
     }
   }, [exportPage, loadTotals])
 
-  // Custom filter configuration for dependent filtering
   const getFilterConfig = useCallback(() => {
     if (!exportPage) return {}
     
@@ -356,14 +351,12 @@ const getTotalUpdateFunction = useCallback(() => {
     }
   }, [location.pathname])
 
-  // Initialize currentFilteredData when dataArray changes
   useEffect(() => {
     if (dataArray && dataArray.length > 0) {
       setCurrentFilteredData(dataArray)
     }
   }, [dataArray])
 
-  // Enhanced table props with ref and proper data handling
   const tableProps = useMemo(() => {
     if (!exportPage || !dataArray || dataArray.length === 0) return null
     
@@ -383,7 +376,6 @@ const getTotalUpdateFunction = useCallback(() => {
     }
   }, [exportPage, dataArray, getTableColumns, getDateRange, getExportFunction, handleTotalUpdate, getFilterConfig])
 
-  // Determine button text based on page type
   const getButtonText = () => {
     switch(currentPath) {
       case '/vendas':
@@ -402,7 +394,6 @@ const getTotalUpdateFunction = useCallback(() => {
       {totals && <TotalModalidadesComp totals={totals} type={exportPage} />}
       {currentPath === '/servicos' && <hr className='hr-global' />}
       
-      {/* Pass the export function and filtered data to GerarRelatorio */}
       <GerarRelatorio 
         className='export' 
         onExport={getExportFunction()}

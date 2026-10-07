@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useContext } from "react"
 import { useNavigate } from "react-router-dom"
 import { AuthContext } from "../../contexts/auth"
-import { getCurrentTenant, getLogoByContext } from '../../util/tenant'
+import { getTenantFromURL, getLogoByContext } from '../../util/tenant'
+import { applyContext, getStoredContext } from '../../util/contextUtils'
 import './login.css'
-import { useContext } from "react"
 import LoadingModal from "./LoadingModal"
+import AccountBlockedModal from "./AccountBlockedModal"
 
 const Login = () => {
     const {
@@ -19,130 +20,120 @@ const Login = () => {
     const [loading, setLoading] = useState(false)
     const [currentLogo, setCurrentLogo] = useState(null)
     const [tenantInfo, setTenantInfo] = useState(null)
+    const [accountBlocked, setAccountBlocked] = useState(false)
 
-    // Função para carregar o tenant e logo
     const loadTenant = () => {
-        // Tenta pegar o contexto do localStorage (para compatibilidade)
-        const savedContext = localStorage.getItem('selectedContext');
-        let logo;
-        let tenant;
-        
-        if (savedContext) {
-            // Se tem contexto salvo, usa ele
-            logo = getLogoByContext(savedContext);
-            tenant = getCurrentTenant();
+        const urlTenant = getTenantFromURL()
+        const storedContext = getStoredContext()
+
+        let resolvedContext
+        let resolvedLogo
+        let resolvedTenant = null
+
+        if (urlTenant) {
+            resolvedContext = urlTenant.contextKey
+            resolvedLogo = urlTenant.logo
+            resolvedTenant = urlTenant
         } else {
-            // Senão, detecta da URL
-            tenant = getCurrentTenant();
-            logo = tenant.logo;
-            // Salva o contexto para consistência
-            localStorage.setItem('selectedContext', tenant.contextKey);
+            resolvedContext = storedContext
+            resolvedLogo = getLogoByContext(storedContext)
         }
-        
-        setTenantInfo(tenant);
-        setCurrentLogo(logo);
-        
-        // Aplica o contexto no DOM
-        const contextToApply = savedContext || tenant?.contextKey || 'SL';
-        document.documentElement.setAttribute('data-context', contextToApply);
-    };
 
-    // Listen for context changes
-    useEffect(() => {
-        const handleContextChange = (event) => {
-            loadTenant();
-        };
-
-        // Carrega logo inicial
-        loadTenant();
-
-        window.addEventListener('contextChange', handleContextChange);
-        
-        return () => {
-            window.removeEventListener('contextChange', handleContextChange);
-        };
-    }, []);
+        setTenantInfo(resolvedTenant)
+        setCurrentLogo(resolvedLogo)
+        if (!localStorage.getItem('token')) {
+            applyContext(resolvedContext)
+        }
+    }
 
     useEffect(() => {
-        if (localStorage.getItem('isSignedIn')) {
-            setIsSignedIn(JSON.parse(localStorage.getItem('isSignedIn')));
+        const handleContextChange = () => loadTenant()
+        loadTenant()
+        window.addEventListener('contextChange', handleContextChange)
+        return () => window.removeEventListener('contextChange', handleContextChange)
+    }, [])
+
+    useEffect(() => {
+        const stored = localStorage.getItem('isSignedIn')
+        if (stored !== null) {
+            setIsSignedIn(JSON.parse(stored))
         }
-    }, []);
+    }, [setIsSignedIn])
 
     useEffect(() => {
         if (isSignedIn === true) {
-            const path = localStorage.getItem('currentPath');
-            if (path !== '/') {
-                navigate(`/${path}`);
-            }
+            const path = localStorage.getItem('currentPath') || '/dashboard'
+            const target = path.startsWith('/') ? path : `/${path}`
+            navigate(target === '/' ? '/dashboard' : target)
         }
-    }, [isSignedIn]);
+    }, [isSignedIn, navigate])
 
     async function handleLogin(e) {
-        e.preventDefault();
-        setLoading(true);
-        await loginApp(login, password);
-        setLoading(false);
-    }
-
-    // Determine the logo class based on tenant
-    const getLogoClass = () => {
-        if (!tenantInfo) return 'img-login';
-        
-        const tenantId = tenantInfo.id;
-        // SuperJur and MG get larger logo
-        if (tenantId === 'SuperJur' || tenantId === 'MG') {
-            return 'img-login img-login-large';
+        e.preventDefault()
+        setLoading(true)
+        try {
+            const result = await loginApp(login, password)
+            if (result?.status === 'blocked') {
+                setPassword('')
+                setAccountBlocked(true)
+            }
+        } finally {
+            setLoading(false)
         }
-        return 'img-login';
-    };
-
-    // Se logo ainda não carregou, mostra placeholder
-    if (!currentLogo) {
-        return <div>Carregando...</div>;
     }
 
-    const logoClass = getLogoClass();
+    const getLogoClass = () => {
+        if (!tenantInfo) return 'img-login'
+        const tenantId = tenantInfo.id
+        if (tenantId === 'SuperJur' || tenantId === 'MG') {
+            return 'img-login img-login-large'
+        }
+        return 'img-login'
+    }
 
-    return(
+    if (!currentLogo) {
+        return <div>Carregando...</div>
+    }
+
+    const logoClass = getLogoClass()
+
+    return (
         <div className='appPage'>
-            <div className='body-login'> 
+            <div className='body-login'>
                 <div className='bg-login'></div>
-                
+
                 <div className='form-wrapper'>
                     <form type='submit' className='form-login' onSubmit={handleLogin}>
-                        <img 
-                            className={logoClass} 
-                            src={currentLogo} 
-                            alt='logo' 
+                        <img
+                            className={logoClass}
+                            src={currentLogo}
+                            alt='logo'
                             onError={(e) => {
-                                console.error('❌ Erro ao carregar logo:', currentLogo);
-                                // Fallback para logo padrão
-                                e.target.src = require('../../assets/LogoTopo.png');
+                                e.target.src = require('../../assets/LogoTopo.png')
                             }}
                         />
                         <div className='input-container-login'>
-                            <input 
-                                id='login' 
-                                className='input-login' 
-                                type='text' 
-                                placeholder='usuário' 
-                                value={login} 
-                                autoComplete="username" 
+                            <input
+                                id='login'
+                                className='input-login'
+                                type='text'
+                                placeholder='usuário'
+                                value={login}
+                                autoComplete="username"
                                 onChange={(e) => setLogin(e.target.value)}
                             />
-                            <input 
-                                id='senha' 
-                                className='input-login' 
-                                type='password' 
-                                placeholder='senha' 
-                                value={password} 
-                                autoComplete="current-password" 
+                            <input
+                                id='senha'
+                                className='input-login'
+                                type='password'
+                                placeholder='senha'
+                                value={password}
+                                autoComplete="current-password"
                                 onChange={(e) => setPassword(e.target.value)}
                             />
                             <hr className='hr-global' />
-                            {!loading ? 
-                                <button type='submit' className='btn btn-primary'>Login</button> : 
+                            {!loading ?
+                                <button type='submit' className='btn btn-primary'>Login</button> :
                                 <button type='submit' className='btn btn-primary' disabled>Login</button>
                             }
                         </div>
@@ -150,8 +141,9 @@ const Login = () => {
                 </div>
             </div>
             {loading && <LoadingModal />}
+            {accountBlocked && <AccountBlockedModal onClose={() => setAccountBlocked(false)} />}
         </div>
-    );
-};
+    )
+}
 
-export default Login;
+export default Login

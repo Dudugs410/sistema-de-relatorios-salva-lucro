@@ -7,12 +7,14 @@ import '../../index.scss'
 import MyCalendar from '../../components/Componente_Calendario'
 import NewDisplayData from '../../components/Component_NewDisplayData'
 import { toast } from 'react-toastify'
-import { FiHelpCircle } from 'react-icons/fi'
 
+
+import { getThemeColor } from '../../util/contextUtils'
+import PageShell from '../../components/PageShell'
+import TutorialButton from '../../components/TutorialButton'
 const Creditos = () => {
   const location = useLocation()
   
-  // Add a ref to track if initial load has happened
   const initialLoadDoneRef = useRef(false)
 
   const resetValues = useCallback(() => {
@@ -25,17 +27,13 @@ const Creditos = () => {
       voucher: 0,
       total: 0
     })
-    // Reset ref
     initialLoadDoneRef.current = false
-    // Reset tutorial state
     setRunTutorial(false)
     
-    // Clear report-specific storage when resetting
     localStorage.removeItem('reportBandeira')
     localStorage.removeItem('reportAdquirente')
   }, [])
 
-  // Clean up report data when component unmounts or route changes
   useEffect(() => {
     return () => {
       localStorage.removeItem('reportBandeira')
@@ -43,7 +41,6 @@ const Creditos = () => {
     }
   }, [])
 
-  // Clear report data when path changes (navigation)
   useEffect(() => {
     localStorage.removeItem('reportBandeira')
     localStorage.removeItem('reportAdquirente')
@@ -77,7 +74,6 @@ const Creditos = () => {
     newLoadTotalCredits
   } = useContext(AuthContext)
 
-  // Format date to YYYY-MM-DD for API
   const formatDateToYYYYMMDD = (date) => {
     if (!date) return ''
     
@@ -100,7 +96,6 @@ const Creditos = () => {
     return ''
   }
 
-  // Load data using the new API
   async function handleLoadData(e) {
     e.preventDefault()
     try {
@@ -119,23 +114,18 @@ const Creditos = () => {
 
   async function loadData() {
     try {
-      // Get dates from creditsDateRange
       const startDate = creditsDateRange[0]
       const endDate = creditsDateRange[1]
       
-      // Format dates for API
       const formattedStartDate = formatDateToYYYYMMDD(startDate)
       const formattedEndDate = formatDateToYYYYMMDD(endDate)
       
-      // Store formatted dates in localStorage for export
       localStorage.setItem('dataInicial', formattedStartDate)
       localStorage.setItem('dataFinal', formattedEndDate)
       
-      // Call the new API function
       const creditsData = await newLoadCredits(formattedStartDate, formattedEndDate)
       
       if (creditsData && creditsData.length > 0) {
-        // Calculate totals by produto
         let totalCredito = 0
         let totalDebito = 0
         let totalVoucher = 0
@@ -165,11 +155,9 @@ const Creditos = () => {
         
         setCreditsTotal(totals)
         
-        // Group by admin for the admin table
         const groupedData = newGroupByAdminCredits(creditsData)
         setCreditsPageAdminArray(groupedData)
         
-        // Set the main data array
         setCreditsPageArray(creditsData)
       } else {
         setCreditsPageArray([])
@@ -191,7 +179,6 @@ const Creditos = () => {
     }
   }
 
-  // Update admin array when creditsPageArray changes - ONLY ONCE
   useEffect(() => {
     if (creditsPageArray && creditsPageArray.length > 0 && !initialLoadDoneRef.current) {
       const groupedData = newGroupByAdminCredits(creditsPageArray)
@@ -204,7 +191,6 @@ const Creditos = () => {
     setCreditsDateRange(dateRange)
   }
 
-  // Joyride state
   const [runTutorial, setRunTutorial] = useState(false)
   const [tutorialSteps, setTutorialSteps] = useState([
     {
@@ -285,12 +271,7 @@ const Creditos = () => {
   }
 
   return (
-    <div className='page-content-vendas'>
-      <div className='vendas-title-container'>
-        <h1 className='vendas-title'>Calendário de Créditos</h1>
-      </div>
-      <hr className='hr-global' />
-      <div className='component-container-vendas' data-tour="calendario-section">
+    <PageShell title='Calendário de Créditos' tour="calendario-section">
         {creditsPageArray !== null ?
           (creditsPageArray.length > 0 ? (
             <NewDisplayData
@@ -304,11 +285,10 @@ const Creditos = () => {
               tutorialSteps={tutorialSteps}
               listaBandeiras={listaBandeiras}
               listaAdministradoras={listaAdministradoras}
-              showSelects={false} // Hide selects when data is shown
+              showSelects={false}
             />
           ) : (
             <>
-              {/* Joyride for calendar view */}
               {runTutorial && (
                 <Joyride
                   steps={tutorialSteps}
@@ -320,7 +300,7 @@ const Creditos = () => {
                   scrollOffset={80}
                   styles={{
                     options: {
-                      primaryColor: '#99cc33',
+                      primaryColor: getThemeColor('--highlight-color', '#99cc33'),
                       textColor: '#0a3d70',
                       zIndex: 10000,
                     }
@@ -352,7 +332,7 @@ const Creditos = () => {
                 tutorialSteps={tutorialSteps}
                 listaBandeiras={listaBandeiras}
                 listaAdministradoras={listaAdministradoras}
-                showSelects={true} // Show selects when no data
+                showSelects={true}
                 onSearch={handleLoadData}
                 isSearching={btnDisabledCredits}
               />
@@ -364,31 +344,13 @@ const Creditos = () => {
             </>
           )
         ) : null}
-        <button
-          className='btn btn-success-dados btn-tutorial px-2 py-1'
-          onClick={() => {
+        <TutorialButton onStart={() => {
             setRunTutorial(false);
             setTimeout(() => {
               setRunTutorial(true);
             }, 50);
-          }}
-          style={{
-            position: 'relative',
-            bottom: '0px',
-            right: '-10px',
-            zIndex: 10,
-            padding: '10px 15px',
-            background: 'none',
-            color: '#99cc33',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer'
-          }}
-        >
-          <FiHelpCircle />
-        </button>
-      </div>
-    </div>
+          }} />
+    </PageShell>
   )
 }
 

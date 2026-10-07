@@ -1,4 +1,3 @@
-// MyCalendar.jsx
 import React, { useContext, useEffect, useState } from "react"
 import Calendar from "react-calendar"
 import { AuthContext } from "../../contexts/auth"
@@ -24,7 +23,6 @@ const MyCalendar = (props) => {
   const [allowRange, setAllowRange] = useState(true)
   const [showPesquisar, setShowPesquisar] = useState(true)
 
-  // Define routes with their specific behaviors
   const routesWithoutPesquisar = [
     '/creditos-data-banco',
     '/previsao-recebimento',
@@ -70,14 +68,12 @@ const MyCalendar = (props) => {
     setDateSysmo(date)
   }
 
-  // Define routes that should show the "Exportar relatório" message instead of "Executar busca"
   const routesWithExportMessage = [
     '/creditos-data-banco',
     '/previsao-recebimento',
     '/resumo-mensal'
   ]
 
-  // Get the text for the info message
   const getInfoText = () => {
     if (routesWithExportMessage.includes(location.pathname)) {
       if (dateRange[0].toLocaleDateString('pt-BR') !== dateRange[1].toLocaleDateString('pt-BR')) {
@@ -94,7 +90,6 @@ const MyCalendar = (props) => {
     }
   }
 
-  //date-range-picker
   const MyDatePicker = () => {
     return (
       <div className='form-container-picker'>

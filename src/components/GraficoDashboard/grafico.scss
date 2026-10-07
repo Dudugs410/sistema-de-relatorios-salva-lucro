@@ -75,7 +75,7 @@
     }
     
     &:hover {
-      background-color: rgba(153, 204, 51, 0.1);
+      background-color: rgba(var(--highlight-color-rgb), 0.1);
     }
     
     &.hidden {
@@ -125,10 +125,6 @@
 }
 
 .chart-controls {
-  /* position: absolute; */
-  /* top: -40px; */
-  /* right: 0; */
-  /* z-index: 5; */
   display: flex;
   gap: 8px;
   flex-direction: row-reverse;
@@ -155,8 +151,8 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   
   &:hover {
-    background: rgba(153, 204, 51, 0.1);
-    border-color: #99cc33;
+    background: rgba(var(--highlight-color-rgb), 0.1);
+    border-color: var(--highlight-color);
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   }
@@ -168,7 +164,7 @@
 
 .toggle-icon {
   font-size: 16px;
-  color: #99cc33;
+  color: var(--highlight-color);
 }
 
 .toggle-label {
@@ -205,7 +201,7 @@
       }
       
       &:hover {
-        background-color: rgba(153, 204, 51, 0.2);
+        background-color: rgba(var(--highlight-color-rgb), 0.2);
       }
     }
     
@@ -246,10 +242,7 @@
   }
 }
 
-// ALL SIZES UP TO 1399px - SAME STYLING
-// This includes desktop, tablets, and mobile
 
-// Tablet and smaller desktop
 @media (max-width: 992px) {
   .chart-container {
     height: 450px;
@@ -261,7 +254,6 @@
   }
 }
 
-// Mobile (stack layout)
 @media (max-width: 768px) {
   .chart-container {
     height: 550px;
@@ -280,7 +272,7 @@
       
       .legend-item {
         .legend-text {
-          font-size: 11px; // Smaller for mobile
+          font-size: 11px;
         }
       }
     }
@@ -306,7 +298,6 @@
   }
 }
 
-// Extra small mobile (≤480px)
 @media (max-width: 480px) {
   .chart-container {
     height: 600px;
@@ -316,7 +307,7 @@
       
       .legend-item {
         .legend-text {
-          font-size: 10px; // Extra small for very small screens
+          font-size: 10px;
         }
       }
     }
@@ -327,6 +318,3 @@
     }
   }
 }
-
-// Large screens (≥1400px) - KEEP SAME AS UP TO 1399px
-// No special styling needed - same as desktop

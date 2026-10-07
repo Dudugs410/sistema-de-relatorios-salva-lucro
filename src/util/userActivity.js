@@ -1,10 +1,9 @@
-// userActivity.js
 
 import { useEffect, useRef } from 'react';
 
-const THROTTLE_INTERVAL = 10 * 60 * 1000; // 10 minutes
-const TOKEN_EXPIRATION_THRESHOLD = 10 * 60 * 1000; // Show modal 10 minutes before token expires
-const TOKEN_EXPIRATION_TIME = 120 * 60 * 1000; // 2 hours (7200 seconds)
+const THROTTLE_INTERVAL = 10 * 60 * 1000;
+const TOKEN_EXPIRATION_THRESHOLD = 10 * 60 * 1000;
+const TOKEN_EXPIRATION_TIME = 120 * 60 * 1000;
 
 export function useUserActivity(onActive, onIdle, idleTimeout = 10 * 60 * 1000, onExpiryWarning) {
   const lastActivityTimeRef = useRef(Date.now());
@@ -16,10 +15,9 @@ export function useUserActivity(onActive, onIdle, idleTimeout = 10 * 60 * 1000, 
   const updateActivity = () => {
     lastActivityTimeRef.current = Date.now();
 
-    // Check if enough time has passed to allow a refresh
     if (Date.now() - lastRefreshTimeRef.current > THROTTLE_INTERVAL) {
-      onActive(); // Trigger the refresh if allowed
-      lastRefreshTimeRef.current = Date.now(); // Update the last refresh time
+      onActive();
+      lastRefreshTimeRef.current = Date.now();
     }
 
     resetIdleCheck();
@@ -42,7 +40,7 @@ export function useUserActivity(onActive, onIdle, idleTimeout = 10 * 60 * 1000, 
     const timeUntilExpiration = TOKEN_EXPIRATION_TIME - timeSinceLastRefresh;
 
     if (timeUntilExpiration <= TOKEN_EXPIRATION_THRESHOLD) {
-      onExpiryWarning(); // Trigger modal 10 minutes before token expires
+      onExpiryWarning();
     }
   };
 
@@ -50,7 +48,6 @@ export function useUserActivity(onActive, onIdle, idleTimeout = 10 * 60 * 1000, 
     const currentTime = Date.now();
     const timeSinceLastActivity = currentTime - lastActivityTimeRef.current;
     const timeLeftUntilIdle = Math.max((idleTimeout - timeSinceLastActivity) / 1000, 0);
-    //console.log(`Time left until idle: ${timeLeftUntilIdle.toFixed(0)} seconds`);
   };
 
   useEffect(() => {
@@ -59,7 +56,7 @@ export function useUserActivity(onActive, onIdle, idleTimeout = 10 * 60 * 1000, 
 
     resetIdleCheck();
     checkForExpiryWarning();
-    logInterval.current = setInterval(logTimeLeftUntilIdle, 5000); // Log every 5 seconds
+    logInterval.current = setInterval(logTimeLeftUntilIdle, 5000);
 
     return () => {
       events.forEach((event) => window.removeEventListener(event, updateActivity));

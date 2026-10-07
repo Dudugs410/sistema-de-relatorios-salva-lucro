@@ -8,7 +8,6 @@
 .seletor-adq-container {
   width: 100%;
   display: flex;
-  /* width: fit-content; */
   justify-content: space-evenly;
   flex-direction: column;
   flex-wrap: wrap;
@@ -22,4 +21,4 @@
   width: 60%;
   padding: 5px;
   border-radius: 10px;
-}/*# sourceMappingURL=tabelaVendasAdq.css.map */
+}

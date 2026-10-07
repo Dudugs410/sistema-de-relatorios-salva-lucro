@@ -286,7 +286,6 @@ const TabelaInvestments = ({ data, clickRow, loadTransactions }) => {
         </div>
       )}
       
-      {/* Desktop Table */}
       <div className='table-wrapper desktop-only'>
         <table className='table table-striped table-hover det-table-global'>
           <thead>
@@ -378,7 +377,6 @@ const TabelaInvestments = ({ data, clickRow, loadTransactions }) => {
           </tbody>
         </table>
       </div>
-      {/* Mobile Card View */}
       <div className='mobile-only'>
         <MobileCardView />
       </div>

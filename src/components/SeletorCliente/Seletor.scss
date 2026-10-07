@@ -212,7 +212,6 @@
   }
 }
 
-// Spinner animation
 .spinner-border {
   display: inline-block;
   width: 1rem;
@@ -230,7 +229,6 @@
   }
 }
 
-// Responsive adjustments
 @media (max-width: 640px) {
   .selector-container {
     width: 95%;
@@ -263,7 +261,6 @@
   }
 }
 
-// Dark mode support
 @media (prefers-color-scheme: dark) {
   .selector-container {
     background: #1f2937;

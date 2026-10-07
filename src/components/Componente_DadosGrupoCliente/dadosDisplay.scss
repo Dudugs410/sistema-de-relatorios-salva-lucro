@@ -7,8 +7,6 @@
     align-items: stretch;
     position: relative;
     
-    // EXACT SAME PATTERN AS HEADER AND SIDEBAR
-    // Background with primary color overlay using pseudo-element
     &::before {
       content: '';
       position: absolute;
@@ -26,13 +24,11 @@
       z-index: 0;
     }
     
-    // Glass-morphism effect on top of the colored background
     background: rgba(0, 0, 0, 0.15);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     
-    // Ensure all children appear above the background
     > * {
       position: relative;
       z-index: 1;

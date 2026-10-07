@@ -1,4 +1,3 @@
-// src/pages/CreditosDataBanco/index.js
 import { useEffect, useContext, useState, useCallback } from 'react'
 import Select from 'react-select'
 import '../Vendas/vendas.scss'
@@ -8,9 +7,13 @@ import { useLocation } from 'react-router-dom'
 import '../../index.scss'
 import MyCalendar from '../../components/Componente_Calendario'
 import { toast } from 'react-toastify'
-import { FiHelpCircle, FiFilePlus } from 'react-icons/fi'
+import { FiFilePlus } from 'react-icons/fi'
 import api from '../../services/api'
 
+import { getThemeColor } from '../../util/contextUtils'
+import PageShell from '../../components/PageShell'
+import TutorialButton from '../../components/TutorialButton'
+import { selectStyles, selectTheme } from '../../util/selectStyles'
 const PrevisaoRecebimentos = () => {
   const location = useLocation()
 
@@ -61,7 +64,6 @@ const PrevisaoRecebimentos = () => {
     creditsDateRange, setCreditsDateRange
   } = useContext(AuthContext)
 
-  // Format date to YYYY-MM-DD for API
   const formatDateToYYYYMMDD = (date) => {
     if (!date) return ''
     
@@ -79,14 +81,12 @@ const PrevisaoRecebimentos = () => {
     return ''
   }
 
-  // Get the request object for API
   const getRequestObject = (format) => {
     const cliente = JSON.parse(localStorage.getItem('selectedClientBody'))
     const grupo = JSON.parse(localStorage.getItem('selectedGroupBody'))
     const bandeiraObj = JSON.parse(localStorage.getItem('selectedBanCredits')) || ''
     const adquirenteObj = JSON.parse(localStorage.getItem('selectedAdmCredits')) || ''
     
-    // Get clientes string
     let clientesString = ""
     
     if (cliente && cliente.label === 'TODOS') {
@@ -106,7 +106,6 @@ const PrevisaoRecebimentos = () => {
     const ban = bandeiraObj?.codigoBandeira || ''
     const adq = adquirenteObj?.codigoAdquirente || ''
 
-    // Get dates from dateRange or creditsDateRange
     let dataInicial = ''
     let dataFinal = ''
     
@@ -127,12 +126,11 @@ const PrevisaoRecebimentos = () => {
       adquirente: adq,
       produto: '',
       modalidade: '',
-      arquivo: format, // 'PDF' or 'XLSX'
+      arquivo: format,
       modelo: 'FLUXO'
     }
   }
 
-  // Generic download function using the API
   const downloadReport = async (format) => {
     setDownloading(true)
     
@@ -142,7 +140,6 @@ const PrevisaoRecebimentos = () => {
       const response = await api.post('relatorios/detalhado', requestObject)
       
       if (response.data.success === true && response.data.formato === format) {
-        // Convert base64 to blob and download
         const binaryData = atob(response.data.base64)
         const arrayBuffer = new ArrayBuffer(binaryData.length)
         const uint8Array = new Uint8Array(arrayBuffer)
@@ -160,7 +157,6 @@ const PrevisaoRecebimentos = () => {
         const a = document.createElement('a')
         a.href = url
         
-        // Create filename with date range
         let startDateStr = ''
         let endDateStr = ''
         
@@ -203,12 +199,10 @@ const PrevisaoRecebimentos = () => {
     }
   }
 
-  // Excel download handler
   const handleExcelDownload = async () => {
     await downloadReport('XLSX')
   }
 
-  // PDF download handler
   const handlePDFDownload = async () => {
     await downloadReport('PDF')
   }
@@ -218,19 +212,16 @@ const PrevisaoRecebimentos = () => {
     setCreditsDateRange(dateRange)
   }
 
-  // Get the selected option object for Adquirente
   const getSelectedAdminOption = () => {
     if (!administradora || listaAdministradoras.length === 0) return null
     return listaAdministradoras.find(option => option.codigoAdquirente === administradora)
   }
 
-  // Get the selected option object for Bandeira
   const getSelectedBanOption = () => {
     if (!bandeira || listaBandeiras.length === 0) return null
     return listaBandeiras.find(option => option.codigoBandeira === bandeira)
   }
 
-  // Joyride state
   const [runTutorial, setRunTutorial] = useState(false)
   const [steps, setSteps] = useState([
     {
@@ -256,15 +247,7 @@ const PrevisaoRecebimentos = () => {
   }
 
   return (
-    <div className='appPage'>
-      <div className='page-vendas-background'>
-        <div className='page-content-vendas'>
-          <div className='vendas-title-container'>
-            <h1 className='vendas-title'>Previsão de Recebimentos</h1>
-          </div>
-          <hr className='hr-global' />
-          
-          <div className='component-container-vendas'>
+    <PageShell title='Previsão de Recebimentos'>
             {runTutorial &&
               <Joyride
                 steps={steps}
@@ -276,7 +259,7 @@ const PrevisaoRecebimentos = () => {
                 scrollOffset={80}
                 styles={{
                   options: {
-                    primaryColor: '#99cc33',
+                    primaryColor: getThemeColor('--highlight-color', '#99cc33'),
                     textColor: '#0a3d70',
                     zIndex: 10000,
                   }
@@ -297,10 +280,9 @@ const PrevisaoRecebimentos = () => {
               />
             }
             
-            {/* Filters Section - exactly like Creditos page */}
-            <div data-tour="select-container-calendario" className='select-container-calendario'>
-              <div className='select-wrapper'>
-                <h5>Adquirente</h5>
+            <div data-tour="select-container-calendario" className='page-filters'>
+              <div className='page-filter'>
+                <h5 className='page-filter__label'>Adquirente</h5>
                 <Select
                   className='seletor-adq-select fixed-width-select'
                   id='adquirente'
@@ -313,35 +295,12 @@ const PrevisaoRecebimentos = () => {
                   menuPosition="fixed"
                   placeholder="Selecione uma adquirente..."
                   isClearable={true}
-                  styles={{
-                    control: (base) => ({
-                      ...base,
-                      minWidth: 250,
-                      width: '100%',
-                    }),
-                    menu: (base) => ({
-                      ...base,
-                      minWidth: 250,
-                      width: '100%',
-                    }),
-                    valueContainer: (base) => ({
-                      ...base,
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                    }),
-                    singleValue: (base) => ({
-                      ...base,
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      maxWidth: '90%',
-                    }),
-                  }}
+                  styles={selectStyles}
+                  theme={selectTheme}
                 />
               </div>
-              <div className='select-wrapper'>
-                <h5>Bandeira</h5>
+              <div className='page-filter'>
+                <h5 className='page-filter__label'>Bandeira</h5>
                 <Select
                   className='seletor-adq-select fixed-width-select'
                   id='bandeira'
@@ -354,44 +313,19 @@ const PrevisaoRecebimentos = () => {
                   menuPosition="fixed"
                   placeholder="Selecione uma bandeira..."
                   isClearable={true}
-                  styles={{
-                    control: (base) => ({
-                      ...base,
-                      minWidth: 250,
-                      width: '100%',
-                    }),
-                    menu: (base) => ({
-                      ...base,
-                      minWidth: 250,
-                      width: '100%',
-                    }),
-                    valueContainer: (base) => ({
-                      ...base,
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                    }),
-                    singleValue: (base) => ({
-                      ...base,
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      maxWidth: '90%',
-                    }),
-                  }}
+                  styles={selectStyles}
+                  theme={selectTheme}
                 />
               </div>
             </div>
 
-            {/* Calendar Section */}
             <div data-tour="calendario-section">
               <MyCalendar 
                 getCalendarDate={handleDateRangeChange}
               />
             </div>
 
-            {/* Export Buttons Section - exactly like GerarRelatorio */}
-            <div data-tour="exportacao-section" className='container' style={{ marginTop: '0px' }}>
+            <div data-tour="exportacao-section" className='export-area'>
               <div className='export-column'>
                 <button 
                   className="btn btn-exportar btn-exportar-excel" 
@@ -412,28 +346,8 @@ const PrevisaoRecebimentos = () => {
               </div>
             </div>
 
-            <button 
-              className='btn btn-success-dados btn-tutorial px-2 py-1'
-              onClick={() => setRunTutorial(true)}
-              style={{
-                position: 'relative',
-                bottom: '0px',
-                right: '-10px',
-                zIndex: 10,
-                padding: '10px 15px',
-                background: 'none',
-                color: '#99cc33',
-                border: 'none',
-                borderRadius: '5px',
-                cursor: 'pointer'
-              }}
-            >
-              <FiHelpCircle />
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+            <TutorialButton onStart={() => setRunTutorial(true)} />
+    </PageShell>
   )
 }
 

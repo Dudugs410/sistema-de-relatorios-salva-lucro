@@ -6,10 +6,9 @@ import { LiaFileInvoiceDollarSolid } from "react-icons/lia";
 import { Collapse, Nav, Navbar, NavItem, NavLink } from 'reactstrap'
 import { AuthContext } from '../../contexts/auth'
 import { useNavigate, useLocation } from 'react-router-dom'
-import api from '../../services/api';
+import { fetchMenuOptions } from '../../services/authService';
 import { getTenantFromURL } from '../../util/tenant';
 
-// Icon mapping object - maps icon names from API to React Icon components
 const iconComponentMap = {
     'FiHome': FiHome,
     'FiDollarSign': FiDollarSign,
@@ -33,6 +32,22 @@ const iconComponentMap = {
     'LiaFileInvoiceDollarSolid': LiaFileInvoiceDollarSolid,
 };
 
+const MENU_CACHE_KEY = 'options'
+
+const extractMenuList = (data) => {
+    if (Array.isArray(data)) return data
+    if (Array.isArray(data?.data)) return data.data
+    return null
+}
+
+const readCachedMenus = () => {
+    try {
+        return extractMenuList(JSON.parse(localStorage.getItem(MENU_CACHE_KEY)))
+    } catch {
+        return null
+    }
+}
+
 const Sidebar = () => {
     const [optionsWithIcons, setOptionsWithIcons] = useState([])
     const [activeParent, setActiveParent] = useState(null)
@@ -41,32 +56,15 @@ const Sidebar = () => {
     const [currentTenant, setCurrentTenant] = useState(null)
     const [logoError, setLogoError] = useState(false)
     
-    const { currentLogo, currentContext, user } = useContext(AuthContext)
+    const { currentLogo, currentContext } = useContext(AuthContext)
 
     const navigate = useNavigate()
     const location = useLocation()
 
-    // Get current tenant on mount
     useEffect(() => {
-        const tenant = getTenantFromURL();
-        setCurrentTenant(tenant);
-        
-        const currentContextAttr = document.documentElement.getAttribute('data-context');
-        if (!currentContextAttr) {
-            const defaultContext = 'salvalucro';
-            document.documentElement.setAttribute('data-context', defaultContext);
-            localStorage.setItem('userContext', defaultContext);
-        }
-        
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        if (!currentTheme) {
-            const defaultTheme = 'light';
-            document.documentElement.setAttribute('data-theme', defaultTheme);
-            localStorage.setItem('userTheme', defaultTheme);
-        }
+        setCurrentTenant(getTenantFromURL());
     }, []);
 
-    // Function to get icon component from API icon name
     const getIconFromApi = (iconName) => {
         if (!iconName || iconName.trim() === '') {
             return null;
@@ -90,7 +88,6 @@ const Sidebar = () => {
         return icon || null;
     }
 
-    // Fallback icon mapping for when API doesn't provide icons
     const getFallbackIconForMenu = (menuName) => {
         const fallbackIconMap = {
             'Dashboard': FiHome,
@@ -150,7 +147,7 @@ const Sidebar = () => {
 
     const transformMenuData = (menuData) => {
         if (!menuData || !Array.isArray(menuData)) return []
-        
+
         return menuData
             .filter(item => item.parentId === 0)
             .map(parent => {
@@ -203,65 +200,30 @@ const Sidebar = () => {
             .filter(item => item !== null)
     }
 
-    const testDirectFetch = () => {
-        const testUserId = localStorage.getItem('userId') || '167561'
-        
-        fetch(`https://app.salvalucro.com.br/api/v1/Menu?codigo=${testUserId}`)
-            .then(response => response.json())
-            .then(data => {
-                const transformed = transformMenuData(data)
-                setOptionsWithIcons(transformed)
-                setLoading(false)
-            })
-            .catch(error => {
-                console.error('TEST: Direct fetch failed:', error)
-                setLoading(false)
-            })
-    }
-
     const fetchMenus = async () => {
+        const userId = localStorage.getItem('userID')
+        if (!userId) {
+            setOptionsWithIcons([])
+            setLoading(false)
+            return
+        }
         try {
-            setLoading(true)
-            
-            let userId = null
-            
-            if (user && user.id) {
-                userId = user.id
-            } else if (localStorage.getItem('userId')) {
-                userId = localStorage.getItem('userId')
-            } else if (localStorage.getItem('user')) {
-                try {
-                    const userObj = JSON.parse(localStorage.getItem('user'))
-                    userId = userObj.id || userObj.userId
-                } catch (e) {
-                    console.error('Error parsing user from localStorage', e)
-                }
-            }
-            
-            if (!userId) {
-                userId = '167561'
-            }
-            
-            const response = await api.get(`/Menu?codigo=${userId}`)
-            
-            if (response.data && Array.isArray(response.data)) {
-                const transformedMenus = transformMenuData(response.data)
-                setOptionsWithIcons(transformedMenus)
-            } else if (response.data && response.data.data && Array.isArray(response.data.data)) {
-                const transformedMenus = transformMenuData(response.data.data)
-                setOptionsWithIcons(transformedMenus)
-            } else {
-                setOptionsWithIcons([])
-            }
+            const menus = extractMenuList(await fetchMenuOptions(userId)) || []
+            localStorage.setItem(MENU_CACHE_KEY, JSON.stringify(menus))
+            setOptionsWithIcons(transformMenuData(menus))
         } catch (error) {
             console.error('Error fetching menus:', error)
-            testDirectFetch()
         } finally {
             setLoading(false)
         }
     }
 
     useEffect(() => {
+        const cached = readCachedMenus()
+        if (cached) {
+            setOptionsWithIcons(transformMenuData(cached))
+            setLoading(false)
+        }
         fetchMenus()
     }, [])
 
@@ -275,7 +237,6 @@ const Sidebar = () => {
         });
     };
 
-    // ===== LOGO RENDERING LOGIC =====
     const shouldUseColorMask = () => {
         return currentTenant?.path === 'salvalucro3';
     };
@@ -406,7 +367,7 @@ const Sidebar = () => {
                             <div className="text-muted" style={{ color: 'var(--sidebar-font-color, #ffffff)' }}>
                                 Nenhum menu disponível
                             </div>
-                            <button onClick={testDirectFetch} className="btn btn-sm btn-primary mt-2">
+                            <button onClick={fetchMenus} className="btn btn-sm btn-primary mt-2">
                                 Recarregar Menu
                             </button>
                         </div>

@@ -1,0 +1,221 @@
+.page {
+  width: 95%;
+  margin: 10px auto 54px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 20px;
+  background-color: var(--background-color);
+  color: var(--font-color);
+  transition: background-color 0.4s, color 0.4s;
+  min-width: 0;
+}
+
+.page__title-bar {
+  width: 100%;
+  padding: 10px 16px;
+  border-radius: 20px;
+  text-align: center;
+  background-color: var(--secondary-color);
+  transition: background-color 0.4s;
+}
+
+.page__title {
+  margin: 0;
+  font-size: clamp(1.4rem, 1rem + 1.6vw, 2.4rem);
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+  color: var(--on-secondary-color, var(--primary-color));
+  transition: color 0.4s;
+}
+
+.page__body {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-filters {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 16px 20px;
+  margin-bottom: 12px;
+}
+
+.page-filter {
+  flex: 1 1 250px;
+  max-width: 350px;
+  min-width: 0;
+}
+
+.page-filter__label {
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--font-color);
+}
+
+.tutorial-button {
+  position: fixed;
+  right: 20px;
+  bottom: 45px;
+  z-index: 1000;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid var(--highlight-color);
+  border-radius: 50%;
+  font-size: 1.3rem;
+  color: var(--highlight-color);
+  background-color: var(--background-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s, color 0.2s;
+
+  &:hover {
+    transform: scale(1.05);
+    color: var(--on-highlight-color);
+    background-color: var(--highlight-color);
+  }
+}
+
+.floating-button-container {
+  position: fixed;
+  bottom: 45px;
+  left: 20px;
+  z-index: 1000;
+
+  @media (max-width: 480px) {
+    bottom: 15px;
+    left: 15px;
+  }
+}
+
+.btn-floating-new-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  border: 2px solid var(--primary-color);
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--on-secondary-color, var(--primary-color));
+  background-color: var(--secondary-color);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    filter: brightness(0.95);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .floating-button-icon {
+    font-size: 18px;
+  }
+
+  .floating-button-text {
+    white-space: nowrap;
+  }
+
+  @media (max-width: 768px) {
+    padding: 8px 16px;
+    font-size: 13px;
+
+    .floating-button-icon {
+      font-size: 14px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 6px 12px;
+    gap: 6px;
+    font-size: 12px;
+  }
+}
+
+.react-calendar--doubleView {
+  max-width: 100%;
+}
+
+@media (max-width: 869px) {
+  .page {
+    width: 100%;
+    margin: 0 0 80px;
+    padding: 8px;
+    border-radius: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .page-filter {
+    flex-basis: auto;
+    max-width: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .page__title-bar {
+    padding: 8px 12px;
+    border-radius: 12px;
+  }
+
+  .tutorial-button {
+    right: 15px;
+    bottom: 15px;
+    width: 40px;
+    height: 40px;
+  }
+}
+
+.export-area {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px 20px;
+  padding-bottom: 13px;
+
+  .export-column {
+    flex: 1 1 220px;
+    max-width: 320px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .btn-exportar {
+    width: 100%;
+    max-width: none !important;
+    margin-left: 0 !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .export-area {
+    flex-direction: column;
+    align-items: stretch;
+
+    .export-column {
+      max-width: none;
+    }
+  }
+}

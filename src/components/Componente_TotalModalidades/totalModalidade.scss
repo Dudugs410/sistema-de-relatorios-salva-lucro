@@ -7,7 +7,6 @@
     justify-content: flex-start;
 }
 
-// Add specific class for single box (services)
 .content-container-modalidade.single-box {
     justify-content: center;
     
@@ -69,12 +68,30 @@
     font-weight: bold;
 }
 
+.highlight-modalidade,
+.income-modalidade,
+.expense-modalidade{
+    transition: all .4s;
+    font-weight: bold;
+}
+
+.highlight-modalidade{
+    color: var(--highlight-color);
+}
+
+.income-modalidade{
+    color: rgb(0, 163, 0);
+}
+
+.expense-modalidade{
+    color: rgb(218, 100, 100);
+}
+
 .valor-total{
     color: white;
     text-shadow: 1px 2px 2px rgba(0,0,0,0.6);
 }
 
-// Tablet responsive (769px to 1024px)
 @media screen and (min-width: 769px) and (max-width: 1024px) {
     .content-container-modalidade {
         flex-wrap: wrap;
@@ -88,7 +105,6 @@
         max-width: calc(25% - 10px);
     }
     
-    // For services single box
     .content-container-modalidade.single-box {
         .total-container-modalidade {
             max-width: 350px;
@@ -101,7 +117,6 @@
     }
 }
 
-// Mobile landscape (481px to 768px)
 @media screen and (min-width: 481px) and (max-width: 768px) {
     .content-container-modalidade {
         display: grid;
@@ -116,7 +131,6 @@
         padding: 10px;
     }
     
-    // For services single box - center it and make it full width on mobile
     .content-container-modalidade.single-box {
         display: flex;
         justify-content: center;
@@ -141,7 +155,6 @@
     }
 }
 
-// Mobile portrait (up to 480px)
 @media screen and (max-width: 480px) {
     .content-container-modalidade {
         display: grid;
@@ -156,7 +169,6 @@
         padding: 8px;
     }
     
-    // For services single box - full width on small screens
     .content-container-modalidade.single-box {
         display: flex;
         justify-content: center;
@@ -186,7 +198,6 @@
     }
 }
 
-// Small mobile (up to 360px)
 @media screen and (max-width: 360px) {
     .total-container-modalidade {
         min-height: 70px;

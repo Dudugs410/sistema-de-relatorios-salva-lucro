@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react'
 import { useDropzone } from 'react-dropzone'
 import Webcam from 'react-webcam'
-import './ImageUpload.scss' // Import the SCSS file
+import './ImageUpload.scss'
 
 const ImageUpload = ({ onUpload }) => {
   const [selectedFiles, setSelectedFiles] = useState([])
@@ -32,7 +32,7 @@ const ImageUpload = ({ onUpload }) => {
   })
 
   const toggleWebcam = (event) => {
-    event.preventDefault() // Prevent form submission
+    event.preventDefault()
     if (selectedFiles.length >= 5) {
       alert('You can upload a maximum of 5 images.')
       return
@@ -43,7 +43,7 @@ const ImageUpload = ({ onUpload }) => {
   const webcamRef = useRef(null)
 
   const capture = useCallback((event) => {
-    event.preventDefault() // Prevent form submission
+    event.preventDefault()
     if (selectedFiles.length >= 5) {
       alert('You can upload a maximum of 5 images.')
       return

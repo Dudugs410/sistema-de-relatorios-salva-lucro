@@ -1,33 +1,26 @@
-// src/components/ThemeSync.jsx
 import { useContext, useEffect } from 'react';
 import { AuthContext } from '../../contexts/auth';
-
+import { applyContext, applyTheme, getStoredContext, getStoredTheme } from '../../util/contextUtils';
 
 const ThemeSync = ({ children }) => {
-  const { currentContext } = useContext(AuthContext);
-  
-  // This effect runs whenever currentContext changes in React
+  const { currentContext } = useContext(AuthContext) || {};
+
   useEffect(() => {
-    if (currentContext) {
-      // Get current HTML attribute value
-      const htmlContext = document.documentElement.getAttribute('data-context');
-      
-      // If they don't match, force sync
-      if (htmlContext !== currentContext) {
-        document.documentElement.setAttribute('data-context', currentContext);
-      }
-      
-      // Also ensure theme is synced from localStorage
-      const savedTheme = localStorage.getItem('appTheme');
-      if (savedTheme) {
-        const htmlTheme = document.documentElement.getAttribute('data-theme');
-        if (htmlTheme !== savedTheme) {
-          document.documentElement.setAttribute('data-theme', savedTheme);
-        }
-      }
+    const stored = getStoredContext();
+    if (currentContext && currentContext !== stored) {
+      applyContext(currentContext);
+      return;
+    }
+    if (!currentContext) {
+      applyContext(stored);
     }
   }, [currentContext]);
-  
+
+  useEffect(() => {
+    const theme = getStoredTheme();
+    applyTheme(theme === 'dark');
+  }, []);
+
   return children;
 };
 

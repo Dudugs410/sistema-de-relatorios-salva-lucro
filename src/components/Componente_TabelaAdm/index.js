@@ -4,7 +4,6 @@ import './tabelaGenerica.scss'
 import '../../styles/global.scss'
 
 export default function TabelaGenericaAdm({ Array: dataArray, textColor }) {
-  // Safe formatting function
   const formatCurrency = (value) => {
     if (value === undefined || value === null || value === '') {
       return 'R$ 0,00'
@@ -22,7 +21,6 @@ export default function TabelaGenericaAdm({ Array: dataArray, textColor }) {
     })
   }
 
-  // Safe check for dataArray
   if (!dataArray || !Array.isArray(dataArray) || dataArray.length === 0) {
     return null
   }
@@ -40,10 +38,8 @@ export default function TabelaGenericaAdm({ Array: dataArray, textColor }) {
             </thead>
             <tbody>
               {dataArray.map((elemento, index) => {
-                // Safe extraction of admin name
                 const adminName = elemento?.adminName || elemento?.adquirente || 'Unknown'
                 
-                // Safe extraction of total value
                 let totalValue = 0
                 if (elemento?.total !== undefined && elemento?.total !== null) {
                   totalValue = Number(elemento.total)
@@ -51,12 +47,10 @@ export default function TabelaGenericaAdm({ Array: dataArray, textColor }) {
                   totalValue = Number(elemento.valor)
                 }
                 
-                // Ensure it's a valid number
                 if (isNaN(totalValue)) {
                   totalValue = 0
                 }
                 
-                // Determine CSS class based on value
                 const valueClass = totalValue >= 0 ? 'span-table-servicos-green' : 'span-table-servicos-red'
                 const finalColorClass = textColor || 'green-global'
                 
