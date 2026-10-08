@@ -7,6 +7,7 @@ import { Collapse, Nav, Navbar, NavItem, NavLink } from 'reactstrap'
 import { AuthContext } from '../../contexts/auth'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { fetchMenuOptions } from '../../services/authService';
+import { NO_MENU_PERMISSIONS_MESSAGE } from '../../services/apiErrors';
 import { getTenantFromURL } from '../../util/tenant';
 
 const iconComponentMap = {
@@ -55,6 +56,7 @@ const Sidebar = () => {
     const [loading, setLoading] = useState(true)
     const [currentTenant, setCurrentTenant] = useState(null)
     const [logoError, setLogoError] = useState(false)
+    const [menuStatus, setMenuStatus] = useState('loading')
     
     const { currentLogo, currentContext } = useContext(AuthContext)
 
@@ -204,6 +206,7 @@ const Sidebar = () => {
         const userId = localStorage.getItem('userID')
         if (!userId) {
             setOptionsWithIcons([])
+            setMenuStatus('error')
             setLoading(false)
             return
         }
@@ -211,8 +214,10 @@ const Sidebar = () => {
             const menus = extractMenuList(await fetchMenuOptions(userId)) || []
             localStorage.setItem(MENU_CACHE_KEY, JSON.stringify(menus))
             setOptionsWithIcons(transformMenuData(menus))
+            setMenuStatus(menus.length === 0 ? 'empty' : 'loaded')
         } catch (error) {
             console.error('Error fetching menus:', error)
+            setMenuStatus((current) => (current === 'loaded' ? current : 'error'))
         } finally {
             setLoading(false)
         }
@@ -222,6 +227,7 @@ const Sidebar = () => {
         const cached = readCachedMenus()
         if (cached) {
             setOptionsWithIcons(transformMenuData(cached))
+            setMenuStatus(cached.length === 0 ? 'empty' : 'loaded')
             setLoading(false)
         }
         fetchMenus()
@@ -365,11 +371,13 @@ const Sidebar = () => {
                     ) : (
                         <div className="text-center p-4">
                             <div className="text-muted" style={{ color: 'var(--sidebar-font-color, #ffffff)' }}>
-                                Nenhum menu disponível
+                                {menuStatus === 'empty' ? NO_MENU_PERMISSIONS_MESSAGE : 'Nenhum menu disponível'}
                             </div>
-                            <button onClick={fetchMenus} className="btn btn-sm btn-primary mt-2">
-                                Recarregar Menu
-                            </button>
+                            {menuStatus !== 'empty' && (
+                                <button onClick={fetchMenus} className="btn btn-sm btn-primary mt-2">
+                                    Recarregar Menu
+                                </button>
+                            )}
                         </div>
                     )}
                 </Nav>

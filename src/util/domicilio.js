@@ -3,13 +3,21 @@ export const DOMICILIO_COLUMNS = [
   { key: 'ADQUIRENTE', label: 'Adquirente' },
   { key: 'BANDEIRA', label: 'Bandeira' },
   { key: 'MODALIDADE', label: 'Modalidade' },
-  { key: 'PROPAGAR', label: 'Propagar', format: (value) => (value ? 'Sim' : 'Não') },
 ]
+
+export const fixEncoding = (text) => {
+  if (typeof text !== 'string' || !/[ÃÂ]/.test(text)) return text
+  try {
+    return decodeURIComponent(escape(text))
+  } catch {
+    return text
+  }
+}
 
 export const formatDomicilioCell = (domicilio, column) => {
   const value = domicilio[column.key]
   if (column.format) return column.format(value)
-  return value === undefined || value === null || value === '' ? 'N/A' : value
+  return value === undefined || value === null || value === '' ? 'N/A' : fixEncoding(String(value))
 }
 
 export const EMPTY_DOMICILIO_FORM = {

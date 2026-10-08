@@ -21,10 +21,11 @@
   .btn-add-domicilio {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
     padding: 10px 20px;
     background: var(--secondary-color);
-    color: var(--primary-color);
+    color: var(--on-secondary-color, var(--primary-color));
     border: none;
     border-radius: 6px;
     font-size: 0.9rem;
@@ -62,7 +63,7 @@
 
   thead {
     background: var(--secondary-color);
-    color: var(--primary-color);
+    color: var(--on-secondary-color, var(--primary-color));
 
     th {
       padding: 12px 16px;
@@ -80,7 +81,7 @@
       border-bottom: 1px solid var(--bs-border-color);
 
       &:hover {
-        background: rgba(var(--secondary-color-rgb), 0.05);
+        background: rgba(var(--highlight-color-rgb), 0.08);
       }
 
       &:last-child {
@@ -91,6 +92,30 @@
         padding: 10px 16px;
         color: var(--font-color);
       }
+    }
+  }
+}
+@media (max-width: 480px) {
+  .lista-domicilios-header {
+    flex-direction: column;
+    align-items: stretch;
+
+    h3 {
+      text-align: center;
+    }
+
+    .btn-add-domicilio {
+      width: 100%;
+    }
+  }
+
+  .lista-domicilios-table {
+    font-size: 0.8rem;
+
+    thead th,
+    tbody tr td {
+      padding: 8px 10px;
+      white-space: nowrap;
     }
   }
 }

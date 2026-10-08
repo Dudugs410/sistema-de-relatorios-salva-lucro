@@ -14,6 +14,11 @@ import {
 } from '../../services/authService'
 import { getDefaultPreferences, getUserIdentity } from '../../util/contextUtils'
 import { isUnauthorized } from './isUnauthorized'
+import {
+  getApiErrorMessage,
+  USER_LOOKUP_ERROR_MESSAGE,
+  NO_MENU_PERMISSIONS_MESSAGE,
+} from '../../services/apiErrors'
 
 const PERSISTENT_STORAGE_KEYS = ['app_version']
 
@@ -161,14 +166,18 @@ export const useSession = ({ preferences, resetAppValues, loadGroupsList, naviga
       setClientUserId(userId)
 
       let user = null
+      let userLookupMessage = USER_LOOKUP_ERROR_MESSAGE
       try {
         user = await fetchUser(userId)
       } catch (error) {
         console.error('Error loading user:', error)
+        userLookupMessage = getApiErrorMessage(error, USER_LOOKUP_ERROR_MESSAGE)
       }
       if (!user?.CODIGO) {
         clearSessionTokens()
-        toast.error('Não foi possível carregar os dados do usuário')
+        localStorage.removeItem('currentPath')
+        setClientUserId(undefined)
+        toast.error(userLookupMessage)
         return
       }
       if (isAccountBlocked(user)) {
@@ -196,7 +205,12 @@ export const useSession = ({ preferences, resetAppValues, loadGroupsList, naviga
 
       await storePluggyCredentials(userId)
 
-      localStorage.setItem('options', JSON.stringify(await loadOptions()))
+      const menuOptions = await loadOptions()
+      localStorage.setItem('options', JSON.stringify(menuOptions))
+      const menuList = Array.isArray(menuOptions) ? menuOptions : menuOptions?.data
+      if (Array.isArray(menuList) && menuList.length === 0) {
+        toast.warning(NO_MENU_PERMISSIONS_MESSAGE, { autoClose: 10000 })
+      }
 
       const groups = (await loadGroupsList()) || []
       localStorage.setItem('groupsStorage', JSON.stringify(groups))
