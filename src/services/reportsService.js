@@ -47,6 +47,8 @@ export const fetchDetailedReport = async (model, startDate, endDate, additionalF
   return response.data
 }
 
+export const deleteSaleCoupon = (saleId) => api.delete('CupomVenda/codigo', { params: { codigo: saleId } })
+
 export const fetchDashboard = async () => {
   const cnpj = localStorage.getItem('cnpj')
   const isAllClients = ['todos', 'TODOS', 'Todos'].includes(cnpj)

@@ -9,7 +9,7 @@ import './GerarRelatorio.scss'
 import { AuthContext } from '../../contexts/auth'
 import { toast } from 'react-toastify'
 
-export default function GerarRelatorio({ onExport, filteredData }) {
+export default function GerarRelatorio({ onExport, filteredData, tipoRelatorio = null }) {
 
 	const { 
 		dateConvert, exportName,
@@ -17,7 +17,7 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 		salesDateRange, creditsDateRange, servicesDateRange,
 	} = useContext(AuthContext)
 
-	const [tipoRelatorio, setTipoRelatorio] = useState('')
+	const [tipoRelatorioLabel, setTipoRelatorioLabel] = useState('')
 	const [currentDateTime, setCurrentDateTime] = useState('')
 	const [tipo, setTipo] = useState('')
 	const [tableData, setTableData] = useState([])
@@ -46,6 +46,8 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 		return () => clearInterval(intervalId)
 	}, [currentDateTime])
 
+	const isResumido = localStorage.getItem('currentPath') === '/vendas' && tipoRelatorio?.value === 'resumido'
+
 	const getModelo = () => {
 		const currentPath = localStorage.getItem('currentPath')
 		switch (currentPath) {
@@ -67,23 +69,23 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 		
 		switch (currentPath) {
 			case '/vendas':
-				setTipoRelatorio('Relatório de Vendas')
+				setTipoRelatorioLabel('Relatório de Vendas')
 				setTipo('vendas')
 				break
 			case '/creditos':
-				setTipoRelatorio('Relatório de Créditos')
+				setTipoRelatorioLabel('Relatório de Créditos')
 				setTipo('creditos')
 				break
 			case '/creditos-data-banco':
-				setTipoRelatorio('Relatório de Créditos - Data Banco')
+				setTipoRelatorioLabel('Relatório de Créditos - Data Banco')
 				setTipo('creditos')
 				break
 			case '/servicos':
-				setTipoRelatorio('Relatório de Serviços')
+				setTipoRelatorioLabel('Relatório de Serviços')
 				setTipo('servicos')
 				break
 			case '/taxas':
-				setTipoRelatorio('Relatório de Taxas')
+				setTipoRelatorioLabel('Relatório de Taxas')
 				setTipo('taxas')
 				break
 			default:
@@ -255,7 +257,7 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 			
 			console.log('Full request object:', requestObject)
 			
-			const response = await api.post('relatorios/detalhado', requestObject)
+			const response = await api.post(isResumido ? 'relatorios/resumido' : 'relatorios/detalhado', requestObject)
 			
 			if (response.data.success === true && response.data.formato === format) {
 				const binaryData = atob(response.data.base64)
@@ -276,8 +278,8 @@ export default function GerarRelatorio({ onExport, filteredData }) {
 				a.href = url
 				const dateRangeStr = getDateRangeString()
 				const fileName = dateRangeStr 
-					? `${tipoRelatorio} - ${exportName} - ${dateRangeStr}.${fileExtension}`
-					: `${tipoRelatorio} - ${exportName} - ${currentDateTime}.${fileExtension}`
+					? `${tipoRelatorioLabel}${isResumido ? ' - Resumido' : ''} - ${exportName} - ${dateRangeStr}.${fileExtension}`
+					: `${tipoRelatorioLabel}${isResumido ? ' - Resumido' : ''} - ${exportName} - ${currentDateTime}.${fileExtension}`
 				a.download = fileName
 				document.body.appendChild(a)
 				a.click()

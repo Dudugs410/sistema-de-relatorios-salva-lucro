@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { toast } from 'react-toastify'
 import {
+  deleteSaleCoupon,
   fetchDetailedReport,
   fetchLegacySales,
   fetchLegacyCredits,
@@ -145,6 +146,30 @@ export const useReports = ({ onUnauthorized }) => {
     if (JSON.stringify(salesTableData) !== JSON.stringify(rows)) setSalesTableData(rows)
   }
 
+  const deleteSale = async (sale) => {
+    const saleId = sale?.ID
+    if (!saleId) {
+      toast.dismiss()
+      toast.error('Não foi possível identificar o cupom de venda para exclusão.')
+      return { success: false }
+    }
+    try {
+      const response = await deleteSaleCoupon(saleId)
+      toast.dismiss()
+      toast.success(response.data?.mensagem || response.data?.MENSAGEM || 'Cupom de venda excluído com sucesso!')
+      return { success: true, data: response.data }
+    } catch (error) {
+      console.error('Erro ao excluir cupom de venda:', error)
+      if (isUnauthorized(error)) {
+        onUnauthorized()
+        return { success: false }
+      }
+      toast.dismiss()
+      toast.error(error.response?.data?.mensagem || error.response?.data?.MENSAGEM || 'Erro ao excluir cupom de venda!')
+      return { success: false }
+    }
+  }
+
   const exportCredits = (data) => {
     if (!data || data.length === 0) return []
     const rows = transformCreditsRows(data)
@@ -205,6 +230,7 @@ export const useReports = ({ onUnauthorized }) => {
     salesTableData,
     setSalesTableData,
     exportSales,
+    deleteSale,
     errorSales,
     canceledSales,
     setCanceledSales,

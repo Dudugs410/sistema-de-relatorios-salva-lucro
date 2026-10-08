@@ -104,6 +104,27 @@ const formatDate = (date) => {
   return formatDateOnly(date)
 }
 
+const TIPO_RELATORIO_OPTIONS = [
+  { value: 'detalhado', label: 'Detalhado' },
+  { value: 'resumido', label: 'Resumido' },
+]
+
+const isFalseFlag = (flag) => {
+  if (typeof flag === 'boolean') return flag === false
+  if (typeof flag === 'number') return flag === 0
+  if (typeof flag === 'string') return ['false', '0'].includes(flag.trim().toLowerCase())
+  return false
+}
+
+const userCanDeleteSales = () => {
+  try {
+    const user = JSON.parse(localStorage.getItem('user') || '{}')
+    return isFalseFlag(user?.GRUPO?.ACESSORESTRITOPROCESSO)
+  } catch {
+    return false
+  }
+}
+
 const NewDisplayData = ({ 
   dataArray, 
   adminDataArray, 
@@ -126,7 +147,10 @@ const NewDisplayData = ({
   onAdquirenteChange = null,
   showSelects = true,
   onSearch = null,
-  isSearching = false
+  isSearching = false,
+  tipoRelatorio = null,
+  onTipoRelatorioChange = null,
+  onRefreshSales = null,
 }) => {
   const { 
     clientUserId, 
@@ -139,9 +163,12 @@ const NewDisplayData = ({
     exportSales,
     exportCredits,
     exportServices,
+    deleteSale,
     loadBanners,
     loadAdmins
   } = useContext(AuthContext)
+
+  const canDeleteSale = useMemo(userCanDeleteSales, [])
   
   const [exportPage, setExportPage] = useState('')
   const [currentPath, setCurrentPath] = useState(location.pathname)
@@ -398,20 +425,6 @@ const NewDisplayData = ({
             await exportSales(dataToExport)
             break
           case 'openfinance':
-            if (exportSales) {
-              await exportSales(dataToExport)
-            } else {
-              const csvContent = "data:text/csv;charset=utf-8," 
-                + Object.keys(dataToExport[0] || {}).join(",") + "\n"
-                + dataToExport.map(row => Object.values(row).join(",")).join("\n")
-              const encodedUri = encodeURI(csvContent)
-              const link = document.createElement("a")
-              link.setAttribute("href", encodedUri)
-              link.setAttribute("download", `extrato_bancario_${new Date().toISOString().split('T')[0]}.csv`)
-              document.body.appendChild(link)
-              link.click()
-              document.body.removeChild(link)
-            }
             break
           case '/creditos':
             await exportCredits(dataToExport)
@@ -675,9 +688,33 @@ const NewDisplayData = ({
       showFilters: true,
       textColor: "green-global",
       filterConfig: getFilterConfig(),
-      enableDependentFilters: true
+      enableDependentFilters: true,
+      canDeleteSale: exportPage === 'vendas' && canDeleteSale,
+      onDeleteSale: deleteSale,
+      onRefreshSales,
     }
-  }, [exportPage, dataArray, getTableColumns, getDateRange, getExportFunction, handleTotalUpdate, getFilterConfig, hideTables])
+  }, [exportPage, dataArray, getTableColumns, getDateRange, getExportFunction, handleTotalUpdate, getFilterConfig, hideTables, canDeleteSale, deleteSale, onRefreshSales])
+
+  const showTipoRelatorio = Boolean(tipoRelatorio && onTipoRelatorioChange) && exportPage === 'vendas' && dataArray?.length > 0
+
+  const renderTipoRelatorio = (inputId) => (
+    <div className='tipo-relatorio-wrapper' data-tour="tipo-relatorio-section">
+      <label className='tipo-relatorio-label' htmlFor={inputId}>Tipo de Relatório</label>
+      <Select
+        inputId={inputId}
+        options={TIPO_RELATORIO_OPTIONS}
+        onChange={onTipoRelatorioChange}
+        value={tipoRelatorio}
+        menuPortalTarget={document.body}
+        menuPosition="fixed"
+        isClearable={false}
+        isSearchable={false}
+        isDisabled={isSearching}
+        styles={selectStyles}
+        theme={selectTheme}
+      />
+    </div>
+  )
 
   const getButtonText = () => {
     if (customExportPage === 'openfinance') {
@@ -811,11 +848,13 @@ const NewDisplayData = ({
       )}
 
       {dataArray && dataArray.length > 0 && customExportPage !== 'openfinance' && (
-        <div data-tour="exportacao-section">
-          <GerarRelatorio 
-            className='export' 
+        <div className='report-export'>
+          {showTipoRelatorio && renderTipoRelatorio('tipo-relatorio')}
+          <GerarRelatorio
+            className='export'
             onExport={getExportFunction()}
             filteredData={currentFilteredData}
+            tipoRelatorio={tipoRelatorio}
           />
           <hr className='hr-global'/>
         </div>

@@ -196,6 +196,16 @@ const Vendas = () =>{
     }
   }, [memoizedExportData, salesTableData, setSalesTableData])
 
+  const [tipoRelatorio, setTipoRelatorio] = useState({ value: 'detalhado', label: 'Detalhado' })
+
+  const refreshSales = async () => {
+    try {
+      await loadData()
+    } catch (error) {
+      console.error('Error refreshing sales:', error)
+    }
+  }
+
   const handleResetOnError = () => {
     resetValues()
     toast.error('Ocorreu um erro ao carregar os dados de vendas. A página foi redefinida.')
@@ -299,6 +309,12 @@ const Vendas = () =>{
       }
       
       newSteps.push({
+        target: '[data-tour="tipo-relatorio-section"]',
+        content: 'Escolha o tipo de relatório a ser exportado: Detalhado (uma linha por venda) ou Resumido.',
+        placement: 'bottom',
+      });
+
+      newSteps.push({
         target: '[data-tour="exportacao-section"]',
         content: 'Exporta as vendas sendo exibidas para os formatos Excel ou PDF.',
         placement: 'bottom',
@@ -368,6 +384,9 @@ const Vendas = () =>{
               listaBandeiras={listaBandeiras}
               listaAdministradoras={listaAdministradoras}
               showSelects={false}
+              tipoRelatorio={tipoRelatorio}
+              onTipoRelatorioChange={setTipoRelatorio}
+              onRefreshSales={refreshSales}
             />
           ) : (
             <>

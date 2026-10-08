@@ -10,7 +10,9 @@ import {
   FiSkipForward, 
   FiFilter, 
   FiChevronDown, 
-  FiChevronUp 
+  FiChevronUp,
+  FiTrash2,
+  FiAlertTriangle
 } from 'react-icons/fi'
 import Marquee from "react-fast-marquee";
 
@@ -213,6 +215,9 @@ const NewTabelaGenerica = forwardRef(({
   expandAll = false,
   filterConfig: customFilterConfig,
   enableDependentFilters = false,
+  canDeleteSale = false,
+  onDeleteSale,
+  onRefreshSales = null,
 }, ref) => {
   const { 
     isDarkTheme, 
@@ -236,6 +241,8 @@ const NewTabelaGenerica = forwardRef(({
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage] = useState(15)
   const [isDataProcessed, setIsDataProcessed] = useState(false)
+  const [saleToDelete, setSaleToDelete] = useState(null)
+  const [isDeletingSale, setIsDeletingSale] = useState(false)
 
   const lastFilteredDataRef = useRef(null)
   const isUpdatingRef = useRef(false)
@@ -428,7 +435,51 @@ const NewTabelaGenerica = forwardRef(({
     }
   }, [tableType, customFilterConfig])
 
-  const tableColumns = useMemo(() => columns || [], [columns])
+  const showDeleteColumn = tableType === 'vendas' && canDeleteSale && typeof onDeleteSale === 'function'
+
+  const tableColumns = useMemo(() => {
+    const baseColumns = columns || []
+    if (!showDeleteColumn) return baseColumns
+    return [
+      ...baseColumns,
+      {
+        key: '__delete',
+        header: 'Excluir',
+        render: (item) => (
+          <button
+            type="button"
+            className="table-delete-button"
+            title="Excluir cupom de venda"
+            aria-label="Excluir cupom de venda"
+            onClick={(e) => {
+              e.stopPropagation()
+              setSaleToDelete(item)
+            }}
+          >
+            <FiTrash2 />
+          </button>
+        ),
+      },
+    ]
+  }, [columns, showDeleteColumn])
+
+  const handleDeleteSaleCancel = useCallback(() => {
+    if (!isDeletingSale) setSaleToDelete(null)
+  }, [isDeletingSale])
+
+  const handleDeleteSaleConfirm = useCallback(async () => {
+    if (!saleToDelete || !onDeleteSale) return
+    setIsDeletingSale(true)
+    try {
+      const result = await onDeleteSale(saleToDelete)
+      if (result && result.success) {
+        setSaleToDelete(null)
+        if (onRefreshSales) await onRefreshSales()
+      }
+    } finally {
+      setIsDeletingSale(false)
+    }
+  }, [saleToDelete, onDeleteSale, onRefreshSales])
 
   const isExpandable = expandable || config.expandable
 
@@ -975,6 +1026,60 @@ const NewTabelaGenerica = forwardRef(({
           </div>
           <hr className='hr-global'/>
         </>
+      )}
+
+      {saleToDelete && (
+        <div className="confirm-dialog-overlay" onClick={handleDeleteSaleCancel}>
+          <div
+            className="confirm-dialog"
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="delete-sale-title"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="confirm-dialog__header">
+              <h2 id="delete-sale-title">Excluir Cupom de Venda</h2>
+              <button className="confirm-dialog__close" onClick={handleDeleteSaleCancel} aria-label="Fechar">×</button>
+            </div>
+
+            <div className="confirm-dialog__body">
+              <div className="confirm-icon">
+                <FiAlertTriangle />
+              </div>
+              <p className="confirm-message">Tem certeza que deseja excluir este cupom de venda?</p>
+              <div className="confirm-details">
+                <div className="confirm-detail-row">
+                  <span className="detail-label">Adquirente:</span>
+                  <span className="detail-value">{saleToDelete.ADMINISTRADORA || 'N/A'}</span>
+                </div>
+                <div className="confirm-detail-row">
+                  <span className="detail-label">NSU:</span>
+                  <span className="detail-value">{saleToDelete.NSU || 'N/A'}</span>
+                </div>
+                <div className="confirm-detail-row">
+                  <span className="detail-label">Data Venda:</span>
+                  <span className="detail-value">
+                    {saleToDelete.DATAVENDA ? formatValue(String(saleToDelete.DATAVENDA).split('T')[0], 'date') : 'N/A'}
+                  </span>
+                </div>
+                <div className="confirm-detail-row">
+                  <span className="detail-label">Valor Bruto:</span>
+                  <span className="detail-value">{formatValue(saleToDelete.VALORBRUTO, 'currency') || 'N/A'}</span>
+                </div>
+              </div>
+              <p className="confirm-warning">Esta ação não pode ser desfeita.</p>
+            </div>
+
+            <div className="confirm-dialog__actions">
+              <button type="button" className="confirm-dialog__cancel" onClick={handleDeleteSaleCancel} disabled={isDeletingSale}>
+                Cancelar
+              </button>
+              <button type="button" className="confirm-dialog__confirm" onClick={handleDeleteSaleConfirm} disabled={isDeletingSale}>
+                {isDeletingSale ? 'Excluindo...' : 'Excluir'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </>
   )
