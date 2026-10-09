@@ -37,13 +37,18 @@ export const REQUIRED_DOMICILIO_FIELDS = [
   ['MODCODIGO', 'Selecione uma modalidade'],
 ]
 
+const toCode = (value) => {
+  const number = Number(value)
+  return value !== null && value !== '' && Number.isInteger(number) ? number : value
+}
+
 export const buildDomicilioPayload = (banco, form) => ({
-  BANCODIGO: banco?.CODIGO,
-  ADQCODIGO: form.ADQCODIGO,
-  CLDCODIGO: form.CLDCODIGO,
-  BADCODIGO: form.BADCODIGO,
-  PROCODIGO: form.PROCODIGO,
-  MODCODIGO: form.MODCODIGO,
+  BANCODIGO: toCode(banco?.CODIGO),
+  CLDCODIGO: toCode(form.CLDCODIGO),
+  ADQCODIGO: toCode(form.ADQCODIGO),
+  BADCODIGO: toCode(form.BADCODIGO),
+  PROCODIGO: toCode(form.PROCODIGO),
+  MODCODIGO: toCode(form.MODCODIGO),
   PROPAGAR: form.PROPAGAR === true,
 })
 

@@ -25,6 +25,7 @@ import {
   fetchSysmo,
 } from '../../services/registryService'
 import { isUnauthorized } from './isUnauthorized'
+import { getApiErrorMessage } from '../../services/apiErrors'
 
 const withLoading = (setLoading) => async (action) => {
   setLoading(true)
@@ -82,8 +83,8 @@ export const useRegistry = ({ onUnauthorized }) => {
           toast.success(response.data?.mensagem || 'Domicílio adicionado com sucesso!')
           return { success: true, data: response.data }
         } catch (error) {
-          console.error('Erro ao criar domicílio:', error)
-          toast.error(error.response?.data?.mensagem || 'Erro ao adicionar domicílio')
+          console.error('Erro ao criar domicílio:', error.response?.status, error.response?.data ?? error)
+          toast.error(getApiErrorMessage(error, 'Erro ao adicionar domicílio'))
           if (isUnauthorized(error)) onUnauthorized()
           return { success: false }
         }
