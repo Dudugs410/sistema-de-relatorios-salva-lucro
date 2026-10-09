@@ -12,6 +12,8 @@ import {
   FiChevronDown, 
   FiChevronUp,
   FiTrash2,
+  FiSearch,
+  FiX,
   FiAlertTriangle
 } from 'react-icons/fi'
 import Marquee from "react-fast-marquee";
@@ -196,6 +198,39 @@ const ConditionalMarquee = ({ children, speed = 50, gradient = false, className 
   );
 };
 
+const normalizeSearchText = (value) =>
+  String(value)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+
+const getSearchableText = (item, columns) => {
+  const values = []
+  const searchColumns = columns.filter((column) => !String(column.key).startsWith('__'))
+  if (searchColumns.length === 0) {
+    values.push(...Object.values(item || {}))
+  }
+  searchColumns.forEach((column) => {
+    const raw = String(column.key).split('.').reduce((acc, part) => (acc ? acc[part] : undefined), item)
+    values.push(raw)
+    if (column.accessor) {
+      try {
+        values.push(column.accessor(item))
+      } catch {
+        return
+      }
+    }
+    if (typeof raw === 'number') {
+      values.push(raw.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
+    }
+  })
+  return normalizeSearchText(
+    values
+      .filter((value) => value !== null && value !== undefined && typeof value !== 'object')
+      .join(' ')
+  )
+}
+
 const NewTabelaGenerica = forwardRef(({ 
   array, 
   tableType,
@@ -229,6 +264,7 @@ const NewTabelaGenerica = forwardRef(({
   const [dataExibicao, setDataExibicao] = useState([])
   const [allFilterOptions, setAllFilterOptions] = useState({})
   const [selectedFilters, setSelectedFilters] = useState({})
+  const [searchTerm, setSearchTerm] = useState('')
   const [showMobileFilters, setShowMobileFilters] = useState(false)
   const [isMobileView, setIsMobileView] = useState(false)
   const [expandedRow, setExpandedRow] = useState(null)
@@ -463,6 +499,17 @@ const NewTabelaGenerica = forwardRef(({
     ]
   }, [columns, showDeleteColumn])
 
+  const searchIndex = useMemo(() => {
+    const index = new Map()
+    dataArray.forEach((item) => index.set(item, getSearchableText(item, tableColumns)))
+    return index
+  }, [dataArray, tableColumns])
+
+  const searchTokens = useMemo(
+    () => normalizeSearchText(searchTerm.trim()).split(/\s+/).filter(Boolean),
+    [searchTerm]
+  )
+
   const handleDeleteSaleCancel = useCallback(() => {
     if (!isDeletingSale) setSaleToDelete(null)
   }, [isDeletingSale])
@@ -536,6 +583,13 @@ const NewTabelaGenerica = forwardRef(({
         }
       })
     }
+
+    if (searchTokens.length > 0) {
+      filteredData = filteredData.filter((item) => {
+        const text = searchIndex.get(item) ?? getSearchableText(item, tableColumns)
+        return searchTokens.every((token) => text.includes(token))
+      })
+    }
     
     const filteredDataSignature = JSON.stringify(filteredData)
     
@@ -557,7 +611,7 @@ const NewTabelaGenerica = forwardRef(({
     if (!isDataProcessed && dataArray.length > 0) {
       setIsDataProcessed(true)
     }
-  }, [dataArray, selectedFilters, getFilterConfig, dataExibicao.length, isDataProcessed])
+  }, [dataArray, selectedFilters, searchTokens, searchIndex, tableColumns, getFilterConfig, dataExibicao.length, isDataProcessed])
 
   useEffect(() => {
     if (onTotalUpdateRef.current && dataExibicao && dataExibicao.length > 0) {
@@ -664,8 +718,11 @@ const NewTabelaGenerica = forwardRef(({
     }))
   }, [])
 
+  const hasActiveFilters = searchTokens.length > 0 || Object.keys(selectedFilters).some(key => selectedFilters[key])
+
   const clearFilters = useCallback(() => {
     const storageKeys = getStorageKeys()
+    setSearchTerm('')
     setSelectedFilters({})
     localStorage.removeItem(storageKeys.filter1)
     localStorage.removeItem(storageKeys.filter2)
@@ -778,42 +835,64 @@ const NewTabelaGenerica = forwardRef(({
             </div>
           </div>
           <hr className='hr-global'/>
-                      <div data-tour="bandeiraadquirente-section" className='container desktop-filters'>
-              {Object.keys(getFilterConfig()).map(filterKey => (
-                <div key={filterKey} className='export-column'>
-                  <div className='filter-card'>
-                    <label className='filter-label'>{getFilterConfig()[filterKey].label}</label>
-                    <div className="custom-select-wrapper">
-                      <select 
-                        className='custom-select' 
-                        value={selectedFilters[filterKey] || ''}
-                        onChange={(e) => handleFilterChange(filterKey, e.target.value)}
-                      >
-                        <option value=''>Todas</option>
-                        {getAvailableOptions(filterKey)?.map(option => (
-                          <option key={option} value={option}>{option}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              ))}
-              
-              {Object.keys(selectedFilters).some(key => selectedFilters[key]) && (
-                <div className="export-column">
-                  <div className='filter-card'>
-                    <label className='filter-label'>&nbsp;</label>
-                    <button 
-                      className="clear-filters-btn"
-                      onClick={clearFilters}
-                    >
-                      <FiFilter />
-                      Limpar Filtros
-                    </button>
-                  </div>
-                </div>
-              )}
+          <div className='table-filters' data-tour="bandeiraadquirente-section">
+            <div className='table-filters__field table-filters__field--search'>
+              <label className='filter-label' htmlFor={`table-search-${tableType}`}>Buscar</label>
+              <div className='table-search'>
+                <FiSearch className='table-search__icon' aria-hidden='true' />
+                <input
+                  id={`table-search-${tableType}`}
+                  type='search'
+                  className='table-search__input'
+                  placeholder='Buscar em todas as colunas...'
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  autoComplete='off'
+                />
+                {searchTerm && (
+                  <button type='button' className='table-search__clear' onClick={() => setSearchTerm('')} aria-label='Limpar busca'>
+                    <FiX />
+                  </button>
+                )}
+              </div>
             </div>
+
+            {Object.keys(getFilterConfig()).map(filterKey => (
+              <div key={filterKey} className='table-filters__field'>
+                <label className='filter-label' htmlFor={`table-filter-${filterKey}`}>{getFilterConfig()[filterKey].label}</label>
+                <div className="custom-select-wrapper">
+                  <select
+                    id={`table-filter-${filterKey}`}
+                    className='custom-select'
+                    value={selectedFilters[filterKey] || ''}
+                    onChange={(e) => handleFilterChange(filterKey, e.target.value)}
+                  >
+                    <option value=''>Todas</option>
+                    {getAvailableOptions(filterKey)?.map(option => (
+                      <option key={option} value={option}>{option}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            ))}
+
+            <div className='table-filters__actions'>
+              <button
+                type='button'
+                className="clear-filters-btn"
+                onClick={clearFilters}
+                disabled={!hasActiveFilters}
+              >
+                <FiFilter />
+                Limpar Filtros
+              </button>
+            </div>
+          </div>
+          {hasActiveFilters && (
+            <div className='table-filters__summary' aria-live='polite'>
+              Exibindo {dataExibicao.length} de {dataArray.length} registros
+            </div>
+          )}
             <hr className='hr-global'/>
         </>
       )}

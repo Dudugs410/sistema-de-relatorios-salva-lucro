@@ -47,6 +47,9 @@ export const fetchDetailedReport = async (model, startDate, endDate, additionalF
   return response.data
 }
 
+export const fetchSalesByDay = async (data, cnpj) =>
+  (await api.get('vendas', { params: { data, cnpj } })).data?.VENDAS || []
+
 export const deleteSaleCoupon = (saleId) => api.delete('CupomVenda/codigo', { params: { codigo: saleId } })
 
 export const fetchDashboard = async () => {

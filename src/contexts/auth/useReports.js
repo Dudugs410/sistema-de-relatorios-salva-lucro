@@ -3,6 +3,7 @@ import { toast } from 'react-toastify'
 import {
   deleteSaleCoupon,
   fetchDetailedReport,
+  fetchSalesByDay,
   fetchLegacySales,
   fetchLegacyCredits,
   fetchLegacyServices,
@@ -18,6 +19,8 @@ import {
   transformSalesRows,
   transformCreditsRows,
   transformServicesRows,
+  getSaleLookupParams,
+  findMatchingSales,
 } from '../../util/reportTransforms'
 import { isUnauthorized } from './isUnauthorized'
 
@@ -146,14 +149,26 @@ export const useReports = ({ onUnauthorized }) => {
     if (JSON.stringify(salesTableData) !== JSON.stringify(rows)) setSalesTableData(rows)
   }
 
-  const deleteSale = async (sale) => {
-    const saleId = sale?.ID
-    if (!saleId) {
-      toast.dismiss()
-      toast.error('Não foi possível identificar o cupom de venda para exclusão.')
-      return { success: false }
+  const resolveSaleId = async (sale) => {
+    if (sale?.ID) return { id: sale.ID }
+    const params = getSaleLookupParams(sale)
+    if (!params) return { error: 'Não foi possível identificar o cupom de venda para exclusão.' }
+    const matches = findMatchingSales(sale, await fetchSalesByDay(params.data, params.cnpj))
+    if (matches.length === 0) return { error: 'Venda não encontrada para exclusão. Nenhum cupom foi excluído.' }
+    if (matches.length > 1 || !matches[0]?.id) {
+      return { error: 'Não foi possível identificar a venda com segurança. Nenhum cupom foi excluído.' }
     }
+    return { id: matches[0].id }
+  }
+
+  const deleteSale = async (sale) => {
     try {
+      const { id: saleId, error: lookupError } = await resolveSaleId(sale)
+      if (!saleId) {
+        toast.dismiss()
+        toast.error(lookupError)
+        return { success: false }
+      }
       const response = await deleteSaleCoupon(saleId)
       toast.dismiss()
       toast.success(response.data?.mensagem || response.data?.MENSAGEM || 'Cupom de venda excluído com sucesso!')

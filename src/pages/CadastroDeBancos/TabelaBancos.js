@@ -17,7 +17,7 @@ import ListaDomicilios from '../../components/ListaDomicilios'
 import ModalDomicilio from '../../components/ModalDomicilio'
 import './TabelaBancos.scss'
 
-function ListaDomiciliosWrapper({ banco }) {
+function ListaDomiciliosWrapper({ banco, clientCode }) {
   const [addOpen, setAddOpen] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0)
 
@@ -30,6 +30,7 @@ function ListaDomiciliosWrapper({ banco }) {
         isOpen={addOpen}
         onClose={() => setAddOpen(false)}
         banco={banco}
+        clientCode={clientCode}
         onCreated={handleCreated}
       />
     </>
@@ -486,7 +487,7 @@ const TabelaBancos = ({
               </button>
             </div>
             <div style={{ padding: '0 24px 24px' }}>
-              <ListaDomiciliosWrapper banco={selectedBankForDomicilio} />
+              <ListaDomiciliosWrapper banco={selectedBankForDomicilio} clientCode={selectedClient?.cod} />
             </div>
           </div>
         </div>

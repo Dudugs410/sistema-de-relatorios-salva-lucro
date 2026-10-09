@@ -162,3 +162,45 @@ export const transformServicesRows = (data) =>
     data: item.data,
     descricao: item.descricao,
   }))
+
+const onlyDigits = (value) => String(value ?? '').replace(/\D/g, '')
+const normalizeCode = (value) => onlyDigits(value).replace(/^0+/, '')
+const normalizeName = (value) =>
+  String(value ?? '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+    .toLowerCase()
+
+export const getSaleLookupParams = (sale) => {
+  const cnpj = onlyDigits(sale?.CNPJ)
+  const data = String(sale?.DATAVENDA ?? '').split('T')[0]
+  if (!cnpj || !/^\d{4}-\d{2}-\d{2}$/.test(data) || !normalizeCode(sale?.NSU)) return null
+  return { data, cnpj }
+}
+
+const SALE_TIEBREAKERS = [
+  (sale, candidate) => {
+    const auth = normalizeCode(sale?.AUTORIZACAO)
+    return !auth || normalizeCode(candidate?.codigoAutorizacao) === auth
+  },
+  (sale, candidate) => {
+    const value = Number(sale?.VALORBRUTO)
+    return Number.isNaN(value) || Math.abs(Number(candidate?.valorBruto) - value) < 0.005
+  },
+  (sale, candidate) => {
+    const acquirer = normalizeName(sale?.ADMINISTRADORA)
+    return !acquirer || normalizeName(candidate?.adquirente?.nomeAdquirente) === acquirer
+  },
+]
+
+export const findMatchingSales = (sale, candidates) => {
+  const nsu = normalizeCode(sale?.NSU)
+  let matches = (candidates || []).filter((candidate) => normalizeCode(candidate?.nsu) === nsu)
+  for (const matchesTiebreaker of SALE_TIEBREAKERS) {
+    if (matches.length <= 1) break
+    const narrowed = matches.filter((candidate) => matchesTiebreaker(sale, candidate))
+    if (narrowed.length > 0) matches = narrowed
+  }
+  return matches
+}

@@ -3,14 +3,15 @@ import Select from 'react-select'
 import { toast } from 'react-toastify'
 import { FiX } from 'react-icons/fi'
 import { AuthContext } from '../../contexts/auth'
-import { EMPTY_DOMICILIO_FORM, REQUIRED_DOMICILIO_FIELDS, buildDomicilioPayload } from '../../util/domicilio'
+import { EMPTY_DOMICILIO_FORM, REQUIRED_DOMICILIO_FIELDS, buildDomicilioPayload, toEstabelecimentoOptions } from '../../util/domicilio'
 import './ModalDomicilio.scss'
 import { selectStyles, selectTheme } from '../../util/selectStyles'
 
-const ModalDomicilio = ({ isOpen, onClose, banco, onCreated }) => {
+const ModalDomicilio = ({ isOpen, onClose, banco, clientCode = null, onCreated }) => {
   const { loadBanners, loadAdmins, loadProducts, loadMods, loadEstabelecimentos, addDomicilio } = useContext(AuthContext)
 
   const [formData, setFormData] = useState(EMPTY_DOMICILIO_FORM)
+  const codigoCliente = banco?.CLICODIGO ?? clientCode
 
   const [adquirenteOptions, setAdquirenteOptions] = useState([])
   const [bandeiraOptions, setBandeiraOptions] = useState([])
@@ -112,20 +113,26 @@ const ModalDomicilio = ({ isOpen, onClose, banco, onCreated }) => {
       return
     }
 
+    if (!codigoCliente) {
+      setEstabelecimentoOptions([])
+      return
+    }
+
+    let cancelled = false
     const fetchEstabelecimentos = async () => {
       setLoadingEstabelecimentos(true)
-      const estabelecimentos = await loadEstabelecimentos(formData.ADQCODIGO, banco?.CLICODIGO)
-      setEstabelecimentoOptions(
-        estabelecimentos.map(e => ({
-          value: e.codigoClienteAdquirente,
-          label: e.codigoEstabelecimento,
-        })).sort((a, b) => String(a.label).localeCompare(String(b.label)))
-      )
+      const estabelecimentos = await loadEstabelecimentos(formData.ADQCODIGO, codigoCliente)
+      if (cancelled) return
+      setEstabelecimentoOptions(toEstabelecimentoOptions(estabelecimentos))
       setLoadingEstabelecimentos(false)
     }
 
     fetchEstabelecimentos()
-  }, [isOpen, formData.ADQCODIGO, loadEstabelecimentos, banco?.CLICODIGO])
+    return () => {
+      cancelled = true
+      setLoadingEstabelecimentos(false)
+    }
+  }, [isOpen, formData.ADQCODIGO, loadEstabelecimentos, codigoCliente])
 
   const handleSelectChange = (name, option) => {
     setFormData(prev => {
@@ -207,14 +214,17 @@ const ModalDomicilio = ({ isOpen, onClose, banco, onCreated }) => {
                 value={estabelecimentoOptions.find(o => o.value === formData.CLDCODIGO) || null}
                 onChange={(option) => handleSelectChange('CLDCODIGO', option)}
                 placeholder={
-                  !formData.ADQCODIGO
-                    ? 'Selecione um adquirente primeiro'
-                    : loadingEstabelecimentos
-                      ? 'Carregando...'
-                      : 'Selecione um estabelecimento'
+                  !codigoCliente
+                    ? 'Cliente do banco não identificado'
+                    : !formData.ADQCODIGO
+                      ? 'Selecione um adquirente primeiro'
+                      : loadingEstabelecimentos
+                        ? 'Carregando...'
+                        : 'Selecione um estabelecimento'
                 }
+                noOptionsMessage={() => 'Nenhum estabelecimento encontrado para este cliente e adquirente'}
                 isLoading={loadingEstabelecimentos}
-                isDisabled={!formData.ADQCODIGO || loadingEstabelecimentos}
+                isDisabled={!codigoCliente || !formData.ADQCODIGO || loadingEstabelecimentos}
                 isClearable
                 menuPortalTarget={document.body}
                 menuPosition="fixed"

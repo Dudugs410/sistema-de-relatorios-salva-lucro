@@ -72,8 +72,8 @@ export const useRegistry = ({ onUnauthorized }) => {
     return {
       loadDomicilios: async (codigoBanco) =>
         codigoBanco ? lookupList(fetchDomiciliosByBanco, 'Erro ao carregar domicílios:')(codigoBanco) : [],
-      loadEstabelecimentos: async (codigoAdquirente, codigoCliente = localStorage.getItem('clientCode')) =>
-        codigoAdquirente
+      loadEstabelecimentos: async (codigoAdquirente, codigoCliente) =>
+        codigoAdquirente && codigoCliente
           ? lookupList(fetchEstablishments, 'Erro ao carregar estabelecimentos:')(codigoCliente, codigoAdquirente)
           : [],
       addDomicilio: async (domicilio) => {
