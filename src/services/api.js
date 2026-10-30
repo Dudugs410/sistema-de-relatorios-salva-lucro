@@ -21,6 +21,25 @@ api.interceptors.request.use(
     }
   )
 
+const AUTH_ENDPOINTS = ['token', 'token/refresh/']
+let sessionExpiredHandler = null
+
+export const setSessionExpiredHandler = (handler) => {
+  sessionExpiredHandler = handler
+}
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const url = String(error.config?.url || '').replace(/^\//, '')
+    const isAuthRequest = AUTH_ENDPOINTS.includes(url)
+    if (error.response?.status === 401 && !isAuthRequest && localStorage.getItem('isSignedIn') === 'true') {
+      sessionExpiredHandler?.()
+    }
+    return Promise.reject(error)
+  }
+)
+
 export const cancelOngoingRequests = () => {
   globalAbortController.abort();
   globalAbortController = new AbortController();

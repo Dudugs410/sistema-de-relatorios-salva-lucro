@@ -8,8 +8,10 @@ import { ToastContainer } from 'react-toastify';
 
 import './index.scss';
 import PluggyProvider from './contexts/pluggyContext';
-import useSessionTimeout from './hooks/useSessionTimeout/useSessionTimeout';
 import ThemeSync from './components/ThemeSync';
+import InstallAppPrompt from './components/InstallAppPrompt';
+import SessionManager from './components/SessionManager';
+import { isSignedInStored, isTokenUsable } from './util/session';
 
 const PREFS_REFRESH_AFTER_MS = 60 * 1000;
 
@@ -33,9 +35,8 @@ function PageVisibilityHandler({ children }) {
       hiddenAt.current = null;
       if (hiddenFor < PREFS_REFRESH_AFTER_MS) return;
 
-      const token = localStorage.getItem('token');
       const userId = localStorage.getItem('userID');
-      if (token && userId && loadUserPreferences) {
+      if (userId && loadUserPreferences && isSignedInStored() && isTokenUsable()) {
         loadUserPreferences(userId);
       }
     };
@@ -48,8 +49,6 @@ function PageVisibilityHandler({ children }) {
 }
 
 function AppContent() {
-  useSessionTimeout(30);
-
   return (
     <>
       <AuthProvider>
@@ -58,11 +57,13 @@ function AppContent() {
             <PageVisibilityHandler>
               <ThemeSync>
                 <RoutesApp />
+                <SessionManager />
               </ThemeSync>
             </PageVisibilityHandler>
           </PreferenceLoader>
         </PluggyProvider>
       </AuthProvider>
+      <InstallAppPrompt />
       <ToastContainer
         position="bottom-right"
         autoClose={5000}

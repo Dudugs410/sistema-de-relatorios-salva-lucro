@@ -122,15 +122,18 @@ const PieChart = ({ data01, arrayAdm = [], totalAdmin = 0, tipo, dados }) => {
   const legendContainerRef = useRef(null);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const newColor = getComputedStyle(document.documentElement).getPropertyValue('--font-color');
-      if (newColor !== fontColor) {
-        setFontColor(newColor);
-      }
-    }, 100);
+    const root = document.documentElement;
+    const syncFontColor = () => {
+      const newColor = getComputedStyle(root).getPropertyValue('--font-color');
+      setFontColor((current) => (current === newColor ? current : newColor));
+    };
 
-    return () => clearInterval(interval);
-  }, [fontColor]);
+    const observer = new MutationObserver(syncFontColor);
+    observer.observe(root, { attributes: true, attributeFilter: ['data-theme', 'data-context', 'class'] });
+    syncFontColor();
+
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     switch (dados) {

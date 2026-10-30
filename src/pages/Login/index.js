@@ -6,6 +6,9 @@ import { applyContext, getStoredContext } from '../../util/contextUtils'
 import './login.css'
 import LoadingModal from "./LoadingModal"
 import AccountBlockedModal from "./AccountBlockedModal"
+import PageLoader from "../../components/PageLoader"
+import { FiEye, FiEyeOff } from "react-icons/fi"
+import { toast } from "react-toastify"
 
 const Login = () => {
     const {
@@ -21,6 +24,7 @@ const Login = () => {
     const [currentLogo, setCurrentLogo] = useState(null)
     const [tenantInfo, setTenantInfo] = useState(null)
     const [accountBlocked, setAccountBlocked] = useState(false)
+    const [showPassword, setShowPassword] = useState(false)
 
     const loadTenant = () => {
         const urlTenant = getTenantFromURL()
@@ -70,6 +74,10 @@ const Login = () => {
 
     async function handleLogin(e) {
         e.preventDefault()
+        if (!login.trim() || !password) {
+            toast.warning('Informe usuário e senha.')
+            return
+        }
         setLoading(true)
         try {
             const result = await loginApp(login, password)
@@ -92,7 +100,7 @@ const Login = () => {
     }
 
     if (!currentLogo) {
-        return <div>Carregando...</div>
+        return <PageLoader />
     }
 
     const logoClass = getLogoClass()
@@ -122,15 +130,26 @@ const Login = () => {
                                 autoComplete="username"
                                 onChange={(e) => setLogin(e.target.value)}
                             />
-                            <input
-                                id='senha'
-                                className='input-login'
-                                type='password'
-                                placeholder='senha'
-                                value={password}
-                                autoComplete="current-password"
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
+                            <div className='password-field'>
+                                <input
+                                    id='senha'
+                                    className='input-login'
+                                    type={showPassword ? 'text' : 'password'}
+                                    placeholder='senha'
+                                    value={password}
+                                    autoComplete="current-password"
+                                    onChange={(e) => setPassword(e.target.value)}
+                                />
+                                <button
+                                    type='button'
+                                    className='password-toggle'
+                                    onClick={() => setShowPassword((visible) => !visible)}
+                                    aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                                    title={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                                >
+                                    {showPassword ? <FiEyeOff /> : <FiEye />}
+                                </button>
+                            </div>
                             <hr className='hr-global' />
                             {!loading ?
                                 <button type='submit' className='btn btn-primary'>Login</button> :

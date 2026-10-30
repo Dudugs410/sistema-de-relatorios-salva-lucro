@@ -1,8 +1,8 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import Cookies from 'js-cookie'
 import jwtDecode from 'jwt-decode'
 import { toast } from 'react-toastify'
-import { cancelOngoingRequests } from '../../services/api'
+import { cancelOngoingRequests, setSessionExpiredHandler } from '../../services/api'
 import {
   requestToken,
   refreshTokens,
@@ -14,13 +14,15 @@ import {
 } from '../../services/authService'
 import { getDefaultPreferences, getUserIdentity } from '../../util/contextUtils'
 import { isUnauthorized } from './isUnauthorized'
+import { INSTALL_PROMPT_DISMISSED_KEY } from '../../util/installPrompt'
+import { SESSION_EXPIRED_MESSAGE, isSignedInStored, isTokenUsable } from '../../util/session'
 import {
   getApiErrorMessage,
   USER_LOOKUP_ERROR_MESSAGE,
   NO_MENU_PERMISSIONS_MESSAGE,
 } from '../../services/apiErrors'
 
-const PERSISTENT_STORAGE_KEYS = ['app_version']
+const PERSISTENT_STORAGE_KEYS = ['app_version', INSTALL_PROMPT_DISMISSED_KEY]
 
 const SESSION_COOKIES = ['apiKey', 'accessToken', 'id', 'accounts', 'itemID']
 
@@ -83,13 +85,24 @@ export const useSession = ({ preferences, resetAppValues, loadGroupsList, naviga
     navigate('/')
   }, [navigate, resetAppValues, resetPreferences])
 
+  const expireSession = useCallback(() => {
+    if (!isSignedInStored()) return
+    logout()
+    toast.warning(SESSION_EXPIRED_MESSAGE, { toastId: 'session-expired', autoClose: 8000 })
+  }, [logout])
+
+  useEffect(() => {
+    setSessionExpiredHandler(expireSession)
+    return () => setSessionExpiredHandler(null)
+  }, [expireSession])
+
   const loadUser = fetchUser
 
   const updateUser = useCallback(async (userObj) => {
     try {
       const response = await putUser(userObj)
       if (response.status === 401) {
-        logout()
+        expireSession()
         return null
       }
       if (!response.ok) throw new Error(`HTTP ${response.status}`)
@@ -110,7 +123,7 @@ export const useSession = ({ preferences, resetAppValues, loadGroupsList, naviga
       toast.error('Erro ao atualizar usuário!')
       return null
     }
-  }, [logout])
+  }, [expireSession])
 
   const loadOptions = async () => {
     try {
@@ -224,21 +237,29 @@ export const useSession = ({ preferences, resetAppValues, loadGroupsList, naviga
     }
   }
 
-  const refreshSession = async () => {
-    try {
+  const refreshInFlight = useRef(null)
+
+  const refreshSession = useCallback(() => {
+    if (refreshInFlight.current) return refreshInFlight.current
+    const run = async () => {
       const refreshToken = localStorage.getItem('refreshToken')
-      if (!refreshToken) {
-        console.log('No refresh token available')
-        return
+      if (!refreshToken) return false
+      try {
+        const data = await refreshTokens(refreshToken)
+        if (!isTokenUsable(data?.acess_token)) return false
+        localStorage.setItem('token', data.acess_token)
+        if (data.refresh_token) localStorage.setItem('refreshToken', data.refresh_token)
+        return true
+      } catch (error) {
+        console.error('Error refreshing session:', error)
+        return false
       }
-      const data = await refreshTokens(refreshToken)
-      localStorage.setItem('token', data.acess_token)
-      localStorage.setItem('refreshToken', data.refresh_token)
-    } catch (error) {
-      console.error('Error refreshing session:', error)
-      if (isUnauthorized(error)) logout()
     }
-  }
+    refreshInFlight.current = run().finally(() => {
+      refreshInFlight.current = null
+    })
+    return refreshInFlight.current
+  }, [])
 
   return {
     isSignedIn,
@@ -248,6 +269,7 @@ export const useSession = ({ preferences, resetAppValues, loadGroupsList, naviga
     clientUserId,
     loginApp,
     logout,
+    expireSession,
     loadUser,
     updateUser,
     refreshSession,

@@ -26,6 +26,7 @@ import Extrato from "../pages/Extrato"
 import PrevisaoRecebimentos from "../pages/PrevisaoRecebimentos"
 import ResumoMensal from "../pages/ResumoMensal"
 import OpenFinance from "../pages/OpenFinance"
+import NotFound from "../pages/NotFound"
 
 function RoutesApp() {
   const location = useLocation()
@@ -59,18 +60,7 @@ function RoutesApp() {
       <Route path="/cadastrodebancos" element={<Navigate to="/cadastro" replace />} />
       <Route path="/openfinance" element={<Navigate to="/extrato" replace />} />
 
-      <Route path="*" element={
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center', 
-          height: '100vh',
-          fontSize: '24px',
-          color: 'var(--font-color, #666)'
-        }}>
-          Página não encontrada
-        </div>
-      } />
+      <Route path="*" element={<Private><NotFound /></Private>} />
     </Routes>
   )
 }

@@ -12,12 +12,27 @@ import {
 import { getIconPathByCode, getDefaultIconByVisualIdentity } from '../../util/iconRegistry'
 import { getLogoByContext, getTenantFromURL } from '../../util/tenant'
 import salvalucroLogo from '../../assets/LogoTopo.png'
+import { isTokenUsable } from '../../util/session'
 
 const resolveLogo = (identity) => getTenantFromURL()?.logo || getLogoByContext(identity) || salvalucroLogo
 
 const getLoggedOutContext = () => getTenantFromURL()?.contextKey || getStoredContext()
 
 const isLoggedIn = () => Boolean(localStorage.getItem('userID') && localStorage.getItem('token'))
+
+const PREFERENCES_CACHE_KEY = 'userPreferences'
+
+const readCachedPreferences = () => {
+  try {
+    return JSON.parse(localStorage.getItem(PREFERENCES_CACHE_KEY) || 'null')
+  } catch {
+    return null
+  }
+}
+
+const cachePreferences = (prefs) => {
+  if (prefs) localStorage.setItem(PREFERENCES_CACHE_KEY, JSON.stringify(prefs))
+}
 
 const today = () => new Date().toISOString().split('T')[0]
 
@@ -57,10 +72,13 @@ export const usePreferences = () => {
     if (!userId) return null
     const user = userData || getStoredUser()
     const identity = getUserIdentity(user)
-    const prefs = await getOrCreatePreferences(userId, user)
+    const fetched = await getOrCreatePreferences(userId, user)
+    if (!localStorage.getItem('userID')) return null
+    if (fetched) cachePreferences(fetched)
+    const prefs = fetched || readCachedPreferences()
     if (prefs) setUserPreferences(prefs)
     applyPreferences(prefs, identity)
-    return prefs
+    return fetched
   }, [getOrCreatePreferences, applyPreferences])
 
   const savePreferences = useCallback(async (changes) => {
@@ -87,6 +105,7 @@ export const usePreferences = () => {
 
     const success = await saveUserPrefs(payload)
     if (success) {
+      cachePreferences(payload)
       setUserPreferences(payload)
       applyPreferences(payload, identity)
     }
@@ -119,7 +138,7 @@ export const usePreferences = () => {
 
   useEffect(() => {
     const initialize = async () => {
-      if (isLoggedIn()) {
+      if (isLoggedIn() && isTokenUsable()) {
         await loadUserPreferences(localStorage.getItem('userID'))
       } else {
         applyLoggedOutAppearance()

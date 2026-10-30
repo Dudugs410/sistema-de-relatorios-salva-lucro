@@ -1,0 +1,102 @@
+.session-prompt-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background-color: rgba(0, 0, 0, 0.55);
+}
+
+.session-prompt {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 20px 20px;
+  border: 1px solid var(--highlight-color, #99cc33);
+  border-radius: 16px;
+  text-align: center;
+  color: var(--font-color, #333333);
+  background-color: var(--background-color, #ffffff);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+  animation: session-prompt-in 0.2s ease-out;
+}
+
+.session-prompt__icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 1.4rem;
+  color: var(--on-highlight-color, #141414);
+  background-color: var(--highlight-color, #99cc33);
+}
+
+.session-prompt__title {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.session-prompt__text {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.session-prompt__actions {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.session-prompt__btn {
+  flex: 1 1 140px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: wait;
+  }
+}
+
+.session-prompt__btn--primary {
+  border: 1px solid var(--highlight-color, #99cc33);
+  color: var(--on-highlight-color, #141414);
+  background-color: var(--highlight-color, #99cc33);
+}
+
+.session-prompt__btn--secondary {
+  border: 1px solid var(--font-color, #333333);
+  color: var(--font-color, #333333);
+  background-color: transparent;
+}
+
+@keyframes session-prompt-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .session-prompt {
+    animation: none;
+  }
+}

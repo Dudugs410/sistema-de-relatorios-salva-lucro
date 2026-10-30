@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState, useCallback } from 'react'
 import '../../styles/global.scss'
 import './user.scss'
+import { toast } from 'react-toastify'
 import { AuthContext } from '../../contexts/auth'
 import { useUserPreferences } from '../../hooks/useUserPreferences/useUserPreferences'
 import { useNavigate, useLocation } from 'react-router-dom'
@@ -8,7 +9,6 @@ import {
   getSelectableColorIcons,
   getAdminIcons,
   getSecretIcons,
-  getIconPathByCode,
   getUserDefaultIcon,
   getDefaultIconByVisualIdentity
 } from '../../util/iconRegistry'
@@ -254,7 +254,7 @@ const Usuario = () => {
       if (Object.keys(changes).length === 0) return true
 
       if (!(await savePreferences(changes))) {
-        alert('Erro ao salvar as preferências. Tente novamente.')
+        toast.error('Erro ao salvar as preferências. Tente novamente.')
         return false
       }
       if (changes.ICONE) {
@@ -305,6 +305,9 @@ const Usuario = () => {
       setHasUnsavedChanges(false)
     } else if (pendingAction === 'logout') {
       logout()
+    } else if (pendingAction === 'close') {
+      setActiveRightPanel(null)
+      setSelectedIcon(null)
     }
 
     setPendingAction(null)
@@ -322,7 +325,7 @@ const Usuario = () => {
 
   const handleApplyIcon = async () => {
     if (!ENABLE_CUSTOMIZATION || !selectedIcon) {
-      alert('Por favor, selecione um ícone primeiro.')
+      toast.warning('Selecione um ícone primeiro.')
       return
     }
 
@@ -334,15 +337,15 @@ const Usuario = () => {
         setCurrentSavedIconCode(selectedIcon.code)
         setOriginalIconCode(selectedIcon.code)
         setHasUnsavedChanges(false)
-        alert(`Ícone "${selectedIcon.name}" salvo com sucesso!`)
+        toast.success(`Ícone "${selectedIcon.name}" salvo com sucesso!`)
         setActiveRightPanel(null)
         setSelectedIcon(null)
       } else {
-        alert('Erro ao salvar o ícone. Tente novamente.')
+        toast.error('Erro ao salvar o ícone. Tente novamente.')
       }
     } catch (error) {
       console.error('Error saving icon:', error)
-      alert('Erro ao salvar o ícone. Tente novamente.')
+      toast.error('Erro ao salvar o ícone. Tente novamente.')
     } finally {
       setSaving(false)
     }
@@ -365,14 +368,14 @@ const Usuario = () => {
       if (success) {
         setOriginalScheme(selectedScheme)
         setHasUnsavedChanges(false)
-        alert(`Esquema de cores "${colorSchemes.find((s) => s.id === selectedScheme)?.name}" salvo com sucesso!`)
+        toast.success(`Esquema de cores "${colorSchemes.find((s) => s.id === selectedScheme)?.name}" salvo com sucesso!`)
         setActiveRightPanel(null)
       } else {
-        alert('Erro ao salvar o esquema de cores. Tente novamente.')
+        toast.error('Erro ao salvar o esquema de cores. Tente novamente.')
       }
     } catch (error) {
       console.error('Error saving color scheme:', error)
-      alert('Erro ao salvar o esquema de cores. Tente novamente.')
+      toast.error('Erro ao salvar o esquema de cores. Tente novamente.')
     } finally {
       setSaving(false)
     }
@@ -408,20 +411,13 @@ const Usuario = () => {
 
   const handleClosePanel = () => {
     if (hasUnsavedChanges) {
-      const confirmClose = window.confirm('Você tem alterações não salvas. Deseja sair sem salvar?')
-      if (!confirmClose) return
+      setPendingAction('close')
+      setShowNavigationModal(true)
+      return
     }
 
     setActiveRightPanel(null)
-    if (hasUnsavedChanges) {
-      setSelectedScheme(originalScheme)
-      applyContext(originalScheme, identidadeVisual)
-      setUserImg(getIconPathByCode(originalIconCode, getDefaultIconPath()))
-      setHasUnsavedChanges(false)
-      setSelectedIcon(null)
-    } else if (selectedIcon) {
-      setSelectedIcon(null)
-    }
+    setSelectedIcon(null)
   }
 
   const NavigationModal = () => {

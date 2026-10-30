@@ -10,6 +10,7 @@ import SidebarMenu from '../Componente_SidebarMenu'
 import DadosGrupoCliente from "../Componente_DadosGrupoCliente"
 import { applyTheme } from '../../util/contextUtils'
 import { FiMenu } from 'react-icons/fi'
+import PageLoader from '../PageLoader'
 import { AuthContext } from '../../contexts/auth'
 
 function Layout({ children }) {
@@ -80,33 +81,7 @@ function Layout({ children }) {
   const closeSidebar = () => setSidebarVisible(false)
 
   if (!isThemeLoaded) {
-    return (
-      <div className="layout-loading" style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        backgroundColor: '#ffffff',
-        flexDirection: 'column',
-        gap: '20px'
-      }}>
-        <div className="spinner" style={{
-          width: '40px',
-          height: '40px',
-          border: '4px solid #f3f3f3',
-          borderTop: '4px solid #3498db',
-          borderRadius: '50%',
-          animation: 'spin 1s linear infinite'
-        }}></div>
-        <p>Carregando ambiente...</p>
-        <style>{`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}</style>
-      </div>
-    )
+    return <PageLoader message='Carregando ambiente...' />
   }
 
   return (
@@ -115,18 +90,7 @@ function Layout({ children }) {
         <button
           className="hamburger-button"
           onClick={toggleSidebar}
-          aria-label="Toggle menu"
-          style={{
-            position: 'fixed',
-            top: '10px',
-            left: '10px',
-            zIndex: 1000,
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            padding: '8px',
-            color: 'var(--text-color, #333)'
-          }}
+          aria-label="Abrir menu"
         >
           <FiMenu size={24} />
         </button>

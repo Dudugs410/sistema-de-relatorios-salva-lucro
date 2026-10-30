@@ -102,7 +102,6 @@ export const useReports = ({ onUnauthorized }) => {
       if (error.code === 'ERR_CANCELED') {
         setError(false)
       } else if (isUnauthorized(error)) {
-        toast.error('Sessão Expirada')
         onUnauthorized()
         return
       } else {

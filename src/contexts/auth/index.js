@@ -54,7 +54,7 @@ function AuthProvider({ children }) {
     ui.setCanceled(false)
     session.setIsSignedIn(false)
   }
-  logoutRef.current = session.logout
+  logoutRef.current = session.expireSession
 
   const { canceled, setFetchingData } = ui
   const allDashboardsLoaded =
