@@ -27,6 +27,7 @@ import PrevisaoRecebimentos from "../pages/PrevisaoRecebimentos"
 import ResumoMensal from "../pages/ResumoMensal"
 import OpenFinance from "../pages/OpenFinance"
 import NotFound from "../pages/NotFound"
+import SuporteChamado from "../pages/SuporteChamado"
 
 function RoutesApp() {
   const location = useLocation()
@@ -46,6 +47,7 @@ function RoutesApp() {
       <Route path="/login" element={<Login />} />
       
       <Route path="/usuario" element={<Private><Usuario /></Private>} />
+      <Route path="/suporte" element={<Private><SuporteChamado /></Private>} />
       <Route path="/dashboard" element={<Private><Dashboard /></Private>} />
       <Route path="/vendas" element={<Private><Vendas /></Private>} />
       <Route path="/creditos" element={<Private><Recebiveis /></Private>} />

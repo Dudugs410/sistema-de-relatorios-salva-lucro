@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom"
-import { FiMoon, FiSun, FiCalendar, FiUser, FiLogOut, FiChevronDown } from "react-icons/fi"
+import { FiMoon, FiSun, FiCalendar, FiUser, FiLogOut, FiChevronDown, FiHelpCircle } from "react-icons/fi"
 import { AuthContext } from "../../contexts/auth"
 import React, { useContext, useEffect, useState, useCallback, useRef } from "react"
 import './header.scss'
@@ -74,6 +74,11 @@ const Header = () => {
     const handleNavigateToUserPage = () => {
         setShowUserDropdown(false)
         navigate('/usuario')
+    }
+
+    const handleNavigateToSupport = () => {
+        setShowUserDropdown(false)
+        navigate('/suporte')
     }
 
     const handleLogout = () => {
@@ -173,6 +178,13 @@ const Header = () => {
                                     >
                                         <FiUser className="dropdown-icon" />
                                         <span>Meu Perfil</span>
+                                    </button>
+                                    <button
+                                        className="dropdown-item"
+                                        onClick={handleNavigateToSupport}
+                                    >
+                                        <FiHelpCircle className="dropdown-icon" />
+                                        <span>Suporte</span>
                                     </button>
                                     <div className="dropdown-divider"></div>
                                     <button 
