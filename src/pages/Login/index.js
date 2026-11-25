@@ -7,6 +7,7 @@ import './login.css'
 import LoadingModal from "./LoadingModal"
 import AccountBlockedModal from "./AccountBlockedModal"
 import PageLoader from "../../components/PageLoader"
+import InstallAppButton from "../../components/InstallAppButton"
 import { FiEye, FiEyeOff } from "react-icons/fi"
 import { toast } from "react-toastify"
 
@@ -155,6 +156,7 @@ const Login = () => {
                                 <button type='submit' className='btn btn-primary'>Login</button> :
                                 <button type='submit' className='btn btn-primary' disabled>Login</button>
                             }
+                            <InstallAppButton className='install-app-button--login' />
                         </div>
                     </form>
                 </div>

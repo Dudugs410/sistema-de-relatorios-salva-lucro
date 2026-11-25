@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { FiDownload, FiShare, FiMoreVertical, FiX } from 'react-icons/fi'
 import {
   canPromptInstall,
@@ -16,7 +17,10 @@ const SHOW_DELAY_MS = 3000
 
 const shouldOffer = () => isMobileDevice() && !isRunningInstalled() && !isInstallPromptSnoozed()
 
+const LOGIN_PATHS = ['/', '/login']
+
 const InstallAppPrompt = () => {
+  const { pathname } = useLocation()
   const [visible, setVisible] = useState(false)
   const [nativeAvailable, setNativeAvailable] = useState(canPromptInstall())
 
@@ -32,7 +36,8 @@ const InstallAppPrompt = () => {
     }
   }, [])
 
-  if (!visible) return null
+  // Na tela de login o botão "Instalar" já é exibido no formulário.
+  if (!visible || LOGIN_PATHS.includes(pathname)) return null
 
   const dismiss = () => {
     snoozeInstallPrompt()

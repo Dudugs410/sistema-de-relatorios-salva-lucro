@@ -14,7 +14,7 @@ import {
 } from '../../services/authService'
 import { getDefaultPreferences, getUserIdentity } from '../../util/contextUtils'
 import { isUnauthorized } from './isUnauthorized'
-import { INSTALL_PROMPT_DISMISSED_KEY } from '../../util/installPrompt'
+import { INSTALL_PROMPT_DISMISSED_KEY, MANUAL_INSTALL_KEY } from '../../util/installPrompt'
 import { SESSION_EXPIRED_MESSAGE, isSignedInStored, isTokenUsable } from '../../util/session'
 import {
   getApiErrorMessage,
@@ -22,7 +22,7 @@ import {
   NO_MENU_PERMISSIONS_MESSAGE,
 } from '../../services/apiErrors'
 
-const PERSISTENT_STORAGE_KEYS = ['app_version', INSTALL_PROMPT_DISMISSED_KEY]
+const PERSISTENT_STORAGE_KEYS = ['app_version', INSTALL_PROMPT_DISMISSED_KEY, MANUAL_INSTALL_KEY]
 
 const SESSION_COOKIES = ['apiKey', 'accessToken', 'id', 'accounts', 'itemID']
 
