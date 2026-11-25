@@ -1,0 +1,25 @@
+@import '../../styles/floatingButtons';
+
+// Base da pilha de botões flutuantes (o tutorial fica logo acima).
+.support-chat-button {
+  @include floating-action-button(0);
+}
+
+.support-chat-button__icon {
+  @include floating-action-button-icon;
+}
+
+.support-chat-button__label {
+  @include floating-action-button-label('.support-chat-button');
+}
+
+// Notificações (toasts) no canto inferior direito sobem para ficar acima dos dois botões.
+.Toastify__toast-container--bottom-right {
+  bottom: fab-bottom(2);
+}
+
+@media (max-width: $fab-mobile-breakpoint) {
+  .Toastify__toast-container--bottom-right {
+    bottom: fab-bottom(2, $fab-size-mobile, $fab-offset-mobile);
+  }
+}

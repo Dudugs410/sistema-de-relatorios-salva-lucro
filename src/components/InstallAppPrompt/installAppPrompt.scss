@@ -1,7 +1,7 @@
 .install-prompt {
   position: fixed;
   right: 12px;
-  bottom: 72px;
+  bottom: 140px; // acima dos botões flutuantes de suporte e tutorial
   z-index: 1100;
   width: calc(100% - 24px);
   max-width: 340px;

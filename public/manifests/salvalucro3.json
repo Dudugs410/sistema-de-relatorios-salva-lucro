@@ -1,0 +1,17 @@
+{
+  "id": "/salvalucro3/",
+  "name": "Salva Lucro | Financeiro",
+  "short_name": "Salva Lucro",
+  "description": "Salva Lucro - Gestão financeira",
+  "start_url": "/salvalucro3/",
+  "scope": "/salvalucro3/",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#0a3d70",
+  "background_color": "#ffffff",
+  "icons": [
+    { "src": "../icons/salvalucro3/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "../icons/salvalucro3/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "../icons/salvalucro3/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

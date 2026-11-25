@@ -1,0 +1,87 @@
+// Botões flutuantes do canto inferior direito (suporte e tutorial), empilhados na mesma coluna.
+// Suporte fica na base; tutorial logo acima. Toasts e o banner de instalação ficam acima de ambos.
+
+$fab-size: 56px;
+$fab-size-mobile: 50px;
+$fab-offset: 24px;
+$fab-offset-mobile: 16px;
+$fab-gap: 12px;
+$fab-mobile-breakpoint: 600px;
+
+// Posição (bottom) do botão na pilha: 0 = base, 1 = acima dele, ...
+@function fab-bottom($index, $size: $fab-size, $offset: $fab-offset) {
+  @return $offset + $index * ($size + $fab-gap);
+}
+
+@mixin floating-action-button($index) {
+  position: fixed;
+  right: $fab-offset;
+  bottom: fab-bottom($index);
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  height: $fab-size;
+  min-width: $fab-size;
+  padding: 0 calc((#{$fab-size} - 24px) / 2);
+  border: none;
+  border-radius: $fab-size;
+  color: var(--on-highlight-color, #141414);
+  background-color: var(--highlight-color, #99cc33);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+  &:hover,
+  &:focus-visible {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.32);
+    transform: translateY(-2px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--font-color, #333333);
+    outline-offset: 3px;
+  }
+
+  @media (max-width: $fab-mobile-breakpoint) {
+    right: $fab-offset-mobile;
+    bottom: fab-bottom($index, $fab-size-mobile, $fab-offset-mobile);
+    height: $fab-size-mobile;
+    min-width: $fab-size-mobile;
+    padding: 0 calc((#{$fab-size-mobile} - 24px) / 2);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+@mixin floating-action-button-icon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+}
+
+// Texto que aparece ao passar o mouse (desktop). $button é o seletor do botão.
+@mixin floating-action-button-label($button) {
+  max-width: 0;
+  margin-left: 0;
+  font-size: 0.9rem;
+  font-weight: bold;
+  white-space: nowrap;
+  opacity: 0;
+  transition: max-width 0.25s ease, margin-left 0.25s ease, opacity 0.2s ease;
+
+  @media (hover: hover) {
+    #{$button}:hover &,
+    #{$button}:focus-visible & {
+      max-width: 120px;
+      margin-left: 10px;
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}

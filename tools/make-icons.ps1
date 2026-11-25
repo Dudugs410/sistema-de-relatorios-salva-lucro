@@ -6,7 +6,8 @@ $out = Join-Path $Root 'public\icons'
 
 # path => source image, background ('' = sample from image corner)
 $tenants = @(
-  @{ path = 'salvalucro3';       src = 'user_icons\ICON_LOGO_AZUL.png';    bg = '#FFFFFF' },
+  # Salva Lucro: logo azul (486px) recolorido no verde do ICON_LOGO_VERDE (que só tem 236px).
+  @{ path = 'salvalucro3';       src = 'user_icons\ICON_LOGO_AZUL.png';    bg = '#FFFFFF'; recolor = '#99CC33' },
   @{ path = 'sifra_react';       src = 'user_icons\ICON_SIFRA.png';        bg = '#FFFFFF' },
   @{ path = 'mg_react';          src = 'logoMG.png';                       bg = '' },
   @{ path = 'superjur_react';    src = 'user_icons\ICON_SUPERJUR.png';     bg = '#FFFFFF' },
@@ -53,6 +54,28 @@ foreach ($t in $tenants) {
   $dir = Join-Path $out $t.path
   New-Item -ItemType Directory -Force $dir | Out-Null
   $src = New-Object System.Drawing.Bitmap (Join-Path $assets $t.src)
+
+  if ($t.recolor) {
+    # Troca a cor principal mantendo branco e transparência (pixels claros continuam claros).
+    $to = [System.Drawing.ColorTranslator]::FromHtml($t.recolor)
+    $baseL = 255
+    for ($y = 0; $y -lt $src.Height; $y += 3) {
+      for ($x = 0; $x -lt $src.Width; $x += 3) {
+        $p = $src.GetPixel($x, $y)
+        if ($p.A -eq 255) { $baseL = [Math]::Min($baseL, ($p.R + $p.G + $p.B) / 3) }
+      }
+    }
+    for ($y = 0; $y -lt $src.Height; $y++) {
+      for ($x = 0; $x -lt $src.Width; $x++) {
+        $p = $src.GetPixel($x, $y)
+        if ($p.A -eq 0) { continue }
+        $l = ($p.R + $p.G + $p.B) / 3
+        $s = [Math]::Max(0, [Math]::Min(1, ($l - $baseL) / (255 - $baseL)))
+        $r = [int]($to.R + (255 - $to.R) * $s); $g = [int]($to.G + (255 - $to.G) * $s); $b = [int]($to.B + (255 - $to.B) * $s)
+        $src.SetPixel($x, $y, [System.Drawing.Color]::FromArgb($p.A, $r, $g, $b))
+      }
+    }
+  }
 
   if ($t.bg) {
     $bg = [System.Drawing.ColorTranslator]::FromHtml($t.bg)

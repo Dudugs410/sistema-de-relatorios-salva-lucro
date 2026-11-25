@@ -12,6 +12,7 @@ import { applyTheme } from '../../util/contextUtils'
 import { FiMenu } from 'react-icons/fi'
 import PageLoader from '../PageLoader'
 import { AuthContext } from '../../contexts/auth'
+import SupportChatButton from '../SupportChatButton'
 
 function Layout({ children }) {
   const [sidebarVisible, setSidebarVisible] = useState(false)
@@ -160,6 +161,7 @@ function Layout({ children }) {
           </main>
         </div>
       </div>
+      <SupportChatButton />
     </div>
   )
 }

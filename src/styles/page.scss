@@ -1,3 +1,5 @@
+@import './floatingButtons';
+
 .page {
   width: 95%;
   margin: 10px auto 54px;
@@ -59,31 +61,17 @@
   color: var(--font-color);
 }
 
+// Empilhado acima do botão flutuante de suporte, com o mesmo visual (ver _floatingButtons.scss).
 .tutorial-button {
-  position: fixed;
-  right: 20px;
-  bottom: 45px;
-  z-index: 1000;
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border: 1px solid var(--highlight-color);
-  border-radius: 50%;
-  font-size: 1.3rem;
-  color: var(--highlight-color);
-  background-color: var(--background-color);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-  cursor: pointer;
-  transition: transform 0.2s, background-color 0.2s, color 0.2s;
+  @include floating-action-button(1);
+}
 
-  &:hover {
-    transform: scale(1.05);
-    color: var(--on-highlight-color);
-    background-color: var(--highlight-color);
-  }
+.tutorial-button__icon {
+  @include floating-action-button-icon;
+}
+
+.tutorial-button__label {
+  @include floating-action-button-label('.tutorial-button');
 }
 
 .floating-button-container {
@@ -177,13 +165,6 @@
   .page__title-bar {
     padding: 8px 12px;
     border-radius: 12px;
-  }
-
-  .tutorial-button {
-    right: 15px;
-    bottom: 15px;
-    width: 40px;
-    height: 40px;
   }
 }
 

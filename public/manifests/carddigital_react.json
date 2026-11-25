@@ -1,0 +1,17 @@
+{
+  "id": "/carddigital_react/",
+  "name": "Card Digital | Financeiro",
+  "short_name": "Card Digital",
+  "description": "Card Digital - Gestão financeira",
+  "start_url": "/carddigital_react/",
+  "scope": "/carddigital_react/",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#0a3d70",
+  "background_color": "#ffffff",
+  "icons": [
+    { "src": "../icons/carddigital_react/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "../icons/carddigital_react/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "../icons/carddigital_react/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

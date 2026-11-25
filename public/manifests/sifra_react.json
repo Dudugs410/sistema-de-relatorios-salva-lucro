@@ -1,0 +1,17 @@
+{
+  "id": "/sifra_react/",
+  "name": "Sifra | Financeiro",
+  "short_name": "Sifra",
+  "description": "Sifra - Gestão financeira",
+  "start_url": "/sifra_react/",
+  "scope": "/sifra_react/",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#0a3d70",
+  "background_color": "#ffffff",
+  "icons": [
+    { "src": "../icons/sifra_react/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "../icons/sifra_react/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "../icons/sifra_react/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
