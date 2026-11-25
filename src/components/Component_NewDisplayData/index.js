@@ -109,6 +109,8 @@ const TIPO_RELATORIO_OPTIONS = [
   { value: 'resumido', label: 'Resumido' },
 ]
 
+const TIPO_RELATORIO_PARCELADO = { value: 'parcelado', label: 'Parcelado' }
+
 const isFalseFlag = (flag) => {
   if (typeof flag === 'boolean') return flag === false
   if (typeof flag === 'number') return flag === 0
@@ -150,6 +152,8 @@ const NewDisplayData = ({
   isSearching = false,
   tipoRelatorio = null,
   onTipoRelatorioChange = null,
+  somenteParceladas = false,
+  onSomenteParceladasChange = null,
   onRefreshSales = null,
 }) => {
   const { 
@@ -704,15 +708,33 @@ const NewDisplayData = ({
         inputId={inputId}
         options={TIPO_RELATORIO_OPTIONS}
         onChange={onTipoRelatorioChange}
-        value={tipoRelatorio}
+        value={somenteParceladas ? TIPO_RELATORIO_PARCELADO : tipoRelatorio}
         menuPortalTarget={document.body}
         menuPosition="fixed"
         isClearable={false}
         isSearchable={false}
-        isDisabled={isSearching}
+        isDisabled={isSearching || somenteParceladas}
         styles={selectStyles}
         theme={selectTheme}
       />
+    </div>
+  )
+
+  const showSomenteParceladas = Boolean(onSomenteParceladasChange) && exportPage === 'vendas' && dataArray?.length > 0
+
+  const renderSomenteParceladas = () => (
+    <div className='form-check somente-parceladas'>
+      <input
+        className='form-check-input'
+        type='checkbox'
+        id='somente-parceladas'
+        checked={somenteParceladas}
+        onChange={(e) => onSomenteParceladasChange(e.target.checked)}
+        disabled={isSearching}
+      />
+      <label className='form-check-label' htmlFor='somente-parceladas'>
+        Somente vendas parceladas
+      </label>
     </div>
   )
 
@@ -850,11 +872,13 @@ const NewDisplayData = ({
       {dataArray && dataArray.length > 0 && customExportPage !== 'openfinance' && (
         <div className='report-export'>
           {showTipoRelatorio && renderTipoRelatorio('tipo-relatorio')}
+          {showSomenteParceladas && renderSomenteParceladas()}
           <GerarRelatorio
             className='export'
             onExport={getExportFunction()}
             filteredData={currentFilteredData}
             tipoRelatorio={tipoRelatorio}
+            somenteParceladas={showSomenteParceladas && somenteParceladas}
           />
           <hr className='hr-global'/>
         </div>

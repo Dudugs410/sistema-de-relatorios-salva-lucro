@@ -9,7 +9,7 @@ import './GerarRelatorio.scss'
 import { AuthContext } from '../../contexts/auth'
 import { toast } from 'react-toastify'
 
-export default function GerarRelatorio({ onExport, filteredData, tipoRelatorio = null }) {
+export default function GerarRelatorio({ onExport, filteredData, tipoRelatorio = null, somenteParceladas = false }) {
 
 	const { 
 		dateConvert, exportName,
@@ -46,9 +46,12 @@ export default function GerarRelatorio({ onExport, filteredData, tipoRelatorio =
 		return () => clearInterval(intervalId)
 	}, [currentDateTime])
 
-	const isResumido = localStorage.getItem('currentPath') === '/vendas' && tipoRelatorio?.value === 'resumido'
+	const isParcelamentos = localStorage.getItem('currentPath') === '/vendas' && somenteParceladas
+	const isResumido = !isParcelamentos && localStorage.getItem('currentPath') === '/vendas' && tipoRelatorio?.value === 'resumido'
+	const fileSuffix = isParcelamentos ? ' - Parceladas' : isResumido ? ' - Resumido' : ''
 
 	const getModelo = () => {
+		if (isParcelamentos) return 'PARCELAMENTOS'
 		const currentPath = localStorage.getItem('currentPath')
 		switch (currentPath) {
 			case '/vendas':
@@ -278,8 +281,8 @@ export default function GerarRelatorio({ onExport, filteredData, tipoRelatorio =
 				a.href = url
 				const dateRangeStr = getDateRangeString()
 				const fileName = dateRangeStr 
-					? `${tipoRelatorioLabel}${isResumido ? ' - Resumido' : ''} - ${exportName} - ${dateRangeStr}.${fileExtension}`
-					: `${tipoRelatorioLabel}${isResumido ? ' - Resumido' : ''} - ${exportName} - ${currentDateTime}.${fileExtension}`
+					? `${tipoRelatorioLabel}${fileSuffix} - ${exportName} - ${dateRangeStr}.${fileExtension}`
+					: `${tipoRelatorioLabel}${fileSuffix} - ${exportName} - ${currentDateTime}.${fileExtension}`
 				a.download = fileName
 				document.body.appendChild(a)
 				a.click()
@@ -308,6 +311,7 @@ export default function GerarRelatorio({ onExport, filteredData, tipoRelatorio =
 	}
 
 	const generatePdf = async () => {
+		if (isParcelamentos) return
 		if (!tableData || tableData.length === 0) {
 			toast.warning('Sem dados para exportar.')
 			return
@@ -331,7 +335,8 @@ export default function GerarRelatorio({ onExport, filteredData, tipoRelatorio =
 					<button 
 						className='btn btn-exportar btn-exportar-pdf' 
 						onClick={generatePdf}
-						disabled={downloading}
+						disabled={downloading || isParcelamentos}
+						title={isParcelamentos ? 'Exportação em PDF indisponível para vendas parceladas' : undefined}
 					>
 						{downloading ? 'Gerando...' : 'Download PDF'} <FiFilePlus />
 					</button>

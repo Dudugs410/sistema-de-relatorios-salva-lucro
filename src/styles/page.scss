@@ -407,6 +407,18 @@
   gap: 6px;
 }
 
+.somente-parceladas {
+  margin: 4px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--font-color);
+
+  .form-check-input,
+  .form-check-label {
+    cursor: pointer;
+  }
+}
+
 .tipo-relatorio-label {
   margin: 0;
   font-size: 14px;

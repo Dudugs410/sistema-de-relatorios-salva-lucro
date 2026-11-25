@@ -9,6 +9,7 @@ import { FiCalendar } from 'react-icons/fi'
 import NewDisplayData from '../../components/Component_NewDisplayData'
 import PageShell from '../../components/PageShell'
 import TutorialButton from '../../components/TutorialButton'
+import { isInstallmentSale } from '../../util/reportTransforms'
 
 const Vendas = () =>{
   const location = useLocation()
@@ -31,7 +32,9 @@ const Vendas = () =>{
     lastProcessedDataRef.current = null
     lastExportedDataRef.current = null
     setRunTutorial(false)
-    
+    setAllSales([])
+    setSomenteParceladas(false)
+
     localStorage.removeItem('reportBandeira')
     localStorage.removeItem('reportAdquirente')
   }
@@ -198,6 +201,30 @@ const Vendas = () =>{
 
   const [tipoRelatorio, setTipoRelatorio] = useState({ value: 'detalhado', label: 'Detalhado' })
 
+  // Full API result; salesPageArray holds what is displayed (all sales or only installments).
+  const [allSales, setAllSales] = useState([])
+  const [somenteParceladas, setSomenteParceladas] = useState(false)
+
+  const showSales = (rows, onlyInstallments) => {
+    const list = rows || []
+    if (!onlyInstallments) {
+      setSomenteParceladas(false)
+      setSalesPageArray(list)
+      return
+    }
+    const installments = list.filter(isInstallmentSale)
+    if (list.length > 0 && installments.length === 0) {
+      toast.info('Nenhuma venda parcelada no período selecionado.')
+      setSomenteParceladas(false)
+      setSalesPageArray(list)
+      return
+    }
+    setSomenteParceladas(true)
+    setSalesPageArray(installments)
+  }
+
+  const handleSomenteParceladasChange = (checked) => showSales(allSales, checked)
+
   const refreshSales = async () => {
     try {
       await loadData()
@@ -259,8 +286,9 @@ const Vendas = () =>{
         adquirente: adquirenteValue,
         bandeira: bandeiraValue,
       }  
-      const data = await newLoadSales(startDate, endDate, filters)      
-      setSalesPageArray(data)
+      const data = (await newLoadSales(startDate, endDate, filters)) || []
+      setAllSales(data)
+      showSales(data, somenteParceladas)
       
     } catch (error) {
       console.error('Error fetching sales data:', error)
@@ -386,6 +414,8 @@ const Vendas = () =>{
               showSelects={false}
               tipoRelatorio={tipoRelatorio}
               onTipoRelatorioChange={setTipoRelatorio}
+              somenteParceladas={somenteParceladas}
+              onSomenteParceladasChange={handleSomenteParceladasChange}
               onRefreshSales={refreshSales}
             />
           ) : (

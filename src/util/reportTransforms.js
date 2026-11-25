@@ -204,3 +204,5 @@ export const findMatchingSales = (sale, candidates) => {
   }
   return matches
 }
+
+export const isInstallmentSale = (sale) => Number(sale?.PARCELA) > 1
